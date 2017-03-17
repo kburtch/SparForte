@@ -153,7 +153,7 @@ New Unique Concepts
     - objects more complicated but not an issue now.
     - have an option for open access
     - how to you lock the list and enforce it?
-    - % should be usable in more contexts
+    - % functionality should be extended and made usable in more contexts
        - chould % chain objects methods?  That is, % equals @ + first param?
   - sofware model + archecture
     - allow architects to apply architecture policy to groups of software by the
@@ -161,7 +161,12 @@ New Unique Concepts
       software model be exposed through System?  Currently pragmas are applied
       directly to the current program, rather than triggered by pragma
       software_model and applied through some kind of architecture system.
-
+  - units of measure for numerics
+    - e.g. distance : integer in "foot", "feet" := 0;
+    - should units be pre-defined?  defined in units package?  strings are too
+      risky...
+  - naming convention
+    - what are the naming standards of functions.  e.g. sin(), to_sin(), sin_of()?
 
 -------------------------------------------------------------------------------
 KNOWN ISSUES/IDEAS

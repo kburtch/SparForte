@@ -1162,17 +1162,24 @@ end ParseNumericsSerial;
 procedure ParseNumericsRnd( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.rnd( n );
   -- Source: N/A
-  expr_val   : unbounded_string;
-  expr_type  : identifier;
+  expr_val    : unbounded_string;
+  expr_type   : identifier;
+  randomFloat : float;
 begin
   kind := positive_t;
   expect( rnd_t );
   ParseSingleNumericParameter( expr_val, expr_type, positive_t );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string(  1.0 +
-          long_float'truncation( to_numeric( expr_val ) *
-             long_float( Ada.Numerics.Float_Random.Random( random_generator ) ) ) );
+        -- Kludge: Random produces 0..1.0, but 1.0 is too large.  Probably a
+        -- better way to handle this...
+        loop
+           randomFloat := Ada.Numerics.Float_Random.Random( random_generator );
+        exit when randomFloat /= 1.0;
+        end loop; 
+        result := to_unbounded_string(  1.0 +
+           long_float'truncation( to_numeric( expr_val ) *
+              long_float( randomFloat  ) ) );
      end if;
   exception when others =>
      err_exception_raised;

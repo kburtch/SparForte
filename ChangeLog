@@ -40,3 +40,5 @@ CHANGES SINCE 2.0.2
 
 18. Change: pragma session_import_script, session_export_script and prompt_script not allowed in a restricted shell (as a security precaution).
 
+19. Fix: numerics.rnd() no longer occasionally produces a number too high.
+
