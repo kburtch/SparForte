@@ -42,3 +42,7 @@ CHANGES SINCE 2.0.2
 
 19. Fix: numerics.rnd() no longer occasionally produces a number too high.
 
+20. Fix: private fields in records and arrays of private elements can no longer be encoded as JSON.  Even though data is stored as strings, a private type is supposed to be a black box.
+
+21. Fix: canlendar.time values are no longer parsed by the "?" command at syntax time.  They were causing an index_error.
+

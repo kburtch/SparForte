@@ -1237,18 +1237,20 @@ begin
         end drop_leading_space;
 
      begin
-        Split( time( to_numeric( expr_val ) ), year, month, day, seconds );
+        if isExecutingCommand then
+           Split( time( to_numeric( expr_val ) ), year, month, day, seconds );
 
-        hours := duration( float'truncation( float( seconds / (60 * 60) ) ) );
-        seconds := seconds - hours * (60* 60);
-        minutes := duration( float'truncation( float( seconds / ( 60 ) ) ) );
-        seconds := seconds - (minutes * 60);
-        expr_val := get_4_digits( year'img ) &  "/";
-        expr_val := expr_val & get_2_digits( month'img ) &  "/";
-        expr_val := expr_val & get_2_digits( day'img ) & " ";
-        expr_val := expr_val & get_2_digits( hours'img ) & ":";
-        expr_val := expr_val & get_2_digits( minutes'img ) & ":";
-        expr_val := expr_val & drop_leading_space( seconds'img );
+           hours := duration( float'truncation( float( seconds / (60 * 60) ) ) );
+           seconds := seconds - hours * (60* 60);
+           minutes := duration( float'truncation( float( seconds / ( 60 ) ) ) );
+           seconds := seconds - (minutes * 60);
+           expr_val := get_4_digits( year'img ) &  "/";
+           expr_val := expr_val & get_2_digits( month'img ) &  "/";
+           expr_val := expr_val & get_2_digits( day'img ) & " ";
+           expr_val := expr_val & get_2_digits( hours'img ) & ":";
+           expr_val := expr_val & get_2_digits( minutes'img ) & ":";
+           expr_val := expr_val & drop_leading_space( seconds'img );
+        end if;
      end;
   end if;
   if isExecutingCommand then -- fix this for no output on error!

@@ -1176,7 +1176,7 @@ begin
         loop
            randomFloat := Ada.Numerics.Float_Random.Random( random_generator );
         exit when randomFloat /= 1.0;
-        end loop; 
+        end loop;
         result := to_unbounded_string(  1.0 +
            long_float'truncation( to_numeric( expr_val ) *
               long_float( randomFloat  ) ) );

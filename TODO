@@ -17,6 +17,9 @@ Severe Issues (Fix These First)
       must be a global scanner flag.
 - regression tests
     - cgi third_party test
+- calendar
+    - calendar says time arithmatic is in seconds but arithmetic was done
+      in nano-seconds in my latest test.
 - unsorted/misc
     - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
       my virtual machine, even after repeated audits of all syscalls for handling
@@ -25,8 +28,6 @@ Severe Issues (Fix These First)
       If so, where?
        - echo "test" | head; --raised it
        - echo  | sort | head; -- raised it
-    - parseidentifier can throw an invalid data error when setting wasReferenced on
-      certain circumstances.
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - constant check fails if assignment is in `..` (subscripts are compiled after

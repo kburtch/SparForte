@@ -361,7 +361,6 @@ type declaration is record
      openNamespace : identifier := identifier'first;       -- corresponding open (or null)
      nextNamespace : identifier := identifier'first;       -- next tag (descending)
      parentNamespace : identifier := identifier'first;     -- parent open tag
-
 end record;
 
 

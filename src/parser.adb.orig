@@ -413,6 +413,7 @@ end ParseNewIdentifier;
 
 procedure ParseIdentifier( id : out identifier ) is
   -- expect a  previously declared identifier
+  recId : identifier;
 begin
   id := eof_t; -- assume failure
   if token = number_t then
@@ -476,8 +477,11 @@ begin
            -- record fields are ignored in the unused identifier checks.
            -- also do this for writing since it is hard to determine if
            -- all record fields have been written to.
-           if identifiers( token ).field_of /= eof_t then
-              identifiers( identifiers( token ).field_of ).wasReferenced := true;
+           --
+           -- rather than eof, precaution against unexpected values
+           recId := identifiers( token ).field_of;
+           if recId in reserved_top..identifiers'last then
+              identifiers( recId ).wasReferenced := true;
            else
               -- mark the value as used because it was referred to
               identifiers( token ).wasReferenced := true;

@@ -3939,8 +3939,8 @@ begin
         end loop;
         result := result & data & to_unbounded_string( "]" );
      else
-        -- this should not happen
-        err( "unsupported array type" );
+        -- private types are unique types extending variable_t
+        err( "private type elements cannot be encoded as JSON" );
      end if;
 exception when CONSTRAINT_ERROR =>
   err( "internal error: constraint_error" );
@@ -4277,8 +4277,8 @@ begin
           end if;
         end;
      else
-        -- this should not happen
-        err( "unsupported array type" );
+        -- private types are unique types extending variable_t
+        err( "private type elements cannot be used to store JSON data" );
      end if;
 exception when CONSTRAINT_ERROR =>
   err( "internal error: constraint_error" );
@@ -4343,11 +4343,16 @@ begin
                          elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
                             -- if it's a JSON string, just copy the data
                             result := result & identifiers( field_t ).value.all;
-                         else
+                         elsif uniFieldType = uni_string_t then
                             item := to_unbounded_string( """" );
                             item := item & ToJSONEscaped( identifiers( field_t ).value.all );
                             item := item & '"';
                             result := result & item;
+                         else
+                            -- private types are unique types extending variable_t
+                            err( "private type fields like " &
+                                optional_bold( to_string( fieldName ) ) &
+                                " cannot be encoded as JSON" );
                          end if;
                       end if;
                 end if;
@@ -4527,7 +4532,6 @@ begin
                         end if;
                         identifiers( j ).value.all := decodedItemValue;
                       end;
-
                     elsif getUniType( elementKind ) = uni_string_t then
 
                       -- Strings
@@ -4550,7 +4554,7 @@ begin
                       end if;
                       identifiers( j ).value.all := castToType( decodedItemValue,
                          identifiers( j ).kind );
-                    else
+                    elsif getUniType( elementKind ) = uni_numeric_t then
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
@@ -4558,6 +4562,11 @@ begin
                       end if;
                       identifiers( j ).value.all := castToType( decodedItemValue,
                          identifiers( j ).kind );
+                    else
+                       -- private types are unique types extending variable_t
+                       err( "private type fields like " &
+                             optional_bold( to_string( identifiers( j ).name ) ) &
+                             " cannot store JSON data" );
                     end if;
                  end if;
                  exit; -- the searchName may occur more than once.  stop when found first match
