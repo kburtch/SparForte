@@ -1,12 +1,12 @@
 #!/usr/local/bin/spar
 
+-- TODO raising index strings error during syntax check?
+
 pragma annotate( summary, "ramcache" )
        @( description, "Use a ramdisk as a key-value lookup table with " )
        @( description, "values that expire." )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
-
-pragma restriction( no_external_commands );
 
 procedure ramcache is
   ramdisk_dir : constant string := "/dev/shm";
@@ -157,10 +157,12 @@ begin
 
   -- add a value to the cache
 
+  ? "Putting foo = bar in the cache";
   put_cache( "foo", "bar" );
 
   -- get a value from the cache (good for 100 seconds)
 
+  ? "Getting foo's value from the cache";
   ? get_cache( "foo", 100 );
 end ramcache;
 
