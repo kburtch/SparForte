@@ -71,7 +71,7 @@ vectors_delete_first_t  : identifier;
 vectors_delete_last_t   : identifier;
 vectors_contains_t      : identifier;
 vectors_move_t          : identifier;
-vectors_copy_t          : identifier;
+--vectors_copy_t          : identifier;
 vectors_reverse_elements_t : identifier;
 vectors_flip_t          : identifier;
 vectors_new_cursor_t    : identifier;

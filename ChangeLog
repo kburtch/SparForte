@@ -46,3 +46,5 @@ CHANGES SINCE 2.0.2
 
 21. Fix: canlendar.time values are no longer parsed by the "?" command at syntax time.  They were causing an index_error.
 
+22. Fix: calendar.time arithmetic working properly (probably broken when castToType was implemented).
+

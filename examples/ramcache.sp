@@ -1,7 +1,22 @@
+#!/usr/local/bin/spar
+
+pragma annotate( summary, "ramcache" )
+       @( description, "Use a ramdisk as a key-value lookup table with " )
+       @( description, "values that expire." )
+       @( author, "Ken O. Burtch" );
+pragma license( unrestricted );
+
+pragma restriction( no_external_commands );
+
 procedure ramcache is
   ramdisk_dir : constant string := "/dev/shm";
+  -- path to the ram disk directory
+
   cache_dir   : constant string := "cache";
+  -- diretory name of this cache
+
   cache_path  : constant string := ramdisk_dir & "/" & cache_dir;
+  -- location of the cache
 
   ramcache_error : exception;
 
@@ -10,13 +25,26 @@ procedure ramcache is
   ----------------------------------------------------------------------------
 
   type a_cache_entry is record
-       saved_time : calendar.time;
+       saved_time_year  : calendar.year_number;
+       saved_time_month : calendar.month_number;
+       saved_time_day   : calendar.day_number;
+       saved_time_day_duration : calendar.day_duration;
        key_value : string;
   end record;
+  -- the value and the time it was stored
+
+
+  ----------------------------------------------------------------------------
+  -- Cache Primitives
+  --
+  -- These are primitive operations, to be used as a foundation for other
+  -- main operation.
+  ----------------------------------------------------------------------------
+
 
   -- WRITE CACHE
   --
-  -- Store a key-value pair in the cache, along with the time of saving.
+  -- Store a key-value pair in the cache, along with the time it was stored.
   ----------------------------------------------------------------------------
 
   procedure write_cache( key : string; key_value : string ) is
@@ -26,7 +54,13 @@ procedure ramcache is
     json : json_string;
   begin
     md5_sig := numerics.md5( key );
-    cache_entry.saved_time := calendar.clock;
+    calendar.split(
+       calendar.clock,
+       cache_entry.saved_time_year,
+       cache_entry.saved_time_month,
+       cache_entry.saved_time_day,
+       cache_entry.saved_time_day_duration
+    );
     cache_entry.key_value := key_value;
     records.to_json( json, cache_entry );
     create( f, out_file, cache_path & "/" & md5_sig );
@@ -37,7 +71,8 @@ procedure ramcache is
 
   -- READ CACHE
   --
-  -- Store a key-value pair in the cache, along with the time of saving.
+  -- Read a key-value pair in the cache, also returning the time of storage.
+  -- An empty string is returned if the value is not found.
   ----------------------------------------------------------------------------
 
   procedure read_cache( key : string; key_value : out string; saved_time : out calendar.time ) is
@@ -50,18 +85,19 @@ procedure ramcache is
     open( f, in_file, cache_path & "/" & md5_sig );
     json := get_line( f );
     close( f );
-? json;
--- TODO: time is numeric but incorrectly saved as a string, possibly because
--- calendar.time is a private time.
--- {"saved_time":"-4191177771725300000","key_value":"bar"}
     records.to_record( cache_entry, json );
     key_value := cache_entry.key_value;
-    saved_time := cache_entry.saved_time;
+    saved_time := calendar.time_of(
+      cache_entry.saved_time_year,
+      cache_entry.saved_time_month,
+      cache_entry.saved_time_day,
+      cache_entry.saved_time_day_duration
+    );
   exception when others =>
     key_value := "";
     saved_time := calendar.clock;
-raise;
   end read_cache;
+
 
   ----------------------------------------------------------------------------
   -- Cache Interface Subprograms
@@ -115,9 +151,17 @@ raise;
   end get_cache;
 
 begin
+  -- create or verify the cache
+
   init_cache;
+
+  -- add a value to the cache
+
   put_cache( "foo", "bar" );
-  ? get_cache( "foo", 1000000 );
+
+  -- get a value from the cache (good for 100 seconds)
+
+  ? get_cache( "foo", 100 );
 end ramcache;
 
 -- VIM editor formatting instructions
