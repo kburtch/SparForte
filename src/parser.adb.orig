@@ -1196,12 +1196,14 @@ begin
              end if;
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
-              declare
-                 c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
-              begin
-                 c := c + duration( to_numeric( term2 ) );
-                 se := to_unbounded_string( long_float( c ) );
-              end;
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c + duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
            elsif operator = "-" then
               declare
                  c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
@@ -1212,12 +1214,14 @@ begin
            end if;
         elsif operation = variable_t then -- duration + time
            if operator = "+" then
-              declare
-                 c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
-              begin
-                 c := duration( to_numeric( se ) ) + c;
-                 se := to_unbounded_string( long_float( c ) );
-              end;
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
+                 begin
+                    c := duration( to_numeric( se ) ) + c;
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
            elsif operator = "-" then
               err( "operation - not defined for these types" );
            end if;
@@ -2178,19 +2182,23 @@ begin
              end if;
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
-              declare
-                 c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
-              begin
-                 c := c + duration( to_numeric( term2 ) );
-                 se := to_unbounded_string( long_float( c ) );
-              end;
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c + duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
            elsif operator = "-" then
-              declare
-                 c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
-              begin
-                 c := c - duration( to_numeric( term2 ) );
-                 se := to_unbounded_string( long_float( c ) );
-              end;
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c - duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
            end if;
         elsif operation = variable_t then -- duration + time
            if operator = "+" then
