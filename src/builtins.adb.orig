@@ -1941,6 +1941,7 @@ begin
      Put_Line( "  line_count_of_value        line( v )                  value_of_line( k, p )" );
      Put_Line( "  url_decode                 url_encode( s )            html_encode( s )" );
      Put_Line( "  set_cookie( k,v,e,p,d,s )  cookie_value( p )          cookie_count" );
+     Put_Line( "  s := key_value( p )" );
      discardUnusedIdentifier( token );
   elsif helpTopic = "chains" then
      Put_Line( "  p := chains.chain_count        e := chains.chain_context " );

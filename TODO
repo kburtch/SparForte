@@ -15,8 +15,6 @@ Severe Issues (Fix These First)
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
       must be a global scanner flag.
-- regression tests
-    - cgi third_party test
 - unsorted/misc
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
@@ -61,6 +59,8 @@ Annoyances / Bugs with Workarounds / Updates
       If so, where?
        - echo "test" | head; --raised it
        - echo  | sort | head; -- raised it
+      - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
+
 - unsorted/misc
 
     - control-z handling - fork, send a sleep signal and reset scanner

@@ -144,7 +144,8 @@ function URL_Decode(Data : in Unbounded_String;
          return Unbounded_String is
  Destination : Unbounded_String := Data;
 begin
- URL_Decode(Destination); 
+ -- KB: 17/03/24 - he forgot to pass translate_plus.  Corrected.
+ URL_Decode(Destination,Translate_Plus); 
  return Destination;
 end URL_Decode;
 
@@ -169,8 +170,9 @@ begin
  -- For URL/URI encoding, see IETF RFC 2396.
  while I <= Last_Position loop
    Current_Character := Element(Data, I);
-   if Translate_Plus and Current_Character = '+' then
-     Replace_Element(Data, I, ' ');
+ -- KB: 17/03/24 - he replaced + with space instead of the other way around.  Corrected.
+   if Translate_Plus and Current_Character = ' ' then
+     Replace_Element(Data, I, '+');
    elsif not Is_In(Current_Character, Unescaped_URL) then
      -- Character I isn't safe, replace it:
      Replacer(2) := To_Hex_Char(Character'Pos(Current_Character) / 16);
@@ -187,7 +189,8 @@ function URL_Encode(Data : in Unbounded_String;
          return Unbounded_String is
  Destination : Unbounded_String := Data;
 begin
- URL_Encode(Destination); 
+ -- KB: 17/03/24 - he forgot to pass translate_plus.  Corrected.
+ URL_Encode(Destination,Translate_Plus); 
  return Destination;
 end URL_Encode;
 

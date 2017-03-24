@@ -48,3 +48,5 @@ CHANGES SINCE 2.0.2
 
 22. Fix: calendar.time arithmetic working properly (probably broken when castToType was implemented).
 
+23. Fix: Fixed two bugs in '+' handling in third-party CGI package, cgi.url_encode and cgi.url_decode.
+

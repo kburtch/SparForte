@@ -7,11 +7,43 @@
 # simple as possible to run on as many Bourne-compatible shells as
 # possible.
 
-echo "$0: Testing thrid-party software..."
-echo "$0: "`date`
+do_cgi_good_test() {
+   # Fake a minimal CGI environment
 
-cd third_party
+   export GATEWAY_INTERFACE="CGI/1.1"
+   export REQUEST_METHOD="GET"
+   export QUERY_STRING="first_key=first value&second_key=second value"
+   export REQUEST_URL="/example/path/cgi_test.html"
+   export SERVER_NAME="example.com"
+   export SCRIPT_NAME="/example/cgi_test.html"
 
+   TESTSET="cgi_good_test.sp"
+   if [ ! -f "$TESTSET" ] ; then
+      echo "Failed - $TESTSET is missing"
+   fi
+   # Cookie string will be returned, so discard them if they exist.
+   RESULT=`../../spar --test --debug ./$TESTSET 2>&1 | sed '/^Set-Cookie:/d'`
+   if [ $? -ne 0 ] ; then
+      echo "Failed - $TESTSET Failed"
+      echo "$RESULT"
+      exit 192
+   elif [ -n "$RESULT" ] ; then
+      echo "Failed - $TESTSET Failed"
+      echo "$RESULT"
+      exit 192
+   else
+      echo "OK - $TESTSET"
+   fi
+
+   unset REQUEST_METHOD
+   unset GATEWAY_INTERFACE
+   unset QUERY_STRING
+   unset REQUEST_URL
+   unset SERVER_NAME
+   unset SCRIPT_NAME
+}
+
+do_btree_good_test() {
 TESTSET="btree_good_test.sp"
 if [ ! -f "$TESTSET" ] ; then
    echo "Failed - $TESTSET is missing"
@@ -28,7 +60,9 @@ elif [ -n "$RESULT" ] ; then
 else
    echo "OK - $TESTSET"
 fi
+}
 
+do_hash_good_test() {
 TESTSET="hash_good_test.sp"
 if [ ! -f "$TESTSET" ] ; then
    echo "Failed - $TESTSET is missing"
@@ -45,7 +79,9 @@ elif [ -n "$RESULT" ] ; then
 else
    echo "OK - $TESTSET"
 fi
+}
 
+do_memcache_good_test() {
 TESTSET="memcache_good_test.sp"
 if [ ! -f "$TESTSET" ] ; then
    echo "Failed - $TESTSET is missing"
@@ -62,6 +98,18 @@ elif [ -n "$RESULT" ] ; then
 else
    echo "OK - $TESTSET"
 fi
+}
+
+echo "$0: Testing thrid-party software..."
+echo "$0: "`date`
+
+cd third_party
+
+do_cgi_good_test
+# exit 192
+do_btree_good_test
+do_hash_good_test
+do_memcache_good_test
 
 # ---------------------------------------------------------------------------
 
