@@ -1192,6 +1192,8 @@ package body APQ.MySQL.Client is
    function New_Query(C : Connection_Type) return Root_Query_Type'Class is
       Q : Query_Type;
    begin
+      -- KB: 17/03/24 - trying to suppress read but not assigned warning
+      Q.count := 0; 
       return Q;
    end New_Query;
 
