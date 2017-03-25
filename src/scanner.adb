@@ -3906,7 +3906,7 @@ begin
            result := result & item & to_unbounded_string( "]" );
         end;
 
-     elsif kind = uni_string_t then
+     elsif kind = uni_string_t or kind = universal_t then
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
@@ -4132,7 +4132,7 @@ begin
              end;
            end if;
 
-     elsif kind = uni_string_t then
+     elsif kind = uni_string_t or kind = universal_t then
 
         -- some kind of string items
 
@@ -4343,7 +4343,7 @@ begin
                          elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
                             -- if it's a JSON string, just copy the data
                             result := result & identifiers( field_t ).value.all;
-                         elsif uniFieldType = uni_string_t then
+                         elsif uniFieldType = uni_string_t or uniFieldType = universal_t then
                             item := to_unbounded_string( """" );
                             item := item & ToJSONEscaped( identifiers( field_t ).value.all );
                             item := item & '"';
@@ -4532,7 +4532,8 @@ begin
                         end if;
                         identifiers( j ).value.all := decodedItemValue;
                       end;
-                    elsif getUniType( elementKind ) = uni_string_t then
+                    elsif getUniType( elementKind ) = uni_string_t or
+                          getUniType( elementKind ) = universal_t then
 
                       -- Strings
                       -- JSON string is raw json...could be anything.  Otherwise, the string
