@@ -52,3 +52,5 @@ CHANGES SINCE 2.0.2
 
 24. Fix: univeral_typeless record fields and array elements can now be encoded as JSON (threate as strings).
 
+25. Fix: fixed inconsistent licence warning produced by GCC Ada.
+
