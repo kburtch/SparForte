@@ -1,56 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.0.3's focus was bug fixes for SparForte 2.0
+SparForte 2.0.x's focus was bug fixes for SparForte 2.0
 
-CHANGES SINCE 2.0.2
-
-1. Fix: cgi.cookie_value default position no longer throws an exception.
-
-2. Fix: fixed adacgi 1.6 error that prevented cookies from being read.
-
-3. Fix: reading an empty value in memcache/get no longer raises no servers configured.
-
-4. New: added memcache good test cases to release tests.
-
-5. Fix: areadline library patched so command prompt history doesn't remember blank lines, to match up with the history command and normal shell behavior.
-
-6. Fix: hash_io updated to include changes to btree_io.  new hash_io good test cases added to release test.
-
-7. Change: doubly_linked_list.new_list and new_cursor removed.  Declare the generic type parameter in the declaration using "doubly_linked_lists.list( type )" or "doubly_linked_lists.cursor( type )".
-
-8. Change: btree_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "btree_io.file( type )" or "btree_io.cursor( type )".
-
-9. Change: dynamic_hash_tables.new_table removed.  Declare the generic type parameter in the declaration using "dynamic_hash_tables.table( type )".
-
-10. Change: hash_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "hash_io.file( type )" or "hash_io.cursor( type )".
-
-11. New: SHA digest functions: numerics.sha1_digest_of, numerics.sha256_digest_of, numerics.sha256_digest_of, numerics.sha512_digest_of. [tests needed]
-
-12. New: code coverage reporting added to Makefile (e.g. make coverage).  Added more regression tests to improve test coverage.
-
-13. Fix: lock_files.lock( file ... ) variation now handles wait and retry correctly.
-
-14. Fix: btree_io.get_first, etc. with array or record type no longer report the variable wasn't written to. [record fields todo]
-
-15. Fix: negative numbers weren't recognized in some JSON cases.  Corrected.
-
-16. New: Base 64 functions: strings.to_base64, strings.to_string Base 64 version.
-
-17. Change: Updated directory_operations and created positive regression tests for it.
-
-18. Change: pragma session_import_script, session_export_script and prompt_script not allowed in a restricted shell (as a security precaution).
-
-19. Fix: numerics.rnd() no longer occasionally produces a number too high.
-
-20. Fix: private fields in records and arrays of private elements can no longer be encoded as JSON.  Even though data is stored as strings, a private type is supposed to be a black box.
-
-21. Fix: canlendar.time values are no longer parsed by the "?" command at syntax time.  They were causing an index_error.
-
-22. Fix: calendar.time arithmetic working properly (probably broken when castToType was implemented).
-
-23. Fix: Fixed two bugs in '+' handling in third-party CGI package, cgi.url_encode and cgi.url_decode.
-
-24. Fix: univeral_typeless record fields and array elements can now be encoded as JSON (threate as strings).
-
-25. Fix: fixed inconsistent licence warning produced by GCC Ada.
+CHANGES SINCE 2.0.3
 

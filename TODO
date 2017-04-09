@@ -52,6 +52,8 @@ Annoyances / Bugs with Workarounds / Updates
   - David B wants me to bring back SparForte shared library
     - shared library calling mechanism and integration with other languages
 - shell
+    - control-d on a non-login shell can sometimes give a command hash "internal
+      error"
     - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
       my virtual machine, even after repeated audits of all syscalls for handling
       this error.
