@@ -125,12 +125,14 @@ begin
   if identifiers( token ).kind = command_t then   -- handle a command type
       shell_word := identifiers( token ).value.all;
   elsif token = symbol_t then
-     if identifiers( token ).value.all = ";" then
-        err( "shell word expected" );
-     end if;
      shell_word := identifiers( token ).value.all;
   elsif token = word_t then
-     shell_word := identifiers( token ).value.all;
+     if head( identifiers( token ).value.all, 1 ) = "`" then
+        err( optional_bold( "shell word" ) & " expected, not a " &
+          optional_bold( "backquoted literal" ) );
+     else
+        shell_word := identifiers( token ).value.all;
+     end if;
   elsif token = cd_t then
      shell_word := identifiers( token ).name;
   elsif token = clear_t then
@@ -173,20 +175,15 @@ begin
   elsif token = charlit_t then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "character literal" ) );
-  elsif token = backlit_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
-  elsif token = word_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "(shell immediate) word" ) );
+  -- This should be impossible as a backlit would be scanned as a word token
+  --elsif token = backlit_t then
+  --   err( optional_bold( "shell word" ) & " expected, not a " &
+  --        optional_bold( "backquoted literal" ) );
   elsif token = eof_t then
      err( optional_bold( "shell word" ) & " or semi-colon expected. Possibly hidden by an unescaped '--'?" );
   elsif is_keyword( token ) then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "keyword" ) );
-  elsif token = symbol_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "symbol" ) );
   elsif identifiers( token ).field_of /= eof_t then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "field of a record type" ) );

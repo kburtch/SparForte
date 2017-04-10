@@ -3108,6 +3108,15 @@ env ft;
 env fm;
 env js;
 
+-- Other built-ins
+
+clear;
+help clear;
+pwd;
+pwd_cmd : constant command := "/bin/pwd";
+pwd_cmd;
+jobs;
+
 -- doubly_linked_lists positive tests
 
 -- Basic Assign (GCC Ada 4.7/8+)

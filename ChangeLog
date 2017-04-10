@@ -4,3 +4,5 @@ SparForte 2.0.x's focus was bug fixes for SparForte 2.0
 
 CHANGES SINCE 2.0.3
 
+1. Fix: backquoted strings cannot be used as a Bourne shell command.
+
