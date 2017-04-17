@@ -280,7 +280,8 @@ endif
 	@echo
 	# Remove old test results (keep .gcno - notes files)
 	-rm -f *.gcda *.gcov coverage.info
-	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -c $(INCLUDE) spar
+	# Always build without optimization to ensure correct coverage results
+	$(GNATMAKE) -j2 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS) -lgcov
 	@echo
@@ -305,6 +306,19 @@ endif
 	# b~ confuses lcov
 	-rm b~*
 	lcov '--capture' '--directory' . '--output-file' coverage.info
+	# Ignore Ada files
+	lcov '--remove' coverage.info '/usr/*' '--output-file' coverage.info
+	# Ignore third-party software
+	lcov '--remove' coverage.info 'src/apq-2.1/*' '--output-file' coverage.info
+	lcov '--remove' coverage.info 'gen_list.ad*' '--output-file' coverage.info
+	lcov '--remove' coverage.info 'scanner-calendar.ad*' '--output-file' coverage.info
+    # Ignore incomplete software
+	lcov '--remove' coverage.info 'parser_tinyserve.ad*' '--output-file' coverage.info
+	lcov '--remove' coverage.info 'parser_vectors.ad*' '--output-file' coverage.info
+    # Ignore graphics and sound from automated tests
+	lcov '--remove' coverage.info 'spar_os-sound.ad*' '--output-file' coverage.info
+	lcov '--remove' coverage.info 'parser_sound.ad*' '--output-file' coverage.info
+	lcov '--remove' coverage.info 'parser_pen.ad*' '--output-file' coverage.info
 	genhtml coverage.info '--output-directory' coverage
 	@echo
 	@echo "---------------------------------------------------------------"
