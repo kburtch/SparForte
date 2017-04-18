@@ -56,26 +56,29 @@ fi
 case "$DISTRO" in
 redhat )
    set -e
-   sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
-   sudo -u root yum install -q -y bzip2
-   sudo -u root yum install -q -y gcc-gnat
-   sudo -u root yum install -q -y git
-   sudo -u root yum install -q -y gstreamer1
-   sudo -u root yum install -q -y gstreamer1-devel
-   sudo -u root yum install -q -y libdb-devel
-   sudo -u root yum install -q -y mariadb
-   sudo -u root yum install -q -y mariadb-devel
-   sudo -u root yum install -q -y mariadb-server
-   sudo -u root yum install -q -y mlocate
-   sudo -u root yum install -q -y postgresql
-   sudo -u root yum install -q -y postgresql-devel
-   sudo -u root yum install -q -y postgresql-server
-   sudo -u root yum install -q -y SDL
-   sudo -u root yum install -q -y SDL-devel
-   sudo -u root yum install -q -y SDL_image
-   sudo -u root yum install -q -y SDL_image-devel
-   sudo -u root yum install -q -y bc
-   sudo -u root yum install -q -y memcached
+   sudo -u root yum list installed | fgrep epel-release >/dev/null
+   if [ $? -eq 1 ] ; then
+      sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+      sudo -u root yum install -q -y bzip2
+      sudo -u root yum install -q -y gcc-gnat
+      sudo -u root yum install -q -y git
+      sudo -u root yum install -q -y gstreamer1
+      sudo -u root yum install -q -y gstreamer1-devel
+      sudo -u root yum install -q -y libdb-devel
+      sudo -u root yum install -q -y mariadb
+      sudo -u root yum install -q -y mariadb-devel
+      sudo -u root yum install -q -y mariadb-server
+      sudo -u root yum install -q -y mlocate
+      sudo -u root yum install -q -y postgresql
+      sudo -u root yum install -q -y postgresql-devel
+      sudo -u root yum install -q -y postgresql-server
+      sudo -u root yum install -q -y SDL
+      sudo -u root yum install -q -y SDL-devel
+      sudo -u root yum install -q -y SDL_image
+      sudo -u root yum install -q -y SDL_image-devel
+      sudo -u root yum install -q -y bc
+      sudo -u root yum install -q -y memcached
+   fi
    set +e
    ;;
 suse)
