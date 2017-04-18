@@ -75,6 +75,7 @@ redhat )
    sudo -u root yum install -q -y SDL_image
    sudo -u root yum install -q -y SDL_image-devel
    sudo -u root yum install -q -y bc
+   sudo -u root yum install -q -y memcached
    set +e
    ;;
 suse)
@@ -90,6 +91,7 @@ suse)
    sudo -u root zypper "--non-interactive" install postgresql
    sudo -u root zypper "--non-interactive" install postgresql-devel
    sudo -u root zypper "--non-interactive" install rpmlint
+   sudo -u root zypper "--non-interactive" install memcached
    set +e
    ;;
 ubuntu )
@@ -109,6 +111,7 @@ ubuntu )
    sudo -u root apt-get -q -y install libsdl-image1.2-dev
    sudo -u root apt-get -q -y install wget
    sudo -u root apt-get -q -y install bc
+   sudo -u root apt-get -q -y install memcached
    set +e
    ;;
 *)
