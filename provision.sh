@@ -55,9 +55,9 @@ fi
 
 case "$DISTRO" in
 redhat )
-   set -e
    sudo -u root yum list installed | fgrep epel-release >/dev/null
    if [ $? -eq 1 ] ; then
+      set -e
       sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
       sudo -u root yum install -q -y bzip2
       sudo -u root yum install -q -y gcc-gnat
@@ -78,8 +78,8 @@ redhat )
       sudo -u root yum install -q -y SDL_image-devel
       sudo -u root yum install -q -y bc
       sudo -u root yum install -q -y memcached
+      set +e
    fi
-   set +e
    ;;
 suse)
    set -e
