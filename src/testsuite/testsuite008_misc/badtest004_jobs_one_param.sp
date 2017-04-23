@@ -1,0 +1,1 @@
+jobs "a"; -- should fail

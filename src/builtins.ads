@@ -57,7 +57,7 @@ procedure clear( ap : argumentListPtr );
 procedure delete( ap : argumentListPtr );
 -- delete : SQL delete
 
-procedure env( id : identifier := eof_t );
+--procedure env( id : identifier := eof_t );
 -- env - list environment to standard output
 
 procedure help( ap : argumentListPtr );

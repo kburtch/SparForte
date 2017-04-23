@@ -42,6 +42,7 @@ Annoyances / Bugs with Workarounds / Updates
       redistributable library
     - check double pragma import - test case
 - unit testing and teamwork
+    - restricted shell tests
     - xUnit support for tests (pragma test_result - output in JUNIT format?)
 - graphics and sound
   - SDL - hardware accelleration not working with SDL...why not?
@@ -116,6 +117,13 @@ Nice to Haves / Missing Functionality
   - need template package to set return HTTP status
 - build system
   - dynamic loadable built-in packages
+- example programs
+  - a REST API
+    - with message envelope
+    - with call statistics
+    - with bandwidth calculations
+- packages
+  - new vector or game math package (quads, etc).
 - unsorted/misc
     - alternatives to ParseGeneralStatement more appropriate for executable bodies
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io

@@ -475,8 +475,14 @@ begin
               put( kind.name );
               -- If it's a generic type, show the instantiated types
               declare
-                 baseType : identifier := getBaseType( ident.kind );
+                 baseType : identifier;
               begin
+                 -- Don't look up the base type on a universal or a keyword.
+                 if ident.class = subClass then
+                    baseType := getBaseType( ident.kind );
+                 else
+                    basetype := ident.kind;
+                 end if;
                  if identifiers( baseType ).class = genericTypeClass then
                     put( "(" );
                     put( to_string( identifiers( ident.genKind ).name ) );
@@ -2833,7 +2839,8 @@ begin
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
-        err( "type expected, not a keyword" );
+        err( "type expected, not the keyword " &
+           optional_bold( to_string( identifiers( original ).name ) ) );
         return universal_t;
   end if;
 
@@ -2886,7 +2893,8 @@ begin
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
-        err( "type expected, not a keyword" );
+        err( "type expected, not the keyword " &
+           optional_bold( to_string( identifiers( original ).name ) ) );
         return universal_t;
   end if;
 

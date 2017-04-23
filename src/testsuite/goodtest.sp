@@ -980,16 +980,44 @@ os.system( "cd ." );
 i := os.status;
 pragma assert( i = 0 );
 
+-- cd command
+-- note path is only shown in interactive modes
+
 s1 := PWD;
+s := PWD & "/" & "cdtest";
 cd .;
 pragma assert( PWD = OLDPWD );
-s := PWD & "/" & "cdtest";
 cd cdtest;
 pragma assert( PWD = s );
 pragma assert( OLDPWD = s1 );
 cd -;
 pragma assert( PWD = s1 );
 pragma assert( OLDPWD = s );
+cd "";
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd -;
+cd ~;
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd -;
+-- AdaScript style
+cd( "." );
+pragma assert( PWD = OLDPWD );
+cd( "cdtest" );
+pragma assert( PWD = s );
+pragma assert( OLDPWD = s1 );
+cd( "-" );
+pragma assert( PWD = s1 );
+pragma assert( OLDPWD = s );
+cd( "" );
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd( "-" );
+cd( "~" );
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd( "-" );
 
 -- basic text_io and % (last output)
 
@@ -2541,6 +2569,7 @@ delete( ft );
 -- trace command
 
 trace false;
+trace;
 trace true;
 trace;
 
@@ -3107,6 +3136,9 @@ env ft;
 --env st;
 env fm;
 env js;
+-- AdaScript style
+env( "js" );
+env;
 
 -- Other built-ins
 

@@ -161,6 +161,8 @@ procedure old_cd( s : unbounded_string ) is
 begin
   if length( path ) = 0 then                 -- no path?
      path := to_unbounded_string( "$HOME" ); -- then go home
+  -- Normally, tilde is substituted in a shell word expansion.
+  -- However, we may end up here if AdaScript parameters are used.
   elsif Element( path, 1 ) = '~' then        -- leading tilda?
      Delete( path, 1, 1 );                   -- shortform for
      Insert( path, 1, "$HOME" );             -- home
@@ -168,7 +170,6 @@ begin
      path := to_unbounded_string( "$OLDPWD" ); -- short for OLDPWD
      showPath := inputMode = interactive or inputMode = breakout;
   end if;
-
   if head( path, 5 ) = "$HOME" then
      findIdent( to_unbounded_string( "HOME" ), temp_id );
      Delete( path, 1, 5 );
@@ -202,41 +203,41 @@ begin
 end old_cd;
 
 -----------------------------------------------------------------------------
---  ENV (POSIX SHELL COMMAND)
+--  ENV (ADASCRIPT COMMAND)
 --
 -- env : show the attributes of an identifier / all identifiers (if eof_t)
 -- Syntax: env [id]
 -- NOTE: another instance supports argument list params
 -----------------------------------------------------------------------------
 
-procedure env( id : identifier := eof_t ) is
-  perc : integer;
-begin
-  if identifiers( id ).kind = new_t then
-     discardUnusedIdentifier( id );
-     err( "identifier not declared" );
-     return;
-  end if;
-  if id /= eof_t then
-     Put_Identifier( id );
-     return;
-  end if;
-  for i in 1..identifiers_top-1 loop
-    if identifiers( i ).kind /= keyword_t then
-       Put_Identifier( i );
-    end if;
-  end loop;
-  perc := integer( ( ( identifiers_top - 1 ) * 100 ) / identifiers'last );
-  Put( "The symbol table is" );
-  Put( perc'img );
-  Put( "% full with" );
-  Put( identifier'image( identifiers_top-1 ) );
-  Put_Line( " identifiers." );
-exception
-   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
-   -- occurs, just stop outputing and exit.
-   when DEVICE_ERROR => null;
-end env;
+--procedure env( id : identifier := eof_t ) is
+--  perc : integer;
+--begin
+--  if identifiers( id ).kind = new_t then
+--     discardUnusedIdentifier( id );
+--     err( "identifier not declared" );
+--     return;
+--  end if;
+--  if id /= eof_t then
+--     Put_Identifier( id );
+--     return;
+--  end if;
+--  for i in 1..identifiers_top-1 loop
+--    if identifiers( i ).kind /= keyword_t then
+--       Put_Identifier( i );
+--    end if;
+--  end loop;
+--  perc := integer( ( ( identifiers_top - 1 ) * 100 ) / identifiers'last );
+--  Put( "The symbol table is" );
+--  Put( perc'img );
+--  Put( "% full with" );
+--  Put( identifier'image( identifiers_top-1 ) );
+--  Put_Line( " identifiers." );
+--exception
+--   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
+--   -- occurs, just stop outputing and exit.
+--   when DEVICE_ERROR => null;
+--end env;
 
 
 -----------------------------------------------------------------------------

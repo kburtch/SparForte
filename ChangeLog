@@ -6,3 +6,5 @@ CHANGES SINCE 2.0.3
 
 1. Fix: backquoted strings cannot be used as a Bourne shell command.
 
+2. Fix: type error when using env; to show all parameters, resulting from new parameterized generic type handling error, has been fixed.
+
