@@ -1,10 +1,16 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.0.x's focus was bug fixes for SparForte 2.0
+SparForte 2.0.4's focus was bug fixes for SparForte 2.0
 
 CHANGES SINCE 2.0.3
 
 1. Fix: backquoted strings cannot be used as a Bourne shell command.
 
 2. Fix: type error when using env; to show all parameters, resulting from new parameterized generic type handling error, has been fixed.
+
+3. Refactor: help command split out from builtins package.
+
+4. Refactor: new report system created, some help topics converted to use it.
+
+5. Change: pragma deprecated/depreciated is now an error when running in design phase mode, but remains a warning otherwise.
 
