@@ -29,7 +29,7 @@ with system,
     world,
     compiler,
     scanner,
-    builtins,
+    builtins.help,
     string_util,
     user_io,
     parser_aux, -- for OSError
@@ -336,7 +336,7 @@ begin
   if    cmd = "cd" then      builtins.cd( ap );            noReturnForBuiltin;
   elsif cmd = "clear" then   builtins.clear( ap );         noReturnForBuiltin;
   elsif cmd = "env" then     builtins.env( ap );           noReturnForBuiltin;
-  elsif cmd = "help" then    builtins.help( ap );          noReturnForBuiltin;
+  elsif cmd = "help" then    builtins.help.help( ap );     noReturnForBuiltin;
   elsif cmd = "history" then builtins.do_history( ap );    noReturnForBuiltin;
   elsif cmd = "jobs" then    builtins.jobs( ap );          noReturnForBuiltin;
   elsif cmd = "pwd" then     builtins.pwd( ap );           noReturnForBuiltin;
