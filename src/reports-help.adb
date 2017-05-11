@@ -22,21 +22,15 @@
 ------------------------------------------------------------------------------
 with ada.strings.unbounded.text_io,
      ada.calendar,
-     string_util;
-     -- user_io;
+     string_util,
+     user_io;
 use  ada.strings,
      ada.strings.unbounded.text_io,
      ada.calendar,
-     string_util;
-     -- user_io;
+     string_util,
+     user_io;
 
 package body reports.help is
-
-  -- THIS IS A STUB to avoid bringing in user_io dependencies
-  function optional_bold( s : string ) return unbounded_string is
-  begin
-    return "*" & to_unbounded_string( s ) & "*";
-  end optional_bold;
 
   ----------------------------------------------------------------------------
   --  HELP ENTRY
@@ -283,7 +277,7 @@ package body reports.help is
     s : unbounded_string;
   begin
      -- display the help topic and the header if there is one
-     put( r.outputfile, to_string( e.topic ) );
+     put( r.outputfile, optional_bold( to_string( e.topic ) ) );
      if length( e.summary ) > 0 then
         put( r.outputfile, " - " & to_string( e.summary ) );
      end if;

@@ -158,7 +158,11 @@ begin
             optionOffset := optionOffset + 1;
             exit;
          elsif Argument(i)'length = 0 then
-            Put_Line( standard_error, Command_Name & ": empty script name" );
+            if execOpt then
+               Put_Line( standard_error, Command_Name & ": empty script string" );
+            else
+               Put_Line( standard_error, Command_Name & ": empty script name" );
+            end if;
             Set_Exit_Status( 192 );
             return;
          elsif Argument(i)(1) = '-' then

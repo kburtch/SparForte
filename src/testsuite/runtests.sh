@@ -164,6 +164,47 @@ bad_test_testmode() {
   fi
 }
 
+#  BAD TEST GCC ERRORS
+#
+# Run the test script with no parameters is SparForte testing mode.
+# Declare FOOBAR.  If there's a core dump or a success code is returned,
+# abort with the error.
+# ---------------------------------------------------------------------------
+
+bad_test_gcc_errors() {
+  echo "Running $1..."
+  setup
+  OUTPUT=`../spar --debug -gcc-errors "$1" < /dev/null 2>&1`
+  RESULT=$?
+  teardown
+  TMP=`ls core 2>/dev/null`
+  test -f ./test.txt && rm ./test.txt
+  if [ ! -z "$TMP" ] ; then
+     rm core
+     echo
+     echo "--- $1 FAILED WITH CORE DUMP ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+  if [ $RESULT -eq 0 ] ; then
+     echo
+     echo "--- $1 TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "in script"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 TEST FAILED - not in GCC error format ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+echo "OK"
+}
+
 #  GOOD TEST
 #
 # Run the test script with no parameters.  Declare FOOBAR.  If there's a
@@ -403,6 +444,16 @@ fi
 
 ls testmodesuite/badtest* | (while read FILE ; do
    bad_test_testmode "$FILE"
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
+done )
+
+# Run test requiring --gcc-errors mode
+
+ls testgccerrsuite/badtest* | (while read FILE ; do
+   bad_test_gcc_errors "$FILE"
    RESULT=$?
    if [ $RESULT -ne 0 ] ; then
       exit $RESULT

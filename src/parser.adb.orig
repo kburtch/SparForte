@@ -8719,6 +8719,12 @@ begin
      token := identifiers'first;                -- dummy, replaced by g_n_t
      getNextToken;                              -- load first token
 
+     -- Expect some actual source code, at least token, for running.
+
+     if token = eof_t then
+        err( "there were no commands to run" );
+     end if;
+
      -- Prior to a main program (or a simple script), a script may have
      -- pragmas, policies, configurations, withs, trace.  A procedure
      -- is a main program.  Otherwise, skip all this and drop down to the

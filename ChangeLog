@@ -14,3 +14,9 @@ CHANGES SINCE 2.0.3
 
 5. Change: pragma deprecated/depreciated is now an error when running in design phase mode, but remains a warning otherwise.
 
+6. Fix: spar -e with an empty string now produces an appropriate error message instead of "empty script name".
+
+7: Fix: a file or spar -e string with only whitespace is now an error.
+
+8: Fix: "hash clash" internal error message removed...a hash collision is not really an error and it was originally used for debugging.
+

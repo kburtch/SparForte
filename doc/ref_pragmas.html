@@ -191,7 +191,8 @@ licensing and feature restriction.</p>
   <li> <b>pragma depreciated( "newscript" )</b> - when script finishes
 execution,
 SparForte will warn that the script is obsolete and has been superceded for
-"newscript".  The script name can be a static string expression.</li>
+"newscript".  The script name can be a static string expression.  If
+running in design mode, the message will be reported as an error.</li>
   <li><b>pragma license( license_name [, "extra"] )</b> - declare the
 license for the script.  license_name can be:<br>
 <ul>

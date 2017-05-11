@@ -79,6 +79,12 @@ package body reports is
        r.screenWidth := 65536;
     else
       r.screenWidth := integer'value( to_string( s ) );
+      -- constrain to reasonable limits
+      if r.screenWidth < 20 then
+         r.screenWidth := 20;
+      elsif r.screenWidth > 160 then
+         r.screenWidth := 160;
+      end if;
     end if;
     -- create the temporary spool file
     create( r.outputfile, out_file );

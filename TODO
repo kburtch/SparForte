@@ -10,6 +10,7 @@ These are new issues identified but not entered into the outstanding bug list
 
 Severe Issues (Fix These First)
 -------------------------------
+* gcc-errors tests not triggered on error_tokenize?
 
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
@@ -37,6 +38,9 @@ Annoyances / Bugs with Workarounds / Updates
     - what are semantics of throwing an exception in a subscript `...`
     - exceptions that propogate to the top aren't formatted properly in the
       Apache log (single chars means single lines)
+- should create a report on process resources using getrusage(2).  Also will
+   need this for memory leak tests (though there are command line ways of
+   doing this).
 - pragmas
     - can't declare two licences or software_models.  This is a problem for a
       redistributable library
@@ -55,8 +59,6 @@ Annoyances / Bugs with Workarounds / Updates
 - shell
     - windows size change is not refreshing the terminal settings?
     - escaping unprintable characters not working with readline prompt
-    - control-d on a non-login shell can sometimes give a command hash "internal
-      error"
     - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
       my virtual machine, even after repeated audits of all syscalls for handling
       this error.
@@ -97,6 +99,9 @@ Nice to Haves / Missing Functionality
       an error if x is used in the design phase only, and a warning in
       the development phase.
     - pragma depreciated should be a list, not a string.
+    - review and improve help command reports for producing system audit reports.  Are they complete?  Usable?  Any rsh restrictions needed?  For example, we need a software_model report.
+    - while we want to default to security, we also want not to be overly restrictive with pragma restriction in general.  We should probably default to secure and add exceptions...how would i code that?
+    - probably need a security pragma and not relying on rsh = security
 - user role blocks
     - configuration/policy/project <name> ... is separate (not with separate, which isn't
       as specific)
@@ -123,8 +128,12 @@ Nice to Haves / Missing Functionality
   - record system refactor (in prep for aggregate expressions)
 - templates
   - need template package to set return HTTP status
+- strings
+  - more validation functions
 - build system
   - dynamic loadable built-in packages
+  - fuzz testing (i.e. oss fuzz) - testing for vulnerabilities with random data
+  - memory leak testing
 - example programs
   - a REST API
     - with message envelope
@@ -158,6 +167,7 @@ Nice to Haves / Missing Functionality
      - with include doesn't work on the command because it is loaded at syntax check
        time and the command line has no syntax check...but it would be good to load
        libraries at the command line so can I come up with a strategy to make it work?
+   - libraries to load neutral (i.e. non-sf) config file formats?
 
 New Unique Concepts
 -------------------

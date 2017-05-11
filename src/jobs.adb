@@ -184,17 +184,14 @@ end hashOf;
 --  ADD COMMAND HASH
 --
 -- Add the path to a command to the command hash table.  If there is a hash
--- collision, ignore the new entry.  If there is a collision when adding a
--- built-in, report this as an error.
+-- collision, ignore the new entry.
 -----------------------------------------------------------------------------
 
 procedure addCommandHash( cmd, full : unbounded_string; builtin : boolean ) is
   bin : natural := 0;
 begin
   bin := hashOf( cmd );
-  if length( cmdHash( bin ).fullPath ) /= 0 then
-     err( "internal error: builtin command hash clash for builtin" );
-  else
+  if length( cmdHash( bin ).fullPath ) = 0 then
      cmdHash( bin ).cmd := cmd;
      cmdHash( bin ).fullPath := full;
      cmdHash( bin ).builtin := builtin;
