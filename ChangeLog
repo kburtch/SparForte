@@ -10,7 +10,7 @@ CHANGES SINCE 2.0.3
 
 3. Refactor: help command split out from builtins package.
 
-4. Refactor: new report system created, some help topics converted to use it.
+4. Refactor: new report system created, built-in help topics converted to use it.
 
 5. Change: pragma deprecated/depreciated is now an error when running in design phase mode, but remains a warning otherwise.
 
@@ -19,4 +19,10 @@ CHANGES SINCE 2.0.3
 7: Fix: a file or spar -e string with only whitespace is now an error.
 
 8: Fix: "hash clash" internal error message removed...a hash collision is not really an error and it was originally used for debugging.
+
+9. Fix: dbm online help fixed.
+
+10. Fix: strings.match online help no longer "help match" but "help strings.match" as in the index page.
+
+11. Fix: set_input added to the help index.
 

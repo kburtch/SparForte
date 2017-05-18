@@ -46,11 +46,14 @@ package reports.help is
        bugsWidth     : positive := 1;
        category      : unbounded_string;
        content       : contentList.List;
+       inSection     : boolean := false;
+       sectionContent: contentList.List;
        contentWidth  : positive := 1;
        exceptions    : contentList.List;
        exceptionsWidth : positive := 1;
        implementationNotes : contentList.List;
        implementationWidth : positive := 1;
+       -- TODO: see also should be a list.
        seeAlso       : unbounded_string;
        author        : unbounded_string;
        modified      : unbounded_string;
@@ -64,6 +67,7 @@ package reports.help is
        todos         : contentList.List;
        todosWidth    : positive := 1;
        version       : unbounded_string;
+       empty         : boolean := true;
        -- TODO: nesting
   end record;
 
@@ -75,6 +79,8 @@ package reports.help is
 
   procedure endHelp( e : in out aHelpEntry );
 
+  function isEmpty( e : aHelpEntry ) return boolean;
+
   procedure author( e : in out aHelpEntry; s : string );
   procedure authorKen( e : in out aHelpEntry );
 
@@ -84,7 +90,9 @@ package reports.help is
 
   procedure content( e : in out aHelpEntry; s1, s2, s3, s4  : string := "" );
   procedure categoryBuiltin( e : in out aHelpEntry );
+  procedure categoryFunction( e : in out aHelpEntry );
   procedure categoryPackage( e : in out aHelpEntry );
+  procedure categoryProcedure( e : in out aHelpEntry );
   procedure categoryKeyword( e : in out aHelpEntry );
 
   procedure description( e : in out aHelpEntry; s : string );

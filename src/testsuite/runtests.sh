@@ -264,6 +264,28 @@ good_test_in_dir() {
   fi
 }
 
+#  HELP TEST IN DIR
+#
+# Run the test script with no parameters.  Declare FOOBAR.  If there's a
+# non-success code is returned, abort with the error.  Do it with syntax-only
+# and normally.  Unlike regular good_test, this assumes you are in the
+# subdirectory...this is necessary from some of the "separate" tests.
+# ---------------------------------------------------------------------------
+
+help_test_in_dir() {
+  echo "Running $1..."
+  ../../spar --debug "$1" a b c > "./test.txt"
+  RESULT=$?
+  if [ $RESULT -ne 0 ] ; then
+     cat "./test.txt"
+  fi 
+  test -f "./test.txt" && rm "./test.txt"
+  if [ $RESULT -ne 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $? ---"
+     exit 1
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # SPARFORTE TEST SUITE
 # ---------------------------------------------------------------------------
@@ -385,7 +407,34 @@ fi
 cd - 2>/dev/null
 echo "OK"
 
-# Search testsuite* directories and run bad tests stored there
+# Search helpsuite* directories and run bad tests stored there
+#
+# These are for code coverage.
+
+echo
+echo "Testing built-in help scripts:"
+
+ls -d helpsuite* | (while read DIR ; do
+   cd "$DIR"
+   ls helptest* | ( while read FILE; do
+      help_test_in_dir "$FILE"
+      RESULT=$?
+      if [ $RESULT -ne 0 ] ; then
+         exit $RESULT
+      fi
+   done )
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
+   cd - 2>/dev/null
+done )
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+# Search goodsuite* directories and run bad tests stored there
 #
 # These good tests normally test different structures such as
 # include files.  We need to change to the directory first.

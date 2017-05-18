@@ -43,45 +43,66 @@ package body reports.help is
      return ToUpper(left.topic) >= ToUpper( right.topic );
   end ">=";
 
-  procedure clearHelp( r : in out aHelpEntry ) is
+  procedure clearHelp( e : in out aHelpEntry ) is
   begin
-    r.author := null_unbounded_string;
-    contentList.Clear( r.bugs );
-    contentList.Clear( r.content );
-    r.description := null_unbounded_string;
-    contentList.Clear( r.errors );
-    contentList.Clear( r.examples );
-    contentList.Clear( r.exceptions );
-    r.footer := null_unbounded_string;
-    contentList.Clear( r.implementationNotes );
-    r.modified := null_unbounded_string;
-    contentList.Clear( r.params );
-    r.returns := null_unbounded_string;
-    r.seeAlso := null_unbounded_string;
-    r.summary:= null_unbounded_string;
-    contentList.Clear( r.todos );
-    r.topic := null_unbounded_string;
+    e.author := null_unbounded_string;
+    contentList.Clear( e.bugs );
+    contentList.Clear( e.content );
+    contentList.Clear( e.sectionContent );
+    e.inSection := false;
+    e.description := null_unbounded_string;
+    contentList.Clear( e.errors );
+    contentList.Clear( e.examples );
+    contentList.Clear( e.exceptions );
+    e.footer := null_unbounded_string;
+    contentList.Clear( e.implementationNotes );
+    e.modified := null_unbounded_string;
+    contentList.Clear( e.params );
+    e.returns := null_unbounded_string;
+    e.seeAlso := null_unbounded_string;
+    e.summary:= null_unbounded_string;
+    contentList.Clear( e.todos );
+    e.topic := null_unbounded_string;
 
-    r.contentWidth := 1;
-    r.bugsWidth    := 1;
-    r.errorsWidth  := 1;
-    r.examplesWidth  := 1;
-    r.implementationWidth := 1;
-    r.paramsWidth   := 1;
-    r.exceptionsWidth := 1;
-    r.todosWidth    := 1;
+    e.contentWidth := 1;
+    e.bugsWidth    := 1;
+    e.errorsWidth  := 1;
+    e.examplesWidth  := 1;
+    e.implementationWidth := 1;
+    e.paramsWidth   := 1;
+    e.exceptionsWidth := 1;
+    e.todosWidth    := 1;
+    e.empty := true;
   end clearHelp;
 
   procedure startHelp( e : in out aHelpEntry; topic : string ) is
   begin
     clearHelp( e );
     e.topic := to_unbounded_string( topic );
+    e.empty := false;
   end startHelp;
+
+  procedure addSection( e : in out aHelpEntry ) is
+    s : unbounded_string;
+  begin
+    while not contentList.isEmpty( e.sectionContent ) loop
+      contentList.Pull( e.sectionContent, s );
+      contentList.Queue( e.content, s );
+    end loop;
+    e.inSection := false;
+  end addSection;
 
   procedure endHelp( e : in out aHelpEntry ) is
   begin
-    null;
+    if e.inSection then
+      addSection( e );
+    end if;
   end endHelp;
+
+  function isEmpty( e : aHelpEntry ) return boolean is
+  begin
+    return e.empty;
+  end isEmpty;
 
   procedure author( e : in out aHelpEntry; s : string ) is
   begin
@@ -133,17 +154,28 @@ package body reports.help is
     category( e, "built-in shell command" );
   end categoryBuiltin;
 
-  procedure categoryPackage( e : in out aHelpEntry ) is
+  procedure categoryFunction( e : in out aHelpEntry ) is
   begin
-    category( e, "built-in package" );
-  end categoryPackage;
+    category( e, "built-in function" );
+  end categoryFunction;
 
   procedure categoryKeyword( e : in out aHelpEntry ) is
   begin
     category( e, "keyword" );
   end categoryKeyword;
 
+  procedure categoryPackage( e : in out aHelpEntry ) is
+  begin
+    category( e, "built-in package" );
+  end categoryPackage;
+
+  procedure categoryProcedure( e : in out aHelpEntry ) is
+  begin
+    category( e, "built-in procedure" );
+  end categoryProcedure;
+
   procedure content( e : in out aHelpEntry; s1, s2, s3, s4  : string := "" ) is
+
     procedure addContent( e : in out aHelpEntry; s : string ) is
     begin
       if s'length > 0 then
@@ -153,20 +185,56 @@ package body reports.help is
          end if;
       end if;
     end addContent;
+
+    procedure addSectionContent( e : in out aHelpEntry; s : string ) is
+    begin
+      if s'length > 0 then
+         contentList.Insert( e.sectionContent, to_unbounded_string( s ) );
+         if s'length > e.contentWidth then
+            e.contentWidth := positive( s'length );
+         end if;
+      end if;
+    end addSectionContent;
+
   begin
-     if s1'length > 0 then
-        addContent( e, s1 );
-     end if;
-     if s2'length > 0 then
-        addContent( e, s2 );
-     end if;
-     if s3'length > 0 then
-        addContent( e, s3 );
-     end if;
-     if s4'length > 0 then
-        addContent( e, s4 );
-     end if;
+     if e.inSection then
+       if s1'length > 0 then
+          addSectionContent( e, s1 );
+       end if;
+       if s2'length > 0 then
+          addSectionContent( e, s2 );
+       end if;
+       if s3'length > 0 then
+          addSectionContent( e, s3 );
+       end if;
+       if s4'length > 0 then
+          addSectionContent( e, s4 );
+       end if;
+     else
+       if s1'length > 0 then
+          addContent( e, s1 );
+       end if;
+       if s2'length > 0 then
+          addContent( e, s2 );
+       end if;
+       if s3'length > 0 then
+          addContent( e, s3 );
+       end if;
+       if s4'length > 0 then
+          addContent( e, s4 );
+       end if;
+    end if;
   end content;
+
+  procedure section( e : in out aHelpEntry; s : string ) is
+  begin
+    if e.inSection then
+      addSection( e );
+    end if;
+    e.inSection := true;
+    contentList.Queue( e.content, null_unbounded_string );
+    contentList.Queue( e.content, to_unbounded_string( s ) );
+  end section;
 
   procedure errors( e : in out aHelpEntry; s : string ) is
   begin
@@ -212,12 +280,6 @@ package body reports.help is
   begin
     e.returns := to_unbounded_string( s );
   end returns;
-
-  procedure section( e : in out aHelpEntry; s : string ) is
-  begin
-     contentList.Queue( e.content, null_unbounded_string );
-     content( e, s );
-  end section;
 
   procedure seeAlso( e : in out aHelpEntry; s : string ) is
   begin

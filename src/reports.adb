@@ -39,9 +39,25 @@ package body reports is
     --return "*" & to_unbounded_string( s ) & "*";
   --end optional_bold;
 
+  -- Sort case-insensitive and ignoring any "... := " that function synopses have
+
   function insensitiveGreaterThan( left, right : unbounded_string ) return boolean is
+    l, r : unbounded_string;
+    p : natural;
   begin
-     return ToUpper(left) >= ToUpper( right );
+    l := ToUpper( left );
+    p := index( l, " := " );
+    if p > 0 then
+      delete( l, 1, p+3 );
+    end if;
+
+    r := ToUpper( right );
+    p := index( r, " := " );
+    if p > 0 then
+      delete( r, 1, p+3 );
+    end if;
+
+     return l >= r;
   end insensitiveGreaterThan;
 
   ----------------------------------------------------------------------------
@@ -248,6 +264,7 @@ package body reports is
     newLineWidth : natural;
     nextTab : natural;
     s : unbounded_string;
+    firstNewLine : boolean := true;
   begin
     if not contentList.isEmpty( l ) then
       new_line( r.outputfile );
@@ -258,14 +275,20 @@ package body reports is
 
          -- a blank line denotes a new section
          if length( s ) = 0 then
-            new_line( r.outputfile );
-            new_line( r.outputfile );
+           new_line( r.outputfile );
+           -- suppress first newline or we'll get a double-space
+           if firstNewLine then
+             firstnewLine := false;
+           else
+             new_line( r.outputfile );
+           end if;
             if not contentList.isEmpty( l ) then
                contentList.Pull( l, s );
                put_line( r.outputfile, to_string( s ) );
                new_line( r.outputfile );
             end if;
             r.lineWidth := 0;
+            nextTab := indentWidth;
 
           -- add a new item to the line with the same column width
           -- if the column width is exceeded, start a new line

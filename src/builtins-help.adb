@@ -22,6 +22,7 @@
 ------------------------------------------------------------------------------
 
 with interfaces.c,
+     ada.characters.Latin_1,
      ada.text_io,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
@@ -746,7 +747,7 @@ begin
    start( r.all );
    startHelp( e, "help" );
    summary( e, "SparForte command prompt help" );
-   category( e, "built-in commands" );
+   category( e, "reference" );
    description( e,
      "The help command gives short advice on keywords, packages, " &
      "scripts, operating system commands and other topics.  Enter 'help' and " &
@@ -784,6 +785,7 @@ begin
    content( e, "get" );
    content( e, "get_immediate" );
    content( e, "get_line" );
+   content( e, "glossary" );
    content( e, "gnat.cgi" );
    content( e, "gnat.crc32" );
    content( e, "hash_io" );
@@ -806,6 +808,7 @@ begin
    content( e, "open" );
    content( e, "os" );
    content( e, "pen" );
+   content( e, "pen.gl" );
    content( e, "pragma" );
    content( e, "procedure" );
    content( e, "put" );
@@ -814,6 +817,7 @@ begin
    content( e, "reset" );
    content( e, "records" );
    content( e, "return" );
+   content( e, "set_input" );
    content( e, "skip_line" );
    content( e, "sound" );
    content( e, "source_info" );
@@ -827,6 +831,7 @@ begin
    content( e, "templates" );
    content( e, "trace" );
    content( e, "type" );
+   content( e, "types" );
    content( e, "typeset" );
    content( e, "units" );
    content( e, "unset" );
@@ -838,336 +843,373 @@ begin
      "SparForte, enter 'return' (or 'logout' if this is your login session)." );
    endHelp( e );
    render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-
    finish( r.all );
 end helpMain;
 
 procedure helpBtreeIO is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "btree_io (package) - Berkeley DB B-tree files" );
-     New_Line;
-     Put_Line( "add( f, k, v )                   get_previous( f, c, k, v )" );
-     Put_Line( "append( f, k, v )                b := has_element( f, k )" );
-     Put_Line( "clear( f )                       increment( f, k [,n] )" );
-     Put_Line( "close( f )                       b := is_open( f )" );
-     Put_Line( "close_cursor( f, c )             e := last_error( f )" );
-     Put_Line( "create( f, p, kl, vl )           open( f, p, kl, vl )" );
-     Put_Line( "decrement( f, k [,n] )           open_cursor( f, c )" );
-     Put_Line( "delete( f )                      prepend( f, k, v )" );
-     Put_Line( "flush( f )                       raise_exceptions( f, b )" );
-     Put_Line( "v := get( f, k )                 remove( f, k )" );
-     Put_Line( "get_first( f, c, k, v )          replace( f, k, v )" );
-     Put_Line( "get_last( f, c, k, v )           set( f, k, v )" );
-     Put_Line( "get_next( f, c, k, v )           truncate( f )" );
-     Put_Line( "                                 b := will_raise( f )" );
+     startHelp( e, "btree_io" );
+     summary( e, "btree_io package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using Berkeley DB B-tree files." );
+     content( e, "add( f, k, v )","get_previous( f, c, k, v )" );
+     content( e, "append( f, k, v )","b := has_element( f, k )" );
+     content( e, "clear( f )","increment( f, k [,n] )" );
+     content( e, "close( f )","b := is_open( f )" );
+     content( e, "close_cursor( f, c )","e := last_error( f )" );
+     content( e, "create( f, p, kl, vl )","open( f, p, kl, vl )" );
+     content( e, "decrement( f, k [,n] )","open_cursor( f, c )" );
+     content( e, "delete( f )","prepend( f, k, v )" );
+     content( e, "flush( f )","raise_exceptions( f, b )" );
+     content( e, "v := get( f, k )","remove( f, k )" );
+     content( e, "get_first( f, c, k, v )","replace( f, k, v )" );
+     content( e, "get_last( f, c, k, v )","set( f, k, v )" );
+     content( e, "get_next( f, c, k, v )","truncate( f )" );
+     content( e, "b := will_raise( f )" );
+     seeAlso( e, "doc/pkg_btree_io.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpBtreeIO;
 
 procedure helpDb is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "db (package) - APQ PostgreSQL database package interface" );
-     New_Line;
-     Put_Line( "  db.connect( d [, u, w ][, h][, p] )" );
-     Put_Line( "  append( s [,a] )            prepare( s [, a] )" );
-     Put_Line( "  append_line( s )            append_quoted( s )" );
-     Put_Line( "  execute                     execute_checked( [ s ] )" );
-     Put_Line( "  disconnect                  b := is_connected" );
-     Put_Line( "  reset                       s := error_message" );
-     Put_Line( "  s := notice_message         s := in_abort_state" );
-     Put_Line( "  s := options                set_rollback_on_finalize( b )" );
-     Put_Line( "  open_db_trace( f [,m] )     b := will_rollback_on_finalize" );
-     Put_Line( "  close_db_trace              set_trace( b )" );
-     Put_Line( "  b := is_trace               clear" );
-     Put_Line( "  raise_exceptions( [ b ] )   report_errors( b )" );
-     Put_Line( "  begin_work                  rollback_work" );
-     Put_Line( "  commit_work                 rewind" );
-     Put_Line( "  fetch [ (i) ]               b := end_of_query" );
-     Put_Line( "  t := tuple                  n := tuples" );
-     Put_Line( "  n := columns                s := column_name( c )" );
-     Put_Line( "  i := column_index( s )      b := is_null( c )" );
-     Put_Line( "  s := value( c )             d := engine_of" );
-     Put_Line( "  show                        list" );
-     Put_Line( "  schema( t )                 users" );
-     Put_Line( "  databases" );
+     startHelp( e, "db" );
+     summary( e, "db (PostgreSQL) package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using a PostgreSQL database.  " &
+        "Based on the APQ project.  See the dbm package for multiple connections." );
+     content( e, "db.connect( d [, u, w ][, h][, p] )" );
+     content( e, "append( s [,a] )","prepare( s [, a] )" );
+     content( e, "append_line( s )","append_quoted( s )" );
+     content( e, "execute","execute_checked( [ s ] )" );
+     content( e, "disconnect","b := is_connected" );
+     content( e, "reset","s := error_message" );
+     content( e, "s := notice_message","s := in_abort_state" );
+     content( e, "s := options","set_rollback_on_finalize( b )" );
+     content( e, "open_db_trace( f [,m] )","b := will_rollback_on_finalize" );
+     content( e, "close_db_trace","set_trace( b )" );
+     content( e, "b := is_trace","clear" );
+     content( e, "raise_exceptions( [ b ] )","report_errors( b )" );
+     content( e, "begin_work","rollback_work" );
+     content( e, "commit_work","rewind" );
+     content( e, "fetch [ (i) ]","b := end_of_query" );
+     content( e, "t := tuple","n := tuples" );
+     content( e, "n := columns","s := column_name( c )" );
+     content( e, "i := column_index( s )","b := is_null( c )" );
+     content( e, "s := value( c )","d := engine_of" );
+     content( e, "show","list" );
+     content( e, "schema( t )","users" );
+     content( e, "databases" );
+     seeAlso( e, "doc/pkg_db.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpDb;
 
 procedure helpDbm is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "dbm (package) - APQ PostgreSQL database package - multiple connections interface" );
-     New_Line;
-     Put_line( "connect( c, d [, u, w ][, h][, p] )" );
-     Put_line( "append( q, s [, a] )         prepare( q, s [, a] )" );
-     Put_line( "append_line( q, s )          append_quoted( q, c, s )" );
-     Put_line( "execute( q, c )              execute_checked( q, c [, s ] )" );
-     Put_line( "disconnect( c )              is_connected( c )" );
-     Put_line( "reset( c )                   s := error_message( c )" );
-     Put_line( "databases( c )               b := in_abort_state( c )" );
-     Put_line( "s := options( c )            set_rollback_on_finalize( c, b )" );
-     Put_line( "open_db_trace( c, f [, m] )  b := will_rollback_on_finalize( c )" );
-     Put_line( "close_db_trace( c )          set_trace( c, b )" );
-     Put_line( "b := is_trace( c )           clear( q )" );
-     Put_line( "raise_exceptions( q [, b ] ) report_errors( q, b )" );
-     Put_line( "begin_work( q, c )           rollback_work( q, c )" );
-     Put_line( "commit_work( q, c )          rewind( q )" );
-     Put_line( "fetch( q [, i] )             b := end_of_query( q )" );
-     Put_line( "n := tuple( q, t )           n := tuples( q )" );
-     Put_line( "n := columns( q )            s := column_name( q, i )" );
-     Put_line( "i := column_index( q, s )    b := is_null( q, i )" );
-     Put_line( "s := value( q, i )           b := engine_of( c )" );
-     Put_line( "show( q, c )                 list( c )" );
-     Put_line( "schema( c, t )               users( c )" );
-     Put_line( "new_connection( c )          new_query( q )" );
-     Put_line( "fetch_values( q, c, r )      s := notice_message( c )" );
-     Put_line( "append_for_insert( q, c, r ) append_for_update( q, c, r )" );
+     startHelp( e, "dbm" );
+     summary( e, "dbm (PostgreSQL) package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using PostgreSQL databases.  " &
+         "Based on the APQ project.  Supports multiple connections." );
+     content( e, "connect( c, d [, u, w ][, h][, p] )" );
+     content( e, "append( q, s [, a] )","prepare( q, s [, a] )" );
+     content( e, "append_line( q, s )","append_quoted( q, c, s )" );
+     content( e, "execute( q, c )","execute_checked( q, c [, s ] )" );
+     content( e, "disconnect( c )","is_connected( c )" );
+     content( e, "reset( c )","s := error_message( c )" );
+     content( e, "databases( c )","b := in_abort_state( c )" );
+     content( e, "s := options( c )","set_rollback_on_finalize( c, b )" );
+     content( e, "open_db_trace( c, f [, m] )","b := will_rollback_on_finalize( c )" );
+     content( e, "close_db_trace( c )","set_trace( c, b )" );
+     content( e, "b := is_trace( c )","clear( q )" );
+     content( e, "raise_exceptions( q [, b ] )","report_errors( q, b )" );
+     content( e, "begin_work( q, c )","rollback_work( q, c )" );
+     content( e, "commit_work( q, c )","rewind( q )" );
+     content( e, "fetch( q [, i] )","b := end_of_query( q )" );
+     content( e, "n := tuple( q, t )","n := tuples( q )" );
+     content( e, "n := columns( q )","s := column_name( q, i )" );
+     content( e, "i := column_index( q, s )","b := is_null( q, i )" );
+     content( e, "s := value( q, i )","b := engine_of( c )" );
+     content( e, "show( q, c )","list( c )" );
+     content( e, "schema( c, t )","users( c )" );
+     content( e, "new_connection( c )","new_query( q )" );
+     content( e, "fetch_values( q, c, r )","s := notice_message( c )" );
+     content( e, "append_for_insert( q, c, r )","append_for_update( q, c, r )" );
+     seeAlso( e, "doc/pkg_dbm.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpDbm;
 
 procedure helpHashIO is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "hash_io (package) - Berkeley DB hash files" );
-     New_Line;
-     Put_Line( "add( f, k, v )                   get_previous( f, c, k, v )" );
-     Put_Line( "append( f, k, v )                b := has_element( f, k )" );
-     Put_Line( "clear( f )                       increment( f, k [,n] )" );
-     Put_Line( "close( f )                       b := is_open( f )" );
-     Put_Line( "close_cursor( f, c )             e := last_error( f )" );
-     Put_Line( "create( f, p, kl, vl )           open( f, p, kl, vl )" );
-     Put_Line( "decrement( f, k [,n] )           open_cursor( f, c )" );
-     Put_Line( "delete( f )                      prepend( f, k, v )" );
-     Put_Line( "flush( f )                       raise_exceptions( f, b )" );
-     Put_Line( "v := get( f, k )                 remove( f, k )" );
-     Put_Line( "get_first( f, c, k, v )          replace( f, k, v )" );
-     Put_Line( "get_last( f, c, k, v )           set( f, k, v )" );
-     Put_Line( "get_next( f, c, k, v )           truncate( f )" );
-     Put_Line( "                                 b := will_raise( f )" );
+     startHelp( e, "hash_io" );
+     summary( e, "hash_io package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using Berkeley DB Hash files." );
+     content( e, "add( f, k, v )","get_previous( f, c, k, v )" );
+     content( e, "append( f, k, v )","b := has_element( f, k )" );
+     content( e, "clear( f )","increment( f, k [,n] )" );
+     content( e, "close( f )","b := is_open( f )" );
+     content( e, "close_cursor( f, c )","e := last_error( f )" );
+     content( e, "create( f, p, kl, vl )","open( f, p, kl, vl )" );
+     content( e, "decrement( f, k [,n] )","open_cursor( f, c )" );
+     content( e, "delete( f )","prepend( f, k, v )" );
+     content( e, "flush( f )","raise_exceptions( f, b )" );
+     content( e, "v := get( f, k )","remove( f, k )" );
+     content( e, "get_first( f, c, k, v )","replace( f, k, v )" );
+     content( e, "get_last( f, c, k, v )","set( f, k, v )" );
+     content( e, "get_next( f, c, k, v )","truncate( f )" );
+     content( e, "b := will_raise( f )" );
+     seeAlso( e, "doc/pkg_hash_io.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpHashIO;
 
 procedure helpMySQL is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "mysql (package) - APQ MySQL database package interface" );
-     New_Line;
-     Put_Line( "  connect( d [, u, w ][, h][, p] )" );
-     Put_Line( "  append( s [, a] )           prepare( s [, a] )" );
-     Put_Line( "  append_line( s )            append_quoted( s )" );
-     Put_Line( "  execute                     execute_checked( [ s ] )" );
-     Put_Line( "  disconnect                  is_connected" );
-     Put_Line( "  reset                       s := error_message" );
-     Put_Line( "  databases                   b := in_abort_state" );
-     Put_Line( "  s := options                set_rollback_on_finalize( b )" );
-     Put_Line( "  open_db_trace( f [,m] )     b := will_rollback_on_finalize" );
-     Put_Line( "  close_db_trace              set_trace( b )" );
-     Put_Line( "  b := is_trace               clear" );
-     Put_Line( "  raise_exceptions( [ b ] )   report_errors( b )" );
-     Put_Line( "  begin_work                  rollback_work" );
-     Put_Line( "  commit_work                 rewind" );
-     Put_Line( "  fetch [ (i) ]               b := end_of_query" );
-     Put_Line( "  n := tuple( t )             n := tuples" );
-     Put_Line( "  n := columns                s := column_name( c )" );
-     Put_Line( "  i := column_index( s )      b := is_null( c )" );
-     Put_Line( "  s := value( c )             b := engine_of " );
-     Put_Line( "  show                        list" );
-     Put_Line( "  schema( t )                 users" );
+     startHelp( e, "mysql" );
+     summary( e, "mysql package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using a MySQL database.  " &
+        "Based on the APQ project.  See the mysqlm package for multiple connections." );
+     content( e, "connect( d [, u, w ][, h][, p] )" );
+     content( e, "append( s [, a] )","prepare( s [, a] )" );
+     content( e, "append_line( s )","append_quoted( s )" );
+     content( e, "execute","execute_checked( [ s ] )" );
+     content( e, "disconnect","is_connected" );
+     content( e, "reset","s := error_message" );
+     content( e, "databases","b := in_abort_state" );
+     content( e, "s := options","set_rollback_on_finalize( b )" );
+     content( e, "open_db_trace( f [,m] )","b := will_rollback_on_finalize" );
+     content( e, "close_db_trace","set_trace( b )" );
+     content( e, "b := is_trace","clear" );
+     content( e, "raise_exceptions( [ b ] )","report_errors( b )" );
+     content( e, "begin_work","rollback_work" );
+     content( e, "commit_work","rewind" );
+     content( e, "fetch [ (i) ]","b := end_of_query" );
+     content( e, "n := tuple( t )","n := tuples" );
+     content( e, "n := columns","s := column_name( c )" );
+     content( e, "i := column_index( s )","b := is_null( c )" );
+     content( e, "s := value( c )","b := engine_of " );
+     content( e, "show","list" );
+     content( e, "schema( t )","users" );
+     seeAlso( e, "doc/pkg_mysql.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpMySQL;
 
 procedure helpMySQLM is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "mysqlm (package) - APQ MySQL database package - multiple connections interface" );
-     New_Line;
-     Put_Line( "  connect( c, d [, u, w ][, h][, p] )" );
-     Put_Line( "  append( q, s [, a] )         prepare( q, s [, a] )" );
-     Put_Line( "  append_line( q, s )          append_quoted( q, c, s )" );
-     Put_Line( "  execute( q, c )              execute_checked( q, c [, s ] )" );
-     Put_Line( "  disconnect( c )              is_connected( c )" );
-     Put_Line( "  reset( c )                   s := error_message( c )" );
-     Put_Line( "  databases( c )               b := in_abort_state( c )" );
-     Put_Line( "  s := options( c )            set_rollback_on_finalize( c, b )" );
-     Put_Line( "  open_db_trace( c, f [, m] )  b := will_rollback_on_finalize( c )" );
-     Put_Line( "  close_db_trace( c )          set_trace( c, b )" );
-     Put_Line( "  b := is_trace( c )           clear( q )" );
-     Put_Line( "  raise_exceptions( q [, b ] ) report_errors( q, b )" );
-     Put_Line( "  begin_work( q, c )           rollback_work( q, c )" );
-     Put_Line( "  commit_work( q, c )          rewind( q )" );
-     Put_Line( "  fetch( q [, i] )             b := end_of_query( q )" );
-     Put_Line( "  n := tuple( q, t )           n := tuples( q )" );
-     Put_Line( "  n := columns( q )            s := column_name( q, i )" );
-     Put_Line( "  i := column_index( q, s )    b := is_null( q, i )" );
-     Put_Line( "  s := value( q, i )           b := engine_of( c ) " );
-     Put_Line( "  show( q, c )                 list( c )" );
-     Put_Line( "  schema( c, t )               users( c )" );
-     Put_Line( "  new_connection( c )          new_query( q )" );
-     Put_Line( "  fetch_values( q, c, r )" );
-     Put_Line( "  append_for_insert( q, c, r ) append_for_update( q, c, r )" );
+     startHelp( e, "mysqlm" );
+     summary( e, "mysqlm package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using MySQL databases.  " &
+        "Based on the APQ project.  Supports multiple connections." );
+     content( e, "connect( c, d [, u, w ][, h][, p] )" );
+     content( e, "append( q, s [, a] )","prepare( q, s [, a] )" );
+     content( e, "append_line( q, s )","append_quoted( q, c, s )" );
+     content( e, "execute( q, c )","execute_checked( q, c [, s ] )" );
+     content( e, "disconnect( c )","is_connected( c )" );
+     content( e, "reset( c )","s := error_message( c )" );
+     content( e, "databases( c )","b := in_abort_state( c )" );
+     content( e, "s := options( c )","set_rollback_on_finalize( c, b )" );
+     content( e, "open_db_trace( c, f [, m] )","b := will_rollback_on_finalize( c )" );
+     content( e, "close_db_trace( c )","set_trace( c, b )" );
+     content( e, "b := is_trace( c )","clear( q )" );
+     content( e, "raise_exceptions( q [, b ] )","report_errors( q, b )" );
+     content( e, "begin_work( q, c )","rollback_work( q, c )" );
+     content( e, "commit_work( q, c )","rewind( q )" );
+     content( e, "fetch( q [, i] )","b := end_of_query( q )" );
+     content( e, "n := tuple( q, t )","n := tuples( q )" );
+     content( e, "n := columns( q )","s := column_name( q, i )" );
+     content( e, "i := column_index( q, s )","b := is_null( q, i )" );
+     content( e, "s := value( q, i )","b := engine_of( c ) " );
+     content( e, "show( q, c )","list( c )" );
+     content( e, "schema( c, t )","users( c )" );
+     content( e, "new_connection( c )","new_query( q )" );
+     content( e, "fetch_values( q, c, r )" );
+     content( e, "append_for_insert( q, c, r )","append_for_update( q, c, r )" );
+     seeAlso( e, "doc/pkg_mysqlm.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpMySQLM;
 
 procedure helpUnits is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "units (package) - measurement conversions:" );
-     New_Line;
-     Put_Line( "  r := acres2hectares( f ) r := bytes2mb( f )     r := c2f( f )" );
-     Put_Line( "  r := c2k( f )            r := cm2inches( f )    r := cucm2floz( f )" );
-     Put_Line( "  r := cucm2usfloz( f )    r := f2c( f )          r := feet2cm( f )" );
-     Put_Line( "  r := floz2usfloz( f )    r := floz2cucm( f )    r := floz2ml( f )" );
-     Put_Line( "  r := g2troz( f )         r := gal2l( f )        r := grams2oz( f )" );
-     Put_Line( "  r := hectares2acres( f ) r := inches2mm( f )    r := k2c( f )" );
-     Put_Line( "  r := kg2lb( f )          r := km2miles( f )     r := l2gal( f )" );
-     Put_Line( "  r := l2quarts( f )       r := l2usdryoz( f )    r := l2usliqoz( f )" );
-     Put_Line( "  r := lb2kg( f )          r := ly2pc( f )        r := m2yards( f )" );
-     Put_Line( "  r := mb2bytes( f )       r := miles2km( f )     r := ml2floz( f )" );
-     Put_Line( "  r := ml2usfloz( f )      r := mm2inches( f )    r := pc2ly( f )" );
-     Put_Line( "  r := pints2l( f )        r := oz2grams( f )     r := sqcm2sqin( f )" );
-     Put_Line( "  r := sqft2sqm( f )       r := sqin2sqcm( f )    r := sqkm2sqmiles( f )" );
-     Put_Line( "  r := sqm2sqft( f )       r := sqm2sqyd( f )     r := sqmiles2sqkm( f )" );
-     Put_Line( "  r := sqyd2sqm( f )       r := tonnes2tons( f )  r := tons2tonnes( f )" );
-     Put_Line( "  r := troz2g( f )         r := usdryoz2l( f )    r := usliqoz2l( f )" );
-     Put_Line( "  r := usfloz2cucm( f )    r := usfloz2floz( f )  r := usfloz2ml( f )" );
-     Put_Line( "  r := yards2m( f )" );
+     startHelp( e, "units" );
+     summary( e, "units package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines for conversion of units of measurement." );
+     content( e, "r := acres2hectares( f )","r := bytes2mb( f )","r := c2f( f )" );
+     content( e, "r := c2k( f )","r := cm2inches( f )","r := cucm2floz( f )" );
+     content( e, "r := cucm2usfloz( f )","r := f2c( f )","r := feet2cm( f )" );
+     content( e, "r := floz2usfloz( f )","r := floz2cucm( f )","r := floz2ml( f )" );
+     content( e, "r := g2troz( f )","r := gal2l( f )","r := grams2oz( f )" );
+     content( e, "r := hectares2acres( f )","r := inches2mm( f )","r := k2c( f )" );
+     content( e, "r := kg2lb( f )","r := km2miles( f )","r := l2gal( f )" );
+     content( e, "r := l2quarts( f )","r := l2usdryoz( f )","r := l2usliqoz( f )" );
+     content( e, "r := lb2kg( f )","r := ly2pc( f )","r := m2yards( f )" );
+     content( e, "r := mb2bytes( f )","r := miles2km( f )","r := ml2floz( f )" );
+     content( e, "r := ml2usfloz( f )","r := mm2inches( f )","r := pc2ly( f )" );
+     content( e, "r := pints2l( f )","r := oz2grams( f )","r := sqcm2sqin( f )" );
+     content( e, "r := sqft2sqm( f )","r := sqin2sqcm( f )","r := sqkm2sqmiles( f )" );
+     content( e, "r := sqm2sqft( f )","r := sqm2sqyd( f )","r := sqmiles2sqkm( f )" );
+     content( e, "r := sqyd2sqm( f )","r := tonnes2tons( f )","r := tons2tonnes( f )" );
+     content( e, "r := troz2g( f )","r := usdryoz2l( f )","r := usliqoz2l( f )" );
+     content( e, "r := usfloz2cucm( f )","r := usfloz2floz( f )","r := usfloz2ml( f )" );
+     content( e, "r := yards2m( f )" );
+     seeAlso( e, "doc/pkg_units.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpUnits;
 
 procedure helpNumerics is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "numerics - numerics package constants/functions" );
-     New_Line;
-     Put_line( "Constants" );
-     New_Line;
-     Put_line( "  e                    log2_e                  log10_e             ln10" );
-     Put_line( "  ln2                  pi                      pi_by_2             pi_by_4" );
-     Put_line( "  pi_under_1           pi_under_2              sqrt_pi_under_2     sqrt_2" );
-     Put_line( "  sqrt_2_under_1" );
-     New_Line;
-     Put_line( "General" );
-     New_Line;
-     Put_line( "  f := abs( e )               f := ceiling( e )            f := copy_sign( x, y )" );
-     Put_line( "  f := even( i )              f := exp( x )                f := exponent( e )" );
-     Put_line( "  f := floor( e )             f := fnv_hash_of( s, l )     f := fraction( e )" );
-     Put_line( "  f := hash_of( s, l )        f := leading_part( x, y )    f := log( e [,b] )" );
-     Put_line( "  f := machine( e )           f := max( x, y )             r := md5( s )" );
-     Put_line( "  f := min( x, y )            f := odd( x )                f := murmur_hash_of( s, l )" );
-     Put_line( "  p := pos( c )               f := random                  f := remainder( x, y )" );
-     Put_line( "  r := rnd( p )               i := rotate_left( e, b )     i := rotate_right( e, b )" );
-     Put_line( "  f := rounding( e )          f := scaling( x, y )         f := sdbm_hash_of( s, l )" );
-     Put_Line( "  f := serial                 d := sha1_digest_of( s )     d := sha224_digest_of( s )" );
-     Put_Line( "  d := sha256_digest_of( s )  d := sha512_digest_of( s )   i := shift_left( e, b )" );
-     Put_Line( "  i := shift_right( e, b ) i := shift_right_arithmetic( x, b )" );
-     Put_Line( "  f := sqrt( e )              f := sturges( l, h, t )      f := truncation( e )" );
-     Put_Line( "  f := unbiased_rounding( e ) f := value( s )" );
-     New_Line;
-     Put_line( "Trig" );
-     New_Line;
-     Put_line( "  f := arccos( x [,cycle] )    f := arccosh( e )         f := arccot( x, y [,cycle] )" );
-     Put_line( "  f := arccoth( e )            f := arcsin( e [,cycle] ) f := arcsinh( e )" );
-     Put_line( "  f := arctan( x, y [,cycle] ) f := arctanh( e )         f := cos( e [,cycle] )" );
-     Put_line( "  f := cosh( e )               f := cot( e [,cycle] )    f := coth( e )" );
-     Put_line( "  f := sin( e [,cycle] )       f := sinh( e )            f := tan( e [,cycle] )" );
-     Put_line( "  f := tanh( e )" );
-     New_Line;
-     Put_line( "Complex" );
-     New_Line;
-     Put_line( "  re( complex )                im( complex )             modulus( complex )" );
-     Put_line( "  set_re( complex, r )         set_im( complex, i )      argument( complex )" );
-     New_Line;
-     Put_Line( "  abs( x ) is not 'numerics.abs( x )' because it's not in the numerics package" );
+     startHelp( e, "numerics" );
+     summary( e, "numerics package" );
+     categoryPackage( e );
+     description( e, "A collection of constants and common routines using numbers and mathematics." );
+     section( e, "Constants" );
+     content( e, "e","log2_e","log10_e","ln10" );
+     content( e, "ln2","pi","pi_by_2","pi_by_4" );
+     content( e, "pi_under_1","pi_under_2","sqrt_pi_under_2","sqrt_2" );
+     content( e, "sqrt_2_under_1" );
+     section( e, "General" );
+     content( e, "f := abs( e )","f := ceiling( e )","f := copy_sign( x, y )" );
+     content( e, "f := even( i )","f := exp( x )","f := exponent( e )" );
+     content( e, "f := floor( e )","f := fnv_hash_of( s, l )","f := fraction( e )" );
+     content( e, "f := hash_of( s, l )","f := leading_part( x, y )","f := log( e [,b] )" );
+     content( e, "f := machine( e )","f := max( x, y )","r := md5( s )" );
+     content( e, "f := min( x, y )","f := odd( x )","f := murmur_hash_of( s, l )" );
+     content( e, "p := pos( c )","f := random","f := remainder( x, y )" );
+     content( e, "r := rnd( p )","i := rotate_left( e, b )","i := rotate_right( e, b )" );
+     content( e, "f := rounding( e )","f := scaling( x, y )","f := sdbm_hash_of( s, l )" );
+     content( e, "f := serial","d := sha1_digest_of( s )","d := sha224_digest_of( s )" );
+     content( e, "d := sha256_digest_of( s )","d := sha512_digest_of( s )","i := shift_left( e, b )" );
+     content( e, "i := shift_right( e, b )","i := shift_right_arithmetic( x, b )" );
+     content( e, "f := sqrt( e )","f := sturges( l, h, t )","f := truncation( e )" );
+     content( e, "f := unbiased_rounding( e )","f := value( s )" );
+     section( e, "Trigonometry" );
+     content( e, "f := arccos( x [,cycle] )","f := arccosh( e )","f := arccot( x, y [,cycle] )" );
+     content( e, "f := arccoth( e )","f := arcsin( e [,cycle] )","f := arcsinh( e )" );
+     content( e, "f := arctan( x, y [,cycle] )","f := arctanh( e )","f := cos( e [,cycle] )" );
+     content( e, "f := cosh( e )","f := cot( e [,cycle] )","f := coth( e )" );
+     content( e, "f := sin( e [,cycle] )","f := sinh( e )","f := tan( e [,cycle] )" );
+     content( e, "f := tanh( e )" );
+     section( e, "Complex Numbers" );
+     content( e, "re( complex )","im( complex )","modulus( complex )" );
+--      content( e, "set_re( complex, r )","set_im( complex, i )","argument( complex )" );
+     footer( e, "abs( x ) is not 'numerics.abs( x )' because it's a language feature" );
+     seeAlso( e, "doc/pkg_numerics.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpNumerics;
 
 procedure helpPragma is
+  e : aHelpEntry;
+  r : aRootReportPtr;
 begin
-     Put_Line( "pragma - interpreter directive" );
-     New_Line;
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "ada_95 - enforce Ada 95 restrictions" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "advise( from, to, message ) - request team advice/assistance" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "annotate( [type,]""text"" ) - embed a comment for help command" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "assert( condition ) - with --debug/--test, terminate program on condition fail" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "assumption( used, written, var ) - assume a variable was read or written to when testing" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "blocked( from, message ) - announce programmer progress blocked" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "clarify( from, to, message ) - request programmer clarification" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "debug( `commands` ) - with --debug, execute debug commands" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "depreciated/deprecated( ""newscript"" ) - report script as obsolete by newscript" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "dispute( from, to, message ) - request program review" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "export( shell | local_memcache | memcache | session , var ) - export a variable" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "export_json( shell | local_memcache | memcache | session , var )" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "gcc_errors - same as --gcc-errors" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "import( shell | cgi | local_memcache | memcache | session, var ) - import a var" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "import_json( shell | cgi | local_memcache | memcache | session, var )" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "inspect( var ) - perform 'env var' on --break breakout" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "inspection_peek - like a inspection_point but no breakout" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "inspection_point - break to command prompt if --break is used" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "license( license_name [, extra] )" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "no_command_hash - do not store command pathnames in the hash table" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "prompt_script( `commands` ) - commands to draw command prompt" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "propose( from, to, message ) - suggest a change to a program" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "refactor( from, to, message ) - request programmer optimize program" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_annotate_todos ) - " &
-         "must not have annotate/todo" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( annotations_not_optional ) - " &
-         "must have pragma annotate" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_auto_declarations ) - " &
-         "no auto command line declarations" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_external_commands ) - " &
-         "disable operating system commands" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_memcache ) - " &
-         "disable connections to memcache" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_mysql_database ) - " &
-         "disable connections to mysql" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_postgresql_database ) - " &
-         "disable connections to postgresql" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "restriction( no_unused_identifiers ) - " &
-         "stricter unused tests" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "session_export_script( `commands` ) - commands to export session variables" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "session_import_script( `commands` ) - commands to import session variables" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "software_model( model_name )" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "suppress( word_quoting ) - allow shell 'barewords'" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "suppress( all_priority_todos_for_release ) - all todo's allowed late in SDLC" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "suppress( low_priority_todos_for_release ) - low priority allowed late in SDLC" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "test( condition ) - with --test, execute test commands" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "test_result( condition ) - with --test, display warning on condition failure" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "todo( to, message, work, units, priority, units ) - task assignment/estimation" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "uninspect( var ) - undo pragma inspect" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "unrestricted_template( css|html|js|json|text|wml|xml [, path] ) - don't run template in restricted shell" );
-     Put_Line( "  " & bold( "pragma" ) & " " &
-       "volatile( var ) - load value from environment on every access" );
+     startHelp( e, "pragma" );
+     summary( e, "pragma name [( params...)]" );
+     categoryKeyword( e );
+     description( e, "Pragmas (or interpreter directives) provide SparForte with advice " &
+                  "for running programs.  They can also " &
+                  "supply additional information for people not covered by " &
+                  "the language itself.  Pragmas are used for " &
+                  "design and architecture, documentation, project management, team " &
+                  "communication, debugging, configuration and other things.");
+  content( e, "pragma ada_95 - enforce Ada 95 restrictions" );
+  content( e, "pragma advise( from, to, message ) - request team advice/assistance" );
+  content( e, "pragma annotate( [type,] " & Ada.Characters.Latin_1.Quotation & "text" & Ada.Characters.Latin_1.Quotation & " ) - embed a comment for help command" );
+  content( e, "pragma assert( condition ) - with --debug/--test, terminate program on condition fail" );
+  content( e, "pragma assumption( used, written, var ) - assume a variable was read or written to when testing" );
+  content( e, "pragma blocked( from, message ) - announce programmer progress blocked" );
+  content( e, "pragma clarify( from, to, message ) - request programmer clarification" );
+  content( e, "pragma debug( `commands` ) - with --debug, execute debug commands" );
+  content( e, "pragma depreciated/deprecated( " & Ada.Characters.Latin_1.Quotation & "newscript" & Ada.Characters.Latin_1.Quotation &" ) - report script as obsolete by newscript" );
+  content( e, "pragma dispute( from, to, message ) - request program review" );
+  content( e, "pragma export( shell | local_memcache | memcache | session , var ) - export a variable" );
+  content( e, "pragma export_json( shell | local_memcache | memcache | session , var )" );
+  content( e, "pragma gcc_errors - same as --gcc-errors" );
+  content( e, "pragma import( shell | cgi | local_memcache | memcache | session, var ) - import a var" );
+  content( e, "pragma import_json( shell | cgi | local_memcache | memcache | session, var )" );
+  content( e, "pragma inspect( var ) - perform 'env var' on --break breakout" );
+  content( e, "pragma inspection_peek - like a inspection_point but no breakout" );
+  content( e, "pragma inspection_point - break to command prompt if --break is used" );
+  content( e, "pragma license( license_name [, extra] ) - specify a software license" );
+  content( e, "pragma no_command_hash - do not store command pathnames in the hash table" );
+  content( e, "pragma prompt_script( `commands` ) - commands to draw command prompt" );
+  content( e, "pragma propose( from, to, message ) - suggest a change to a program" );
+  content( e, "pragma refactor( from, to, message ) - request programmer optimize program" );
+  content( e, "pragma restriction( no_annotate_todos ) - must not have annotate/todo" );
+  content( e, "pragma restriction( annotations_not_optional ) - must have pragma annotate" );
+  content( e, "pragma restriction( no_auto_declarations ) - no auto command line declarations" );
+  content( e, "pragma restriction( no_external_commands ) - disable operating system commands" );
+  content( e, "pragma restriction( no_memcache ) - disable connections to memcache" );
+  content( e, "pragma restriction( no_mysql_database ) - disable connections to mysql" );
+  content( e, "pragma restriction( no_postgresql_database ) - disable connections to postgresql" );
+  content( e, "pragma restriction( no_unused_identifiers ) - stricter unused tests" );
+  content( e, "pragma session_export_script( `commands` ) - commands to export session variables" );
+  content( e, "pragma session_import_script( `commands` ) - commands to import session variables" );
+  content( e, "pragma software_model( model_name ) - specify the category of the program" );
+  content( e, "pragma suppress( word_quoting ) - allow shell 'barewords'" );
+  content( e, "pragma suppress( all_priority_todos_for_release ) - all todo's allowed late in SDLC" );
+  content( e, "pragma suppress( low_priority_todos_for_release ) - low priority todo's allowed late in SDLC" );
+  content( e, "pragma template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
+  content( e, "pragma test( condition ) - with --test, execute test commands" );
+  content( e, "pragma test_result( condition ) - with --test, display warning on condition failure" );
+  content( e, "pragma todo( to, message, work, units, priority, units ) - task assignment/estimation" );
+  content( e, "pragma unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
+  content( e, "pragma uninspect( var ) - undo pragma inspect" );
+  content( e, "pragma unrestricted_template( css|html|js|json|text|wml|xml [, path] ) - run template without a restricted shell" );
+  content( e, "pragma volatile( var ) - load value from environment on every access" );
+     seeAlso( e, "doc/ref_pragmas.html" );
+     endHelp( e );
+   r := new longHelpReport;
+   start( r.all );
+   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+   finish( r.all );
 end helpPragma;
 
 procedure help( ap : argumentListPtr ) is
@@ -1235,24 +1277,32 @@ begin
      return;
   end if;
   if helpTopic = "arrays" then
-     Put_Line( "arrays - arrays package functions" );
-     New_Line;
-     Put_Line( "  first( a )               last( a )                length( a )");
-     Put_Line( "  bubble_sort( a )         bubble_sort_descending( a )" );
-     Put_Line( "  heap_sort( a )           heap_sort_descending( a )" );
-     Put_Line( "  shuffle( a )             flip( a )" );
-     Put_Line( "  shift_left( a )          shift_right( a )" );
-     Put_Line( "  rotate_left( a )         rotate_right( a )" );
-     Put_Line( "  to_array( a, s )         to_json( s, a )" );
+     startHelp( e, "arrays" );
+     summary( e, "arrays package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using arrays." );
+     content( e, "first( a )","last( a )","length( a )");
+     content( e, "bubble_sort( a )","bubble_sort_descending( a )" );
+     content( e, "heap_sort( a )","heap_sort_descending( a )" );
+     content( e, "shuffle( a )","flip( a )" );
+     content( e, "shift_left( a )","shift_right( a )" );
+     content( e, "rotate_left( a )","rotate_right( a )" );
+     content( e, "to_array( a, s )","to_json( s, a )" );
+     seeAlso( e, "doc/pkg_arrays.html" );
+     endHelp( e );
   elsif helpTopic = "btree_io" then
      helpBTreeIO;
   elsif helpTopic = "calendar" then
-     Put_Line( "calendar (package) - time and date operations:" );
-     New_Line;
-     Put_Line( "  t := clock               y := year( t )           m := month( t )" );
-     Put_Line( "  d := day( t )            s := seconds( t )        split( t, y, m, d, s )" );
-     Put_Line( "  t := time_of( y,m,d,s )  i := day_of_week( t )    t := to_time( j )" );
      discardUnusedIdentifier( token );
+     startHelp( e, "calendar" );
+     summary( e, "calendar package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using dates and times." );
+     content( e, "t := clock","y := year( t )","m := month( t )" );
+     content( e, "d := day( t )","s := seconds( t )","split( t, y, m, d, s )" );
+     content( e, "t := time_of( y,m,d,s )","i := day_of_week( t )","t := to_time( j )" );
+     seeAlso( e, "doc/pkg_calendar.html" );
+     endHelp( e );
   elsif helpTopic = "case" then
      startHelp( e, "case" );
      summary( e, "case var is...end case" );
@@ -1263,42 +1313,51 @@ begin
      content( e, "case var is when literal|const[|...] => ...when others => ...end case" );
      seeAlsoFlowControl( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "cd" then
      startHelp( e, "cd" );
-     summary( e, "cd -|" & ASCII.Quotation & ASCII.Quotation & "|dirname" );
+     summary( e, "change directory" );
      categoryBuiltin( e );
      description( e,
       "Change the working directory.  Supports AdaScript parameters. " &
       "One parameter is required.  An empty path will change to the user's " &
       "home directory.  A minus sign will revert to the previous directory." );
+     content( e, "cd -|" & ASCII.Quotation & ASCII.Quotation & "|dirname" );
      params( e, "path - the path to change to (or null string, minus)" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "cgi" then
-     Put_Line( "cgi (package) - process CGI commands and cookies:" );
-     New_Line;
-     Put_Line( "  parsing_errors             input_received             is_index" );
-     Put_Line( "  cgi_method                 value( k, i, b )           key_exists( k, i )" );
-     Put_Line( "  key_count( k )             argument_count             key( p )" );
-     Put_Line( "  key_value_exists( k, v )   put_cgi_header( s )        put_html_head( t, m )" );
-     Put_Line( "  put_html_heading( s, p )   put_html_tail              put_error_message( s )" );
-     Put_Line( "  my_url                     put_variables              line_count" );
-     Put_Line( "  line_count_of_value        line( v )                  value_of_line( k, p )" );
-     Put_Line( "  url_decode                 url_encode( s )            html_encode( s )" );
-     Put_Line( "  set_cookie( k,v,e,p,d,s )  cookie_value( p )          cookie_count" );
-     Put_Line( "  s := key_value( p )" );
      discardUnusedIdentifier( token );
+     startHelp( e, "cgi" );
+     summary( e, "cgi package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines for web programming and cookies.  " &
+         "Based on the ADACGI project.  See also gnat.cgi.");
+     content( e, "parsing_errors","input_received","is_index" );
+     content( e, "cgi_method","value( k, i, b )","key_exists( k, i )" );
+     content( e, "key_count( k )","argument_count","key( p )" );
+     content( e, "key_value_exists( k, v )","put_cgi_header( s )","put_html_head( t, m )" );
+     content( e, "put_html_heading( s, p )","put_html_tail","put_error_message( s )" );
+     content( e, "my_url","put_variables","line_count" );
+     content( e, "line_count_of_value","line( v )","value_of_line( k, p )" );
+     content( e, "url_decode","url_encode( s )","html_encode( s )" );
+     content( e, "set_cookie( k,v,e,p,d,s )","cookie_value( p )","cookie_count" );
+     content( e, "s := key_value( p )" );
+     seeAlso( e, "doc/pkg_cgi.html" );
+     endHelp( e );
   elsif helpTopic = "chains" then
-     Put_Line( "  p := chains.chain_count        e := chains.chain_context " );
-     Put_Line( "  b := chains.in_chain" );
-  elsif helpTopic = "clear" then
-    Put_Line( "clear - reset tty device and clear the screen" );
+     discardUnusedIdentifier( token );
+     startHelp( e, "chains" );
+     summary( e, "chain package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using @ chains.  " &
+                  "A chain is a command, pragma or procedure run multiple times " &
+                  "in a row but with different parameters.  "  &
+                   "The chains package currently only works with procedure chains.");
+     content( e, "p := chains.chain_count","e := chains.chain_context " );
+     content( e, "b := chains.in_chain" );
+     seeAlso( e, "doc/pkg_chains.html" );
+     endHelp( e );
+ elsif helpTopic = "clear" then
      startHelp( e, "clear" );
      summary( e, "clear" );
      categoryBuiltin( e );
@@ -1308,98 +1367,157 @@ begin
       "the top-left corner of the display." );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "close" then
-     Put_Line( "close - close an open file" );
-     Put_Line( "  close( file )" );
+     startHelp( e, "close" );
+     summary( e, "close (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Closes an open file." );
+     params( e, "file - a text_io file" );
+     content( e, "close( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
 --  elsif helpTopic = "command" then
 --     Put_Line( "command - run a Linux command (instead of a built-in command)" );
 --     Put_Line( "  " & bold( "command" ) & " cmd" );
   elsif helpTopic = "command_line" then
-     Put_Line( "command_line (package) - count and read script arguments" );
-     New_Line;
-     Put_Line( "  s := argument( p ) - return argument p" );
-     Put_Line( "  n := argument_count - number of arguments" );
-     Put_Line( "  s := command_name - name used to execute the script");
-     Put_Line( "  n := environment.environment_count - number of environment vars" );
-     Put_Line( "  s := environment.environment_value( p ) - return environment value p" );
-     Put_Line( "  command_line.set_exit_status( n ) - change script exit status code - change script exit status code");
-     New_Line;
-     Put_Line( "Bourne Shell shortcuts:" );
-     Put_Line( "  $# - number of arguments" );
-     Put_Line( "  $1...$9 - first 9 arguments" );
      discardUnusedIdentifier( token );
+     startHelp( e, "command_line" );
+     summary( e, "command_line package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using command line arguments, " &
+       "environment variables, and the exit status.  " &
+        "Command line arguments can also be accessed through the following Bourne " &
+        "shell shortcuts: $# (the number of arguments), $1..$9 (the first nine " &
+         "arguments), and $0 (the command path).  See also the os package.");
+     content( e, "s := argument( p )" );
+     content( e, "n := argument_count" );
+     content( e, "s := command_name");
+     content( e, "n := environment.environment_count" );
+     content( e, "s := environment.environment_value( p )" );
+     content( e, "set_exit_status( n )");
+     seeAlso( e, "doc/pkg_cmdline.html" );
+     endHelp( e );
   elsif helpTopic = "create" then
-     Put_Line( "create - create a new file or overwrite an existing file" );
-     Put_Line( "  create( file [, out_file | append_file] [, path ] )" );
-     Put_Line( "The default type is out_file" );
-     Put_Line( "The default path a temporary file name" );
+     startHelp( e, "create" );
+     summary( e, "create (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Open a new file, or overwrite an existing one." );
+     params( e, "file - a text_io file" );
+     params( e, "type - out_file (default) or append_file" );
+     params( e, "path - path to the file (default, a temporary file)" );
+     content( e, "create( file [, type] [, path ] ] )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "db" then
      helpDb;
-  elsif helpTopic = "db" then
+  elsif helpTopic = "dbm" then
      helpDbm;
   elsif helpTopic = "declare" then
+     startHelp( e, "declare" );
+     summary( e, "declare/begin block" );
+     categoryKeyword( e );
+     description( e, "Begin a new unnamed block of source code within a procedure or function." );
      Put_Line( "declare - begin a new block" );
-     Put_Line( "  [" & bold( "declare") & " declarations] " &
-       bold( "begin" ) & " ... " & bold( "end" ) );
+     content( e, ( "[declare declarations] begin executable-commands exception handlers end;" ) );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
   elsif helpTopic = "delay" then
-     Put_Line( "delay - wait (sleep) for a specific time" );
-     Put_Line( "  " & bold( "delay" ) & " secs" );
+     startHelp( e, "delay" );
+     summary( e, "delay statement" );
+     categoryKeyword( e );
+     description( e, "Wait (or sleep) for the specified time." );
+     params( e, "secs - the number of seconds" );
+     content( e, "delay secs" );
+     seeAlso( e, "doc/ref_other.html" );
+     endHelp( e );
   elsif helpTopic = "delete" then
-     Put_Line( "delete - close and delete a file" );
-     Put_Line( "  delete( file )" );
+     startHelp( e, "delete" );
+     summary( e, "delete (text_io package/SQL)" );
+     category( e, "keyword and built-in procedure" );
+     description( e, "As a text.io procedure, delete closes and removes a file.  " &
+       "As an SQL command, delete removes rows from a database table." );
+     params( e, "file - a text_io file" );
+     content( e, "delete( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "directory_operations" then
-     Put_Line( "directory_operations - directory operations package functions" );
-     New_Line;
-     Put_Line( "  c := dir_separator             change_dir( p )               remove_dir( p [, r] )" );
-     Put_Line( "  p := get_current_dir           s := dir_name( p )            s := base_name( p [, f] )" );
-     Put_Line( "  s := file_extension( p )       s := file_name( p )           s := format_pathname( p [,t] )" );
-     Put_Line( "  s := expand_path( p [,t] )     make_dir( p )                 close( d )" );
-     Put_Line( "  b := is_open( d )              open( d, p )                  read( d, s )" );
+     startHelp( e, "directory_operations" );
+     summary( e, "directory_operations package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using directories and file paths." );
+     content( e, "c := dir_separator","change_dir( p )","remove_dir( p [, r] )" );
+     content( e, "p := get_current_dir","s := dir_name( p )","s := base_name( p [, f] )" );
+     content( e, "s := file_extension( p )","s := file_name( p )","s := format_pathname( p [,t] )" );
+     content( e, "s := expand_path( p [,t] )","make_dir( p )","close( d )" );
+     content( e, "b := is_open( d )","open( d, p )","read( d, s )" );
+     seeAlso( e, "doc/pkg_dirops.html" );
+     endHelp( e );
   elsif helpTopic = "end_of_file" then
-     Put_Line( "end_of_file - true if an in_file file has no more data" );
-     Put_Line( "  end_of_file( file )" );
+     startHelp( e, "end_of_file" );
+     summary( e, "end_of_file (text_io package)" );
+     categoryFunction( e );
+     description( e, "True if a file has no more data in a file." );
+     params( e, "file - a text_io file" );
+     content( e, "end_of_file( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "end_of_line" then
-     Put_Line( "end_of_line - true if an in_file file has reached the end of a line with get" );
-     Put_Line( "  end_of_line( file )" );
+     startHelp( e, "end_of_line" );
+     summary( e, "end_of_line (text_io package)" );
+     categoryFunction( e );
+     description( e, "True if an in_file file has reached the end of a line with get" );
+     params( e, "file - a text_io file" );
+     content( e, "end_of_line( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "doubly_linked_lists" then
-     Put_Line( "doubly_linked_lists - linked lists package" );
-     New_Line;
-     Put_Line( "append( l, e )                                         s := assemble( l [,d [,f]] )" );
-     Put_Line( "assign( l1, l2 )                                       clear( l )" );
-     Put_Line( "b := contains( l, e )                                  delete( l, c [,n] )" );
-     Put_Line( "delete_first( l [,n] )                                 delete_last( l [,n] )" );
-     Put_Line( "disassemble( s, l [,d [,f] ] )                         e := element( c )" );
-     Put_Line( "find( l, e, c )                                        first( l, c )" );
-     Put_Line( "e := first_element( l )                                flip( l )" );
-     Put_Line( "b := has_element( c )" );
-     Put_Line( "insert_before( l, c [, n] ) | ( l, c, e [, n] )" );
-     Put_Line( "insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )" );
-     Put_Line( "b := is_empty( l )" );
-     Put_Line( "e := last_element( l )                                 n := length( l )" );
-     Put_Line( "move( l1, l2 )                                         next( c )" );
-     Put_Line( "prepend( l, e )                                        previous( c )" );
-     Put_Line( "replace_element( l, c, e )                             reverse_elements( l )" );
-     Put_Line( "reverse_find( l, e, c )" );
-     Put_Line( "splice( l1, c, l2 [,c2] ) | ( l1, c, c2 )" );
-     Put_Line( "swap( l, c1, c2 )                                      swap_links( l, c1, c2 )" );
+     startHelp( e, "doubly_linked_lists" );
+     summary( e, "doubly_linked_lists package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using bi-directional lists." );
+     content( e, "append( l, e )","s := assemble( l [,d [,f]] )" );
+     content( e, "assign( l1, l2 )","clear( l )" );
+     content( e, "b := contains( l, e )","delete( l, c [,n] )" );
+     content( e, "delete_first( l [,n] )","delete_last( l [,n] )" );
+     content( e, "disassemble( s, l [,d [,f] ] )","e := element( c )" );
+     content( e, "find( l, e, c )","first( l, c )" );
+     content( e, "e := first_element( l )","flip( l )" );
+     content( e, "b := has_element( c )" );
+     content( e, "insert_before( l, c [, n] ) | ( l, c, e [, n] )" );
+     content( e, "insert_before_and_mark( l, c, c2 [, n] ) | ( l, c, e, c2 [, n] )" );
+     content( e, "b := is_empty( l )" );
+     content( e, "e := last_element( l )","n := length( l )" );
+     content( e, "move( l1, l2 )","next( c )" );
+     content( e, "prepend( l, e )","previous( c )" );
+     content( e, "replace_element( l, c, e )","reverse_elements( l )" );
+     content( e, "reverse_find( l, e, c )" );
+     content( e, "splice( l1, c, l2 [,c2] ) | ( l1, c, c2 )" );
+     content( e, "swap( l, c1, c2 )","swap_links( l, c1, c2 )" );
+     seeAlso( e, "doc/pkg_doubly.html" );
+     endHelp( e );
   elsif helpTopic = "dynamic_hash_tables" then
-     Put_Line( "dynamic_hash_tables - hash table package" );
-     New_Line;
-     Put_Line( "add( t, k, v )                  append( t, k, v )" );
-     Put_Line( "decrement( t, k [,n] )          v := get( t, k )" );
-     Put_Line( "get_first( t, v, f )            get_next( t, v, f )" );
-     Put_Line( "b := has_element( t, k )        increment( t, k [,n] )" );
-     Put_Line( "prepend( t, k, v )              remove( t, k )" );
-     Put_Line( "replace( t, k, v )              reset( t )" );
-     Put_Line( "set( t, k, v )" );
+     startHelp( e, "dynamic_hash_tables" );
+     summary( e, "dynamic_hash_tables package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using in-memory, dynamically growing hash tables." );
+     content( e, "add( t, k, v )","append( t, k, v )" );
+     content( e, "decrement( t, k [,n] )","v := get( t, k )" );
+     content( e, "get_first( t, v, f )","get_next( t, v, f )" );
+     content( e, "b := has_element( t, k )","increment( t, k [,n] )" );
+     content( e, "prepend( t, k, v )","remove( t, k )" );
+     content( e, "replace( t, k, v )","reset( t )" );
+     content( e, "set( t, k, v )" );
+     seeAlso( e, "doc/pkg_dht.html" );
+     endHelp( e );
   elsif helpTopic = "enums" then
-     Put_Line( "enums (package) - enumerated types" );
-     New_Line;
-     Put_Line( "  enums.first(t)            enums.last(t)            enums.pred(e2)      ");
-     Put_Line( "  enums.succ(e2)                                                         ");
+     startHelp( e, "enums" );
+     summary( e, "enums package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using enumerated types." );
+     content( e, "enums.first(t)","enums.last(t)","enums.pred(e2)");
+     content( e, "enums.succ(e2)");
+     seeAlso( e, "doc/pkg_enums.html" );
+     endHelp( e );
   elsif helpTopic = "env" then
      startHelp( e, "env" );
      summary( e, "env [var]" );
@@ -1411,89 +1529,150 @@ begin
      params( e, "var - the identifier to display" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "exceptions" then
-     Put_Line( "exceptions - exceptions package functions" );
-     New_Line;
-     Put_Line( "  s := exceptions.exception_name        s := exceptions.exception_info" );
-     Put_Line( "  n := exceptions.exception_status_code" );
+     startHelp( e, "exceptions" );
+     summary( e, "exceptions package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using exceptions." );
+     content( e, "s := exceptions.exception_name","s := exceptions.exception_info" );
+     content( e, "n := exceptions.exception_status_code" );
+     seeAlso( e, "doc/pkg_exceptions.html" );
+     endHelp( e );
   elsif helpTopic = "exit" then
-     Put_Line( "exit - break out of a loop" );
-     Put_Line( "  " & bold( "exit" ) & " or " &
-       bold( "exit" ) & " " & bold("when" ) & " condition" );
+     startHelp( e, "exit" );
+     summary( e, "exit statement" );
+     categoryKeyword( e );
+     description( e, "Break out of a loop." );
+     content( e, "exit [when condition]" );
+     seeAlso( e, "doc/ref_flow.html" );
+     endHelp( e );
   elsif helpTopic = "files" then
-     Put_Line( "files - files package functions" );
-     New_Line;
-     Put_Line( "  b := basename( p )           b := dirname( p )         b := exists( p )" );
-     Put_Line( "  b := is_absolute_path( p )   b := is_directory( p )    b := is_executable( p )" );
-     Put_Line( "  b := is_executable_file( p ) b := is_regular_file( p ) b := is_readable( p )" );
-     Put_Line( "  b := is_readable_file( p )   b := is_waiting_file( p ) b := is_writable( p )  " );
-     Put_Line( "  b := is_writable_file( p )   t := last_accessed( p )   t := last_changed( p )" );
-     Put_Line( "  t := last_modified( p )      l := size( p )" );
+     startHelp( e, "files" );
+     summary( e, "files package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using files." );
+     content( e, "b := basename( p )","b := dirname( p )","b := exists( p )" );
+     content( e, "b := is_absolute_path( p )","b := is_directory( p )","b := is_executable( p )" );
+     content( e, "b := is_executable_file( p )","b := is_regular_file( p )","b := is_readable( p )" );
+     content( e, "b := is_readable_file( p )","b := is_waiting_file( p )","b := is_writable( p )  " );
+     content( e, "b := is_writable_file( p )","t := last_accessed( p )","t := last_changed( p )" );
+     content( e, "t := last_modified( p )","l := size( p )" );
+     seeAlso( e, "doc/pkg_files.html" );
+     endHelp( e );
   elsif helpTopic = "for" then
-     Put_Line( "for - for loop" );
-     Put_Line( "  " & bold( "for" ) & " var " &
-      bold( "in" ) & " [" & bold( "reverse" ) & "]" &
-      " first..last " & bold( "loop" ) & " ... " &
-      bold( "end" ) & " " & bold( "loop" ) );
+     startHelp( e, "for statement" );
+     summary( e, "for" );
+     categoryKeyword( e );
+     description( e, "The for loop increments its index variable by 1 until it iterates through " &
+                  "the specified range. The range can either be numeric or enumerated." );
+     content( e, "for var in [reverse] first..last loop...end loop" );
+     seeAlso( e, "doc/ref_flow.html" );
+     endHelp( e );
   elsif helpTopic = "function" then
-     Put_Line( "functions - user defined functions" );
-     New_Line;
-     Put_Line( "  " & bold( "function" ) & " f " & bold ( "return" ) & " t " & bold( "is" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "begin" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "end" ) & " f;" );
-     New_Line;
-     Put_Line( "  " & bold( "function" ) & " f( f1 : mode type [; f2:mode type...]) " & bold( "return" ) & " t " & bold( "is" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "begin" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "end" ) & " f;" );
-     New_Line;
-     Put_Line( "  " & bold( "function" ) & " f " & bold( "return" ) & " t " & bold( "is separate" ) & ";" );
-     Put_Line( "   --load function from include file ""f.bush""" );
-     New_Line;
-     Put_Line( "Mode may be 'in' or 'in out'" );
+     startHelp( e, "function" );
+     summary( e, "function statement" );
+     categoryKeyword( e );
+     description( e, "A user-defined function is a subprogram that returns " &
+                  "a value so that it can be used in an expression.  Parameter " &
+                "modes can be in, out, or in out." );
+     content( e, "function f return type is...begin...end f" );
+     content( e, "function f( p : [mode] type [; p2...] ) return type is...begin...end f" );
+     content( e, "function f...return type is separate" );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
   elsif helpTopic = "get" then
-     Put_Line( "get - read a character from a line of text" );
-     Put_Line( "  get ([file,] ch)" );
+     startHelp( e, "get" );
+     summary( e, "get (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Read a character from a file." );
+     params( e, "file - the text_io file.  The default is standard_input." );
+     params( e, "ch - the character read." );
+     content( e, "get ([file,] ch)" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "get_immediate" then
-     Put_Line( "get_immediate - read a character from a line of text" );
-     Put_Line( "  get_immediate (ch [, b]) - b is true if non-blocking" );
+     startHelp( e, "get_immediate" );
+     summary( e, "get_immediate (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Read a character from a current_input without displaying on current_output." );
+     params( e, "ch - the character read" );
+     params( e, "b - true if non-blocking (default true)" );
+     content( e, "get_immediate (ch [, b])" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "get_line" then
-     Put_Line( "get_line - read a line of text" );
-     Put_Line( "  var := get_line [ (file) ]" );
+     startHelp( e, "get_line" );
+     summary( e, "get_line (text_io package)" );
+     categoryProcedure( e );
+     params( e, "file - the text_io file (default standard_input)" );
+     description( e, "Read a line of text from a file." );
+     content( e, "var := get_line [ (file) ]" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
+  elsif helpTopic = "glossary" then
+     startHelp( e, "glossary" );
+     summary( e, "glossary" );
+     category( e, "reference" );
+     content( e, "Access type - a 'handle' or extended pointer to a storage location." );
+     content( e, "Actual Parameter - the name of the parameter to a subprogram when it is being called. That is, 'put_line( foo );' foo is the actual parameter." );
+     content( e, "Aggregate - a type with more than one value, like an array or record." );
+     content( e, "Array - a composite type whose components are all of the same type, where components are selected with indices." );
+     content( e, "Declaration - a language construct that associates a name with a storage location." );
+     content( e, "Discrete Type - an integer or enumerated type (including characters)." );
+     content( e, "Discriminant - a parameter of a composite type, like an index to an array." );
+     content( e, "Elementary Type - a type without components." );
+     content( e, "Expansion - changing the text of a line using a Bourne $ substitution." );
+     content( e, "Expression - a calculation using operators, functions, etc. that can be assigned or used as a parameter." );
+     content( e, "Fixed Point Type - a number with a fixed number of decimal places, often used for currency." );
+     content( e, "Formal Parameter - the name of the parameter to a subprogram as used inside of a subprogram. That is, the parameter name used when the function is declared." );
+     content( e, "Limited Type - a type for which assignment is not allowed." );
+     content( e, "Literal - something you type representing a specific value, not a variable. The number 57 is a numeric literal. The string 'hello world' is a string literal." );
+     content( e, "Package - a 'library' or 'module'. A program unit containing a collection of related items." );
+     content( e, "Pragma - an interpreter directive" );
+     content( e, "Record Type - a composite types with zero or more named components of various types, where components are selected by name." );
+     content( e, "Real Type - a fixed point or floating point number." );
+     content( e, "Scalar Type - a discrete or real type. In AdaScript, a string is also a scalar type." );
+     content( e, "Tagged Type - a 'class'" );
+     content( e, "Task - a 'thread'" );
+     seeAlso( e, "doc/ref_adascript.html" );
+     endHelp( e );
   elsif helpTopic = "gnat.crc32" then
-     Put_Line( "gnat.crc32 (package) - GNAT CRC packages");
-     New_Line;
-     Put_Line( "  gnat.crc32.initialize( c )" );
-     Put_Line( "  gnat.crc32.update(c, s )" );
-     Put_Line( "  i := gnat.crc32.get_value( c )" );
+     startHelp( e, "gnat.crc32" );
+     summary( e, "gnat.crc32 package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines for cyclic redundancy checks." );
+     content( e, "gnat.crc32.initialize( c )" );
+     content( e, "gnat.crc32.update(c, s )" );
+     content( e, "i := gnat.crc32.get_value( c )" );
+     seeAlso( e, "doc/pkg_gnat_crc32.html" );
+     endHelp( e );
   elsif helpTopic = "gnat.cgi" then
-     Put_Line( "gnat.cgi (package) - GNAT CGI packages");
-     New_Line;
-     Put_Line( "  gnat.cgi.put_header [(f) | (h [,f])]" );
-     Put_Line( "  b := gnat.cgi.ok" );
-     Put_Line( "  m := gnat.cgi.method" );
-     Put_Line( "  s := gnat.cgi.metavariable( k [,r] )" );
-     Put_Line( "  b := gnat.cgi.metavariable.exists( k )" );
-     Put_Line( "  s := gnat.cgi.url" );
-     Put_Line( "  n := gnat.cgi.argument_count" );
-     Put_Line( "  s := gnat.cgi.value( k [,r] | p )" );
-     Put_Line( "  b := gnat.cgi.key_exists( k )" );
-     Put_Line( "  s := gnat.cgi.key( p )" );
-     Put_Line( "  gnat.cgi.cookie.put_header [ (f) | (h [,f]) ]" );
-     Put_Line( "  b := gnat.cgi.cookie_ok" );
-     Put_Line( "  n := gnat.cgi.cookie_count" );
-     Put_Line( "  s := gnat.cgi.cookie_value( k [,r] )" );
-     Put_Line( "  b := gnat.cgi.cookie_exists( k )" );
-     Put_Line( "  s := gnat.cgi.cookie_key( p )" );
-     Put_Line( "  gnat.cgi.cookie.set( k [,v [,c [,d [,m [,p [,s] ] ] ] ] ] )" );
-     Put_Line( "  s := gnat.cgi.debug.text_output" );
-     Put_Line( "  s := gnat.cgi.debug.html_output" );
+     startHelp( e, "gnat.crc32" );
+     summary( e, "gnat.crc32 package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines for web programming and cookies.  " &
+                  "See also cgi.");
+     content( e, "gnat.cgi.put_header [(f) | (h [,f])]" );
+     content( e, "b := gnat.cgi.ok" );
+     content( e, "m := gnat.cgi.method" );
+     content( e, "s := gnat.cgi.metavariable( k [,r] )" );
+     content( e, "b := gnat.cgi.metavariable.exists( k )" );
+     content( e, "s := gnat.cgi.url" );
+     content( e, "n := gnat.cgi.argument_count" );
+     content( e, "s := gnat.cgi.value( k [,r] | p )" );
+     content( e, "b := gnat.cgi.key_exists( k )" );
+     content( e, "s := gnat.cgi.key( p )" );
+     content( e, "gnat.cgi.cookie.put_header [ (f) | (h [,f]) ]" );
+     content( e, "b := gnat.cgi.cookie_ok" );
+     content( e, "n := gnat.cgi.cookie_count" );
+     content( e, "s := gnat.cgi.cookie_value( k [,r] )" );
+     content( e, "b := gnat.cgi.cookie_exists( k )" );
+     content( e, "s := gnat.cgi.cookie_key( p )" );
+     content( e, "gnat.cgi.cookie.set( k [,v [,c [,d [,m [,p [,s] ] ] ] ] ] )" );
+     content( e, "s := gnat.cgi.debug.text_output" );
+     content( e, "s := gnat.cgi.debug.html_output" );
+     seeAlso( e, "doc/pkg_gnat_cgi.html" );
+     endHelp( e );
   elsif helpTopic = "help" then
      startHelp( e, "help" );
      summary( e, "help  [-c|-h|-m|-l|-t" );
@@ -1515,13 +1694,10 @@ begin
      params( e, "-t - show todo pragmas and summarize" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "hash_io" then
      helpHashIo;
   elsif helpTopic = "history" then
-     startHelp( e, "history" );
+     startHelp( e, "history command" );
      summary( e, "history [amount|-c]" );
      categoryBuiltin( e );
      description( e,
@@ -1530,37 +1706,59 @@ begin
        "command history.  Supports AdaScript parameters." );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "keys" then
-     Put_Line( "Keyboard Keys:" );
-     New_Line;
-     Put_Line( "Emacs Mode:                          vi Mode:" );
-     Put_Line( "  control-b - move backwards           J - move backwards" );
-     Put_Line( "  control-f - move forwards            K - move forwards" );
-     Put_Line( "  control-p - move up                  I - move up" );
-     Put_Line( "  control-n - move down                M - move down" );
-     Put_Line( "  control-x - erase line" );
-     Put_Line( "  control-a - move to start            ^ - move to start" );
-     Put_Line( "  control-e - move to end              $ - move to end" );
-     Put_Line( "  control-r - search history" );
-     Put_Line( "  control-] - character search" );
-     Put_Line( "  tab       - complete filename        ESC ESC - complete filename" );
-     Put_Line( "                                       ESC - enter/exit vi mode" );
      discardUnusedIdentifier( token );
+     startHelp( e, "keys" );
+     summary( e, "keyboard keys" );
+     category( e, "reference" );
+     description( e, "A summary of the keyboard editing keys." );
+     section( e, "Emacs Mode" );
+     content( e, "control-b - move backwards" );
+     content( e, "control-f - move forwards" );
+     content( e, "control-p - move up" );
+     content( e, "control-n - move down" );
+     content( e, "control-x - erase line" );
+     content( e, "control-a - move to start" );
+     content( e, "control-e - move to end" );
+     content( e, "control-r - search history" );
+     content( e, "control-] - character search" );
+     content( e, "tab       - complete filename" );
+     section( e, "Vi Mode" );
+     content( e, "J - move backwards" );
+     content( e, "K - move forwards" );
+     content( e, "I - move up" );
+     content( e, "M - move down" );
+     content( e, "^ - move to start" );
+     content( e, "$ - move to end" );
+     content( e, "ESC ESC - complete filename" );
+     content( e, "ESC - enter/exit vi mode" );
+     seeAlso( e, "doc/ref_cmdline.html" );
+     endHelp( e );
   elsif helpTopic = "if" then
-     Put_Line( "if - conditional execution" );
-     Put_Line( "  " & bold( "if" ) & " expression " & bold("then" ) &
-       " ... [" & bold( "elsif" ) & " expr " & bold( "then" ) &
-       " ...] [" & bold( "else" ) & " ...] " &
-       bold( "end" ) & " " & bold( "if" ) );
+     startHelp( e, "if" );
+     summary( e, "if statement" );
+     description( e, "if statements are used for conditional branching." );
+     categoryKeyword( e );
+     content( e, "if expression then ... [elsif expression then...] [else ...] end if" );
+     seeAlso( e, "doc/ref_flow.html" );
+     endHelp( e );
   elsif helpTopic = "inkey" then
-     Put_Line( "inkey - read a character from standard input without echoing" );
-     Put_Line( "  c := inkey" );
+     startHelp( e, "inkey" );
+     summary( e, "inkey (text_io package)" );
+     categoryFunction( e );
+     description( e, "Read a character from current_input without echoing to current_output." );
+     content( e, "c := inkey" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "is_open" then
-     Put_Line( "is_open - true if file is open" );
-     Put_Line( "  is_open( file )" );
+     startHelp( e, "is_open" );
+     summary( e, "is_open (text_io package)" );
+     categoryFunction( e );
+     description( e, "Return true if file is open." );
+     params( e, "file - a text_io file" );
+     content( e, "is_open( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "jobs" then
      startHelp( e, "jobs" );
      summary( e, "jobs" );
@@ -1569,12 +1767,15 @@ begin
        "Give the status of commands currently running in the background" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "line" then
-     Put_Line( "line - the number of read/written lines" );
-     Put_Line( "  line( file )" );
+     startHelp( e, "line" );
+     summary( e, "line (text_io package)" );
+     categoryFunction( e );
+     description( e, "Return the number of read/written lines." );
+     params( e, "file - a text_io file" );
+     content( e, "line( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "logout" then
      startHelp( e, "logout" );
      summary( e, "logout" );
@@ -1589,141 +1790,233 @@ begin
      errors( e, "If the session is not a login session, an error is displayed" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "lock_files" then
-     Put_Line( "lock_files (package) - creating and deleting lock files" );
-     New_Line;
-     Put_Line( "  lock_files.lock_file( dir, file [,wait [,retries] )" );
-     Put_Line( "  lock_files.lock_file( file [,wait [,retries] )" );
-     Put_Line( "  lock_files.unlock_file( dir, file )" );
-     Put_Line( "  lock_files.unlock_file( file )" );
      discardUnusedIdentifier( token );
+     startHelp( e, "lock_files" );
+     summary( e, "lock_files package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using lock files." );
+     content( e, "lock_files.lock_file( dir, file [,wait [,retries] )" );
+     content( e, "lock_files.lock_file( file [,wait [,retries] )" );
+     content( e, "lock_files.unlock_file( dir, file )" );
+     content( e, "lock_files.unlock_file( file )" );
+     seeAlso( e, "doc/pkg_lock_files.html" );
+     endHelp( e );
   elsif helpTopic = "loop" then
-     Put_Line( "loop - general loop" );
-     Put_Line( "  " & bold( "loop" ) & " ... " &
-       bold( "end" ) & " " & bold( "loop" ) );
+     startHelp( e, "loop" );
+     summary( e, "loop statement" );
+     description( e, "A 'loop' loop is a general purpose loop. It can only be exited with 'exit'. " );
+     categoryKeyword( e );
+     content( e, "loop ...end loop" );
+     seeAlso( e, "doc/ref_flow.html" );
+     endHelp( e );
   elsif helpTopic = "new_line" then
-     Put_Line( "new_line - start a new line" );
-     Put_Line( "  new_line [(file)]" );
-  elsif helpTopic = "match" then
-     Put_Line( "strings.match - pattern matching with UNIX V7 regular expressions and PERL extensions" );
-     Put_Line( "  bool := match( expression, string )" );
-     New_Line;
-     Put_Line( "^    - at beginning            .   - any character" );
-     Put_Line( "$    - at end                  ?   - zero or one character" );
-     Put_Line( "[s]  - any in set s            +   - one or more characters" );
-     Put_Line( "[^s] - any not in set s        *   - zero or more characters" );
-     Put_Line( "\    - escape character        (e) - nested expression" );
-     Put_Line( "|    - alternative                                    " );
-     New_Line;
-     Put_Line( "Regular expressions are described in ""man 5 regexp""" );
+     startHelp( e, "new_line" );
+     summary( e, "new_line (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Begin a new line of text." );
+     params( e, "file - a text_io file.  The default is current_output" );
+     content( e, "new_line [(file)]" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
+  elsif helpTopic = "strings.match" then
+     startHelp( e, "strings.match" );
+     summary( e, "strings.match (strings package)" );
+     categoryFunction( e );
+     description( e, "Pattern matching with UNIX V7 regular expressions and PERL extensions." );
+     section( e, "Syntax" );
+     content( e, "bool := match( expression, string )" );
+     section( e, "Matching Symbols" );
+     content( e, "^ - at beginning" );
+     content( e, ". - any character" );
+     content( e, "$ - at end" );
+     content( e, "? - zero or one character" );
+     content( e, "[s] - any in set s" );
+     content( e, "+ - one or more characters" );
+     content( e, "[^s] - any not in set s" );
+     content( e, "* - zero or more characters" );
+     content( e, "\ - escape character" );
+     content( e, "(e) - nested expression" );
+     content( e, "| - alternative" );
+     footer( e, "Regular expressions are described in ""man 5 regexp""" );
+     seeAlso( e, "doc/pkg_strings.html" );
+     endHelp( e );
   elsif helpTopic = "mysql" then
      helpMySQL;
   elsif helpTopic = "mysqlm" then
      helpMySQLM;
-  elsif helpTopic = "declare" then
-     Put_Line( "declare - begin a new block" );
-     Put_Line( "  [" & bold( "declare") & " declarations] " &
-       bold( "begin" ) & " ... " & bold( "end" ) );
-  elsif helpTopic = "delay" then
-     Put_Line( "delay - wait (sleep) for a specific time" );
-     Put_Line( "  " & bold( "delay" ) & " secs" );
   elsif helpTopic = "memcache" then
-     Put_Line( "memcache - distributed memcache package functions" );
-     New_Line;
-     Put_Line( "  add( cl, k, v )             prepend( cl, k, v )" );
-     Put_Line( "  append( cl, k, v )          register_server( cl, h, p )" );
-     Put_Line( "  clear_servers( cl )         replace( cl, k, v )" );
-     Put_Line( "  delete( cl, k )             set( cl, k, v )" );
-     Put_Line( "  flush( cl )                 set_cluster_name( cl, s )" );
-     Put_Line( "  is_valid_memcache_key( k )  set_cluster_type( cl, e )" );
-     Put_Line( "  v := get( cl, k )           s := stats( cl )" );
-     Put_Line( "  cl := new_cluster           s := version( cl )" );
-     New_Line;
-     Put_Line( "memcache.highread - distributed dual memcache package functions" );
-     New_Line;
-     Put_Line( "  add( cl, k, v )             register_alpha_server( cl, h, p )" );
-     Put_Line( "  append( cl, k, v )          register_beta_server( cl, h, p )" );
-     Put_Line( "  clear_servers( cl )         replace( cl, k, v )" );
-     Put_Line( "  delete( cl, k )             set( cl, k, v )" );
-     Put_Line( "  flush( cl )                 set_cluster_name( cl, s )" );
-     Put_Line( "  v := get( cl, k )           set_cluster_type( cl, e )" );
-     Put_Line( "  cl := new_cluster           s := stats( cl )" );
-     Put_Line( "  prepend( cl, k, v )         s := version( cl )" );
+     startHelp( e, "memcache" );
+     summary( e, "memcache and memcache.highread packages" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using memcached, " &
+                  "a distributed in-memory cache." );
+     section( e, "memcache" );
+     content( e, "add( cl, k, v )","prepend( cl, k, v )" );
+     content( e, "append( cl, k, v )","register_server( cl, h, p )" );
+     content( e, "clear_servers( cl )","replace( cl, k, v )" );
+     content( e, "delete( cl, k )","set( cl, k, v )" );
+     content( e, "flush( cl )","set_cluster_name( cl, s )" );
+     content( e, "is_valid_memcache_key( k )","set_cluster_type( cl, e )" );
+     content( e, "v := get( cl, k )","s := stats( cl )" );
+     content( e, "cl := new_cluster","s := version( cl )" );
+     section( e, "memcache.highread" );
+     content( e, "add( cl, k, v )","register_alpha_server( cl, h, p )" );
+     content( e, "append( cl, k, v )","register_beta_server( cl, h, p )" );
+     content( e, "clear_servers( cl )","replace( cl, k, v )" );
+     content( e, "delete( cl, k )","set( cl, k, v )" );
+     content( e, "flush( cl )","set_cluster_name( cl, s )" );
+     content( e, "v := get( cl, k )","set_cluster_type( cl, e )" );
+     content( e, "cl := new_cluster","s := stats( cl )" );
+     content( e, "prepend( cl, k, v )","s := version( cl )" );
+     seeAlso( e, "doc/pkg_memcache.html and doc/pkg_memcache_highread.html" );
+     endHelp( e );
   elsif helpTopic = "mode" then
-     Put_Line( "mode - the file mode (in_file, out_file, append_file)" );
-     Put_Line( "  mode( file )" );
+     startHelp( e, "mode" );
+     summary( e, "mode (text_io package)" );
+     categoryFunction( e );
+     description( e, "Return the file mode (in_file, out_file, append_file)" );
+     params( e, "file - a text_io file" );
+     content( e, "mode( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "name" then
-     Put_Line( "name - name of an open file" );
-     Put_Line( "  name( file )" );
+     startHelp( e, "name" );
+     summary( e, "name (text_io package)" );
+     categoryFunction( e );
+     description( e, "Return the path of an open file" );
+     params( e, "file - a text_io file" );
+     content( e, "name( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "null" then
-     Put_Line( "null - do nothing" );
+     startHelp( e, "null" );
+     summary( e, "null statement" );
+     description( e, "The null statement doesn't do anything. It acts " &
+        "as a placeholder in contexts where statements or commands " &
+        "are required. There are no arguments." );
+     categoryKeyword( e );
+     content( e, "null;" );
+     seeAlso( e, "doc/ref_other.html" );
+     endHelp( e );
   elsif helpTopic = "os" then
-     Put_Line( "os - SparForte operating system binding" );
-     Put_Line( "  i := status" );
-     Put_Line( "  s := strerror( i )" );
-     Put_Line( "  system( s )" );
-     New_Line;
-     Put_Line( "Bourne Shell shortcuts:" );
-     Put_Line( "  $? - status of last command" );
+     startHelp( e, "os" );
+     summary( e, "os package" );
+     categoryPackage( e );
+     description( e, "A collection of common bindings for the operating system." );
+     content( e, "i := status" );
+     content( e, "s := strerror( i )" );
+     content( e, "system( s )" );
+     footer( e, "The Bourne shell style $? operand is the same as os.status" );
+     seeAlso( e, "doc/pkg_os.html" );
+     endHelp( e );
   elsif helpTopic = "open" then
-     Put_Line( "open - open an existing file or open a socket" );
-     Put_Line( "  open( file, in_file | out_file | append_file, path )" );
+     startHelp( e, "open" );
+     summary( e, "open (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Open an existing file." );
+     params( e, "file - a text_io file" );
+     params( e, "type - in_file, out_file or append_file" );
+     params( e, "path - path to the file" );
+     content( e, "open( file, type, path )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "procedure" then
-     Put_Line( "procedure - user defined procedures" );
-     New_Line;
-     Put_Line( "  " & bold( "procedure" ) & " p " & bold( "is" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "begin" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "end" ) & " p;" );
-     New_Line;
-     Put_Line( "  " & bold( "procedure" ) & " p( f1 : mode type [; f2:mode type...]) " & bold( "is" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "begin" ) );
-     Put_Line( "  ..." );
-     Put_Line( "  " & bold( "end" ) & " p;" );
-     New_Line;
-     Put_Line( "Mode may be 'in', 'out' or 'in out'" );
+     startHelp( e, "procedure" );
+     summary( e, "procedure statement" );
+     categoryKeyword( e );
+     description( e, "A user-defined procedure is a subprogram that does not return " &
+                  "a value for an expression.  Parameter " &
+                "modes can be in, out, or in out." );
+     content( e, "procedure p is...begin...end p" );
+     content( e, "procedure p( p : [mode] type [; p2...] )is...begin...end p" );
+     content( e, "procedure p...is separate" );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
   elsif helpTopic = "pragma" then
      helpPragma;
   elsif helpTopic = "put" then
-     Put_Line( "put - write to output, no new line" );
-     Put_Line( "  put ( [file], expression [,picture] )" );
+     startHelp( e, "put" );
+     summary( e, "put (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Write a value to a file and do not start a new line.  If the value is " &
+        "numeric, use the optional picture string to format the number." );
+     params( e, "file - the text_io file (default current_output)" );
+     params( e, "expression - the value to write" );
+     params( e, "picture - the format string for a number" );
+     section( e, "Syntax" );
+     content( e, "put( [file,] expression [,picture] )" );
+     section( e, "Picture Symbols" );
+     content( e, "'+' - the number will be printed with a leading + or -" );
+     content( e, "'-' - a negative numbers will be printed with a leading -" );
+     content( e, "'<' and '>' - a negative number will be printed with (..)" );
+     content( e, "CR - a negative number will be printed with a leading " & Ada.Characters.Latin_1.Quotation & "CR" & Ada.Characters.Latin_1.Quotation & " (credit)" );
+     content( e, "DB - a negative number will be printed with a leading "& Ada.Characters.Latin_1.Quotation & "DB" & Ada.Characters.Latin_1.Quotation & " (debit)" );
+     content( e, "'$' - the currency symbol will be printed, or a floating dollar sign if multiple instances" );
+     content( e, "'.' - marks the actual position for a decimal point" );
+     content( e, "'V' - marks the assumed position for a decimal point" );
+     content( e, "'9' - space for a number with leading zeros" );
+     content( e, "'#' - same as '$', except only the leading character is shown" );
+     content( e, "'Z' - space for a numbers with leading blanks" );
+     content( e, "'_', 'B', '0', '/'- inserted. 'B' is a blank" );
+     content( e, "'*' - space for a number with leading asterisks" );
+     seeAlso( e, "doc/pkg_text_io.html and doc/ref_numberformat.html" );
+     endHelp( e );
   elsif helpTopic = "put_line" then
-     Put_Line( "put_line - write to output and start new line" );
-     Put_Line( "  put_line ( [file], expression )" );
+     startHelp( e, "put_line" );
+     summary( e, "put_line (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Write a value to a file and start a new line" );
+     content( e, "put_line ( [file,] expression )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "pwd" then
      startHelp( e, "pwd" );
      summary( e, "pwd" );
      categoryBuiltin( e );
      description( e,
-        "Show the path of the present (current) working directory " );
+        "Show the path of the present (current) working directory" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "records" then
-     Put_Line( "records - records package functions" );
-     New_Line;
-     Put_Line( "  to_record( r, s )        to_json( s, r )" );
-     New_Line;
+     startHelp( e, "records" );
+     summary( e, "records package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using records" );
+     content( e, "to_record( r, s )","to_json( s, r )" );
+     seeAlso( e, "doc/pkg_records.html" );
+     endHelp( e );
   elsif helpTopic = "raise" then
-     Put_Line( "raise [e [with s] ] - raise (throw) an exception" );
-     New_Line;
-     Put_Line( "  raise   - re-raise an exception in an exception handler" );
-     Put_Line( "  raise e - raise exception e" );
-     Put_Line( "  raise e with s - raise exception e with new message s" );
-     New_Line;
+     startHelp( e, "raise" );
+     summary( e, "raise statement" );
+     categoryKeyword( e );
+     description( e, "Raise (throw) an exception" );
+     content( e, "raise   - re-raise an exception in an exception handler" );
+     content( e, "raise e - raise exception e" );
+     content( e, "raise e with s - raise exception e with new message s" );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
   elsif helpTopic = "reset" then
-     Put_Line( "reset - reopen a file" );
-     Put_Line( "  reset( file [,mode])" );
+     startHelp( e, "reset" );
+     summary( e, "reset (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Reopen an open file, possibly changing the file mode." );
+     params( e, "file - a text_io file" );
+     params( e, "mode - in_file, out_file or append_file" );
+     content( e, "reset( file [,mode])" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "return" then
-     Put_Line( "return - exit script and return status code" );
-     Put_Line( "  " & bold( "return") );
+     startHelp( e, "return" );
+     summary( e, "return statement" );
+     categoryKeyword( e );
+     description( e, "Leave a procedure, function or main program.  If a " &
+        "function, return a value that can be used in an expression.  With " &
+        "an interactive prompt, quits a shell.  In breakout mode, resumes " &
+        "execution of the script." );
+     content( e, "return [expression]" );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
   elsif helpTopic = "typeset" then
      startHelp( e, "typeset" );
      summary( e, "typeset var is type" );
@@ -1737,73 +2030,112 @@ begin
      errors( e, "An exception is raised if not used in an interactive session" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "set_input" or helpTopic = "set_output" or helpTopic = "set_error" then
-     Put_Line( "set_input/output/error - input/output redirection" );
-     New_Line;
-     Put_Line( "  set_input( file )" );
-     Put_Line( "  set_output( file )" );
-     Put_Line( "  set_error( file )" );
-     Put_Line( "The default files are standard_input, standard_output and standard_error" );
+     startHelp( e, "set_input" );
+     summary( e, "set_input (text_io package)" );
+     categoryProcedure( e );
+     description( e, "set_input redirects the current_input to a file.  "  &
+                  "set_output redirects the current_output to a file.  " &
+                "set_error redirects the current_error to a file.  " &
+      "The default files are standard_input, standard_output and standard_error." );
+     params( e, "file - a text_io file" );
+     content( e, "set_input( file )" );
+     content( e, "set_output( file )" );
+     content( e, "set_error( file )" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "skip_line" then
-     Put_Line( "skip_line - discard the next line of input" );
-     Put_Line( "  skip_line [(file)]" );
+     startHelp( e, "skip_line" );
+     summary( e, "skip_line (text_io package)" );
+     categoryProcedure( e );
+     description( e, "Read a line from a file and discard it." );
+     params( e, "file - a text_io file.  The default is current_input" );
+     content( e, "skip_line [(file)]" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
   elsif helpTopic = "sound" then
-     Put_Line( "sound (package) - play music and sound" );
-     New_Line;
-     Put_Line( "  play( ""path"" [,pri] ) - play a sound at an optional priority" );
-     Put_Line( "  playcd [( ""path"" )]   - play an audio cd in optional cd device path" );
-     Put_Line( "  stopcd                - stop an audio cd" );
-     New_Line;
+     startHelp( e, "sound" );
+     summary( e, "sound package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using sound." );
+     content( e, "play( ""path"" [,pri] )" );
+     content( e, "playcd [( ""path"" )]" );
+     content( e, "stopcd" );
+     seeAlso( e, "doc/pkg_sound.html" );
+     endHelp( e );
   elsif helpTopic = "source_info" then
+     discardUnusedIdentifier( token );
+     startHelp( e, "source_info" );
+     summary( e, "source_info package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines for the script execution state." );
      Put_Line( "source_info (package) - information on the current script" );
-     New_Line;
-     Put_Line( "  s := enclosing_entity - name of script (if a procedure block)" );
-     Put_Line( "  s := file - file name without a path" );
-     Put_Line( "  p := line - current line number" );
-     Put_Line( "  n := script_size - size of compiled script (bytes)" );
-     Put_Line( "  s := source_location - file and line number" );
-     Put_Line( "  n := symbol_table_size - number of identifiers" );
-     New_Line;
-     discardUnusedIdentifier( token );
+     content( e, "s := enclosing_entity" );
+     content( e, "s := file" );
+     content( e, "p := line" );
+     content( e, "n := script_size" );
+     content( e, "s := source_location" );
+     content( e, "n := symbol_table_size" );
+     seeAlso( e, "doc/pkg_sinfo.html" );
+     endHelp( e );
   elsif helpTopic = "stats" then
-     Put_Line( "stats - stats package functions" );
-     New_Line;
-     Put_Line("  r := average( a )             r := max( a )              r := min( a )" );
-     Put_Line("  r := standard_deviation( a )  r := sum( a )              r := variance( a )" );
      discardUnusedIdentifier( token );
+     startHelp( e, "stats" );
+     summary( e, "stats package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using statistics." );
+     content( e, "r := average( a )","r := max( a )","r := min( a )" );
+     content( e, "r := standard_deviation( a )","r := sum( a )","r := variance( a )" );
+     seeAlso( e, "doc/pkg_stats.html" );
+     endHelp( e );
   elsif helpTopic = "subtype" then
-     Put_Line( "subtype - create an alias for a type" );
-     Put_Line( "  " & bold( "subtype" ) & " newtype " &
-       bold( "is" ) & " oldtype" );
+     startHelp( e, "subtype" );
+     summary( e, "subtype statement" );
+     categoryKeyword( e );
+     description( e, "The subtype statement will create a type that is " &
+                  "compatible with the original, as if it was a renaming of the original type. " );
+     content( e, "subtype newtype is oldtype " );
+     seeAlso( e, "doc/ref_typedecl.html" );
+     endHelp( e );
   elsif helpTopic = "System" then
-     Put_Line( "System (package) - System package constants" );
-     New_Line;
-     Put_Line( "  System.System_Name            System.Fine_Delta" );
-     Put_Line( "  System.Max_Int                System.Tick" );
-     Put_Line( "  System.Min_Int                System.Storage_Unit" );
-     Put_Line( "  System.Max_Binary_Modulus     System.Word_Size" );
-     Put_Line( "  System.Max_Nonbinary_Modulus  System.Memory_Size" );
-     Put_Line( "  System.Max_Base_Digits        System.Default_Bit_Order" );
-     Put_Line( "  System.Max_Mantissa           System.Login_Shell" );
-     Put_Line( "  System.Restricted_Shell       System.Script_License" );
-     Put_Line( "  System.Script_Software_Model  System.System_Version" );
      discardUnusedIdentifier( token );
+     startHelp( e, "System" );
+     summary( e, "System package" );
+     categoryPackage( e );
+     description( e, "A collection of common constants describing the " &
+                  "computer hardware and execution environment." );
+     content( e, "System.System_Name","System.Fine_Delta" );
+     content( e, "System.Max_Int","System.Tick" );
+     content( e, "System.Min_Int","System.Storage_Unit" );
+     content( e, "System.Max_Binary_Modulus","System.Word_Size" );
+     content( e, "System.Max_Nonbinary_Modulus","System.Memory_Size" );
+     content( e, "System.Max_Base_Digits","System.Default_Bit_Order" );
+     content( e, "System.Max_Mantissa","System.Login_Shell" );
+     content( e, "System.Restricted_Shell","System.Script_License" );
+     content( e, "System.Script_Software_Model","System.System_Version" );
+     seeAlso( e, "doc/pkg_system.html" );
+     endHelp( e );
   elsif helpTopic = "teams" then
-     Put_Line( "teams - the development team package" );
-     New_Line;
-     Put_Line( "  teams.member - a team member" );
-     Put_Line( "  teams.work_measure - the measure of work effort" );
-     Put_Line( "  teams.work_priority - the measure of work priority" );
+     startHelp( e, "teams" );
+     summary( e, "teams package" );
+     categoryPackage( e );
+     description( e, "A collection of common types describing development teams." );
+     content( e, "teams.member" );
+     content( e, "teams.work_measure" );
+     content( e, "teams.work_priority" );
+     seeAlso( e, "doc/pkg_teams.html" );
+     endHelp( e );
   elsif helpTopic = "templates" then
-     Put_Line( "templates - the templates package" );
-     New_Line;
-     Put_Line( "  b := has_put_template_header" );
-     Put_Line( "  put_template_header" );
-     Put_Line( "  set_http_location( n )" );
-     Put_Line( "  set_http_status( i )" );
+     startHelp( e, "templates" );
+     summary( e, "templates package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using templates." );
+     content( e, "b := has_put_template_header" );
+     content( e, "put_template_header" );
+     content( e, "set_http_location( n )" );
+     content( e, "set_http_status( i )" );
+     seeAlso( e, "doc/pkg_templates.html" );
+     endHelp( e );
   elsif helpTopic = "trace" then
      startHelp( e, "trace" );
      summary( e, "trace [true|false]" );
@@ -1817,26 +2149,34 @@ begin
         "turns off tracing.  Supports AdaScript parameters." );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "type" then
-     Put_Line( "type - declare a new type or enumerated type" );
-     Put_Line( "  " & bold( "type" ) & " newtype " &
-       bold( "is" ) & " " & bold( "new" ) & " oldtype" );
-     Put_Line( "  " & bold( "type" ) & " newenum " & bold( "is" ) &
-       " ( enum1 [,enum2...])" );
-     Put_Line( "  " & bold( "type" ) & " newarray " & bold( "is" ) &
-       " array( low..high ) of item-type [:= array|( item, ...)]" );
-     New_Line;
-     Put_Line( "Standard types:" );
-     Put_Line( " boolean     integer            natural            short_short_integer     " );
-     Put_Line( " character   long_float         positive           socket_type" );
-     Put_Line( " duration    long_integer       short_float        string" );
-     Put_Line( " file_type   long_long_float    short_integer      universal_numeric" );
-     Put_Line( " file_mode   long_long_integer  short_short_float  universal_string" );
-     Put_Line( " float       unbounded_string                      universal_typeless" );
-     Put_Line( " complex                                                             " );
+     startHelp( e, "type" );
+     summary( e, "type statement" );
+     categoryKeyword( e );
+     description( e, "The type statement will create a new type that is " &
+                  "incompatible with the original type.  It is also " &
+                  "used to create array, record and enumerated types. " &
+                "See also subtypes.");
+     content( e, "type newtype is new oldtype" );
+     content( e, "type newtype is ( enum1 [,enum2...] )" );
+     content( e, "type newtype is record field1 : type1 [;field2...] end record" );
+     content( e, "type newtype is array( low..high) of item_type [:= array( item,...)]" );
+     seeAlso( e, "doc/ref_typedecl.html" );
+     endHelp( e );
+  elsif helpTopic = "types" then
+     startHelp( e, "types" );
+     summary( e, "standard types" );
+     category( e, "reference" );
+     description( e, "These are the fundamental (and text_io package) types:" );
+     content( e, "boolean","integer","natural","short_short_integer     " );
+     content( e, "character","long_float","positive","socket_type" );
+     content( e, "duration","long_integer","short_float","string" );
+     content( e, "file_type","long_long_float","short_integer","universal_numeric" );
+     content( e, "file_mode","long_long_integer","short_short_float","universal_string" );
+     content( e, "float","unbounded_string","universal_typeless" );
+     content( e, "complex","json_string" );
+     seeAlso( e, "doc/ref_types.html" );
+     endHelp( e );
   elsif helpTopic = "units" then
      helpUnits;
   elsif helpTopic = "unset" then
@@ -1850,11 +2190,8 @@ begin
      errors( e, "An exception is raised if not used in an interactive session" );
      seeAlsoShellCmds( e );
      endHelp( e );
-     start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
-     finish( r.all );
   elsif helpTopic = "wait" then
-      startHelp( e, "wait" );
+     startHelp( e, "wait" );
      summary( e, "wait" );
      categoryBuiltin( e );
      description( e,
@@ -1862,97 +2199,138 @@ begin
         "return the exit status of the last command." );
      seeAlsoShellCmds( e );
      endHelp( e );
+  elsif helpTopic = "while" then
+     startHelp( e, "while" );
+     summary( e, "while statement" );
+     description( e, "Loop as long as an expression remains true." );
+     categoryKeyword( e );
+     content( e, "while expression loop ...end loop" );
+     seeAlso( e, "doc/ref_flow.html" );
+     endHelp( e );
+  elsif helpTopic = "expressions" then
+     discardUnusedIdentifier( token );
+     startHelp( e, "expressions" );
+     summary( e, "expressions operators and operands" );
+     category( e, "reference" );
+     description( e, "These are the expression operators and operands:" );
+     section( e, "Uniary Operators" );
+     content( e, "+ - uniary plus" );
+     content( e, "- - uniary minus" );
+     content( e, "not - uniary not" );
+     section( e, "Exponents" );
+     content( e, "** - exponentiation" );
+     section( e, "Mathematics" );
+     content( e, "* - multiplication","and - bitwise and" );
+     content( e, "/ - division","or  - bitwise or" );
+     content( e, "& - string concatenation","xor - bitwise xor" );
+     content( e, "+ - addition","- - subtraction" );
+     section( e, "Relations" );
+     content( e, "= - equals", "/= - not equals", "> - greater than" );
+     content( e, ">= - greater than or equals", "< - less than" );
+     content( e, "<= - less than or equals", "in - in a range" );
+     content( e, "not in - not in a range" );
+     section( e, "Boolean Operators" );
+     content( e, "and - boolean and", "or - boolean or", "xor - boolean exclusive or" );
+     section( e, "Operands" );
+     content( e, "@ - reflexive operand (itself)","% - last output" );
+     seeAlso( e, "doc/ref_assign.html and doc/ref_specials.html" );
+     endHelp( e );
+  elsif helpTopic = "numerics" then
+     discardUnusedIdentifier( token );
+     helpNumerics;
+  elsif helpTopic = "pen" then
+     startHelp( e, "pen" );
+     summary( e, "pen package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using 2-D drawing." );
+     content( e, "set_rect(r, l, t, r, b)","b := is_empty_rect( r )","offset_rect( r, dx, dy )" );
+     content( e, "inset_rect( r, dx, dy )","intersect_rect( r,r1,r2)","b := inside_rect( ir, or )");
+     content( e, "b := in_rect( x, y, r )");
+     content( e, "frame_ellipse( id, r )","frame_rect( id, r )","fill_ellipse( id, r )");
+     content( e, "paint_rect( id, r )","fill_rect(id,rct,r,g,b)","fill_rect(id,r,cn)");
+     content( e, "paint_ellipse( id, r )");
+     content( e, "line_to( id, x, y )","line( id, dx, dy )","hline( id, x1, x2, y )");
+     content( e, "vline( id, x, y1, y2 )","move_to( id, x, y )","move( id, dx, dy )");
+     content( e, "clear","clear( r, g, b)","clear( cn )");
+     content( e, "get_pen_mode( id )","get_pen_brush( id )","set_pen_ink(id,r,g,b)    " );
+     content( e, "set_pen_ink(id,cn)","set_pen_mode( id, m)","set_pen_pattern( id,pid) " );
+     content( e, "set_pen_brush( id,brush )","set_font( c, f, p )*","put( c, s )*");
+     content( e, "p := greyscale( r,g,b)","blend(r1,g1,b1,r2,g2,b2,r,g,b)","fade(r1,g1,b1,p,r,g,b)");
+     content( e, "new_canvas(h,v,c,id)","new_screen_canvas(h,v,c,id)","new_window_canvas(h,v,c,id)");
+     content( e, "new_canvas(p,id)","new_gl_screen_canvas(h,v,c,id)","save_canvas(p,id)");
+     content( e, "close_canvas( id )","new_gl_window_canvas(h,v,c,id)","wait_to_reveal( id )" );
+     content( e, "reveal( id )","reveal_now( id )");
+     seeAlso( e, "doc/pkg_pen.html" );
+     footer( e, "* - not finished" );
+     endHelp( e );
+  elsif helpTopic = "pen.gl" then
+     startHelp( e, "pen" );
+     summary( e, "pen package (OpenGL Functions)" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using 3-D drawing.  See also pen." );
+     content( e, "This section is under construction." );
+     seeAlso( e, "doc/pkg_pengl.html" );
+     footer( e, "* - not finished" );
+     endHelp( e );
+  elsif helpTopic = "step" then
+     startHelp( e, "step" );
+     summary( e, "step" );
+     categoryBuiltin( e );
+     description( e, "On --break breakout mode, run one instruction and stop." );
+     seeAlso( e, "doc/tutorial_9.html" );
+     endHelp( e );
+  elsif helpTopic = "strings" then
+     startHelp( e, "strings" );
+     summary( e, "strings package (OpenGL Functions)" );
+     categoryPackage( e );
+     description( e, "A collection of common routines using strings." );
+     content( e, "n := count( s, p )","r := csv_field( s, c [, d] )","r := csv_replace( s, f, t, [, d] )" );
+     content( e, "r := delete( s, l, h )","c := element( s, p )","r := field( s, c [, d] )" );
+     content( e, "b := glob( e, s )","r := head( s, c [, p] )" );
+     content( e, "r := strings.image( n )","n := index( s, p [, d] )","n := index_non_blank( s [,d] )" );
+     content( e, "r := insert( s, b, n )","r := is_alphanumeric( s )","r := is_basic( s )" );
+     content( e, "r := is_control( s )","r := is_digit( s )","r := is_fixed( s )" );
+     content( e, "r := is_graphic( s )","r := is_hexadecimal_digit(s)","r := is_letter( s )" );
+     content( e, "r := is_lower( s )","r := is_slashed_date( s )","r := is_special( s )" );
+     content( e, "b := is_typo_of( s1, s2 )","r := is_upper( s )","n := length( s )" );
+     content( e, "r := lookup( s, k [, d] )","b := match( e, s )","r := mktemp( p )" );
+     content( e, "r := overwrite( s, p, n )","replace( s, f, t [, d] )","replace_slice( s, l, h, b )" );
+     content( e, "set_unbounded_string( u, s )","r := slice( s, l, h )","split( s, l, r , p )" );
+     content( e, "r := tail( s, c [, p] )","r := strings.to_base64( s )","r := to_basic( s )" );
+     content( e, "r := to_escaped( s )","r := to_json( s )","r := to_lower( s )" );
+     content( e, "r := to_proper( s )","r := to_string( s )","r := to_upper( s )" );
+     content( e, "u := to_unbounded_string( s )","r := trim( s [, e] )","r := unbounded_slice(s, l, h)" );
+     content( e, "c := val( n ) " );
+     discardUnusedIdentifier( token ); -- TODO: should this always be done automatically?
+     seeAlso( e, "doc/pkg_strings.html" );
+     endHelp( e );
+  elsif helpTopic = "variables" then
+     discardUnusedIdentifier( token );
+     startHelp( e, "variables" );
+     summary( e, "variables declarations" );
+     category( e, "reference" );
+     description( e, "How to declare variables:" );
+     content( e, "var [,var2...] : [constant] type [:= expression]" );
+     content( e, "array_var :  array( low..high) of item-type [ := array | (item,...) ]" );
+     content( e, "array_var :  array_type [ := array | (item,...) ]" );
+     seeAlso( e, "doc/ref_typedecl.html, doc/ref_enum.html, doc/ref_arrays.html and doc/ref_records.html" );
+     endHelp( e );
+  elsif helpTopic = "?" then
+     startHelp( e, "?" );
+     summary( e, "question mark (text_io package)" );
+     categoryBuiltin( e );
+     description( e, "Write a value to current output in human-readable format and start a new line." );
+     params( e, "expression - the value to display" );
+     content( e, "? expression" );
+     seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
+  else
+     DoScriptHelp( helpTopic );
+  end if;
+  if not isEmpty( e ) then
      start( r.all );
      render( longHelpReport( r.all ), e ); -- TODO: fix typecast
      finish( r.all );
-  elsif helpTopic = "while" then
-     Put_Line( "while - while loop" );
-     New_Line;
-     Put_Line( "  " & bold( "while" ) &
-       " expression " & bold( "loop" ) & " ... " &
-       bold( "end" ) & " " & bold( "loop" ) );
-  elsif helpTopic = "expressions" then
-     Put_Line( "expressions" );
-     New_Line;
-     Put_Line( "+ - not - uniary operations" );
-     New_Line;
-     Put_Line( "** - exponentiation" );
-     New_Line;
-     Put_Line( "* - multiplication             and - bitwise and" );
-     Put_Line( "/ - division                   or  - bitwise or" );
-     Put_line( "& - string concatenation       xor - bitwise xor" );
-     New_Line;
-     Put_Line( "+ - addition                   - - subtraction" );
-     New_Line;
-     Put_Line( "= /= > >= < <= in not in- relational operators" );
-     New_Line;
-     Put_Line( "and or xor - boolean operators" );
-     New_Line;
-     Put_Line( "@ - itself                    % - last put" );
-     discardUnusedIdentifier( token );
-  elsif helpTopic = "numerics" then
-     helpNumerics;
-     discardUnusedIdentifier( token );
-  elsif helpTopic = "pen" then
-     Put_Line( "pen - pen package subprograms" );
-     New_Line;
-     Put_Line( "  set_rect(r, l, t, r, b)   b := is_empty_rect( r )  offset_rect( r, dx, dy )" );
-     Put_Line( "  inset_rect( r, dx, dy )   intersect_rect( r,r1,r2) b := inside_rect( ir, or )");
-     Put_Line( "  b := in_rect( x, y, r )                                                     ");
-     New_Line;
-     Put_Line( "  frame_ellipse( id, r )    frame_rect( id, r )      fill_ellipse( id, r )    ");
-     Put_Line( "  paint_rect( id, r )       fill_rect(id,rct,r,g,b)  fill_rect(id,r,cn)       ");
-     Put_Line( "  paint_ellipse( id, r )                                                      ");
-     Put_Line( "  line_to( id, x, y )       line( id, dx, dy )       hline( id, x1, x2, y )   ");
-     Put_Line( "  vline( id, x, y1, y2 )    move_to( id, x, y )      move( id, dx, dy )       ");
-     Put_Line( "  clear                     clear( r, g, b)          clear( cn )              ");
-     New_Line;
-     Put_Line( "  get_pen_mode( id )        get_pen_brush( id )      set_pen_ink(id,r,g,b)    " );
-     Put_Line( "  set_pen_ink(id,cn)        set_pen_mode( id, m)     set_pen_pattern( id,pid) " );
-     Put_Line( "  set_pen_brush( id,brush ) set_font( c, f, p )*     put( c, s )*             ");
-     Put_Line( "  p := greyscale( r,g,b) blend(r1,g1,b1,r2,g2,b2,r,g,b) fade(r1,g1,b1,p,r,g,b)");
-     New_Line;
-     Put_Line( "  new_canvas(h,v,c,id) new_screen_canvas(h,v,c,id) new_window_canvas(h,v,c,id)");
-     Put_Line( "  new_canvas(p,id)     new_gl_screen_canvas(h,v,c,id)  save_canvas(p,id)      ");
-     Put_Line( "  close_canvas( id )   new_gl_window_canvas(h,v,c,id)  wait_to_reveal( id )" );
-     Put_Line( "reveal( id )           reveal_now( id )                                                            ");
-  elsif helpTopic = "step" then
-     Put_Line( "step - on --break breakout, run one instruction and stop" );
-     Put_Line( "  " & bold( "step" ) );
-  elsif helpTopic = "strings" then
-     Put_Line( "strings - strings package functions" );
-     New_Line;
-     Put_Line("  n := count( s, p )             r := csv_field( s, c [, d] )  r := csv_replace( s, f, t, [, d] )" );
-     Put_Line("  r := delete( s, l, h )         c := element( s, p )          r := field( s, c [, d] )" );
-     Put_Line("  b := glob( e, s )              r := head( s, c [, p] )" );
-     Put_Line("  r := strings.image( n )        n := index( s, p [, d] )      n := index_non_blank( s [,d] )" );
-     Put_Line("  r := insert( s, b, n )         r := is_alphanumeric( s )     r := is_basic( s )" );
-     Put_Line("  r := is_control( s )           r := is_digit( s )            r := is_fixed( s )" );
-     Put_Line("  r := is_graphic( s )           r := is_hexadecimal_digit(s)  r := is_letter( s )" );
-     Put_Line("  r := is_lower( s )             r := is_slashed_date( s )     r := is_special( s )" );
-     Put_Line("  b := is_typo_of( s1, s2 )      r := is_upper( s )            n := length( s )" );
-     Put_Line("  r := lookup( s, k [, d] )      b := match( e, s )            r := mktemp( p )" );
-     Put_Line("  r := overwrite( s, p, n )      replace( s, f, t [, d] )      replace_slice( s, l, h, b )" );
-     Put_Line("  set_unbounded_string( u, s )   r := slice( s, l, h )         split( s, l, r , p )" );
-     Put_Line("  r := tail( s, c [, p] )        r := strings.to_base64( s )   r := to_basic( s )" );
-     Put_Line("  r := to_escaped( s )           r := to_json( s )             r := to_lower( s )" );
-     Put_Line("  r := to_proper( s )            r := to_string( s )           r := to_upper( s )" );
-     Put_Line("  u := to_unbounded_string( s )  r := trim( s [, e] )          r := unbounded_slice(s, l, h)" );
-     Put_Line("  c := val( n ) " );
-     discardUnusedIdentifier( token );
-  elsif helpTopic = "variables" then
-     Put_Line( "Variables" );
-     Put_Line( "  var [,var2...] : [" & bold( "constant" ) & "] type " &
-       "[ := expression ] - declaration" );
-     Put_Line( "  var : [" & "] array( " &
-       "low..high) of item-type [ := array | (item,...) ] - arrays" );
-     Put_Line( "  var := expression - assignment" );
-     discardUnusedIdentifier( token );
-  elsif helpTopic = "?" then
-     Put_Line( "? - put_line to standard output" );
-     Put_Line( "  ? expression" );
-  else
-     DoScriptHelp( helpTopic );
   end if;
   free( r );
 -- getNextToken;
