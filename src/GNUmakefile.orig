@@ -307,7 +307,7 @@ endif
 	gcov -b *.adb
 	# b~ confuses lcov
 	-rm b~*
-	gcovr --branches --xml-pretty -r .
+	gcovr '--branches' '--xml-pretty' -r . -o gcovr.xml
 	#gcovr --branches -r . --html --html-details -o gcovr-report.html
 	lcov '--capture' '--directory' . '--output-file' coverage.info
 	# Ignore Ada files
