@@ -61,8 +61,6 @@ use ada.text_io,
     world,
     performance_monitoring;
 
-pragma Optimize( time );
-
 package body compiler is
 
 -----------------------------------------------------------------------------

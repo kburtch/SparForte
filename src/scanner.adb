@@ -139,8 +139,6 @@ use ada.text_io,
     parser_templates,
     parser_tinyserve;
 
-pragma Optimize( time );
-
 package body scanner is
 
 -----------------------------------------------------------------------------

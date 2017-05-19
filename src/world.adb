@@ -45,8 +45,6 @@ use ada.text_io,
     spar_os;
     -- scanner_arrays;
 
-pragma Optimize( time );
-
 package body world is
 
 localMemcacheClusterInitialized : boolean := false;
