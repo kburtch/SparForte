@@ -1,84 +1,56 @@
-For the latest news, visit the SparForte website.
+For the latest news, visit the SparForte web site.
 
-SparForte 2.0.2's focus was bug fixes for SparForte 2.0.1
+SparForte 2.0.3's focus was bug fixes for SparForte 2.0
 
-CHANGES SINCE 2.0.1
+CHANGES SINCE 2.0.2
 
-1. Fix: When the verbose option is used, Berkeley DB verbose options are enabled for DB_VERB_BACKUP, DB_VERB_DEADLOCK, DB_VERB_FILEOPS, DB_VERB_WAITSFOR.
+1. Fix: cgi.cookie_value default position no longer throws an exception.
 
-2. Fix: If btree_io.create fails to create a file, an exception is no longer raised when truncate is attempted.
+2. Fix: fixed adacgi 1.6 error that prevented cookies from being read.
 
-3. Fix: Dynamic memory within resource handles is freed and files closed prior to deallocation the resource handle.  Fixed order of deallocation to eliminate storage_error for btree freed handles.
+3. Fix: reading an empty value in memcache/get no longer raises no servers configured.
 
-4. Fix: In web templates, scripts tags are no longer run if a previous error occurred.  The error flag is not reset either, so errors will appear in the browser window.
+4. New: added memcache good test cases to release tests.
 
-5. Fix: btree_io.remove no longer throws an exception when a cursor isn't used (uninitialized variable).  It no longer tries to remove the environment.
+5. Fix: areadline library patched so command prompt history doesn't remember blank lines, to match up with the history command and normal shell behavior.
 
-6. Fix: btree_io cursors and files no longer give a constant expected message in test phase mode.
+6. Fix: hash_io updated to include changes to btree_io.  new hash_io good test cases added to release test.
 
-7. Change: text templates no longer show error messages on a single line.  Other templates remain unchanged.
+7. Change: doubly_linked_list.new_list and new_cursor removed.  Declare the generic type parameter in the declaration using "doubly_linked_lists.list( type )" or "doubly_linked_lists.cursor( type )".
 
-8. New: third party tests added to "make releasetest".  First is btree_io positive tests.
+8. Change: btree_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "btree_io.file( type )" or "btree_io.cursor( type )".
 
-9. Fix: exception handlers in inner blocks no longer run when an error occurs in the outer block.
+9. Change: dynamic_hash_tables.new_table removed.  Declare the generic type parameter in the declaration using "dynamic_hash_tables.table( type )".
 
-10. Fix: strings.trim end parameter is now optional, as in the documentation.
+10. Change: hash_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "hash_io.file( type )" or "hash_io.cursor( type )".
 
-11. Fix: btree_io cursors no longer raise storage_error if the cursor was in wrong open/close state.  Appropriate error message given.
+11. New: SHA digest functions: numerics.sha1_digest_of, numerics.sha256_digest_of, numerics.sha256_digest_of, numerics.sha512_digest_of.
 
-12. Fix: btree_io files no longer raise storage_error if the file was in wrong open/close state.  Appropriate error message given.
+12. New: code coverage reporting added to Makefile (e.g. make coverage).  Added more regression tests to improve test coverage.
 
-13. Fix: btree_io, doubly lists, dht's (and unfinished vectors package) no longer raise a constraint error if the generic is not initialized with a "new_" function.
+13. Fix: lock_files.lock( file ... ) variation now handles wait and retry correctly.
 
-14. Fix: exceptions raised in subprograms no longer vanish when the subprogram ends.
+14. Fix: btree_io.get_first, etc. with array or record type no longer report the variable wasn't written to.
 
-15. Fix: JSON decoding now handles backslash escaping correctly.
+15. Fix: negative numbers weren't recognized in some JSON cases.  Corrected.
 
-16. Fix: btreee_io.get_next, get_first, get_list, get_previous, no longer run JSON decoding or a result if raise_exceptions is false and the get failed.
+16. New: Base 64 functions: strings.to_base64, strings.to_string Base 64 version.
 
-17. Fix: user-defined procedures and functions no longer report semi-colon expected while exiting a block.
+17. Change: Updated directory_operations and created positive regression tests for it.
 
-18. Fix: "with separate" now works with absolute paths.
+18. Change: pragma session_import_script, session_export_script and prompt_script not allowed in a restricted shell (as a security precaution).
 
-19. Fix: btree_io.replace with cursor checks to ensure item exists before writing. 
+19. Fix: numerics.rnd() no longer occasionally produces a number too high.
 
+20. Fix: private fields in records and arrays of private elements can no longer be encoded as JSON.  Even though data is stored as strings, a private type is supposed to be a black box.
 
+21. Fix: canlendar.time values are no longer parsed by the "?" command at syntax time.  They were causing an index_error.
 
-SparForte 2.0.1's focus was bug fixes for SparForte 2.0
+22. Fix: calendar.time arithmetic working properly (probably broken when castToType was implemented).
 
-CHANGES SINCE 2.0
+23. Fix: Fixed two bugs in '+' handling in third-party CGI package, cgi.url_encode and cgi.url_decode.
 
-1. New: in --test phase mode, variables that are not written to (that is, assigned to or are in out / out parameters) are an error: they should be constants.  If a record field is written to, the whole record is treated as written to.
+24. Fix: univeral_typeless record fields and array elements can now be encoded as JSON (threate as strings).
 
-2. Change: Release tests now test example programs with --test phase mode (instead of the default development phase mode) to ensure the most error checking is applied.  (Also, they really are being tested for a release so --test is the correct flag.)
-
-3. Change: Additional debugging options on GCC C compiles.
-
-4. Fix: for GNU readline prompt, added a newline so "return" displays properly on control-d exit.
-
-5. Change: New, more meaningful message when a -- or comment hides last semi-colon at a command prompt.
-
-6. New: pragma annotate( category ... ) to designate a group of scripts.
-
-7. New: --profile / -P - run profile without logging in or using --login.
-
-8. Fix: Control-C/SIGINT no longer aborts an interactive session if pragma prompt_script has been used.
-
-9. Fix: Clear login shell flag on background processes in pipelines so they don't report a "must use logout" error.  Hopefully fixed, anyway.
-
-10. Fix: removed EINTR handling on close...this is a diagnosic message and should not result in another close attempt.
-
-11. Fix: env no longer raises PROGRAM_ERROR due to broken pipe (e.g. env | head ).
-
-12. Fix: Added a SIGPIPE handler.  The results are ignored but it prevents broken pipe warnings from other commands (e.g. ls -1 | head ).
-
-13. Fix: Bourne shell barewords now expand properly to multiple words if they contain whitespace. (e.g. s := "*.ads *.adb" ; ls $s lists all files matching those endings.  Bareword expansion is not permitted with command names because it complicates AdaScript parameter handling.
-
-14. Fix: Resources are now declared at the block level of the identifier, not the block level of the source line.  Resources are no longer deallocated prematurely.
-
-15. Fix: name of include files displayed properly in error messages.
-
-16. Fix: constant test works correctly with user function out, in out parameters.
-
-17. New: pragma assumption( used, var ) / assumption( written, var ) as a workaround when the language guesses incorrectly if a variable is unused or is not written to.
+25. Fix: fixed inconsistent licence warning produced by GCC Ada.
 

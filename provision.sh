@@ -55,27 +55,31 @@ fi
 
 case "$DISTRO" in
 redhat )
-   set -e
-   sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
-   sudo -u root yum install -q -y bzip2
-   sudo -u root yum install -q -y gcc-gnat
-   sudo -u root yum install -q -y git
-   sudo -u root yum install -q -y gstreamer1
-   sudo -u root yum install -q -y gstreamer1-devel
-   sudo -u root yum install -q -y libdb-devel
-   sudo -u root yum install -q -y mariadb
-   sudo -u root yum install -q -y mariadb-devel
-   sudo -u root yum install -q -y mariadb-server
-   sudo -u root yum install -q -y mlocate
-   sudo -u root yum install -q -y postgresql
-   sudo -u root yum install -q -y postgresql-devel
-   sudo -u root yum install -q -y postgresql-server
-   sudo -u root yum install -q -y SDL
-   sudo -u root yum install -q -y SDL-devel
-   sudo -u root yum install -q -y SDL_image
-   sudo -u root yum install -q -y SDL_image-devel
-   sudo -u root yum install -q -y bc
-   set +e
+   sudo -u root yum list installed | fgrep epel-release >/dev/null
+   if [ $? -eq 1 ] ; then
+      set -e
+      sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+      sudo -u root yum install -q -y bzip2
+      sudo -u root yum install -q -y gcc-gnat
+      sudo -u root yum install -q -y git
+      sudo -u root yum install -q -y gstreamer1
+      sudo -u root yum install -q -y gstreamer1-devel
+      sudo -u root yum install -q -y libdb-devel
+      sudo -u root yum install -q -y mariadb
+      sudo -u root yum install -q -y mariadb-devel
+      sudo -u root yum install -q -y mariadb-server
+      sudo -u root yum install -q -y mlocate
+      sudo -u root yum install -q -y postgresql
+      sudo -u root yum install -q -y postgresql-devel
+      sudo -u root yum install -q -y postgresql-server
+      sudo -u root yum install -q -y SDL
+      sudo -u root yum install -q -y SDL-devel
+      sudo -u root yum install -q -y SDL_image
+      sudo -u root yum install -q -y SDL_image-devel
+      sudo -u root yum install -q -y bc
+      sudo -u root yum install -q -y memcached
+      set +e
+   fi
    ;;
 suse)
    set -e
@@ -90,6 +94,7 @@ suse)
    sudo -u root zypper "--non-interactive" install postgresql
    sudo -u root zypper "--non-interactive" install postgresql-devel
    sudo -u root zypper "--non-interactive" install rpmlint
+   sudo -u root zypper "--non-interactive" install memcached
    set +e
    ;;
 ubuntu )
@@ -109,6 +114,7 @@ ubuntu )
    sudo -u root apt-get -q -y install libsdl-image1.2-dev
    sudo -u root apt-get -q -y install wget
    sudo -u root apt-get -q -y install bc
+   sudo -u root apt-get -q -y install memcached
    set +e
    ;;
 *)

@@ -506,68 +506,68 @@ end err_tokenize;
 -- and the parse history (to recognize and deal wtih Bourne
 -- shell parameters).
 
-procedure resetRegisters( ci : in out CompressionInfo ) is
-  -- called when we don't know if the index registers are valid
-  -- anymore (ie. at a 'begin' or 'end;')
-begin
-  ci.nextVMIR := 0;
-end resetRegisters;
-
-procedure freeVMNR( ci : in out compressionInfo; r : out aVMNRNumber ) is
-  -- return a free General Purpose Numeric Register.  If none,
-  -- returns noRegister
-begin
-  r := ci.nextVMNR;
-  if ci.nextVMNR < aVMNRNumber'last then
-     ci.nextVMNR := ci.nextVMNR + 1;
-  end if;
-end freeVMNR;
-
-procedure freeVMSR( ci : in out compressionInfo; r : out aVMSRNumber ) is
-  -- return a free General Purpose String Register.  If none,
-  -- returns noRegister
-begin
-  r := ci.nextVMSR;
-  if ci.nextVMSR < aVMSRNumber'last then
-     ci.nextVMSR := ci.nextVMSR + 1;
-  end if;
-end freeVMSR;
-
-function lookupVMNR( ci : compressionInfo; s : unbounded_string ) return aVMNRNumber is
-   -- find a general purpose string register holding the value of id
-   found : aVMNRNumber := aVMNRNumber( noRegister );
-begin
-   for r in aVMNRNumber'first..ci.nextVMNR-1 loop
-       if ci.VMNRmap( r ) = s then
-          found := r;
-       end if;
-   end loop;
-   return found;
-end lookupVMNR;
-
-function lookupVMSR( ci : compressionInfo; s : unbounded_string ) return aVMSRNumber is
-   -- find a general purpose string register holding the value of id
-   found : aVMSRNumber := aVMSRNumber( noRegister );
-begin
-   for r in aVMSRNumber'first..ci.nextVMSR-1 loop
-       if ci.VMSRmap( r ) = s then
-          found := r;
-       end if;
-   end loop;
-   return found;
-end lookupVMSR;
-
-function lookupVMIR( ci : compressionInfo; id : identifier ) return aVMIRNumber is
-   -- find a general purpose numeric register holding the value of id
-   found : aVMIRNumber := aVMIRNumber( noRegister );
-begin
-   for r in aVMIRNumber'first..ci.nextVMIR-1 loop
-       if ci.VMIRmap( r ) = id then
-          found := r;
-       end if;
-   end loop;
-   return found;
-end lookupVMIR;
+--procedure resetRegisters( ci : in out CompressionInfo ) is
+--  -- called when we don't know if the index registers are valid
+--  -- anymore (ie. at a 'begin' or 'end;')
+--begin
+--  ci.nextVMIR := 0;
+--end resetRegisters;
+--
+--procedure freeVMNR( ci : in out compressionInfo; r : out aVMNRNumber ) is
+--  -- return a free General Purpose Numeric Register.  If none,
+--  -- returns noRegister
+--begin
+--  r := ci.nextVMNR;
+--  if ci.nextVMNR < aVMNRNumber'last then
+--     ci.nextVMNR := ci.nextVMNR + 1;
+--  end if;
+--end freeVMNR;
+--
+--procedure freeVMSR( ci : in out compressionInfo; r : out aVMSRNumber ) is
+--  -- return a free General Purpose String Register.  If none,
+--  -- returns noRegister
+--begin
+--  r := ci.nextVMSR;
+--  if ci.nextVMSR < aVMSRNumber'last then
+--     ci.nextVMSR := ci.nextVMSR + 1;
+--  end if;
+--end freeVMSR;
+--
+--function lookupVMNR( ci : compressionInfo; s : unbounded_string ) return aVMNRNumber is
+--   -- find a general purpose string register holding the value of id
+--   found : aVMNRNumber := aVMNRNumber( noRegister );
+--begin
+--   for r in aVMNRNumber'first..ci.nextVMNR-1 loop
+--       if ci.VMNRmap( r ) = s then
+--          found := r;
+--       end if;
+--   end loop;
+--   return found;
+--end lookupVMNR;
+--
+--function lookupVMSR( ci : compressionInfo; s : unbounded_string ) return aVMSRNumber is
+--   -- find a general purpose string register holding the value of id
+--   found : aVMSRNumber := aVMSRNumber( noRegister );
+--begin
+--   for r in aVMSRNumber'first..ci.nextVMSR-1 loop
+--       if ci.VMSRmap( r ) = s then
+--          found := r;
+--       end if;
+--   end loop;
+--   return found;
+--end lookupVMSR;
+--
+--function lookupVMIR( ci : compressionInfo; id : identifier ) return aVMIRNumber is
+--   -- find a general purpose numeric register holding the value of id
+--   found : aVMIRNumber := aVMIRNumber( noRegister );
+--begin
+--   for r in aVMIRNumber'first..ci.nextVMIR-1 loop
+--       if ci.VMIRmap( r ) = id then
+--          found := r;
+--       end if;
+--   end loop;
+--   return found;
+--end lookupVMIR;
 
 
 -----------------------------------------------------------------------------

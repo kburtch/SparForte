@@ -1,3 +1,5 @@
+-- Test program to test bdb library
+
 with system.address_to_access_conversions,
      unchecked_deallocation,
      interfaces.c,
@@ -171,7 +173,7 @@ put_line( "d2" );
   remove( env, "/home/ken/ada/berkeley" );
 put_line( "d3" );
 
-return;
+--return;
 
   Init( session );
   Init( env, 0 );

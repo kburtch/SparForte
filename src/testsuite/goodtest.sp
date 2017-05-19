@@ -980,16 +980,44 @@ os.system( "cd ." );
 i := os.status;
 pragma assert( i = 0 );
 
+-- cd command
+-- note path is only shown in interactive modes
+
 s1 := PWD;
+s := PWD & "/" & "cdtest";
 cd .;
 pragma assert( PWD = OLDPWD );
-s := PWD & "/" & "cdtest";
 cd cdtest;
 pragma assert( PWD = s );
 pragma assert( OLDPWD = s1 );
 cd -;
 pragma assert( PWD = s1 );
 pragma assert( OLDPWD = s );
+cd "";
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd -;
+cd ~;
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd -;
+-- AdaScript style
+cd( "." );
+pragma assert( PWD = OLDPWD );
+cd( "cdtest" );
+pragma assert( PWD = s );
+pragma assert( OLDPWD = s1 );
+cd( "-" );
+pragma assert( PWD = s1 );
+pragma assert( OLDPWD = s );
+cd( "" );
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd( "-" );
+cd( "~" );
+pragma assert( PWD = HOME );
+pragma assert( OLDPWD = s1 );
+cd( "-" );
 
 -- basic text_io and % (last output)
 
@@ -2541,6 +2569,7 @@ delete( ft );
 -- trace command
 
 trace false;
+trace;
 trace true;
 trace;
 
@@ -3107,6 +3136,18 @@ env ft;
 --env st;
 env fm;
 env js;
+-- AdaScript style
+env( "js" );
+env;
+
+-- Other built-ins
+
+clear;
+help clear;
+pwd;
+pwd_cmd : constant command := "/bin/pwd";
+pwd_cmd;
+jobs;
 
 -- doubly_linked_lists positive tests
 
@@ -4229,6 +4270,107 @@ gnat.crc32.initialize( crc );
 gnat.crc32.update( crc, "abc" );
 i := gnat.crc32.get_value( crc );
 pragma assert( i = 3403398717 );
+
+-- Other packages: units
+
+lfv := units.inches2mm( 10 );
+pragma assert( lfv = 254 );
+lfv := numerics.rounding( units.feet2cm( 100 ) );
+pragma assert( lfv = 3048 );
+lfv := numerics.rounding( units.yards2m( 100 ) );
+pragma assert( lfv = 91 );
+lfv := numerics.rounding( units.miles2km( 100 ) );
+pragma assert( lfv = 161 );
+lfv := numerics.rounding( units.mm2inches( 100 ) );
+pragma assert( lfv = 4 );
+lfv := numerics.rounding( units.cm2inches( 100 ) );
+pragma assert( lfv = 39 );
+lfv := numerics.rounding( units.m2yards( 100 ) );
+pragma assert( lfv = 109 );
+lfv := numerics.rounding( units.km2miles( 100 ) ) ;
+pragma assert( lfv = 62 );
+lfv := numerics.rounding( units.sqin2sqcm( 100 ) );
+pragma assert( lfv = 645 );
+lfv := numerics.rounding( units.sqft2sqm( 100 ) );
+pragma assert( lfv = 9 );
+lfv := numerics.rounding( units.sqyd2sqm( 100 ) );
+pragma assert( lfv = 84 );
+lfv := numerics.rounding( units.acres2hectares( 100 ) );
+pragma assert( lfv = 40 );
+lfv := numerics.rounding( units.sqcm2sqin( 100 ) ) ;
+pragma assert( lfv = 16 );
+lfv := numerics.rounding( units.sqm2sqft( 100 ) ) ;
+pragma assert( lfv = 1076 );
+lfv := numerics.rounding( units.sqm2sqyd( 100 ) );
+pragma assert( lfv = 120 );
+lfv := numerics.rounding( units.sqkm2sqmiles( 100 ) );
+pragma assert( lfv = 39 );
+lfv := numerics.rounding( units.hectares2acres( 100 ) );
+pragma assert( lfv = 247 );
+lfv := numerics.rounding( units.ly2pc( 100 ) );
+pragma assert( lfv = 31 );
+lfv := numerics.rounding( units.pc2ly( 100 ) );
+pragma assert( lfv = 326 );
+lfv := numerics.rounding( units.oz2grams( 100 ) );
+pragma assert( lfv = 2835 );
+lfv := numerics.rounding( units.lb2kg( 100 ) );
+pragma assert( lfv = 45 );
+lfv := numerics.rounding( units.tons2tonnes( 100 ) );
+pragma assert( lfv = 102 );
+lfv := numerics.rounding( units.grams2oz( 100 ) );
+pragma assert( lfv = 35 );
+lfv := numerics.rounding( units.kg2lb( 100 ) );
+pragma assert( lfv = 220 );
+lfv := numerics.rounding( units.tonnes2tons( 100 ) );
+pragma assert( lfv = 98 );
+lfv := numerics.rounding( units.floz2ml( 100 ) );
+pragma assert( lfv = 2841 );
+lfv := numerics.rounding( units.usfloz2ml( 100 ) );
+pragma assert( lfv = 2957 );
+lfv := numerics.rounding( units.usfloz2floz( 100 ) );
+pragma assert( lfv = 104 );
+lfv := numerics.rounding( units.pints2l( 100 ) );
+pragma assert( lfv = 57 );
+lfv := numerics.rounding( units.gal2l( 100 ) );
+pragma assert( lfv = 455 );
+lfv := numerics.rounding( units.ml2floz( 100 ) ) ;
+pragma assert( lfv = 4 );
+lfv := numerics.rounding( units.ml2usfloz( 100 ) );
+pragma assert( lfv = 3 );
+lfv := numerics.rounding( units.floz2usfloz( 100 ) );
+pragma assert( lfv = 96 );
+lfv := numerics.rounding( units.l2quarts( 100 ) ) ;
+pragma assert( lfv = 88 );
+lfv := numerics.rounding( units.l2gal( 100 ) );
+pragma assert( lfv = 22 );
+lfv := numerics.rounding( units.f2c( 100 ) );
+pragma assert( lfv = 38 );
+lfv := numerics.rounding( units.c2f( 100 ) )  ;
+pragma assert( lfv = 212 );
+lfv := numerics.rounding( units.k2c( 100 ) );
+pragma assert( lfv = -173 );
+lfv := numerics.rounding( units.c2k( 100 ) );
+pragma assert( lfv = 373 );
+lfv := numerics.rounding( units.usdrygal2l( 100 ) );
+pragma assert( lfv = 440 );
+lfv := numerics.rounding( units.usliqgal2l( 100 ) );
+pragma assert( lfv = 379 );
+lfv := numerics.rounding( units.l2usliqgal( 100 ) );
+pragma assert( lfv = 26 );
+lfv := numerics.rounding( units.troz2g( 100 ) );
+pragma assert( lfv = 3110 );
+lfv := numerics.rounding( units.g2troz( 100 ) );
+pragma assert( lfv = 3 );
+lfv := numerics.rounding( units.cucm2floz( 100 ) );
+pragma assert( lfv = 4 );
+lfv := numerics.rounding( units.cucm2usfloz( 100 ) );
+pragma assert( lfv = 34 );
+lfv := numerics.rounding( units.usfloz2cucm( 100 ) );
+pragma assert( lfv = 2957 );
+lfv := numerics.rounding( units.bytes2mb( 10000000 ) );
+pragma assert( lfv = 10 );
+lfv := numerics.rounding( units.mb2bytes( 100 ) );
+pragma assert( lfv = 104857600 );
 
 -- Pragmas
 

@@ -10,24 +10,13 @@ These are new issues identified but not entered into the outstanding bug list
 
 Severe Issues (Fix These First)
 -------------------------------
+* gcc-errors tests not triggered on error_tokenize?
 
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
       must be a global scanner flag.
-- regression tests
-    - cgi third_party test
-- calendar
-    - calendar says time arithmatic is in seconds but arithmetic was done
-      in nano-seconds in my latest test.
 - unsorted/misc
-    - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
-      my virtual machine, even after repeated audits of all syscalls for handling
-      this error.
-      Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
-      If so, where?
-       - echo "test" | head; --raised it
-       - echo  | sort | head; -- raised it
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - constant check fails if assignment is in `..` (subscripts are compiled after
@@ -49,11 +38,15 @@ Annoyances / Bugs with Workarounds / Updates
     - what are semantics of throwing an exception in a subscript `...`
     - exceptions that propogate to the top aren't formatted properly in the
       Apache log (single chars means single lines)
+- should create a report on process resources using getrusage(2).  Also will
+   need this for memory leak tests (though there are command line ways of
+   doing this).
 - pragmas
     - can't declare two licences or software_models.  This is a problem for a
       redistributable library
     - check double pragma import - test case
 - unit testing and teamwork
+    - restricted shell tests
     - xUnit support for tests (pragma test_result - output in JUNIT format?)
 - graphics and sound
   - SDL - hardware accelleration not working with SDL...why not?
@@ -63,6 +56,18 @@ Annoyances / Bugs with Workarounds / Updates
 - build system
   - David B wants me to bring back SparForte shared library
     - shared library calling mechanism and integration with other languages
+- shell
+    - windows size change is not refreshing the terminal settings?
+    - escaping unprintable characters not working with readline prompt
+    - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
+      my virtual machine, even after repeated audits of all syscalls for handling
+      this error.
+      Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
+      If so, where?
+       - echo "test" | head; --raised it
+       - echo  | sort | head; -- raised it
+      - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
+
 - unsorted/misc
 
     - control-z handling - fork, send a sleep signal and reset scanner
@@ -88,6 +93,15 @@ Nice to Haves / Missing Functionality
     - distinguish types of pragmas, to later separate by block or context
     - a pragma to check for the version of SparForte?  Is it a doc pragma,
       executable or both?
+    - pragma restriction is too restrictive.  If the goal is to migrate
+      designs, we need levels of restrictions.  For example, pragma
+      pending_restriction( x ), similar to pragma deprecated, which is
+      an error if x is used in the design phase only, and a warning in
+      the development phase.
+    - pragma depreciated should be a list, not a string.
+    - review and improve help command reports for producing system audit reports.  Are they complete?  Usable?  Any rsh restrictions needed?  For example, we need a software_model report.
+    - while we want to default to security, we also want not to be overly restrictive with pragma restriction in general.  We should probably default to secure and add exceptions...how would i code that?
+    - probably need a security pragma and not relying on rsh = security
 - user role blocks
     - configuration/policy/project <name> ... is separate (not with separate, which isn't
       as specific)
@@ -114,8 +128,19 @@ Nice to Haves / Missing Functionality
   - record system refactor (in prep for aggregate expressions)
 - templates
   - need template package to set return HTTP status
+- strings
+  - more validation functions
 - build system
   - dynamic loadable built-in packages
+  - fuzz testing (i.e. oss fuzz) - testing for vulnerabilities with random data
+  - memory leak testing
+- example programs
+  - a REST API
+    - with message envelope
+    - with call statistics
+    - with bandwidth calculations
+- packages
+  - new vector or game math package (quads, etc).
 - unsorted/misc
     - alternatives to ParseGeneralStatement more appropriate for executable bodies
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
@@ -142,6 +167,7 @@ Nice to Haves / Missing Functionality
      - with include doesn't work on the command because it is loaded at syntax check
        time and the command line has no syntax check...but it would be good to load
        libraries at the command line so can I come up with a strategy to make it work?
+   - libraries to load neutral (i.e. non-sf) config file formats?
 
 New Unique Concepts
 -------------------
@@ -168,6 +194,12 @@ New Unique Concepts
       risky...
   - naming convention
     - what are the naming standards of functions.  e.g. sin(), to_sin(), sin_of()?
+  - type system
+    - extending enums to strings and number sets
+    - what about users creating their own universal types?
+    - progamming by contract features - we have functions, so we can do them
+      but can we do it elegantly rather than as an add-on to the existing
+      syntax?
 
 -------------------------------------------------------------------------------
 KNOWN ISSUES/IDEAS
@@ -406,6 +438,7 @@ ISSUES (Bourne Shell)
     syntax even when the statements aren't being executed.  This is a rare
     case, but it also raises the issue of scope with pullBlock--technically,
     j is a global but pullBlock treats all internal declarations as local.
+   - an undo for unset
 
 
 MAJOR REDESIGNS

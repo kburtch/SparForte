@@ -475,8 +475,14 @@ begin
               put( kind.name );
               -- If it's a generic type, show the instantiated types
               declare
-                 baseType : identifier := getBaseType( ident.kind );
+                 baseType : identifier;
               begin
+                 -- Don't look up the base type on a universal or a keyword.
+                 if ident.class = subClass then
+                    baseType := getBaseType( ident.kind );
+                 else
+                    basetype := ident.kind;
+                 end if;
                  if identifiers( baseType ).class = genericTypeClass then
                     put( "(" );
                     put( to_string( identifiers( ident.genKind ).name ) );
@@ -2833,7 +2839,8 @@ begin
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
-        err( "type expected, not a keyword" );
+        err( "type expected, not the keyword " &
+           optional_bold( to_string( identifiers( original ).name ) ) );
         return universal_t;
   end if;
 
@@ -2886,7 +2893,8 @@ begin
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
-        err( "type expected, not a keyword" );
+        err( "type expected, not the keyword " &
+           optional_bold( to_string( identifiers( original ).name ) ) );
         return universal_t;
   end if;
 
@@ -3906,7 +3914,7 @@ begin
            result := result & item & to_unbounded_string( "]" );
         end;
 
-     elsif kind = uni_string_t then
+     elsif kind = uni_string_t or kind = universal_t then
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
@@ -4132,7 +4140,7 @@ begin
              end;
            end if;
 
-     elsif kind = uni_string_t then
+     elsif kind = uni_string_t or kind = universal_t then
 
         -- some kind of string items
 
@@ -4343,7 +4351,7 @@ begin
                          elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
                             -- if it's a JSON string, just copy the data
                             result := result & identifiers( field_t ).value.all;
-                         elsif uniFieldType = uni_string_t then
+                         elsif uniFieldType = uni_string_t or uniFieldType = universal_t then
                             item := to_unbounded_string( """" );
                             item := item & ToJSONEscaped( identifiers( field_t ).value.all );
                             item := item & '"';
@@ -4532,7 +4540,8 @@ begin
                         end if;
                         identifiers( j ).value.all := decodedItemValue;
                       end;
-                    elsif getUniType( elementKind ) = uni_string_t then
+                    elsif getUniType( elementKind ) = uni_string_t or
+                          getUniType( elementKind ) = universal_t then
 
                       -- Strings
                       -- JSON string is raw json...could be anything.  Otherwise, the string

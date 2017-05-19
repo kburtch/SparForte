@@ -47,6 +47,7 @@ with system,
     signal_flags,
     compiler,
     scanner,
+    scanner.calendar,
     scanner_res,
     scanner_restypes,
     parser_params,
@@ -73,6 +74,7 @@ use ada.text_io,
     signal_flags,
     compiler,
     scanner,
+    scanner.calendar,
     scanner_res,
     scanner_restypes,
     parser_params,
@@ -123,12 +125,14 @@ begin
   if identifiers( token ).kind = command_t then   -- handle a command type
       shell_word := identifiers( token ).value.all;
   elsif token = symbol_t then
-     if identifiers( token ).value.all = ";" then
-        err( "shell word expected" );
-     end if;
      shell_word := identifiers( token ).value.all;
   elsif token = word_t then
-     shell_word := identifiers( token ).value.all;
+     if head( identifiers( token ).value.all, 1 ) = "`" then
+        err( optional_bold( "shell word" ) & " expected, not a " &
+          optional_bold( "backquoted literal" ) );
+     else
+        shell_word := identifiers( token ).value.all;
+     end if;
   elsif token = cd_t then
      shell_word := identifiers( token ).name;
   elsif token = clear_t then
@@ -171,20 +175,15 @@ begin
   elsif token = charlit_t then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "character literal" ) );
-  elsif token = backlit_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
-  elsif token = word_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "(shell immediate) word" ) );
+  -- This should be impossible as a backlit would be scanned as a word token
+  --elsif token = backlit_t then
+  --   err( optional_bold( "shell word" ) & " expected, not a " &
+  --        optional_bold( "backquoted literal" ) );
   elsif token = eof_t then
      err( optional_bold( "shell word" ) & " or semi-colon expected. Possibly hidden by an unescaped '--'?" );
   elsif is_keyword( token ) then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "keyword" ) );
-  elsif token = symbol_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "symbol" ) );
   elsif identifiers( token ).field_of /= eof_t then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "field of a record type" ) );
@@ -1140,11 +1139,12 @@ begin
         typesOK := true;
         expr_type := cal_time_t;
         operation := uni_numeric_t;
+        operation := cal_time_t;
      end if;
      if (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
         expr_type := cal_time_t;
-        operation := uni_numeric_t;
+        operation := variable_t; -- representing time on right
      end if;
      -- Otherwise check the types normally
      if not typesOK then
@@ -1191,6 +1191,39 @@ begin
                    se := null_unbounded_string;
                 end;
              end if;
+        elsif operation = cal_time_t then -- time +/- duration
+           if operator = "+" then
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c + duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
+           elsif operator = "-" then
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c - duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
+           end if;
+        elsif operation = variable_t then -- duration + time
+           if operator = "+" then
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
+                 begin
+                    c := duration( to_numeric( se ) ) + c;
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
+           elsif operator = "-" then
+              err( "operation - not defined for these types" );
+           end if;
         else
              if operator = "+" then
                 err( "operation + not defined for these types" );
@@ -2094,12 +2127,12 @@ begin
      if (kind1 = cal_time_t) and then (getBaseType(kind2) = duration_t or kind2 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
         expr_type := cal_time_t;
-        operation := uni_numeric_t;
+        operation := cal_time_t;
      end if;
      if (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
         expr_type := cal_time_t;
-        operation := uni_numeric_t;
+        operation := variable_t;
      end if;
      -- Otherwise check the types normally
      if not typesOK then
@@ -2146,6 +2179,39 @@ begin
                    se := null_unbounded_string;
                 end;
              end if;
+        elsif operation = cal_time_t then -- time +/- duration
+           if operator = "+" then
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c + duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
+           elsif operator = "-" then
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                 begin
+                    c := c - duration( to_numeric( term2 ) );
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
+           end if;
+        elsif operation = variable_t then -- duration + time
+           if operator = "+" then
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
+                 begin
+                    c := duration( to_numeric( se ) ) + c;
+                    se := to_unbounded_string( long_float( c ) );
+                 end;
+              end if;
+           elsif operator = "-" then
+              err( "operation - not defined for these types" );
+           end if;
         else
              if operator = "+" then
                 err( "operation + not defined for these types" );
@@ -8652,6 +8718,12 @@ begin
      cmdpos := firstScriptCommandOffset;
      token := identifiers'first;                -- dummy, replaced by g_n_t
      getNextToken;                              -- load first token
+
+     -- Expect some actual source code, at least token, for running.
+
+     if token = eof_t then
+        err( "there were no commands to run" );
+     end if;
 
      -- Prior to a main program (or a simple script), a script may have
      -- pragmas, policies, configurations, withs, trace.  A procedure

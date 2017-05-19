@@ -1069,9 +1069,14 @@ begin
      when debug_on =>
         debugOpt := true;
      when depreciated =>
-        -- later, this should create a list of depreciation message
+        -- TODO: this should create a list of depreciation message
         -- for now, only the entire script is depreciated
+        -- It is an error in the design phase to run a deprecated script.
         depreciatedMsg := "This script made obsolete by " & expr_val & '.';
+        if designOpt then
+           err( to_string( depreciatedMsg ) );
+           depreciatedMsg := null_unbounded_string;
+        end if;
      when dispute =>
         null;
      when error =>

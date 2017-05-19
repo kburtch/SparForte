@@ -1,0 +1,245 @@
+<HEAD><TITLE>ramcache.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : ramcache.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar ramcache
+Putting foo = bar, cnt = 15 in the cache
+Getting the values from the cache
+bar
+ 15
+Deleting foo and cnt
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "ramcache" )
+       @( description, "Use a ramdisk as a key-value lookup table with " )
+       @( description, "values that expire." )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>procedure</b> ramcache <b>is</b>
+  ramdisk_dir : <b>constant</b> string := "/dev/shm";
+  <FONT COLOR=green><EM>-- absolute path to the ram disk directory (typically /dev/shm on Linux)</EM></FONT>
+
+  cache_dir   : <b>constant</b> string := "cache";
+  <FONT COLOR=green><EM>-- diretory name of our cache on the ramdisk</EM></FONT>
+
+  cache_path  : <b>constant</b> string := ramdisk_dir &amp; "/" &amp; cache_dir;
+  <FONT COLOR=green><EM>-- absolute path of our cache</EM></FONT>
+
+  ramcache_error : <b>exception</b>;
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>-- Support Subprograms</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>type</b> a_cache_entry <b>is</b> <b>record</b>
+       saved_time_year  : calendar.year_number;
+       saved_time_month : calendar.month_number;
+       saved_time_day   : calendar.day_number;
+       saved_time_day_duration : calendar.day_duration;
+       key_value        : universal_typeless;
+  <b>end</b> <b>record</b>;
+  <FONT COLOR=green><EM>-- the value and the time it was stored</EM></FONT>
+
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>-- Cache Primitives</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- These are primitive operations, to be used as a foundation for other</EM></FONT>
+  <FONT COLOR=green><EM>-- main operation.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+
+  <FONT COLOR=green><EM>-- WRITE CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Store a key-value pair in the cache, along with the time it was stored.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> write_cache( key : string; key_value : universal_typeless ) <b>is</b>
+    md5_sig : string;
+    subdir  : string;
+    f : file_type;
+    cache_entry : a_cache_entry;
+    json : json_string;
+  <b>begin</b>
+    md5_sig := numerics.md5( key );
+    subdir := strings.head( md5_sig, 2 );
+    <FONT COLOR=green><EM>-- Create the subdirectory, if none exists</EM></FONT>
+    <b>if</b> <b>not</b> files.is_directory( cache_path &amp; "/" &amp; subdir ) <b>then</b>
+       mkdir( "-m", "700", cache_path &amp; "/" &amp; subdir );
+    <b>end</b> <b>if</b>;
+    calendar.split(
+       calendar.clock,
+       cache_entry.saved_time_year,
+       cache_entry.saved_time_month,
+       cache_entry.saved_time_day,
+       cache_entry.saved_time_day_duration
+    );
+    cache_entry.key_value := key_value;
+    records.to_json( json, cache_entry );
+    create( f, out_file, cache_path &amp; "/" &amp; subdir &amp; "/" &amp; md5_sig );
+    put_line( f, json );
+    close( f );
+  <b>end</b> write_cache;
+
+
+  <FONT COLOR=green><EM>-- READ CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Read a key-value pair in the cache, also returning the time of storage.</EM></FONT>
+  <FONT COLOR=green><EM>-- An empty string is returned if the value is not found.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> read_cache( key : string; key_value : <b>out</b> universal_typeless; saved_time : <b>out</b> calendar.time ) <b>is</b>
+    md5_sig : string;
+    subdir  : string;
+    f : file_type;
+    cache_entry : a_cache_entry;
+    json : json_string;
+  <b>begin</b>
+    md5_sig := numerics.md5( key );
+    subdir := strings.head( md5_sig, 2 );
+    open( f, in_file, cache_path &amp; "/" &amp; subdir &amp; "/" &amp; md5_sig );
+    json := get_line( f );
+    close( f );
+    records.to_record( cache_entry, json );
+    key_value := cache_entry.key_value;
+    saved_time := calendar.time_of(
+      cache_entry.saved_time_year,
+      cache_entry.saved_time_month,
+      cache_entry.saved_time_day,
+      cache_entry.saved_time_day_duration
+    );
+  <b>exception</b> <b>when</b> <b>others</b> =&gt;
+    key_value := "";
+    saved_time := calendar.clock;
+  <b>end</b> read_cache;
+
+
+  <FONT COLOR=green><EM>-- REMOvE CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Remove an entry from the cache.  Does not remove the parent</EM></FONT>
+  <FONT COLOR=green><EM>-- subdirectory.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> remove_cache( key : string ) <b>is</b>
+    md5_sig : string;
+    subdir  : string;
+    f : file_type;
+  <b>begin</b>
+    md5_sig := numerics.md5( key );
+    subdir := strings.head( md5_sig, 2 );
+    open( f, in_file, cache_path &amp; "/" &amp; subdir &amp; "/" &amp; md5_sig );
+    <b>delete</b>( f );
+  <b>end</b> remove_cache;
+
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>-- Cache Interface Subprograms</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+
+  <FONT COLOR=green><EM>-- INIT CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Create a cache directory or ensure he directory is writable.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> init_cache <b>is</b>
+  <b>begin</b>
+     <b>if</b> <b>not</b> files.is_directory( cache_path ) <b>then</b>
+        mkdir( "-m", "700", cache_path );
+     <b>elsif</b> <b>not</b> files.is_writable( cache_path ) <b>then</b>
+        <b>raise</b> ramcache_error <b>with</b> "cache directory is not writable";
+     <b>end</b> <b>if</b>;
+  <b>end</b> init_cache;
+
+
+  <FONT COLOR=green><EM>-- PUT CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Put a key-value pair in the cache.  The key and value must not be empty</EM></FONT>
+  <FONT COLOR=green><EM>-- strings.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> put_cache( key : string; key_value : universal_typeless ) <b>is</b>
+  <b>begin</b>
+    <b>if</b> key /= "" <b>then</b>
+       <b>if</b> key_value /= "" <b>then</b>
+          write_cache( key, key_value );
+       <b>end</b> <b>if</b>;
+    <b>end</b> <b>if</b>;
+  <b>end</b> put_cache;
+
+
+  <FONT COLOR=green><EM>-- GET CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Get a value from the cache.  If it is too old or if it doesn't exist,</EM></FONT>
+  <FONT COLOR=green><EM>-- return an empty string.  If key is empty, return an empty string.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>function</b> get_cache( key : string; expires : duration ) <b>return</b> universal_typeless <b>is</b>
+    key_value  : universal_typeless;
+    saved_time : calendar.time;
+  <b>begin</b>
+    <b>if</b> key /= "" <b>then</b>
+       read_cache( key, key_value, saved_time );
+    <b>end</b> <b>if</b>;
+  <FONT COLOR=green><EM>--  if calendar.clock &gt; saved_time + expires then</EM></FONT>
+  <FONT COLOR=green><EM>--     key_value := "";</EM></FONT>
+  <FONT COLOR=green><EM>--  end if;</EM></FONT>
+    <b>return</b> key_value;
+  <b>end</b> get_cache;
+
+
+  <FONT COLOR=green><EM>-- DELETE CACHE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Delete a value from the cache.  If key is empty, does nothing.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> delete_cache ( key : string ) <b>is</b>
+  <b>begin</b>
+    <b>if</b> key /= "" <b>then</b>
+       remove_cache( key );
+    <b>end</b> <b>if</b>;
+  <b>end</b> delete_cache;
+
+<b>begin</b>
+  <FONT COLOR=green><EM>-- create or verify the cache</EM></FONT>
+
+  init_cache;
+
+  <FONT COLOR=green><EM>-- add some values to the cache</EM></FONT>
+
+  ? "Putting foo = bar, cnt = 15 in the cache";
+  put_cache( "foo", "bar" );
+  put_cache( "cnt", 15 );
+
+  <FONT COLOR=green><EM>-- get values from the cache (good for 100 seconds)</EM></FONT>
+
+  ? "Getting the values from the cache";
+  ? get_cache( "foo", 100 );
+  ? get_cache( "cnt", 100 );
+
+  <FONT COLOR=green><EM>-- deleting the value</EM></FONT>
+
+  ? "Deleting foo and cnt";
+  delete_cache( "foo" );
+  delete_cache( "cnt" );
+
+<b>end</b> ramcache;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

@@ -29,7 +29,7 @@ with system,
     world,
     compiler,
     scanner,
-    builtins,
+    builtins.help,
     string_util,
     user_io,
     parser_aux, -- for OSError
@@ -184,17 +184,14 @@ end hashOf;
 --  ADD COMMAND HASH
 --
 -- Add the path to a command to the command hash table.  If there is a hash
--- collision, ignore the new entry.  If there is a collision when adding a
--- built-in, report this as an error.
+-- collision, ignore the new entry.
 -----------------------------------------------------------------------------
 
 procedure addCommandHash( cmd, full : unbounded_string; builtin : boolean ) is
   bin : natural := 0;
 begin
   bin := hashOf( cmd );
-  if length( cmdHash( bin ).fullPath ) /= 0 then
-     err( "internal error: builtin command hash clash for builtin" );
-  else
+  if length( cmdHash( bin ).fullPath ) = 0 then
      cmdHash( bin ).cmd := cmd;
      cmdHash( bin ).fullPath := full;
      cmdHash( bin ).builtin := builtin;
@@ -336,7 +333,7 @@ begin
   if    cmd = "cd" then      builtins.cd( ap );            noReturnForBuiltin;
   elsif cmd = "clear" then   builtins.clear( ap );         noReturnForBuiltin;
   elsif cmd = "env" then     builtins.env( ap );           noReturnForBuiltin;
-  elsif cmd = "help" then    builtins.help( ap );          noReturnForBuiltin;
+  elsif cmd = "help" then    builtins.help.help( ap );     noReturnForBuiltin;
   elsif cmd = "history" then builtins.do_history( ap );    noReturnForBuiltin;
   elsif cmd = "jobs" then    builtins.jobs( ap );          noReturnForBuiltin;
   elsif cmd = "pwd" then     builtins.pwd( ap );           noReturnForBuiltin;

@@ -164,6 +164,47 @@ bad_test_testmode() {
   fi
 }
 
+#  BAD TEST GCC ERRORS
+#
+# Run the test script with no parameters is SparForte testing mode.
+# Declare FOOBAR.  If there's a core dump or a success code is returned,
+# abort with the error.
+# ---------------------------------------------------------------------------
+
+bad_test_gcc_errors() {
+  echo "Running $1..."
+  setup
+  OUTPUT=`../spar --debug -gcc-errors "$1" < /dev/null 2>&1`
+  RESULT=$?
+  teardown
+  TMP=`ls core 2>/dev/null`
+  test -f ./test.txt && rm ./test.txt
+  if [ ! -z "$TMP" ] ; then
+     rm core
+     echo
+     echo "--- $1 FAILED WITH CORE DUMP ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+  if [ $RESULT -eq 0 ] ; then
+     echo
+     echo "--- $1 TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "in script"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 TEST FAILED - not in GCC error format ---"
+     echo "Test was:"
+     cat "$1"
+     exit 1
+  fi
+echo "OK"
+}
+
 #  GOOD TEST
 #
 # Run the test script with no parameters.  Declare FOOBAR.  If there's a
@@ -217,6 +258,28 @@ good_test_in_dir() {
   RESULT=$?
   #teardown
   test -f ./test.txt && rm ./test.txt
+  if [ $RESULT -ne 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $? ---"
+     exit 1
+  fi
+}
+
+#  HELP TEST IN DIR
+#
+# Run the test script with no parameters.  Declare FOOBAR.  If there's a
+# non-success code is returned, abort with the error.  Do it with syntax-only
+# and normally.  Unlike regular good_test, this assumes you are in the
+# subdirectory...this is necessary from some of the "separate" tests.
+# ---------------------------------------------------------------------------
+
+help_test_in_dir() {
+  echo "Running $1..."
+  ../../spar --debug "$1" a b c > "./test.txt"
+  RESULT=$?
+  if [ $RESULT -ne 0 ] ; then
+     cat "./test.txt"
+  fi 
+  test -f "./test.txt" && rm "./test.txt"
   if [ $RESULT -ne 0 ] ; then
      echo "--- $1 TEST FAILED - status code $? ---"
      exit 1
@@ -344,7 +407,34 @@ fi
 cd - 2>/dev/null
 echo "OK"
 
-# Search testsuite* directories and run bad tests stored there
+# Search helpsuite* directories and run bad tests stored there
+#
+# These are for code coverage.
+
+echo
+echo "Testing built-in help scripts:"
+
+ls -d helpsuite* | (while read DIR ; do
+   cd "$DIR"
+   ls helptest* | ( while read FILE; do
+      help_test_in_dir "$FILE"
+      RESULT=$?
+      if [ $RESULT -ne 0 ] ; then
+         exit $RESULT
+      fi
+   done )
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
+   cd - 2>/dev/null
+done )
+RESULT=$?
+if [ $RESULT -ne 0 ] ; then
+   exit $RESULT
+fi
+
+# Search goodsuite* directories and run bad tests stored there
 #
 # These good tests normally test different structures such as
 # include files.  We need to change to the directory first.
@@ -403,6 +493,16 @@ fi
 
 ls testmodesuite/badtest* | (while read FILE ; do
    bad_test_testmode "$FILE"
+   RESULT=$?
+   if [ $RESULT -ne 0 ] ; then
+      exit $RESULT
+   fi
+done )
+
+# Run test requiring --gcc-errors mode
+
+ls testgccerrsuite/badtest* | (while read FILE ; do
+   bad_test_gcc_errors "$FILE"
    RESULT=$?
    if [ $RESULT -ne 0 ] ; then
       exit $RESULT

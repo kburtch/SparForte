@@ -57,11 +57,10 @@ procedure clear( ap : argumentListPtr );
 procedure delete( ap : argumentListPtr );
 -- delete : SQL delete
 
-procedure env( id : identifier := eof_t );
+--procedure env( id : identifier := eof_t );
 -- env - list environment to standard output
 
-procedure help( ap : argumentListPtr );
--- help: show help
+-- help is in a separate package
 
 procedure do_history( ap : argumentListPtr );
 -- history: shell history control

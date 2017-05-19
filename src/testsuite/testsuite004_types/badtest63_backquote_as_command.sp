@@ -1,0 +1,1 @@
+`pwd;` ; -- backquote as command

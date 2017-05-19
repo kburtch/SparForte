@@ -51,9 +51,8 @@ commands.</p>
 <table border="0" cellspacing="0" cellpadding="0" width="90%" summary="">
 <tr>
 <td align="left">
-<p>change directory. "-" is the previous directory.&nbsp;
-A leading '~' is your home directory.</p>
-
+<p>Change directory. Changes the present working directory to the new directory.  A leading '~' is your home directory.  An empty string path will also go to your home directory.  Unlike the standard cd, cd requires at least one parameter.  cd supports AdaScript parameters.</p>
+<p>A "-" path will revert to your previous directory.  If use are at an interactive prompt, the name of the directory will be shown.</p>
 <u>Bash equivalent</u>: <tt>cd</tt><br>
 <u>Perl equivalent</u>: <tt>chdir</tt><br>
 <u>PHP  equivalent</u>: <tt>chdir</tt><br>

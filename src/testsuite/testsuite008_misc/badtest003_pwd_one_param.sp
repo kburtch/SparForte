@@ -1,0 +1,1 @@
+pwd "a"; -- should fail
