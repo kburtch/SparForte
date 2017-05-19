@@ -300,6 +300,7 @@ endif
 	@echo "  This covers language regression tests only"
 	@echo "---------------------------------------------------------------"
 	@echo
+	sloccount --duplicates --wide --details . > sloccount.sc
 	#gcov produces text files, lcov produces html like PHP coverage
 	gcov -b *.adb
 	# b~ confuses lcov

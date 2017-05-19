@@ -10,7 +10,11 @@ procedure ramcache is
   ----------------------------------------------------------------------------
 
   type a_cache_entry is record
-       saved_time : calendar.time;
+       --saved_time : calendar.time;
+       saved_time_year  : calendar.year_number;
+       saved_time_month : calendar.month_number;
+       saved_time_day   : calendar.day_number;
+       saved_time_day_duration : calendar.day_duration;
        key_value : string;
   end record;
 
@@ -26,7 +30,13 @@ procedure ramcache is
     json : json_string;
   begin
     md5_sig := numerics.md5( key );
-    cache_entry.saved_time := calendar.clock;
+    calendar.split(
+       calendar.clock,
+       cache_entry.saved_time_year,
+       cache_entry.saved_time_month,
+       cache_entry.saved_time_day,
+       cache_entry.saved_time_day_duration
+    );
     cache_entry.key_value := key_value;
     records.to_json( json, cache_entry );
     create( f, out_file, cache_path & "/" & md5_sig );
@@ -50,17 +60,17 @@ procedure ramcache is
     open( f, in_file, cache_path & "/" & md5_sig );
     json := get_line( f );
     close( f );
-? json;
--- TODO: time is numeric but incorrectly saved as a string, possibly because
--- calendar.time is a private time.
--- {"saved_time":"-4191177771725300000","key_value":"bar"}
     records.to_record( cache_entry, json );
     key_value := cache_entry.key_value;
-    saved_time := cache_entry.saved_time;
+    saved_time := calendar.time_of(
+      cache_entry.saved_time_year,
+      cache_entry.saved_time_month,
+      cache_entry.saved_time_day,
+      cache_entry.saved_time_day_duration
+    );
   exception when others =>
     key_value := "";
     saved_time := calendar.clock;
-raise;
   end read_cache;
 
   ----------------------------------------------------------------------------
@@ -117,7 +127,8 @@ raise;
 begin
   init_cache;
   put_cache( "foo", "bar" );
-  ? get_cache( "foo", 1000000 );
+  -- TODO: investigate why expires is not in seconds
+  ? get_cache( "foo", 10000000 );
 end ramcache;
 
 -- VIM editor formatting instructions
