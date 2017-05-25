@@ -950,14 +950,14 @@ end_junit_suite
 # Switch tests
 
 start_junit_suite "switch_tests" "run_tests.sp"
-start_junit_case "$1" "switch_tests"
+start_junit_case "minus_c_switch" "switch_tests"
 setup
 ../spar -c
 RESULT=$?
 teardown
 if [ $RESULT -eq 0 ] ; then
      echo
-     echo "--- $1 TEST FAILED - status code $RESULT ---"
+     echo "--- minus_c_switch TEST FAILED - status code $RESULT ---"
      echo "Test was:"
      cat "$1"
      junit_fail_bad_status $RESULT
