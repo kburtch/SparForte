@@ -40,6 +40,8 @@ packages from their distributor, if they are available.
 
 The following software packages are required for SparForte:
 
+  * A Bourne-compatible shell such as bash or ksh.  dash does not work.
+
   * GNU make is required; other make programs may not work.  GNU make is often
     installed under the name "gmake" and the SparForte makefile assumes this is the
     name of your software building program.

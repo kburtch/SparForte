@@ -10,13 +10,14 @@ These are new issues identified but not entered into the outstanding bug list
 
 Severe Issues (Fix These First)
 -------------------------------
-* gcc-errors tests not triggered on error_tokenize?
 
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
       must be a global scanner flag.
 - unsorted/misc
+    - with include builtin help missing
+    - gcc-errors tests not triggered on error_tokenize?
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - constant check fails if assignment is in `..` (subscripts are compiled after
