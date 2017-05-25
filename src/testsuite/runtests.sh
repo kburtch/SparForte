@@ -99,7 +99,7 @@ start_junit() {
   # Write header
 
   echo '<?xml version="1.0" encoding="UTF-8"?>'  > "$JUNIT_RESULT"
-  echo '</testsuites>' >> "$JUNIT_RESULT"
+  echo '<testsuites>' >> "$JUNIT_RESULT"
 }
 
 
