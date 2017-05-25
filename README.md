@@ -1,3 +1,5 @@
+[![Build Status](http://ec2-52-60-61-113.ca-central-1.compute.amazonaws.com:8080/buildStatus/icon?job=SparForte)](http://ec2-52-60-61-113.ca-central-1.compute.amazonaws.com:8080/job/SparForte)
+
 # SparForte README File
 
 Ken O. Burtch is the author of "Linux Shell Scripting with Bash" and
