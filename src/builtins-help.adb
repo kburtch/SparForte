@@ -2325,7 +2325,7 @@ begin
         "statements stored in a separate file. The file can include " &
         "variables, constants, types, functions, procedures, pragmas, " &
         "etc. A declaration file is used to share common declarations " &
-        "across many scripts.." );
+        "across many scripts." );
      params( e, "path - the path to the include file" );
      content( e, "with separate " & Ada.Characters.Latin_1.Quotation &
         "path" & Ada.Characters.Latin_1.Quotation );
