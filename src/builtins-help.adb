@@ -2282,7 +2282,7 @@ begin
      endHelp( e );
   elsif helpTopic = "strings" then
      startHelp( e, "strings" );
-     summary( e, "strings package (OpenGL Functions)" );
+     summary( e, "strings package" );
      categoryPackage( e );
      description( e, "A collection of common routines using strings." );
      content( e, "n := count( s, p )","r := csv_field( s, c [, d] )","r := csv_replace( s, f, t, [, d] )" );
