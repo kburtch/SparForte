@@ -838,6 +838,7 @@ begin
    content( e, "variables" );
    content( e, "wait" );
    content( e, "while" );
+   content( e, "with" );
    content( e, ASCII.Quotation & "?" & ASCII.Quotation );
    footer( e, "For full details, see the SparForte documentation.  To leave " &
      "SparForte, enter 'return' (or 'logout' if this is your login session)." );
@@ -2315,11 +2316,27 @@ begin
      content( e, "array_var :  array_type [ := array | (item,...) ]" );
      seeAlso( e, "doc/ref_typedecl.html, doc/ref_enum.html, doc/ref_arrays.html and doc/ref_records.html" );
      endHelp( e );
+  elsif helpTopic = "with" then
+     startHelp( e, "with" );
+     summary( e, "with separate" );
+     categoryKeyword( e );
+     description( e, "A separate declaration file is the SparForte " &
+        "equivalent of an include file. It is an set of declaration " &
+        "statements stored in a separate file. The file can include " &
+        "variables, constants, types, functions, procedures, pragmas, " &
+        "etc. A declaration file is used to share common declarations " &
+        "across many scripts.." );
+     params( e, "path - the path to the include file" );
+     content( e, "with separate " & Ada.Characters.Latin_1.Quotation &
+        "path" & Ada.Characters.Latin_1.Quotation );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
   elsif helpTopic = "?" then
      startHelp( e, "?" );
      summary( e, "question mark (text_io package)" );
      categoryBuiltin( e );
-     description( e, "Write a value to current output in human-readable format and start a new line." );
+     description( e, "Write a value to current output in human-readable " &
+        "format and start a new line." );
      params( e, "expression - the value to display" );
      content( e, "? expression" );
      seeAlso( e, "doc/pkg_text_io.html" );
