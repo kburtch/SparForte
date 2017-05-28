@@ -54,7 +54,12 @@ ASCII[47]="/"
 # spar -e test: empty string
 
 STR=''
-../../spar -e "$STR"
+../../spar -e "$STR"  2>/dev/null
+STATUS=$?
+if [ "$STATUS" -ne 192 ] ; then
+   echo "Test failed: expected status 192 but got $STATUS"
+   echo "$OUTPUT"
+fi
 
 # spar -e test: single characters
 
@@ -70,14 +75,50 @@ STR=''
         EXPECTED=192
      fi
      if [ "$STATUS" -ne "$EXPECTED" ] ; then
-        echo "Test failed: expected status $EXPECTED but got $STATUS"
+        echo "Test failed: ASCII $CNT - expected status $EXPECTED but got $STATUS"
         echo "$OUTPUT"
         exit 192
      fi
      let "CNT++"
   done
 )
+
+# spar -e test: double characters
+
+( CNT=0
+  CNT2=0
+  while [ "$CNT" -le 47 ] ; do
+     while [ "$CNT2" -le 47 ] ; do
+        STR=`echo -e "${ASCII[$CNT]}${ASCII[$CNT2]}"`
+        OUTPUT=`../../spar -e "$STR" 2>&1`
+        STATUS=$?
+        if [ "$CNT" -eq 45 ] ; then
+           # a minus, then we expect option missing
+           EXPECTED=1
+        elif [ "$CNT" -eq 0 ] ; then
+           if [ "$CNT2" -eq 45 ] ; then
+              # a NULL plus minus, then we expect option missing
+              # (Gnat doesn't seem to handle this case properly)
+              EXPECTED=1
+           else
+              EXPECTED=192
+           fi
+        else
+           EXPECTED=192
+        fi
+        if [ "$STATUS" -ne "$EXPECTED" ] ; then
+           echo "Test failed: ASCII $CNT and $CNT2 - expected status $EXPECTED but got $STATUS"
+           echo "$OUTPUT"
+           exit 192
+        fi
+        let "CNT2++"
+     done
+     let "CNT++"
+  done
+)
+
+# If we got this far, fuzz tests are done.
+
 echo "Fuzz Test OK"
 exit 0
-
 
