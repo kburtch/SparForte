@@ -18,7 +18,7 @@ CHANGES SINCE 2.0.3
 
 7: Fix: a file or spar -e string with only whitespace is now an error.
 
-8: Fix: "hash clash" internal error message removed...a hash collision is not really an error and it was originally used for debugging.
+8: Fix: "hash clash" internal error message corrected, typically on shell exit.
 
 9. Fix: dbm online help fixed.
 

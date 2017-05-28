@@ -191,10 +191,13 @@ procedure addCommandHash( cmd, full : unbounded_string; builtin : boolean ) is
   bin : natural := 0;
 begin
   bin := hashOf( cmd );
-  if length( cmdHash( bin ).fullPath ) = 0 then
-     cmdHash( bin ).cmd := cmd;
-     cmdHash( bin ).fullPath := full;
-     cmdHash( bin ).builtin := builtin;
+  if builtin and length( cmdHash( bin ).fullPath ) /= 0 then
+    put_line( standard_error, "internal error: builtin command hash clash for builtin "
+        & toEscaped( cmd ) );
+  else
+    cmdHash( bin ).cmd := cmd;
+    cmdHash( bin ).fullPath := full;
+    cmdHash( bin ).builtin := builtin;
   end if;
 end addCommandHash;
 
