@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.0.4's focus was bug fixes for SparForte 2.0
+SparForte 2.0.4's focus was bringing SparForte into Jenkins continuous integration.
 
 CHANGES SINCE 2.0.3
 
@@ -25,4 +25,12 @@ CHANGES SINCE 2.0.3
 10. Fix: strings.match online help no longer "help match" but "help strings.match" as in the index page.
 
 11. Fix: set_input added to the help index.
+
+12. Fix: with separate added to help command.
+
+13. Change: make coverage regression and coverage tests now support Jenkins using JUnit/Cobetura.
+
+14. New: user types and subtypes can be declared abstract.  [TODO: records, arrays, check parameters, positive tests, negative tests, and docs.]
+
+15. New: user types and subtypes can be declared limited.  [TODO: records, arrays, check parameters, positive tests, negative tests, and docs.  This isn't that useful until packages or some other context is defined where it can be assigned.]
 

@@ -11,6 +11,11 @@ These are new issues identified but not entered into the outstanding bug list
 Severe Issues (Fix These First)
 -------------------------------
 
+- abstract types not complete
+  - env / env x - not showing abstract
+  - abstract procedures
+  - abstract functions
+  - abstract parameters should error in non-abstract procs/funcs
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
@@ -140,6 +145,7 @@ Nice to Haves / Missing Functionality
     - with message envelope
     - with call statistics
     - with bandwidth calculations
+    - with state guarantees (how old the response)
 - packages
   - new vector or game math package (quads, etc).
 - unsorted/misc
@@ -201,6 +207,25 @@ New Unique Concepts
     - progamming by contract features - we have functions, so we can do them
       but can we do it elegantly rather than as an add-on to the existing
       syntax?
+    - the similar types problem
+      - Classes/Objects partially, but do not completely, eliminate the problem
+        of using similar types together (notably, factory classes as a workaround
+        for "new" only able to produce one type of object).  With the Ada-based
+        strong typing system, we need a better way to define similar types,
+        ensuring the these concepts are not limited to objects but can be used
+        throughout the language
+    - basic extensibility of aggregates
+      - arrays and records should be part of the core typing system, so that they
+        can be easily extended.  A record type, for example, shouldn't need "tagged"
+        to be extended.  An array type should be able to be extended with
+        new bounds (as the element type can be separately extensible).  'class
+        should not be necessary if we can trace subtypes back to originating parent
+        types.  (None of this should require objects, which
+        are separate features to be introduced later.)
+    - privacy should probably not use a "private" package section, but be a
+      keyword in declarations.
+    - abstract should be usable anywhere to create a type that is not intended
+      to have a variable created of that type.
 
 -------------------------------------------------------------------------------
 KNOWN ISSUES/IDEAS
