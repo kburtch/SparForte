@@ -122,6 +122,10 @@ source_info_symbol_table_size_t : identifier; -- Bush-specific
 
 -- End of Identifier Declarations
 
+-- List of reserved words for checking identifier names
+
+reserved_words : unbounded_string;
+
 ------------------------------------------------------------------------------
 -- Housekeeping
 --

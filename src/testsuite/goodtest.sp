@@ -2517,6 +2517,8 @@ close( ft );
 open( ft, in_file, "./__testfile" );
 b := end_of_file( ft );
 pragma assert( b = true );
+b := is_open( ft );
+pragma assert( b = true );
 close( ft );
 
 open( ft, out_file, "./__testfile" );
@@ -4372,6 +4374,17 @@ pragma assert( lfv = 10 );
 lfv := numerics.rounding( units.mb2bytes( 100 ) );
 pragma assert( lfv = 104857600 );
 
+-- source_info
+
+s := source_info.file;
+pragma assert( s = "goodtest.sp" );
+p := source_info.line;
+pragma assert( p > 0 );
+s := source_info.source_location;
+pragma assert( strings.length( s ) > 0 );
+s := source_info.enclosing_entity;
+pragma assert( s = "script" );
+   
 -- Pragmas
 
 pragma assumption( used, i );

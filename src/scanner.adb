@@ -367,6 +367,12 @@ begin
         put( "identifier of the type " );
      end case;
 
+     -- Abstract
+
+     if kind.noVar then
+        put( "abstract " );
+     end if;
+
      -- Limited type?
 
      if kind.limit then

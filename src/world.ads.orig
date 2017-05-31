@@ -331,6 +331,7 @@ type declaration is record
      volatile : boolean := false;               -- marked by pragma volatile
      static   : boolean := false;               -- if value is known at syn chk
      limit    : boolean := false;               -- limited type
+     noVar    : boolean := false;               -- abstract type
      list     : boolean := false;               -- array or array type
      resource : boolean := false;               -- resource type
      field_of : identifier;                     -- record superclass

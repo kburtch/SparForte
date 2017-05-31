@@ -1,0 +1,5 @@
+# This should fail
+
+pragma ada_95;
+s : string := $1;
+? s;

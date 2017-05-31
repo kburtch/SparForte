@@ -2689,6 +2689,12 @@ begin
        ": internal error: too many reserved words (limit 8191)";
   end if;
 
+  -- Collect reserved words for testing new identifier names
+
+  reserved_words := null_unbounded_string;
+  for i in 1..reserved_top-1 loop
+      reserved_words := reserved_words & " " & identifiers( i ).name & " ";
+  end loop;
 end startCompiler;
 
 

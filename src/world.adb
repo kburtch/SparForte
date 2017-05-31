@@ -526,6 +526,7 @@ begin
        volatile => false,
        static   => false,
        limit    => false,
+       noVar    => false,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -581,6 +582,7 @@ begin
        volatile => false,
        static   => false,
        limit    => false,
+       noVar    => false,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -702,6 +704,7 @@ begin
     identifiers(id).volatile := false;
     identifiers(id).static   := false;
     identifiers(id).limit    := false;
+    identifiers(id).noVar    := false;
     identifiers(id).list     := false;
     identifiers(id).field_of := proc_id;
     identifiers(id).inspect  := false;
@@ -793,6 +796,7 @@ begin
                  volatile => false,
                  static   => false,
                  limit    => false,
+                 noVar    => false,
                  list     => identifiers( identifiers( i ).kind ).list,   -- arrays now supported
                  resource => false,
                  field_of => eof_t,
@@ -862,6 +866,7 @@ begin
        volatile => false,
        static   => false,
        limit    => false,
+       noVar    => false,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -946,6 +951,7 @@ begin
        volatile => false,
        static   => false,
        limit    => false,
+       noVar    => false,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1006,6 +1012,7 @@ begin
        volatile => false,
        static   => identifiers( canonicalRef.id ).static,
        limit    => identifiers( canonicalRef.id ).limit,
+       noVar    => identifiers( canonicalRef.id ).noVar,
        list     => identifiers( canonicalRef.id ).list,
        resource => false,  -- can't really look up a resource
        field_of => identifiers( canonicalRef.id ).field_of,
@@ -1185,6 +1192,7 @@ begin
        volatile => false,
        static   => false,
        limit    => false,
+       noVar    => false,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1312,6 +1320,7 @@ begin
        volatile => false,
        static   => false,
        limit    => false,
+       noVar    => false,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1435,6 +1444,7 @@ begin
    to_decl.kind := from_decl.kind;
    to_decl.class := from_decl.class;
    to_decl.limit := from_decl.limit;
+   to_decl.noVar := from_decl.noVar;
    to_decl.genKind := from_decl.genKind;
    to_decl.genKind2 := from_decl.genKind2;
 end copyValue;

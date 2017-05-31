@@ -364,8 +364,8 @@ begin
      elsif token = word_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "(shell immediate) word" ) );
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "character literal" ) );
+     elsif token = eof_t then
+        err( optional_bold( "identifier" ) & " expected" );
      elsif is_keyword( token ) and token /= eof_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "keyword" ) );
@@ -382,26 +382,23 @@ begin
      getNextToken;
   else
      id := token;
-     -- if in a script, prohibit "l" and "O" as identifier names
-     if inputMode /= interactive and inputMode /= breakout then
-        if identifiers( id ).name = lowercase_l then
-           err( "style issue: name lowercase " & optional_bold( "l" ) & " can be confused with the number one" );
-        elsif identifiers( id ).name = uppercase_o then
-           err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
-        elsif index( nonmeaningful_words, to_string( " " & toLower( identifiers( id ).name ) & " " ) ) > 0 then
-           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
-        else
-           declare
-              nameAsLower : unbounded_string := toLower( identifiers(id).name );
-           begin
-              for i in 1..reserved_top-1 loop
-                if identifiers(i).name = nameAsLower then
-                   err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to reserved identifier " & optional_bold( to_string( identifiers(i).name ) ) );
-                end if;
-              end loop;
-           end;
+     declare
+        nameAsLower : unbounded_string := " " & toLower( identifiers(id).name ) & " ";
+     begin
+        -- if in a script, prohibit "l" and "O" as identifier names
+        if inputMode /= interactive and inputMode /= breakout then
+           if identifiers( id ).name = lowercase_l then
+              err( "style issue: name lowercase " & optional_bold( "l" ) & " can be confused with the number one" );
+           elsif identifiers( id ).name = uppercase_o then
+              err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
+           end if;
         end if;
-     end if;
+        if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
+           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+        elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
+            err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+        end if;
+     end;
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
@@ -455,15 +452,9 @@ begin
           -- token will be eof_t if error has already occurred
           discardUnusedIdentifier( token );
           -- help for common mistakes
-          -- php/shell
-          if ( to_string( identifiers( token ).name ) = "echo" ) or
-             -- basic/python
-             ( to_string( identifiers( token ).name ) = "print" ) then
-             err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared - perhaps you meant " & optional_bold( "put" ) );
-          else
-             -- default message
-             err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared" );
-          end if;
+          -- php/shell - checking for echo/print doesn't work since these
+          -- are Linux commands anyway and will be found.  Code removed.
+          err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared" );
        end if;
      end if;
      -- this only appears if err in typo loop didn't occur
@@ -712,7 +703,8 @@ begin
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
-           err( "symbol_table_size is not allowed with pragma ada_95" );
+           err( "symbol_table_size is not allowed with " &
+              optional_bold( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         else
@@ -1623,7 +1615,7 @@ begin
               err( "program_error exception raised" );
               kind := eof_t;
            when others =>
-              err( "no such argument" );
+              err( "there are only" & integer'image( Argument_Count-optionOffset) & " arguments" );
               kind := eof_t;
            end;
         end if;
@@ -3256,16 +3248,21 @@ begin
 
   --  Get the type.
 
-  ParseIdentifier( type_token );                       -- identify type
+  ParseIdentifier( type_token );                            -- identify type
 
   -- Array type?  Handled elsewhere.
 
-  if identifiers( getBaseType( type_token ) ).list then  -- array type?
+  if identifiers( getBaseType( type_token ) ).list then       -- array type?
      if not anon_arrays then
         err( "nested arrays not yet supported" );
+     elsif identifiers( type_token ).noVar then
+        err( "constants and variables cannot be declared as " &
+          optional_bold( to_string( identifiers( type_token ).name ) ) &
+          " because it is " & optional_bold( "abstract" ) );
+     else
+        ParseArrayDeclaration( id, type_token );                -- handle it
      end if;
-     ParseArrayDeclaration( id, type_token );          -- handle it
-     return;                                           --  and nothing more
+     return;                                            --  and nothing more
   end if;
 
   -- Record type?  Handled elsewhere.
@@ -3273,8 +3270,13 @@ begin
   if identifiers( getBaseType( type_token ) ).kind = root_record_t then  -- record type?
      if not anon_arrays then
         err( "nested records not yet supported" );
+     elsif identifiers( type_token ).noVar then
+        err( "constants and variables cannot be declared as " &
+          optional_bold( to_string( identifiers( type_token ).name ) ) &
+          " because it is " & optional_bold( "abstract" ) );
+     else
+        ParseRecordDeclaration( id, type_token );          -- handle it
      end if;
-     ParseRecordDeclaration( id, type_token );          -- handle it
      return;                                           --  and nothing more
   end if;
 
@@ -3294,6 +3296,16 @@ begin
      elsif not expr_expected then
         err( "command variables must be constant" );
      end if;
+  end if;
+
+  -- Abstract Types
+  --
+  -- These cannot be declared.
+
+  if identifiers( type_token ).noVar then
+     err( "constants and variables cannot be declared as " &
+          optional_bold( to_string( identifiers( type_token ).name ) ) &
+          " because it is " & optional_bold( "abstract" ) );
   end if;
 
   -- Generic Parameters
@@ -3671,7 +3683,7 @@ begin
 end ParseArrayTypePart;
 
 procedure ParseType is
-   -- Syntax: type = "type newtype is new oldtype"
+   -- Syntax: type = "type newtype is new [abstract] oldtype"
    --         type = "type arraytype is array-type-part"
    -- NOTE: enumerateds aren't overloadable (yet)
    newtype_id : identifier;
@@ -3736,15 +3748,53 @@ begin
          b := deleteIdent( parent_id );                    -- discard parent
      end if;
 
+   -- "abstract" appears before record or array, but after "new"
+   -- so there's extra logic to handle abstract and non-abstract
+   -- cases.
+   --
+   -- type ... abstract record... or abstract array...
+
+   elsif token = abstract_t then                              -- abstract type?
+      expect( abstract_t );
+      if token = array_t then
+         ParseArrayTypePart( newtype_id );
+         identifiers( newtype_id ).noVar := true;          -- no variables
+      elsif token = record_t then
+         ParseRecordTypePart( newtype_id );
+         identifiers( newtype_id ).noVar := true;          -- no variables
+      elsif token = new_t then
+        err( optional_bold( "abstract" ) & " goes after " & optional_bold( "new" ) );
+      else
+        err( "record or array expected" );
+      end if;
+
+   -- type ... array...
+
    elsif token = array_t then
       ParseArrayTypePart( newtype_id );
+
+   -- type ... record...
+
    elsif token = record_t then
       ParseRecordTypePart( newtype_id );
    else
 
-     -- new type
+     -- type ... new [abstract] [limited]...
 
      expect( new_t );                                      -- "new"
+
+     if token = abstract_t then                              -- abstract type?
+        identifiers( newtype_id ).noVar := true;             -- no variables
+        expect( abstract_t );
+     end if;
+
+     -- limited types
+
+     if token = limited_t then                               -- abstract type?
+        identifiers( newtype_id ).limit := true;             -- no variables
+        expect( limited_t );
+     end if;
+
      if token = array_t then
         err( "omit " & optional_bold( "new" ) & " since array is not derived from another type" );
      end if;
@@ -3783,7 +3833,7 @@ begin
 end ParseType;
 
 procedure ParseSubtype is
-   -- Syntax: type = "subtype newtype is oldtype"
+   -- Syntax: type = "subtype newtype is [abstract] oldtype"
    newtype_id : identifier;
    parent_id : identifier;
    b : boolean;
@@ -3791,6 +3841,12 @@ begin
    expect( subtype_t );                                    -- "subtype"
    ParseNewIdentifier( newtype_id );                       -- type name
    expect( is_t );                                         -- "is"
+
+   if token = abstract_t then                              -- abstract type?
+      identifiers( newtype_id ).noVar := true;             -- no variables
+      expect( abstract_t );
+   end if;
+
    ParseIdentifier( parent_id );                           -- old type
    if class_ok( parent_id, genericTypeClass, typeClass,
                subClass ) then                             -- not a type?
@@ -8021,7 +8077,6 @@ begin
   elsif identifiers( var_id ).kind = root_record_t then
      err( "cannot assign to an entire record" );
   elsif identifiers( var_id ).list then
-
      expect( symbol_t, "(" );
      ParseExpression( index_value, index_kind );
      if getUniType( index_kind ) = uni_string_t or identifiers( index_kind ).list then
