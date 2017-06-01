@@ -3763,9 +3763,11 @@ begin
       if token = array_t then
          ParseArrayTypePart( newtype_id );
          identifiers( newtype_id ).noVar := true;          -- no variables
+         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
       elsif token = record_t then
          ParseRecordTypePart( newtype_id );
          identifiers( newtype_id ).noVar := true;          -- no variables
+         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
       elsif token = new_t then
         err( optional_bold( "abstract" ) & " goes after " & optional_bold( "new" ) );
       else
@@ -3789,6 +3791,7 @@ begin
 
      if token = abstract_t then                              -- abstract type?
         identifiers( newtype_id ).noVar := true;             -- no variables
+         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
         expect( abstract_t );
      end if;
 
