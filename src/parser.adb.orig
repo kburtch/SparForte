@@ -751,8 +751,9 @@ begin
            kind := identifiers( t ).kind;
         elsif identifiers( t ).class = subClass or             -- type cast
            identifiers( t ).class = typeClass then
-           if identifiers( getBaseType( t ) ).list then        -- array cast?
-              err( "cannot typecast by array types...perhaps you wanted an array variable" ); -- because we can't
+           -- this will change when arrays can have derived types.
+           if identifiers( getBaseType( t ) ).list then
+              err( optional_bold( to_string( identifiers( t ).name ) ) & " is an array type" );
            end if;                               -- represent array types
            castType := t;                        -- in expressiosn (yet)
            expect( symbol_t, "(" );
@@ -770,6 +771,7 @@ begin
            expect( symbol_t, "(" );                  -- parse index part
            ParseExpression( f, kind );               -- kind is the index type
            if getUniType( kind ) = uni_string_t or   -- index must be scalar
+              getUniType( kind ) = root_record_t or
               identifiers( getBaseType( kind ) ).list then
               err( "array index must be a scalar type" );
            end if;                                   -- variables are not
@@ -857,8 +859,9 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
      err( "operator expected");
-  elsif identifiers( Token ).value.all /= "**" then
-     err( "** operator expected");
+  -- This is checked by parseTerm
+  --elsif identifiers( Token ).value.all /= "**" then
+  --   err( "** operator expected");
   else
      op := identifiers( token ).value.all;
   end if;
@@ -1846,8 +1849,9 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
      err( "operator expected");
-  elsif identifiers( Token ).value.all /= "**" then
-     err( "** operator expected");
+  -- This is checked by parseTerm
+  --elsif identifiers( Token ).value.all /= "**" then
+  --   err( "** operator expected");
   else
      op := identifiers( token ).value.all;
   end if;

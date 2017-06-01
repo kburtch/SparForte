@@ -20,15 +20,17 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
-with Ada.Characters.Latin_1,
+with Ada.Calendar.Arithmetic,
+     Ada.Characters.Latin_1,
      Ada.Strings.Unbounded;
-use  Ada.Strings.Unbounded;
+use  Ada.Strings.Unbounded,
+     Ada.Calendar.Arithmetic;
 
 package body reports.test is
 
   -- JUNIT Utilities
 
-  Quotation : character := Ada.Characters.Latin_1.Quotation;
+  Quotation : constant character := Ada.Characters.Latin_1.Quotation;
 
   type test_natural is new natural;
   type assertion_natural is new natural;
@@ -60,6 +62,7 @@ package body reports.test is
     name         : unbounded_string;
     path         : unbounded_string;
     startTime    : ada.calendar.time;
+    testCnt      : test_natural := 1;
     assertionCnt : assertion_natural := 1;
     failureCnt   : failure_natural := 0;
     errorCnt     : error_natural := 0;
@@ -69,7 +72,7 @@ package body reports.test is
   procedure startJunit is
   begin
     put_line( "<?xml version=" & ASCII.Quotation & "1.0" &
-      ASCII.Quotation & " encoding="  & ASCII.Quotation & 
+      ASCII.Quotation & " encoding="  & ASCII.Quotation &
       "UTF-8"  & ASCII.Quotation & "?>" );
     put_line( "<testsuites>" );
   end startJunit;
@@ -82,30 +85,32 @@ package body reports.test is
     jtc.startTime := ada.calendar.clock;
   end startJUnitTestCase;
 
-  procedure endJunitTestCase( jtc : in out junitTestCase ) is
-    elapsed : duraton;
+  procedure endJunitTestCase( jtc : in out junitTestCase; jts : in out junitTestSuite; js : in out junitState ) is
+    elapsedDays : Day_Count;
+    elapsedSeconds : duration;
+    elapsedLeapSeconds : Leap_Seconds_Count;
   begin
-    js.testCnt := js.testCnt + 1;
+    js.totalTests := js.totalTests + 1;
     jts.assertionCnt := jts.assertionCnt + jtc.assertionCnt;
     jts.failureCnt := jts.failureCnt + jtc.failureCnt;
     jts.errorCnt := jts.errorCnt + jtc.errorCnt;
-    elapsed := ada.calendar.clock - jtc.startTime;
-    put( "  <testcase name=" & Quotation & jtc.name & Quotation & " " );
-    put( "class=" & Quotation & jtc.class & Quotation & " " );
-    put( "file=" & Quotation & jtc.file & Quotation & " " );
-    put( "line=" & Quotation & jtc.line'img & Quotation & " " );
+    Difference( ada.calendar.clock, jtc.startTime, elapsedDays, elapsedSeconds, elapsedLeapSeconds );
+    put( "  <testcase name=" & Quotation & to_string( jtc.name ) & Quotation & " " );
+    put( "class=" & Quotation & to_string( jtc.class ) & Quotation & " " );
+    put( "file=" & Quotation & to_string( jtc.file ) & Quotation & " " );
+    put( "line=" & Quotation & to_string( jtc.line ) & Quotation & " " );
     put( "assertions=" & Quotation & jtc.assertionCnt'img & Quotation & " " );  -- TODO: trim
     put( "failures=" & Quotation & jtc.failureCnt'img & Quotation & " " );
     put( "errors=" & Quotation & jtc.errorCnt'img & Quotation & " " );
-    put( "time=" & Quotation & elapsed & Quotation & ">"
+    put( "time=" & Quotation & elapsedSeconds'img & Quotation & ">" );
     new_line;
     if length( jtc.failureMsg ) > 0 then
-       put( "    <failure message=" & Quotation & "test failure" & 
-         Quotation & ">" & jtc.failureMsg & "</failure>" );
+       put( "    <failure message=" & Quotation & "test failure" &
+         Quotation & ">" & to_string( jtc.failureMsg ) & "</failure>" );
     end if;
     if length( jtc.errorMsg ) > 0 then
-       put( "    <error message=" & Quotation & "test error" & 
-         Quotation & ">" & jtc.errorMsg & "</error>" );
+       put( "    <error message=" & Quotation & "test error" &
+         Quotation & ">" & to_string( jtc.errorMsg ) & "</error>" );
     end if;
     if jtc.skipped then
        put( "<skipped />" );
@@ -120,19 +125,21 @@ package body reports.test is
     jts.name := name;
     jts.path := path;
     jts.startTime := ada.calendar.clock;
-  end startJUnitTestCase;
+  end startJUnitTestSuite;
 
   procedure endJunitTestSuite( jts : in out junitTestSuite ) is
-    elapsed : duraton;
+    elapsedDays : Day_Count;
+    elapsedSeconds : duration;
+    elapsedLeapSeconds : Leap_Seconds_Count;
   begin
-    elapsed := ada.calendar.clock - jts.startTime;
-    put( "<testsuite name=" & Quotation & jts.name & Quotation & " " );
-    put( "file=" & Quotation & jts.path & Quotation & " " );
-    put( "tests=" & Quotation & $jts.testCnt'img & Quotation & " " ); -- TODO: trim
+    Difference( ada.calendar.clock, jts.startTime, elapsedDays, elapsedSeconds, elapsedLeapSeconds );
+    put( "<testsuite name=" & Quotation & to_string( jts.name ) & Quotation & " " );
+    put( "file=" & Quotation & to_string( jts.path ) & Quotation & " " );
+    put( "tests=" & Quotation & jts.testCnt'img & Quotation & " " ); -- TODO: trim
     put( "assertions=" & Quotation & jts.assertionCnt'img & Quotation & " " );
     put( "failures=" & Quotation & jts.failureCnt'img & Quotation & " " );
     put( "errors=" & Quotation & jts.errorCnt'img & Quotation & " " );
-    put( "time=" & Quotation & elapsed'img & Quotation & ">"
+    put( "time=" & Quotation & elapsedSeconds'img & Quotation & ">" );
     new_line;
     -- TODO: test cases go here
     put_line( "</testsuite>" );

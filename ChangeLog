@@ -34,3 +34,7 @@ CHANGES SINCE 2.0.3
 
 15. New: user types and subtypes can be declared limited.  [TODO: records, arrays, check parameters, positive tests, negative tests, and docs.  This isn't that useful until packages or some other context is defined where it can be assigned.]
 
+16. Fix: passing a record to an array index no longer results in an exception crash.
+
+17. New: gprof profiling enabled on make coverage
+

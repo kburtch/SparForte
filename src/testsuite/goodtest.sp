@@ -4384,7 +4384,7 @@ s := source_info.source_location;
 pragma assert( strings.length( s ) > 0 );
 s := source_info.enclosing_entity;
 pragma assert( s = "script" );
-   
+
 -- Pragmas
 
 pragma assumption( used, i );

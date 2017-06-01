@@ -199,7 +199,7 @@ clean:
 	#$(MAKE) -C ADAVOX-0.51 clean
 	$(MAKE) -C pegasock clean
 	-rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
-	-rm -f *.gcda *.gcno *.gcov coverage.info
+	-rm -f *.gcda *.gcno *.gcov coverage.info gmon.out testsuite/templates/gmon.out testsuite/goodsuite/gmon.out testsuite/helpsuite/gmon.out testsuite/third_party/gmon.out testsuite/gmon.out
 
 distclean:
 	$(MAKE) -C areadline clean
@@ -281,14 +281,15 @@ endif
 	# Remove old test results (keep .gcno - notes files)
 	-rm -f *.gcda *.gcov coverage.info
 	# Always build without optimization to ensure correct coverage results
-	$(GNATMAKE) -j2 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -c $(INCLUDE) spar
+	# -pg required for gprof performance profiling
+	$(GNATMAKE) -j2 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -pg -g -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS) -lgcov
+	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS) -lgcov -pg
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING REGRESSION TEST SUITE"
 	@echo "---------------------------------------------------------------"
-	(cd testsuite; sh runtests.sh)
+	(cd testsuite; sh runtests.sh -g)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING THIRD PARTY TEST SUITE"

@@ -9,6 +9,7 @@
 
 # Command line option flags
 OPT_FAIL=
+OPT_GPROF=
 
 # Set to 1 if any test failed
 HAD_FAILURE=
@@ -587,6 +588,10 @@ good_test() {
      fi
   fi
   end_junit_case
+  if [ ! -z "$OPT_GPROF" ] ; then
+     echo "gprof profile of goodtest.sp"
+     gprof -p ../spar
+  fi
 }
 
 #  GOOD TEST IN DIR
@@ -702,13 +707,18 @@ test_template() {
 if [ "$1" = "-h" ] ; then
    echo "SparForte test suite"
    echo
-   echo "usage: $0 [-b]"
+   echo "usage: $0 [-b|-f|-g]"
    echo " -b - bad syntax tests only"
    echo " -f - fail on first error"
+   echo " -g - gprof profiling results"
    exit 0
 fi
 if [ "$1" = "-f" ] ; then
    OPT_FAIL=1
+elif [ "$1" = "-g" ] ; then
+   OPT_GPROF=1
+elif [ "$1" != "-b" ] ; then
+   echo "Unexpected switch $1"
 fi
 
 # Cleanup temp file (if it exists)

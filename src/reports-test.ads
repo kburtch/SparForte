@@ -31,12 +31,13 @@ with gen_list;
 
 package reports.test is
 
+procedure startJunit; -- not really here..just to compile
+
   ----------------------------------------------------------------------------
   --
   -- TESTING REPORTS
   --
   ----------------------------------------------------------------------------
-  -- TODO: none yet
 
   type testReport is new textReport with null record;
 

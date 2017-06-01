@@ -16,6 +16,9 @@ Severe Issues (Fix These First)
   - abstract procedures
   - abstract functions
   - abstract parameters should error in non-abstract procs/funcs
+- thoughts on user-defined universals
+  - some features are looking for root storage types, but these are currently
+    equivalent to the built-in universals.
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
