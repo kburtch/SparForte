@@ -1133,7 +1133,6 @@ begin
      if (kind1 = cal_time_t) and then (getBaseType(kind2) = duration_t or kind2 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
         expr_type := cal_time_t;
-        operation := uni_numeric_t;
         operation := cal_time_t;
      end if;
      if (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
@@ -2184,7 +2183,7 @@ begin
                     c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                  begin
                     c := c + duration( to_numeric( term2 ) );
-                    se := to_unbounded_string( long_float( c ) );
+                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            elsif operator = "-" then
@@ -2193,7 +2192,7 @@ begin
                     c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                  begin
                     c := c - duration( to_numeric( term2 ) );
-                    se := to_unbounded_string( long_float( c ) );
+                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            end if;
@@ -2204,7 +2203,7 @@ begin
                     c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
                  begin
                     c := duration( to_numeric( se ) ) + c;
-                    se := to_unbounded_string( long_float( c ) );
+                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            elsif operator = "-" then
