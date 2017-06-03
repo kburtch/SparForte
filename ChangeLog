@@ -30,11 +30,14 @@ CHANGES SINCE 2.0.3
 
 13. Change: make coverage regression and coverage tests now support Jenkins using JUnit/Cobetura.
 
-14. New: user types and subtypes can be declared abstract.  [TODO: records, arrays, check parameters, positive tests, negative tests, and docs.]
+14. New: user types and subtypes can be declared abstract.  [TODO: check parameters, negative tests, and docs.]
 
-15. New: user types and subtypes can be declared limited.  [TODO: records, arrays, check parameters, positive tests, negative tests, and docs.  This isn't that useful until packages or some other context is defined where it can be assigned.]
+15. New: user types and subtypes can be declared limited.  [TODO: check parameters, negative tests - arrays, records, which can't be assigned yet].  This isn't that useful until packages or some other context is defined where it can be assigned.]
 
 16. Fix: passing a record to an array index no longer results in an exception crash.
 
 17. New: gprof profiling enabled on make coverage
+
+18. Fix: rounding errors in calendar.time arithmetic fixed.
+
 

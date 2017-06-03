@@ -53,6 +53,10 @@ subtype sub_int is integer;
 type new_int is new integer;
 type new_enum is (enum0);
 type new_enum2 is (enum1, enum2, enum3);
+type abstract_int is new abstract integer;
+subtype abstract_int2 is abstract integer;
+type limited_int is new limited integer;
+subtype limited_int2 is limited integer;
 
 -- assignment and expressions
 
@@ -85,6 +89,10 @@ i := ((1 + 1 )) / 1;
 pragma assert( i=2 );
 i:=(1+1)/2;
 pragma assert( i=1 );
+i := 3 mod 2;
+pragma assert( i=1 );
+f := 3 rem 2;
+pragma assert( f=1 );
 i := System.Max_Int;
 pragma assert( i=System.Max_Int );
 i := System.Max_Int+0;
@@ -130,6 +138,8 @@ pragma assert( s="ab" );
 c := 'a';
 s := "unistring"&c;
 pragma assert( s="unistringa" );
+s := 3 * "str";
+pragma assert( s="strstrstr" );
 b := true;
 pragma assert( b=true );
 b := false;
@@ -191,6 +201,20 @@ pragma assert( b=true );
 b := 1 = 1;
 pragma assert( b=true );
 b := 1 /= 1;
+pragma assert( b=false );
+b := "1" > "1";
+pragma assert( b=false );
+b := "1" = "1";
+pragma assert( b=true );
+b := "1" < "1";
+pragma assert( b=false );
+b := "1" >= "1";
+pragma assert( b=true );
+b := "1" <= "1";
+pragma assert( b=true );
+b := "1" = "1";
+pragma assert( b=true );
+b := "1" /= "1";
 pragma assert( b=false );
 i := 0;
 i := @ + 1;
@@ -1248,6 +1272,8 @@ pragma assert( sa2(1) = 5 );
 type nullarray is array(1..0) of integer;
 nularr : nullarray;
 
+type abstractarray is abstract array(1..2) of integer;
+
 -- type of an array type
 
 type arrtype2 is new arrtype;
@@ -1375,6 +1401,10 @@ i := stats.max( la1 );
 pragma assert( i = 3 );
 
 -- record
+
+type arec0 is abstract record
+     i : integer;
+end record;
 
 type arec1 is record
      i : integer;
@@ -2693,10 +2723,16 @@ pragma assert( cy > 2000 ); -- test not exact
 
 -- calendar arithmetic
 
-current_time := current_time - 1.0; -- calendar arithmetic
-current_time := current_time + 1.0; -- calendar arithmetic
-b := current_time = current_time;
+old_current_time : calendar.time := current_time;
+current_time := current_time - 1.0;
+current_time := current_time + 1.0;
+b := current_time = old_current_time;
 pragma assert( b = true );
+-- Code coverage fails here due to previous error
+current_time := 1.0 + current_time;
+b := current_time > old_current_time;
+pragma assert( b = true );
+current_time := old_current_time;
 b := current_time > current_time;
 pragma assert( b = false );
 b := current_time >= current_time;

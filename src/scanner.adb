@@ -333,9 +333,23 @@ begin
         if ident.field_of = eof_t then
            put( "subtype of " );
         end if;
+        -- abstract/limited are the type itself, not its paretn
+        if ident.noVar then
+           put( "abstract " );
+        end if;
+        if ident.limit then
+           put( "limited " );
+        end if;
      when typeClass =>
         if not ident.list then
            put( "new type of " );
+        end if;
+        -- abstract/limited are the type itself, not its paretn
+        if ident.noVar then
+           put( "abstract " );
+        end if;
+        if ident.limit then
+           put( "limited " );
         end if;
      when constClass =>
         if ident.field_of = eof_t then

@@ -142,6 +142,80 @@ i : integer := integer( "this is a string" );<br>
 
 <p><b>Ada</b>:Type qualifications are not yet implemented.</p>
 
+<h3>Abstract Types</h3>
+
+<p>An abstract type is a type that is declared but it cannot be used to
+store values.  It cannot be used for
+variables, constants or subprogram parameters.  These can represent
+unfinished data types, future ideas, conceptual types that only exist
+to create other types.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+-- Customer is not complete or ready for use<br />
+<br />
+<b>type</b> customer <b>is</b> <b>abstract</b> <b>record</b><br />
+&nbsp;&nbsp;cname : string;<br />
+<b>end</b> <b>record</b>;<br />
+<br />
+-- No customer id can be generic.  Only foreign or<br />
+-- domestic customers exist in the real world.<br />
+<br />
+<b>type</b> generic_customer_id <b>is</b> <b>new<b> <b>abstract</b> <b>integer</b>;<br />
+<br />
+type domestic_customer_id <b>is</b> <b>new</b> generic_customer_id;<br />
+type foreign_customer_id <b>is </b><b>new</b> generic_customer_id;<br />
+        </div>
+        </center>
+
+<p>In this example, generic_customer_id can be used to make other types,
+but cannot be used itself to make variables.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+id : generic_customer_id;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ constants and variables cannot be declared as generic_customer_id because it is abstract<br />
+        </div>
+        </center>
+
+<p>Subtypes can also be created from abstract types.  The subtypes will
+not be abstract but you can make a subtype abstract.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>subtype</b> domestic_customer_id <b>is</b> <b>abstract</b> generic_customer_id;<br/>
+        </div>
+        </center>
+
+
+<p>Most types (except for enumerated types) may be created as abstract
+types.</p>
+
+<p><b>Ada</b>:In SparForte, abstract does not require an object.</p>
+
+<h3>Limited Types</h3>
+
+<p>A limited type is a type that prevents value assignments.  Limited variables
+cannot have values assigned to them.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+-- The operating system assigns id's so we don't want others<br />
+-- assigning new values accidentally.<br />
+<br />
+<b>type</b> operating_system_id <b>is</b> <b>new</b> <b>limited</b> integer;<br />
+        </div>
+        </center>
+
+<p>Subtypes can also be created from limited types.  The subtypes will
+not be limited but you can make a subtype limited.</p>
+
+<p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
+
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

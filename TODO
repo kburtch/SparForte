@@ -12,13 +12,9 @@ Severe Issues (Fix These First)
 -------------------------------
 
 - abstract types not complete
-  - env / env x - not showing abstract
   - abstract procedures
   - abstract functions
   - abstract parameters should error in non-abstract procs/funcs
-- thoughts on user-defined universals
-  - some features are looking for root storage types, but these are currently
-    equivalent to the built-in universals.
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler
@@ -107,10 +103,18 @@ Nice to Haves / Missing Functionality
       pending_restriction( x ), similar to pragma deprecated, which is
       an error if x is used in the design phase only, and a warning in
       the development phase.
+      - a way for archictural exceptions to be recorded, audited...i.e. with
+        team member that OK'ed it.
     - pragma depreciated should be a list, not a string.
     - review and improve help command reports for producing system audit reports.  Are they complete?  Usable?  Any rsh restrictions needed?  For example, we need a software_model report.
     - while we want to default to security, we also want not to be overly restrictive with pragma restriction in general.  We should probably default to secure and add exceptions...how would i code that?
     - probably need a security pragma and not relying on rsh = security
+    - pragma deprecated is designed for scripts, but there is no way to deprecate
+      subprograms, types, etc.  In general, I need to expand end-of-life
+      and migration features.
+    - teams package should be redesigned so team members can be more easily
+      used with pragmas (that is, team member info should be available at
+      syntax-check time)
 - user role blocks
     - configuration/policy/project <name> ... is separate (not with separate, which isn't
       as specific)
@@ -135,6 +139,17 @@ Nice to Haves / Missing Functionality
   - return arrays and records in expressions (requires records revamp)
   - allow users to create their own universal types
   - record system refactor (in prep for aggregate expressions)
+  - thoughts on user-defined universals
+    - some features are looking for root storage types, but these are currently
+      equivalent to the built-in universals.
+    - since aggregates have no common structure, the type contained in a
+      universal variable should be the type of the value being assigned.  This
+      is, in essence, polymorphism.
+      - should variables change type automatically or be declared as polymorphic?
+      - should the notion of extension be reversed?  In Ada, types are about
+        applying restrictions.  Would it make sense to have the root type to be
+        the broadest type.  e.g. "type ... withOUT record x : integer..." to
+        make storage items hidden/off-limits as opposed to adding new fields?
 - templates
   - need template package to set return HTTP status
 - strings
