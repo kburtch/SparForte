@@ -40,4 +40,8 @@ CHANGES SINCE 2.0.3
 
 18. Fix: rounding errors in calendar.time arithmetic fixed.
 
+19. Fix: funtions many no longer be called in static expressions (since they use regular expressions).
+
+20. Refactor: expression handling redesigned to get some minor speed improvements.
+
 

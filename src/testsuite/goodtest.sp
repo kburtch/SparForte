@@ -267,6 +267,9 @@ pragma assert( i=96 );
 j := 32;
 i := 255 and j;
 pragma assert( i=32 );
+j := 14;
+i := j xor 9;
+pragma assert( i=7 );
 i := 5;
 pragma assert( i in 1..10 );
 pragma assert( i in i..i );
@@ -1143,6 +1146,67 @@ pragma dispute( ken, ken, "foo" & "bar" );
 pragma propose( ken, ken, "foo" & "bar" );
 pragma refactor( ken, ken, "foo" & "bar" );
 pragma todo( ken, "some " & "task 1", work_measure.unknown, 0, work_priority.level, 'l', "ID 1" );
+
+-- right now all static expressions are strings.  This is a workaround.
+-- also, no way to test if result is correct.  This, though, uses a
+-- non-static expression in strings.image...
+
+--pragma annotate( description, strings.image( 4 ) );
+--pragma annotate( description, strings.image( 0 ) );
+--pragma annotate( description, strings.image( 1000000 ) );
+--pragma annotate( description, strings.image( 1_000_000 ) );
+--pragma annotate( description, strings.image( 0.0 ) );
+--pragma annotate( description, strings.image( +1 ) );
+--pragma annotate( description, strings.image( -1 ) );
+--pragma annotate( description, strings.image( 1 + 1 ) );
+--pragma annotate( description, strings.image( 1 * 1 ) );
+--pragma annotate( description, strings.image( 1 ** 1 ) );
+--pragma annotate( description, strings.image( 1 / 1 ) );
+--pragma annotate( description, strings.image( 1 - 1 ) );
+--pragma annotate( description, strings.image( (1 + 1 ) / 1 ) );
+--pragma annotate( description, strings.image( ((1 + 1 )) / 1 ) );
+--pragma annotate( description, strings.image( (1+1)/2 ) );
+--pragma annotate( description, strings.image( 3 mod 2 ) );
+--pragma annotate( description, strings.image( 3 rem 2 ) );
+--pragma annotate( description, 3 * "str" );
+--pragma annotate( description, strings.image( true ) );
+--pragma annotate( description, strings.image( false ) );
+--pragma annotate( description, strings.image( not true ) );
+--pragma annotate( description, strings.image( not false ) );
+--pragma annotate( description, strings.image( true and true ) );
+--pragma annotate( description, strings.image( true and false ) );
+--pragma annotate( description, strings.image( false and true ) );
+--pragma annotate( description, strings.image( false and false ) );
+--pragma annotate( description, strings.image( true and false and true ) );
+--pragma annotate( description, strings.image( false and true and false ) );
+--pragma annotate( description, strings.image( true and true and true ) );
+--pragma annotate( description, strings.image( false and false and false ) );
+--pragma annotate( description, strings.image( true or true ) );
+--pragma annotate( description, strings.image( true or false ) );
+--pragma annotate( description, strings.image( false or true ) );
+--pragma annotate( description, strings.image( false or false ) );
+--pragma annotate( description, strings.image( true or false or true ) );
+--pragma annotate( description, strings.image( false or true or false ) );
+--pragma annotate( description, strings.image( true or true or true ) );
+--pragma annotate( description, strings.image( false or false or false ) );
+--pragma annotate( description, strings.image( true xor true ) );
+--pragma annotate( description, strings.image( true xor false ) );
+--pragma annotate( description, strings.image( false xor true ) );
+--pragma annotate( description, strings.image( false xor false ) );
+--pragma annotate( description, strings.image( 1 > 1 ) );
+--pragma annotate( description, strings.image( 1 = 1 ) );
+--pragma annotate( description, strings.image( 1 < 1 ) );
+--pragma annotate( description, strings.image( 1 >= 1 ) );
+--pragma annotate( description, strings.image( 1 <= 1 ) );
+--pragma annotate( description, strings.image( 1 = 1 ) );
+--pragma annotate( description, strings.image( 1 /= 1 ) );
+--pragma annotate( description, strings.image( "1" > "1" ) );
+--pragma annotate( description, strings.image( "1" = "1" ) );
+--pragma annotate( description, strings.image( "1" < "1" ) );
+--pragma annotate( description, strings.image( "1" >= "1" ) );
+--pragma annotate( description, strings.image( "1" <= "1" ) );
+--pragma annotate( description, strings.image( "1" = "1" ) );
+--pragma annotate( description, strings.image( "1" /= "1" ) );
 
 -- team member fields
 

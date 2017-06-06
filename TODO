@@ -27,6 +27,7 @@ Severe Issues (Fix These First)
     - constant check fails if assignment is in `..` (subscripts are compiled after
       main program is compiled, but are they syntax checked earlier?)  This may be
       part of a greater issue: subscripts should be syntax checked at compile-time.
+    - arrays.shuffle still giving rare index out of range internal errors
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
