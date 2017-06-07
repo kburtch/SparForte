@@ -297,13 +297,14 @@ endif
 	(cd testsuite; sh third_party_tests.sh)
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "  Generating Code Coverage Reports (gcov, lcov and sloccount)"
+	@echo "  Generating Code Coverage Reports (gcov, lcov and cloc)"
 	@echo
 	@echo "  This covers language regression tests only"
 	@echo "---------------------------------------------------------------"
 	@echo
 	#compute lines of code
-	sloccount --duplicates --wide --details . > sloccount.txt
+	#sloccount --duplicates --wide --details . > sloccount.txt
+    cloc --xml --quiet --report-file="sloccount.xml" .
 	#gcov produces text files, lcov produces html like PHP coverage
 	gcov -b *.adb
 	# b~ confuses lcov
