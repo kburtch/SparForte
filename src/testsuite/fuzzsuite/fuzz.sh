@@ -1,6 +1,9 @@
 #!/bin/bash
 #
 # Very rudimentary fuzzing test to inject random data into SparForte.
+#
+# To be run from testsuite directory
+#
 # May 11, 2017
 # Ken Burtch
 # ----------------------------------------------------------------------------
@@ -54,7 +57,7 @@ ASCII[47]="/"
 # spar -e test: empty string
 
 STR=''
-../../spar -e "$STR"  2>/dev/null
+../spar -e "$STR"  2>/dev/null
 STATUS=$?
 if [ "$STATUS" -ne 192 ] ; then
    echo "Test failed: expected status 192 but got $STATUS"
@@ -66,7 +69,7 @@ fi
 ( CNT=0
   while [ "$CNT" -le 47 ] ; do
      STR=`echo -e "${ASCII[$CNT]}"`
-     OUTPUT=`../../spar -e "$STR" 2>&1`
+     OUTPUT=`../spar -e "$STR" 2>&1`
      STATUS=$?
      if [ "$CNT" -eq 45 ] ; then
         # a minus, then we expect option missing
@@ -90,7 +93,7 @@ fi
   while [ "$CNT" -le 47 ] ; do
      while [ "$CNT2" -le 47 ] ; do
         STR=`echo -e "${ASCII[$CNT]}${ASCII[$CNT2]}"`
-        OUTPUT=`../../spar -e "$STR" 2>&1`
+        OUTPUT=`../spar -e "$STR" 2>&1`
         STATUS=$?
         if [ "$CNT" -eq 45 ] ; then
            # a minus, then we expect option missing

@@ -633,7 +633,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
                  exception when CONSTRAINT_ERROR =>
                    err( gnat.source_info.source_location &
                     ": internal error: constraint_error : index out of range " &
-                    identifiers( array_id ).avalue'first'img & " .. " &
+                    identifiers( array_id ).avalue'first'img & " .." &
                     identifiers( array_id ).avalue'last'img );
                  when STORAGE_ERROR =>
                    err( gnat.source_info.source_location &
@@ -780,7 +780,9 @@ begin
         ParseNumericsAbs( f );
         kind := uni_numeric_t;
      else
-        err( "internal error: unexpected symbol in parse factor" );
+        f := null_unbounded_string;                -- (always return something)
+        kind := eof_t;
+        err( "operand expected" );
      end if;
      -- Another board category, is the token a pre-defined idenifier?
   elsif token < predefined_top then
@@ -873,7 +875,9 @@ begin
           err_exception_raised;
        end;
   when others =>
-      err( "unexpected uniary operation error" );
+      f := null_unbounded_string;                -- (always return something)
+      kind := eof_t;
+      err( "internal error: unexpected uniary operation error" );
   end case;
 end ParseFactor;
 
@@ -2667,7 +2671,9 @@ begin
              begin
                identifiers( array_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
              exception when CONSTRAINT_ERROR =>
-               err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+               err( "assigning " & optional_bold( arrayIndex'img ) &
+                    " elements but the array is range " &
+                    identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
              when STORAGE_ERROR =>
                err( gnat.source_info.source_location &
                  ": internal error : storage error raised in ParseAssignment" );
@@ -2690,9 +2696,9 @@ begin
      end if;
      if isExecutingCommand then                                -- not on synchk
         if arrayIndex < lastIndex then                         -- check sizes
-           err( "array literal has " & optional_bold( arrayIndex'img ) &
-                " elements but the array has" &
-                optional_bold( lastIndex'img ) & " elements" );
+           err( "assigning only " & optional_bold( arrayIndex'img ) &
+                " elements but the array is range " &
+                identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
         end if;
      end if;
      expect( symbol_t, ")" );
@@ -2739,7 +2745,7 @@ begin
                  --end loop;
               end if;
            exception when CONSTRAINT_ERROR =>
-              err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+              err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
            when STORAGE_ERROR =>
               err( gnat.source_info.source_location &
                  ": internal error : storage error raised when copying arrays" );
@@ -2777,20 +2783,27 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( ab1, kind1 );                           -- low bound
   -- should really be a constant expression but we can't handle that
-  if getUniType( kind1 ) = uni_string_t or                 -- must be scalar
-      identifiers( getBaseType( kind1 ) ).list then
-      err( "array indexes must be scalar types" );
-  end if;
-  expect( symbol_t, ".." );
-  ParseExpression( ab2, kind2 );                            -- high bound
-  if token = symbol_t and identifiers( token ).value.all = "," then
-     err( "array of arrays not yet supported" );
-  elsif baseTypesOk( kind1, kind2 ) then                    -- indexes good?
-     if isExecutingCommand then                             -- not on synchk
-        if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
-           if long_integer( to_numeric( ab1 ) ) /= 1 and    -- only 1..0
-              long_integer( to_numeric( ab2 ) ) /= 0 then   -- allowed
-              err( "first array bound is higher than last array bound" );
+  if getUniType( kind1 ) = uni_string_t then                 -- must be scalar
+     err( "array indexes cannot be a string or character type like " &
+          optional_bold( to_string( identifiers( kind1 ).name ) ) );
+  elsif getUniType( kind1 ) = root_record_t then                 -- must be scalar
+     err( "array indexes cannot be a record type like " &
+          optional_bold( to_string( identifiers( kind1 ).name ) ) );
+  elsif identifiers( getBaseType( kind1 ) ).list then
+     err( "array indexes cannot be an array type like " &
+          optional_bold( to_string( identifiers( kind1 ).name ) ) );
+  else
+     expect( symbol_t, ".." );
+     ParseExpression( ab2, kind2 );                            -- high bound
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        err( "array of arrays not yet supported" );
+     elsif baseTypesOk( kind1, kind2 ) then                    -- indexes good?
+        if isExecutingCommand then                             -- not on synchk
+           if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
+              if long_integer( to_numeric( ab1 ) ) /= 1 and    -- only 1..0
+                 long_integer( to_numeric( ab2 ) ) /= 0 then   -- allowed
+                 err( "first array bound is higher than last array bound" );
+              end if;
            end if;
         end if;
      end if;
@@ -8235,7 +8248,7 @@ begin
            identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
            --end if;
         exception when CONSTRAINT_ERROR =>
-          err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+          err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
         when STORAGE_ERROR =>
           err( gnat.source_info.source_location & ": internal error : storage error raised in ParseAssignment" );
         end;
@@ -9862,6 +9875,7 @@ end interpret;
 ------------------------------------------------------------------------------
 
 procedure startParser is
+  pwd : identifier;
 begin
   originalStandardInput := dup( stdin );              -- record stdin
   originalStandardOutput := dup( stdout );            -- record stdout
@@ -9874,7 +9888,15 @@ begin
   Ada.Numerics.Float_Random.Reset( random_generator );-- reset RND generator
   clearCommandHash;                                   -- initialize cmd table
 
-  findPwd;                            -- initialize current_working_directory
+  -- initialize the current_working_directory
+  -- assign PWD the value.  We can't rely on the imported value from the
+  -- environment to be accurate as we may be running in a new directory.
+
+  findPwd;
+  findIdent( to_unbounded_string( "PWD" ), pwd );
+  if pwd /= eof_t then
+     identifiers( pwd ).value.all := current_working_directory;
+  end if;
 end startParser;
 
 

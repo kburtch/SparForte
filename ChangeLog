@@ -40,8 +40,13 @@ CHANGES SINCE 2.0.3
 
 18. Fix: rounding errors in calendar.time arithmetic fixed.
 
-19. Fix: funtions many no longer be called in static expressions (since they use regular expressions).
+19. Fix: functions many no longer be called in static expressions (since they use regular expressions, not static ones).
 
 20. Refactor: expression handling redesigned to get some minor speed improvements.
 
+21. Fix: passing a record to an array index in an anonymous array longer results in an exception crash.
+
+23. Fix: PWD's value is set when SparForte starts and no longer shows the PWD value imported from the environment, which could possibly be incorrect.
+
+24. New: changes to provision and configure scripts for Debian.
 

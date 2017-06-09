@@ -31,22 +31,6 @@ if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
 fi
 
-# Debian
-
-if test -f "/etc/debian_version" ; then
-   echo "This script uses sudo.  You may need to add your login to the"
-   echo "sudoers configuration file.  Press return to continue."
-   read TMP
-   DISTRO="debian"
-fi
-
-# SuSE
-
-TMP=`fgrep SUSE /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="suse"
-fi
-
 # Mint/Ubuntu
 
 TMP=`fgrep Ubuntu /etc/issue`
@@ -56,6 +40,26 @@ fi
 TMP=`fgrep Mint /etc/issue`
 if [ "$TMP" != "" ] ; then
    DISTRO="ubuntu"
+fi
+
+# Debian
+
+if [ -z "$DISTRO" ] ; then
+   if test -f "/etc/debian_version" ; then
+      echo "Debian users"
+      echo
+      echo "This script uses sudo.  You may need to add your login to the"
+      echo "sudoers configuration file.  Press return to continue."
+      read TMP
+      DISTRO="debian"
+   fi
+fi
+
+# SuSE
+
+TMP=`fgrep SUSE /etc/issue`
+if [ "$TMP" != "" ] ; then
+   DISTRO="suse"
 fi
 
 

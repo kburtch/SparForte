@@ -199,7 +199,7 @@ clean:
 	#$(MAKE) -C ADAVOX-0.51 clean
 	$(MAKE) -C pegasock clean
 	-rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
-	-rm -f *.gcda *.gcno *.gcov coverage.info gmon.out testsuite/templates/gmon.out testsuite/goodsuite/gmon.out testsuite/helpsuite/gmon.out testsuite/third_party/gmon.out testsuite/gmon.out
+	-rm -f *.gcda *.gcno *.gcov coverage.info gmon.out testsuite/templates/gmon.out testsuite/goodsuite/gmon.out testsuite/helpsuite/gmon.out testsuite/third_party/gmon.out testsuite/gmon.out testsuite/testsuite010_pragmas/gmon.out testsuite/testsuite015_arrays/gmon.out testsuite/testsuite012_calendar/gmon.out
 
 distclean:
 	$(MAKE) -C areadline clean
@@ -337,6 +337,10 @@ releasetest: test
 	@echo "  RUNNING THIRD PARTY TEST SUITE"
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh third_party_tests.sh)
+	@echo "---------------------------------------------------------------"
+	@echo "  RUNNING FUZZ TEST SUITE"
+	@echo "---------------------------------------------------------------"
+	(cd testsuite; sh fuzz.sh)
 	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING EXAMPLE SCRIPT TEST SUITE"
 	@echo "---------------------------------------------------------------"

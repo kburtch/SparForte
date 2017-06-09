@@ -375,7 +375,7 @@ bad_test() {
   echo "Running $1..."
   start_junit_case "$1" "bad_test"
   setup
-  ../spar --debug "$1" < /dev/null > /dev/null
+  OUTPUT=`../spar --debug "$1" < /dev/null 2>&1`
   RESULT=$?
   teardown
   TMP=`ls core 2>/dev/null`
@@ -386,6 +386,20 @@ bad_test() {
      echo "--- $1 FAILED WITH CORE DUMP ---"
      echo "Test was:"
      cat "$1"
+     junit_fail_core_dump
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH ADA EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
      junit_fail_core_dump
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
@@ -417,7 +431,7 @@ bad_test_wparam() {
   echo "Running $1..."
   start_junit_case "$1" "bad_test_wparam"
   setup
-  ../spar --debug "$1" a b c < /dev/null > /dev/null
+  OUTPUT=`../spar --debug "$1" a b c < /dev/null 2>&1`
   RESULT=$?
   teardown
   TMP=`ls core 2>/dev/null`
@@ -428,6 +442,20 @@ bad_test_wparam() {
      echo "--- $1 FAILED WITH CORE DUMP ---"
      echo "Test was:"
      cat "$1"
+     junit_fail_core_dump
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH ADA EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
      junit_fail_core_dump
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
@@ -459,7 +487,7 @@ bad_test_testmode() {
   echo "Running $1..."
   start_junit_case "$1" "bad_test_testmode"
   setup
-  ../spar --debug --test "$1" < /dev/null > /dev/null
+  OUTPUT=`../spar --debug --test "$1" < /dev/null 2>&1`
   RESULT=$?
   teardown
   TMP=`ls core 2>/dev/null`
@@ -470,6 +498,20 @@ bad_test_testmode() {
      echo "--- $1 FAILED WITH CORE DUMP ---"
      echo "Test was:"
      cat "$1"
+     junit_fail_core_dump
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH ADA EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
      junit_fail_core_dump
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
@@ -511,6 +553,20 @@ bad_test_gcc_errors() {
      echo
      echo "--- $1 FAILED WITH CORE DUMP ---"
      echo "Test was:"
+     cat "$1"
+     junit_fail_core_dump
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH ADA EXCEPTION ---"
+     echo "Test was:"
+     echo "Output was:"
+     echo "$OUTPUT"
      cat "$1"
      junit_fail_core_dump
      if [ ! -z "$OPT_FAIL" ] ; then
