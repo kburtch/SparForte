@@ -31,6 +31,15 @@ if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
 fi
 
+# Debian
+
+if test -f "/etc/debian_version" ; then
+   echo "This script uses sudo.  You may need to add your login to the"
+   echo "sudoers configuration file.  Press return to continue."
+   read TMP
+   DISTRO="debian"
+fi
+
 # SuSE
 
 TMP=`fgrep SUSE /etc/issue`
@@ -115,6 +124,27 @@ ubuntu )
    sudo -u root apt-get -q -y install wget
    sudo -u root apt-get -q -y install bc
    sudo -u root apt-get -q -y install memcached
+   set +e
+   ;;
+debian )
+   set -e
+   sudo -u root apt-get -q -y install libselinux-dev
+   sudo -u root apt-get -q -y install bzip2
+   sudo -u root apt-get -q -y install gnat
+   sudo -u root apt-get -q -y install git
+   sudo -u root apt-get -q -y install libdb-dev
+   sudo -u root apt-get -q -y install libmariadbclient-dev
+   sudo -u root apt-get -q -y install mariadb-server
+   sudo -u root apt-get -q -y install locate
+   sudo -u root apt-get -q -y install postgresql-client
+   sudo -u root apt-get -q -y install postgresql-server-dev-all
+   sudo -u root apt-get -q -y install libgstreamer1.0-dev
+   sudo -u root apt-get -q -y install libsdl1.2-dev
+   sudo -u root apt-get -q -y install libsdl-image1.2-dev
+   sudo -u root apt-get -q -y install wget
+   sudo -u root apt-get -q -y install bc
+   sudo -u root apt-get -q -y install memcached
+   sudo -u root apt-get -q -y install libssl1.1
    set +e
    ;;
 *)

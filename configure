@@ -15,6 +15,9 @@ PREFIX="/usr/local"
 # Default man page installation prefix
 MANPREFIX="/usr/local"
 
+# This will have "sudo" if required for ldconfig
+LDCONFIG_SUDO=
+
 # These variables may be passed into this script from the environment.
 #
 # For example, ARCH=i386 ./configure
@@ -160,6 +163,19 @@ while [ $# -gt 0 ] ; do
   esac
   shift
 done
+
+# Debian warning
+
+# Debian
+
+if test -f "/etc/debian_version" ; then
+   echo "Debian users"
+   echo
+   echo "This script uses sudo.  You may need to add your login to the"
+   echo "sudoers configuration file.  Press return to continue."
+   read TMP
+   LDCONFIG_SUDO=sudo
+fi
 
 # Configure SparForte
 #
@@ -522,7 +538,7 @@ fi
 # Check for the Ada Run-Time Library
 
 echo -n "checking for libgnat (ldconfig -p, Linux)... "
-TMP=`/sbin/ldconfig -p 2>/dev/null | grep libgnat`
+TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libgnat`
 if [ -z "$TMP" ] ; then
    echo "no"
    echo -n "checking for libgnat (ldconfig -r, FreeBSD)... "
@@ -671,10 +687,41 @@ else
    exit 1
 fi
 
+# Check for libssl
+
+echo -n "checking for libssl (ldconfig -p, Linux)... "
+TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | fgrep libssl.so.`
+if [ -z "$TMP" ] ; then
+   echo "no"
+   echo
+   echo "If you have libssl, it may be version specific"
+   echo "Please make a general symbol link libsdl.so to the "
+   echo "correct version and run ldconfig to update the"
+   echo "shared library list."
+   exit 1
+else
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libssl.so`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      echo -n "checking for libSDL (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+         echo
+         echo "Some database support requires libssl"
+         # TODO: test for database...and abort...
+      else
+         echo "yes"
+      fi
+   else
+      echo "yes"
+   fi
+fi
+
 # Check for the libSDL (Simple DirectMedia Layer) Library
 
 echo -n "checking for libSDL (ldconfig -p, Linux)... "
-TMP=`/sbin/ldconfig -p 2>/dev/null | grep libSDL`
+TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL`
 if [ -z "$TMP" ] ; then
    echo "no"
    echo -n "checking for libSDL (ldconfig -r, FreeBSD)... "
@@ -803,7 +850,7 @@ fi
 # This is normally included with SDL but is not included with Fedora Core 4 Linux.
 
 echo -n "checking for libSDL_image (ldconfig -p, Linux)... "
-TMP=`/sbin/ldconfig -p 2>/dev/null | grep libSDL_image`
+TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL_image`
 if [ -z "$TMP" ] ; then
    echo "no"
    echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
@@ -943,7 +990,7 @@ if [ -z "$NO_MYSQL" ] ; then
    if [ -z "$TMP" ] ; then
       echo "no"
    else
-	  HAS_MYSQL=1
+      HAS_MYSQL=1
       echo "yes"
    fi
 else
@@ -954,35 +1001,60 @@ fi
 #
 # HAS_READLINE will be non-empty if support has been requested (NO_READLINE is
 # not empty) and the library is found.
+#
+# There are many versions of readline
 
 HAS_READLINE=
+READLINE_VERSION=
 if [ -z "$NO_READLINE" ] ; then
-   echo -n "checking for readline (ldconfig -p, Linux)... "
-   TMP=`/sbin/ldconfig -p 2>/dev/null | grep libreadline.so.6`
+   echo -n "checking for readline 6 (ldconfig -p, Linux)... "
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.6`
    if [ -z "$TMP" ] ; then
       echo "no"
+   else
+      HAS_READLINE=1
+      READLINE_VERSION=6
+      echo "yes"
+   fi
+   if [ -z "$READLINE_VERSION" ] ; then
+      echo -n "checking for readline 7 (ldconfig -p, Linux)... "
+      TMP=`$LDCONFIG_SUDO sudo /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.7`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+      else
+         HAS_READLINE=1
+         READLINE_VERSION=7
+         echo "yes"
+      fi
+   fi
+   if [ -z "$READLINE_VERSION" ] ; then
       echo -n "checking for readline (ldconfig -r, FreeBSD)... "
       TMP=`/sbin/ldconfig -r 2>/dev/null | grep libreadline`
       if [ -z "$TMP" ] ; then
          echo "no"
-         echo -n "checking for readline (locate, Darwin)... "
-         TMP=`"$LOCATE" libreadline`
-         if [ ! -z "$TMP" ] ; then
-             HAS_READLINE=1
-             echo "yes"
-         else
-             echo "no"
-         fi
       else
          HAS_READLINE=1
+         READLINE_VERSION=6
          echo "yes"
       fi
-   else
-      HAS_READLINE=1
-      echo "yes"
    fi
-else
-   echo "no"
+   if [ -z "$READLINE_VERSION" ] ; then
+      echo -n "checking for readline (locate, Darwin)... "
+      TMP=`"$LOCATE" libreadline`
+      if [ ! -z "$TMP" ] ; then
+         echo "no"
+      else
+         HAS_READLINE=1
+         READLINE_VERSION=6
+         echo "yes"
+      fi
+   fi
+   if [ -z "$READLINE_VERSION" ] ; then
+      echo
+      echo "SparForte cannot find GNU readline and history libraries"
+      echo "Please install them or run configure with --without-readline"
+      exit 1
+   fi
 fi
 
 # GNU Make
@@ -1046,11 +1118,11 @@ fi
 #
 # GSTREAMERFLAG is the C pre-processor flag to enable GSstreamer support.
 # It will be non-blank if GStreamer is detected.
-
+ 
 GSTREAMERFLAG=
 if [ -z "$NO_SOUND" ] ; then
    echo -n "checking for gstreamer (ldconfig -p, Linux)... "
-   TMP=`/sbin/ldconfig -p 2>/dev/null | grep libgstreamer`
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libgstreamer`
    if [ -z "$TMP" ] ; then
       echo "no"
       echo -n "checking for gstreamer (ldconfig -r, FreeBSD)... "
@@ -1367,7 +1439,7 @@ if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
    # Linux Mint doesn't need ncurses and breaks...needed for Slackware?
    #RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6\ \-lncurses"
-   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6"
+   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.$READLINE_VERSION\ \-l:libhistory.so.$READLINE_VERSION"
 else
    RLINCL=
    RLLIBS=
@@ -1389,7 +1461,12 @@ echo "Creating...src/GNUmakefile"
 
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROUTSUB/$GSTREAMEROUT/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
 
-cd ..
+cd areadline
+
+echo "Creating...src/areadline/GNUmakefile"
+sed "s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
+
+cd ../..
 echo "Creating...GNUmakefile"
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g" < GNUmakefile.orig > GNUmakefile
 
