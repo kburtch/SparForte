@@ -340,7 +340,7 @@ releasetest: test
 	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING FUZZ TEST SUITE"
 	@echo "---------------------------------------------------------------"
-	(cd testsuite; sh fuzz.sh)
+	(cd testsuite; sh fuzzsuite/fuzz.sh)
 	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING EXAMPLE SCRIPT TEST SUITE"
 	@echo "---------------------------------------------------------------"

@@ -50,3 +50,5 @@ CHANGES SINCE 2.0.3
 
 24. New: changes to provision and configure scripts for Debian.
 
+25. Change: whitespace at end of line no longer an error in maintenance phase.
+

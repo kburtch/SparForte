@@ -20,12 +20,8 @@ Severe Issues (Fix These First)
       handler.  This includes if statements.  Being in an exception handler
       must be a global scanner flag.
 - unsorted/misc
-    - suppress whitespace errors in maintenance mode
-    - uncaught calendar, cgi package STORAGE_ERRORS in some regression tests,
-      perhaps due to the ParseFactor refactor
     - control-c is propogating to all child processes when it shouldn't
-    - with include builtin help missing
-    - gcc-errors tests not triggered on error_tokenize?
+    - gcc-errors tests not triggered on err_tokenize?
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - constant check fails if assignment is in `..` (subscripts are compiled after
