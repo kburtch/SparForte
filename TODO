@@ -27,7 +27,17 @@ Severe Issues (Fix These First)
     - constant check fails if assignment is in `..` (subscripts are compiled after
       main program is compiled, but are they syntax checked earlier?)  This may be
       part of a greater issue: subscripts should be syntax checked at compile-time.
-    - arrays.shuffle still giving rare index out of range internal errors
+    - btree_io.cursor should have the key type assigned when declared.  Why did I
+      choose not to?  What's the reason?
+    - got a "s already declared" when using s as a function parameter and
+      s is declared in the outer scope but shouldn't be an error
+      - the formal parameters are declared in the same scope as the subprogram
+        name.  The block is used to destroy the actual, usuable parameters
+        during the syntax check.  Moving the block only destroys the formal
+        parameters.
+      - not sure if SparForte even has a mechanism for this
+    - json failed on empty string in a record field?
+      - could not duplicate in testing
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------

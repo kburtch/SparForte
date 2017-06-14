@@ -889,6 +889,8 @@ begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            end;
         end if;
      elsif isArray then
@@ -901,6 +903,8 @@ begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            end;
         end if;
      else
@@ -911,6 +915,8 @@ begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            when STORAGE_ERROR =>
               err( "internal error: unable to reference BDB session" );
            end;
@@ -1323,8 +1329,14 @@ begin
              err( "storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                DoRecordToJson( jsonString, itemId );
-                put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                begin
+                   DoRecordToJson( jsonString, itemId );
+                   put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                exception when CONSTRAINT_ERROR =>
+                   err( "constraint_error: value too big" );
+                when others =>
+                   raise;
+                end;
              else
                 err( exception_message( msg ) );
              end if;
@@ -1341,8 +1353,14 @@ begin
              err( "storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                DoArrayToJson( jsonString, itemId );
-                put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                begin
+                   DoArrayToJson( jsonString, itemId );
+                   put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
+                exception when CONSTRAINT_ERROR =>
+                   err( "constraint_error: value too big" );
+                when others =>
+                   raise;
+                end;
              else
                 err( exception_message( msg ) );
              end if;
@@ -1358,7 +1376,13 @@ begin
              err( "storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+                begin
+                   put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
+                exception when CONSTRAINT_ERROR =>
+                   err( "constraint_error: value too big" );
+                when others =>
+                   raise;
+                end;
              else
                 err( exception_message( msg ) );
              end if;
@@ -1450,6 +1474,8 @@ begin
                 end if;
               exception when msg: berkeley_error =>
                 err( exception_message( msg ) );
+              when CONSTRAINT_ERROR =>
+                 err( "constraint_error: value too big" );
               end;
            end if;
         elsif isArray then
@@ -1476,6 +1502,8 @@ begin
                 end if;
               exception when msg: berkeley_error =>
                 err( exception_message( msg ) );
+              when CONSTRAINT_ERROR =>
+                 err( "constraint_error: value too big" );
               end;
            end if;
         else
@@ -1500,6 +1528,8 @@ begin
                end if;
              exception when msg: berkeley_error =>
                err( exception_message( msg ) );
+             when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
              end;
            end if;
         end if;
@@ -1520,6 +1550,8 @@ begin
                  if last_error( theFile.btree.session ) /= DB_NOTFOUND then
                     err( exception_message( msg ) );
                  end if;
+              when CONSTRAINT_ERROR =>
+                 err( "constraint_error: value too big" );
               end;
            end if;
         elsif isArray then
@@ -1537,6 +1569,8 @@ begin
                  if last_error( theFile.btree.session ) /= DB_NOTFOUND then
                     err( exception_message( msg ) );
                  end if;
+              when CONSTRAINT_ERROR =>
+                 err( "constraint_error: value too big" );
               end;
            end if;
         else
@@ -1551,6 +1585,8 @@ begin
                 if last_error( theFile.btree.session ) /= DB_NOTFOUND then
                    err( exception_message( msg ) );
                 end if;
+             when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
              end;
            end if;
         end if;
@@ -1598,6 +1634,8 @@ begin
           if last_error( theFile.btree.session ) /= DB_NOTFOUND then
               err( exception_message( msg ) );
           end if;
+        when CONSTRAINT_ERROR =>
+          err( "constraint_error: value too big" );
         end;
      end if;
   end if;
@@ -1643,6 +1681,8 @@ begin
           if last_error( theFile.btree.session ) /= DB_NOTFOUND then
               err( exception_message( msg ) );
           end if;
+        when CONSTRAINT_ERROR =>
+          err( "constraint_error: value too big" );
         end;
      end if;
   end if;

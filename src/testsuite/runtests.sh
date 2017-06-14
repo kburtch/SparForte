@@ -1032,6 +1032,7 @@ if [ $RESULT -eq 0 ] ; then
         exit 1
      fi
 fi
+echo "OK"
 end_junit_case
 end_junit_suite
 

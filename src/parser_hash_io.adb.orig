@@ -883,6 +883,8 @@ begin
               put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            end;
         end if;
      elsif isArray then
@@ -895,6 +897,8 @@ begin
               put( theFile.hash.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            end;
         end if;
      else
@@ -907,6 +911,8 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "internal error: unable to reference BDB session" );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            end;
         end if;
      end if;
@@ -1316,6 +1322,8 @@ begin
               exists( theFile.hash.session, to_string( keyExpr ) );
            exception when storage_error =>
              err( "storage error raised" );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
                 DoRecordToJson( jsonString, itemId );
@@ -1334,6 +1342,8 @@ begin
               exists( theFile.hash.session, to_string( keyExpr ) );
            exception when storage_error =>
              err( "storage error raised" );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
                 DoArrayToJson( jsonString, itemId );
@@ -1351,6 +1361,8 @@ begin
               exists( theFile.hash.session, to_string( keyExpr ) );
            exception when storage_error =>
              err( "storage error raised" );
+           when CONSTRAINT_ERROR =>
+              err( "constraint_error: value too big" );
            when msg: berkeley_error =>
              if last_error( theFile.hash.session ) = DB_NOTFOUND then
                 put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr ) );
@@ -1445,6 +1457,8 @@ begin
                 end if;
               exception when msg: berkeley_error =>
                 err( exception_message( msg ) );
+              when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
               end;
            end if;
         elsif isArray then
@@ -1471,6 +1485,8 @@ begin
                 end if;
               exception when msg: berkeley_error =>
                 err( exception_message( msg ) );
+              when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
               end;
            end if;
         else
@@ -1495,6 +1511,8 @@ begin
                end if;
              exception when msg: berkeley_error =>
                err( exception_message( msg ) );
+              when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
              end;
            end if;
         end if;
@@ -1515,6 +1533,8 @@ begin
                  if last_error( theFile.hash.session ) /= DB_NOTFOUND then
                     err( exception_message( msg ) );
                  end if;
+              when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
               end;
            end if;
         elsif isArray then
@@ -1532,6 +1552,8 @@ begin
                  if last_error( theFile.hash.session ) /= DB_NOTFOUND then
                     err( exception_message( msg ) );
                  end if;
+              when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
               end;
            end if;
         else
@@ -1546,6 +1568,8 @@ begin
                  if last_error( theFile.hash.session ) /= DB_NOTFOUND then
                     err( exception_message( msg ) );
                  end if;
+              when CONSTRAINT_ERROR =>
+                err( "constraint_error: value too big" );
               end;
            end if;
         end if;
@@ -1593,6 +1617,8 @@ begin
           if last_error( theFile.hash.session ) /= DB_NOTFOUND then
               err( exception_message( msg ) );
           end if;
+        when CONSTRAINT_ERROR =>
+          err( "constraint_error: value too big" );
         end;
      end if;
   end if;
@@ -1634,6 +1660,8 @@ begin
           put( theFile.hash.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
         exception when storage_error =>
           err( "storage error raised" );
+        when CONSTRAINT_ERROR =>
+          err( "constraint_error: value too big" );
         when msg: berkeley_error =>
           if last_error( theFile.hash.session ) /= DB_NOTFOUND then
               err( exception_message( msg ) );

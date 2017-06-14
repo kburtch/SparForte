@@ -52,3 +52,9 @@ CHANGES SINCE 2.0.3
 
 25. Change: whitespace at end of line no longer an error in maintenance phase.
 
+26. Fix: constraint error caught when setting values too large in btree_io and hash_io.
+
+27. Fix: formal parmeters of procedures and functions no longer clash with pre-existing identifiers of the same name.
+
+28. Fix: arrays.shuffle rare constraint error (should be) fixed.
+

@@ -473,10 +473,15 @@ begin
      len   := identifiers( var_id ).avalue'length;
      begin
         for i in identifiers( var_id ).avalue'range loop
-            newpos := long_integer( long_float'truncation( long_float( len ) *
-                long_float( Ada.Numerics.Float_Random.Random( random_generator
+            -- unfortunately, ada random numbers are 0..1, so they can be too
+            -- large if 1...repeat if that happens
+            loop
+                newpos := long_integer( long_float'truncation( long_float( len ) *
+                    long_float( Ada.Numerics.Float_Random.Random( random_generator
 ) ) ) );
             newpos := newpos + identifiers( var_id ).avalue'first;
+            exit when newpos <= identifiers( var_id ).avalue'last;
+            end loop;
             tmp := identifiers( var_id ).avalue( i );
             identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
             identifiers( var_id ).avalue( newpos ) := tmp;

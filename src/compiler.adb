@@ -2132,7 +2132,9 @@ begin
     line2compile := to_unbounded_string( slice( command, firstLinePos, lastLinePos ) );
     line2ByteCode( ci, line2compile );                   -- compress that slice
     if element( command, lastLinePos ) = ' ' or element( command, lastLinePos ) = ASCII.HT then
-       err_tokenize( "trailing whitespace at end of line", to_string( line2compile ) );
+       if not maintenanceOpt then
+          err_tokenize( "trailing whitespace at end of line", to_string( line2compile ) );
+       end if;
     end if;
     -- DOS text files have CR+LF
     if  linePos < length( command ) then
