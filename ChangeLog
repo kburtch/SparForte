@@ -58,3 +58,5 @@ CHANGES SINCE 2.0.3
 
 28. Fix: arrays.shuffle rare constraint error (should be) fixed.
 
+29. Fix: last in chain internal identifier no longer shows a "should be constant" error in test phase mode.
+

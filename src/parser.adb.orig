@@ -6628,6 +6628,12 @@ begin
 
   formalParamId := proc_id + 1;
   parameterNumber := 1;
+--put_line( "--- Searching from" ); -- DEBUG
+--put_line( to_string( identifiers( proc_id-2 ).name ) ); -- DEBUG
+--put_line( to_string( identifiers( proc_id-1 ).name ) ); -- DEBUG
+--put_line( to_string( identifiers( proc_id ).name ) & " proc" ); -- DEBUG
+--put_line( to_string( identifiers( proc_id+1 ).name ) ); -- DEBUG
+--put_line( to_string( identifiers( proc_id+2 ).name ) ); -- DEBUG
   loop
       while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
@@ -6638,8 +6644,9 @@ begin
         formalParamId := identifier( integer( formalParamId ) + 1 );
       end loop;
 
-    if formalParamId = eof_t then
-       err( "unable to find formal parameter" );
+    --if formalParamId = eof_t then
+    if formalParamId = identifiers_top then
+       err( "internal error: unable to find formal parameter number" & formalParamId'img );
        exit;
     end if;
 
@@ -6658,7 +6665,10 @@ begin
 
          when others =>
               err( gnat.source_info.source_location &
-                   ": internal error: unsupported parameter passing mode" );
+                   ": internal error: formal parameter" &
+                   formalParamId'img &
+                   "/" & to_string( identifiers( formalParamId ).name ) &
+                   " has unsupported parameter passing mode" );
      end case;
 
      exit when error_found or identifiers( token ).value.all /= ","; -- more?
@@ -6916,7 +6926,9 @@ begin
           declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, varClass );
           if syntax_check then
              identifiers( chain_count_id ).wasReferenced := true;
+             identifiers( chain_count_id ).wasWritten := true;
              identifiers( last_in_chain_id ).wasReferenced := true;
+             identifiers( last_in_chain_id ).wasWritten := true;
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
