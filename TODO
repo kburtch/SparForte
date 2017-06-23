@@ -17,8 +17,6 @@ Severe Issues (Fix These First)
   - abstract parameters should error in non-abstract procs/funcs
   - test phase warnings on abstract and limited
 - user limited access level
-  - limited scalars can be defined but aren't working
-    - limited must be detected during an expression in an assignment statement
   - limited arrays and record
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception

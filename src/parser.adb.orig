@@ -602,6 +602,8 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
                  f := castToType( f, kind );
               end if;
            end if;
+        elsif identifiers( t ).limit then
+           err( "limited variables cannot be used in an expression" );
         elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
            array_id := t;                            -- array_id=array variable
            expect( symbol_t, "(" );                  -- parse index part
@@ -8160,7 +8162,7 @@ begin
   elsif not class_ok( var_id, varClass ) then
      null;
   end if;
-  if identifiers( var_type ).limit then
+  if identifiers( var_kind ).limit then
      err( "limited variables cannot be assigned a value" );
   -- TODO: this will break when we can create derived record types
   elsif identifiers( var_id ).kind = root_record_t then
