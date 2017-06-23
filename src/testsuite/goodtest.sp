@@ -55,8 +55,10 @@ type new_enum is (enum0);
 type new_enum2 is (enum1, enum2, enum3);
 type abstract_int is new abstract integer;
 subtype abstract_int2 is abstract integer;
-type limited_int is new limited integer;
-subtype limited_int2 is limited integer;
+limit_int1 : limited integer;
+limit_int2 : limited integer := 5;
+pragma assumption( used, limit_int1 );
+pragma assumption( used, limit_int2 );
 
 -- assignment and expressions
 

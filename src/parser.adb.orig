@@ -3285,6 +3285,20 @@ begin
      identifiers( id ).class := varClass;              -- as a constant and
   end if;
 
+  if token = limited_t then                             -- limited access?
+     if identifiers( id ).noVar then
+        err( "abstract types don't need to be limited types" );
+     elsif identifiers( id ).class = constClass then
+        err( "constants don't need to be limited types" );
+     end if;
+     identifiers( id ).limit := true;
+     expect( limited_t );
+  end if;
+
+  if token = private_t then                             -- private access?
+     err( "not yet implemented" );
+  end if;
+
   -- Anonymous Array?  Handled elsewhere.
 
   if token = array_t then                              -- anonymous array?
@@ -3504,9 +3518,9 @@ begin
   elsif (token = symbol_t and identifiers( token ).value.all = ":=") or -- assign part?
      expr_expected then
 
-     if identifiers( type_token ).limit then
-        err( "limited type variables cannot be assigned a value" );
-     end if;
+     --if identifiers( type_token ).limit then
+     --   err( "limited type variables cannot be assigned a value" );
+     --end if;
 
      -- Tricky bit: what about "i : integer := i"?
      --   Dropping the top of the stack temporarily isn't good enough: if
@@ -3830,7 +3844,7 @@ begin
       ParseRecordTypePart( newtype_id );
    else
 
-     -- type ... new [abstract] [limited]...
+     -- type ... new [abstract] ...
 
      expect( new_t );                                      -- "new"
 
@@ -3842,13 +3856,13 @@ begin
 
      -- limited types
 
-     if token = limited_t then                               -- abstract type?
-        if identifiers( newtype_id ).noVar then
-           err( "abstract types don't need to be limited types" );
-        end if;
-        identifiers( newtype_id ).limit := true;             -- no variables
-        expect( limited_t );
-     end if;
+     --if token = limited_t then                               -- abstract type?
+     --   if identifiers( newtype_id ).noVar then
+     --      err( "abstract types don't need to be limited types" );
+     --   end if;
+     --   identifiers( newtype_id ).limit := true;             -- no variables
+     --   expect( limited_t );
+     --end if;
 
      if token = array_t then
         err( "omit " & optional_bold( "new" ) & " since array is not derived from another type" );
@@ -3902,13 +3916,13 @@ begin
       expect( abstract_t );
    end if;
 
-   if token = limited_t then                               -- limited type?
-      if identifiers( newtype_id ).noVar then
-         err( "abstract types don't need to be limited types" );
-      end if;
-      identifiers( newtype_id ).limit := true;             -- no variables
-      expect( limited_t );
-   end if;
+   --if token = limited_t then                               -- limited type?
+   --   if identifiers( newtype_id ).noVar then
+   --      err( "abstract types don't need to be limited types" );
+   --   end if;
+   --   identifiers( newtype_id ).limit := true;             -- no variables
+   --   expect( limited_t );
+   --end if;
 
    ParseIdentifier( parent_id );                           -- old type
    if class_ok( parent_id, genericTypeClass, typeClass,
@@ -8146,7 +8160,7 @@ begin
   elsif not class_ok( var_id, varClass ) then
      null;
   end if;
-  if identifiers( var_kind ).limit then
+  if identifiers( var_id ).limit then
      err( "limited variables cannot be assigned a value" );
   -- TODO: this will break when we can create derived record types
   elsif identifiers( var_id ).kind = root_record_t then

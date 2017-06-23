@@ -32,7 +32,7 @@ CHANGES SINCE 2.0.3
 
 14. New: user types and subtypes can be declared abstract.  [TODO: check parameters, negative tests, and docs.]
 
-15. New: user types and subtypes can be declared limited.  [TODO: check parameters, negative tests - arrays, records, which can't be assigned yet].  This isn't that useful until packages or some other context is defined where it can be assigned.]
+15. New: scalar variables can be declared limited.  [TODO: check parameters, negative tests - arrays, records, which can't be assigned yet].  This isn't that useful until packages or some other context is defined where it can be assigned.]
 
 16. Fix: passing a record to an array index no longer results in an exception crash.
 

@@ -196,10 +196,10 @@ types.</p>
 
 <p><b>Ada</b>:In SparForte, abstract does not require an object.</p>
 
-<h3>Limited Types</h3>
+<h3>Limited Access Variables</h3>
 
-<p>A limited type is a type that prevents value assignments.  Limited variables
-cannot have values assigned to them.</p>
+<p>A limited access variable is a variable that cannot be copied
+with an assignment statement.</p>
 
         <center>
         <div class="code">
@@ -207,12 +207,9 @@ cannot have values assigned to them.</p>
 -- The operating system assigns id's so we don't want others<br />
 -- assigning new values accidentally.<br />
 <br />
-<b>type</b> operating_system_id <b>is</b> <b>new</b> <b>limited</b> integer;<br />
+operating_system_id <b>:</b> <b>limited</b> integer;<br />
         </div>
         </center>
-
-<p>Subtypes can also be created from limited types.  The subtypes will
-not be limited but you can make a subtype limited.</p>
 
 <p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
 
