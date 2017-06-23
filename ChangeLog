@@ -60,3 +60,5 @@ CHANGES SINCE 2.0.3
 
 29. Fix: last in chain internal identifier no longer shows a "should be constant" error in test phase mode.
 
+30. Fix: scalar user types no longer incorrectly treated as subtypes during syntax check.
+

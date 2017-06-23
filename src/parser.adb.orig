@@ -3875,7 +3875,7 @@ begin
            end if;
         elsif syntax_check then                            -- syntax check?
            identifiers( newtype_id ).kind := parent_id;    -- assign subtype
-           identifiers( newtype_id ).class := subClass;    -- subtype class
+           identifiers( newtype_id ).class := typeClass;   -- subtype class
            if identifiers( parent_id ).list then           -- an array?
               identifiers( newtype_id ).list := true;      -- this also array
            end if;
