@@ -190,13 +190,12 @@ not be abstract but you can make a subtype abstract.</p>
         </div>
         </center>
 
-
 <p>Most types (except for enumerated types) may be created as abstract
 types.</p>
 
 <p><b>Ada</b>:In SparForte, abstract does not require an object.</p>
 
-<h3>Limited Access Variables</h3>
+<h3>Limited Access Variables and Types</h3>
 
 <p>A limited access variable is a variable that cannot be copied
 with an assignment statement.</p>
@@ -207,7 +206,16 @@ with an assignment statement.</p>
 -- The operating system assigns id's so we don't want others<br />
 -- assigning new values accidentally.<br />
 <br />
-operating_system_id <b>:</b> <b>limited</b> integer;<br />
+customer_id <b>:</b> <b>limited</b> integer;<br />
+        </div>
+        </center>
+
+<p>A type or subtype can also be declared as limited.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>subtype</b> file_id <b>is</b> <b>limited</b> integer;<br/>
         </div>
         </center>
 

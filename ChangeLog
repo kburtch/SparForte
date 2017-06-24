@@ -62,3 +62,5 @@ CHANGES SINCE 2.0.3
 
 30. Fix: scalar user types no longer incorrectly treated as subtypes during syntax check.
 
+31. New: abstract enforced for un-applied types in design and test modes.
+

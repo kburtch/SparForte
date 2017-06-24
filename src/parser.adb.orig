@@ -2831,6 +2831,9 @@ begin
            elementType, typeClass );
         identifiers( anonType ).list := true;
         identifiers( anonType ).wasReferenced := true; -- only referenced when declared
+        if syntax_check then
+           identifiers( anonType ).wasApplied := true;    -- only applied when declared
+        end if;
         if class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            --if isExecutingCommand then
            if isExecutingCommand and not syntax_check then
@@ -3314,6 +3317,9 @@ begin
   --  Get the type.
 
   ParseIdentifier( type_token );                            -- identify type
+  if syntax_check then                                 -- mark that type was
+     identifiers( type_token ).wasApplied := true;     -- used
+  end if;
 
   -- Array type?  Handled elsewhere.
 
@@ -3825,10 +3831,12 @@ begin
          ParseArrayTypePart( newtype_id );
          identifiers( newtype_id ).noVar := true;          -- no variables
          identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+         identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = record_t then
          ParseRecordTypePart( newtype_id );
          identifiers( newtype_id ).noVar := true;          -- no variables
          identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+         identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = new_t then
         err( optional_bold( "abstract" ) & " goes after " & optional_bold( "new" ) );
       else
@@ -3852,19 +3860,20 @@ begin
 
      if token = abstract_t then                              -- abstract type?
         identifiers( newtype_id ).noVar := true;             -- no variables
-         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+        identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+        identifiers( newtype_id ).wasApplied := true;     -- treat as applied
         expect( abstract_t );
      end if;
 
      -- limited types
 
-     --if token = limited_t then                               -- abstract type?
-     --   if identifiers( newtype_id ).noVar then
-     --      err( "abstract types don't need to be limited types" );
-     --   end if;
-     --   identifiers( newtype_id ).limit := true;             -- no variables
-     --   expect( limited_t );
-     --end if;
+     if token = limited_t then                               -- abstract type?
+        if identifiers( newtype_id ).noVar then
+           err( "abstract types don't need to be limited types" );
+        end if;
+        identifiers( newtype_id ).limit := true;             -- no variables
+        expect( limited_t );
+     end if;
 
      if token = array_t then
         err( "omit " & optional_bold( "new" ) & " since array is not derived from another type" );
@@ -3918,13 +3927,13 @@ begin
       expect( abstract_t );
    end if;
 
-   --if token = limited_t then                               -- limited type?
-   --   if identifiers( newtype_id ).noVar then
-   --      err( "abstract types don't need to be limited types" );
-   --   end if;
-   --   identifiers( newtype_id ).limit := true;             -- no variables
-   --   expect( limited_t );
-   --end if;
+   if token = limited_t then                               -- limited type?
+      if identifiers( newtype_id ).noVar then
+         err( "abstract types don't need to be limited types" );
+      end if;
+      identifiers( newtype_id ).limit := true;             -- no variables
+      expect( limited_t );
+   end if;
 
    ParseIdentifier( parent_id );                           -- old type
    if class_ok( parent_id, genericTypeClass, typeClass,
@@ -6144,6 +6153,7 @@ begin
 
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
+     identifiers( type_token ).wasApplied := true;
   end if;
 
   updateFormalParameter( formal_param_id, type_token, proc_id, param_no,
@@ -6178,6 +6188,9 @@ begin
 
   ParseIdentifier( type_token );
   identifiers( func_id ).kind := type_token;
+  if syntax_check then
+     identifiers( type_token ).wasApplied := true; -- type was used
+  end if;
 
   -- Check type
 
@@ -6226,6 +6239,9 @@ begin
             proc_id );
          if syntax_check then
             identifiers( actual_param_t ).wasReferenced := true;
+            identifiers(
+              identifiers( actual_param_t ).kind
+              ).wasApplied := true; -- type was used
          end if;
      end if;
 
@@ -6510,6 +6526,9 @@ begin
     -- main record identifier.
     if syntax_check then
        identifiers( usableFieldId ).wasReferenced := true;
+       identifiers(
+         identifiers( recordTypeFieldId ).kind
+         ).wasApplied := true;
      end if;
      recordTypeFieldId := identifier( integer( recordTypeFieldId ) + 1 );
   end loop; -- for

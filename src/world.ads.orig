@@ -339,6 +339,8 @@ type declaration is record
      deleted  : boolean := false;               -- marked for deletion
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
      wasWritten    : boolean := false;          -- true if written in syn chk
+     wasApplied    : boolean := false;          -- true if type was used
+     wasFactor     : boolean := false;          -- true if used in expression
      renaming_of : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident

@@ -15,9 +15,12 @@ Severe Issues (Fix These First)
   - abstract procedures
   - abstract functions
   - abstract parameters should error in non-abstract procs/funcs
-  - test phase warnings on abstract and limited
-- user limited access level
+  - test phase warnings on limited
+  - wasApplied
+- limited types/vars
+  - test for double-limited (i : limited some_limited)
   - limited arrays and record
+  - wasFactor
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.  Being in an exception handler

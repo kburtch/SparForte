@@ -534,6 +534,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -590,6 +592,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -804,6 +808,8 @@ begin
                  deleted  => false,
                  wasReferenced => false,
                  wasWritten => false,
+                 wasApplied => false,
+                 wasFactor => false,
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
@@ -874,6 +880,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -959,6 +967,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1020,6 +1030,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
        funcCB => identifiers( canonicalRef.id ).funcCB,
        genKind => identifiers( canonicalRef.id ).genKind,
@@ -1150,6 +1162,8 @@ begin
         if syntax_check then
            identifiers( field_id ).wasReferenced := true;
            identifiers( field_id ).wasWritten := true;
+           identifiers( field_id ).wasApplied := false;
+           identifiers( field_id ).wasFactor := false;
         end if;
      end;
      j := identifier( integer( j ) + 1 );
@@ -1200,6 +1214,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1328,6 +1344,8 @@ begin
        deleted  => false,
        wasReferenced => false,
        wasWritten => false,
+       wasApplied => false,
+       wasFactor => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,

@@ -1533,6 +1533,19 @@ begin
      for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
+         -- types that are not applied out to be abstract in design or
+         -- test phase
+         if identifiers( i ).class = typeClass or
+            identifiers( i ).class = subClass then
+            if boolean( designOpt ) or boolean( testOpt ) then
+               if not identifiers( i ).wasApplied then
+                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                     " is a " & optional_bold( "concrete type" ) &
+                     " but expected an " & optional_bold( "abstract type" ) &
+                     ".  It is not used in declarations." );
+               end if;
+            end if;
+         end if;
          -- Test for variables that are never written to.  This is only done
          -- in testing phase mode as code under development may indeed have
          -- variables like this, and many things are unwritten in design phase.
@@ -1601,6 +1614,17 @@ begin
      for i in reverse predefined_top..identifiers_top-1 loop
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
+         if identifiers( i ).class = typeClass or
+            identifiers( i ).class = subClass then
+            if boolean( designOpt ) or boolean( testOpt ) then
+               if not identifiers( i ).wasApplied then
+                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                     " is a " & optional_bold( "concrete type" ) &
+                     " but expected an " & optional_bold( "abstract type" ) &
+                     ".  It is not used in declarations." );
+               end if;
+            end if;
+         end if;
          if identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
          -- TODO: Refactor out
