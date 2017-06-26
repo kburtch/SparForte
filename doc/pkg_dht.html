@@ -81,7 +81,7 @@ in the table.</p>
         <div class="code">
 <pre>
 <b>=&gt;</b> type url_string is new string
-<b>=&gt;</b> urls : dynamic_hash_tables.new_table( url_string )
+<b>=&gt;</b> urls : dynamic_hash_tables.table( url_string )
 <b>=&gt;</b> u : url_string
 <b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
 =&gt; (Assuming eof is a new boolean variable)

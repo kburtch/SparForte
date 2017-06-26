@@ -549,6 +549,7 @@ procedure StartupDHT is
 begin
   declareNamespace( "dynamic_hash_tables" );
   declareIdent( dht_table_t,   "dynamic_hash_tables.table", variable_t, genericTypeClass );
+  identifiers( dht_table_t ).limit := true;
 
   --declareProcedure( dht_new_table_t, "dynamic_hash_tables.new_table", ParseDHTNewTable'access );
   declareProcedure( dht_set_t, "dynamic_hash_tables.set", ParseDHTSet'access );

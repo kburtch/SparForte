@@ -144,7 +144,7 @@ i : integer := integer( "this is a string" );<br>
 
 <h3>Abstract Types</h3>
 
-<p>An abstract type is a type that is declared but it cannot be used to
+<p>An <b>abstract type</b> is a type that is declared but it cannot be used to
 store values.  It cannot be used for
 variables, constants or subprogram parameters.  These can represent
 unfinished data types, future ideas, conceptual types that only exist
@@ -195,10 +195,12 @@ types.</p>
 
 <p><b>Ada</b>:In SparForte, abstract does not require an object.</p>
 
-<h3>Limited Access Variables and Types</h3>
+<p><b>pragma ada_95</b>: Abstract types are not permitted.</p>
 
-<p>A limited access variable is a variable that cannot be copied
-with an assignment statement.</p>
+<h3>Limited Variables and Types</h3>
+
+<p>A <b>limited variable</b> is a variable that cannot be copied
+with an assignment statement.  It cannot be used in an expression.</p>
 
         <center>
         <div class="code">
@@ -220,6 +222,7 @@ customer_id <b>:</b> <b>limited</b> integer;<br />
         </center>
 
 <p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
+<p><b>pragma ada_95</b>: Limited variables and types are not permitted.</p>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

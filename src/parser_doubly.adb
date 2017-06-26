@@ -1199,17 +1199,16 @@ end ParseDoublySplice;
 procedure ParseDoublyHasElement( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := doubly_linked_list.has_element( l );
   -- Ada:    b := doubly_linked_list.has_element( l );
-  cursExpr  : unbounded_string;
-  cursType  : identifier;
+  cursId : identifier;
   theCursor : resPtr;
   use Doubly_Linked_String_Lists; -- needed for =
 begin
   kind := boolean_t;
   expect( doubly_has_element_t );
-  ParseSingleNumericParameter( cursExpr, cursType, doubly_cursor_t );
+  ParseSingleCursorParameter( cursId );
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( cursExpr ), theCursor );
+       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        result := to_bush_boolean( theCursor.dlslCursor /= Doubly_Linked_String_Lists.No_Element );
      end;
   end if;
@@ -1374,7 +1373,9 @@ begin
   declareNamespace( "doubly_linked_lists" );
 
   declareIdent( doubly_list_t,   "doubly_linked_lists.list", variable_t, genericTypeClass );
+  identifiers( doubly_list_t ).limit := true;
   declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", variable_t, genericTypeClass );
+  identifiers( doubly_cursor_t ).limit := true;
 
   --declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
   declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );

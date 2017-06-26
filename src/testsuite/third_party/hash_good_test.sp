@@ -189,7 +189,7 @@ hash_io.set( fi, "foo", 2 );
 declare
   c : hash_io.cursor( integer );
   key : string;
-  new_int : integer;
+  new_int : limited integer;
 begin
   hash_io.open_cursor( fi, c );
   hash_io.get_last( fi, c, key, new_int );
@@ -265,7 +265,7 @@ hash_io.set( fs, "bar", "green" );
 declare
   c : hash_io.cursor( string );
   key : string;
-  new_s : string;
+  new_s : limited string;
 begin
   hash_io.open_cursor( fs, c );
   hash_io.get_last( fs, c, key, new_s );
@@ -354,7 +354,7 @@ hash_io.set( fa, "bar", a );
 declare
   c : hash_io.cursor( arr_type );
   key : string;
-  new_a : arr_type;
+  new_a : limited arr_type;
 begin
   hash_io.open_cursor( fa, c );
   hash_io.get_last( fa, c, key, new_a );
@@ -380,7 +380,7 @@ pragma assert( i = 2 );
 declare
   c : hash_io.cursor( arr_type );
   key : string;
-  new_a : arr_type;
+  new_a : limited arr_type;
 begin
   hash_io.open_cursor( fa, c );
   hash_io.get_first( fa, c, key, new_a );

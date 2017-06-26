@@ -1539,10 +1539,26 @@ begin
             identifiers( i ).class = subClass then
             if boolean( designOpt ) or boolean( testOpt ) then
                if not identifiers( i ).wasApplied then
-                  err( optional_bold( to_string( identifiers( i ).name ) ) &
-                     " is a " & optional_bold( "concrete type" ) &
-                     " but expected an " & optional_bold( "abstract type" ) &
-                     ".  It is not used in declarations." );
+                  if identifiers( i ).field_of = eof_t then -- not a field of a record
+                     err( optional_bold( to_string( identifiers( i ).name ) ) &
+                        " is a " & optional_bold( "concrete type" ) &
+                        " but expected an " & optional_bold( "abstract type" ) &
+                        ".  It is not used in declarations." );
+                  end if;
+               end if;
+            end if;
+         end if;
+         if not identifiers( i ).wasFactor then
+            if testOpt then
+               if not onlyAda95 then -- limited not available with pragma ada_95
+                  if identifiers( i ).class = varClass then
+                     if not identifiers( i ).limit then
+                        err( optional_bold( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_bold( "not-limited variable" ) &
+                           " but expected a " & optional_bold( "limited" ) &
+                           ".  It (or its elements) are not used in expressions." );
+                     end if;
+                  end if;
                end if;
             end if;
          end if;
@@ -1556,7 +1572,7 @@ begin
                   err( optional_bold( to_string( identifiers( i ).name ) ) &
                      " is a " & optional_bold( "variable" ) &
                      " but expected a " & optional_bold( "constant" ) &
-                     ".  It (or its elements) are never written to." );
+                     "(or in mode parameter).  It (or its elements) are never written to." );
                end if;
             end if;
          elsif identifiers( i ).wasReferenced then
@@ -1618,10 +1634,32 @@ begin
             identifiers( i ).class = subClass then
             if boolean( designOpt ) or boolean( testOpt ) then
                if not identifiers( i ).wasApplied then
-                  err( optional_bold( to_string( identifiers( i ).name ) ) &
-                     " is a " & optional_bold( "concrete type" ) &
-                     " but expected an " & optional_bold( "abstract type" ) &
-                     ".  It is not used in declarations." );
+                  if identifiers( i ).field_of = eof_t then -- not a field of a record
+                     err( optional_bold( to_string( identifiers( i ).name ) ) &
+                        " is a " & optional_bold( "concrete type" ) &
+                        " but expected an " & optional_bold( "abstract type" ) &
+                        ".  It is not used in declarations." );
+                  end if;
+               end if;
+            end if;
+         end if;
+--put_line( to_string( identifiers( i ).name ) & "being tested" ); -- DEBUGME
+--put_line( identifiers( i ).wasFactor'img ); -- DEBUGME
+         if not identifiers( i ).wasFactor then
+--put_line( to_string( identifiers( i ).name ) & " is not a factor" ); -- DEBUGME
+            if testOpt then
+--put_line( "test opt" ); -- DEBUGME
+               if identifiers( i ).class = varClass then
+--put_line( "variable" ); -- DEBUGME
+                  if not onlyAda95 then -- limited not available with pragma ada_95
+--put_line( "not ada_95" ); -- DEBUGME
+                     if not identifiers( i ).limit then
+                        err( optional_bold( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_bold( "not-limited variable" ) &
+                           " but expected a " & optional_bold( "limited" ) &
+                           ".  It (or its elements) are not used in expressions." );
+                     end if;
+                  end if;
                end if;
             end if;
          end if;
@@ -2369,6 +2407,7 @@ end shutdownScanner;
   declareIdent( root_record_t, "root record", variable_t, typeClass );
   declareIdent( command_t, "command", variable_t, typeClass );
   declareIdent( file_type_t, "file_type", variable_t, typeClass );
+  identifiers( file_type_t ).limit := true;
   identifiers( identifiers_top-1 ).limit := true; -- limited type
   declareIdent( socket_type_t, "socket_type", variable_t, typeClass );
   identifiers( identifiers_top-1 ).limit := true; -- limited type

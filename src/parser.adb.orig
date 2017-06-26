@@ -604,6 +604,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
            end if;
         elsif identifiers( t ).limit then
            err( "limited variables cannot be used in an expression" );
+           kind := eof_t;
         elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
            array_id := t;                            -- array_id=array variable
            expect( symbol_t, "(" );                  -- parse index part
@@ -642,6 +643,9 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
                     ": internal error : storage error raised in ParseFactor" );
                  end;
               end if;
+           elsif syntax_check then
+--put_line( "wasFactor 1" ); -- DEBUGME
+              identifiers( array_id ).wasFactor := true;
            end if;
            expect( symbol_t, ")" );                  -- element type is k's k
            kind := identifiers( identifiers( array_id ).kind ).kind;
@@ -653,6 +657,10 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
            end if;
            f := identifiers( t ).value.all;
            kind := identifiers( t ).kind;
+           if syntax_check then
+--put_line( "wasFactor 2 - " & to_string( identifiers( t ).name ) ); -- DEBUGME
+              identifiers( t ).wasFactor := true;
+           end if;
         end if;
   end parseFactorIdentifier;
   pragma inline( parseFactorIdentifier );
@@ -3175,6 +3183,8 @@ begin
                if syntax_check and then not error_found then
                   identifiers( dont_care_t ).wasReferenced := true;
                   identifiers( dont_care_t ).wasWritten := true;
+--put_line( "wasFactor 3" ); -- DEBUGME
+                  identifiers( dont_care_t ).wasFactor := true;
                end if;
             end;
          j := identifier( integer( j ) + 1 );
@@ -3300,10 +3310,6 @@ begin
      expect( limited_t );
   end if;
 
-  if token = private_t then                             -- private access?
-     err( "not yet implemented" );
-  end if;
-
   -- Anonymous Array?  Handled elsewhere.
 
   if token = array_t then                              -- anonymous array?
@@ -3320,6 +3326,21 @@ begin
   if syntax_check then                                 -- mark that type was
      identifiers( type_token ).wasApplied := true;     -- used
   end if;
+
+  -- Limited Type?  Inherited from the type (if any).
+
+  if identifiers( type_token ).limit then
+     if identifiers( id ).limit then
+        err( "the type is already limited" );
+     else
+        identifiers( id ).limit := true;
+     end if;
+  end if;
+
+  if token = private_t then                             -- private access?
+     err( "not yet implemented" );
+  end if;
+
 
   -- Array type?  Handled elsewhere.
 
@@ -3777,6 +3798,7 @@ begin
 
       identifiers( newtype_id ).kind := root_enumerated_t; -- the parent is
       identifiers( newtype_id ).class := typeClass;        -- type based on
+      identifiers( newtype_id ).wasApplied := true;        -- can't be abstract
       parent_id := newtype_id;                             -- root enumerated
       -- The enum type name may not be referenced as much
       -- as items are mentioned.  (e.g. draco_ii doesn't
@@ -3859,6 +3881,10 @@ begin
      expect( new_t );                                      -- "new"
 
      if token = abstract_t then                              -- abstract type?
+        if onlyAda95 then
+          err( "abstract types not allowed with " &
+              optional_bold( "pragam ada_95" ) );
+        end if;
         identifiers( newtype_id ).noVar := true;             -- no variables
         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
         identifiers( newtype_id ).wasApplied := true;     -- treat as applied
@@ -3870,9 +3896,17 @@ begin
      if token = limited_t then                               -- abstract type?
         if identifiers( newtype_id ).noVar then
            err( "abstract types don't need to be limited types" );
+        elsif onlyAda95 then
+           err( "limited types are not allowed with " & optional_bold( "pragma ada_95" ) );
         end if;
         identifiers( newtype_id ).limit := true;             -- no variables
         expect( limited_t );
+        if token = abstract_t then
+           err( optional_bold( "abstract" ) & " comes before " &
+                optional_bold( "limited" ) & ", but also abstract types " &
+                "don't need to be limited types" );
+           expect( abstract_t );
+        end if;
      end if;
 
      if token = array_t then
@@ -3923,16 +3957,29 @@ begin
    expect( is_t );                                         -- "is"
 
    if token = abstract_t then                              -- abstract type?
+      if onlyAda95 then
+        err( "abstract subtypes not allowed with " &
+            optional_bold( "pragam ada_95" ) );
+      end if;
       identifiers( newtype_id ).noVar := true;             -- no variables
       expect( abstract_t );
    end if;
 
    if token = limited_t then                               -- limited type?
       if identifiers( newtype_id ).noVar then
-         err( "abstract types don't need to be limited types" );
+         err( "abstract subtypes don't need to be limited subtypes" );
+      elsif onlyAda95 then
+        err( "limited subtypes not allowed with " &
+            optional_bold( "pragam ada_95" ) );
       end if;
       identifiers( newtype_id ).limit := true;             -- no variables
       expect( limited_t );
+      if token = abstract_t then
+         err( optional_bold( "abstract" ) & " comes before " &
+              optional_bold( "limited" ) & ", but also abstract subtypes " &
+              "don't need to be limited subtypes" );
+         expect( abstract_t );
+      end if;
    end if;
 
    ParseIdentifier( parent_id );                           -- old type
@@ -4606,6 +4653,8 @@ begin
      if syntax_check and then not error_found then
         identifiers( for_var ).wasReferenced := true;
         identifiers( for_var ).wasWritten := true;
+--put_line( "wasFactor 4" ); -- DEBUGME
+        identifiers( for_var ).wasFactor := true;
      end if;
      if baseTypesOk( expr1_type, expr2_type ) then      -- check types
         if getUniType( expr1_type ) = uni_numeric_t then
@@ -6597,6 +6646,8 @@ begin
         identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
      else
         identifiers( actual_param_ref.id ).wasWritten := true;
+--put_line( "wasFactor 5" ); -- DEBUGME
+        identifiers( actual_param_ref.id ).wasFactor := true;
      end if;
   end if;
   if declareParams then
@@ -6962,8 +7013,11 @@ begin
           if syntax_check then
              identifiers( chain_count_id ).wasReferenced := true;
              identifiers( chain_count_id ).wasWritten := true;
+--put_line( "wasFactor 5b" ); -- DEBUGME
+             identifiers( chain_count_id ).wasFactor := true;
              identifiers( last_in_chain_id ).wasReferenced := true;
              identifiers( last_in_chain_id ).wasWritten := true;
+             identifiers( last_in_chain_id ).wasFactor := true;
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
@@ -8266,12 +8320,19 @@ begin
   -- the field of the record, mark the whole record as being written
   -- to.  Otherwise, mark just the identifier.
   -- Check for error in case var_id is eof_t.
+  --
+  -- A variable that is assigned a value cannot be limited, so
+  -- treat it as if it was a factor.
 
   if syntax_check and then not error_found then
      if identifiers( var_id ).field_of /= eof_t then
         identifiers( identifiers( var_id ).field_of ).wasWritten := true;
+--put_line( "wasFactor 6" ); -- DEBUGME
+        identifiers( identifiers( var_id ).field_of ).wasFactor := true;
      else
         identifiers( var_id ).wasWritten := true;
+--put_line( "wasFactor 7" ); -- DEBUGME
+        identifiers( var_id ).wasFactor := true;
      end if;
   end if;
 

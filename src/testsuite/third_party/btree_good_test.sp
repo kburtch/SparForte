@@ -188,7 +188,7 @@ btree_io.set( fi, "foo", 2 );
 declare
   c : btree_io.cursor( integer );
   key : string;
-  new_int : integer;
+  new_int : limited integer;
 begin
   btree_io.open_cursor( fi, c );
   btree_io.get_last( fi, c, key, new_int );
@@ -262,7 +262,7 @@ btree_io.set( fs, "bar", "green" );
 declare
   c : btree_io.cursor( string );
   key : string;
-  new_s : string;
+  new_s : limited string;
 begin
   btree_io.open_cursor( fs, c );
   btree_io.get_last( fs, c, key, new_s );

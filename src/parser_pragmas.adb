@@ -84,6 +84,7 @@ type aPragmaKind is (
      advise,
      asserting,
      assumption,
+     assumption_applied,
      assumption_used,
      assumption_written,
      annotate,
@@ -315,10 +316,16 @@ begin
      getNextToken;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
+  elsif name = "applied" then
+     assumeKind := assumption_applied;
+     discardUnusedIdentifier( token );
+     getNextToken;
+     expect( symbol_t, "," );
+     ParseIdentifier( var_id );
   else
      assumeKind := assumption;
      discardUnusedIdentifier( token );
-     err( "only 'used', 'written' assumptions supported" );
+     err( "only 'applied', 'used', 'written' assumptions supported" );
   end if;
 end ParseAssumptionKind;
 
@@ -1020,6 +1027,13 @@ begin
         else
             identifiers( var_id ).wasWritten := true;
          end if;
+     elsif pragmaKind = assumption_applied then
+        if identifiers( var_id ).class /= typeClass and
+           identifiers( var_id ).class /= subClass then
+           err( "concrete type or subtype expected" );
+        else
+           identifiers( var_id ).wasApplied := true;
+        end if;
      elsif pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
      elsif pragmaKind = suppress_word_quoting then

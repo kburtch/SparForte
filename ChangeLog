@@ -64,3 +64,5 @@ CHANGES SINCE 2.0.3
 
 31. New: abstract enforced for un-applied types in design and test modes.
 
+32. Change: all id numbers (e.g. files, lists, canvases)  are now limited types.
+
