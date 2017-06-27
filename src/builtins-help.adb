@@ -1164,7 +1164,10 @@ begin
   content( e, "pragma advise( from, to, message ) - request team advice/assistance" );
   content( e, "pragma annotate( [type,] " & Ada.Characters.Latin_1.Quotation & "text" & Ada.Characters.Latin_1.Quotation & " ) - embed a comment for help command" );
   content( e, "pragma assert( condition ) - with --debug/--test, terminate program on condition fail" );
-  content( e, "pragma assumption( used, written, var ) - assume a variable was read or written to when testing" );
+  content( e, "pragma assumption( applied, type ) - assume a type or subtype was used to make a variable" );
+  content( e, "pragma assumption( factor, var ) - assume a variable was used in an expression" );
+  content( e, "pragma assumption( used, var ) - assume a variable was read" );
+  content( e, "pragma assumption( written, var ) - assume a variable was written" );
   content( e, "pragma blocked( from, message ) - announce programmer progress blocked" );
   content( e, "pragma clarify( from, to, message ) - request programmer clarification" );
   content( e, "pragma debug( `commands` ) - with --debug, execute debug commands" );
