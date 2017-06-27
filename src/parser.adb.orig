@@ -375,6 +375,9 @@ begin
      elsif isLocal( token ) then
         err( "already declared " &
              optional_bold( to_string( identifiers( token ).name ) ) );
+     elsif element( identifiers( token ).name,
+         length( identifiers( token ).name ) ) = '_' then
+            err( "trailing underscores not allowed in identifiers" );
      else
         -- create a new one in this scope
         declareIdent( id, identifiers( token ).name, new_t, varClass );

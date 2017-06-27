@@ -68,3 +68,5 @@ CHANGES SINCE 2.0.3
 
 33. New: pragma assumption applied and factor, for abstract and limited type tests.
 
+34. New: trailing underscores not allowed in identifiers.
+
