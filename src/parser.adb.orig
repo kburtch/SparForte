@@ -583,88 +583,93 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
 
   procedure ParseFactorIdentifier is
   begin
-        ParseIdentifier( t );
-        if identifiers( t ).volatile then           -- volatile user identifier
-           refreshVolatile( t );
-           f := identifiers( t ).value.all;
-           kind := identifiers( t ).kind;
-        elsif identifiers( t ).class = subClass or             -- type cast
-           identifiers( t ).class = typeClass then
-           -- this will change when arrays can have derived types.
-           if identifiers( getBaseType( t ) ).list then
-              err( optional_bold( to_string( identifiers( t ).name ) ) & " is an array type" );
-           end if;                               -- represent array types
-           castType := t;                        -- in expressiosn (yet)
-           expect( symbol_t, "(" );
-           ParseExpression( f, kind );
-           expect( symbol_t, ")" );
-           if uniTypesOk( castType, kind ) then
-              kind := castType;
-              if isExecutingCommand then
-                 --f := castToType( to_numeric( f ), kind );
-                 f := castToType( f, kind );
-              end if;
-           end if;
-        elsif identifiers( t ).limit then
-           err( "limited variables cannot be used in an expression" );
-           kind := eof_t;
-        elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
-           array_id := t;                            -- array_id=array variable
-           expect( symbol_t, "(" );                  -- parse index part
-           ParseExpression( f, kind );               -- kind is the index type
-           if getUniType( kind ) = uni_string_t or   -- index must be scalar
-              getUniType( kind ) = root_record_t or
-              identifiers( getBaseType( kind ) ).list then
-              err( "array index must be a scalar type" );
-           end if;                                   -- variables are not
-           if isExecutingCommand then                -- declared in syntax chk
-              arrayIndex := long_integer(to_numeric(f));  -- convert to number
-              --array_id2 := arrayID( to_numeric(      -- array_id2=reference
-              --   identifiers( array_id ).value ) );  -- to the array table
-              --if indexTypeOK( array_id2, kind ) then -- check and access array
-              --    if inBounds( array_id2, arrayIndex ) then
-              --       f := arrayElement( array_id2, arrayIndex );
-              --    end if;
-              --end if;
-              -- TODO: make a utility function for doing all this.
-              -- TODO: probably needs a better error message
-              if baseTypesOK( identifiers( array_id ).genKind, kind ) then
-                 if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
-                    err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
-                 end if;
-              end if;
-              if not error_found then
-                 begin
-                   f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
-                 exception when CONSTRAINT_ERROR =>
-                   err( gnat.source_info.source_location &
-                    ": internal error: constraint_error : index out of range " &
-                    identifiers( array_id ).avalue'first'img & " .." &
-                    identifiers( array_id ).avalue'last'img );
-                 when STORAGE_ERROR =>
-                   err( gnat.source_info.source_location &
-                    ": internal error : storage error raised in ParseFactor" );
-                 end;
-              end if;
-           elsif syntax_check then
+    ParseIdentifier( t );
+    if identifiers( t ).volatile then           -- volatile user identifier
+       refreshVolatile( t );
+       f := identifiers( t ).value.all;
+       kind := identifiers( t ).kind;
+    end if;
+    if identifiers( t ).class = subClass or             -- type cast
+       identifiers( t ).class = typeClass then
+       -- this will change when arrays can have derived types.
+       if identifiers( getBaseType( t ) ).list then
+          err( optional_bold( to_string( identifiers( t ).name ) ) & " is an array type" );
+       end if;                               -- represent array types
+       castType := t;                        -- in expressiosn (yet)
+       expect( symbol_t, "(" );
+       ParseExpression( f, kind );
+       expect( symbol_t, ")" );
+       if uniTypesOk( castType, kind ) then
+          kind := castType;
+          if isExecutingCommand then
+             f := castToType( f, kind );
+          end if;
+       end if;
+    elsif identifiers( t ).limit then
+       err( "limited variables cannot be used in an expression" );
+       kind := eof_t;
+    elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
+       array_id := t;                            -- array_id=array variable
+       expect( symbol_t, "(" );                  -- parse index part
+       ParseExpression( f, kind );               -- kind is the index type
+       if getUniType( kind ) = uni_string_t or   -- index must be scalar
+          getUniType( kind ) = root_record_t or
+          identifiers( getBaseType( kind ) ).list then
+          err( "array index must be a scalar type" );
+       end if;                                   -- variables are not
+       if isExecutingCommand then                -- declared in syntax chk
+          arrayIndex := long_integer(to_numeric(f));  -- convert to number
+          --array_id2 := arrayID( to_numeric(      -- array_id2=reference
+          --   identifiers( array_id ).value ) );  -- to the array table
+          --if indexTypeOK( array_id2, kind ) then -- check and access array
+          --    if inBounds( array_id2, arrayIndex ) then
+          --       f := arrayElement( array_id2, arrayIndex );
+          --    end if;
+          --end if;
+          -- TODO: make a utility function for doing all this.
+          -- TODO: probably needs a better error message
+          if baseTypesOK( identifiers( array_id ).genKind, kind ) then
+             if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
+                err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+             end if;
+          end if;
+          if not error_found then
+             begin
+               f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
+             exception when CONSTRAINT_ERROR =>
+               err( gnat.source_info.source_location &
+                ": internal error: constraint_error : index out of range " &
+                identifiers( array_id ).avalue'first'img & " .." &
+                identifiers( array_id ).avalue'last'img );
+             when STORAGE_ERROR =>
+               err( gnat.source_info.source_location &
+                ": internal error : storage error raised in ParseFactor" );
+             end;
+          end if;
+       elsif syntax_check then
 --put_line( "wasFactor 1" ); -- DEBUGME
-              identifiers( array_id ).wasFactor := true;
-           end if;
-           expect( symbol_t, ")" );                  -- element type is k's k
-           kind := identifiers( identifiers( array_id ).kind ).kind;
-        -- regular variable with an array index?
-        else
-          if token = symbol_t and then identifiers( token ).value.all = "(" then
-             err( optional_bold( to_string( identifiers( t ).name ) ) &
-                 " has an array index but is not an array" );
-           end if;
-           f := identifiers( t ).value.all;
-           kind := identifiers( t ).kind;
-           if syntax_check then
+          identifiers( array_id ).wasFactor := true;
+       end if;
+       expect( symbol_t, ")" );                  -- element type is k's k
+       kind := identifiers( identifiers( array_id ).kind ).kind;
+    -- regular variable with an array index?
+    else
+      if token = symbol_t and then identifiers( token ).value.all = "(" then
+         err( optional_bold( to_string( identifiers( t ).name ) ) &
+             " has an array index but is not an array" );
+       end if;
+       f := identifiers( t ).value.all;
+       kind := identifiers( t ).kind;
+       -- Mark as used as a factor.  if it is a record field, mark the whole
+       -- record as used as a factor for limit type testing purposes.
+       if syntax_check then
 --put_line( "wasFactor 2 - " & to_string( identifiers( t ).name ) ); -- DEBUGME
-              identifiers( t ).wasFactor := true;
-           end if;
-        end if;
+          identifiers( t ).wasFactor := true;
+          if identifiers( t ).field_of /= eof_t then
+             identifiers( identifiers( t ).field_of ).wasFactor := true;
+          end if;
+       end if;
+    end if;
   end parseFactorIdentifier;
   pragma inline( parseFactorIdentifier );
 
