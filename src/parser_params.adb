@@ -660,6 +660,7 @@ begin
        ref.kind := identifiers( ref.id ).kind;
     end if;
   end if;
+
   -- Mark the variable as having been written for future tests.
   if syntax_check and then not error_found then
      if identifiers( ref.id ).field_of /= eof_t then

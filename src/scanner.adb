@@ -1548,15 +1548,19 @@ begin
                end if;
             end if;
          end if;
+         -- Do not apply to record fields as some record fields may not be
+         -- accessed.
          if not identifiers( i ).wasFactor then
             if testOpt then
                if not onlyAda95 then -- limited not available with pragma ada_95
                   if identifiers( i ).class = varClass then
-                     if not identifiers( i ).limit then
-                        err( optional_bold( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_bold( "not-limited variable" ) &
-                           " but expected a " & optional_bold( "limited" ) &
-                           ".  It (or its elements) are not used in expressions." );
+                     if identifiers( i ).field_of /= eof_t then
+                        if not identifiers( i ).limit then
+                           err( optional_bold( to_string( identifiers( i ).name ) ) &
+                              " is a " & optional_bold( "not-limited variable" ) &
+                              " but expected a " & optional_bold( "limited" ) &
+                              ".  It (or its elements) are not used in expressions." );
+                        end if;
                      end if;
                   end if;
                end if;
@@ -1565,14 +1569,16 @@ begin
          -- Test for variables that are never written to.  This is only done
          -- in testing phase mode as code under development may indeed have
          -- variables like this, and many things are unwritten in design phase.
+         -- Don't apply to record fields
          if not identifiers( i ).wasWritten then
             if testOpt then
                if identifiers( i ).class = varClass then
--- TODO: don't apply to records
-                  err( optional_bold( to_string( identifiers( i ).name ) ) &
-                     " is a " & optional_bold( "variable" ) &
-                     " but expected a " & optional_bold( "constant" ) &
-                     "(or in mode parameter).  It (or its elements) are never written to." );
+                  if identifiers( i ).field_of /= eof_t then
+                     err( optional_bold( to_string( identifiers( i ).name ) ) &
+                        " is a " & optional_bold( "variable" ) &
+                        " but expected a " & optional_bold( "constant" ) &
+                        " (or in mode parameter).  It (or its elements) are never written to." );
+                  end if;
                end if;
             end if;
          elsif identifiers( i ).wasReferenced then

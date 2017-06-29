@@ -664,9 +664,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        -- record as used as a factor for limit type testing purposes.
        if syntax_check then
 --put_line( "wasFactor 2 - " & to_string( identifiers( t ).name ) ); -- DEBUGME
-          identifiers( t ).wasFactor := true;
-          if identifiers( t ).field_of /= eof_t then
-             identifiers( identifiers( t ).field_of ).wasFactor := true;
+          if t /= eof_t then
+             identifiers( t ).wasFactor := true;
+             if identifiers( t ).field_of /= eof_t then
+                identifiers( identifiers( t ).field_of ).wasFactor := true;
+             end if;
           end if;
        end if;
     end if;

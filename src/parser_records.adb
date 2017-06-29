@@ -72,15 +72,24 @@ end ParseRecordsToJson;
 procedure ParseRecordsToRecord is
   -- Syntax: str := records.to_record( rec, str );
   -- Source: N/A
-  target_var_id : identifier;
+  --target_var_id : identifier;
+  target_ref    : reference;
   sourceVal     : unbounded_string;
   sourceType    : identifier;
   baseType      : identifier;
 begin
   expect( records_to_record_t );
   expect( symbol_t, "(" );
-  ParseIdentifier( target_var_id );  --ParseInOutParameter( target_ref );
-  baseType := getBaseType( identifiers( target_var_id ).kind );
+  -- Since this function accepts any record, we cannot use ParseOutParameter
+  -- as we have no default.  ParseIdentifier will treat it as a read-but-not-
+  -- written, which will throw off the constant tests.  So we have to use
+  -- ParseInOutParameter.  Since we don't have nested record yet in
+  -- SparForte, we're not using assignParameter..and DoJsonToRecord doesn't
+  -- support it anyway.
+  -- ParseIdentifier( target_var_id );
+  -- ParseOutParameter( target_ref, json_string_t );
+  ParseInOutParameter( target_ref );
+  baseType := getBaseType( identifiers( target_ref.id ).kind );
   if identifiers( baseType ).kind /= root_record_t then
      err( "Record type expected" );
   end if;
@@ -90,7 +99,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     DoJsonToRecord( target_var_id, sourceVal );
+     DoJsonToRecord( target_ref.id, sourceVal );
   end if;
 end ParseRecordsToRecord;
 
