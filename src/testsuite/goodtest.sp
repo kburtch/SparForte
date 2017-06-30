@@ -59,6 +59,18 @@ limit_int1 : limited integer;
 limit_int2 : limited integer := 5;
 pragma assumption( used, limit_int1 );
 pragma assumption( used, limit_int2 );
+type limited_int is new limited integer;
+subtype limited_int2 is limited integer;
+
+-- It is permissible to cast temporarily to an abstract.
+
+declare
+  type i1 is new abstract integer;
+  type i2 is new i1;
+  i : i2;
+begin
+  i := i2( i1( 1 ) );
+end;
 
 -- assignment and expressions
 
@@ -1520,6 +1532,13 @@ rec1 := rec3;
 rec2 := rec4;
 rec5 := rec4;
 rec6 := rec7;
+
+-- Permissible with SparForte
+
+type odd_rec is record
+  i : limited integer;
+  c : constant integer := 1;
+end record;
 
 -- complex
 

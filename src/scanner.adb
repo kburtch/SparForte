@@ -3346,6 +3346,9 @@ end renamingTypesOk;
 -- If a value is an integer type (i.e. positive, natural or integer),
 -- round the value.  Otherwise do not round the value.  Return the
 -- result as a string value.  This version only handles numbers.
+--
+-- It is permissible to cast to an abstract type as you are not defining
+-- a new variable (instance) of that type.
 -----------------------------------------------------------------------------
 
 function castToType( val : long_float; kind : identifier ) return unbounded_string is
