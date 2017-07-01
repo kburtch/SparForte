@@ -36,7 +36,6 @@ Severe Issues (Fix These First)
       part of a greater issue: subscripts should be syntax checked at compile-time.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
-    - shell commands are not recognized as such when compiling case...=> case.
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
