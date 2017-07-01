@@ -75,3 +75,5 @@ CHANGES SINCE 2.0.3
 
 36. Fix: "expected a constant" check not applied to record fields.
 
+37. Fix: case..when now handles shell commands correctly.
+

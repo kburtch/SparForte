@@ -1070,6 +1070,8 @@ begin
      when '=' =>
           if cmdpos < length( command ) then
              if Element( command, cmdpos+1 ) = '>' then
+                -- A big arrow can be the start of a case/when.
+                ci.context := startOfStatement; --DEBUGME
                 cmdpos := cmdpos + 1;
              end if;
           end if;
