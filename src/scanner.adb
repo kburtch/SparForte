@@ -4603,7 +4603,6 @@ begin
 
 -- range check the valuse for enumerateds
                     elsif getUniType( elementKind ) = root_enumerated_t then
-
                       -- Enumerateds
                       -- i don't actually record the maximum value for an enumerated type
                       -- the only way to tell is to search the symbol table for a match.

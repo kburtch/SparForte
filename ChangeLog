@@ -77,3 +77,5 @@ CHANGES SINCE 2.0.3
 
 37. Fix: case..when now handles shell commands correctly.
 
+38. Fix: json enumerateds how handled correctly in case...when.
+
