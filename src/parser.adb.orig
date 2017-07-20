@@ -42,6 +42,7 @@ with system,
     user_io.getline,
     script_io,
     performance_monitoring,
+    reports.test,
     builtins,
     jobs,
     signal_flags,
@@ -67,8 +68,9 @@ use ada.text_io,
     spar_os.exec,
     user_io,
     script_io,
-    performance_monitoring,
     string_util,
+    performance_monitoring,
+    reports.test,
     builtins,
     jobs,
     signal_flags,
@@ -3875,18 +3877,18 @@ begin
         err( "record or array expected" );
       end if;
 
-   -- type ... array...
+   -- type ... is array...
 
    elsif token = array_t then
       ParseArrayTypePart( newtype_id );
 
-   -- type ... record...
+   -- type ... is record...
 
    elsif token = record_t then
       ParseRecordTypePart( newtype_id );
    else
 
-     -- type ... new [abstract] ...
+     -- type ... is new [abstract] ...
 
      expect( new_t );                                      -- "new"
 
@@ -3901,9 +3903,9 @@ begin
         expect( abstract_t );
      end if;
 
-     -- limited types
+     -- type ... is new [abstract] [limited]...
 
-     if token = limited_t then                               -- abstract type?
+     if token = limited_t then                               -- limited type?
         if identifiers( newtype_id ).noVar then
            err( "abstract types don't need to be limited types" );
         elsif onlyAda95 then
@@ -9827,7 +9829,11 @@ end doLocalProfile;
 
 procedure checkAndInterpretScript( fullScriptPath : string ) is
 begin
-  if syntaxOpt then                                  -- -c / --check?
+  if tail( to_unbounded_string( fullScriptPath ), 3 ) = ".sh" then
+     put_line( standard_error, ".sh probably means " & fullScriptPath & " (if it exists) is not a SparForte script" );
+     set_exit_status( Failure );
+     return;
+  elsif syntaxOpt then                               -- -c / --check?
      syntax_check := true;                           -- check syntax only
      interpretScript( fullScriptPath );    -- check the script
   -- no syntax check obsolete with BUSH 2.0 (syntax check stage is needed to
@@ -9850,6 +9856,11 @@ begin
            trace := true;                            -- turn on trace
         end if;
         interpretScript( fullScriptPath ); -- run the script
+     end if;
+     if testOpt then
+        if wasTestErrorOrFailure then
+           err( "tests failed" );
+        end if;
      end if;
      -- display any error message
      if error_found then
@@ -9901,6 +9912,12 @@ begin
         -- when others =>
        --  err( "unable to open template " & optional_bold( to_string( templatePath ) ) );
         end;
+        -- Not sure this makes sense in a template, but we'll include it here.
+        if testOpt then
+           if wasTestErrorOrFailure then
+              err( "tests failed" );
+           end if;
+        end if;
         if error_found then
            put_line( standard_error, fullErrorMessage );
            -- always has template if we get here

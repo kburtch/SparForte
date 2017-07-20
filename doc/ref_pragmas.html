@@ -90,6 +90,7 @@ environment.</p>
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> todo( to, story, measure, units, priority, units [, ticket] )
   <b>pragma</b> test( condition )
+  <b>pragma</b> test_report( text|xml [, "filepath"] )
   <b>pragma</b> test_result( condition )
   <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache | session, var )
   <b>pragma</b> uninspect( var )
@@ -343,17 +344,6 @@ extra shell words.  However, when porting shell scripts, it can be helpful
 to allow unquoted expansions. (e.g. "echo $HOME" will no longer be
 reported as an error.)
 </li>
-  <li> <b>pragma test( `commands` )</b> -
-these are a set of testing commands to run when test mode (the --test
-option) is used.  For example, this can be used to help with unit testing.
-Because this is a pragma, it can be placed in variable declarations or
-other places executable statements are not normally allowed.  Make
-sure the final command ends with a semi-colon.</li>
-  <li> <b>pragma test_result( expression )</b> - evaluates the expression.
-If it isn't true, a "test failed" message is written to standard error.
-(The format of the message is affected by --gcc-errors.) Use this to check
-the results in automated tests.
-Requires --test option or asserts will have no effect.</li>
   <li> <b>pragma uninspect( var )</b> - undo a pragma inspect. Don't
 show
 a
@@ -361,6 +351,111 @@ variable's description whenever a user breaks to a command prompt. Has
 no
 effect if --break option isn't used.</li>
   </li>
+</ul>
+
+<h4>Testing Pragmas</h4>
+
+<p>When running in SDLC test mode (spar -t), SparForte will run any
+testing pragmas in the script and produce a test report.  In any
+other SDLC mode, the testing pragmas will not run.</p>
+
+<p><b>pragma test_report</b> selects the format and file path for the
+report.  The file path is a static static expression.  By default,
+the report will be in text format and written to standard output.</p>
+
+<p><b>pragma test</b> runs a test cases.  <b>pragma test_result</b>
+evaluates a boolean expression to check to see if the test ran
+correctly.  A test case or test_result expression is an "error" if
+the test case had an error when it ran.  Otherwise, a test result
+is either successful or a failure.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+pragma test_report( text );<br />
+pragma test( `i := 1;` ); -- a test case<br />
+pragma test_result( i = 1 ); -- should be successful<br />
+        <div class="code_caption">
+                <b>Example</b>: A example of a simple test</span>
+        </div>
+        </div>
+        </center>
+
+<p>Text reports are written to standard output when the script finishes
+running.  Only failed test cases are shown.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+(script finishes running...)
+End of File<br />
+^---------^ tests failed<br />
+<br />
+Test t_1: <br />
+ * Description: deliberate fail<br />
+ * Class: undefined<br />
+ * File: t<br />
+ * Line:  4<br />
+ * Test_Result's:  0<br />
+ * Failures:  0<br />
+ * Errors:  1<br />
+ * Time:  0.003516000<br />
+ * Error: t: 1: 6: in script[# 10]i := ;[# 10]     ^ operand expected<br />
+<br />
+Test t_2: <br />
+ * Description: <br />
+ * Class: undefined<br />
+ * File: t<br />
+ * Line:  6<br />
+ * Test_Result's:  2<br />
+ * Failures:  1<br />
+ * Errors:  0<br />
+ * Time:  0.000315000<br />
+ * Failure: pragma test_result( i = 0 );<br />
+<br />
+Suite Summary for t: <br />
+ * File: t<br />
+ * Tests:  1<br />
+ * Test_Result's:  3<br />
+ * Failures:  1<br />
+ * Errors:  1<br />
+ * Time:  0.004157000<br />
+        <div class="code_caption">
+                <b>Example</b>: An example of a text test report for "t.sp"</span>
+        </div>
+        </div>
+        </center>
+
+<p>Xml reports are written to a file in JUnit format when the script
+finishes running.  All tests, failed or successful, are included.
+SparForte treats each file as a JUnit test suite, and each <b>pragma
+test</b> as a JUnit test case.  Each <b>pragma test_result</b> is
+treated as a JUnit assertion.  The default path for the JUnit file
+is "sparforte_test.xml".</p>
+
+<p>If any test fails (or is in error), a "tests failed" error will be
+raised when the script finishes running.</p>
+
+<p>Tests should not be used at the command prompt or in configuring
+files like a profile file.</p>
+
+<ul>
+  <li> <b>pragma test( `commands` [, "description"] )</b> -
+these are a set of testing commands to run when test mode (the --test
+option) is used.  For example, this can be used to help with unit testing.
+Because this is a pragma, it can be placed in variable declarations or
+other places executable statements are not normally allowed.  Make
+sure the final command ends with a semi-colon.  The description
+is an optional explanation of the test.</li>
+  <li> <b>pragma test_report( text|xml [, "filepath" ] )</b> - select the
+format of the test/test_result test report, and the path to the
+report file.  The path is a static expression so it can use constants.</p>
+  <li> <b>pragma test_result( expression )</b> - evaluates the boolean
+expression.
+If it isn't true, a "test failed" message is written to standard error.
+(The format of the message is affected by --gcc-errors.) Use this to check
+the results in automated tests.
+Requires --test option or asserts will have no effect.</li>
 </ul>
 
 <h4>Documentation Pragmas</h4>

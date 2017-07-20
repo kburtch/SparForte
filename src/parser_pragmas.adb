@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2017 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -128,6 +128,7 @@ type aPragmaKind is (
      suppress_all_todos,
      template,
      test,
+     test_report,
      test_result,
      todo,
      unchecked_import,
@@ -137,6 +138,16 @@ type aPragmaKind is (
      volatile,
      unknown_pragma
    );
+
+--testReport : xmlTestReport;
+--testReport : textTestReport;
+
+-- TODO: this is ugly
+
+usingTextTestReport : boolean := false; -- TODO: if we must do this, use enum.
+myTextTestReport : textTestReport;
+myXmlTestReport  : xmlTestReport;
+reportPath       : unbounded_string;
 
 --  PARSE PRAGMA KIND
 --
@@ -219,6 +230,8 @@ begin
      pragmaKind := template;
   elsif name = "test" then
      pragmaKind :=  test;
+  elsif name = "test_report" then
+     pragmaKind :=  test_report;
   elsif name = "test_result" then
      pragmaKind :=  test_result;
   elsif name = "todo" then
@@ -605,6 +618,7 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   pragmaKind  : aPragmaKind := thePragmaKind; -- TODO: Hack
   expr_val    : unbounded_string;
   expr_val2   : unbounded_string;
+  expr_type   : identifier;
   results     : unbounded_string;
   var_id      : identifier;
   exportType  : unbounded_string;
@@ -856,6 +870,35 @@ begin
   when test =>                               -- pragma test
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        expr_val2 := identifiers( token ).value.all;
+        expect( strlit_t );
+     else
+        expr_val2 := null_unbounded_string;
+     end if;
+  when test_report =>                        -- pragma test_report
+     expr_val := identifiers( token ).name;
+     discardUnusedIdentifier( token );
+     if expr_val = "text" then
+        getNextToken;
+     elsif expr_val = "xml" then
+        getNextToken;
+     else
+        err( "unknown test report type '" & to_string( expr_val ) & "'" );
+     end if;
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( reportPath, expr_type );
+        baseTypesOK( expr_type, uni_string_t );
+        if expr_val = "text" and length( reportPath ) > 0 then
+           err( "text reports currently cannot be written to a file" );
+        elsif expr_val = "xml" and length( reportPath ) = 0 then
+           err( "file path is empty" );
+        end if;
+     else
+        reportPath := null_unbounded_string;
+     end if;
   when test_result =>                        -- pragma test_result
      declare
        save_syntax : boolean;
@@ -1461,23 +1504,107 @@ begin
         --putTemplateHeader( templateHeader );
      when test =>
         if testOpt then
-           if not syntax_check then
+           -- not clear what doing a test in an interactive session means,
+           -- and the parser isn't designed to produce a test report in
+           -- this situation.
+           if inputMode = interactive or inputMode = breakout then
+              err( "test is not allowed in an interactive session" );
+           elsif not syntax_check then
+              if not isJunitStarted then
+                 begin
+                   if usingTextTestReport then
+                      startJunit( myTextTestReport );
+                   else
+                      startJunit( myXmlTestReport, reportPath );
+                   end if;
+                 exception when others =>
+                   err( "exception while creating test result file" );
+                 end;
+              end if;
+              begin
+                 if isJunitTestCaseStarted then
+                    if usingTextTestReport then
+                       endJunitTestCase( myTextTestReport );
+                    else
+                       endJunitTestCase( myXmlTestReport );
+                    end if;
+                 end if;
+                 if usingTextTestReport then
+                    checkForNewTestSuite( myTextTestReport );
+                 else
+                    checkForNewTestSuite( myXmlTestReport );
+                 end if;
+                 if usingTextTestReport then
+                    startJunitTestCase( myTextTestReport,  null_unbounded_string, expr_val2 );
+                 else
+                    startJunitTestCase( myXmlTestReport,  null_unbounded_string, expr_val2 );
+                 end if;
+              exception when others =>
+                 err( "exception while writing to test result file" );
+              end;
               declare
-                 savershOpt : commandLineOption := rshOpt;
+                savershOpt : commandLineOption := rshOpt;
+                save_error_found : boolean := error_found;
               begin
                  --rshOpt := true;            -- force restricted shell mode
                  CompileRunAndCaptureOutput( expr_val, results );
                  --rshOpt := savershOpt;
                  put( results );
+                 if error_found then
+                    if usingTextTestReport then
+                       testCaseError( myTextTestReport );
+                    else
+                       testCaseError( myXmlTestReport );
+                    end if;
+                 end if;
+                 -- Script must continue to run even if an error occurred in the
+                 -- test subscript.
+                 error_found := save_error_found;
+              exception when others =>
+                 if usingTextTestReport then
+                    testCaseError( myTextTestReport );
+                 else
+                    testCaseError( myXmlTestReport );
+                 end if;
+                 error_found := save_error_found;
               end;
            end if;
         end if;
+     when test_report =>
+        -- TODO: should be a syntax-time tests, not a run-time test.
+        if isJunitStarted then
+           err( "test report has already been started" );
+        elsif expr_val = "text" then
+           usingTextTestReport := true;
+        elsif expr_val = "xml" then
+           usingTextTestReport := false;
+        else
+           err( "internal error: unexpected test report type '" & to_string( expr_val ) & "'" );
+        end if;
      when test_result =>
         if testOpt then
-           if not syntax_check then
+           -- not clear what doing a test in an interactive session means,
+           -- and the parser isn't designed to produce a test report in
+           -- this situation.
+           if inputMode = interactive or inputMode = breakout then
+              err( "test_result is not allowed in an interactive session" );
+           elsif not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
-                 if expr_val = "0" then
-                    err_test_result;
+                 if not isJunitStarted then
+                    err( optional_bold( "pragma test" ) & " must be used before pragma test_result" );
+                 elsif expr_val = "0" then
+                    if usingTextTestReport then
+                       testCaseFailure( myTextTestReport );
+                    else
+                       testCaseFailure( myXmlTestReport );
+                    end if;
+                    --err_test_result;
+                 else
+                    if usingTextTestReport then
+                       testCaseSuccess( myTextTestReport );
+                    else
+                       testCaseSuccess( myXmlTestReport );
+                    end if;
                  end if;
               end if;
            end if;
@@ -1689,5 +1816,35 @@ begin
      end loop;
   end if;
 end ParsePragma;
+
+procedure startupPragmas is
+begin
+  null;
+end startupPragmas;
+
+procedure shutdownPragmas is
+begin
+  if isJunitStarted then
+     if isJunitTestCaseStarted then
+        if usingTextTestReport then
+           endJunitTestCase( myTextTestReport );
+        else
+           endJunitTestCase( myXmlTestReport );
+        end if;
+     end if;
+     if isJunitTestSuiteStarted then
+        if usingTextTestReport then
+           endJUnitTestSuite( myTextTestReport );
+        else
+           endJUnitTestSuite( myXmlTestReport );
+        end if;
+     end if;
+     if usingTextTestReport then
+        endJunit( myTextTestReport );
+     else
+        endJunit( myXmlTestReport );
+     end if;
+  end if;
+end shutdownPragmas;
 
 end parser_pragmas;

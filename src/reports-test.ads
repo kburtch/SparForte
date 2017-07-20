@@ -22,25 +22,157 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
-     ada.strings.unbounded;
-
+     ada.strings.unbounded,
+     Ada.Calendar.Arithmetic;
 use ada.text_io,
-    ada.strings.unbounded;
+    ada.strings.unbounded,
+    Ada.Calendar.Arithmetic;
 
 with gen_list;
 
 package reports.test is
 
-procedure startJunit; -- not really here..just to compile
+  type test_natural is new natural;
+  type assertion_natural is new natural;
+  type error_natural is new natural;
+  type failure_natural is new natural;
+
+  package errorList is new gen_list( unbounded_string, "=", ">=" );
+  package failureList is new gen_list( unbounded_string, "=", ">=" );
+
+  wasTestErrorOrFailure : boolean := false;
+
+  type junitState is record
+    inTestCase  : boolean := false;
+    inTestSuite : boolean := false;
+    totalTests  : test_natural := 0;
+  end record;
+
+  type junitTestCase is record
+    name         : unbounded_string;
+    description  : unbounded_string;
+    class        : unbounded_string;
+    file         : unbounded_string;
+    line         : unbounded_string;
+    assertionCnt : assertion_natural := 0;
+    failureCnt   : failure_natural := 0;
+    errorCnt     : error_natural := 0;
+    startTime    : ada.calendar.time;
+    errorMsgs    : errorList.list;
+    failureMsgs  : failureList.list;
+    skipped      : boolean := false;
+    isOpen       : boolean := false;
+    testNo       : natural := 0;
+  end record;
+
+  type junitTestSuite is record
+    name         : unbounded_string;
+    path         : unbounded_string;
+    startTime    : ada.calendar.time;
+    testCnt      : test_natural := 1;
+    assertionCnt : assertion_natural := 0;
+    failureCnt   : failure_natural := 0;
+    errorCnt     : error_natural := 0;
+    isOpen       : boolean := false;
+  end record;
 
   ----------------------------------------------------------------------------
   --
   -- TESTING REPORTS
   --
   ----------------------------------------------------------------------------
+  -- TODO: different test report formats
 
-  type testReport is new textReport with null record;
+  -- TODO: xmlReport not yet written, so use text report
 
+  function isJunitStarted return boolean;
+
+  function isJunitTestCaseStarted return boolean;
+
+  function isJunitTestSuiteStarted return boolean;
+
+  ----------------------------------------------------------------------------
+  --
+  -- TEXT REPORTS
+  --
+  -- rootReport -> textReport -> textTestReport
+  --
+  ----------------------------------------------------------------------------
+
+  type textTestReport is new textReport with null record;
+
+  procedure startJUnitTestCase( report: in out textTestReport ;
+     name, description : unbounded_string := null_unbounded_string );
+  procedure endJunitTestCase( report : in out textTestReport );
+
+  -- TEST CASE ERROR
+  --
+  -- Record an exception or some other unexpected problem with the testing.
+
+  procedure testCaseError( report : in out textTestReport );
+
+  -- TEST CASE FAILURE
+  --
+  -- Record a test case failure.
+
+  procedure testCaseFailure( report : in out textTestReport );
+
+  -- TEST CASE SUCCESS
+  --
+  -- Record a test case success.
+
+  procedure testCaseSuccess( report : in out textTestReport );
+
+  -- more here
+
+  procedure startJUnitTestSuite( report: in out textTestReport;
+     name : unbounded_string := null_unbounded_string );
+  procedure endJunitTestSuite( report : in out textTestReport );
+  procedure checkForNewTestSuite( report : in out textTestReport );
+
+  procedure startJunit( report : in out textTestReport );
+  procedure endJunit( report : in out textTestReport );
+
+  ----------------------------------------------------------------------------
+  --
+  -- JUNIT XML REPORTS
+  --
+  -- rootReport -> textReport* -> xmlTestReport
+  --
+  ----------------------------------------------------------------------------
+
+  type xmlTestReport is new textReport with null record;
+
+  procedure startJUnitTestCase( report: in out xmlTestReport ;
+     name, description : unbounded_string := null_unbounded_string );
+  procedure endJunitTestCase( report : in out xmlTestReport );
+
+    -- TEST CASE ERROR
+  --
+  -- Record an exception or some other unexpected problem with the testing.
+
+  procedure testCaseError( report : in out xmlTestReport );
+
+  -- TEST CASE FAILURE
+  --
+  -- Record a test case failure.
+
+  procedure testCaseFailure( report : in out xmlTestReport );
+
+  -- TEST CASE SUCCESS
+  --
+  -- Record a test case success.
+
+  procedure testCaseSuccess( report : in out xmlTestReport );
+
+  procedure startJUnitTestSuite( report: in out xmlTestReport;
+      name : unbounded_string := null_unbounded_string );
+  procedure endJunitTestSuite( report : in out xmlTestReport );
+  procedure checkForNewTestSuite( report : in out xmlTestReport );
+
+  procedure startJunit( report : in out xmlTestReport; path : unbounded_string );
+  procedure endJunit( report : in out xmlTestReport );
 
 end reports.test;
 
+-- vim: ft=spar

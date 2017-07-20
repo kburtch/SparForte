@@ -46,6 +46,7 @@ with system,
     --TODO: I need to fix this circular dependency between the scanner and
     -- parser.  That is, move start/shutdown to separate packages.
     parser,
+    parser_pragmas,
     parser_os,
     parser_arrays,
     parser_enums,
@@ -101,6 +102,7 @@ use ada.text_io,
     software_models,
     performance_monitoring,
     parser,
+    parser_pragmas,
     parser_os,
     parser_arrays,
     parser_enums,
@@ -1983,6 +1985,7 @@ begin
   ShutdownDBM;
   ShutdownDB;
   ShutdownSparOS;
+  ShutdownPragmas;
 
   -- Deallocate arrays and resources before the symbol and block tables
   -- is cleared
@@ -2595,6 +2598,7 @@ begin
   -- startup built-in packages from other modules
   --
 
+  StartupPragmas;
   StartupSparOS;
   StartupDB;
   StartupDBM;
@@ -4428,11 +4432,18 @@ begin
                          -- json encode primitive types
                          uniFieldType := getUniType( identifiers( field_t ).kind );
                          if getBaseType( identifiers( field_t ).kind ) = boolean_t then
-                            if integer( to_numeric( identifiers( field_t ).value.all ) ) = 0 then
-                               result := result & "false";
-                            else
-                               result := result & "true";
-                            end if;
+                            begin
+                               if integer( to_numeric( identifiers( field_t ).value.all ) ) = 0 then
+                                  result := result & "false";
+                               else
+                                  result := result & "true";
+                               end if;
+                            exception when others =>
+                               err( "unable to parse boolean value " &
+                                  ASCII.Quotation &
+                                  to_string( identifiers( field_t ).value.all ) &
+                                  ASCII.Quotation );
+                            end;
                          elsif uniFieldType = uni_numeric_t then
 -- trim?
                             result := result & identifiers( field_t ).value.all;

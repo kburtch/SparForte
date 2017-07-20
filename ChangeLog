@@ -79,3 +79,14 @@ CHANGES SINCE 2.0.3
 
 38. Fix: json enumerateds how handled correctly in case...when.
 
+39. Change: scripts that end in ".sh" (traditionally a shell script) now do not run...an error is reported.
+
+40. Fix: records.to_json no longer raises an exception on an undefined boolean field.
+
+41. New: pragma test has an optional dscription.
+
+42. New: pragma test_report to specify a test report type and filename.
+
+43. New: test failures no longer abort immediately but produce a report after the program finishes.
+
+
