@@ -608,7 +608,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           end if;
        end if;
     elsif identifiers( t ).limit then
-       err( "limited variables cannot be used in an expression" );
+       err( "limited variables cannot be used in an expression (or you may have spelled a subprogram name incorrectly)" );
        kind := eof_t;
     elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
        array_id := t;                            -- array_id=array variable

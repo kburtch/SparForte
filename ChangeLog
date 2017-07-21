@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.0.4's focus was bringing SparForte into Jenkins continuous integration.
+SparForte 2.1's focus was bringing SparForte into Jenkins continuous integration.
 
 CHANGES SINCE 2.0.3
 
@@ -83,7 +83,7 @@ CHANGES SINCE 2.0.3
 
 40. Fix: records.to_json no longer raises an exception on an undefined boolean field.
 
-41. New: pragma test has an optional dscription.
+41. New: pragma test has an optional test description.
 
 42. New: pragma test_report to specify a test report type and filename.
 
