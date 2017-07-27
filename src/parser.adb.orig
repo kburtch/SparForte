@@ -3009,10 +3009,22 @@ begin
                  declare
                     fieldName : unbounded_string;
                     field_t : identifier;
+                    p : natural;
                  begin
                     fieldName := identifiers( j ).name;
-                    fieldName := delete( fieldName, 1, index( fieldName, "." ) );
-                    fieldName := identifiers( id ).name & "." & fieldName;
+                    -- it is possible to have multiple periods in the name
+                    -- search backwards for the field name.
+                    p := length( fieldName );
+                    while p > 0 loop
+                       exit when element( fieldName, p ) = '.';
+                       p := p - 1;
+                    end loop;
+                    if p = 0 then
+                       field_t := eof_t;
+                    else
+                       fieldName := delete( fieldName, 1, p );
+                       fieldName := identifiers( id ).name & "." & fieldName;
+                    end if;
                     findIdent( fieldName, field_t );
                     if field_t = eof_t then
                        err( "unable to find record field " &
@@ -3034,7 +3046,8 @@ begin
        end if;
        end loop; -- for
        if not found then
-          err( "record literal too long" );
+          err( "assigning" & optional_bold( field_no'img ) &
+               " fields but the record has only" & optional_bold( expected_fields'img ) );
        end if;
        exit when error_found or identifiers( token ).value.all /= ","; -- more?
        expect( symbol_t, "," );
@@ -3042,7 +3055,8 @@ begin
      end loop;
      expect( symbol_t, ")" );
      if expected_fields /= field_no then
-        err( "record literal too short" );
+        err( "assigning only" & optional_bold( field_no'img ) &
+             " fields but the record has" & optional_bold( expected_fields'img ) );
      end if;
   else
      ParseIdentifier( second_record_id );                      -- second rec?

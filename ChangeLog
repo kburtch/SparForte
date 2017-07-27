@@ -89,4 +89,5 @@ CHANGES SINCE 2.0.3
 
 43. New: test failures no longer abort immediately but produce a report after the program finishes.
 
+44. Fix: assigning in a record declaration now works with types containing a period (e.g. teams.member ).
 
