@@ -91,3 +91,5 @@ CHANGES SINCE 2.0.3
 
 44. Fix: assigning in a record declaration now works with types containing a period (e.g. teams.member ).
 
+45. Fix: btree_io and hash_io cursors now closed at end-of-block to prevent indefinite row locking on a control-c exit.
+
