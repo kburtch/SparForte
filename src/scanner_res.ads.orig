@@ -141,8 +141,9 @@ type btree_file_type is record
 end record;
 
 type btree_cursor_type is record
-     cursor : bdb.berkeley_cursor;
-     isOpen : boolean := false;
+     cursor  : bdb.berkeley_cursor;
+     isOpen  : boolean := false;
+     session : bdb.berkeley_session;
 end record;
 
 type hash_file_type is record
@@ -154,8 +155,9 @@ type hash_file_type is record
 end record;
 
 type hash_cursor_type is record
-     cursor : bdb.berkeley_cursor;
-     isOpen : boolean := false;
+     cursor  : bdb.berkeley_cursor;
+     session : bdb.berkeley_session;
+     isOpen  : boolean := false;
 end record;
 
 type recno_file_type is record
