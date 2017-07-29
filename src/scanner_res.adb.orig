@@ -272,8 +272,8 @@ begin
   elsif rp.rt = hash_file then
 #if BDB
      if rp.hash.isOpen then
-        close( rp.hash.env );
         close( rp.hash.session );
+        close( rp.hash.env );
      end if;
      free_berkeley_session( rp.hash.session );
 #else
@@ -282,8 +282,8 @@ begin
   elsif rp.rt = recno_file then
 #if BDB
      if rp.recno.isOpen then
-        close( rp.recno.env );
         close( rp.recno.session );
+        close( rp.recno.env );
      end if;
      free_berkeley_session( rp.recno.session );
 #else
