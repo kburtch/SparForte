@@ -22,6 +22,7 @@
 ------------------------------------------------------------------------------
 
 with interfaces.c,
+    ada.exceptions,
     ada.text_io.editing,
     ada.strings.unbounded.text_io,
     gnat.source_info,
@@ -36,6 +37,7 @@ with interfaces.c,
     parser,
     parser_params;
 use interfaces.c,
+    ada.exceptions,
     ada.text_io,
     ada.text_io.editing,
     ada.strings.unbounded,
@@ -1103,6 +1105,7 @@ procedure ParsePutLine is
   result    : size_t;
   ch        : character;
   fd        : aFileDescriptor;
+  retry     : boolean;
 begin
   target_ref.index := 0;
   expect( put_line_t );
@@ -1134,9 +1137,37 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if target_ref.id = standard_error_t then
-        Put_Line( standard_error, expr_val );
+        -- Ada doesn't handle interrupted system calls properly.
+        -- maybe a more elegant way to do this...
+        loop
+          retry := false;
+          begin
+            Put_Line( standard_error, expr_val );
+          exception when msg: device_error =>
+            if exception_message( msg ) = "interrupted system call" then
+               retry := true;
+            else
+               err( exception_message( msg ) );
+            end if;
+          end;
+        exit when not retry;
+        end loop;
      elsif target_ref.id = standard_output_t then
-        Put_Line( expr_val );
+        -- Ada doesn't handle interrupted system calls properly.
+        -- maybe a more elegant way to do this...
+        loop
+          retry := false;
+          begin
+            Put_Line( expr_val );
+          exception when msg: device_error =>
+            if exception_message( msg ) = "interrupted system call" then
+               retry := true;
+            else
+               err( exception_message( msg ) );
+            end if;
+          end;
+        exit when not retry;
+        end loop;
         last_output := expr_val;
         last_output_type := expr_type;
      else
@@ -1174,6 +1205,7 @@ procedure ParseQuestion is
   -- Source: BUSH built-in
   expr_val  : unbounded_string;
   expr_type : identifier;
+  retry     : boolean;
 begin
   expect( symbol_t );
   if onlyAda95 then
@@ -1280,7 +1312,21 @@ begin
            err_exception_raised;
         end;
      end if;
-     Put_Line( expr_val );
+     -- Ada doesn't handle interrupted system calls properly.
+     -- maybe a more elegant way to do this...
+     loop
+        retry := false;
+        begin
+          Put_Line( expr_val );
+        exception when msg: device_error =>
+          if exception_message( msg ) = "interrupted system call" then
+             retry := true;
+          else
+             err( exception_message( msg ) );
+          end if;
+        end;
+     exit when not retry;
+     end loop;
      last_output := expr_val;
      last_output_type := expr_type;
      replaceField( standard_output_t, line_field,
@@ -1303,6 +1349,7 @@ procedure ParsePut is
   pic       : Picture;
   pic_val   : unbounded_string;
   pic_type  : identifier;
+  retry     : boolean;
 begin
   expect( put_t );
   expect( symbol_t, "(" );
@@ -1352,9 +1399,37 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if target_ref.id = standard_error_t then
-        Put( standard_error, expr_val );
+        -- Ada doesn't handle interrupted system calls properly.
+        -- maybe a more elegant way to do this...
+        loop
+           retry := false;
+           begin
+             Put( standard_error, expr_val );
+           exception when msg: device_error =>
+             if exception_message( msg ) = "interrupted system call" then
+                retry := true;
+             else
+                err( exception_message( msg ) );
+             end if;
+           end;
+        exit when not retry;
+        end loop;
      elsif target_ref.id = standard_output_t then
-        Put( expr_val );
+        -- Ada doesn't handle interrupted system calls properly.
+        -- maybe a more elegant way to do this...
+        loop
+           retry := false;
+           begin
+             Put( expr_val );
+           exception when msg: device_error =>
+             if exception_message( msg ) = "interrupted system call" then
+                retry := true;
+             else
+                err( exception_message( msg ) );
+             end if;
+           end;
+        exit when not retry;
+        end loop;
         last_output := expr_val;
      else
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );

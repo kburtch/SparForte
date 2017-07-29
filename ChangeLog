@@ -93,3 +93,5 @@ CHANGES SINCE 2.0.3
 
 45. Fix: btree_io and hash_io cursors now closed at end-of-block to prevent indefinite row locking on a control-c exit.
 
+46. Fix: text_io package workaround for Ada.Text_IO not handling interrupted system calls on Put/Put_Line.
+
