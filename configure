@@ -128,7 +128,7 @@ while [ $# -gt 0 ] ; do
   #    if [ ! -w "/dev/shm/sparforte" ] ; then
   #       echo "/dev/shm/sparforte not writable"
   #       exit 192
-  #    fi            
+  #    fi
   #    DEV_SHM=1
   #    ;;
   --without-sound)
@@ -460,6 +460,18 @@ elif [ "$OS" = "cygwin" ] ; then
          exit 1
       fi
    fi
+elif [ "$OS" = "darwin" ] ; then
+   echo -n "Darwin"
+   if test -r spar_os.ads ; then
+      echo " (cached, make distclean to remove)";
+   else
+      echo
+      cp os_bindings/spar_darwin.ads spar_os.ads
+      if [ $? -ne 0 ] ; then
+         echo "Unable to find appropriate spar_os source files"
+         exit 1
+      fi
+   fi
 else
    echo "unknown"
    echo
@@ -702,18 +714,25 @@ echo -n "checking for libssl (ldconfig -p, Linux)... "
 TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | fgrep libssl.so.`
 if [ -z "$TMP" ] ; then
    echo "no"
-   echo
-   echo "If you have libssl, it may be version specific"
-   echo "Please make a general symbol link libsdl.so to the "
-   echo "correct version and run ldconfig to update the"
-   echo "shared library list."
-   exit 1
+   echo -n "checking for libssl.dylib (Darwin)..."
+   TMP=`"$LOCATE" libssl.dylib`
+   if [ ! -z "$TMP" ] ; then
+       echo "yes"
+   else
+       echo "no"
+       echo
+       echo "If you have libssl, it may be version specific"
+       echo "Please make a general symbol link libssl.so to the "
+       echo "correct version and run ldconfig to update the"
+       echo "shared library list."
+       exit 1
+   fi
 else
    TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libssl.so`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo -n "checking for libSDL (ldconfig -r, FreeBSD)... "
-      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL`
+      echo -n "checking for libssl (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libssl.so`
       if [ -z "$TMP" ] ; then
          echo "no"
          echo
@@ -767,38 +786,40 @@ if [ -z "$TMP" ] ; then
    if [ -n "$PKGCONFIG" ] ; then
       echo -n "configuring SDL (pkg-config)... "
       # bundled SDL here
-      SDLLIBSTYPE=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`
-      SDLLIBSTYPE=`echo "$SDLLIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-      SDLINCLTYPE=`(exec $PKGCONFIG --cflags sdl 2>/dev/null)`
-      SDLINCLTYPE=`echo "$SDLINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+      SDLLIBS=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`
+      SDLINCL=`(exec $PKGCONFIG --cflags sdl 2>/dev/null)`
       if [ $? -ne 0 ] ; then
-         SDLLIBSTYPE=""
-         SDLINCLTYPE=""
+         SDLLIBS=""
+         SDLINCL=""
          echo "no"
       else
          echo "yes"
       fi
    fi
-   if [ -z "$SDLLIBSTYPE" ] ; then
+   if [ -z "$SDLLIBS" ] ; then
       echo "guessing at SDL configation (may be incorrect)... "
       # Cannot find SDL_config?  Use these defaults for makefile sed...
       if [ "$OS" = "FreeBSD" ] ; then
-         SDLLIBSTYPE="-L\/usr\/local\/lib -lSDL-1.1\ -lSDL_image -lpthread"
-         SDLINCLTYPE="-I\/usr\/local\/include\/SDL11"
+         SDLLIBS="-L/usr/local/lib -lSDL-1.1 -lSDL_image -lpthread"
+         SDLINCL="-I/usr/local/include/SDL11"
+      elif [ "$OS" = "darwin" ] ; then
+         SDLLIBS="/Library/Frameworks/SDL.framework/SDL /Library/Frameworks/SDL_image.framework/SDL_image"
+         SDLINCL="-I/Library/Frameworks/SDL.framework/include"
       else
-         SDLLIBSTYPE="-l\ SDL\ -l\ SDL_image"
-         SDLINCLTYPE="-I\/usr\/include\/SDL"
+         SDLLIBS="-l SDL -l SDL_image"
+         SDLINCL="-I/usr/include/SDL"
       fi
    fi
 else
-   # Remove -D_REENTRANT (not recognized by GCC Ada) and escape special
-   # sed characters (space and slash)
-   SDLLIBSTYPE=`$SDL_CONFIG --libs`" -lSDL_image"
-   SDLLIBSTYPE=`echo "$SDLLIBSTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-   SDLINCLTYPE=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
-   SDLINCLTYPE=`echo "$SDLINCLTYPE" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+   # Remove -D_REENTRANT (not recognized by GCC Ada)
+   SDLLIBS=`$SDL_CONFIG --libs`" -lSDL_image"
+   SDLINCL=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
    echo "yes"
 fi
+
+# Escape special characters (space and slash)
+SDLLIBSTYPE=`echo "$SDLLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+SDLINCLTYPE=`echo "$SDLINCL" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 
 #if [ -z "$SDL_CONFIG" ] ; then
 #   SDL_CONFIG="sdl-config"
@@ -833,8 +854,7 @@ if test -r spar_os-sdl.ads ; then
    echo " (cached, make distclean to remove)";
 else
    cd ../test
-   # FreeBSD 9 /usr/local
-   (exec "$CC" sdlversion.c -I/usr/local/include -L/usr/local/lib -lSDL > /dev/null 2>/dev/null )
+   (exec "$CC" sdlversion.c "$SDLINCL" "$SDLLIBS" > /dev/null 2>/dev/null )
    TMP=`./a.out`
    rm a.out
    cd ../src
@@ -869,16 +889,24 @@ if [ -z "$TMP" ] ; then
       echo -n "checking for libSDL_image (locate, Darwin)... "
       TMP=`"$LOCATE" libSDL_image`
       if [ ! -z "$TMP" ] ; then
+          SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
           echo "yes"
       else
-          echo "No version of the Simple DirectMedia Layer image library (libSDL_Image) was found"
-          echo "This auxillary library is normally included with libSDL."
-          echo "Fedora users can install it using this command: yum install SDL_image"
-          echo "If you have installed libSDL_image, you may need to use ldconfig (as"
-          echo "root) to update the shared library search paths for libSDL_image"
-          echo
-          echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
-          exit 1
+          echo "no"
+          echo -n "checking for default libSDL_image (grep, Darwin)... "
+          TMP=`echo "$SDLLIBS" | grep SDL_image`
+          if [ ! -z "$TMP" ] ; then
+              echo "yes"
+          else
+              echo "No version of the Simple DirectMedia Layer image library (libSDL_Image) was found"
+              echo "This auxillary library is normally included with libSDL."
+              echo "Fedora users can install it using this command: yum install SDL_image"
+              echo "If you have installed libSDL_image, you may need to use ldconfig (as"
+              echo "root) to update the shared library search paths for libSDL_image"
+              echo
+              echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
+              exit 1
+          fi
       fi
     else
        SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
@@ -1050,7 +1078,7 @@ if [ -z "$NO_READLINE" ] ; then
    if [ -z "$READLINE_VERSION" ] ; then
       echo -n "checking for readline (locate, Darwin)... "
       TMP=`"$LOCATE" libreadline`
-      if [ ! -z "$TMP" ] ; then
+      if [ -z "$TMP" ] ; then
          echo "no"
       else
          HAS_READLINE=1
@@ -1127,7 +1155,7 @@ fi
 #
 # GSTREAMERFLAG is the C pre-processor flag to enable GSstreamer support.
 # It will be non-blank if GStreamer is detected.
- 
+
 GSTREAMERFLAG=
 if [ -z "$NO_SOUND" ] ; then
    echo -n "checking for gstreamer (ldconfig -p, Linux)... "

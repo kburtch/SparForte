@@ -113,10 +113,12 @@ WHENCE_SEEK_CUR : constant integer := 1;
 WHENCE_SEEK_END : constant integer := 2;
 -- in stdio.h (no WHENCE in Darwin)
 
-function lseek( fd : aFileDescriptor; offset : long_long_integer; whence : integer )
+function LLI_lseek( fd : aFileDescriptor; offset : long_long_integer; whence : integer )
   return long_long_integer;
-pragma import( C, lseek );
--- Darwin has long long offset and return
+pragma import( C, LLI_lseek, "lseek" );
+function lseek( fd : aFileDescriptor; offset : long_long_integer; whence : integer )
+  return long_integer is (long_integer(LLI_lseek(fd, offset, whence)));
+-- Darwin has long long offset and return but SparForte expects long
 
 function dup( oldfd : aFileDescriptor ) return aFileDescriptor;
 pragma import( C, dup );
@@ -497,6 +499,7 @@ AF_INET : constant aProtocolFamily := 2;
 
 type aSocketType is new int;
 SOCK_STREAM : constant aSocketType := 1;
+SOCK_NONBLOCK : constant aSocketType := 0; -- Linux-specific
 
 -- this is for a steady connection.  Defined as 1 in
 -- /usr/include/linux/socket.h

@@ -15,7 +15,7 @@
 // Configuration constants
 
 #define SOCKET_BUFFER_MAX 256
-// limited by kernel parameter SOMAXCONN 
+// limited by kernel parameter SOMAXCONN
 // /proc/sys/net/core/somaxconn (default 128)
 // http://publib.boulder.ibm.com/infocenter/wasinfo/v6r0/index.jsp?topic=/com.ibm.websphere.express.doc/info/exp/ae/tprf_tunelinux.html
 // recommends bumping the maximum for this and nextdev_max_backlog to 3000
@@ -159,7 +159,7 @@ SocketData *initialize_server( int socket_port,
   socket_data->socket_linger_seconds = socket_linger_seconds;
   socket_data->timeout_secs = timeout_secs;
   socket_data->timeout_usecs = timeout_usecs;
- 
+
   if ( !(hp = gethostbyname( socket_buffer ) ) ) {
         socket_error = errno;
         free( socket_data );
@@ -180,7 +180,7 @@ SocketData *initialize_server( int socket_port,
 	   socket_port );
 */
 
-  if ( socket_port > 32767 ) { 
+  if ( socket_port > 32767 ) {
      socket_error = 256;
      free( socket_data );
      return NULL;
@@ -496,7 +496,11 @@ void send_client_message( int socket_client, int chars ) {
 retry:
   // MSG_NOSIGNAL suppresses the broken pipe signal but an error is still
   // returned
+#ifdef __APPLE__
+  bytes_sent = send( socket_client, buffer, chars, 0 );
+#else
   bytes_sent = send( socket_client, buffer, chars, MSG_NOSIGNAL );
+#endif
 
   if ( bytes_sent < 0 ) {
      // handle errors.  If EINTR, retrun so that, as much as possible, the
