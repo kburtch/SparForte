@@ -65,6 +65,10 @@ Annoyances / Bugs with Workarounds / Updates
 - records
   - if constant records/arrays are allowed,they should have static expressions
     during declaration assignments.
+- strings
+  - some string functions have string, not universal_string, parameters, which
+    means parameters often must be typecast.  Probably they should be universal
+    types.
 - graphics and sound
   - SDL - hardware accelleration not working with SDL...why not?
   - SDL needs to be upgraded for version 2.0
