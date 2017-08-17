@@ -262,9 +262,20 @@ begin
   elsif rp.rt = btree_file then
 #if BDB
      if rp.btree.isOpen then
-        close( rp.btree.session );
-        close( rp.btree.env );
+        -- close the database
+        begin
+           close( rp.btree.session );
+        exception when berkeley_error =>
+           err_exception_raised;
+        end;
+        -- close the environment
+        begin
+           close( rp.btree.env );
+        exception when berkeley_error =>
+           err_exception_raised;
+        end;
      end if;
+     -- free the I/O buffer memory
      free_berkeley_session( rp.btree.session );
 #else
      null;
@@ -272,9 +283,20 @@ begin
   elsif rp.rt = hash_file then
 #if BDB
      if rp.hash.isOpen then
-        close( rp.hash.env );
-        close( rp.hash.session );
+        -- close the database
+        begin
+           close( rp.hash.session );
+        exception when berkeley_error =>
+           err_exception_raised;
+        end;
+        -- close the environment
+        begin
+           close( rp.hash.env );
+        exception when berkeley_error =>
+           err_exception_raised;
+        end;
      end if;
+     -- free the I/O buffer memory
      free_berkeley_session( rp.hash.session );
 #else
      null;
@@ -282,24 +304,52 @@ begin
   elsif rp.rt = recno_file then
 #if BDB
      if rp.recno.isOpen then
-        close( rp.recno.env );
-        close( rp.recno.session );
+        -- close the database
+        begin
+           close( rp.recno.session );
+        exception when berkeley_error =>
+           err_exception_raised;
+        end;
+        -- close the environment
+        begin
+           close( rp.recno.env );
+        exception when berkeley_error =>
+           err_exception_raised;
+        end;
      end if;
+     -- free the I/O buffer memory
      free_berkeley_session( rp.recno.session );
 #else
      null;
 #end if;
   elsif rp.rt = btree_cursor then
-      null; -- we need the file to close the cursor and we don't have it
-      --if rp.btree_cur.isOpen then
-      --   close( rp.btree_cur.cursor );
-      --end if;
+     -- TODO: The session is shallow copied, so closing the original session
+     -- early has uncertain effects.
+     if rp.btree_cur.isOpen then
+        begin
+           close( rp.btree_cur.session, rp.btree_cur.cursor );
+        exception when berkeley_error =>
+          err_exception_raised;
+        end;
+     end if;
   elsif  rp.rt = hash_cursor then
-       null;
+     -- TODO: The session is shallow copied, so closing the original session
+     -- early has uncertain effects.
+     if rp.hash_cur.isOpen then
+        begin
+           close( rp.hash_cur.session, rp.hash_cur.cursor );
+        exception when berkeley_error =>
+          err_exception_raised;
+        end;
+     end if;
   elsif  rp.rt = recno_cursor then
-       null;
+      null;
+      -- TODO: this is temporary: at least tell the user cursor wasn't closed
+      --if rp.recno_cur.isOpen then
+      --   err( "cursor is not closed" );
+      --end if;
   end if;
--- TODO: shoul close tinyserve server if open
+-- TODO: should close tinyserve server if open
   resHandleList.clear( resHandles, long_integer( id ) );
   --if trace then
   --   put_trace( "Resource handle" & id'img & " memory freed" );

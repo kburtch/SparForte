@@ -56,7 +56,7 @@ Annoyances / Bugs with Workarounds / Updates
    need this for memory leak tests (though there are command line ways of
    doing this).
 - pragmas
-    - can't declare two licences or software_models.  This is a problem for a
+    - can't declare two licenses or software_models.  This is a problem for a
       redistributable library
     - check double pragma import - test case
 - unit testing and teamwork
@@ -77,6 +77,23 @@ Annoyances / Bugs with Workarounds / Updates
 - build system
   - David B wants me to bring back SparForte shared library
     - shared library calling mechanism and integration with other languages
+
+    Lua's approach to being called by another language:
+
+    http://queue.acm.org/detail.cfm?id=1983083
+
+    Java uses JNI
+
+    http://en.wikipedia.org/wiki/Java_Native_Interface
+    http://home.pacifier.com/~mmead/jni/cs510ajp/example_details.html
+    http://download.oracle.com/javase/6/docs/technotes/guides/jni/spec/intro.html#wp9502
+
+    - you can call java from c using standard calls
+    - search for a class, load a method, run it
+    - http://en.wikipedia.org/wiki/Java_Native_Interface
+    - http://www.ibm.com/developerworks/java/library/j-jni/index.html
+    - business shell, though, only imports variables right now
+
 - shell
     - windows size change is not refreshing the terminal settings?
     - escaping unprintable characters not working with readline prompt
@@ -306,6 +323,16 @@ ISSUES (SparForte Environment)
     - in morph.bush example, a single newline is output when Ada is shutting
       down.  Is something flushed or what??...BUT a short sample script doesn't
       have this behaviour.  Is this still an issue?
+    - random numbers
+      https://github.com/adrianhoe/adamt19937
+      http://adrianhoe.com/adrianhoe/projects/adamt19937/
+    - benchmarks
+      - http://benchmarksgame.alioth.debian.org/
+    - shell examples
+      - http://comp.eonworks.com/scripts/scripts.html
+      - http://www.shelldorado.com/scripts/categories.html
+      - http://www.linuxlots.com/~dunne/scripts.html [broken?]
+
 
 ISSUES (AdaScript)
 
@@ -314,7 +341,6 @@ ISSUES (AdaScript)
     - rpmlint complains about gethostbyname (IP4-specific) -> getaddrinfo
   * terminal control character escaping isn't working on readline prompt
     - bold is turned off temporarily on prompt
-
 
   * general syntax (AdaScript Issues)
     - implement scientific notation numeric literals
@@ -327,10 +353,23 @@ ISSUES (AdaScript)
       sensitivity
     - vim syntax - $$ doesn't work
     - unreachable code error doesn't indent token hilight properly
+    - case cases are not checked for identical cases but should be.
+    - should last output (%) be assignable?
 
   * assignments
     - naturals and positives compatibility (intTypesOK) not handled at
       assignment...is this fixed?
+    - when declaring variables, should the type be optional when a value
+      is assigned (so that the type of the value is used, like a command line
+      auto declaration)?  This is how the Go language does it.
+
+  * pragmas
+    - should there be a pragma that runs after every command (as in
+      the special trap for BASH)?
+    - dual license support for pragma license?
+    - pragma restriction( no_unextended_types ); -- variables must use
+      user-defined types derived from standard ones?
+    - additional safety features for pragma import/export?
 
   * pen package (AdaScript Issues)
     - pen package fails on AMD/Linux
@@ -406,6 +445,42 @@ ISSUES (AdaScript)
   * System package (AdaScript Issues)
     - System_Name should be enumerated
 
+  * OS package
+    - export variables are not exported before a os.system().  Should they be?
+    - os.unrestricted_system vs. restricted system?  or restricted backquotes
+      and unrestricted backquotes?
+
+  * Pen package
+    - TTF (True-type Fonts)
+              /* Initialize the TTF library */
+        if ( TTF_Init() < 0 ) {
+                fprintf(stderr, "Couldn't initialize TTF: %s\n",SDL_GetError());
+                SDL_Quit();
+                return(2);
+        }
+
+        /* Open the font file with the requested point size */
+        font = TTF_OpenFont(argv[0], ptsize);
+        if ( font == NULL ) {
+                fprintf(stderr, "Couldn't load %d pt font from %s: %s\n",
+                                        ptsize, argv[0], SDL_GetError());
+                cleanup(2);
+        }
+        TTF_SetFontStyle(font, renderstyle);
+        TTF_SetFontOutline(font, outline);
+        TTF_SetFontKerning(font, kerning);
+        TTF_SetFontHinting(font, hinting);
+
+        TTF_CloseFont(font);
+
+        Basically two main functions:
+
+        text = TTF_RenderText_Solid(font, string, *forecol);
+        text = TTF_RenderText_Shaded(font, string, *forecol, *backcol)
+        text = TTF_RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg);
+
+        There are other functions to get font information, do UTF-8 or set features.
+
   * template issues (AdaScript Issues)
     - line numbering in templates - Text_IO skips blank lines.  Template
       scripts are missing blank lines, and throws line numbers off as a
@@ -439,6 +514,9 @@ ISSUES (AdaScript)
     - unconstrained arrays and forced initialization
     - if array return values are implemented, arrays should be initialized with
       array expression value.
+
+  * ZMQ support (new package)
+    - see https://github.com/persan/zeromq-Ada
 
 ISSUES (Bourne Shell)
 
@@ -523,6 +601,9 @@ MAJOR REDESIGNS
     arrays can be returned (and future records, objects)
 
  - performance enhancements
+    - should the universal type (i.e. storage type - univeral_string, array,
+      root_enumerated, etc.) be stored with the variable
+      so SparForte doesn't have to be looked up constantly?
     - lineRead still reads as unbounded_string instead of copying directly
       into script variable, causing double buffering and conversion slowdowns
     - more sophisticated byte code for speed

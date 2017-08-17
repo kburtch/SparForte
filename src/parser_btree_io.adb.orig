@@ -1818,6 +1818,7 @@ begin
               " is already open" );
         else
            new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur.cursor );
+           theCurs.btree_cur.session := theFile.btree.session;
            theCurs.btree_cur.isOpen := true;
         end if;
      end if;

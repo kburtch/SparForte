@@ -1119,7 +1119,7 @@ begin
         end if;
      when annotate =>
         null;
-     when assumption|assumption_used|assumption_written =>
+     when assumption|assumption_used|assumption_written|assumption_applied|assumption_factor =>
         null;
      when blocked =>
         null;

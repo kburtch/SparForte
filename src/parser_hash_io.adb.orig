@@ -1801,6 +1801,7 @@ begin
               " is already open" );
         else
            new_berkeley_cursor( theFile.hash.session, theCurs.hash_cur.cursor );
+           theCurs.hash_cur.session := theFile.hash.session;
            theCurs.hash_cur.isOpen := true;
         end if;
      end if;
