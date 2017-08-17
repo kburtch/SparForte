@@ -25,11 +25,13 @@
 
 with ada.strings.unbounded,
      world,
+     string_util,
      scanner,
      parser,
      parser_params;
 use  ada.strings.unbounded,
      world,
+     string_util,
      scanner,
      parser,
      parser_params;
@@ -99,7 +101,13 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     DoJsonToRecord( target_ref.id, sourceVal );
+     begin
+       DoJsonToRecord( target_ref.id, sourceVal );
+     exception when constraint_error =>
+       err( "bad JSON string " & to_string( toEscaped( sourceVal ) ) );
+     when others =>
+       err_exception_raised;
+     end;
   end if;
 end ParseRecordsToRecord;
 

@@ -25,11 +25,13 @@ with gnat.bubble_sort_a,
      gnat.heap_sort_a,
      ada.numerics.float_random,
      world,
+     string_util,
      scanner,
      parser,
      parser_params;
 use
      world,
+     string_util,
      scanner,
      parser,
      parser_params;
@@ -738,7 +740,13 @@ begin
   if isExecutingCommand then
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
      -- assignParameter( target_var_id, jsonString );
-     DoJsonToArray( target_var_id, source_val );
+     begin
+       DoJsonToArray( target_var_id, source_val );
+     exception when constraint_error =>
+       err( "bad JSON string " & to_string( toEscaped( source_val ) ) );
+     when others =>
+       err_exception_raised;
+     end;
   end if;
 end ParseArraysToArray;
 

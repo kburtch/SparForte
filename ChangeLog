@@ -91,3 +91,5 @@ CHANGES SINCE 2.0.3
 
 44. Fix: assigning in a record declaration now works with types containing a period (e.g. teams.member ).
 
+45. Fix: arrays.to_array and records.to_record handle JSON conversion exceptions properly.
+
