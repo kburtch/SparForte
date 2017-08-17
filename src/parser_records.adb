@@ -82,15 +82,25 @@ procedure ParseRecordsToRecord is
 begin
   expect( records_to_record_t );
   expect( symbol_t, "(" );
+  -- TODO: refactor this.
+  --
   -- Since this function accepts any record, we cannot use ParseOutParameter
   -- as we have no default.  ParseIdentifier will treat it as a read-but-not-
   -- written, which will throw off the constant tests.  So we have to use
   -- ParseInOutParameter.  Since we don't have nested record yet in
   -- SparForte, we're not using assignParameter..and DoJsonToRecord doesn't
   -- support it anyway.
+  --
+  -- As a side-effect, InOut is going to create local record fields as if
+  -- this was a normal procedure.  We don't need these fields since we can
+  -- write the original directly.  We can discard these with pushBlock/
+  -- pullBLock
+  --
   -- ParseIdentifier( target_var_id );
   -- ParseOutParameter( target_ref, json_string_t );
+  pushBlock( newScope => true );
   ParseInOutParameter( target_ref );
+  pullBlock;
   baseType := getBaseType( identifiers( target_ref.id ).kind );
   if identifiers( baseType ).kind /= root_record_t then
      err( "Record type expected" );

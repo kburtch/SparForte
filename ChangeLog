@@ -97,3 +97,7 @@ CHANGES SINCE 2.0.3
 
 47. Fix: arrays.to_array and records.to_record handle JSON conversion exceptions properly.
 
+48. Fix: records.to_record fixed so "?" will display the name, not ordinal position, of enumerated items.
+
+49. Fix: records.to_record memory leak fixed.
+

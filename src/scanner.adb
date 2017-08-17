@@ -4638,7 +4638,9 @@ begin
                                 " is out of range for " &
                                 optional_bold( to_string( identifiers( elementKind ).name ) ) );
                         end if;
-                        identifiers( j ).value.all := decodedItemValue;
+                        -- Space is required for findEnumImage.  Values are
+                        -- stored with leading space.
+                        identifiers( j ).value.all := ' ' & decodedItemValue;
                       end;
                     elsif getUniType( elementKind ) = uni_string_t or
                           getUniType( elementKind ) = universal_t then
