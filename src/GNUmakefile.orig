@@ -114,7 +114,7 @@ endif
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 	@echo
@@ -282,7 +282,7 @@ endif
 	-rm -f *.gcda *.gcov coverage.info
 	# Always build without optimization to ensure correct coverage results
 	# -pg required for gprof performance profiling
-	$(GNATMAKE) -j2 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat05 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -pg -g -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -pg -g -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS) -lgcov -pg
 	@echo
