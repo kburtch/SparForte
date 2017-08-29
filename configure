@@ -854,8 +854,11 @@ if test -r spar_os-sdl.ads ; then
    echo " (cached, make distclean to remove)";
 else
    cd ../test
-   #(exec "$CC" sdlversion.c "$SDLINCL" "$SDLLIBS" > /dev/null 2>/dev/null )
-   (exec "$CC" sdlversion.c "$SDLINCL" "$SDLLIBS" )
+   if [ "$OS" = "darwin" ] ; then
+      (exec "$CC" sdlversion.c "$SDLINCL" "$SDLLIBS" > /dev/null 2>/dev/null )
+   else
+      (exec "$CC" sdlversion.c -I/usr/local/include -L/usr/local/lib -lSDL)
+   fi
    TMP=`./a.out`
    rm a.out
    cd ../src
