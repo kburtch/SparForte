@@ -6,7 +6,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2016 Free Software Foundation            --
+--              Copyright (C) 2001-2017 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -109,6 +109,7 @@ error_found : boolean := false;           -- true if an error occurred
 done_sub    : boolean := false;           -- true if done a subprogram
 exit_block  : boolean := false;           -- true if "exit"ing
 skipping_block : boolean := false;        -- true if skipping conditional code
+exception_handler : boolean := false;     -- true if handling an exception
 last_status : aStatusCode := 0;           -- status of last shell command
 tabSize     : natural := 8;               -- how many spaces for a tab
 

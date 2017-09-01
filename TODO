@@ -22,8 +22,9 @@ Priority Issues (Fix These First)
   - limited arrays and record
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
-      handler.  This includes if statements.  Being in an exception handler
-      must be a global scanner flag.
+      handler.  This includes if statements.
+      - Being in an exception handler must be a global scanner flag.
+      - However, exceptions must also be nestable.  This will take some work.
 - unsorted/misc
     - btree_io.raise exception fails with a limit type error on the btree variable
     - JUnit support for test cases not complete

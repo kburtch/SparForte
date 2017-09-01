@@ -103,3 +103,5 @@ CHANGES SINCE 2.0.3
 
 50. XML report for test pragmas tested under Jenkins and JUnit plugin.
 
+51. [Blady-Com] Change: contributor changes for better Darwin support.
+
