@@ -379,7 +379,7 @@ rpm:	all
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
-	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL provision.sh examples doc GNUmakefile sparforte_icon.xpm; rm -f spar )
+	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL provision.sh examples doc GNUmakefile sparforte_f_icon.xpm  sparforte_sail_icon.xpm; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 install:
