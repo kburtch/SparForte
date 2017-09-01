@@ -872,8 +872,8 @@ begin
      expect( backlit_t );
      if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
-        expr_val2 := identifiers( token ).value.all;
         expect( strlit_t );
+        expr_val2 := identifiers( strlit_t ).value.all;
      else
         expr_val2 := null_unbounded_string;
      end if;
@@ -914,6 +914,14 @@ begin
         else
            ParseExpression( expr_val, var_id );
         end if;
+        -- Optional description string
+        --if token = symbol_t and identifiers( token ).value.all = "," then
+        --   expect( symbol_t, "," );
+        --   expr_val2 := identifiers( token ).value.all;
+        --   expect( strlit_t );
+        --else
+        --   expr_val2 := null_unbounded_string;
+        --end if;
      end;
   when todo =>                               -- pragma to-do
      -- we don't need to save anything because this is an informational

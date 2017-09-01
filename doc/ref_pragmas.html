@@ -89,7 +89,7 @@ environment.</p>
   <b>pragma</b> suppress( low_priority_todos_for_release )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> todo( to, story, measure, units, priority, units [, ticket] )
-  <b>pragma</b> test( condition )
+  <b>pragma</b> test( condition [, "description" )
   <b>pragma</b> test_report( text|xml [, "filepath"] )
   <b>pragma</b> test_result( condition )
   <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache | session, var )
@@ -363,7 +363,8 @@ other SDLC mode, the testing pragmas will not run.</p>
 report.  The file path is a static static expression.  By default,
 the report will be in text format and written to standard output.</p>
 
-<p><b>pragma test</b> runs a test cases.  <b>pragma test_result</b>
+<p><b>pragma test</b> runs a test cases and gives it an optional
+description.  <b>pragma test_result</b>
 evaluates a boolean expression to check to see if the test ran
 correctly.  A test case or test_result expression is an "error" if
 the test case had an error when it ran.  Otherwise, a test result
@@ -373,7 +374,7 @@ is either successful or a failure.</p>
         <div class="code">
                 <p class="code">
 pragma test_report( text );<br />
-pragma test( `i := 1;` ); -- a test case<br />
+pragma test( `i := 1;`, "Example test case" ); -- a test case<br />
 pragma test_result( i = 1 ); -- should be successful<br />
         <div class="code_caption">
                 <b>Example</b>: A example of a simple test</span>

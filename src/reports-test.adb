@@ -42,6 +42,49 @@ package body reports.test is
 
   Quotation : constant character := Ada.Characters.Latin_1.Quotation;
 
+  -- ENCODE MESSAGE
+  --
+  -- Encode special XML/HTML characters.
+
+  function encode_message( msg : unbounded_string ) return string is
+    encoded : unbounded_string;
+    ch : character;
+  begin
+    for i in 1..length( msg ) loop
+        ch := element( msg, i );
+        if ch = Quotation then
+           encoded := encoded & "&quot;";
+        elsif ch = '&' then
+           encoded := encoded & "&amp;";
+        elsif ch = '<' then
+           encoded := encoded & "&lt;";
+        elsif ch = '>' then
+           encoded := encoded & "&gt;";
+        else
+           encoded := encoded & ch;
+        end if;
+    end loop;
+    return to_string( encoded );
+  end encode_message;
+
+  -- ENCODE CLASS
+  --
+  -- If filenames are used for classes, anything with a "." will be treated
+  -- as two classes.  So strip off the filename suffix if it exists.
+
+  function encode_class( class : unbounded_string ) return string is
+    encoded : unbounded_string;
+  begin
+    if tail( class, 3 ) = ".sp" then
+       encoded := delete( class, length( class )-2, length( class ) );
+    elsif tail( class, 5 ) = ".bush" then
+       encoded := delete( class, length( class )-4, length( class ) );
+    else
+       encoded := class;
+    end if;
+    return to_string( encoded );
+  end encode_class;
+
   isStarted : boolean := false;
   isTestCaseStarted : boolean := false;
   isTestSuiteStarted : boolean := false;
@@ -319,9 +362,9 @@ package body reports.test is
     else
        create( test_result_file, out_file, to_string( path ) );
     end if;
-    put_line( test_result_file, "<?xml version=" & ASCII.Quotation & "1.0" &
-      ASCII.Quotation & " encoding="  & ASCII.Quotation &
-      "UTF-8"  & ASCII.Quotation & "?>" );
+    put_line( test_result_file, "<?xml version=" & Quotation & "1.0" &
+      Quotation & " encoding="  & Quotation &
+      "UTF-8"  & Quotation & "?>" );
     put_line( test_result_file, "<testsuites>" );
   end startJunit;
 
@@ -371,22 +414,34 @@ package body reports.test is
     put( test_case_file, "class=" & Quotation & to_string( jtc.class ) & Quotation & " " );
     put( test_case_file, "file=" & Quotation & to_string( jtc.file ) & Quotation & " " );
     put( test_case_file, "line=" & Quotation & to_string( trim( jtc.line, both ) ) & Quotation & " " );
-    put( test_case_file, "assertions=" & Quotation & trim( jtc.assertionCnt'img, both ) & Quotation & " " );  -- TODO: trim
+    put( test_case_file, "assertions=" & Quotation & trim( jtc.assertionCnt'img, both ) & Quotation & " " );
     put( test_case_file, "failures=" & Quotation & trim( jtc.failureCnt'img, both ) & Quotation & " " );
     put( test_case_file, "errors=" & Quotation & trim( jtc.errorCnt'img, both ) & Quotation & " " );
     put( test_case_file, "time=" & Quotation & trim( elapsedSeconds'img, both ) & Quotation & ">" );
     new_line( test_case_file );
-    -- TODO: probably should have the error line, with the message in error messsage
+    -- TODO: should be cleaned up
     while not failureList.isEmpty( jtc.failureMsgs ) loop
        failureList.Pull( jtc.failureMsgs, msg );
-       put_line( test_case_file, "    <failure message=" & Quotation & "test failure" &
-         Quotation & ">" & to_string( msg ) & "</failure>" );
+       if jtc.description = "" then
+          put_line( test_case_file, "    <failure message=" & Quotation & encode_message( msg ) &
+            Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) & "</failure>" );
+       else
+          put_line( test_case_file, "    <failure message=" & Quotation & encode_message( msg ) &
+            Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) &
+            ":" & encode_message( jtc.description ) & "</failure>" );
+       end if;
     end loop;
-    -- TODO: probably should have the error line, with the message in error messsage
+    -- TODO: should be cleaned up
     while not errorList.isEmpty( jtc.errorMsgs ) loop
        errorList.Pull( jtc.errorMsgs, msg );
-       put_line( test_case_file, "    <error message=" & Quotation & "test error" &
-         Quotation & ">" & to_string( msg ) & "</error>" );
+       if jtc.description = "" then
+          put_line( test_case_file, "    <error message=" & Quotation & encode_message( msg ) &
+            Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) & "</error>" );
+       else
+          put_line( test_case_file, "    <error message=" & Quotation & encode_message( msg ) &
+            Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) &
+            ":" & encode_message( jtc.description ) & "</error>" );
+       end if;
     end loop;
     -- TODO: nothing actually skipped yet.
     if jtc.skipped then
@@ -465,7 +520,7 @@ package body reports.test is
     s : unbounded_string;
   begin
     Difference( ada.calendar.clock, jts.startTime, elapsedDays, elapsedSeconds, elapsedLeapSeconds );
-    put( test_result_file, "<testsuite name=" & Quotation & to_string( jts.name ) & Quotation & " " );
+    put( test_result_file, "<testsuite name=" & Quotation & encode_class( jts.name ) & Quotation & " " );
     put( test_result_file, "file=" & Quotation & to_string( jts.path ) & Quotation & " " );
     put( test_result_file, "tests=" & Quotation & trim( jts.testCnt'img, both ) & Quotation & " " ); -- TODO: trim
     put( test_result_file, "assertions=" & Quotation & trim( jts.assertionCnt'img, both ) & Quotation & " " );

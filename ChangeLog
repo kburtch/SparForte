@@ -101,3 +101,5 @@ CHANGES SINCE 2.0.3
 
 49. Fix: records.to_record memory leak fixed.
 
+50. XML report for test pragmas tested under Jenkins and JUnit plugin.
+

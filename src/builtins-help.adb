@@ -1201,7 +1201,8 @@ begin
   content( e, "pragma suppress( all_priority_todos_for_release ) - all todo's allowed late in SDLC" );
   content( e, "pragma suppress( low_priority_todos_for_release ) - low priority todo's allowed late in SDLC" );
   content( e, "pragma template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
-  content( e, "pragma test( condition ) - with --test, execute test commands" );
+  content( e, "pragma test( condition [, " & ASCII.Quotation & "description" & ASCII.Quotation & "] ) - with --test, execute test commands" );
+  content( e, "pragma test_report( text|xml [, " & ASCII.Quotation & "filepath" & ASCII.Quotation & "] )" );
   content( e, "pragma test_result( condition ) - with --test, display warning on condition failure" );
   content( e, "pragma todo( to, message, work, units, priority, units ) - task assignment/estimation" );
   content( e, "pragma unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
