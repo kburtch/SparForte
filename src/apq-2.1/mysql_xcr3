@@ -32,8 +32,7 @@ esac;
 
 INP="$TMP2"
 
-
-LINES=$(wc -l <"$TMP1")
+NUM_LINES=$(wc -l <"$TMP1")
 
 sed <$INP >"$OUT" -n '1,/^ *type Field_Type is/p'
 
@@ -42,7 +41,7 @@ sed <$INP >"$OUT" -n '1,/^ *type Field_Type is/p'
 i=0
 while read VALUE NAME ; do
 	i=$(expr $i + 1)
-	if [ $i -lt $LINES ] ; then
+	if [ $i -lt $NUM_LINES ] ; then
 		echo "      $NAME,"
 	else
 		echo "      $NAME"
@@ -56,7 +55,7 @@ sed <$INP >>$OUT '1,/%ENUM_FIELD_TYPE%/d;/%USE_FIELD_TYPE%/,$d'
 i=0
 while read VALUE NAME ; do
 	i=$(expr $i + 1)
-	if [ $i -lt $LINES ] ; then
+	if [ $i -lt $NUM_LINES ] ; then
 		echo "      $NAME => $VALUE,"
 	else
 		echo "      $NAME => $VALUE"
