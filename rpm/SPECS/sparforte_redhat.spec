@@ -19,7 +19,7 @@ AutoReqProv:    on
 %description
 
 SparForte is an interepreted programming language with a shell, intrinsic
-database efatures and a web template engine.  It is intended for fast,
+database features and a web template engine.  It is intended for fast,
 scalable, well-designed projects.  Documentation is available on the
 project website
 
