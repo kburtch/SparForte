@@ -1,56 +1,109 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.0.3's focus was bug fixes for SparForte 2.0
+SparForte 2.1's focus was bringing SparForte into Jenkins continuous integration.
 
-CHANGES SINCE 2.0.2
+CHANGES SINCE 2.0.3
 
-1. Fix: cgi.cookie_value default position no longer throws an exception.
+1. Fix: backquoted strings cannot be used as a Bourne shell command.
 
-2. Fix: fixed adacgi 1.6 error that prevented cookies from being read.
+2. Fix: type error when using env; to show all parameters, resulting from new parameterized generic type handling error, has been fixed.
 
-3. Fix: reading an empty value in memcache/get no longer raises no servers configured.
+3. Refactor: help command split out from builtins package.
 
-4. New: added memcache good test cases to release tests.
+4. Refactor: new report system created, built-in help topics converted to use it.
 
-5. Fix: areadline library patched so command prompt history doesn't remember blank lines, to match up with the history command and normal shell behavior.
+5. Change: pragma deprecated/depreciated is now an error when running in design phase mode, but remains a warning otherwise.
 
-6. Fix: hash_io updated to include changes to btree_io.  new hash_io good test cases added to release test.
+6. Fix: spar -e with an empty string now produces an appropriate error message instead of "empty script name".
 
-7. Change: doubly_linked_list.new_list and new_cursor removed.  Declare the generic type parameter in the declaration using "doubly_linked_lists.list( type )" or "doubly_linked_lists.cursor( type )".
+7: Fix: a file or spar -e string with only whitespace is now an error.
 
-8. Change: btree_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "btree_io.file( type )" or "btree_io.cursor( type )".
+8: Fix: "hash clash" internal error message corrected, typically on shell exit.
 
-9. Change: dynamic_hash_tables.new_table removed.  Declare the generic type parameter in the declaration using "dynamic_hash_tables.table( type )".
+9. Fix: dbm online help fixed.
 
-10. Change: hash_io.new_file and new_cursor removed.  Declare the generic type parameter in the declaration using "hash_io.file( type )" or "hash_io.cursor( type )".
+10. Fix: strings.match online help no longer "help match" but "help strings.match" as in the index page.
 
-11. New: SHA digest functions: numerics.sha1_digest_of, numerics.sha256_digest_of, numerics.sha256_digest_of, numerics.sha512_digest_of.
+11. Fix: set_input added to the help index.
 
-12. New: code coverage reporting added to Makefile (e.g. make coverage).  Added more regression tests to improve test coverage.
+12. Fix: with separate added to help command.
 
-13. Fix: lock_files.lock( file ... ) variation now handles wait and retry correctly.
+13. Change: make coverage regression and coverage tests now support Jenkins using JUnit/Cobetura.
 
-14. Fix: btree_io.get_first, etc. with array or record type no longer report the variable wasn't written to.
+14. New: user types and subtypes can be declared abstract.  [TODO: check parameters, negative tests, and docs.]
 
-15. Fix: negative numbers weren't recognized in some JSON cases.  Corrected.
+15. New: scalar variables can be declared limited.  [TODO: check parameters, negative tests - arrays, records, which can't be assigned yet].  This isn't that useful until packages or some other context is defined where it can be assigned.]
 
-16. New: Base 64 functions: strings.to_base64, strings.to_string Base 64 version.
+16. Fix: passing a record to an array index no longer results in an exception crash.
 
-17. Change: Updated directory_operations and created positive regression tests for it.
+17. New: gprof profiling enabled on make coverage
 
-18. Change: pragma session_import_script, session_export_script and prompt_script not allowed in a restricted shell (as a security precaution).
+18. Fix: rounding errors in calendar.time arithmetic fixed.
 
-19. Fix: numerics.rnd() no longer occasionally produces a number too high.
+19. Fix: functions many no longer be called in static expressions (since they use regular expressions, not static ones).
 
-20. Fix: private fields in records and arrays of private elements can no longer be encoded as JSON.  Even though data is stored as strings, a private type is supposed to be a black box.
+20. Refactor: expression handling redesigned to get some minor speed improvements.
 
-21. Fix: canlendar.time values are no longer parsed by the "?" command at syntax time.  They were causing an index_error.
+21. Fix: passing a record to an array index in an anonymous array longer results in an exception crash.
 
-22. Fix: calendar.time arithmetic working properly (probably broken when castToType was implemented).
+23. Fix: PWD's value is set when SparForte starts and no longer shows the PWD value imported from the environment, which could possibly be incorrect.
 
-23. Fix: Fixed two bugs in '+' handling in third-party CGI package, cgi.url_encode and cgi.url_decode.
+24. New: changes to provision and configure scripts for Debian.
 
-24. Fix: univeral_typeless record fields and array elements can now be encoded as JSON (threate as strings).
+25. Change: whitespace at end of line no longer an error in maintenance phase.
 
-25. Fix: fixed inconsistent licence warning produced by GCC Ada.
+26. Fix: constraint error caught when setting values too large in btree_io and hash_io.
+
+27. Fix: formal parmeters of procedures and functions no longer clash with pre-existing identifiers of the same name.
+
+28. Fix: arrays.shuffle rare constraint error (should be) fixed.
+
+29. Fix: last in chain internal identifier no longer shows a "should be constant" error in test phase mode.
+
+30. Fix: scalar user types no longer incorrectly treated as subtypes during syntax check.
+
+31. New: abstract enforced for un-applied types in design and test modes.
+
+32. Change: all id numbers (e.g. files, lists, canvases)  are now limited types.
+
+33. New: pragma assumption applied and factor, for abstract and limited type tests.
+
+34. New: trailing underscores not allowed in identifiers.
+
+35. Fix: records.to_record now marks the record as written, elimintating the
+"expected a constant" error message.
+
+36. Fix: "expected a constant" check not applied to record fields.
+
+37. Fix: case..when now handles shell commands correctly.
+
+38. Fix: json enumerateds how handled correctly in case...when.
+
+39. Change: scripts that end in ".sh" (traditionally a shell script) now do not run...an error is reported.
+
+40. Fix: records.to_json no longer raises an exception on an undefined boolean field.
+
+41. New: pragma test has an optional test description.
+
+42. New: pragma test_report to specify a test report type and filename.
+
+43. New: test failures no longer abort immediately but produce a report after the program finishes.
+
+44. Fix: assigning in a record declaration now works with types containing a period (e.g. teams.member ).
+
+45. Fix: btree_io and hash_io cursors now closed at end-of-block to prevent indefinite row locking on a control-c exit.
+
+46. Fix: text_io package workaround for Ada.Text_IO not handling interrupted system calls on Put/Put_Line.
+
+47. Fix: arrays.to_array and records.to_record handle JSON conversion exceptions properly.
+
+48. Fix: records.to_record fixed so "?" will display the name, not ordinal position, of enumerated items.
+
+49. Fix: records.to_record memory leak fixed.
+
+50. XML report for test pragmas tested under Jenkins and JUnit plugin.
+
+51. [Blady-Com] Change: contributor changes for better Darwin support.
+
+22. Fix: fixed third-party APQ library for newer versions of BASH.
 
