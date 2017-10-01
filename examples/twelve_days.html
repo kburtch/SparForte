@@ -1,0 +1,77 @@
+<HEAD><TITLE>twelve_days.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : twelve_days.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar twelve_days
+On the first day of Christmas,
+My true love gave to me:
+ A partridge in a pear-tree.
+
+On the second day of Christmas,
+My true love gave to me:
+ Two turtle doves
+ And a partridge in a pear-tree.
+
+On the third day of Christmas,
+...
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "twelve_days" )
+       @( description, "Write a program that outputs the lyrics of the " )
+       @( description, "Christmas carol The Twelve Days of Christmas. " )
+       @( see_also, "http://rosettacode.org/wiki/The_Twelve_Days_of_Christmas" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> twelve_days <b>is</b>
+  <b>type</b> days <b>is</b> ( first, second, third, forth, fifth, sixth,seventh, eighth,
+                 ninth, tenth, eleventh, twelfth );
+  gifts : <b>array</b>( first..twelfth ) <b>of</b> string := (
+          " A partridge in a pear-tree.",
+          " Two turtle doves",
+          " Three French hens",
+          " Four calling birds",
+          " Five golden rings",
+          " Six geese a-laying",
+          " Seven swans a-swimming",
+          " Eight maids a-milking",
+          " Nine ladies dancing",
+          " Ten lords a-leaping",
+          " Eleven pipers piping",
+          " Twelve drummers drumming"
+  );
+<b>begin</b>
+  <b>for</b> day <b>in</b> first..twelfth <b>loop</b>
+      put( "On the " ) @ ( day ) @ ( " day of Christmas," );
+      new_line;
+      put_line( "My true love gave to me:" );
+      <b>for</b> subday <b>in</b> <b>reverse</b> first..day <b>loop</b>
+          put_line( gifts( subday ) );
+      <b>end</b> <b>loop</b>;
+      <b>if</b> day = first <b>then</b>
+          gifts( day ) := strings.replace_slice( gifts( day ), 2, 2, "And a" );
+      <b>end</b> <b>if</b>;
+      new_line;
+  <b>end</b> <b>loop</b>;
+  command_line.set_exit_status( 0 );
+<b>end</b> twelve_days;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+</PRE></BODY></HTML>
+
+</PRE></BODY></HTML>
