@@ -20,6 +20,8 @@ Priority Issues (Fix These First)
   - abstract anonymous arrays
 - limited types/vars
   - limited arrays and record
+- check to ensure template error messages are not shown in maintenace mode
+  (i.e. do not expose program information to untrusted users)
 - exceptions
     - re-raise doesn't work unless it is in the main body of an exception
       handler.  This includes if statements.
@@ -29,6 +31,7 @@ Priority Issues (Fix These First)
     - btree_io.raise exception fails with a limit type error on the btree variable
     - JUnit support for test cases not complete
     - control-c is propogating to all child processes when it shouldn't
+      - check SIGPIPE handling also
     - gcc-errors tests not triggered on err_tokenize?
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
@@ -118,6 +121,7 @@ Annoyances / Bugs with Workarounds / Updates
     - check pragma block with @ 
     - ParseGeneralStatement allows declarations.  For body and user role blocks,
       we need more restrictive variations of PGS.
+    - @ for a(x) gives an unexpected exception
 
 Nice to Haves / Missing Functionality
 -------------------------------------

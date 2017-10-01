@@ -7,7 +7,9 @@ procedure rest_api is
 -- TODO: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 
 type response is record
+   -- global fields
    response_api_version  : universal_typeless; -- what edition
+   hash                  : universal_string;   -- verification message digest
    -- client fields
    response_time         : universal_typeless; -- when the response happened (server clock)
    response_duration     : universal_typeless; -- how long the last round trip took(?)
@@ -19,6 +21,7 @@ type response is record
    request_id            : universal_string;   -- unique id to identify duplicate requests
    request               : json_string;        -- the request
    -- server fields
+   server_id             : universal_string;   -- which server provided the data
    last_request_duration : universal_typeless; -- last request turnaround
    data_create_time      : universal_typeless; -- how old is the original data
    data_update_time      : universal_typeless; -- how up-to-date this copy is

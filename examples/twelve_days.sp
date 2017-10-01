@@ -1,9 +1,9 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "twelve_days" );
+pragma annotate( summary, "twelve_days" )
        @( description, "Write a program that outputs the lyrics of the " )
-       @( description, "Christmas carol The Twelve Days of Christmas. " );
-       @( see_also,, "http://rosettacode.org/wiki/The_Twelve_Days_of_Christmas" );
+       @( description, "Christmas carol The Twelve Days of Christmas. " )
+       @( see_also, "http://rosettacode.org/wiki/The_Twelve_Days_of_Christmas" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 

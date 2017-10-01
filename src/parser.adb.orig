@@ -1184,11 +1184,19 @@ begin
         typesOK := true;
         expr_type := cal_time_t;
         operation := cal_time_t;
-     end if;
-     if (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
+     elsif (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
         expr_type := cal_time_t;
         operation := variable_t; -- representing time on right
+     elsif (kind1 = cal_time_t) and then (getBaseType(kind2) = cal_time_t) then
+        if operator = "+" then
+           typesOK := true;
+           expr_type := cal_time_t;
+        else
+           typesOK := true;
+           expr_type := duration_t;
+        end if;
+        operation := root_record_t; -- representing time on both side
      end if;
      -- Otherwise check the types normally
      if not typesOK then
@@ -1267,6 +1275,24 @@ begin
               end if;
            elsif operator = "-" then
               err( "operation - not defined for these types" );
+           end if;
+        elsif operation = root_record_t then -- adding times
+           if operator = "+" then
+              err( "operation + not defined for these types" );
+           else
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c2: duration;
+                 begin
+                    c2 := c - scanner.calendar.time( to_numeric( term2 ) );
+                    se := to_unbounded_string( duration'image( c2 ) );
+                 exception when time_error =>
+                    err( "duration value too large or small" );
+                 when constraint_error =>
+                    err( "constraint error" );
+                 end;
+              end if;
            end if;
         else
              if operator = "+" then
@@ -2182,11 +2208,19 @@ begin
         typesOK := true;
         expr_type := cal_time_t;
         operation := cal_time_t;
-     end if;
-     if (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
+     elsif (kind2 = cal_time_t) and then (getBaseType(kind1) = duration_t or kind1 = uni_numeric_t or kind2 = universal_t) then
         typesOK := true;
         expr_type := cal_time_t;
         operation := variable_t;
+     elsif (kind1 = cal_time_t) and then (getBaseType(kind2) = cal_time_t) then
+        if operator = "+" then
+           typesOK := true;
+           expr_type := cal_time_t;
+        else
+           typesOK := true;
+           expr_type := duration_t;
+        end if;
+        operation := root_record_t; -- representing time on both side
      end if;
      -- Otherwise check the types normally
      if not typesOK then
@@ -2265,6 +2299,24 @@ begin
               end if;
            elsif operator = "-" then
               err( "operation - not defined for these types" );
+           end if;
+        elsif operation = root_record_t then -- adding times
+           if operator = "+" then
+              err( "operation + not defined for these types" );
+           else
+              if isExecutingCommand then
+                 declare
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c2: duration;
+                 begin
+                    c2 := c - scanner.calendar.time( to_numeric( term2 ) );
+                    se := to_unbounded_string( duration'image( c2 ) );
+                 exception when time_error =>
+                    err( "duration value too large or small" );
+                 when constraint_error =>
+                    err( "constraint error" );
+                 end;
+              end if;
            end if;
         else
              if operator = "+" then

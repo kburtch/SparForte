@@ -4,3 +4,7 @@ SparForte 2.1.1's focus was bringing SparForte into Jenkins continuous integrati
 
 CHANGES SINCE 2.1
 
+1. New: Can now subtract one calendar.time value from another.
+
+2. New: New examples: twelve_days.sp, time_function.sp
+
