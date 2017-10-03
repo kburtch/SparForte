@@ -8,3 +8,5 @@ CHANGES SINCE 2.1
 
 2. New: New examples: twelve_days.sp, time_function.sp
 
+3. Fix: Anonymous array element type is treated as applied to eliminate concrete/abstract error.
+

@@ -2904,7 +2904,10 @@ begin
         identifiers( anonType ).list := true;
         identifiers( anonType ).wasReferenced := true; -- only referenced when declared
         if syntax_check then
-           identifiers( anonType ).wasApplied := true;    -- only applied when declared
+           -- treat the anonymous type as applied (i.e. no need to be abstr.)
+           -- for an anonymous array, the element type must be applied also
+           identifiers( anonType ).wasApplied := true;
+           identifiers( elementType ).wasApplied := true;
         end if;
         if class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            --if isExecutingCommand then
