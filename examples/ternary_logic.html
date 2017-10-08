@@ -1,0 +1,136 @@
+<HEAD><TITLE>ternary_logic.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : ternary_logic.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar ternary_logic.sp
+Ternary Not:
+not no    =&gt; Yes
+not maybe =&gt; Maybe
+not yes   =&gt; No
+
+Ternary And:
+no    and no    =&gt; No
+no    and maybe =&gt; No
+no    and yes   =&gt; No
+maybe and no    =&gt; No
+maybe and maybe =&gt; Maybe
+maybe and yes   =&gt; Maybe
+yes   and no    =&gt; No
+yes   and maybe =&gt; Maybe
+yes   and yes   =&gt; Yes
+
+Ternary Or:
+no    or no    =&gt; No
+no    or maybe =&gt; Maybe
+no    or yes   =&gt; Yes
+maybe or no    =&gt; Maybe
+maybe or maybe =&gt; Maybe
+maybe or yes   =&gt; Yes
+yes   or no    =&gt; Yes
+yes   or maybe =&gt; Yes
+yes   or yes   =&gt; Yes
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "ternary_logic" )
+       @( description, "In logic, a three-valued logic (also trivalent, " )
+       @( description, "ternary, or trinary logic, sometimes abbreviated " )
+       @( description, "3VL) is any of several many-valued logic systems " )
+       @( description, "in which there are three truth values indicating " )
+       @( description, "true, false and some indeterminate third value. " )
+       @( see_also, "http://rosettacode.org/wiki/Ternary_logic" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> ternary_logic <b>is</b>
+
+<b>type</b> ternary <b>is</b> (no, maybe, yes);
+
+<b>function</b> ternary_and( left : ternary; right : ternary ) <b>return</b> ternary <b>is</b>
+<b>begin</b>
+  <b>if</b> left &lt; right <b>then</b>
+     <b>return</b> left;
+  <b>else</b>
+     <b>return</b> right;
+  <b>end</b> <b>if</b>;
+<b>end</b> ternary_and;
+
+<b>function</b> ternary_or( left : ternary; right : ternary ) <b>return</b> ternary <b>is</b>
+<b>begin</b>
+  <b>if</b> left &gt; right <b>then</b>
+     <b>return</b> left;
+  <b>else</b>
+     <b>return</b> right;
+  <b>end</b> <b>if</b>;
+<b>end</b> ternary_or;
+
+<b>function</b> ternary_not( right : ternary ) <b>return</b> ternary <b>is</b>
+<b>begin</b>
+  <b>case</b> right <b>is</b>
+  <b>when</b> yes =&gt; <b>return</b> no;
+  <b>when</b> maybe =&gt; <b>return</b> maybe;
+  <b>when</b> no =&gt; <b>return</b> yes;
+  <b>when</b> <b>others</b> =&gt; put_line( "Unexpected value" );
+  <b>end</b> <b>case</b>;
+<b>end</b> ternary_not;
+
+<b>function</b> ternary_image( ternary_value : ternary ) <b>return</b> string <b>is</b>
+<b>begin</b>
+  <b>case</b> ternary_value <b>is</b>
+  <b>when</b> yes    =&gt; <b>return</b> "Yes";
+  <b>when</b> no     =&gt; <b>return</b> "No";
+  <b>when</b> maybe  =&gt; <b>return</b> "Maybe";
+  <b>when</b> <b>others</b> =&gt; put_line( "Unexpected value" );
+  <b>end</b> <b>case</b>;
+<b>end</b> ternary_image;
+
+<b>begin</b>
+  ? "Ternary Not:"
+  @ "not no    =&gt; " &amp; ternary_image( ternary_not( no ) )
+  @ "not maybe =&gt; " &amp; ternary_image( ternary_not( maybe ) )
+  @ "not yes   =&gt; " &amp; ternary_image( ternary_not( yes ) );
+  new_line;
+
+  ? "Ternary And:"
+  @ "no    and no    =&gt; " &amp; ternary_image( ternary_and( no, no ) )
+  @ "no    and maybe =&gt; " &amp; ternary_image( ternary_and( no, maybe ) )
+  @ "no    and yes   =&gt; " &amp; ternary_image( ternary_and( no, yes ) )
+  @ "maybe and no    =&gt; " &amp; ternary_image( ternary_and( maybe, no ) )
+  @ "maybe and maybe =&gt; " &amp; ternary_image( ternary_and( maybe, maybe ) )
+  @ "maybe and yes   =&gt; " &amp; ternary_image( ternary_and( maybe, yes ) )
+  @ "yes   and no    =&gt; " &amp; ternary_image( ternary_and( yes, no ) )
+  @ "yes   and maybe =&gt; " &amp; ternary_image( ternary_and( yes, maybe ) )
+  @ "yes   and yes   =&gt; " &amp; ternary_image( ternary_and( yes, yes ) );
+  new_line;
+
+  ? "Ternary Or:"
+  @ "no    or no    =&gt; " &amp; ternary_image( ternary_or( no, no ) )
+  @ "no    or maybe =&gt; " &amp; ternary_image( ternary_or( no, maybe ) )
+  @ "no    or yes   =&gt; " &amp; ternary_image( ternary_or( no, yes ) )
+  @ "maybe or no    =&gt; " &amp; ternary_image( ternary_or( maybe, no ) )
+  @ "maybe or maybe =&gt; " &amp; ternary_image( ternary_or( maybe, maybe ) )
+  @ "maybe or yes   =&gt; " &amp; ternary_image( ternary_or( maybe, yes ) )
+  @ "yes   or no    =&gt; " &amp; ternary_image( ternary_or( yes, no ) )
+  @ "yes   or maybe =&gt; " &amp; ternary_image( ternary_or( yes, maybe ) )
+  @ "yes   or yes   =&gt; " &amp; ternary_image( ternary_or( yes, yes ) );
+  new_line;
+<b>end</b> ternary_logic;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

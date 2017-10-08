@@ -531,6 +531,17 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="ternary_logic.sp"
+RESULT=`src/spar --test examples/$EXAMPLE | wc -l`
+EXPECTED="27"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="time_function.sp"
 RESULT=`src/spar --test examples/$EXAMPLE | cut -c1-6`
 EXPECTED="sum(4)"

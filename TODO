@@ -175,6 +175,7 @@ Nice to Haves / Missing Functionality
   - close tinyserve if open
   - complete tinyserve package
 - types and expressions
+  - enum.max, enum.min
   - return arrays and records in expressions (requires records revamp)
   - allow users to create their own universal types
   - record system refactor (in prep for aggregate expressions)
