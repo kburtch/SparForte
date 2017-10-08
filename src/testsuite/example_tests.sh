@@ -531,12 +531,34 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="time_function.sp"
+RESULT=`src/spar --test examples/$EXAMPLE | cut -c1-6`
+EXPECTED="sum(4)"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="tmpfile.sp"
 RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="Creating a temporary file
 Reading a temporary file
 File contains: Hello World
 Discarding a temporary file"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="twelve_days.sp"
+RESULT=`src/spar --test examples/$EXAMPLE | wc -l`
+EXPECTED="114"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"

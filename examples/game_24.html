@@ -1,0 +1,136 @@
+<HEAD><TITLE>palindrome.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : palindrome.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar game_24.sp
+24 Game
+Generating 4 digits...
+Your Digits: 7 4 3 1
+Enter your expression, one number and operator at a time.
+Digit: 7
+Operator: *
+Digit: 4
+Operator: -
+Digit: 3
+Operator: -
+Digit: 1
+You won!
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "game_24" )
+       @( description, "Write a program that randomly chooses and displays " )
+       @( description, "four digits, each from 1..9 (inclusive) with " )
+       @( description, "repetitions allowed." )
+       @( description, "" )
+       @( description, "The program should prompt for the player to enter " )
+       @( description, "an arithmetic expression using just those, and " )
+       @( description, "all of those four digits, used exactly once each. " )
+       @( description, "The program should check then evaluate the " )
+       @( description, "expression." )
+       @( description, "" )
+       @( description, "The goal is for the player to enter an expression " )
+       @( description, "that (numerically) evaluates to 24. " )
+       @( description, "" )
+       @( description, "Based on the Ada version." )
+       @( see_also, "http://rosettacode.org/wiki/24_game" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> game_24 <b>is</b>
+   <b>subtype</b> operation <b>is</b> character;
+   <b>type</b> digit <b>is</b> <b>new</b> positive;
+   given_digits : <b>array</b> (1 .. 4) <b>of</b> digit;
+<b>begin</b>
+   put_line ("24 Game");
+   put_line ("Generating 4 digits...");
+   <b>for</b> i <b>in</b> arrays.first( given_digits )..arrays.last( given_digits ) <b>loop</b>
+      given_digits( i ) := digit( numerics.rnd( 9 ) );
+   <b>end</b> <b>loop</b>;
+   put ("Your Digits:");
+   <b>for</b> i <b>in</b> arrays.first( given_digits )..arrays.last( given_digits ) <b>loop</b>
+      put (given_digits (i));
+   <b>end</b> <b>loop</b>;
+   new_line;
+   put_line("Enter your expression, one number and operator at a time.");
+   <b>declare</b>
+      candidate_value : integer;
+      input_operations : <b>array</b>( 1..3) <b>of</b> operation;
+      input_digits : <b>array</b>( 1..4 ) <b>of</b> digit;
+      unused_digits : <b>array</b>( 1..4 ) <b>of</b> boolean := ( true, true, true, true );
+      ch : character;
+      op : operation;
+   <b>begin</b>
+      <FONT COLOR=green><EM>-- get input</EM></FONT>
+      <b>for</b> i <b>in</b> 1 .. 4 <b>loop</b>
+         put( "Digit: " );
+         ch := get_line;
+         input_digits (i) := digit( numerics.value( string( ch ) ) );
+         <b>exit</b> <b>when</b> i = 4;
+         put( "Operator: " );
+         ch := get_line;
+         input_operations (i) := operation( ch );
+      <b>end</b> <b>loop</b>;
+      <FONT COLOR=green><EM>-- check input</EM></FONT>
+      <b>for</b> i <b>in</b> arrays.first( input_digits )..arrays.last( input_digits ) <b>loop</b>
+         <b>declare</b>
+            found : boolean := false;
+         <b>begin</b>
+            <b>for</b> j <b>in</b> arrays.first( given_digits )..arrays.last( given_digits ) <b>loop</b>
+               <b>if</b> unused_digits (j) <b>and</b> given_digits (j) = input_digits (i) <b>then</b>
+                  unused_digits (j) := false;
+                  found;
+                  <b>exit</b>;
+               <b>end</b> <b>if</b>;
+            <b>end</b> <b>loop</b>;
+            <b>if</b> <b>not</b> found <b>then</b>
+               put_line ("Illegal Number used:" &amp;
+                  strings.image(input_digits (i)));
+               <b>return</b>;
+            <b>end</b> <b>if</b>;
+         <b>end</b>;
+      <b>end</b> <b>loop</b>;
+      <FONT COLOR=green><EM>-- check value</EM></FONT>
+      candidate_value := integer (input_digits(1));
+      <b>for</b> i <b>in</b> arrays.first( input_operations )..arrays.last( input_operations ) <b>loop</b>
+         op := input_operations( i );
+         <b>case</b> op <b>is</b>
+            <b>when</b> '+' =&gt;
+               candidate_value := @ + integer (input_digits (i + 1));
+            <b>when</b> '-' =&gt;
+               candidate_value := @ - integer (input_digits (i + 1));
+            <b>when</b> '*' =&gt;
+               candidate_value := @ * integer (input_digits (i + 1));
+            <b>when</b> '/' =&gt;
+               candidate_value := @ / integer (input_digits (i + 1));
+            <b>when</b> <b>others</b> =&gt;
+               put_line ("Illegal Op used:" &amp; input_operations (i));
+               <b>return</b>;
+         <b>end</b> <b>case</b>;
+      <b>end</b> <b>loop</b>;
+      <b>if</b> candidate_value /= 24 <b>then</b>
+         put_line ("Value" &amp; strings.image (candidate_value) &amp; " is not 24!");
+      <b>else</b>
+         put_line ("You won!");
+      <b>end</b> <b>if</b>;
+   <b>end</b>;
+<b>end</b> game_24;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
