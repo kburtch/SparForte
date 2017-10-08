@@ -6,7 +6,7 @@ CHANGES SINCE 2.1
 
 1. New: Can now subtract one calendar.time value from another.
 
-2. New: New examples: twelve_days.sp, time_function.sp
+2. New: New examples: game_24.sp, ternary_logic.sp, twelve_days.sp, time_function.sp
 
 3. Fix: Anonymous array element type is treated as applied to eliminate concrete/abstract error.
 
