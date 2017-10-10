@@ -174,8 +174,9 @@ Nice to Haves / Missing Functionality
 - tinyserve
   - close tinyserve if open
   - complete tinyserve package
+- os package
+  - process id
 - types and expressions
-  - enum.max, enum.min
   - return arrays and records in expressions (requires records revamp)
   - allow users to create their own universal types
   - record system refactor (in prep for aggregate expressions)
@@ -254,6 +255,15 @@ New Unique Concepts
     - how to you lock the list and enforce it?
     - % functionality should be extended and made usable in more contexts
        - chould % chain objects methods?  That is, % equals @ + first param?
+  - parallel blocks
+    - ability to track code meant to be used in pairs (e.g. defining two
+      procedures, one must appear first, one must appear last, both should
+      be used in the enclosing block)
+  - writing code
+    - embedded SQL or
+    - generally, features to allow a program to construct programs safely
+      in another language (e.g. SQL, shell or other), safeguarding from
+      code injection or other issues.
   - sofware model + archecture
     - allow architects to apply architecture policy to groups of software by the
       software model system.  Explore what needs to be involved.  should the

@@ -19,6 +19,7 @@ type response is record
    desired_time          : universal_typeless; -- when the client wants the response (priority)
    request_discardable   : boolean;            -- discard if too late
    request_id            : universal_string;   -- unique id to identify duplicate requests
+   is_test               : boolean;            -- true if a test
    request               : json_string;        -- the request
    -- server fields
    server_id             : universal_string;   -- which server provided the data

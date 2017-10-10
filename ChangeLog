@@ -10,3 +10,5 @@ CHANGES SINCE 2.1
 
 3. Fix: Anonymous array element type is treated as applied to eliminate concrete/abstract error.
 
+4. New: OS package functions.  os.pid, equivalent to Bourne shell $$. os.error_string (strerror) and documentation fixed.
+

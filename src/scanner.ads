@@ -100,13 +100,15 @@ sound_unmute_t     : identifier;
 
 
 ------------------------------------------------------------------------------
--- BUSH O/S package identifiers
+-- O/S package identifiers
 --
 -- These will eventually be moved to the BUSH_OS parser
 ------------------------------------------------------------------------------
 
-os_system_t       : identifier;
+os_error_string_t : identifier;
+os_pid_t          : identifier;
 os_status_t       : identifier;
+os_system_t       : identifier;
 
 -- End of Identifier Declarations
 

@@ -1909,8 +1909,9 @@ begin
      summary( e, "os package" );
      categoryPackage( e );
      description( e, "A collection of common bindings for the operating system." );
+     content( e, "s := error_string( i )" );
+     content( e, "i := pid" );
      content( e, "i := status" );
-     content( e, "s := strerror( i )" );
      content( e, "system( s )" );
      footer( e, "The Bourne shell style $? operand is the same as os.status" );
      seeAlso( e, "doc/pkg_os.html" );

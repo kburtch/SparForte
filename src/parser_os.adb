@@ -28,12 +28,14 @@ with gnat.lock_files,
     world,
     scanner,
     parser_params,
+    parser_aux,
     spar_os;
 use gnat.lock_files,
     ada.strings.unbounded,
     world,
     scanner,
     parser_params,
+    parser_aux,
     spar_os;
 
 package body parser_os is
@@ -59,14 +61,45 @@ procedure ParseOSStatus( result : out unbounded_string; kind : out identifier ) 
 begin
   kind := integer_t;
   expect( os_status_t );
-  result := to_unbounded_string( aStatusCode'image( last_status ) );
+  if isExecutingCommand then
+     result := to_unbounded_string( aStatusCode'image( last_status ) );
+  end if;
 end ParseOSStatus;
+
+procedure ParseOSPid( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: os.pid
+begin
+  kind := natural_t;
+  expect( os_pid_t );
+  if isExecutingCommand then
+     result := to_unbounded_string( aPID'image( getpid ) );
+  end if;
+end ParseOSPid;
+
+procedure ParseOSErrorString( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: os.error_string
+  expr_val   : unbounded_string;
+  expr_type  : identifier;
+begin
+  kind := string_t;
+  expect( os_error_string_t );
+  ParseSingleNumericParameter( expr_val, expr_type, integer_t );
+  if isExecutingCommand then
+     begin
+        result := to_unbounded_string( OSerror( integer( to_numeric( expr_val ) ) ) );
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
+end ParseOSErrorString;
 
 procedure StartupSparOS is
 begin
   declareNamespace( "os" );
-  declareProcedure( os_system_t, "os.system", ParseOSSystem'access );
+  declareFunction( os_error_string_t, "os.error_string", ParseOSErrorString'access );
+  declareFunction( os_pid_t, "os.pid", ParseOSPid'access );
   declareFunction( os_status_t, "os.status", ParseOSStatus'access );
+  declareProcedure( os_system_t, "os.system", ParseOSSystem'access );
   declareNamespaceClosed( "os" );
 end StartupSparOS;
 
