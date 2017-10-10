@@ -1020,6 +1020,10 @@ pragma assert( strings.length( s ) > 0 ); -- can't know exactly what
 os.system( "cd ." );
 i := os.status;
 pragma assert( i = 0 );
+n := os.pid;
+pragma assert( n /= 0 );
+s := os.error_string( 1 );
+pragma assert( strings.length( s ) > 0 );
 
 -- cd command
 -- note path is only shown in interactive modes
