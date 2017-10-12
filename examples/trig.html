@@ -1,0 +1,101 @@
+<HEAD><TITLE>trig.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : trig.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar trig
+Sin    7.07106781186547E-01 7.07106781186547E-01
+Cos    7.07106781186547E-01 7.07106781186548E-01
+Tan    1.00000000000000E+00 9.99999999999998E-01
+Cot    1.00000000000000E+00 1.00000000000000E+00
+Arcsin 4.50000000000000E+01 7.85398163397448E-01
+Arccos 4.50000000000000E+01 7.85398163397448E-01
+Arctan 45 7.85398163397448E-01
+Arccot 45 7.85398163397449E-01
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "trig" )
+       @( description, "If your language has a library or built-in " )
+       @( description, "functions for trigonometry, show examples of: ")
+       @( description, "sine, cosine, tangent, inverses (of the above) " )
+       @( description, "using the same angle in radians and degrees." )
+       @( description, "" )
+       @( description, "For the non-inverse functions,   each radian/" )
+       @( description, "degree pair should use arguments that evaluate to " )
+       @( description, "the same angle   (that is, it's not necessary to " )
+       @( description, "use the same angle for all three regular " )
+       @( description, "functions as long as the two sine calls use the " )
+       @( description, "same angle).  For the inverse functions,   use " )
+       @( description, "the same number and convert its answer to radians " )
+       @( description, "and degrees." )
+       @( see_also, "http://rosettacode.org/wiki/Trigonometric_functions" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> trig <b>is</b>
+  degrees_cycle : <b>constant</b> float := 360.0;
+  radians_cycle : <b>constant</b> float := 2.0 * float( numerics.pi );
+  angle_degrees : <b>constant</b> float := 45.0;
+  angle_radians : <b>constant</b> float := float( numerics.pi ) / 4.0;
+<b>begin</b>
+  put( "Sin   " )
+    @( numerics.sin( angle_degrees, degrees_cycle ) )
+    @( numerics.sin( angle_radians, radians_cycle ) );
+  new_line;
+
+  put( "Cos   " )
+    @( numerics.cos( angle_degrees, degrees_cycle ) )
+    @( numerics.cos( angle_radians, radians_cycle ) );
+  new_line;
+
+  put( "Tan   " )
+    @( numerics.tan( angle_degrees, degrees_cycle ) )
+    @( numerics.tan( angle_radians, radians_cycle ) );
+  new_line;
+
+  put( "Cot   " )
+    @( numerics.cot( angle_degrees, degrees_cycle ) )
+    @( numerics.cot( angle_radians, radians_cycle ) );
+  new_line;
+
+  put( "Arcsin" )
+    @( numerics.arcsin( numerics.sin( angle_degrees, degrees_cycle ), degrees_cycle ) )
+    @( numerics.arcsin( numerics.sin( angle_radians, radians_cycle ), radians_cycle ) );
+  new_line;
+
+  put( "Arccos" )
+    @( numerics.arccos( numerics.cos( angle_degrees, degrees_cycle ), degrees_cycle ) )
+    @( numerics.arccos( numerics.cos( angle_radians, radians_cycle ), radians_cycle ) );
+  new_line;
+
+  put( "Arctan" )
+    @( numerics.arctan( numerics.tan( angle_degrees, degrees_cycle ), 1, degrees_cycle ) )
+    @( numerics.arctan( numerics.tan( angle_radians, radians_cycle ), 1, radians_cycle ) );
+  new_line;
+
+  put( "Arccot" )
+    @( numerics.arccot( numerics.cot( angle_degrees, degrees_cycle ), 1, degrees_cycle ) )
+    @( numerics.arccot( numerics.cot( angle_radians, radians_cycle ), 1, radians_cycle ) );
+  new_line;
+
+  command_line.set_exit_status( 0 );
+<b>end</b> trig;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
