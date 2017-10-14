@@ -494,3 +494,5 @@ end loop; -- master loop here
 
 end quest;
 
+-- vim: ft=spar
+
