@@ -531,6 +531,31 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="sumseries.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+echo "$RESULT"
+EXPECTED="Sum of F(x) from 1 to 1000 is 1.64393456668165E+00"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="sumsq.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+echo "$RESULT"
+EXPECTED=" 0
+ 133"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="ternary_logic.sp"
 RESULT=`src/spar --test examples/$EXAMPLE | wc -l`
 EXPECTED="27"

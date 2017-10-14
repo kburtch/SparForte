@@ -1,0 +1,58 @@
+<HEAD><TITLE>sumseries.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : sumseries.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar sumseries.sp           
+Sum of F(x) from 1 to 1000 is 1.64393456668165E+00
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "sumseries" )
+              @( description, "Compute the nth term of a series, i.e. the " )
+              @( description, "sum of the n first terms of the " )
+              @( description, "corresponding sequence.  For this task " )
+              @( description, "repeat 1000 times. " )
+              @( see_also, "http://rosettacode.org/wiki/Sum_of_a_series" )
+              @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> sumseries <b>is</b>
+
+  <b>function</b> inverse_square( x : long_float ) <b>return</b> long_float <b>is</b>
+  <b>begin</b>
+    <b>return</b> 1/x**2;
+  <b>end</b> inverse_square;
+
+sum : long_float := 0.0;
+max_param : natural := 1000;
+
+<b>begin</b>
+  <b>for</b> i <b>in</b> 1..max_param <b>loop</b>
+    sum := @ + inverse_square( i );
+  <b>end</b> <b>loop</b>;
+
+  put( "Sum of F(x) from 1 to" )
+    @( max_param )
+    @( " is" )
+    @( sum );
+  new_line;
+<b>end</b> sumseries;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
