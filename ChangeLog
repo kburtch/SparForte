@@ -12,3 +12,5 @@ CHANGES SINCE 2.1
 
 4. New: OS package functions.  os.pid, equivalent to Bourne shell $$. os.error_string (strerror) and documentation fixed.
 
+5. Fix: instead of "identifier not declared", now get "too few parameter" when calling a user function with too few parameters.  Might be a more efficient way to implement this.
+

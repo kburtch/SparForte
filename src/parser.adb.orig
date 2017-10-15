@@ -6795,12 +6795,12 @@ begin
 
   formalParamId := proc_id + 1;
   parameterNumber := 1;
---put_line( "--- Searching from" ); -- DEBUG
---put_line( to_string( identifiers( proc_id-2 ).name ) ); -- DEBUG
---put_line( to_string( identifiers( proc_id-1 ).name ) ); -- DEBUG
---put_line( to_string( identifiers( proc_id ).name ) & " proc" ); -- DEBUG
---put_line( to_string( identifiers( proc_id+1 ).name ) ); -- DEBUG
---put_line( to_string( identifiers( proc_id+2 ).name ) ); -- DEBUG
+-- put_line( "--- Searching from" ); -- DEBUG
+-- put_line( to_string( identifiers( proc_id-2 ).name ) ); -- DEBUG
+-- put_line( to_string( identifiers( proc_id-1 ).name ) ); -- DEBUG
+-- put_line( to_string( identifiers( proc_id ).name ) & " proc" ); -- DEBUG
+-- put_line( to_string( identifiers( proc_id+1 ).name ) ); -- DEBUG
+-- put_line( to_string( identifiers( proc_id+2 ).name ) ); -- DEBUG
   loop
       while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
@@ -6819,6 +6819,7 @@ begin
 
     paramName := identifiers( formalParamId ).name;
     paramName := delete( paramName, 1, index( paramName, "." ) );
+
     case identifiers( formalParamId ).passingMode is
 
          when in_mode =>
@@ -6838,9 +6839,26 @@ begin
                    " has unsupported parameter passing mode" );
      end case;
 
-     exit when error_found or identifiers( token ).value.all /= ","; -- more?
+     -- Not sure we need to exit on an error here - KB: 1710/15
+     --exit when error_found or identifiers( token ).value.all /= ","; -- more?
+     exit when identifiers( token ).value.all /= ","; -- more?
      expect( symbol_t, "," );
      parameterNumber := parameterNumber + 1;
+     formalParamId := identifier( integer( formalParamId ) + 1 );
+  end loop;
+
+  -- Check for too few formal parameters
+  -- TODO: can this be optimized?
+
+  parameterNumber := parameterNumber + 1;
+  formalParamId := identifier( integer( formalParamId ) + 1 );
+  while formalParamId < identifiers_top loop
+     if identifiers( formalParamId ).field_of = proc_id then
+        if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
+           err( "too few parameters" );
+           exit;
+        end if;
+     end if;
      formalParamId := identifier( integer( formalParamId ) + 1 );
   end loop;
 
