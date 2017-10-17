@@ -6848,11 +6848,10 @@ begin
   end loop;
 
   -- Check for too few formal parameters
-  -- TODO: can this be optimized?
 
   parameterNumber := parameterNumber + 1;
   formalParamId := identifier( integer( formalParamId ) + 1 );
-  while formalParamId < identifiers_top loop
+  while formalParamId < proc_id loop
      if identifiers( formalParamId ).field_of = proc_id then
         if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
            err( "too few parameters" );

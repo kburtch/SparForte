@@ -1308,6 +1308,10 @@ begin
            -- since this is an expression, this could be something else but
            -- it is almost always this
            err( "numeric variable has no value" );
+        when constraint_error =>
+           err( "constraint_error in question command - value " &
+             to_string( toEscaped( expr_val ) ) &
+             " may not be numeric" );
         when others =>
            err_exception_raised;
         end;
