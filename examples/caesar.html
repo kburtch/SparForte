@@ -1,0 +1,89 @@
+<HEAD><TITLE>caesar.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : caesar.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar caesar.sp
+The five boxing wizards jump quickly
+Plaintext ------------&gt;The five boxing wizards jump quickly
+Ciphertext -----------&gt;Wkh ilyh eralqj zlcdugv mxps txlfnob
+Decrypted Ciphertext -&gt;The five boxing wizards jump quickly
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "caesar" )
+              @( description, "Implement a Caesar cipher, both encoding and ")
+              @( description, "decoding.  The key is an integer from 1 to " )
+              @( description, "25.  This cipher rotates (either towards left ")
+              @( description, "or right) the letters of the alphabet (A to " )
+              @( description, "Z). " )
+              @( see_also, "http://rosettacode.org/wiki/Caesar_cipher" )
+              @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> caesar <b>is</b>
+
+   <b>type</b> cipher_value <b>is</b> <b>new</b> natural;
+
+   <b>function</b> to_cipher_value(c: character; offset: character) <b>return</b> cipher_value <b>is</b>
+      cv : integer;
+   <b>begin</b>
+      cv := ( numerics.pos(c)-numerics.pos(offset) ) <b>mod</b> 26;
+      <b>return</b> cipher_value(cv);
+   <b>end</b> to_cipher_value;
+
+   <b>function</b> to_character(cv: cipher_value; offset: character) <b>return</b> character <b>is</b>
+   <b>begin</b>
+      <b>return</b> strings.val( integer(cv) + numerics.pos(offset) );
+   <b>end</b> to_character;
+
+   <b>function</b> encrypt( plain: string; key: cipher_value) <b>return</b> string <b>is</b>
+      cv : cipher_value;
+      cipher_char : character;
+      cipher_text : string;
+      plain_char  : character;
+   <b>begin</b>
+      <b>for</b> i <b>in</b> 1..strings.length( plain ) <b>loop</b>
+         plain_char := strings.element( plain, i);
+         <b>if</b> plain_char &gt;= 'A' <b>and</b> plain_char &lt;= 'Z' <b>then</b>
+            cv := ( to_cipher_value( plain_char, 'A')+key ) <b>mod</b> 26;
+            cipher_char := to_character( cv, 'A' );
+         <b>elsif</b> plain_char &gt;= 'a' <b>and</b> plain_char &lt;= 'z' <b>then</b>
+            cv := ( to_cipher_value( plain_char, 'a')+key ) <b>mod</b> 26;
+            cipher_char := to_character( cv, 'a' );
+         <b>else</b>
+            cipher_char := plain_char;
+         <b>end</b> <b>if</b>;
+         cipher_text := strings.overwrite( @, i, string( cipher_char ) );
+      <b>end</b> <b>loop</b>;
+      <b>return</b> cipher_text;
+   <b>end</b> encrypt;
+
+   text:  string := get_line;
+   key: cipher_value := 3; <FONT COLOR=green><EM>-- Default key from "Commentarii de Bello Gallico"</EM></FONT>
+
+<b>begin</b>
+   put_line("Plaintext <FONT COLOR=green><EM>------------&gt;" &amp; text);</EM></FONT>
+   text := encrypt(text, key);
+   put_line("Ciphertext <FONT COLOR=green><EM>-----------&gt;" &amp; text);</EM></FONT>
+   text := encrypt(text, -key);
+   put_line("Decrypted Ciphertext -&gt;" &amp; text);
+<b>end</b> caesar;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
