@@ -1580,9 +1580,9 @@ begin
      description( e, "A user-defined function is a subprogram that returns " &
                   "a value so that it can be used in an expression.  Parameter " &
                 "modes can be in, out, or in out." );
-     content( e, "function f return type is...begin...end f" );
-     content( e, "function f( p : [mode] type [; p2...] ) return type is...begin...end f" );
-     content( e, "function f...return type is separate" );
+     content( e, "function [abstract] f return type is...begin...end f" );
+     content( e, "function [abstract] f( p : [mode] type [; p2...] ) return type is...begin...end f" );
+     content( e, "function [abstract] f...return type is separate" );
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
   elsif helpTopic = "get" then
@@ -1934,9 +1934,9 @@ begin
      description( e, "A user-defined procedure is a subprogram that does not return " &
                   "a value for an expression.  Parameter " &
                 "modes can be in, out, or in out." );
-     content( e, "procedure p is...begin...end p" );
-     content( e, "procedure p( p : [mode] type [; p2...] )is...begin...end p" );
-     content( e, "procedure p...is separate" );
+     content( e, "procedure [abstract] p is...begin...end p" );
+     content( e, "procedure [abstract] p( p : [mode] type [; p2...] )is...begin...end p" );
+     content( e, "procedure [abstract] p...is separate" );
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
   elsif helpTopic = "pragma" then

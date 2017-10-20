@@ -76,10 +76,13 @@ Annoyances / Bugs with Workarounds / Updates
     means parameters often must be typecast.  Probably they should be universal
     types.
 - graphics and sound
-  - SDL - hardware accelleration not working with SDL...why not?
+  - SDL - hardware accelleration not working with ...why not?
   - SDL needs to be upgraded for version 2.0
 - type system
   - constant records are permitted but the fields are variables...the fields should all be constants
+  - programming-by-contract
+    - type validation function needed for database column integrity like
+      string length
 - build system
   - David B wants me to bring back SparForte shared library
     - shared library calling mechanism and integration with other languages

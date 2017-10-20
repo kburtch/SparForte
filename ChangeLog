@@ -14,3 +14,5 @@ CHANGES SINCE 2.1
 
 5. Fix: instead of "identifier not declared", now get "too few parameter" when calling a user function with too few parameters.  Might be a more efficient way to implement this.
 
+6. New: abstract procedures and subprograms [incomplete, untested].
+

@@ -6462,7 +6462,7 @@ begin
 end ParseSeparateProcHeader;
 
 procedure ParseProcedureBlock is
-  -- Syntax: procedure p [(param1...)] OR procedure p [(param1...)] is block
+  -- Syntax: procedure [abstract] p [(param1...)] OR procedure [abstract] p [(param1...)] is block
   -- end p;
   -- Handle procedure declarations, including forward declarations.
   -- Note: DoUserDefinedProcedure executes a user-defined procedure created by
@@ -6472,10 +6472,18 @@ procedure ParseProcedureBlock is
   procEnd   : natural;
   no_params   : integer;
   errorOnEntry : boolean := error_found;
+  isAbstract : boolean := false;
 begin
   procStart := firstPos;
   expect( procedure_t );
+  if token = abstract_t then
+     expect( abstract_t );
+     isAbstract := true;
+  end if;
   ParseProcedureIdentifier( proc_id );
+  if isAbstract then
+     identifiers( proc_id ).noVar := true;
+  end if;
   -- A forward declaration?
   if token /= is_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
      -- the following is only true for a forward declaration
@@ -6939,7 +6947,7 @@ begin
 end ParseSeparateFuncHeader;
 
 procedure ParseFunctionBlock is
-  -- Syntax: function f OR function p return t is block end p;
+  -- Syntax: function [abstract] f OR function [abstract] p return t is block end p;
   -- Handle procedure declarations, including forward declarations.
   -- Note: DoUserDefinedFunction executes a user-defined function created by
   -- this routine.
@@ -6948,10 +6956,18 @@ procedure ParseFunctionBlock is
   funcEnd   : natural;
   no_params   : integer;
   errorOnEntry : boolean := error_found;
+  isAbstract : boolean := false;
 begin
   funcStart := firstPos;
   expect( function_t );
+  if token = abstract_t then
+     expect( abstract_t );
+     isAbstract := true;
+  end if;
   ParseProcedureIdentifier( func_id );
+  if isAbstract then
+     identifiers( func_id ).noVar := true;
+  end if;
   identifiers( func_id ).class := userFuncClass;
   identifiers( func_id ).kind := new_t;
   if token = is_t then -- common error
@@ -7031,6 +7047,10 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( proc_id ).wasReferenced := true;
+     if identifiers( proc_id ).noVar then
+        err( optional_bold( to_string( identifiers( proc_id ).name ) ) &
+          " is abstract and cannot be run" );
+     end if;
   end if;
   getNextToken;
 
@@ -7153,6 +7173,9 @@ begin
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
      expect( procedure_t );
+     if token = abstract_t then
+        expect( abstract_t );
+     end if;
      ParseIdentifier( proc_id );
      -- we already know the parameter syntax is good so skip to "is"
      while token /= is_t loop
@@ -7221,6 +7244,10 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( func_id ).wasReferenced := true;
+     if identifiers( func_id ).noVar then
+        err( optional_bold( to_string( identifiers( func_id ).name ) ) &
+          " is abstract and cannot be run" );
+     end if;
   end if;
   getNextToken;
   -- Parameters will be in the new scope block
@@ -7235,6 +7262,9 @@ begin
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
      expect( function_t );                    -- function
+     if token = abstract_t then
+        expect( abstract_t );
+     end if;
      ParseIdentifier( func_id );              -- function name
      while token /= is_t loop                 -- skip header - syntax is good
         getNextToken;                         -- and params are declared
