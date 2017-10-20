@@ -335,7 +335,7 @@ begin
         if ident.field_of = eof_t then
            put( "subtype of " );
         end if;
-        -- abstract/limited are the type itself, not its paretn
+        -- abstract/limited are the type itself, not its parent
         if ident.noVar then
            put( "abstract " );
         end if;
@@ -346,7 +346,7 @@ begin
         if not ident.list then
            put( "new type of " );
         end if;
-        -- abstract/limited are the type itself, not its paretn
+        -- abstract/limited are the type itself, not its parent
         if ident.noVar then
            put( "abstract " );
         end if;
@@ -358,12 +358,26 @@ begin
            put( "constant " );
         end if;
      when funcClass =>
-        put( "built-in function " );
+        put( "built-in " );
+        if ident.noVar then
+           put( "abstract " );
+        end if;
+        put( "function " );
      when procClass =>
-        put( "built-in procedure " );
+        put( "built-in " );
+        if ident.noVar then
+           put( "abstract " );
+        end if;
+        put( "procedure " );
      when userProcClass =>
+        if ident.noVar then
+           put( "abstract " );
+        end if;
         put( "procedure " );
      when userFuncClass =>
+        if ident.noVar then
+           put( "abstract " );
+        end if;
         put( "function return " );
      when mainProgramClass =>
         put( "main program " );
