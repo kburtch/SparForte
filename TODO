@@ -12,9 +12,8 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - abstract types not complete
-  - abstract procedures
-  - abstract functions
   - abstract parameters should error in non-abstract procs/funcs
+    - may require changing position of "abstract"
   - abstract records
   - abstract array types
   - abstract anonymous arrays

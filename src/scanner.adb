@@ -1563,6 +1563,19 @@ begin
                   end if;
                end if;
             end if;
+         -- Often subprogram are defined and not used (in libraries)
+         --elsif identifiers( i ).class = userProcClass or
+         --   identifiers( i ).class = userFuncClass then
+         --   if boolean( designOpt ) or boolean( testOpt ) then
+         --      if not identifiers( i ).wasReferenced then
+         --         if not identifiers( i ).noVar then
+         --            err( optional_bold( to_string( identifiers( i ).name ) ) &
+         --               " is a " & optional_bold( "concrete subprogram" ) &
+         --               " but expected an " & optional_bold( "abstract subprogram" ) &
+         --               ".  It is never run." );
+         --         end if;
+         --      end if;
+         --   end if;
          end if;
          -- Do not apply to record fields as some record fields may not be
          -- accessed.
@@ -1664,6 +1677,19 @@ begin
                   end if;
                end if;
             end if;
+         -- Often subprogram are defined and not used (in libraries)
+         --elsif identifiers( i ).class = userProcClass or
+         --   identifiers( i ).class = userFuncClass then
+         --   if boolean( designOpt ) or boolean( testOpt ) then
+         --      if not identifiers( i ).wasReferenced then
+         --         if not identifiers( i ).noVar then
+         --            err( optional_bold( to_string( identifiers( i ).name ) ) &
+         --               " is a " & optional_bold( "concrete subprogram" ) &
+         --               " but expected an " & optional_bold( "abstract subprogram" ) &
+         --               ".  It is never run." );
+         --         end if;
+         --      end if;
+         --   end if;
          end if;
 --put_line( to_string( identifiers( i ).name ) & "being tested" ); -- DEBUGME
 --put_line( identifiers( i ).wasFactor'img ); -- DEBUGME

@@ -6472,18 +6472,10 @@ procedure ParseProcedureBlock is
   procEnd   : natural;
   no_params   : integer;
   errorOnEntry : boolean := error_found;
-  isAbstract : boolean := false;
 begin
   procStart := firstPos;
   expect( procedure_t );
-  if token = abstract_t then
-     expect( abstract_t );
-     isAbstract := true;
-  end if;
   ParseProcedureIdentifier( proc_id );
-  if isAbstract then
-     identifiers( proc_id ).noVar := true;
-  end if;
   -- A forward declaration?
   if token /= is_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
      -- the following is only true for a forward declaration
@@ -6508,32 +6500,41 @@ begin
        newName => to_string (identifiers( proc_id ).name ) );
      DeclareActualParameters( proc_id );
      expect( is_t );
-     if token = separate_t then
-        if rshOpt then
-           err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+     if token = null_t then                               -- null abstract
+        expect( null_t );
+        expect( abstract_t );
+        identifiers( proc_id ).noVar := true;
+     else
+        if token = separate_t then
+           if rshOpt then
+              err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+           end if;
+           expect( separate_t );
+           -- "is separate" is effectively an include
+           -- only insert include on a syntax check
+           if syntax_check then
+              insertInclude( identifiers( proc_id ).name & ".sp" );
+           end if;
+           ParseSeparateProcHeader( proc_id, procStart );
+        elsif token = abstract_t then
+           expect( abstract_t );
+           identifiers( proc_id ).noVar := true;
         end if;
-        expect( separate_t );
-        -- "is separate" is effectively an include
-        -- only insert include on a syntax check
-        if syntax_check then
-           insertInclude( identifiers( proc_id ).name & ".sp" );
+        ParseDeclarations;
+        expect( begin_t );
+        skipBlock;                                       -- never execute now
+        if token = exception_t then
+           ParseExceptionHandler( errorOnEntry );
         end if;
-        ParseSeparateProcHeader( proc_id, procStart );
+        pullBlock;
+        expect( end_t );
+        expect( proc_id );
+        procEnd := lastPos+1; -- include EOL ASCII.NUL
+        identifiers( proc_id ).value.all := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
+        -- fake initial indent of 1 for byte code (SOH)
+        -- we don't know what the initial indent is (if any) since it may
+        -- not be the first token on the line (though it usually is)
      end if;
-     ParseDeclarations;
-     expect( begin_t );
-     skipBlock;                                       -- never execute now
-     if token = exception_t then
-        ParseExceptionHandler( errorOnEntry );
-     end if;
-     pullBlock;
-     expect( end_t );
-     expect( proc_id );
-     procEnd := lastPos+1; -- include EOL ASCII.NUL
-     identifiers( proc_id ).value.all := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
-     -- fake initial indent of 1 for byte code (SOH)
-     -- we don't know what the initial indent is (if any) since it may
-     -- not be the first token on the line (though it usually is)
   end if;
   expectSemicolon;
 end ParseProcedureBlock;
@@ -6956,18 +6957,10 @@ procedure ParseFunctionBlock is
   funcEnd   : natural;
   no_params   : integer;
   errorOnEntry : boolean := error_found;
-  isAbstract : boolean := false;
 begin
   funcStart := firstPos;
   expect( function_t );
-  if token = abstract_t then
-     expect( abstract_t );
-     isAbstract := true;
-  end if;
   ParseProcedureIdentifier( func_id );
-  if isAbstract then
-     identifiers( func_id ).noVar := true;
-  end if;
   identifiers( func_id ).class := userFuncClass;
   identifiers( func_id ).kind := new_t;
   if token = is_t then -- common error
@@ -6991,32 +6984,41 @@ begin
        newName => to_string (identifiers( func_id ).name ) );
      DeclareActualParameters( func_id );
      expect( is_t );
-     if token = separate_t then
-        if rshOpt then
-           err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+     if token = null_t then                               -- null abstract
+        expect( null_t );
+        expect( abstract_t );
+        identifiers( func_id ).noVar := true;
+     else
+        if token = separate_t then
+           if rshOpt then
+              err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+           end if;
+            expect( separate_t );
+           -- "is separate" is effectively an include
+           -- only insert include on a syntax check
+           if syntax_check then
+              insertInclude( identifiers( func_id ).name & ".sf" );
+           end if;
+           ParseSeparateFuncHeader( func_id, funcStart );
+        elsif token = abstract_t then
+           expect( abstract_t );
+           identifiers( func_id ).noVar := true;
         end if;
-         expect( separate_t );
-        -- "is separate" is effectively an include
-        -- only insert include on a syntax check
-        if syntax_check then
-           insertInclude( identifiers( func_id ).name & ".sf" );
+        ParseDeclarations;
+        expect( begin_t );
+        SkipBlock;                                       -- never execute
+        if token = exception_t then
+           ParseExceptionHandler( errorOnEntry );
         end if;
-        ParseSeparateFuncHeader( func_id, funcStart );
+        pullBlock;
+        expect( end_t );
+        expect( func_id );
+        funcEnd := lastPos+1; -- include EOL ASCII.NUL
+        identifiers( func_id ).value.all := to_unbounded_string( copyByteCodeLines( funcStart, funcEnd ) );
+        -- fake initial indent of 1 for byte code (SOH)
+        -- we don't know what the initial indent is (if any) since it may
+        -- not be the first token on the line (though it usually is)
      end if;
-     ParseDeclarations;
-     expect( begin_t );
-     SkipBlock;                                       -- never execute
-     if token = exception_t then
-        ParseExceptionHandler( errorOnEntry );
-     end if;
-     pullBlock;
-     expect( end_t );
-     expect( func_id );
-     funcEnd := lastPos+1; -- include EOL ASCII.NUL
-     identifiers( func_id ).value.all := to_unbounded_string( copyByteCodeLines( funcStart, funcEnd ) );
-     -- fake initial indent of 1 for byte code (SOH)
-     -- we don't know what the initial indent is (if any) since it may
-     -- not be the first token on the line (though it usually is)
   end if;
   expectSemicolon;
 end ParseFunctionBlock;
