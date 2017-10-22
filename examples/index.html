@@ -6,12 +6,301 @@
         <META NAME="description" CONTENT="SparForte language documentation">
         <title>SparForte - Source Code Treasury - Browser</title>
         <!-- link rel="StyleSheet" type="text/css" media="screen" href="../art/sparforte.css" -->
-</head>
-<FRAMESET COLS='250,*'>
-<NOFRAME>
-This web page requires frames.
-</NOFRAME>
-<FRAME NAME="files" SRC="files.html">
-<FRAME NAME="main" SRC="main.html">
-</FRAMESET>
-</HTML>
+        <link rel="StyleSheet" type="text/css" media="screen" href="../doc/art/sparforte.css">
+<script>
+  function toggle( thing, show, hide ) {
+     var myThing = document.getElementById( thing );
+     var myShow  = document.getElementById( thing + "_show"  );
+     var myHide  = document.getElementById( thing + "_hide"  );
+     if ( myThing.style.display != 'none' ) {
+        myThing.style.display = 'none';
+        myShow.style.display  = 'inline';
+        myHide.style.display  = 'none';
+     } else {
+        myThing.style.display = 'block';
+        myShow.style.display  = 'none';
+        myHide.style.display  = 'inline';
+     }
+  }
+</script>
+<style>
+ .one_cell_across_three {
+        display: inline-block;
+        width: 100%;
+        vertical-align: top;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        min-width: 200px;
+}
+.left_cell_of_three {
+        display: inline-block;
+        width: 32%;
+        vertical-align: top;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        min-width: 200px;
+        border: 1px solid #1c1142;
+        background-color: #EEEEEE;
+}
+
+.middle_cell_of_three {
+        display: inline-block;
+        width: 32%;
+        vertical-align: top;
+        margin-right: 10px;
+        margin-bottom: 10px; /* spacer when stacked in a tight display */
+        min-width: 200px;
+        border: 1px solid #1c1142;
+        background-color: #EEEEEE;
+}
+
+.right_cell_of_three {
+        display: inline-block;
+        width: 27%;
+        vertical-align: top;
+        margin-bottom: 10px; /* spacer when stacked in a tight display */
+        min-width: 200px;
+        border: 1px solid #1c1142;
+        background-color: #EEEEEE;
+}
+.category {
+        color: #1c1142;
+        /* color: #FFFFFF; */
+        font-family: "Lucida Sans", "Trebuchet MS", sans-serif;
+        font-size: 18px;
+        cursor: pointer;
+
+}
+.category_bar {
+        width: 100%;
+        margin-right: 10px;
+        color: #FFFFFF;
+        font-family: "Lucida Sans", "Trebuchet MS", sans-serif;
+        font-size: 18px;
+        cursor: pointer;
+        background-color: #1c1142;
+        padding: 5px;
+}
+.no_bullets {
+        color: #1c1142;
+        list-style-type: circle;
+}
+.content {
+        padding: 5px;
+}
+</style>
+</HEAD>
+<BODY>
+<H2>SparForte Source Code Treasury</H2>
+
+<p>This is a collection of SparForte/AdaScript example programs.  The programs
+includes tutorials, games, scripts and cookbook solutions to common
+problems.  Click on a title to expand or collapse a box.</p>
+
+<DIV class="left_cell_of_three">
+<!--DIV CLASS="category_bar">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'tutorials' )"><SPAN id="tutorials_show" CLASS="category">&gt;</SPAN><SPAN id="tutorials_hide" CLASS="category" style="display:none">V</SPAN> Tutorials</P>
+</DIV-->
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'tutorials' )"><SPAN id="tutorials_show">&gt;</SPAN><SPAN id="tutorials_hide" style="display:none">V</SPAN> Tutorials</P>
+<p>Basic examples of programming in SparForte.</p>
+<DIV id="tutorials" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="hello.html">hello.sp</A></LI>
+<LI><A HREF="aligncols.html">aligncols.sp</A></LI>
+<LI><A HREF="aplusb.html">aplusb.sp</A></LI>
+<LI><A HREF="arraycat.html">arraycat.sp</A></LI>
+<LI><A HREF="arrayloop.html">arrayloop.sp</A></LI>
+<LI><A HREF="bitarith.html">bitarith.sp</A></LI>
+<LI><A HREF="charcode.html">charcode.sp</A></LI>
+<LI><A HREF="file_creation.html">file_creation.sp</A></LI>
+<LI><A HREF="filecopy.html">filecopy.sp</A></LI>
+<LI><A HREF="incstr.html">incstr.sp</A></LI>
+<LI><A HREF="int_sort.html">int_sort.sp</A></LI>
+<LI><A HREF="introsp.html">introsp.sp</A></LI>
+<LI><A HREF="loopsbreak.html">loopsbreak.sp</A></LI>
+<LI><A HREF="menu.html">menu.sp</A></LI>
+<LI><A HREF="menu2.html">menu2.sp</A></LI>
+<LI><A HREF="printargs.html">printargs.sp</A></LI>
+<LI><A HREF="radices.html">radices.sp</A></LI>
+<LI><A HREF="stringcase.html">stringcase.sp</A></LI>
+<LI><A HREF="trig.html">trig.sp</A></LI>
+</UL>
+</DIV>
+</DIV>
+<BR>
+
+<DIV class="left_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'algorithms' )"><SPAN id="algorithms_show" >&gt;</SPAN><SPAN id="algorithms_hide" style="display:none" >V</SPAN> Algorithms</P>
+<p>Common solutions to programming problems.</p>
+<DIV id="algorithms" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="arraysum.html">arraysum.sp</A></LI>
+<LI><A HREF="best_shuffle.html">best_shuffle.sp</A></LI>
+<LI><A HREF="calcrms.html">calcrms.sp</A></LI>
+<LI><A HREF="combinations.html">combinations.sp</A></LI>
+<LI><A HREF="distance.html">distance.sp</A></LI>
+<LI><A HREF="dotproduct.html">dotproduct.sp</A></LI>
+<LI><A HREF="drawline.html">drawline.sp</A></LI>
+<LI><A HREF="gray.html">gray.sp</A></LI>
+<LI><A HREF="linear_reg.html">linear_reg.sp</A></LI>
+<!-- LI><A HREF=luhn.html TARGET=main>luhn.sp</A></LI -->
+<LI><A HREF="mapping.html">mapping.sp</A></LI>
+<LI><A HREF="minsort.html">minsort.sp</A></LI>
+<LI><A HREF="monte.html">monte.sp</A></LI>
+<LI><A HREF="nonsquares.html">nonsquares.html</A></LI>
+<LI><A HREF="perfect.html">perfect.html</A></LI>
+<LI><A HREF="prime.html">prime.html</A></LI>
+<LI><A HREF="randdist.html">randdist.sp</A></LI>
+<LI><A HREF="rle.html">rle.sp</A></LI>
+<LI><A HREF="roman_numerals.html">roman_numerals.sp</A></LI>
+<LI><A HREF="shuffle.html">shuffle.sp</A></LI>
+<LI><A HREF="sieve.html">sieve.sp</A></LI>
+<LI><A HREF="sumseries.html">sumseries.sp</A></LI>
+<LI><A HREF="sumsq.html">sumsq.sp</A></LI>
+<LI><A HREF="ternary_logic.html">ternary_logic.sp</A></LI>
+</UL>
+</DIV>
+</DIV>
+
+<DIV class="middle_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'databases' )"><SPAN id="databases_show" >&gt;</SPAN><SPAN id="databases_hide" style="display:none" >V</SPAN> Databases</P>
+<p>Examples of using databases.</p>
+<DIV id="databases" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="database.html">database.sp</A></LI>
+</UL>
+</DIV>
+</DIV>
+
+<DIV class="right_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'entertain' )"><SPAN id="entertain_show" >&gt;</SPAN><SPAN id="entertain_hide" style="display:none" >V</SPAN> Entertainment</P>
+<p>Fun or frivilous programs.</p>
+<DIV id="entertain" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="8ball.html">8ball.sp</A></LI>
+<LI><A HREF="bottles.html">bottles.sp</A></LI>
+<LI><A HREF="caesar.html">caesar.sp</A></LI>
+<LI><A HREF="eliza.html">eliza.sp</A></LI>
+<LI><A HREF="neartime.html">neartime.sp</A></LI>
+<LI><A HREF="palindrome.html">palindrome.sp</A></LI>
+<LI><A HREF="poetry.html">poetry.sp</A></LI>
+<LI><A HREF="rot13.html">rot13.sp</A></LI>
+<LI><A HREF="twelve_days.html">twelve_days.sp</A></LI>
+</UL>
+</DIV>
+</DIV>
+
+<DIV class="left_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'games' )"><SPAN id="games_show" >&gt;</SPAN><SPAN id="games_hide" style="display:none" >V</SPAN> Games</P>
+<p>Classic computer games.</p>
+<DIV id="games" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="bjack.html">bjack.sp</A></LI>
+<LI><A HREF="camel.html">camel.sp</A></LI>
+<LI><A HREF="draco_ii.html">draco_ii.sp</A></LI>
+<LI><A HREF="game.html">game.sp</A></LI>
+<LI><A HREF="game_24.html">game_24.sp</A></LI>
+<LI><A HREF="quest.html">quest.sp</A></LI>
+<LI><A HREF="wumpus.html">wumpus.sp</A></LI>
+</UL>
+</div>
+</DIV>
+
+<DIV class="middle_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'multimedia' )"><SPAN id="multimedia_show" >&gt;</SPAN><SPAN id="multimedia_hide" style="display:none" >V</SPAN> Multimedia</P>
+<p>Examples of sound and drawing.</p>
+<DIV id="multimedia" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="audio.html">audio.sp</A></LI>
+<LI><A HREF="chessboard.html">chessboard.sp</A></LI>
+<LI><A HREF="mandel.html">mandel.sp</A></LI>
+<LI><A HREF="moire.html">moire.sp</A></LI>
+<LI><A HREF="opengl_first.html">opengl_first.sp</A></LI>
+<LI><A HREF="opengl_second.html">opengl_second.sp</A></LI>
+<LI><A HREF="weave.html">weave.sp</A></LI>
+</UL>
+</div>
+</DIV>
+
+<DIV class="right_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'puzzles' )"><SPAN id="puzzles_show" >&gt;</SPAN><SPAN id="puzzles_hide" style="display:none" >V</SPAN> Puzzles</P>
+<p>Intellectual problems.</p>
+<DIV id="puzzles" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="doors.html">doors.sp</A></LI>
+<LI><A HREF="factorial.html">factorial.sp</A></LI>
+<LI><A HREF="fibonacci.html">fibonacci.sp</A></LI>
+<LI><A HREF="fizzbuzz.html">fizzbuzz.sp</A></LI>
+<LI><A HREF="gss.html">gss.sp</A></LI>
+<LI><A HREF="monty.html">monty.sp</A></LI>
+<LI><A HREF="yuletide.html">yuletide.sp</A></LI>
+</UL>
+</div>
+</DIV>
+
+<DIV class="left_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'scripting' )"><SPAN id="scripting_show" >&gt;</SPAN><SPAN id="scripting_hide" style="display:none" >V</SPAN> Scripting</P>
+<p>Shell scripting.</p>
+<DIV id="scripting" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="add_ramdisk.html">add_ramdisk.sp</A></LI>
+<LI><A HREF="add_swap.html">add_swap.sp</A></LI>
+<LI><A HREF="archive.html">archive.sp</A></LI>
+<LI><A HREF="bases.html">bases.sp</A></LI>
+<LI><A HREF="de_RPM.html">de_RPM.sp</A></LI>
+<LI><A HREF="dispatch.html">dispatch.sp</A></LI>
+<LI><A HREF="get_env_data.html">get_env_data.sp</A></LI>
+<LI><A HREF="ramcache.html">ramcache.sp</A></LI>
+<LI><A HREF="rm_ramdisk.html">rm_ramdisk.sp</A></LI>
+<LI><A HREF="rm_swap.html">rm_swap.sp</A></LI>
+<LI><A HREF="sleep.html">sleep.sp</A></LI>
+<LI><A HREF="stripcomment.html">stripcomment.sp</A></LI>
+<LI><A HREF="time_function.html">time_function.sp</A></LI>
+<LI><A HREF="tmpfile.html">tmpfile.sp</A></LI>
+<LI><A HREF="web_summary.html">web_summary.sp</A></LI>
+<LI><A HREF="whattime.html">whattime.sp</A></LI>
+<LI><A HREF="yorn.html">yorn.sp</A></LI>
+</UL>
+</div>
+</DIV>
+
+<DIV class="middle_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'utilities' )"><SPAN id="utilities_show" >&gt;</SPAN><SPAN id="utilities_hide" style="display:none" >V</SPAN> Utilities</P>
+<p>Handy shell scripts.</p>
+<DIV id="utilities" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="attention.html">attention.sp</A></LI>
+<LI><A HREF="cecho.html">cecho.sp</A></LI>
+<LI><A HREF="chomp.html">chomp.sp</A></LI>
+<LI><A HREF="chomp2.html">chomp2.sp</A></LI>
+<LI><A HREF="count_statements.html">count_statements.sp</A></LI>
+<LI><A HREF="dateformat.html">dateformat.sp</A></LI>
+<LI><A HREF="isxwindows.html">isxwindows.sp</A></LI>
+<LI><A HREF="pack.html">pack.sp</A></LI>
+<LI><A HREF="postgres_csv.html">postgres_csv.sp</A></LI>
+<LI><A HREF="timestamp.html">timestamp.sp</A></LI>
+<LI><A HREF="title.html">title.sp</A></LI>
+<LI><A HREF="validate_name.html">validate_name.sp</A></LI>
+</UL>
+</div>
+</DIV>
+
+<DIV class="right_cell_of_three">
+<P CLASS="category" TITLE="click to show/hide" onclick="toggle( 'cgi' )"><SPAN id="cgi_show" >&gt;</SPAN><SPAN id="cgi_hide" style="display:none" >V</SPAN> Web Templates / CGI</P>
+<p>HTTP examples.</p>
+<DIV id="cgi" style="display:none">
+<UL CLASS="no_bullets">
+<LI><A HREF="dynamic_css.html">dynamic_css.sp</A></LI>
+<LI><A HREF="dynamic_css2.html">dynamic_css2.sp</A></LI>
+<LI><A HREF="env.html">env.cgi</A></LI>
+<LI><A HREF="json_health_check.html">json_health_check.cgi</A></LI>
+<LI><A HREF="minimal_cgi.html">minimal_cgi.sp</A></LI>
+<LI><A HREF="random.html">random.cgi</A></LI>
+</UL>
+</div>
+</DIV>
+
+<DIV style="background-color: #DDDDDD; text-align: center">
+<a href="#top"><img src="../doc/art/up_arrow.png" border="0" width="24" height="27" alt="[Back to Top]"></a>
+</DIV>
+</BODY></HTML>
