@@ -6312,7 +6312,7 @@ begin
   end if;
 end ParseFormalParameters;
 
-procedure ParseFunctionReturnPart( func_id : identifier ) is
+procedure ParseFunctionReturnPart( func_id : identifier; abstract_return : in out identifier ) is
 -- Syntax: (field = declaration [; declaration ... ] )
 -- Fields are implemented using records
    formal_param_id : identifier;
@@ -6328,6 +6328,9 @@ begin
   identifiers( func_id ).kind := type_token;
   if syntax_check then
      identifiers( type_token ).wasApplied := true; -- type was used
+     if identifiers( type_token ).noVar then
+        abstract_return := type_token;
+     end if;
   end if;
 
   -- Check type
@@ -6529,7 +6532,6 @@ begin
            expect( abstract_t );
            identifiers( proc_id ).noVar := true;
         elsif abstract_parameter /= eof_t then
-           -- TODO: be specific about which parameter
            err( "procedure must be abstract because parameter type " &
               optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
               " is abstract" );
@@ -6972,6 +6974,7 @@ procedure ParseFunctionBlock is
   no_params   : integer;
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
+  abstract_return    : identifier := eof_t;
 begin
   funcStart := firstPos;
   expect( function_t );
@@ -6994,7 +6997,7 @@ begin
         ParseFormalParameters( func_id, no_params, abstract_parameter, is_function => true );
         expect( symbol_t, ")" );
      end if;
-     ParseFunctionReturnPart( func_id );
+     ParseFunctionReturnPart( func_id, abstract_return );
      pushBlock( newScope => true,
        newName => to_string (identifiers( func_id ).name ) );
      DeclareActualParameters( func_id );
@@ -7019,9 +7022,12 @@ begin
            expect( abstract_t );
            identifiers( func_id ).noVar := true;
         elsif abstract_parameter /= eof_t then
-           -- TODO: be specific about which parameter
            err( "function must be abstract because parameter type " &
               optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
+              " is abstract" );
+        elsif abstract_return /= eof_t then
+           err( "function must be abstract because return type " &
+              optional_bold( to_string( identifiers( abstract_return ).name ) ) &
               " is abstract" );
         end if;
         ParseDeclarations;

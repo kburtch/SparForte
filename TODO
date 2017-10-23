@@ -12,11 +12,9 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - abstract types not complete
-  - abstract parameters should error in non-abstract procs/funcs
-    - may require changing position of "abstract"
-  - abstract records
-  - abstract array types
-  - abstract anonymous arrays
+  - check abstract records
+  - check abstract array types
+  - check abstract anonymous arrays
 - limited types/vars
   - limited arrays and record
 - check to ensure template error messages are not shown in maintenace mode

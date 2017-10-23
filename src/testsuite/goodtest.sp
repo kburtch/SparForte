@@ -4512,6 +4512,44 @@ pragma assert( strings.length( s ) > 0 );
 s := source_info.enclosing_entity;
 pragma assert( s = "script" );
 
+-- abstract
+
+declare
+type abstract_type is new abstract integer;
+subtype abstract_subtype is abstract integer;
+
+procedure abstract1 is null abstract;
+
+procedure abstract2 is abstract
+begin
+  null;
+end abstract2;
+
+procedure abstract3( a1 : abstract_type ) is null abstract;
+
+procedure abstract4( a2 : abstract_type ) is abstract
+begin
+  null;
+end abstract4;
+
+function abstract5 return boolean is abstract
+begin
+  return false;
+end abstract5;
+
+function abstract6( a3 : abstract_type ) return boolean is null abstract;
+
+function abstract7( a4 : abstract_type ) return boolean is abstract
+begin
+  return false;
+end abstract7;
+
+function abstract8 return abstract_type is null abstract;
+
+begin
+  null;
+end;
+
 -- Pragmas
 
 pragma assumption( used, i );
