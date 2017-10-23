@@ -6201,14 +6201,14 @@ begin
   pullBlock;
 end ParseBeginBlock;
 
-procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; is_function : boolean := false ) is
+procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; abstract_parameter : in out identifier; is_function : boolean := false ) is
 -- Syntax: (field = declaration [; declaration ... ] )
 -- Fields are implemented using records
    formal_param_id : identifier;
    b : boolean;
-   paramName : unbounded_string;
-   type_token    : identifier;
-   passingMode : aParameterPassingMode;
+   paramName    : unbounded_string;
+   type_token   : identifier;
+   passingMode  : aParameterPassingMode;
 begin
   param_no := param_no + 1;
   ParseNewIdentifier( formal_param_id );
@@ -6243,8 +6243,16 @@ begin
   end if;
 
   -- The name of the type
+  --
+  -- If it's an abstract type, record it because the subproram must be
+  -- abstract also.
 
   ParseIdentifier( type_token );
+  if identifiers( type_token ).noVar then
+     if abstract_parameter = eof_t then
+        abstract_parameter := type_token;
+     end if;
+  end if;
 
   -- Check type
   --
@@ -6293,7 +6301,7 @@ begin
 
   if not error_found and token /= eof_t and not (token = symbol_t and identifiers( token ).value.all = ")" ) then
      expectSemicolon;
-     ParseFormalParameters( proc_id, param_no );
+     ParseFormalParameters( proc_id, param_no, abstract_parameter );
      -- the symbol table will overflow before field_no does
   end if;
 
@@ -6472,6 +6480,7 @@ procedure ParseProcedureBlock is
   procEnd   : natural;
   no_params   : integer;
   errorOnEntry : boolean := error_found;
+  abstract_parameter : identifier := eof_t;
 begin
   procStart := firstPos;
   expect( procedure_t );
@@ -6492,7 +6501,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = "(" then
         expect( symbol_t, "(" );
         no_params := 0;
-        ParseFormalParameters( proc_id, no_params );
+        ParseFormalParameters( proc_id, no_params, abstract_parameter );
         expect( symbol_t, ")" );
         --identifiers( proc_id ).value := to_unbounded_string( no_params );
      end if;
@@ -6519,6 +6528,11 @@ begin
         elsif token = abstract_t then
            expect( abstract_t );
            identifiers( proc_id ).noVar := true;
+        elsif abstract_parameter /= eof_t then
+           -- TODO: be specific about which parameter
+           err( "procedure must be abstract because parameter type " &
+              optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
+              " is abstract" );
         end if;
         ParseDeclarations;
         expect( begin_t );
@@ -6957,6 +6971,7 @@ procedure ParseFunctionBlock is
   funcEnd   : natural;
   no_params   : integer;
   errorOnEntry : boolean := error_found;
+  abstract_parameter : identifier := eof_t;
 begin
   funcStart := firstPos;
   expect( function_t );
@@ -6976,7 +6991,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = "(" then
         expect( symbol_t, "(" );
         no_params := 0;
-        ParseFormalParameters( func_id, no_params, is_function => true );
+        ParseFormalParameters( func_id, no_params, abstract_parameter, is_function => true );
         expect( symbol_t, ")" );
      end if;
      ParseFunctionReturnPart( func_id );
@@ -7003,6 +7018,11 @@ begin
         elsif token = abstract_t then
            expect( abstract_t );
            identifiers( func_id ).noVar := true;
+        elsif abstract_parameter /= eof_t then
+           -- TODO: be specific about which parameter
+           err( "function must be abstract because parameter type " &
+              optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
+              " is abstract" );
         end if;
         ParseDeclarations;
         expect( begin_t );

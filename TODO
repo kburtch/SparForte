@@ -152,6 +152,9 @@ Nice to Haves / Missing Functionality
     - review and improve help command reports for producing system audit reports.  Are they complete?  Usable?  Any rsh restrictions needed?  For example, we need a software_model report.
     - while we want to default to security, we also want not to be overly restrictive with pragma restriction in general.  We should probably default to secure and add exceptions...how would i code that?
     - probably need a security pragma and not relying on rsh = security
+    - should disallow access to certain files or directories like /etc/password by
+      default, unless security pragma allows otherwise.  This is similar to Java's
+      Security Manager.
     - pragma deprecated is designed for scripts, but there is no way to deprecate
       subprograms, types, etc.  In general, I need to expand end-of-life
       and migration features.
