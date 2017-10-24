@@ -7033,6 +7033,11 @@ begin
         ParseDeclarations;
         expect( begin_t );
         SkipBlock;                                       -- never execute
+        if syntax_check then
+           if not blockHasReturn then
+              err( "function has no return value statement" );
+           end if;
+        end if;
         if token = exception_t then
            ParseExceptionHandler( errorOnEntry );
         end if;
@@ -8311,6 +8316,7 @@ begin
         expectSemicolon;
         -- look for unreachable code only during syntax check
         if syntax_check then
+           sawReturn;
            --declare
            --   cmdStart   : aScannerState;
            --begin

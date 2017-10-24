@@ -16,3 +16,5 @@ CHANGES SINCE 2.1
 
 6. New: abstract procedures and subprograms [incomplete, untested].
 
+7. Fix: functions without a return value statement produce an error.
+

@@ -1956,6 +1956,30 @@ end getBlockName;
 
 
 -----------------------------------------------------------------------------
+-- SAW RETURN
+--
+-- Mark return statement has having been seen in this block
+-----------------------------------------------------------------------------
+
+procedure sawReturn is
+begin
+  blocks( blocks_top ).hasReturn := true;
+end sawReturn;
+
+
+-----------------------------------------------------------------------------
+-- BLOCK HAS RETURN
+--
+-- True if a block has been flagged as having a return
+-----------------------------------------------------------------------------
+
+function blockHasReturn return boolean is
+begin
+  return blocks( blocks_top ).hasReturn;
+end blockHasReturn;
+
+
+-----------------------------------------------------------------------------
 -- DUMP SYMBOL TABLE
 --
 -- Debugging routine to display the top of the symbol table.

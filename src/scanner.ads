@@ -215,6 +215,12 @@ function getIdentifierBlock( id : identifier ) return block;
 function getBlockName( b : block ) return unbounded_string;
 -- return the name of the given block
 
+procedure sawReturn;
+-- mark return statement has having been seen in this block
+
+function blockHasReturn return boolean;
+-- true if a block has been flagged as having a return
+
 procedure dumpSymbolTable;
 -- Debugging routine to display the top of the symbol table.
 
@@ -446,6 +452,7 @@ type blockDeclaration is record
   newScope        : boolean := false; -- true if new identifier scope
   blockName       : unbounded_string := Null_Unbounded_String;
   state           : aScannerState;    -- the position on the line
+  hasReturn       : boolean := false; -- true if return was seen (for fn's)
 end record;
 type blocksArray is array( block ) of blockDeclaration;
 -- this arrangement means the last array element is never accessed

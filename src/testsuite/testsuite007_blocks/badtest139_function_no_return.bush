@@ -1,7 +1,13 @@
 # This should fail
 
+procedure p is
+
 function not_implemented return boolean is
 begin
   null;
 end not_implemented;
+
+begin
+  null;
+end p;
 

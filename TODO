@@ -41,8 +41,6 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
-- no check if a function doesn't have a return.  The function runs without
-  a return but return value is random.
 - btree_io/hash_io
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
