@@ -1958,12 +1958,25 @@ end getBlockName;
 -----------------------------------------------------------------------------
 -- SAW RETURN
 --
--- Mark return statement has having been seen in this block
+-- Mark return statement has having been seen in the most recent non-declare
+-- scope block.  If no such block, does nothing.
 -----------------------------------------------------------------------------
 
 procedure sawReturn is
+  b : block := blocks_top;
 begin
-  blocks( blocks_top ).hasReturn := true;
+  if b > blocks'first then                                -- blocks_top is +1
+     b := b - 1;                                          -- current block
+     while b >= block'first loop                          -- while blocks
+        if blocks( b ).newScope and
+           blocks( b ).blockName /= "declare block" and
+           blocks( b ).blockName /= "begin block" then
+            blocks( b ).hasReturn := true;
+            exit;
+         end if;
+         b := b - 1;
+     end loop;
+  end if;
 end sawReturn;
 
 
@@ -1974,8 +1987,12 @@ end sawReturn;
 -----------------------------------------------------------------------------
 
 function blockHasReturn return boolean is
+  res : boolean := false;
 begin
-  return blocks( blocks_top ).hasReturn;
+  if blocks_top > block'first then
+     res := blocks( blocks_top-1 ).hasReturn;
+  end if;
+  return res;
 end blockHasReturn;
 
 

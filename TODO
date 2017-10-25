@@ -220,6 +220,8 @@ Nice to Haves / Missing Functionality
     - built-in cache - memory or disk?
     - redesign is_writable, etc. so works better.
     - return [when] , raise [when]
+    - infinite loop detection - when variables in loop expression are not assigned
+      to - this may be tricky to implement
     - new examples
        - example program of ramdisk cache
     - GitHub readme.md "badges" (see also shields)

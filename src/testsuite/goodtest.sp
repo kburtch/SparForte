@@ -3175,6 +3175,52 @@ begin
   itself2_test @ ;
 end;
 
+-- return in inner block
+
+declare
+  i : integer := 1;
+
+  procedure return_test is
+  begin
+    begin
+      return;
+    end;
+    i := 2;
+  end return_test;
+
+  function return_test2 return integer is
+  begin
+    begin
+      return 3;
+    end;
+    return 2;
+  end return_test2;
+
+  procedure return_test3 is
+  begin
+    declare
+      j : integer := 4;
+    begin
+      j := j;
+      return;
+    end;
+    i := 2;
+  end return_test3;
+
+  function return_test4 return integer is
+  begin
+    declare
+      j : integer := 5;
+    begin
+      return j;
+    end;
+    return 2;
+  end return_test4;
+
+begin
+  null;
+end;
+
 -- integer casting
 -- in bush, literals are universal_numeric's
 
