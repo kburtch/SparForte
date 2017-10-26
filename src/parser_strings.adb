@@ -304,6 +304,9 @@ begin
   expect( index_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextStringParameter( pat_val, pat_type, string_t );
+  if length( pat_val ) = 0 then
+     err( "search string is empty" );
+  end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then

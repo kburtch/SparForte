@@ -3377,6 +3377,9 @@ begin
      expect( constant_t );                             -- by flagging variable
      identifiers( id ).class := constClass;            -- as a constant and
      expr_expected := true;                            -- must assign value
+  elsif token = abstract_t then                        -- abstract only makes sense
+     err( optional_bold( "abstract" ) &                -- in type declarations since
+        " can only be used in type declarations" );    -- it's a no-use quality.
   else
      identifiers( id ).class := varClass;              -- as a constant and
   end if;
@@ -3990,9 +3993,15 @@ begin
         end if;
      end if;
 
+     -- Standard Ada syntax, but if we could extend arrays or records, would
+     -- "new" be appropriate?
+
      if token = array_t then
         err( "omit " & optional_bold( "new" ) & " since array is not derived from another type" );
+     elsif token = record_t then
+        err( "omit " & optional_bold( "new" ) & " since record is not derived from another type" );
      end if;
+
      ParseIdentifier( parent_id );                         -- parent type name
      if class_ok( parent_id, typeClass, subClass ) then    -- not a type?
         if identifiers( getBaseType( parent_id ) ).kind = root_record_t then
