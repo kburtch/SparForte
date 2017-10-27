@@ -247,6 +247,12 @@ Nice to Haves / Missing Functionality
 New Unique Concepts
 -------------------
 
+  - research
+    - continue learning Rust - https://www.rust-lang.org
+    - revisit Go - https://golang.org/
+    - checkout Indris - https://www.idris-lang.org
+    - checkout Erlang for ideas
+  - what can be done to promote better, easier, more detailed error messages?
   - SELinux-like ability to control who access what.
     - for any function, restrict it to a list of parent functions which
       may call it.
@@ -273,9 +279,19 @@ New Unique Concepts
       directly to the current program, rather than triggered by pragma
       software_model and applied through some kind of architecture system.
   - units of measure for numerics
-    - e.g. distance : integer in "foot", "feet" := 0;
-    - should units be pre-defined?  defined in units package?  strings are too
-      risky...
+    - define a standard record type for units with singular/plural/etc.
+    - allow the standard record type to be extended by subtype (providing
+      alternate spellings but compatible) or new types.  Allow the creation
+      of unit hierarchies.  e.g. null (root) units, currencies (abstract),
+      dollars (english canadian) and subtype dollars (french canadian)
+      - this requires derived records to be implemented
+      - e.g. distance : integer in feet := 0;
+        (where feet.singular := "foot", feet.plural := "feet")
+    - can units be applied to strings.  e.g. x : title in spanish or
+      x : title in europe_region.  Affecting concatenation.
+    - should multiple units be allowed?  Is this a special case of multiple
+      inherance, where x belongs to multiple hierarches?  Should it be
+      generalized/
   - naming convention
     - what are the naming standards of functions.  e.g. sin(), to_sin(), sin_of()?
   - type system

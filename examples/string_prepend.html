@@ -1,0 +1,62 @@
+<HEAD><TITLE>string_prepend.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : string_prepend.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar string_prepend.sp          
+Hello World!
+Hello World!
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "string_prepend" )
+       @( description, "Create a string variable equal to any text value." )
+       @( description, "" )
+       @( description, "Prepend the string variable with another string " )
+       @( description, "literal." )
+       @( description, "" )
+       @( description, "If your language supports any idiomatic ways to " )
+       @( description, "do this without referring to the variable twice " )
+       @( description, "in one expression, include such solutions." )
+       @( description, "" )
+       @( description, "To illustrate the operation, show the content of " )
+       @( description, "the variable." )
+       @( see_also, "http://rosettacode.org/wiki/String_prepend" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> string_prepend <b>is</b>
+  world : <b>constant</b> string := "World!";
+  hello : <b>constant</b> string := "Hello ";
+  s : string;
+<b>begin</b>
+  <FONT COLOR=green><EM>-- Using concatenation</EM></FONT>
+  s := world;
+  s := hello &amp; @;
+  ? s;
+
+  <FONT COLOR=green><EM>-- Using strings library</EM></FONT>
+  s := world;
+  s := strings.insert( @, 1, hello );
+  ? s;
+
+  command_line.set_exit_status( 0 );
+<b>end</b> string_prepend;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
