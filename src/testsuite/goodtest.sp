@@ -4596,6 +4596,19 @@ begin
   null;
 end;
 
+-- limited arrays and records
+
+declare
+  la1 : limited array( 1..3 ) of integer := (1,2,3);
+  type la2 is limited array( 1..3 ) of integer;
+  la3 : la2 := (1,2,3);
+  type lr is limited record
+     i : integer;
+  end record;
+begin
+  null;
+end;
+
 -- Pragmas
 
 pragma assumption( used, i );

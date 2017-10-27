@@ -18,3 +18,5 @@ CHANGES SINCE 2.1
 
 7. Fix: functions without a return value statement produce an error.
 
+8. New: limited arrays, records and anonymous arrays.
+

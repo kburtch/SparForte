@@ -2167,8 +2167,8 @@ begin
                 "See also subtypes.");
      content( e, "type newtype is new [abstract|limited] oldtype" );
      content( e, "type newtype is ( enum1 [,enum2...] )" );
-     content( e, "type newtype is [abstract] record field1 : type1 [;field2...] end record" );
-     content( e, "type newtype is [abstract] array( low..high) of item_type [:= array( item,...)]" );
+     content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record" );
+     content( e, "type newtype is [abstract|limited] array( low..high) of item_type [:= array( item,...)]" );
      seeAlso( e, "doc/ref_typedecl.html" );
      endHelp( e );
   elsif helpTopic = "types" then
@@ -2319,7 +2319,7 @@ begin
      category( e, "reference" );
      description( e, "How to declare variables:" );
      content( e, "var [,var2...] : [constant|limited] type [:= expression]" );
-     content( e, "array_var :  array( low..high) of item-type [ := array | (item,...) ]" );
+     content( e, "array_var :  [limited] array( low..high) of item-type [ := array | (item,...) ]" );
      content( e, "array_var :  array_type [ := array | (item,...) ]" );
      seeAlso( e, "doc/ref_typedecl.html, doc/ref_enum.html, doc/ref_arrays.html and doc/ref_records.html" );
      endHelp( e );

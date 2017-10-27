@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- limited types/vars
-  - limited arrays and record
 - check to ensure template error messages are not shown in maintenace mode
   (i.e. do not expose program information to untrusted users)
 - exceptions
@@ -37,6 +35,7 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- logging package
 - btree_io/hash_io
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent

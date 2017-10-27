@@ -2655,6 +2655,44 @@ end ParseStaticExpression;
 -- Declarations
 -----------------------------------------------------------------------------
 
+procedure ParseTypeQualifiers( newtype_id : identifier ) is
+  -- Syntax: [abstract | limited]
+begin
+   -- abstract types
+
+   if token = abstract_t then
+      if onlyAda95 then
+        err( "abstract types not allowed with " &
+            optional_bold( "pragam ada_95" ) );
+      end if;
+      identifiers( newtype_id ).noVar := true;          -- vars not allowed
+      identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+      identifiers( newtype_id ).wasApplied := true;     -- treat as applied
+      expect( abstract_t );
+   end if;
+
+   -- limited types
+
+   if token = limited_t then
+      if identifiers( newtype_id ).noVar then
+         err( "abstract types don't need to be limited types" );
+      elsif onlyAda95 then
+         err( "limited types are not allowed with " & optional_bold( "pragma ada_95" ) );
+      end if;
+      identifiers( newtype_id ).limit := true;          -- assign not allowed
+      expect( limited_t );
+
+      -- check for reverse ordering
+
+      if token = abstract_t then
+         err( optional_bold( "abstract" ) & " comes before " &
+              optional_bold( "limited" ) & ", but also abstract types " &
+              "don't need to be limited types" );
+         expect( abstract_t );
+      end if;
+   end if;
+end ParseTypeQualifiers;
+
 procedure ParseGenericParametersPart( varId : identifier ) is
 -- Syntax: ...( gen1 [,gen2] )
 -- SparForte is currently limited to two generic parameters for a built-in
@@ -2835,7 +2873,7 @@ begin
   -- should have put trace here to show assignment results
 end ParseArrayAssignPart;
 
-procedure ParseAnonymousArray( id : identifier ) is
+procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
   -- Syntax: anon-array = " array(expr..expr) of ident [array-assn]
   -- ParseDeclarationPart was getting complicated so this procedure
   -- was declared separatly.
@@ -2849,7 +2887,6 @@ procedure ParseAnonymousArray( id : identifier ) is
   elementBaseType : identifier;        -- base type of array elements type
   anonType    : identifier;        -- identifier for anonymous array type
 begin
-
   -- To create an anonymous array, we have to add a fake array type
   -- called "an anonymous array" to the symbol table and array table.
 
@@ -2903,6 +2940,10 @@ begin
            elementType, typeClass );
         identifiers( anonType ).list := true;
         identifiers( anonType ).wasReferenced := true; -- only referenced when declared
+        -- mark as limited, if necessary
+        if limit then
+           identifiers( anonType ).limit := true;
+        end if;
         if syntax_check then
            -- treat the anonymous type as applied (i.e. no need to be abstr.)
            -- for an anonymous array, the element type must be applied also
@@ -3245,6 +3286,7 @@ begin
                dont_care_t : identifier;
                dotPos      : natural;
             begin
+               -- construct the record field name
                fieldName := identifiers( j ).name;
                dotPos := length( fieldName );
                while dotPos > 1 loop
@@ -3253,11 +3295,15 @@ begin
                end loop;
                fieldName := delete( fieldName, 1, dotPos );
                fieldName := identifiers( id ).name & "." & fieldName;
+               -- create the variable
                declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
                -- fields have not been marked as children of the parent
                -- record.  However, to make sure the record is used, it
                -- is convenient to track the field.
                identifiers( dont_care_t ).field_of := id;
+               -- apply abtract and limited
+               identifiers( dont_care_t ).limit := identifiers( j ).limit;
+               identifiers( dont_care_t ).noVar := identifiers( j ).noVar;
                -- at least, for now, don't worry if record fields are
                -- declared but not accessed.  We'll just check the
                -- main record identifier.
@@ -3396,11 +3442,14 @@ begin
 
   -- Anonymous Array?  Handled elsewhere.
 
+  -- TODO: sort out limit...is it on types, variables or both.  use it
+  -- consistently.
+
   if token = array_t then                              -- anonymous array?
      if not anon_arrays then
         err( "anonymous arrays are not allowed" );
      end if;
-     ParseAnonymousArray( id );                        -- handle it
+     ParseAnonymousArray( id, identifiers( id ).limit );  -- handle it
      return;                                           --  and nothing more
   end if;
 
@@ -3760,6 +3809,7 @@ procedure ParseRecordTypePart( newtype_id : identifier ) is
    field_no : integer := 1;
    b : boolean;
 begin
+   ParseTypeQualifiers( newtype_id );
    expect( record_t );
    ParseRecordFields( newtype_id, field_no );
    expect( end_t );
@@ -3790,6 +3840,7 @@ procedure ParseArrayTypePart( newtype_id : identifier ) is
    elementBaseType : identifier;        -- base type of array elements type
    b           : boolean;
 begin
+   ParseTypeQualifiers( newtype_id );
 
    -- Check the Array Declaration
 
@@ -3931,20 +3982,22 @@ begin
    --
    -- type ... abstract record... or abstract array...
 
-   elsif token = abstract_t then                              -- abstract type?
-      expect( abstract_t );
+   elsif token = abstract_t or token = limited_t then
+      ParseTypeQualifiers( newtype_id );
       if token = array_t then
          ParseArrayTypePart( newtype_id );
-         identifiers( newtype_id ).noVar := true;          -- no variables
-         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
-         identifiers( newtype_id ).wasApplied := true;     -- treat as applied
+         --identifiers( newtype_id ).noVar := true;          -- no variables
+         --identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+         --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = record_t then
          ParseRecordTypePart( newtype_id );
-         identifiers( newtype_id ).noVar := true;          -- no variables
-         identifiers( newtype_id ).wasReferenced := true;  -- treat as used
-         identifiers( newtype_id ).wasApplied := true;     -- treat as applied
+         --identifiers( newtype_id ).noVar := true;          -- no variables
+         --identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+         --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = new_t then
-        err( optional_bold( "abstract" ) & " goes after " & optional_bold( "new" ) );
+        err( optional_bold( "abstract" ) & " or " &
+             optional_bold( "limited" ) &  " goes after " &
+             optional_bold( "new" ) );
       else
         err( "record or array expected" );
       end if;
@@ -3964,34 +4017,7 @@ begin
 
      expect( new_t );                                      -- "new"
 
-     if token = abstract_t then                              -- abstract type?
-        if onlyAda95 then
-          err( "abstract types not allowed with " &
-              optional_bold( "pragam ada_95" ) );
-        end if;
-        identifiers( newtype_id ).noVar := true;             -- no variables
-        identifiers( newtype_id ).wasReferenced := true;  -- treat as used
-        identifiers( newtype_id ).wasApplied := true;     -- treat as applied
-        expect( abstract_t );
-     end if;
-
-     -- type ... is new [abstract] [limited]...
-
-     if token = limited_t then                               -- limited type?
-        if identifiers( newtype_id ).noVar then
-           err( "abstract types don't need to be limited types" );
-        elsif onlyAda95 then
-           err( "limited types are not allowed with " & optional_bold( "pragma ada_95" ) );
-        end if;
-        identifiers( newtype_id ).limit := true;             -- no variables
-        expect( limited_t );
-        if token = abstract_t then
-           err( optional_bold( "abstract" ) & " comes before " &
-                optional_bold( "limited" ) & ", but also abstract types " &
-                "don't need to be limited types" );
-           expect( abstract_t );
-        end if;
-     end if;
+     ParseTypeQualifiers( newtype_id );
 
      -- Standard Ada syntax, but if we could extend arrays or records, would
      -- "new" be appropriate?
@@ -8406,6 +8432,19 @@ begin
   elsif not class_ok( var_id, varClass ) then
      null;
   end if;
+  -- For a record field, check the record type to see if it is limited.
+  -- If so, treat any field as limited.
+  if identifiers( var_id ).field_of /= eof_t then
+     if identifiers(
+           identifiers (
+               identifiers( var_id ).field_of
+           ).kind
+        ).limit then
+        err( "limited variables cannot be assigned a value" );
+     end if;
+  end if;
+  -- Otherwise, check the variable's kind to see if it is limited.
+  -- This can also be applied to individual record fields as a special case.
   if identifiers( var_kind ).limit then
      err( "limited variables cannot be assigned a value" );
   -- TODO: this will break when we can create derived record types
