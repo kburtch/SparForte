@@ -221,6 +221,25 @@ procedure sawReturn;
 function blockHasReturn return boolean;
 -- true if a block has been flagged as having a return
 
+procedure startExceptionHandler( 
+  occurrence_exception : declaration;
+  occurrence_message   : unbounded_string;
+  occurrence_status    : aStatusCode;
+  occurrence_full      : unbounded_string
+);
+-- mark exception handler block as running (if there is one)
+
+function inExceptionHandler return boolean;
+-- true if in exception handler (i.e. re-raise is valid) If no block, then
+-- no handler.
+
+procedure getBlockException(
+  occurrence_exception : out declaration;
+  occurrence_message   : out unbounded_string;
+  occurrence_status    : out aStatusCode
+);
+-- return the exception defined by startExceptionHandler
+
 procedure dumpSymbolTable;
 -- Debugging routine to display the top of the symbol table.
 
@@ -453,7 +472,13 @@ type blockDeclaration is record
   blockName       : unbounded_string := Null_Unbounded_String;
   state           : aScannerState;    -- the position on the line
   hasReturn       : boolean := false; -- true if return was seen (for fn's)
+  inHandler       : boolean := false; -- true if in exception handler
+  occurrence_exception : declaration;
+  occurrence_message   : unbounded_string;
+  occurrence_status    : aStatusCode;
+  occurrence_full      : unbounded_string;
 end record;
+
 type blocksArray is array( block ) of blockDeclaration;
 -- this arrangement means the last array element is never accessed
 

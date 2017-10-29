@@ -1997,6 +1997,87 @@ end blockHasReturn;
 
 
 -----------------------------------------------------------------------------
+-- START EXCEPTION HANDLER
+--
+-- Mark exception handler block as running (if there is one)
+-----------------------------------------------------------------------------
+
+procedure startExceptionHandler(
+  occurrence_exception : declaration;
+  occurrence_message   : unbounded_string;
+  occurrence_status    : aStatusCode;
+  occurrence_full      : unbounded_string
+) is
+begin
+  if blocks_top > block'first then
+     -- TODO: could be optimized with eof_t...
+     blocks( blocks_top-1 ).inHandler := true;
+     blocks( blocks_top-1 ).occurrence_exception := err_exception;
+     -- TODO: an exception may be progated out of the declaration scope, leaving
+     -- the position in the symbol table undefined
+     blocks( blocks_top-1 ).occurrence_message := err_message;
+     blocks( blocks_top-1 ).occurrence_status := last_status;
+     blocks( blocks_top-1 ).occurrence_full := fullErrorMessage;
+  end if;
+end startExceptionHandler;
+
+
+-----------------------------------------------------------------------------
+-- IN EXCEPTION HANDLER
+--
+-- True if in exception handler (i.e. re-raise is valid).  If no block, then
+-- no handler.
+-----------------------------------------------------------------------------
+
+function inExceptionHandler return boolean is
+  res : boolean := false;
+  b : block := blocks_top;
+begin
+  if blocks_top > block'first then                        -- if have a block
+     b := b - 1;                                          -- current block
+     while b >= block'first loop                          -- while blocks
+        if blocks( b ).newScope then                      -- a scoping block?
+           res := blocks( b ).inHandler;                  -- whatever it is
+           exit;
+        end if;                                           -- else
+        b := b - 1;                                       -- keep looking
+     end loop;
+  end if;
+  return res;
+end inExceptionHandler;
+
+
+-----------------------------------------------------------------------------
+-- GET BLOCK EXCEPTION
+--
+-- Return the exception defined by startExceptionHandler
+-----------------------------------------------------------------------------
+
+procedure getBlockException(
+  occurrence_exception : out declaration;
+  occurrence_message   : out unbounded_string;
+  occurrence_status    : out aStatusCode
+) is
+  b : block := blocks_top;
+begin
+  if blocks_top > block'first then                        -- if have a block
+     b := b - 1;                                          -- current block
+     while b >= block'first loop                          -- while blocks
+        if blocks( b ).newScope then                      -- a scoping block?
+           occurrence_exception := blocks( b ).occurrence_exception;
+           occurrence_message   := blocks( b ).occurrence_message;
+           occurrence_status    := blocks( b ).occurrence_status;
+           exit;
+        end if;                                           -- else
+        b := b - 1;                                       -- keep looking
+     end loop;
+  else
+     err( "internal error: getting exception but not in an exception block" );
+  end if;
+end getBlockException;
+
+
+-----------------------------------------------------------------------------
 -- DUMP SYMBOL TABLE
 --
 -- Debugging routine to display the top of the symbol table.

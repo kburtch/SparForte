@@ -13,11 +13,6 @@ Priority Issues (Fix These First)
 
 - check to ensure template error messages are not shown in maintenace mode
   (i.e. do not expose program information to untrusted users)
-- exceptions
-    - re-raise doesn't work unless it is in the main body of an exception
-      handler.  This includes if statements.
-      - Being in an exception handler must be a global scanner flag.
-      - However, exceptions must also be nestable.  This will take some work.
 - unsorted/misc
     - btree_io.raise exception fails with a limit type error on the btree variable
     - JUnit support for test cases not complete

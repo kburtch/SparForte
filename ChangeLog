@@ -20,3 +20,5 @@ CHANGES SINCE 2.1
 
 8. New: limited arrays, records and anonymous arrays.
 
+9. Fix: re-raise fixed to work in if statements in an exception handler.
+

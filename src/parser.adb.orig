@@ -5892,15 +5892,43 @@ end ParseDeclarations;
 -- Raise an exception outside of an exception block
 -- TODO: inside a block
 
-procedure ParseRestOfRaise is
+procedure ParseRaise is
+-- Syntax: raise | raise e [with s]
   id : identifier;
   with_text : unbounded_string;
   withTextType : identifier;
 begin
-  -- re-raise?
+  expect( raise_t );
+
+  -- re-raise?  restore the exception occurrence and announce an error
+  -- It is only valid in an exception handler (as flagged in the block).
+
   if token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" ) then
-     err( "re-raise is not in the body of an exception handler" );
+     -- exceptions only exist at run-time
+     if not syntax_check then
+        if not inExceptionHandler then
+           err( "re-raise is not in an exception handler" );
+        else
+           getBlockException( err_exception, err_message, last_status );
+           -- Be careful to fix svalue pointer
+           err_exception.value := err_exception.svalue'access;
+        end if;
+     end if;
+     --expectSemicolon;
+     -- Also check for obviously unreachable code.  Otherwise, restore the
+     -- exception by setting the error flag.
+     --if syntax_check then
+     --   if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+     --      err( "unreachable code" );
+     --   end if;
+     --elsif isExecutingCommand then
+     if isExecutingCommand then
+        error_found := true;
+     end if;
   else
+
+     -- Normal raise of an explicit exception
+
      if identifiers( token ).class /= exceptionClass then
         err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
      else
@@ -5951,14 +5979,7 @@ begin
         last_status := character'pos( element( identifiers( id ).value.all, 1 ) );
      end if;
   end if;
-end ParseRestOfRaise;
-
-procedure ParseRaise is
-begin
-  expect( raise_t );
-  ParseRestOfRaise;
 end ParseRaise;
-
 
 -- skip a block of code
 
@@ -6013,36 +6034,41 @@ begin
      err( "missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t  loop
-     -- Re-eaise is a special case.  It must be handled here, in the
-     -- exception block
-     if token = raise_t then
-        expect( raise_t );
-        -- re-raise?  restore the exception occurrence
-        if token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" ) then
-           err_exception := occurrence_exception;
-           err_message := occurrence_message;
-           last_status := occurrence_status;
-           expectSemicolon;
-           if syntax_check then
-             if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-                err( "unreachable code" );
-             end if;
-           elsif isExecutingCommand then
-             error_found := true;
-           end if;
-       else
-          ParseRestOfRaise;
-          expectSemicolon;
-          if syntax_check then
-            if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-               err( "unreachable code" );
-            end if;
-          end if;
-       end if;
-     else
-        ParseGeneralStatement;
-     end if;
+     -- TODO: Really ParseBlockStatement but I haven't written it yet.
+     ParseGeneralStatement;
   end loop;
+
+  --   -- Re-eaise is a special case.  It must be handled here, in the
+  --   -- exception block
+  --   if token = raise_t then
+  --      expect( raise_t );
+  --      -- re-raise?  restore the exception occurrence
+  --      if token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" ) then
+  --         err_exception := occurrence_exception;
+  --         err_message := occurrence_message;
+  --         last_status := occurrence_status;
+  --         expectSemicolon;
+  --         if syntax_check then
+  --           if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+  --              err( "unreachable code" );
+  --           end if;
+  --         elsif isExecutingCommand then
+  --           error_found := true;
+  --         end if;
+  --     else
+  --        ParseRestOfRaise;
+  --        expectSemicolon;
+  --        if syntax_check then
+  --          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+  --             err( "unreachable code" );
+  --          end if;
+  --        end if;
+  --     end if;
+  --   else
+  --      ParseGeneralStatement;
+  --   end if;
+  --end loop;
+
   if token = exception_t then
      err( "already in an exception handler" );
   end if;
@@ -6069,13 +6095,14 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t loop
-      if token = raise_t then -- TODO: wrong
-         expect( raise_t );
-         expectSemicolon;
+      ParseGeneralStatement;         -- step through context
+      -- if token = raise_t then -- TODO: wrong
+      --    expect( raise_t );
+      --    expectSemicolon;
      --elsif token = exception_t then
-      else
-         ParseGeneralStatement;         -- step through context
-      end if;
+      -- else
+      --    ParseGeneralStatement;         -- step through context
+      -- end if;
   end loop;
   syntax_check := old_error;
   skipping_block := old_skipping;
@@ -6102,12 +6129,11 @@ begin
   -- the information about the exception for re-raising.
 
   if handling_exceptions then
-     error_found := false;
      if trace then
         put_trace( "exception handler running" );
      end if;
+     error_found := false;
      -- save the exception id
-     -- if this is a regular error, there will be no exception id
      occurrence_exception := err_exception;
      -- because value is a pointer now we must be careful with the value
      occurrence_exception.value := occurrence_exception.svalue'unchecked_access;
@@ -6116,6 +6142,8 @@ begin
      occurrence_message := err_message;
      occurrence_status := last_status;
      occurrence_full := fullErrorMessage;
+     startExceptionHandler( occurrence_exception, occurrence_message,
+        occurrence_status, occurrence_full );
   end if;
 
   -- parse the exception block and see if there's a matching case for this
