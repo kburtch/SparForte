@@ -38,16 +38,19 @@ justified,    right   justified,   or   center justified   within      its   col
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "aligncols" );
-<b>pragma</b> annotate( description, "Given a text file of many lines, where fields within a line are delineated ");
-<b>pragma</b> annotate( description, "by a single 'dollar' character, write a program that aligns each column of" );
-<b>pragma</b> annotate( description, "fields by ensuring that words in each column are separated by at least one" );
-<b>pragma</b> annotate( description, "space. Further, allow for each word in a column to be either left justified," );
-<b>pragma</b> annotate( description, "right justified, or center justified within its column. " );
-<b>pragma</b> annotate( description, "A modified version of the Ada solution from Rosetta Code" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "aligncols" )
+              @( description, "Given a text file of many lines, where fields within a line are delineated ")
+              @( description, "by a single 'dollar' character, write a program that aligns each column of" )
+              @( description, "fields by ensuring that words in each column are separated by at least one" )
+              @( description, "space. Further, allow for each word in a column to be either left justified," )
+              @( description, "right justified, or center justified within its column. " )
+              @( description, "A modified version of the Ada solution from Rosetta Code" )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Align_columns" );
 <b>pragma</b> license( unrestricted );
 
+<b>pragma</b> software_model( shell_report_script );
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> aligncols <b>is</b>
@@ -129,6 +132,7 @@ justified,    right   justified,   or   center justified   within      its   col
    <b>end</b> <b>loop</b>;
    close( File );
 <b>end</b> aligncols;
+
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>

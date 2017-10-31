@@ -11,11 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- check to ensure template error messages are not shown in maintenace mode
-  (i.e. do not expose program information to untrusted users)
 - unsorted/misc
-    - btree_io.raise exception fails with a limit type error on the btree variable
-    - JUnit support for test cases not complete
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - gcc-errors tests not triggered on err_tokenize?
@@ -114,6 +110,9 @@ Annoyances / Bugs with Workarounds / Updates
     - ParseGeneralStatement allows declarations.  For body and user role blocks,
       we need more restrictive variations of PGS.
     - @ for a(x) gives an unexpected exception
+    - Apache doesn't allow command paramenters for running CGI scripts.  There
+      should be an easy way to set the SDLC mode configuration without command
+      parameters or hard-coding in the shebang.
 
 Nice to Haves / Missing Functionality
 -------------------------------------

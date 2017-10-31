@@ -1,15 +1,18 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "aligncols" );
-pragma annotate( description, "Given a text file of many lines, where fields within a line are delineated ");
-pragma annotate( description, "by a single 'dollar' character, write a program that aligns each column of" );
-pragma annotate( description, "fields by ensuring that words in each column are separated by at least one" );
-pragma annotate( description, "space. Further, allow for each word in a column to be either left justified," );
-pragma annotate( description, "right justified, or center justified within its column. " );
-pragma annotate( description, "A modified version of the Ada solution from Rosetta Code" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "aligncols" )
+              @( description, "Given a text file of many lines, where fields within a line are delineated ")
+              @( description, "by a single 'dollar' character, write a program that aligns each column of" )
+              @( description, "fields by ensuring that words in each column are separated by at least one" )
+              @( description, "space. Further, allow for each word in a column to be either left justified," )
+              @( description, "right justified, or center justified within its column. " )
+              @( description, "A modified version of the Ada solution from Rosetta Code" )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Align_columns" );
 pragma license( unrestricted );
 
+pragma software_model( shell_report_script );
 pragma restriction( no_external_commands );
 
 procedure aligncols is
