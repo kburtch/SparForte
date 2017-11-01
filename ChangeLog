@@ -22,3 +22,5 @@ CHANGES SINCE 2.1
 
 9. Fix: re-raise fixed to work in if statements in an exception handler.
 
+10. New: "nonstandard" software model.
+

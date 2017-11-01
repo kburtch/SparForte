@@ -1,13 +1,15 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "int_sort" );
-pragma annotate( description, "Sort an array (or list) of integers in ascending" );
-pragma annotate( description, "numerical order. Use a sorting facility provided by" );
-pragma annotate( description, "the language/library if possible." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Sort_an_integer_array" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "int_sort" )
+              @( description, "Sort an array (or list) of integers in ascending" )
+              @( description, "numerical order. Use a sorting facility provided by" )
+              @( description, "the language/library if possible." )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Sort_an_integer_array" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure int_sort is

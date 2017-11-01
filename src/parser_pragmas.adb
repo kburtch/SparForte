@@ -598,6 +598,8 @@ begin
      expr_val := name_unbounded;
   elsif name = "driver" then
      expr_val := name_unbounded;
+  elsif name = "nonstandard" then
+     expr_val := name_unbounded;
   end if;
 
   if length( expr_val ) > 0 then

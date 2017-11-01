@@ -26,6 +26,25 @@ use  ada.strings.unbounded;
 
 package body software_models is
 
+-- NONSTANDARD
+
+function name( r : nonstandardRequirements ) return unbounded_string is
+begin
+  return shell_script_model_name;
+end name;
+
+function meetsRequirements( r : nonstandardRequirements ) return boolean is
+begin
+  return true;
+end meetsRequirements;
+
+function error( r : nonstandardRequirements ) return unbounded_string is
+  msg : unbounded_string;
+begin
+  return null_unbounded_string;
+end error;
+
+
 -- SHELL SCRIPT
 
 function name( r : shellScriptRequirements ) return unbounded_string is

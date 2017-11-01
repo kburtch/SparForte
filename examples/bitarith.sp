@@ -7,10 +7,12 @@ pragma annotate( summary, "bitarith" )
        @( description, "and right rotate. All shifts and rotates should be done on" )
        @( description, "the first integer with a shift/rotate amount of the second" )
        @( description, "integer." )
-       @( see_also, "http://rosettacode.org/wiki/Bitwise_operations" )
-       @( author, "Ken O. Burtch" );
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/Bitwise_operations" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure bitarith is

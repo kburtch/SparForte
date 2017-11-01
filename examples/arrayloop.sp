@@ -19,10 +19,12 @@ pragma annotate( summary, "arrayloop" )
        @( description, "" )
        @( description, "If possible, also describe what happens when the arrays" )
        @( description, "are of different lengths. " )
-       @( see_also, "http://rosettacode.org/wiki/Loop_over_multiple_arrays_simultaneously" )
-       @( author, "Ken O. Burtch" );
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/Loop_over_multiple_arrays_simultaneously" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure arrayloop is

@@ -27,6 +27,9 @@ Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
 - logging package
+- shell script software model errors not appearing, needs testing
+- add annotate/categories to example programs representing the example groupings
+  they belong to
 - btree_io/hash_io
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent

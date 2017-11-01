@@ -12,7 +12,7 @@ pragma annotate( summary, "aligncols" )
               @( see_also, "http://rosettacode.org/wiki/Align_columns" );
 pragma license( unrestricted );
 
-pragma software_model( shell_report_script );
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure aligncols is

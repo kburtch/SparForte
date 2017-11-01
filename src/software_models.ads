@@ -52,6 +52,19 @@ type softwareModelRequirements is abstract tagged null record;
 
 type softwareModelPtr is access all softwareModelRequirements'class;
 
+-- NONSTANDARD
+
+type nonstandardRequirements is new softwareModelRequirements with record
+  hasStandardError : boolean := false;
+  hasExitStatus    : boolean := false;
+end record;
+
+function name( r : nonstandardRequirements ) return unbounded_string;
+
+function meetsRequirements( r : nonstandardRequirements ) return boolean;
+
+function error( r : nonstandardRequirements ) return unbounded_string;
+
 -- SHELL SCRIPT
 
 type shellScriptRequirements is new softwareModelRequirements with record

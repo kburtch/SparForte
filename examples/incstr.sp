@@ -1,11 +1,13 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "incstr" );
-pragma annotate( description, "Increment an integer number in a string" );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Increment_a_numerical_string" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "incstr" )
+              @( description, "Increment an integer number in a string" )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Increment_a_numerical_string" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure incstr is

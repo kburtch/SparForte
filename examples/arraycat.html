@@ -21,10 +21,12 @@ $ spar arraycat
 
 <b>pragma</b> annotate( summary, "arraycat" )
        @( description, "Show how to concatenate two arrays in your language." )
-       @( description, "From a Rosetta Code example" )
-       @( author, "Ken O. Burtch" );
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/Array_concatenation" );
 <b>pragma</b> license( unrestricted );
 
+<b>pragma</b> software_model( nonstandard );
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> arraycat <b>is</b>
@@ -35,8 +37,9 @@ $ spar arraycat
   a3 : arrayOf6;
   p  : natural := arrays.first(a3);
 <b>begin</b>
-  <FONT COLOR=green><EM>-- In SparForte 1, array support is limited.  &amp; only works on strings</EM></FONT>
-  <FONT COLOR=green><EM>-- and there's no indefinite ranges.  We have to do this the hard way.</EM></FONT>
+  <FONT COLOR=green><EM>-- In SparForte, &amp; only works on strings and there's no indefinite ranges</EM></FONT>
+  <FONT COLOR=green><EM>-- or array slicing.  We have to do this the hard way, one element at a</EM></FONT>
+  <FONT COLOR=green><EM>-- time.</EM></FONT>
   <b>for</b> i <b>in</b> arrays.first(a1)..arrays.last(a1) <b>loop</b>
       a3(p) := a1(i);
       p := @+1;
@@ -54,4 +57,5 @@ $ spar arraycat
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

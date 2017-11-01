@@ -5,10 +5,12 @@ pragma annotate( summary, "aplusb" )
        @( description, "contestants can gain familiarity with online judging system being used. " )
        @( description, "A+B is one of few problems on contests, which traditionally lacks fabula." )
        @( description, "Given 2 integer numbers, A and B. One needs to find their sum. " )
-       @( description, "A Rosetta Code Example" )
-       @( author, "Ken O. Burtch" );
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/A%2BB" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure aplusb is

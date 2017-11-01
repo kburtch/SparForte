@@ -221,7 +221,7 @@ procedure sawReturn;
 function blockHasReturn return boolean;
 -- true if a block has been flagged as having a return
 
-procedure startExceptionHandler( 
+procedure startExceptionHandler(
   occurrence_exception : declaration;
   occurrence_message   : unbounded_string;
   occurrence_status    : aStatusCode;

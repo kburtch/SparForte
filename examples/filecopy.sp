@@ -3,8 +3,11 @@
 pragma annotate( summary, "filecopy" )
        @( description, "The job is to create a file called 'output.txt', and place in it" )
        @( description, "the contents of the file 'input.txt'." )
-       @( see_also, "http://rosettacode.org/wiki/File_IO" )
-       @( author, "Ken O. Burtch" );
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/File_IO" );
+
+pragma software_model( nonstandard );
 pragma license( unrestricted );
 
 procedure filecopy is

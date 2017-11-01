@@ -2,10 +2,12 @@
 
 pragma annotate( summary, "arraycat" )
        @( description, "Show how to concatenate two arrays in your language." )
-       @( description, "From a Rosetta Code example" )
-       @( author, "Ken O. Burtch" );
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
+       @( see_also, "http://rosettacode.org/wiki/Array_concatenation" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure arraycat is
@@ -16,8 +18,9 @@ procedure arraycat is
   a3 : arrayOf6;
   p  : natural := arrays.first(a3);
 begin
-  -- In SparForte 1, array support is limited.  & only works on strings
-  -- and there's no indefinite ranges.  We have to do this the hard way.
+  -- In SparForte, & only works on strings and there's no indefinite ranges
+  -- or array slicing.  We have to do this the hard way, one element at a
+  -- time.
   for i in arrays.first(a1)..arrays.last(a1) loop
       a3(p) := a1(i);
       p := @+1;

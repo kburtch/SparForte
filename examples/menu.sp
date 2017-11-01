@@ -1,9 +1,10 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "menu" );
-pragma annotate( description, "A simple menu without pragma ada_95" );
-pragma annotate( see_also, "menu2.html" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "menu" )
+              @( description, "A simple menu without pragma ada_95" )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "menu2.html" );
 pragma license( unrestricted );
 
 trace false;

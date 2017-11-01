@@ -4,10 +4,11 @@
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "menu" );
-<b>pragma</b> annotate( description, "A simple menu without pragma ada_95" );
-<b>pragma</b> annotate( see_also, "menu2.html" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "menu" )
+              @( description, "A simple menu without pragma ada_95" )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "menu2.html" );
 <b>pragma</b> license( unrestricted );
 
 <b>trace</b> false;

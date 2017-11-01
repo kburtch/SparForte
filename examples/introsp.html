@@ -26,16 +26,17 @@ Their sum is -5
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "introsp" );
-<b>pragma</b> annotate( description, "Verify the version/revision of your currently running" );
-<b>pragma</b> annotate( description, "(compiler/interpreter/byte-compiler/runtime environment/" );
-<b>pragma</b> annotate( description, "whatever your language uses) and exit if it is too old." );
-<b>pragma</b> annotate( description, "check whether the variable 'bloop' exists and whether the" );
-<b>pragma</b> annotate( description, " math-function 'abs()' is available and if yes compute" );
-<b>pragma</b> annotate( description, "abs(bloop).  Extra credit: Report the number of integer" );
-<b>pragma</b> annotate( description, "variables in global scope, and their sum." );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Introspection" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "introsp" )
+              @( description, "Verify the version/revision of your currently running" )
+              @( description, "(compiler/interpreter/byte-compiler/runtime environment/" )
+              @( description, "whatever your language uses) and exit if it is too old." )
+              @( description, "check whether the variable 'bloop' exists and whether the" )
+              @( description, " math-function 'abs()' is available and if yes compute" )
+              @( description, "abs(bloop).  Extra credit: Report the number of integer" )
+              @( description, "variables in global scope, and their sum." )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Introspection" );
 <b>pragma</b> license( unrestricted );
 
 <b>procedure</b> introsp <b>is</b>

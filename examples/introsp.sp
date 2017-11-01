@@ -1,15 +1,16 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "introsp" );
-pragma annotate( description, "Verify the version/revision of your currently running" );
-pragma annotate( description, "(compiler/interpreter/byte-compiler/runtime environment/" );
-pragma annotate( description, "whatever your language uses) and exit if it is too old." );
-pragma annotate( description, "check whether the variable 'bloop' exists and whether the" );
-pragma annotate( description, " math-function 'abs()' is available and if yes compute" );
-pragma annotate( description, "abs(bloop).  Extra credit: Report the number of integer" );
-pragma annotate( description, "variables in global scope, and their sum." );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Introspection" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "introsp" )
+              @( description, "Verify the version/revision of your currently running" )
+              @( description, "(compiler/interpreter/byte-compiler/runtime environment/" )
+              @( description, "whatever your language uses) and exit if it is too old." )
+              @( description, "check whether the variable 'bloop' exists and whether the" )
+              @( description, " math-function 'abs()' is available and if yes compute" )
+              @( description, "abs(bloop).  Extra credit: Report the number of integer" )
+              @( description, "variables in global scope, and their sum." )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Introspection" );
 pragma license( unrestricted );
 
 procedure introsp is
