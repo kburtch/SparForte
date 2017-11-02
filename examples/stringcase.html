@@ -21,18 +21,20 @@ Alphabeta
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "stringcase" );
-<b>pragma</b> annotate( description, "Take the string 'alphaBETA', and demonstrate how to" );
-<b>pragma</b> annotate( description, "convert it to UPPER-CASE and lower-case. Use the" );
-<b>pragma</b> annotate( description, "default encoding of a string literal or plain ASCII if" );
-<b>pragma</b> annotate( description, "there is no string literal in your language. Show any" );
-<b>pragma</b> annotate( description, "additional case conversion functions (e.g. swapping" );
-<b>pragma</b> annotate( description, "case, capitalizing the first letter, etc.) that may be" );
-<b>pragma</b> annotate( description, "included in the library of your language. " );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/String_case" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "stringcase" )
+              @( description, "Take the string 'alphaBETA', and demonstrate how to" )
+              @( description, "convert it to UPPER-CASE and lower-case. Use the" )
+              @( description, "default encoding of a string literal or plain ASCII if" )
+              @( description, "there is no string literal in your language. Show any" )
+              @( description, "additional case conversion functions (e.g. swapping" )
+              @( description, "case, capitalizing the first letter, etc.) that may be" )
+              @( description, "included in the library of your language. " )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/String_case" );
 <b>pragma</b> license( unrestricted );
 
+<b>pragma</b> software_model( nonstandard );
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> stringcase <b>is</b>

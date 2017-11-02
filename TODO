@@ -11,7 +11,10 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- limited renamings
+  - overriding on renamings?
 - unsorted/misc
+    - more simple scripts (instead of well-formed scripts) examples (for regression testing)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - gcc-errors tests not triggered on err_tokenize?
@@ -107,7 +110,6 @@ Annoyances / Bugs with Workarounds / Updates
     - get_line on an out mode file gives bad file descriptor but needs a better
       error message
     - function f(p), p should not be 'already exists' if there is a p in scope
-    - docs say strings.trim - trim end is optional, but is required.
     - change pegasock to use bdb format exceptions with filename in message?
     - check pragma block with @ 
     - ParseGeneralStatement allows declarations.  For body and user role blocks,
@@ -125,6 +127,13 @@ Nice to Haves / Missing Functionality
     - element as an alias for "get" in memcache, etc.
 - generic types
     - subtypes of generic types
+- user-defined packages
+  - should packages support versioning (e.g. Composer/Cargo/NPM).  Should
+    the language deal with expected versions with configuration block
+    pragmas?  Should I deal with this at all?
+  - package specifications should be renames, not forwards, since they
+    can have their qualities modified on export (abstract, limited, constant)
+    .. can that work?
 - pragmas
     - distinguish types of pragmas, to later separate by block or context
     - a pragma to check for the version of SparForte?  Is it a doc pragma,

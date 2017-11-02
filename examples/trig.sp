@@ -14,10 +14,12 @@ pragma annotate( summary, "trig" )
        @( description, "same angle).  For the inverse functions,   use " )
        @( description, "the same number and convert its answer to radians " )
        @( description, "and degrees." )
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
        @( see_also, "http://rosettacode.org/wiki/Trigonometric_functions" );
-pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure trig is

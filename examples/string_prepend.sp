@@ -12,10 +12,12 @@ pragma annotate( summary, "string_prepend" )
        @( description, "" )
        @( description, "To illustrate the operation, show the content of " )
        @( description, "the variable." )
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
        @( see_also, "http://rosettacode.org/wiki/String_prepend" );
-pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure string_prepend is

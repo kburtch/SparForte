@@ -747,9 +747,9 @@ fields and enumerated variables.  An exception cannot be renamed.</p>
                 <p class="code">=&gt; this_month : string := "October"<br>
 
 =&gt; m : string <b>renames</b> this_month<br>
-&nbsp;? m<br>
-=&gt; October<br>
-&nbsp;<b>type</b> fruit_array <b>is</b> <b>array</b>(1..4) <b>of</b> <b>fruit </b><br>
+=&gt; ? m<br>
+October<br>
+=&gt; <b>type</b> fruit_array <b>is</b> <b>array</b>(1..4) <b>of</b> <b>fruit </b><br>
 =&gt; fruits : fruit_array := (berry, cherry, apple, apple)<br>
 =&gt; the_cherry : fruit <b>renames</b> fruits(2)<br>
 =&gt; ? the_cherry<br>

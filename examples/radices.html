@@ -22,17 +22,19 @@ $ spar radices
 <PRE>
 #!/usr/local/bin/spar
 
-<b>pragma</b> annotate( summary, "radices" );
-<b>pragma</b> annotate( description, "This task requires parsing of such a string (which may" );
-<b>pragma</b> annotate( description, "be assumed to contain nothing else) using the" );
-<b>pragma</b> annotate( description, "language's built-in facilities if possible. Parsing of" );
-<b>pragma</b> annotate( description, "decimal strings is required, parsing of other formats" );
-<b>pragma</b> annotate( description, "is optional but should be shown (i.e., if the language" );
-<b>pragma</b> annotate( description, "can parse in base-19 then that should be illustrated)." );
-<b>pragma</b> annotate( see_also, "http://rosettacode.org/wiki/Non-decimal_radices/Input" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> annotate( summary, "radices" )
+              @( description, "This task requires parsing of such a string (which may" )
+              @( description, "be assumed to contain nothing else) using the" )
+              @( description, "language's built-in facilities if possible. Parsing of" )
+              @( description, "decimal strings is required, parsing of other formats" )
+              @( description, "is optional but should be shown (i.e., if the language" )
+              @( description, "can parse in base-19 then that should be illustrated)." )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Non-decimal_radices/Input" );
 <b>pragma</b> license( unrestricted );
 
+<b>pragma</b> software_model( nonstandard );
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> radices <b>is</b>

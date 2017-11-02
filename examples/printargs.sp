@@ -1,13 +1,15 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "printargs" );
-pragma annotate( description, "Retrieve the list of command-line arguments given to the program." );
-pragma annotate( description, "Example command line: " );
-pragma annotate( description, "myprogram -c 'alpha beta' -h 'gamma'" );
-pragma annotate( see_also, "http://rosettacode.org/wiki/Command-line_arguments" );
-pragma annotate( author, "Ken O. Burtch" );
+pragma annotate( summary, "printargs" )
+              @( description, "Retrieve the list of command-line arguments given to the program." )
+              @( description, "Example command line: " )
+              @( description, "myprogram -c 'alpha beta' -h 'gamma'" )
+              @( category, "tutorials" )
+              @( author, "Ken O. Burtch" )
+              @( see_also, "http://rosettacode.org/wiki/Command-line_arguments" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure printargs is

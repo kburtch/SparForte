@@ -32,10 +32,12 @@ Hello World!
        @( description, "" )
        @( description, "To illustrate the operation, show the content of " )
        @( description, "the variable." )
+       @( category, "tutorials" )
+       @( author, "Ken O. Burtch" )
        @( see_also, "http://rosettacode.org/wiki/String_prepend" );
-<b>pragma</b> annotate( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
+<b>pragma</b> software_model( nonstandard );
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> string_prepend <b>is</b>
@@ -50,7 +52,7 @@ Hello World!
 
   <FONT COLOR=green><EM>-- Using strings library</EM></FONT>
   s := world;
-  s := strings.insert( @, 1, hello );
+  s := strings.<b>insert</b>( @, 1, hello );
   ? s;
 
   command_line.set_exit_status( 0 );
