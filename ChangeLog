@@ -24,3 +24,5 @@ CHANGES SINCE 2.1
 
 10. New: "nonstandard" software model.
 
+11. Fix: variables with explicit limited qualifier are now limited.  limited renames. [Doc/tests required]
+

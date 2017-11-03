@@ -12,7 +12,12 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - limited renamings
-  - overriding on renamings?
+  - test limited scalars
+    - test limited types vs keyword limited
+    - i : limited integer;  ... i is not acting as a limited?
+  - test limited arrays
+  - test limited records
+  - require overriding on renamings of same identifier name but in different scope?
 - unsorted/misc
     - more simple scripts (instead of well-formed scripts) examples (for regression testing)
     - control-c is propogating to all child processes when it shouldn't
