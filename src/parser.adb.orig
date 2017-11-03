@@ -2656,6 +2656,7 @@ end ParseStaticExpression;
 -----------------------------------------------------------------------------
 
 procedure ParseTypeQualifiers( newtype_id : identifier ) is
+  -- Handle the usage qualifiers that go before a types's parent type
   -- Syntax: [abstract | limited]
 begin
    -- abstract types
@@ -2692,6 +2693,37 @@ begin
       end if;
    end if;
 end ParseTypeQualifiers;
+
+procedure ParseVarQualifiers( id : identifier; expr_expected : out boolean ) is
+  -- Handle the usage qualifiers that go before a variable's type
+  -- If a constant, expr_expected is set to true to alert the caller
+  -- that a constant declaration may need a value asigned.
+  -- Syntax: [constant | limited]
+begin
+  expr_expected := false;                              -- usually false
+  if token = aliased_t then                            -- aliased not supported
+     err( "aliased isn't supported" );
+  elsif token = constant_t then                        -- handle constant
+     expect( constant_t );                             -- by flagging variable
+     identifiers( id ).class := constClass;            -- as a constant and
+     expr_expected := true;                            -- must assign value
+  elsif token = abstract_t then                        -- abstract only makes sense
+     err( optional_bold( "abstract" ) &                -- in type declarations since
+        " can only be used in type declarations" );    -- it's a no-use quality.
+  else
+     identifiers( id ).class := varClass;              -- some kind of variable
+  end if;
+
+  if token = limited_t then                             -- limited access?
+     if identifiers( id ).noVar then
+        err( "abstract types don't need to be limited types" );
+     elsif identifiers( id ).class = constClass then
+        err( "constants don't need to be limited types" );
+     end if;
+     identifiers( id ).limit := true;
+     expect( limited_t );
+  end if;
+end ParseVarQualifiers;
 
 procedure ParseGenericParametersPart( varId : identifier ) is
 -- Syntax: ...( gen1 [,gen2] )
@@ -3341,8 +3373,10 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   -- Syntax: declaration = " : array-declaration
   -- Syntax: declaration = " : record-declaration
   -- Syntax: declaration = " : exception [with message use status]
+  -- Syntax: declaration = " : renames x
   -- assigns type of identifier and value (if assignment part)
   -- Note: in some cases, the variable id may change.
+  -- TODO: this procedure is too long and should be broken down
 
   -- anon_arrays => actually, any nested structure allowed? for records
   -- exceptions => exceptions not allowed in records
@@ -3417,28 +3451,7 @@ begin
      return; -- done
   end if;
 
-  if token = aliased_t then                            -- aliased not supported
-     err( "aliased isn't supported" );
-  elsif token = constant_t then                        -- handle constant
-     expect( constant_t );                             -- by flagging variable
-     identifiers( id ).class := constClass;            -- as a constant and
-     expr_expected := true;                            -- must assign value
-  elsif token = abstract_t then                        -- abstract only makes sense
-     err( optional_bold( "abstract" ) &                -- in type declarations since
-        " can only be used in type declarations" );    -- it's a no-use quality.
-  else
-     identifiers( id ).class := varClass;              -- as a constant and
-  end if;
-
-  if token = limited_t then                             -- limited access?
-     if identifiers( id ).noVar then
-        err( "abstract types don't need to be limited types" );
-     elsif identifiers( id ).class = constClass then
-        err( "constants don't need to be limited types" );
-     end if;
-     identifiers( id ).limit := true;
-     expect( limited_t );
-  end if;
+  ParseVarQualifiers( id, expr_expected );             -- constant/limited...
 
   -- Anonymous Array?  Handled elsewhere.
 
@@ -3639,6 +3652,7 @@ begin
         -- the class will change when parsing the rename
         originalClass : anIdentifierClass := identifiers( id ).class;
         originalFieldOf : identifier := identifiers( id ).field_of;
+        wasLimited : boolean := identifiers( id ).limit;
      begin
         -- Variable or Constant renaming
         ParseRenamesPart( canonicalRef, id, type_token );
@@ -3649,10 +3663,15 @@ begin
            -- TODO: I could probably get this to work but it's a weird edge
            -- case.
            err( "enumerated items cannot be renamed" );
+        elsif identifiers( canonicalRef.id ).limit and not wasLimited then
+           err( "limited identifier must be renamed by a limited identifier" );
         end if;
         -- If the identifier is a record field, it must refer to the
         -- renaming record, not the canonical record.
         identifiers( id ).field_of := originalFieldOf;
+        if wasLimited then
+           identifiers( id ).limit := true;
+        end if;
      end;
 
      -- Complete the declaration
@@ -3693,6 +3712,7 @@ begin
      declare
         is_constant : boolean := false;
         var_name    : unbounded_string;
+        wasLimited  : boolean := identifiers( id ).limit;
      begin
 
        -- Temporarily destroy identifer so that i : integer := i isn't circular
@@ -3713,6 +3733,9 @@ begin
        declareIdent( id, var_name, type_token, varClass );  -- declare var
        if is_constant then                                  -- a constant?
           identifiers( id ).class := constClass;            -- fix class
+       end if;
+       if wasLimited then
+          identifiers( id ).limit := true;
        end if;
      end;
 
@@ -8437,6 +8460,8 @@ procedure ParseAssignment is
   -- array_id   : arrayID;
   arrayIndex : long_integer;
 begin
+  -- Get the variable to assign to.  If interactive, consider
+  -- auto-declarations.
   if inputMode = interactive or inputMode = breakout then
     if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations then
        ParseNewIdentifier( var_id );
@@ -8451,17 +8476,27 @@ begin
   else
     ParseIdentifier( var_id );
   end if;
-  itself := identifiers( var_id ).value.all;
+
+  -- Copy the type for convenience
+
   var_kind := identifiers( var_id ).kind;
+
+  -- Setup itself
+
+  itself := identifiers( var_id ).value.all;
   itself_type := var_kind;
-  -- at a breakout prompt, constant assignment is permitted
+
+  -- At a debug breakout prompt, constant assignment is permitted
+
   if inputMode = breakout and identifiers( var_id ).class = constClass then
      put_trace( "Warning: assigning a new value to a constant" );
   elsif not class_ok( var_id, varClass ) then
      null;
   end if;
+
   -- For a record field, check the record type to see if it is limited.
   -- If so, treat any field as limited.
+
   if identifiers( var_id ).field_of /= eof_t then
      if identifiers(
            identifiers (
@@ -8471,13 +8506,19 @@ begin
         err( "limited variables cannot be assigned a value" );
      end if;
   end if;
-  -- Otherwise, check the variable's kind to see if it is limited.
+
+  -- Otherwise, check the variable's type to see if it is limited.
+  -- A variable itself can also be limited.
   -- This can also be applied to individual record fields as a special case.
+
   if identifiers( var_kind ).limit then
+     err( "limited types cannot be assigned a value" );
+  elsif identifiers( var_id ).limit then
      err( "limited variables cannot be assigned a value" );
   -- TODO: this will break when we can create derived record types
-  elsif identifiers( var_id ).kind = root_record_t then
+  elsif var_kind = root_record_t then
      err( "cannot assign to an entire record" );
+  -- Array element
   elsif identifiers( var_id ).list then
      expect( symbol_t, "(" );
      ParseExpression( index_value, index_kind );
@@ -8485,6 +8526,7 @@ begin
         err( "scalar expression expected" );
      end if;
      expect( symbol_t, ")" );
+
      if isExecutingCommand then
         arrayIndex := long_integer( to_numeric( index_value ) );
         if identifiers( var_id ).avalue = null then
