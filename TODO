@@ -178,6 +178,9 @@ Nice to Haves / Missing Functionality
 - tinyserve
   - close tinyserve if open
   - complete tinyserve package
+  - epoll_ Linux commands and threads to scale
+    - see libuv
+    - see node.js talk https://www.youtube.com/watch?v=P9csgxBgaZ8&t=1186
 - os package
   - process id
 - types and expressions
