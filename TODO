@@ -12,13 +12,9 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - limited renamings
-  - test limited scalars
-    - test limited types vs keyword limited
-    - i : limited integer;  ... i is not acting as a limited?
-  - test limited arrays
-  - test limited records
   - require overriding on renamings of same identifier name but in different scope?
 - unsorted/misc
+    - too many parameters to a procedure is not detected
     - more simple scripts (instead of well-formed scripts) examples (for regression testing)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
@@ -30,11 +26,13 @@ Priority Issues (Fix These First)
       part of a greater issue: subscripts should be syntax checked at compile-time.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
+    - env producing phantom errors when piped to fgrep
+
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
-- logging package
+- create a logging package to enhance error handling
 - shell script software model errors not appearing, needs testing
 - add annotate/categories to example programs representing the example groupings
   they belong to
@@ -98,14 +96,8 @@ Annoyances / Bugs with Workarounds / Updates
 - shell
     - windows size change is not refreshing the terminal settings?
     - escaping unprintable characters not working with readline prompt
-    - STILL getting DEVICE_ERROR / interrupted syscall randomly on pipelines with
-      my virtual machine, even after repeated audits of all syscalls for handling
-      this error.
-      Possibly raised internally by Ada.Text_IO and needs to be caught and handled?
-      If so, where?
-       - echo "test" | head; --raised it
-       - echo  | sort | head; -- raised it
-      - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
+    - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
+    - s := `set_error( current_output ); date -d "foo" '+%s'; set_error( standard_error );` does not work as expected (error output shoud be captured)
 
 - unsorted/misc
 
@@ -123,6 +115,9 @@ Annoyances / Bugs with Workarounds / Updates
     - Apache doesn't allow command paramenters for running CGI scripts.  There
       should be an easy way to set the SDLC mode configuration without command
       parameters or hard-coding in the shebang.
+    - Ada-compatible space in front of numbers should be pragma ada_95 because
+      it's annoying throwback to line printers...but every conversion of a
+      number would have to take into account adding/removing a space.
 
 Nice to Haves / Missing Functionality
 -------------------------------------
@@ -190,6 +185,8 @@ Nice to Haves / Missing Functionality
   - process id
 - types and expressions
   - type is new (record type) not yet implemented.
+  - constants, if they can be used like limited and applied to types, should
+    be a boolean property not an identifier class.
   - return arrays and records in expressions (requires records revamp)
   - allow users to create their own universal types
   - record system refactor (in prep for aggregate expressions)
@@ -264,6 +261,7 @@ New Unique Concepts
     - continue learning Rust - https://www.rust-lang.org
     - revisit Go - https://golang.org/
     - checkout Indris - https://www.idris-lang.org
+    - check out D - https://dlang.org/
     - checkout Erlang for ideas
   - what can be done to promote better, easier, more detailed error messages?
   - SELinux-like ability to control who access what.
@@ -653,6 +651,8 @@ MAJOR REDESIGNS
     - should the universal type (i.e. storage type - univeral_string, array,
       root_enumerated, etc.) be stored with the variable
       so SparForte doesn't have to be looked up constantly?
+      - commands like getBaseType could cache the result in the variable
+      - would require updating most of the built-in functions
     - lineRead still reads as unbounded_string instead of copying directly
       into script variable, causing double buffering and conversion slowdowns
     - more sophisticated byte code for speed

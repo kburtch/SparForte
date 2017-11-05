@@ -656,7 +656,12 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        kind := identifiers( identifiers( array_id ).kind ).kind;
     -- regular variable with an array index?
     else
-      if token = symbol_t and then identifiers( token ).value.all = "(" then
+       if identifiers( t ).field_of /= eof_t then
+         if identifiers( identifiers( t ).field_of ).limit then
+            err( "limited record variables cannot be used in an expression" );
+         end if;
+       end if;
+       if token = symbol_t and then identifiers( token ).value.all = "(" then
          err( optional_bold( to_string( identifiers( t ).name ) ) &
              " has an array index but is not an array" );
        end if;
@@ -3665,6 +3670,10 @@ begin
            err( "enumerated items cannot be renamed" );
         elsif identifiers( canonicalRef.id ).limit and not wasLimited then
            err( "limited identifier must be renamed by a limited identifier" );
+        elsif identifiers( canonicalRef.id ).field_of /= eof_t then
+           if identifiers( identifiers( canonicalRef.id ).field_of ).limit and not wasLimited then
+              err( "limited record fields must be renamed by a limited identifier" );
+           end if;
         end if;
         -- If the identifier is a record field, it must refer to the
         -- renaming record, not the canonical record.
@@ -8494,16 +8503,18 @@ begin
      null;
   end if;
 
-  -- For a record field, check the record type to see if it is limited.
-  -- If so, treat any field as limited.
+  -- For a record field, check the record variable and the record type to see
+  -- if it is limited.  If so, treat any field as limited.
 
   if identifiers( var_id ).field_of /= eof_t then
-     if identifiers(
+     if identifiers( identifiers( var_id ).field_of ).limit then
+        err( "limited variables cannot be assigned a value" );
+     elsif identifiers(
            identifiers (
                identifiers( var_id ).field_of
            ).kind
         ).limit then
-        err( "limited variables cannot be assigned a value" );
+        err( "limited types cannot be assigned a value" );
      end if;
   end if;
 
