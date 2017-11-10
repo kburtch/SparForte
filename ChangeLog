@@ -14,7 +14,7 @@ CHANGES SINCE 2.1
 
 5. Fix: instead of "identifier not declared", now get "too few parameter" when calling a user function with too few parameters.  Might be a more efficient way to implement this.
 
-6. New: abstract procedures and subprograms [incomplete, untested].
+6. New: abstract procedures and subprograms.
 
 7. Fix: functions without a return value statement produce an error.
 
@@ -27,4 +27,6 @@ CHANGES SINCE 2.1
 11. Fix: variables with explicit limited qualifier are now limited.  limited renames. [Doc/tests required]
 
 12. New: delarations with the same name at a more global scope now require overriding.
+
+13. New: return statements may have a when clause, like an exit statement.
 

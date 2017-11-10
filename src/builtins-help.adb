@@ -1547,7 +1547,7 @@ begin
      startHelp( e, "exit" );
      summary( e, "exit statement" );
      categoryKeyword( e );
-     description( e, "Break out of a loop." );
+     description( e, "Break out of a loop.  There is an optional exit condition." );
      content( e, "exit [when condition]" );
      seeAlso( e, "doc/ref_flow.html" );
      endHelp( e );
@@ -2019,10 +2019,11 @@ begin
      summary( e, "return statement" );
      categoryKeyword( e );
      description( e, "Leave a procedure, function or main program.  If a " &
-        "function, return a value that can be used in an expression.  With " &
+        "function, return a value that can be used in an expression.  There " &
+        "is an optional return condition.  With " &
         "an interactive prompt, quits a shell.  In breakout mode, resumes " &
         "execution of the script." );
-     content( e, "return [expression]" );
+     content( e, "return [expression] [when condition]" );
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
   elsif helpTopic = "typeset" then

@@ -2917,6 +2917,40 @@ pragma assert( s = "truetrue" );
 
 end;
 
+-- return when clause
+
+declare
+
+function test_f1 return boolean is
+begin
+  return true when 1=1;
+  return false;
+end test_f1;
+
+function test_f2 return boolean is
+begin
+  return true when 1=0;
+  return false;
+end test_f2;
+
+b : boolean;
+
+procedure test_f3 is
+begin
+  b := true;
+  return when 1=1;
+  b := false;
+end test_f3;
+
+begin
+  b := test_f1;
+  pragma assert( b );
+  b := test_f2;
+  pragma assert( not b );
+  test_f3;
+  pragma assert( b );
+end;
+
 -- Exception handling
 
 declare

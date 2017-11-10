@@ -8379,10 +8379,13 @@ procedure ParseReturn is
   -- Syntax: return [function-result-expr]
   -- Return from a subprogram or quit interactive session or resume from a
   -- breakout.
-  expr_val   : unbounded_string;
-  expr_type  : identifier;
-  return_id  : identifier;
+  expr_val    : unbounded_string;
+  expr_type   : identifier;
+  return_id   : identifier;
+  must_return : boolean;
+  has_when    : boolean := false;
 begin
+  -- Return has a special meaning in interactive modes
   if inputMode = breakout then
      expect( return_t );
      expectSemicolon;
@@ -8402,8 +8405,18 @@ begin
         end if;
      end if;
   else
+
+     -- Return statement in a procedure or function
+
      expect( return_t );
-     if token /= eof_t and not (token = symbol_t and identifiers( token ).value.all = ";") and not (token = symbol_t and identifiers( token ).value.all = "|" ) then
+
+     if token /= eof_t and token /= when_t and not (token = symbol_t and identifiers( token ).value.all = ";") and not (token = symbol_t and identifiers( token ).value.all = "|" ) then
+
+        -- Handle a function return value
+        --
+        -- The return value gets assigned even if an optional when clause
+        -- follows and indicates the return does not happen.
+
         if isExecutingCommand then
            -- return value only exists at run-time.  There are better ways to
            -- do this.
@@ -8415,61 +8428,53 @@ begin
            -- check the block name and derrive it that way.  Until we do,
            -- no type checking on the function result!
               ParseExpression( expr_val, expr_type );
-           --if uniTypesOk( expr_type, uni_numeric_t ) then
               identifiers( return_id ).value.all := expr_val;
               if trace then
                  put_trace( "returning """ & to_string( expr_val ) & """" );
               end if;
            end if;
-              --last_status := aStatusCode( to_numeric( expr_val ) );
-              --end if;
         else
               -- for syntax checking, we need to walk the expression
               ParseExpression( expr_val, expr_type );
         end if;
-        expectSemicolon;
-        -- look for unreachable code only during syntax check
-        if syntax_check then
-           sawReturn;
-           --declare
-           --   cmdStart   : aScannerState;
-           --begin
-           --   markScanner( cmdStart );
-              -- we need to advance one to hilight the right token
-           --   getNextToken;
-              -- these are block ending tokens
-              if token /= eof_t and token /= end_t and token /= elsif_t and
-                 token /= else_t and token /= when_t and token /= others_t and
-                 token /= exception_t then
-                 err( "unreachable code" );
-              end if;
-           --   resumeScanning( cmdStart );                    --   overwrite EOF token
-           --end;
-        end if;
-        if isExecutingCommand then
-           DoReturn;
+     end if;
+
+     -- Handle option when expression.
+
+     if token = when_t or token = if_t then     -- if to give "expected when"
+        has_when := true;
+        expect( when_t );
+        ParseExpression( expr_val, expr_type );
+        if baseTypesOk( boolean_t, expr_type ) then
+           must_return :=  expr_val = "1";
         end if;
      else
-        -- no return value?  do return
-        expectSemicolon;
+         must_return := true;
+     end if;
+
+     -- Check for semi-colon and
+
+     expectSemicolon;
+     if syntax_check then
+        -- this marks a function return has having been seen for checks on
+        -- a function with no return.
+        sawReturn;
         -- look for unreachable code only during syntax check
-        if syntax_check then
-           --declare
-           --   cmdStart   : aScannerState;
-           --begin
-           --   markScanner( cmdStart );
-              -- we need to advance one to hilight the right token
-           --   getNextToken;
-              -- these are block ending tokens
-              if token /= eof_t and token /= end_t and token /= elsif_t and
-                 token /= else_t and token /= when_t and token /= others_t and
-                 token /= exception_t then
+        -- does not apply if there's a when clause
+        if not has_when then
+           -- these are block ending tokens
+           if token /= eof_t and token /= end_t and token /= elsif_t and
+              token /= else_t and token /= when_t and token /= others_t and
+              token /= exception_t then
                  err( "unreachable code" );
-              end if;
-           --   resumeScanning( cmdStart );                    --   overwrite EOF token
-           --end;
+           end if;
         end if;
-        if isExecutingCommand then
+     end if;
+
+     -- Execute a return.  Trigger skipping block and exiting.
+
+     if isExecutingCommand then
+        if must_return then
            DoReturn;
         end if;
      end if;

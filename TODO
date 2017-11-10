@@ -11,19 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- limited renamings
-  - require overriding on renamings of same identifier name but in different scope?
 - unsorted/misc
-    - too many parameters to a procedure is not detected
     - more simple scripts (instead of well-formed scripts) examples (for regression testing)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
-    - gcc-errors tests not triggered on err_tokenize?
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
-    - constant check fails if assignment is in `..` (subscripts are compiled after
-      main program is compiled, but are they syntax checked earlier?)  This may be
-      part of a greater issue: subscripts should be syntax checked at compile-time.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
     - env producing phantom errors when piped to fgrep
@@ -122,6 +115,10 @@ Annoyances / Bugs with Workarounds / Updates
 Nice to Haves / Missing Functionality
 -------------------------------------
 
+- overriding renamings
+  - require overriding on renamings of same identifier name but in different scope?
+    - this requires a new function to check for pre-exisiting names in a different
+      scope.  It will need to apply to all variable declarations.
 - memcache/memcache.highread
     - update functionality to handle records, arrays, etc. like btree_io
     - element as an alias for "get" in memcache, etc.
@@ -226,7 +223,7 @@ Nice to Haves / Missing Functionality
     - enums.last is slow...should be updated for namespaces to improve speed
     - built-in cache - memory or disk?
     - redesign is_writable, etc. so works better.
-    - return [when] , raise [when]
+    - raise [when]
     - infinite loop detection - when variables in loop expression are not assigned
       to - this may be tricky to implement
     - new examples
