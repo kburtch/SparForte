@@ -6938,12 +6938,12 @@ begin
 
   formalParamId := proc_id + 1;
   parameterNumber := 1;
--- put_line( "--- Searching from" ); -- DEBUG
--- put_line( to_string( identifiers( proc_id-2 ).name ) ); -- DEBUG
--- put_line( to_string( identifiers( proc_id-1 ).name ) ); -- DEBUG
--- put_line( to_string( identifiers( proc_id ).name ) & " proc" ); -- DEBUG
--- put_line( to_string( identifiers( proc_id+1 ).name ) ); -- DEBUG
--- put_line( to_string( identifiers( proc_id+2 ).name ) ); -- DEBUG
+  -- put_line( "--- Searching from" ); -- DEBUG
+  -- put_line( to_string( identifiers( proc_id-2 ).name ) ); -- DEBUG
+  -- put_line( to_string( identifiers( proc_id-1 ).name ) ); -- DEBUG
+  -- put_line( to_string( identifiers( proc_id ).name ) & " proc" ); -- DEBUG
+  -- put_line( to_string( identifiers( proc_id+1 ).name ) ); -- DEBUG
+  -- put_line( to_string( identifiers( proc_id+2 ).name ) ); -- DEBUG
   loop
       while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
@@ -6994,12 +6994,17 @@ begin
      err( "parameter not found or too many parameters" );
 
   -- Check for too few formal parameters
+  --
+  -- If there are no actual parameters at all, this whole function
+  -- doesn't run.  So this check does not help.
 
   elsif formalParamId < identifiers_top then
      parameterNumber := parameterNumber + 1;
      formalParamId := identifier( integer( formalParamId ) + 1 );
      while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
+           -- return value is end of function's parameters
+           exit when identifiers( formalParamId ).name = "return value";
            if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
               err( "too few parameters" );
               exit;
