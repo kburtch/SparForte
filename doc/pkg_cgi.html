@@ -1233,7 +1233,9 @@ normal string.</p</td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Encode the string using %HH hexadecimal characters. If b is true, translate plus signs to spaces.</p></td>
+<td><p>Certain characters have special significance in URLs and should are
+escaped using a %HH hexadecimal format.  This function encodes these
+characters.  If b is true, translate spaces to plus signs.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">encoded_url := cgi.url_encode( s );</span></td>
