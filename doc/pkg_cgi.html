@@ -483,10 +483,19 @@ POST data without variable assignments).</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the number of times the variable name (or name of a form field)</p></td>
+<td><p>Return the number of occurrences of the CGI variable (HTML form
+input field) in an HTTP request.  (HTML forms may have more than
+one input field with the same name.)  If the variable does not exist,
+zero is returned.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">-</span></td>
+<td><p>If the form contains:</p>
+<span class="code">&lt;input name="foo" value="bar"&gt;<br>
+&lt;input name="foo" value="baz"&gt;<br>
+<br>
+? cgi.key_count( "foo" ); -- returns 2<br>
+</span><br>
+</td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -1168,10 +1177,15 @@ optional mailto link to the page author.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Decode HTML-encoded %HH hexadecimal characters into their corresponding</p></td>
+<td><p>Certain characters have special significance in URLs and should are
+escaped using a %HH hexadecimal format.  This function decodes these
+hexadecimal characters, as well as spaces denoted as a '+', returning a
+normal string.</p</td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">-</span></td>
+<td><span class="code">? cgi.url_decode( "http://localhost/web+page.html" );<br>
+-- returns http://localhost/web page.html<br>
+</span><br></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
