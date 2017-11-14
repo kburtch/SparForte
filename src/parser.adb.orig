@@ -607,7 +607,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
              f := castToType( f, kind );
           end if;
        end if;
-    elsif identifiers( t ).limit then
+    elsif identifiers( t ).usage = limitedUsage then
        err( "limited variables cannot be used in an expression (or you may have spelled a subprogram name incorrectly)" );
        kind := eof_t;
     elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
@@ -657,7 +657,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
     -- regular variable with an array index?
     else
        if identifiers( t ).field_of /= eof_t then
-         if identifiers( identifiers( t ).field_of ).limit then
+         if identifiers( identifiers( t ).field_of ).usage = limitedUsage then
             err( "limited record variables cannot be used in an expression" );
          end if;
        end if;
@@ -2660,7 +2660,7 @@ end ParseStaticExpression;
 -- Declarations
 -----------------------------------------------------------------------------
 
-procedure ParseTypeQualifiers( newtype_id : identifier ) is
+procedure ParseTypeUsageQualifiers( newtype_id : identifier ) is
   -- Handle the usage qualifiers that go before a types's parent type
   -- Syntax: [abstract | limited]
 begin
@@ -2671,7 +2671,7 @@ begin
         err( "abstract types not allowed with " &
             optional_bold( "pragam ada_95" ) );
       end if;
-      identifiers( newtype_id ).noVar := true;          -- vars not allowed
+      identifiers( newtype_id ).usage := abstractUsage; -- vars not allowed
       identifiers( newtype_id ).wasReferenced := true;  -- treat as used
       identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       expect( abstract_t );
@@ -2680,12 +2680,12 @@ begin
    -- limited types
 
    if token = limited_t then
-      if identifiers( newtype_id ).noVar then
+      if identifiers( newtype_id ).usage = abstractUsage then
          err( "abstract types don't need to be limited types" );
       elsif onlyAda95 then
          err( "limited types are not allowed with " & optional_bold( "pragma ada_95" ) );
       end if;
-      identifiers( newtype_id ).limit := true;          -- assign not allowed
+      identifiers( newtype_id ).usage := limitedUsage;  -- assign not allowed
       expect( limited_t );
 
       -- check for reverse ordering
@@ -2697,9 +2697,9 @@ begin
          expect( abstract_t );
       end if;
    end if;
-end ParseTypeQualifiers;
+end ParseTypeUsageQualifiers;
 
-procedure ParseVarQualifiers( id : identifier; expr_expected : out boolean ) is
+procedure ParseVarUsageQualifiers( id : identifier; expr_expected : out boolean ) is
   -- Handle the usage qualifiers that go before a variable's type
   -- If a constant, expr_expected is set to true to alert the caller
   -- that a constant declaration may need a value asigned.
@@ -2720,15 +2720,15 @@ begin
   end if;
 
   if token = limited_t then                             -- limited access?
-     if identifiers( id ).noVar then
+     if identifiers( id ).usage = abstractUsage then
         err( "abstract types don't need to be limited types" );
      elsif identifiers( id ).class = constClass then
         err( "constants don't need to be limited types" );
      end if;
-     identifiers( id ).limit := true;
+     identifiers( id ).usage := limitedUsage;
      expect( limited_t );
   end if;
-end ParseVarQualifiers;
+end ParseVarUsageQualifiers;
 
 procedure ParseGenericParametersPart( varId : identifier ) is
 -- Syntax: ...( gen1 [,gen2] )
@@ -2979,7 +2979,7 @@ begin
         identifiers( anonType ).wasReferenced := true; -- only referenced when declared
         -- mark as limited, if necessary
         if limit then
-           identifiers( anonType ).limit := true;
+           identifiers( anonType ).usage := limitedUsage;
         end if;
         if syntax_check then
            -- treat the anonymous type as applied (i.e. no need to be abstr.)
@@ -3339,8 +3339,7 @@ begin
                -- is convenient to track the field.
                identifiers( dont_care_t ).field_of := id;
                -- apply abtract and limited
-               identifiers( dont_care_t ).limit := identifiers( j ).limit;
-               identifiers( dont_care_t ).noVar := identifiers( j ).noVar;
+               identifiers( dont_care_t ).usage := identifiers( j ).usage;
                -- at least, for now, don't worry if record fields are
                -- declared but not accessed.  We'll just check the
                -- main record identifier.
@@ -3479,7 +3478,7 @@ begin
      return; -- done
   end if;
 
-  ParseVarQualifiers( id, expr_expected );             -- constant/limited...
+  ParseVarUsageQualifiers( id, expr_expected );             -- constant/limited...
 
   -- Anonymous Array?  Handled elsewhere.
 
@@ -3490,7 +3489,7 @@ begin
      if not anon_arrays then
         err( "anonymous arrays are not allowed" );
      end if;
-     ParseAnonymousArray( id, identifiers( id ).limit );  -- handle it
+     ParseAnonymousArray( id, identifiers( id ).usage = limitedUsage );  -- handle it
      return;                                           --  and nothing more
   end if;
 
@@ -3503,11 +3502,11 @@ begin
 
   -- Limited Type?  Inherited from the type (if any).
 
-  if identifiers( type_token ).limit then
-     if identifiers( id ).limit then
+  if identifiers( type_token ).usage = limitedUsage then
+     if identifiers( id ).usage = limitedUsage then
         err( "the type is already limited" );
      else
-        identifiers( id ).limit := true;
+        identifiers( id ).usage := limitedUsage;
      end if;
   end if;
 
@@ -3521,7 +3520,7 @@ begin
   if identifiers( getBaseType( type_token ) ).list then       -- array type?
      if not anon_arrays then
         err( "nested arrays not yet supported" );
-     elsif identifiers( type_token ).noVar then
+     elsif identifiers( type_token ).usage = abstractUsage then
         err( "constants and variables cannot be declared as " &
           optional_bold( to_string( identifiers( type_token ).name ) ) &
           " because it is " & optional_bold( "abstract" ) );
@@ -3536,7 +3535,7 @@ begin
   if identifiers( getBaseType( type_token ) ).kind = root_record_t then  -- record type?
      if not anon_arrays then
         err( "nested records not yet supported" );
-     elsif identifiers( type_token ).noVar then
+     elsif identifiers( type_token ).usage = abstractUsage then
         err( "constants and variables cannot be declared as " &
           optional_bold( to_string( identifiers( type_token ).name ) ) &
           " because it is " & optional_bold( "abstract" ) );
@@ -3568,7 +3567,7 @@ begin
   --
   -- These cannot be declared.
 
-  if identifiers( type_token ).noVar then
+  if identifiers( type_token ).usage = abstractUsage then
      err( "constants and variables cannot be declared as " &
           optional_bold( to_string( identifiers( type_token ).name ) ) &
           " because it is " & optional_bold( "abstract" ) );
@@ -3680,7 +3679,7 @@ begin
         -- the class will change when parsing the rename
         originalClass : anIdentifierClass := identifiers( id ).class;
         originalFieldOf : identifier := identifiers( id ).field_of;
-        wasLimited : boolean := identifiers( id ).limit;
+        wasLimited : boolean := identifiers( id ).usage = limitedUsage;
      begin
         -- Variable or Constant renaming
         ParseRenamesPart( canonicalRef, id, type_token );
@@ -3691,10 +3690,10 @@ begin
            -- TODO: I could probably get this to work but it's a weird edge
            -- case.
            err( "enumerated items cannot be renamed" );
-        elsif identifiers( canonicalRef.id ).limit and not wasLimited then
+        elsif identifiers( canonicalRef.id ).usage = limitedUsage and not wasLimited then
            err( "limited identifier must be renamed by a limited identifier" );
         elsif identifiers( canonicalRef.id ).field_of /= eof_t then
-           if identifiers( identifiers( canonicalRef.id ).field_of ).limit and not wasLimited then
+           if identifiers( identifiers( canonicalRef.id ).field_of ).usage = limitedUsage and not wasLimited then
               err( "limited record fields must be renamed by a limited identifier" );
            end if;
         end if;
@@ -3702,7 +3701,7 @@ begin
         -- renaming record, not the canonical record.
         identifiers( id ).field_of := originalFieldOf;
         if wasLimited then
-           identifiers( id ).limit := true;
+           identifiers( id ).usage := limitedUsage;
         end if;
      end;
 
@@ -3744,7 +3743,7 @@ begin
      declare
         is_constant : boolean := false;
         var_name    : unbounded_string;
-        wasLimited  : boolean := identifiers( id ).limit;
+        wasLimited  : boolean := identifiers( id ).usage = limitedUsage;
      begin
 
        -- Temporarily destroy identifer so that i : integer := i isn't circular
@@ -3767,7 +3766,7 @@ begin
           identifiers( id ).class := constClass;            -- fix class
        end if;
        if wasLimited then
-          identifiers( id ).limit := true;
+          identifiers( id ).usage := limitedUsage;
        end if;
      end;
 
@@ -3864,7 +3863,7 @@ procedure ParseRecordTypePart( newtype_id : identifier ) is
    field_no : integer := 1;
    b : boolean;
 begin
-   ParseTypeQualifiers( newtype_id );
+   ParseTypeUsageQualifiers( newtype_id );
    expect( record_t );
    ParseRecordFields( newtype_id, field_no );
    expect( end_t );
@@ -3895,7 +3894,7 @@ procedure ParseArrayTypePart( newtype_id : identifier ) is
    elementBaseType : identifier;        -- base type of array elements type
    b           : boolean;
 begin
-   ParseTypeQualifiers( newtype_id );
+   ParseTypeUsageQualifiers( newtype_id );
 
    -- Check the Array Declaration
 
@@ -4038,15 +4037,13 @@ begin
    -- type ... abstract record... or abstract array...
 
    elsif token = abstract_t or token = limited_t then
-      ParseTypeQualifiers( newtype_id );
+      ParseTypeUsageQualifiers( newtype_id );
       if token = array_t then
          ParseArrayTypePart( newtype_id );
-         --identifiers( newtype_id ).noVar := true;          -- no variables
          --identifiers( newtype_id ).wasReferenced := true;  -- treat as used
          --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = record_t then
          ParseRecordTypePart( newtype_id );
-         --identifiers( newtype_id ).noVar := true;          -- no variables
          --identifiers( newtype_id ).wasReferenced := true;  -- treat as used
          --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = new_t then
@@ -4072,7 +4069,7 @@ begin
 
      expect( new_t );                                      -- "new"
 
-     ParseTypeQualifiers( newtype_id );
+     ParseTypeUsageQualifiers( newtype_id );
 
      -- Standard Ada syntax, but if we could extend arrays or records, would
      -- "new" be appropriate?
@@ -4132,18 +4129,18 @@ begin
         err( "abstract subtypes not allowed with " &
             optional_bold( "pragam ada_95" ) );
       end if;
-      identifiers( newtype_id ).noVar := true;             -- no variables
+      identifiers( newtype_id ).usage := abstractUsage;    -- no variables
       expect( abstract_t );
    end if;
 
    if token = limited_t then                               -- limited type?
-      if identifiers( newtype_id ).noVar then
+      if identifiers( newtype_id ).usage = abstractUsage then
          err( "abstract subtypes don't need to be limited subtypes" );
       elsif onlyAda95 then
         err( "limited subtypes not allowed with " &
             optional_bold( "pragam ada_95" ) );
       end if;
-      identifiers( newtype_id ).limit := true;             -- no variables
+      identifiers( newtype_id ).usage := limitedUsage;     -- no assignment
       expect( limited_t );
       if token = abstract_t then
          err( optional_bold( "abstract" ) & " comes before " &
@@ -6366,7 +6363,7 @@ begin
   -- abstract also.
 
   ParseIdentifier( type_token );
-  if identifiers( type_token ).noVar then
+  if identifiers( type_token ).usage = abstractUsage then
      if abstract_parameter = eof_t then
         abstract_parameter := type_token;
      end if;
@@ -6446,7 +6443,7 @@ begin
   identifiers( func_id ).kind := type_token;
   if syntax_check then
      identifiers( type_token ).wasApplied := true; -- type was used
-     if identifiers( type_token ).noVar then
+     if identifiers( type_token ).usage = abstractUsage then
         abstract_return := type_token;
      end if;
   end if;
@@ -6633,7 +6630,7 @@ begin
      if token = null_t then                               -- null abstract
         expect( null_t );
         expect( abstract_t );
-        identifiers( proc_id ).noVar := true;
+        identifiers( proc_id ).usage := abstractUsage;
      else
         if token = separate_t then
            if rshOpt then
@@ -6648,7 +6645,7 @@ begin
            ParseSeparateProcHeader( proc_id, procStart );
         elsif token = abstract_t then
            expect( abstract_t );
-           identifiers( proc_id ).noVar := true;
+           identifiers( proc_id ).usage := abstractUsage;
         elsif abstract_parameter /= eof_t then
            err( "procedure must be abstract because parameter type " &
               optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
@@ -7124,7 +7121,7 @@ begin
      if token = null_t then                               -- null abstract
         expect( null_t );
         expect( abstract_t );
-        identifiers( func_id ).noVar := true;
+        identifiers( func_id ).usage := abstractUsage;
      else
         if token = separate_t then
            if rshOpt then
@@ -7139,7 +7136,7 @@ begin
            ParseSeparateFuncHeader( func_id, funcStart );
         elsif token = abstract_t then
            expect( abstract_t );
-           identifiers( func_id ).noVar := true;
+           identifiers( func_id ).usage := abstractUsage;
         elsif abstract_parameter /= eof_t then
            err( "function must be abstract because parameter type " &
               optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
@@ -7199,7 +7196,7 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( proc_id ).wasReferenced := true;
-     if identifiers( proc_id ).noVar then
+     if identifiers( proc_id ).usage = abstractUsage then
         err( optional_bold( to_string( identifiers( proc_id ).name ) ) &
           " is abstract and cannot be run" );
      end if;
@@ -7396,7 +7393,7 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( func_id ).wasReferenced := true;
-     if identifiers( func_id ).noVar then
+     if identifiers( func_id ).usage = abstractUsage then
         err( optional_bold( to_string( identifiers( func_id ).name ) ) &
           " is abstract and cannot be run" );
      end if;
@@ -8536,13 +8533,13 @@ begin
   -- if it is limited.  If so, treat any field as limited.
 
   if identifiers( var_id ).field_of /= eof_t then
-     if identifiers( identifiers( var_id ).field_of ).limit then
+     if identifiers( identifiers( var_id ).field_of ).usage = limitedUsage then
         err( "limited variables cannot be assigned a value" );
      elsif identifiers(
            identifiers (
                identifiers( var_id ).field_of
            ).kind
-        ).limit then
+        ).usage = limitedUsage then
         err( "limited types cannot be assigned a value" );
      end if;
   end if;
@@ -8551,9 +8548,9 @@ begin
   -- A variable itself can also be limited.
   -- This can also be applied to individual record fields as a special case.
 
-  if identifiers( var_kind ).limit then
+  if identifiers( var_kind ).usage = limitedUsage then
      err( "limited types cannot be assigned a value" );
-  elsif identifiers( var_id ).limit then
+  elsif identifiers( var_id ).usage = limitedUsage then
      err( "limited variables cannot be assigned a value" );
   -- TODO: this will break when we can create derived record types
   elsif var_kind = root_record_t then

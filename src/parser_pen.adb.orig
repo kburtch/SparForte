@@ -22277,7 +22277,7 @@ begin
   identifiers( pen_rect_bottom_t ).value.all := to_unbounded_string( "4" );
 
   declareIdent( pen_canvas_id_t, "pen.canvas_id", long_integer_t, typeClass );
-  identifiers( pen_canvas_id_t ).limit := true;
+  identifiers( pen_canvas_id_t ).usage := limitedUsage;
 
   declareIdent( pen_pen_mode_t, "pen.pen_mode", root_enumerated_t, typeClass );
   declareStandardConstant( pen_mode_invert_t, "pen_mode.invert", pen_pen_mode_t, "0" );

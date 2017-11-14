@@ -1106,9 +1106,9 @@ procedure StartupVectors is
 begin
   declareNamespace( "vectors" );
   declareIdent( vectors_vector_t, "vectors.vector", variable_t, genericTypeClass );
-  identifiers( vectors_vector_t).limit := true;
+  identifiers( vectors_vector_t).usage := limitedUsage;
   declareIdent( vectors_cursor_t, "vectors.cursor", variable_t, genericTypeClass );
-  identifiers( vectors_cursor_t).limit := true;
+  identifiers( vectors_cursor_t).usage := limitedUsage;
 
   declareProcedure( vectors_new_vector_t,  "vectors.new_vector", ParseVectorsNewVector'access );
   declareProcedure( vectors_clear_t,     "vectors.clear",    ParseVectorsClear'access );

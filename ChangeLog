@@ -26,7 +26,5 @@ CHANGES SINCE 2.1
 
 11. Fix: variables with explicit limited qualifier are now limited.  limited renames. [Doc/tests required]
 
-12. New: delarations with the same name at a more global scope now require overriding.
-
-13. New: return statements may have a when clause, like an exit statement.
+12. New: return statements may have a when clause, like an exit statement.
 

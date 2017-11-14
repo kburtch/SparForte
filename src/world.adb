@@ -525,8 +525,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       limit    => false,
-       noVar    => false,
+       usage    => fullUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -583,8 +582,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       limit    => false,
-       noVar    => false,
+       usage    => fullUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -641,6 +639,7 @@ begin
        sc.svalue := to_unbounded_string( value );
        sc.class := constClass;
        sc.static := true;                                       -- identifier
+       sc.usage := fullUsage;
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
        sc.value := sc.svalue'access;
@@ -680,6 +679,7 @@ begin
        sc.svalue := to_unbounded_string( value );
        sc.class := enumClass;
        sc.static := true;                                       -- identifier
+       sc.usage := fullUsage;
        sc.field_of := eof_t;
        sc.value := sc.svalue'access;
        -- since this is only called at startup, the default
@@ -707,8 +707,7 @@ begin
     identifiers(id).export   := false;
     identifiers(id).volatile := false;
     identifiers(id).static   := false;
-    identifiers(id).limit    := false;
-    identifiers(id).noVar    := false;
+    identifiers(id).usage    := fullUsage;
     identifiers(id).list     := false;
     identifiers(id).field_of := proc_id;
     identifiers(id).inspect  := false;
@@ -799,8 +798,7 @@ begin
                  export   => false,
                  volatile => false,
                  static   => false,
-                 limit    => false,
-                 noVar    => false,
+                 usage    => fullUsage,
                  list     => identifiers( identifiers( i ).kind ).list,   -- arrays now supported
                  resource => false,
                  field_of => eof_t,
@@ -871,8 +869,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       limit    => false,
-       noVar    => false,
+       usage    => fullUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -958,8 +955,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       limit    => false,
-       noVar    => false,
+       usage    => fullUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1021,8 +1017,7 @@ begin
        export   => false,
        volatile => false,
        static   => identifiers( canonicalRef.id ).static,
-       limit    => identifiers( canonicalRef.id ).limit,
-       noVar    => identifiers( canonicalRef.id ).noVar,
+       usage    => identifiers( canonicalRef.id ).usage,
        list     => identifiers( canonicalRef.id ).list,
        resource => false,  -- can't really look up a resource
        field_of => identifiers( canonicalRef.id ).field_of,
@@ -1205,8 +1200,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       limit    => false,
-       noVar    => false,
+       usage    => fullUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1335,8 +1329,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       limit    => false,
-       noVar    => false,
+       usage    => fullUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1461,8 +1454,7 @@ begin
    to_decl.list := from_decl.list;
    to_decl.kind := from_decl.kind;
    to_decl.class := from_decl.class;
-   to_decl.limit := from_decl.limit;
-   to_decl.noVar := from_decl.noVar;
+   to_decl.usage := from_decl.usage;
    to_decl.genKind := from_decl.genKind;
    to_decl.genKind2 := from_decl.genKind2;
 end copyValue;

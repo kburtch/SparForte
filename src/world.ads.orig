@@ -287,6 +287,19 @@ type anImportMapping is ( none, json );
 
 ------------------------------------------------------------------------------
 --
+-- Usage Qualifier
+--
+-- Limits on how an identifier may be used.
+--
+-- fullUsage     - read/write
+-- abstractUsage - no declarations (legal only for types)
+-- limitedUsage  - no expressions or assignment
+-- constUsage    - read only (a constant)
+
+type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constUsage );
+
+------------------------------------------------------------------------------
+--
 -- Callbacks to execute a build-in procedure or function (such as put_line).
 
 type aBuiltinProcedureCallback is access procedure;
@@ -331,8 +344,7 @@ type declaration is record
      export   : boolean := false;               -- marked by pragma export
      volatile : boolean := false;               -- marked by pragma volatile
      static   : boolean := false;               -- if value is known at syn chk
-     limit    : boolean := false;               -- limited type
-     noVar    : boolean := false;               -- abstract type
+     usage    : aUsageQualifier := fullUsage;   -- limits on use
      list     : boolean := false;               -- array or array type
      resource : boolean := false;               -- resource type
      field_of : identifier;                     -- record superclass

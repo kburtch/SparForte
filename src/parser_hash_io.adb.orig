@@ -2552,9 +2552,9 @@ begin
   declareNamespace( "hash_io" );
 
   declareIdent( hash_file_t,   "hash_io.file", variable_t, genericTypeClass );
-  identifiers( hash_file_t ).limit := true;
+  identifiers( hash_file_t ).usage := limitedUsage;
   declareIdent( hash_cursor_t, "hash_io.cursor", variable_t, genericTypeClass );
-  identifiers( hash_cursor_t ).limit := true;
+  identifiers( hash_cursor_t ).usage := limitedUsage;
 
   --declareProcedure( hash_new_file_t,  "hash_io.new_file", ParseHashNewFile'access );
   declareProcedure( hash_clear_t,     "hash_io.clear",    ParseHashClear'access );

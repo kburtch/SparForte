@@ -1373,9 +1373,9 @@ begin
   declareNamespace( "doubly_linked_lists" );
 
   declareIdent( doubly_list_t,   "doubly_linked_lists.list", variable_t, genericTypeClass );
-  identifiers( doubly_list_t ).limit := true;
+  identifiers( doubly_list_t ).usage := limitedUsage;
   declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", variable_t, genericTypeClass );
-  identifiers( doubly_cursor_t ).limit := true;
+  identifiers( doubly_cursor_t ).usage := limitedUsage;
 
   --declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
   declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );

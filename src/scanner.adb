@@ -336,10 +336,10 @@ begin
            put( "subtype of " );
         end if;
         -- abstract/limited are the type itself, not its parent
-        if ident.noVar then
+        if ident.usage = abstractUsage then
            put( "abstract " );
         end if;
-        if ident.limit then
+        if ident.usage = limitedUsage then
            put( "limited " );
         end if;
      when typeClass =>
@@ -347,10 +347,10 @@ begin
            put( "new type of " );
         end if;
         -- abstract/limited are the type itself, not its parent
-        if ident.noVar then
+        if ident.usage = abstractUsage then
            put( "abstract " );
         end if;
-        if ident.limit then
+        if ident.usage = limitedUsage then
            put( "limited " );
         end if;
      when constClass =>
@@ -359,23 +359,23 @@ begin
         end if;
      when funcClass =>
         put( "built-in " );
-        if ident.noVar then
+        if ident.usage = abstractUsage then
            put( "abstract " );
         end if;
         put( "function " );
      when procClass =>
         put( "built-in " );
-        if ident.noVar then
+        if ident.usage = abstractUsage then
            put( "abstract " );
         end if;
         put( "procedure " );
      when userProcClass =>
-        if ident.noVar then
+        if ident.usage = abstractUsage then
            put( "abstract " );
         end if;
         put( "procedure " );
      when userFuncClass =>
-        if ident.noVar then
+        if ident.usage = abstractUsage then
            put( "abstract " );
         end if;
         put( "function return " );
@@ -399,13 +399,13 @@ begin
 
      -- Abstract
 
-     if kind.noVar then
+     if kind.usage = abstractUsage then
         put( "abstract " );
      end if;
 
      -- Limited type?
 
-     if kind.limit then
+     if kind.usage = limitedUsage then
         put( "limited " );
      end if;
 
@@ -1584,7 +1584,7 @@ begin
                if not onlyAda95 then -- limited not available with pragma ada_95
                   if identifiers( i ).class = varClass then
                      if identifiers( i ).field_of /= eof_t then
-                        if not identifiers( i ).limit then
+                        if identifiers( i ).usage /= limitedUsage then
                            err( optional_bold( to_string( identifiers( i ).name ) ) &
                               " is a " & optional_bold( "not-limited variable" ) &
                               " but expected a " & optional_bold( "limited" ) &
@@ -1701,7 +1701,7 @@ begin
 --put_line( "variable" ); -- DEBUGME
                   if not onlyAda95 then -- limited not available with pragma ada_95
 --put_line( "not ada_95" ); -- DEBUGME
-                     if not identifiers( i ).limit then
+                     if identifiers( i ).usage /= limitedUsage then
                         err( optional_bold( to_string( identifiers( i ).name ) ) &
                            " is a " & optional_bold( "not-limited variable" ) &
                            " but expected a " & optional_bold( "limited" ) &
@@ -2578,10 +2578,10 @@ end shutdownScanner;
   declareIdent( root_record_t, "root record", variable_t, typeClass );
   declareIdent( command_t, "command", variable_t, typeClass );
   declareIdent( file_type_t, "file_type", variable_t, typeClass );
-  identifiers( file_type_t ).limit := true;
-  identifiers( identifiers_top-1 ).limit := true; -- limited type
+  identifiers( file_type_t ).usage := limitedUsage;
+  identifiers( identifiers_top-1 ).usage := limitedUsage;
   declareIdent( socket_type_t, "socket_type", variable_t, typeClass );
-  identifiers( identifiers_top-1 ).limit := true; -- limited type
+  identifiers( identifiers_top-1 ).usage := limitedUsage;
   declareIdent( universal_t, "universal_typeless", variable_t, typeClass );
   declareIdent( integer_t, "integer", uni_numeric_t, typeClass );
   --declareIdent( natural_t, "natural", uni_numeric_t, typeClass );
@@ -3782,7 +3782,7 @@ begin
   identifiers( id ).field_of  := eof_t;
   identifiers( id ).renaming_of := identifiers'first;
   identifiers( id ).volatile := false;
-  identifiers( id ).limit  := false;
+  identifiers( id ).usage  := fullUsage;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
   identifiers( id ).renamed_count := 0;
@@ -3834,7 +3834,7 @@ begin
   identifiers( id ).field_of  := eof_t;
   identifiers( id ).renaming_of := identifiers'first;
   identifiers( id ).volatile := false;
-  identifiers( id ).limit  := false;
+  identifiers( id ).usage := fullUsage;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
   identifiers( id ).renamed_count := 0;

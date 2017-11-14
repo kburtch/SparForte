@@ -3072,7 +3072,7 @@ begin
   declareNamespace( "mysqlm" );
   declareIdent( mysqlm_connection_t, "mysqlm.connection",
     positive_t, typeClass );
-  identifiers( mysqlm_connection_t ).limit := true;
+  identifiers( mysqlm_connection_t ).usage := limitedUsage;
 
   declareIdent( mysqlm_query_t, "mysqlm.query",
     positive_t, typeClass );

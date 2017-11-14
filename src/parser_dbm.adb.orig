@@ -3007,7 +3007,7 @@ begin
   declareNamespace( "dbm" );
 
   declareIdent( dbm_connection_t, "dbm.connection", positive_t, typeClass );
-  identifiers( dbm_connection_t ).limit := true;
+  identifiers( dbm_connection_t ).usage := limitedUsage;
 
   declareIdent( dbm_query_t, "dbm.query", positive_t, typeClass );
 

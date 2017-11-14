@@ -12,6 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - unsorted/misc
+    - update spar.vim on website for configuration/policy blocks
     - no parameters when 1 or more are expected results in "identifier not
       declared" instead of too few parameters message
     - more simple scripts (instead of well-formed scripts) examples (for regression testing)

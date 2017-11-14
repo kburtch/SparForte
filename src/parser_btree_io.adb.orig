@@ -2569,9 +2569,9 @@ begin
   declareNamespace( "btree_io" );
 
   declareIdent( btree_file_t,   "btree_io.file", variable_t, genericTypeClass );
-  identifiers( btree_file_t ).limit := true;
+  identifiers( btree_file_t ).usage := limitedUsage;
   declareIdent( btree_cursor_t, "btree_io.cursor", variable_t, genericTypeClass );
-  identifiers( btree_cursor_t ).limit := true;
+  identifiers( btree_cursor_t ).usage := limitedUsage;
 
   --declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
   declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );
