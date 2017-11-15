@@ -305,7 +305,7 @@ begin
   ParseFirstStringParameter( str_val, str_type );
   ParseNextStringParameter( pat_val, pat_type, string_t );
   -- no value if syntax check
-  if not syntax_check then
+  if isExecutingCommand then
      if length( pat_val ) = 0 then
         err( "search string is empty" );
      end if;
