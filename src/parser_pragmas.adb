@@ -345,7 +345,7 @@ begin
   else
      assumeKind := assumption;
      discardUnusedIdentifier( token );
-     err( "only 'applied', 'used', 'written' assumptions supported" );
+     err( "only 'applied', 'factor', 'used', 'written' assumptions supported" );
   end if;
 end ParseAssumptionKind;
 
