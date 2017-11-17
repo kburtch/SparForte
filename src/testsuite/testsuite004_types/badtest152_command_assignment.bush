@@ -1,5 +1,5 @@
 # This should fail
 
-e : constant command := "/bin/echo";
-f : constant command := e; -- cannot assign commands
+e : limited command := "/bin/echo";
+f : limited command := e; -- cannot assign commands
 

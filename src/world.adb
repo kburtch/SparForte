@@ -582,7 +582,7 @@ begin
        export   => false,
        volatile => false,
        static   => false,
-       usage    => fullUsage,
+       usage    => identifiers( kind ).usage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -701,13 +701,13 @@ begin
        identifiers(id).name     := identifiers( proc_id ).name & "." & identifiers( id ).name;
     end if;
     identifiers(id).svalue   := to_unbounded_string( parameterNumber'img );
-    identifiers(id).class    := varClass;
+    identifiers(id).class    := formalParamClass;
     identifiers(id).kind     := kind;
     identifiers(id).import   := false;
     identifiers(id).export   := false;
     identifiers(id).volatile := false;
     identifiers(id).static   := false;
-    identifiers(id).usage    := constantUsage;
+    --identifiers(id).usage    := constantUsage;
     identifiers(id).list     := false;
     identifiers(id).field_of := proc_id;
     identifiers(id).inspect  := false;
@@ -715,7 +715,7 @@ begin
     identifiers(id).passingMode  := passingMode;
 end updateFormalParameter;
 
--- DECLARE USUAL FORMAL PARAMETER
+-- DECLARE USABLE FORMAL PARAMETER
 --
 -- Declare a usable formal parameter (ie. param for proc.param) in the symbol
 -- table.  proc_id is the id for the subprogram owning the parameter.
@@ -798,7 +798,8 @@ begin
                  export   => false,
                  volatile => false,
                  static   => false,
-                 usage    => constantUsage,
+                 --usage    => constantUsage,
+                 usage    => identifiers( i ).usage,
                  list     => identifiers( identifiers( i ).kind ).list,   -- arrays now supported
                  resource => false,
                  field_of => eof_t,
@@ -826,9 +827,13 @@ begin
      -- svalue isn't defined until here
      identifiers( id ).value := identifiers( id ).svalue'access;
      -- out or in out can be assigned to
-     if identifiers( i ).passingMode = out_mode or
-        identifiers( i ).passingMode = in_out_mode then
-        identifiers( id ).usage := fullUsage;
+     --if identifiers( i ).passingMode = out_mode or
+     --   identifiers( i ).passingMode = in_out_mode then
+     --   identifiers( id ).usage := fullUsage;
+     --end if;
+     if identifiers( i ).passingMode = in_mode and
+        identifiers( i ).usage = fullUsage then
+        identifiers( id ).usage := constantUsage;
      end if;
   end if;
 
@@ -1765,6 +1770,7 @@ begin
   when policyClass      => return "policy block";
   when configurationClass => return "configuration block";
   when genericTypeClass => return "generic type";
+  when formalParamClass => return "formal parameter";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;

@@ -1,4 +1,4 @@
 # This should fail
 
-e : constant command; -- missing assignment
+e : limited command; -- missing assignment
 

@@ -11,7 +11,13 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- abstract and limited are not working.  in mode or out mode sets the usage
+  to full (vs constant)  and the abstract property of a parameter is not set
+  and/or is lost.
+  - null abstract doesn't pull block...or maybe the main program
 - unsorted/misc
+    - null abstract parameters may conflict with other functions.  This
+      may be a more general problem of function parameters conflicting.
     - update spar.vim on website for configuration/policy blocks
     - spell and grammer check documentation
     - no parameters when 1 or more are expected results in "identifier not
@@ -123,6 +129,8 @@ Nice to Haves / Missing Functionality
   - require overriding on renamings of same identifier name but in different scope?
     - this requires a new function to check for pre-exisiting names in a different
       scope.  It will need to apply to all variable declarations.
+    - maybe just   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
+
 - memcache/memcache.highread
     - update functionality to handle records, arrays, etc. like btree_io
     - element as an alias for "get" in memcache, etc.

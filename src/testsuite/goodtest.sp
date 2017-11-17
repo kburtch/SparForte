@@ -46,11 +46,14 @@ unbs : unbounded_string;
 
 i2  : integer := 1;
 s2  : constant string := "test";
+pragma assumption( factor, s2 );
 
 -- new types, enumerateds and subtypes
 
 subtype sub_int is integer;
+pragma assumption( applied, sub_int );
 type new_int is new integer;
+pragma assumption( applied, new_int );
 type new_enum is (enum0);
 type new_enum2 is (enum1, enum2, enum3);
 type abstract_int is new abstract integer;
@@ -60,8 +63,9 @@ limit_int2 : limited integer := 5;
 pragma assumption( used, limit_int1 );
 pragma assumption( used, limit_int2 );
 type limited_int is new limited integer;
+pragma assumption( applied, limited_int );
 subtype limited_int2 is limited integer;
-
+pragma assumption( applied, limited_int2 );
 -- It is permissible to cast temporarily to an abstract.
 
 declare
@@ -1101,21 +1105,21 @@ history -c;
 pragma annotate( "This is a test" );
 pragma depreciated( "<This is not an error>" );
 type import_string is new string;
-FOOBAR : import_string;
+FOOBAR : limited import_string;
 pragma import( shell, FOOBAR );
 pragma export( shell, FOOBAR );
 pragma volatile( FOOBAR );
 foo_dummy_variable_123: string := "foo_123";
 pragma unchecked_import( shell, foo_dummy_variable_123 );
 pragma assert( foo_dummy_variable_123 = "foo_123" );
-FOOBAR1 : import_string;
+FOOBAR1 : limited import_string;
 FOOBAR2 : import_string;
 pragma import( shell, FOOBAR1 ) @ ( shell, FOOBAR2 );
 pragma assert( FOOBAR2 = "foobar" );
-FOOBAR3 : import_string;
+FOOBAR3 : limited import_string;
 FOOBAR4 : import_string;
 
-team : teams.member;
+team : limited teams.member;
 ken  : teams.member;
 
 pragma advise( ken, team, "i need some advice" );
@@ -1359,7 +1363,7 @@ type abstractarray is abstract array(1..2) of integer;
 -- type of an array type
 
 type arrtype2 is new arrtype;
-typed2a : arrtype2;
+typed2a : limited arrtype2;
 pragma assert( arrays.first( typed2a ) = 1900 );
 pragma assert( arrays.last( typed2a ) = 1999 );
 pragma assert( arrays.length( typed2a ) = 100 );
@@ -1367,7 +1371,7 @@ pragma assert( arrays.length( typed2a ) = 100 );
 -- subtype of an array type
 
 subtype subbedarray is arrtype;
-suba1 : subbedarray;
+suba1 : limited subbedarray;
 pragma assert( arrays.first( suba1 ) = 1900 );
 pragma assert( arrays.last( suba1 ) = 1999 );
 pragma assert( arrays.length( suba1 ) = 100 );
@@ -1397,7 +1401,7 @@ pragma assert( la1(aenum2) = 2 );
 pragma assert( la1(aenum3) = 3 );
 
 subtype longerarray2 is longerarray;
-la2 : longerarray2 := la1;
+la2 : limited longerarray2 := la1;
 
 lae : arrayenum;
 
@@ -1539,7 +1543,7 @@ rec6 := rec7;
 
 -- Permissible with SparForte
 
-type odd_rec is record
+type odd_rec is abstract record
   i : limited integer;
   c : constant integer := 1;
 end record;
@@ -1573,7 +1577,7 @@ end;
 
 i := 0;
 declare
-  type int is new integer;
+  type int is new abstract integer;
   subtype int2 is int;
   i : int2 := 1;
   path2 : string := PATH; -- global path
@@ -2487,7 +2491,8 @@ sleep (1) &;
 wait;
 sleep 1 &;
 wait;
-cmd_echo : constant command := "/bin/echo";
+cmd_echo : limited command := "/bin/echo";
+cmd_echo;
 echo | head;
 echo | sort | head;
 echo "test" | head;
@@ -3354,7 +3359,7 @@ env;
 clear;
 help clear;
 pwd;
-pwd_cmd : constant command := "/bin/pwd";
+pwd_cmd : limited command := "/bin/pwd";
 pwd_cmd;
 jobs;
 
@@ -4057,24 +4062,24 @@ end;
 declare
   type a_type is array( 1..2 ) of integer;
   a : a_type;
-  a2 : a_type renames a;
-  a3 : a_type renames a2;
+  ar2 : a_type renames a;
+  ar3 : a_type renames ar2;
   subtype a2_type is a_type;
-  a4 : a2_type renames a;
+  ar4 : a2_type renames a;
   ae : integer renames a(1);
 begin
   a(1) := 2;
   a(2) := 3;
-  pragma assert( a2(2) = 3 );
-  pragma assert( a3(2) = 3 );
-  pragma assert( a4(2) = 3 );
+  pragma assert( ar2(2) = 3 );
+  pragma assert( ar3(2) = 3 );
+  pragma assert( ar4(2) = 3 );
   pragma assert( ae = 2 );
 end;
 
 -- commands
 
-x : constant command := "/bin/true";
-x2 : constant command renames x;
+x : limited command := "/bin/true";
+x2 : limited command renames x;
 
 -- enumerated variables
 
@@ -4605,7 +4610,7 @@ begin
   null;
 end abstract2;
 
-procedure abstract3( a1 : abstract_type ) is null abstract;
+--procedure abstract3( a1 : abstract_type ) is null abstract;
 
 procedure abstract4( a2 : abstract_type ) is abstract
 begin
@@ -4617,7 +4622,7 @@ begin
   return false;
 end abstract5;
 
-function abstract6( a3 : abstract_type ) return boolean is null abstract;
+--function abstract6( a3 : abstract_type ) return boolean is null abstract;
 
 function abstract7( a4 : abstract_type ) return boolean is abstract
 begin
@@ -4639,6 +4644,9 @@ declare
   type lr is limited record
      i : integer;
   end record;
+  -- no easy way to create a limited record and use it as we currently
+  -- need a built-in procedure that accepts one as a paramter.
+  pragma assumption( applied, lr );
 begin
   null;
 end;

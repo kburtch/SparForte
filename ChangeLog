@@ -28,5 +28,9 @@ CHANGES SINCE 2.1
 
 12. New: return statements may have a when clause, like an exit statement.
 
-13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant".
+13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant". [tests, docs to update]
+
+14. Change: command variables must now be limited instead of constant, in line with new limited functionality.  They cannot be used in an expression or assigned to.
+
+15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning.
 

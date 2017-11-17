@@ -1,4 +1,4 @@
 # This should fail
 
-e : command := "/bin/echo"; -- missing constant
+e : command := "/bin/echo"; -- missing limited
 

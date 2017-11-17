@@ -126,6 +126,9 @@ begin
   shell_word := null_unbounded_string;
   if identifiers( token ).kind = command_t then   -- handle a command type
       shell_word := identifiers( token ).value.all;
+      if syntax_check then
+         identifiers( token ).wasReferenced := true;
+      end if;
   elsif token = symbol_t then
      shell_word := identifiers( token ).value.all;
   elsif token = word_t then
@@ -475,6 +478,7 @@ begin
            --
            -- rather than eof, precaution against unexpected values
            recId := identifiers( token ).field_of;
+           -- TODO: this could be more efficient
            if recId in reserved_top..identifiers'last then
               identifiers( recId ).wasReferenced := true;
            else
@@ -649,7 +653,6 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
              end;
           end if;
        elsif syntax_check then
---put_line( "wasFactor 1" ); -- DEBUGME
           identifiers( array_id ).wasFactor := true;
        end if;
        expect( symbol_t, ")" );                  -- element type is k's k
@@ -670,7 +673,6 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        -- Mark as used as a factor.  if it is a record field, mark the whole
        -- record as used as a factor for limit type testing purposes.
        if syntax_check then
---put_line( "wasFactor 2 - " & to_string( identifiers( t ).name ) ); -- DEBUGME
           if t /= eof_t then
              identifiers( t ).wasFactor := true;
              if identifiers( t ).field_of /= eof_t then
@@ -3346,7 +3348,6 @@ begin
                if syntax_check and then not error_found then
                   identifiers( dont_care_t ).wasReferenced := true;
                   identifiers( dont_care_t ).wasWritten := true;
---put_line( "wasFactor 3" ); -- DEBUGME
                   identifiers( dont_care_t ).wasFactor := true;
                end if;
             end;
@@ -3558,8 +3559,9 @@ begin
   elsif getBaseType( type_token ) = command_t then
      if onlyAda95 then
         err( "command types not allowed with " & optional_bold( "pragma ada_95" ) );
-     elsif not expr_expected then
-        err( "command variables must be constant" );
+     elsif identifiers( id ).usage /= limitedUsage then
+        err( "command variables must be " & optional_bold( "limited" ) );
+        expr_expected := true;
      end if;
   end if;
 
@@ -4118,7 +4120,7 @@ begin
 end ParseType;
 
 procedure ParseSubtype is
-   -- Syntax: type = "subtype newtype is [abstract] oldtype"
+   -- Syntax: type = "subtype newtype is [abstract|limited] oldtype"
    newtype_id : identifier;
    parent_id : identifier;
    b : boolean;
@@ -4126,34 +4128,9 @@ begin
    expect( subtype_t );                                    -- "subtype"
    ParseNewIdentifier( newtype_id );                       -- type name
    expect( is_t );                                         -- "is"
-
-   if token = abstract_t then                              -- abstract type?
-      if onlyAda95 then
-        err( "abstract subtypes not allowed with " &
-            optional_bold( "pragam ada_95" ) );
-      end if;
-      identifiers( newtype_id ).usage := abstractUsage;    -- no variables
-      expect( abstract_t );
-   end if;
-
-   if token = limited_t then                               -- limited type?
-      if identifiers( newtype_id ).usage = abstractUsage then
-         err( "abstract subtypes don't need to be limited subtypes" );
-      elsif onlyAda95 then
-        err( "limited subtypes not allowed with " &
-            optional_bold( "pragam ada_95" ) );
-      end if;
-      identifiers( newtype_id ).usage := limitedUsage;     -- no assignment
-      expect( limited_t );
-      if token = abstract_t then
-         err( optional_bold( "abstract" ) & " comes before " &
-              optional_bold( "limited" ) & ", but also abstract subtypes " &
-              "don't need to be limited subtypes" );
-         expect( abstract_t );
-      end if;
-   end if;
-
+   ParseTypeUsageQualifiers( newtype_id );                 -- limited, etc.
    ParseIdentifier( parent_id );                           -- old type
+
    if class_ok( parent_id, genericTypeClass, typeClass,
                subClass ) then                             -- not a type?
       if isExecutingCommand then                           -- OK to execute?
@@ -4828,7 +4805,6 @@ begin
      if syntax_check and then not error_found then
         identifiers( for_var ).wasReferenced := true;
         identifiers( for_var ).wasWritten := true;
---put_line( "wasFactor 4" ); -- DEBUGME
         identifiers( for_var ).wasFactor := true;
      end if;
      if baseTypesOk( expr1_type, expr2_type ) then      -- check types
@@ -6640,6 +6616,10 @@ begin
         expect( null_t );
         expect( abstract_t );
         identifiers( proc_id ).usage := abstractUsage;
+        if syntax_check then
+           identifiers( proc_id ).wasReferenced := true;
+        end if;
+        pullBlock;
      else
         if token = separate_t then
            if rshOpt then
@@ -6655,6 +6635,9 @@ begin
         elsif token = abstract_t then
            expect( abstract_t );
            identifiers( proc_id ).usage := abstractUsage;
+           if syntax_check then
+              identifiers( proc_id ).wasReferenced := true;
+           end if;
         elsif abstract_parameter /= eof_t then
            err( "procedure must be abstract because parameter type " &
               optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
@@ -6836,10 +6819,21 @@ begin
   ParseExpression( expr_value, expr_type );
   typesOK := baseTypesOK( identifiers( formalParamId ).kind, expr_type );
   if typesOK and then declareParams then
-     declareStandardConstant( usableParamId,
-        to_string( paramName ),
-        identifiers( formalParamId ).kind,
-        to_string( expr_value ) );
+     declareIdent(
+         usableParamId,
+         to_string( paramName ),
+         identifiers( formalParamId ).kind
+     );
+     -- For an in-mode parameter, downgrade full usage to constant
+     -- limited, abstract already cannot be assigned to.
+     if identifiers( usableParamId ).usage = fullUsage then
+        identifiers( usableParamId ).usage := constantUsage;
+     end if;
+     -- Originally, made a constant but constant is now a usage qualifier
+     --declareStandardConstant( usableParamId,
+     --   to_string( paramName ),
+     --   identifiers( formalParamId ).kind,
+     --   to_string( expr_value ) );
      if isExecutingCommand then
         identifiers( usableParamId ).value.all := expr_value;
         if trace then
@@ -6876,7 +6870,6 @@ begin
         identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
      else
         identifiers( actual_param_ref.id ).wasWritten := true;
---put_line( "wasFactor 5" ); -- DEBUGME
         identifiers( actual_param_ref.id ).wasFactor := true;
      end if;
   end if;
@@ -7131,6 +7124,10 @@ begin
         expect( null_t );
         expect( abstract_t );
         identifiers( func_id ).usage := abstractUsage;
+        if syntax_check then
+           identifiers( func_id ).wasReferenced := true;
+        end if;
+        pullBlock;
      else
         if token = separate_t then
            if rshOpt then
@@ -7146,6 +7143,9 @@ begin
         elsif token = abstract_t then
            expect( abstract_t );
            identifiers( func_id ).usage := abstractUsage;
+           if syntax_check then
+              identifiers( func_id ).wasReferenced := true;
+           end if;
         elsif abstract_parameter /= eof_t then
            err( "function must be abstract because parameter type " &
               optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
@@ -7289,7 +7289,6 @@ begin
           if syntax_check then
              identifiers( chain_count_id ).wasReferenced := true;
              identifiers( chain_count_id ).wasWritten := true;
---put_line( "wasFactor 5b" ); -- DEBUGME
              identifiers( chain_count_id ).wasFactor := true;
              identifiers( last_in_chain_id ).wasReferenced := true;
              identifiers( last_in_chain_id ).wasWritten := true;
@@ -8530,39 +8529,111 @@ begin
   itself := identifiers( var_id ).value.all;
   itself_type := var_kind;
 
-  -- At a debug breakout prompt, constant assignment is permitted
+  -- Handle usage qualifiers (record fields)
+  --
+  -- At a debug breakout prompt, constant and limited assignment is permitted
+  -- with a warning to the user.
+  --
+  -- Record fields are a little complicated.  As record are collections of
+  -- variables, check both the parent record of the file and that record's
+  -- type to see if it is constant or limited.  If so, treat the field as
+  -- constant or limited.
 
-  if inputMode = breakout and identifiers( var_id ).usage = constantUsage then
-     put_trace( "Warning: assigning a new value to a constant" );
-  elsif not class_ok( var_id, varClass ) then
-     null;
-  end if;
+  if class_ok( var_id, varClass ) then
 
-  -- For a record field, check the record variable and the record type to see
-  -- if it is limited.  If so, treat any field as limited.
+     -- field of a record?
 
-  if identifiers( var_id ).field_of /= eof_t then
-     if identifiers( identifiers( var_id ).field_of ).usage = limitedUsage then
-        err( "limited variables cannot be assigned a value" );
-     elsif identifiers(
-           identifiers (
-               identifiers( var_id ).field_of
-           ).kind
-        ).usage = limitedUsage then
-        err( "limited types cannot be assigned a value" );
+     if identifiers( var_id ).field_of /= eof_t then
+
+        -- check the usage qualifier of the parent
+
+        case identifiers( identifiers( var_id ).field_of ).usage is
+        when abstractUsage =>
+           err( "internal error: variables should not have abstract types" );
+        when limitedUsage =>
+           if inputMode = breakout then
+              put_trace( "Warning: assigning a new value to a limited record field" );
+           else
+              err( "limited record fields cannot be assigned a value" );
+           end if;
+        when constantUsage =>
+           if inputMode = breakout then
+              put_trace( "Warning: assigning a new value to a constant record field" );
+           else
+              err( "constant record fields cannot be assigned a value" );
+           end if;
+        when fullUsage =>
+
+        -- check the usage qualifier of the parent's type
+
+           case identifiers(
+                 identifiers (
+                     identifiers( var_id ).field_of
+                 ).kind
+              ).usage is
+           when abstractUsage =>
+              null; -- don't bother checking
+           when limitedUsage =>
+              if inputMode = breakout then
+                 put_trace( "Warning: assigning a new value to a limited record field" );
+              else
+                 err( "limited record fields cannot be assigned a value" );
+              end if;
+           when constantUsage =>
+              if inputMode = breakout then
+                 put_trace( "Warning: assigning a new value to a constant record field" );
+              else
+                 err( "constant record fields cannot be assigned a value" );
+              end if;
+           when fullUsage =>
+              null;
+           when others =>
+              err( "internal error: unexpected usage qualifier" );
+           end case;
+
+        when others =>
+           err( "internal error: unexpected usage qualifier " &
+              identifiers( identifiers( var_id ).field_of ).usage'img );
+        end case;
+
      end if;
+
+     -- Handle usage qualifiers
+     --
+     -- Check everything here. Including record fields that passed the parent
+     -- record tests.
+
+     case identifiers( var_id ).usage is
+
+     when abstractUsage =>
+        err( "internal error: variables should not be abstract" );
+
+     when limitedUsage =>
+        if inputMode = breakout then
+           put_trace( "Warning: assigning a new value to a limited variable" );
+        else
+           err( "limited variables cannot be assigned a value" );
+        end if;
+
+     when constantUsage =>
+        if inputMode = breakout then
+           put_trace( "Warning: assigning a new value to a constant variable" );
+        else
+           err( "constant variables cannot be assigned a value" );
+        end if;
+
+     when fullUsage =>
+        null;
+
+     when others =>
+        err( "internal error: unexpected usage qualifier " & identifiers( var_id ).usage'img );
+     end case;
   end if;
 
-  -- Otherwise, check the variable's type to see if it is limited.
-  -- A variable itself can also be limited.
-  -- This can also be applied to individual record fields as a special case.
-
-  if identifiers( var_kind ).usage = limitedUsage then
-     err( "limited types cannot be assigned a value" );
-  elsif identifiers( var_id ).usage = limitedUsage then
-     err( "limited variables cannot be assigned a value" );
+  -- Handle aggregate type assignment checks
   -- TODO: this will break when we can create derived record types
-  elsif var_kind = root_record_t then
+
+  if var_kind = root_record_t then
      err( "cannot assign to an entire record" );
   -- Array element
   elsif identifiers( var_id ).list then
@@ -8571,6 +8642,7 @@ begin
      if getUniType( index_kind ) = uni_string_t or identifiers( index_kind ).list then
         err( "scalar expression expected" );
      end if;
+
      expect( symbol_t, ")" );
 
      if isExecutingCommand then
@@ -8578,10 +8650,8 @@ begin
         if identifiers( var_id ).avalue = null then
            err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
         elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG
--- put_line( "internal error: array index out of bounds" ); -- DEBUG
            err( "array index " & to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
         elsif identifiers( var_id ).avalue'last < arrayIndex then
--- put_line( "internal error: array index out of bounds" ); -- DEBUG
            err( "array index " &  to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
         end if;
      end if;
@@ -8607,30 +8677,6 @@ begin
 
   -- Type testing and casting
 
-  --if getUniType( var_id ) = uni_numeric_t then
-  --   -- int types have special handling
-  --   --if intTypesOK( right_type, var_kind ) then
-  --   if baseTypesOk( var_kind, right_type ) then
-  --      null;
-  --   end if;
-  --   -- numeric test.  universal typelesses could result
-  --   -- in a non-numeric expression that baseTypesOk
-  --   -- doesn't catch.
-  --   -- declare
-  --   --    lf : long_float;
-  --   begin
-  --      if isExecutingCommand then
-  --         expr_value := castToType( expr_value, right_type );
-  --         -- lf := to_numeric( expr_value );
-  --         -- -- handle integer types
-  --         -- expr_value := castToType( lf, var_kind );
-  --      end if;
-  --   exception when others =>
-  --      err( "'" & to_string( expr_value) & "' is not numeric" );
-  --   end;
-  -- elsif baseTypesOk( var_kind, right_type ) then
-
-  -- Assigning to an exception variable will be flagged as illegal, but we may
   -- try to assign an exception to a universal type.  We need to flag that as
   -- a special case
   if right_type = exception_t then
@@ -8653,11 +8699,9 @@ begin
   if syntax_check and then not error_found then
      if identifiers( var_id ).field_of /= eof_t then
         identifiers( identifiers( var_id ).field_of ).wasWritten := true;
---put_line( "wasFactor 6" ); -- DEBUGME
         identifiers( identifiers( var_id ).field_of ).wasFactor := true;
      else
         identifiers( var_id ).wasWritten := true;
---put_line( "wasFactor 7" ); -- DEBUGME
         identifiers( var_id ).wasFactor := true;
      end if;
   end if;

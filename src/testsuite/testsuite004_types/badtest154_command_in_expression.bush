@@ -1,5 +1,5 @@
 # This should fail
 
-e : constant command := "/bin/echo";
+e : limited command := "/bin/echo";
 e := e & "!"; -- cannot use commands in expressions
 

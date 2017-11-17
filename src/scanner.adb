@@ -343,8 +343,10 @@ begin
            put( "limited " );
         when constantUsage =>
            put( "constant " );
+        when fullUsage =>
+           null;
         when others =>
-           err( "internal error: unexpected usage qualifier" );
+           err( "internal error: unexpected usage qualifier " & ident.usage'img );
         end case;
      when typeClass =>
         if not ident.list then
@@ -358,8 +360,10 @@ begin
            put( "limited " );
         when constantUsage =>
            put( "constant " );
+        when fullUsage =>
+           null;
         when others =>
-           err( "internal error: unexpected usage qualifier" );
+           err( "internal error: unexpected usage qualifier " & ident.usage'img );
         end case;
      when funcClass =>
         put( "built-in " );
@@ -410,8 +414,10 @@ begin
         put( "limited " );
      when constantUsage =>
         put( "constant " );
+     when fullUsage =>
+        null;
      when others =>
-        err( "internal error: unexpected type usage qualifier" );
+        err( "internal error: unexpected usage qualifier " & ident.usage'img );
      end case;
 
      -- Show the type
@@ -1584,16 +1590,18 @@ begin
          end if;
          -- Do not apply to record fields as some record fields may not be
          -- accessed.
-         if not identifiers( i ).wasFactor then
+         if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
             if testOpt then
                if not onlyAda95 then -- limited not available with pragma ada_95
                   if identifiers( i ).class = varClass then
                      if identifiers( i ).field_of /= eof_t then
                         if identifiers( i ).usage /= limitedUsage then
-                           err( optional_bold( to_string( identifiers( i ).name ) ) &
-                              " is a " & optional_bold( "not-limited variable" ) &
-                              " but expected a " & optional_bold( "limited" ) &
-                              ".  It (or its elements) are not used in expressions." );
+                           if identifiers( i ).name /= "return value" then
+                              err( optional_bold( to_string( identifiers( i ).name ) ) &
+                                 " is a " & optional_bold( "not-limited variable" ) &
+                                 " but expected a " & optional_bold( "limited" ) &
+                                 ".  It (or its elements) are not used in expressions nor is assigned to." );
+                           end if;
                         end if;
                      end if;
                   end if;
@@ -1698,7 +1706,7 @@ begin
          end if;
 --put_line( to_string( identifiers( i ).name ) & "being tested" ); -- DEBUGME
 --put_line( identifiers( i ).wasFactor'img ); -- DEBUGME
-         if not identifiers( i ).wasFactor then
+         if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
 --put_line( to_string( identifiers( i ).name ) & " is not a factor" ); -- DEBUGME
             if testOpt then
 --put_line( "test opt" ); -- DEBUGME
@@ -1707,10 +1715,12 @@ begin
                   if not onlyAda95 then -- limited not available with pragma ada_95
 --put_line( "not ada_95" ); -- DEBUGME
                      if identifiers( i ).usage /= limitedUsage then
-                        err( optional_bold( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_bold( "not-limited variable" ) &
-                           " but expected a " & optional_bold( "limited" ) &
-                           ".  It (or its elements) are not used in expressions." );
+                        if identifiers( i ).name /= "return value" then
+                           err( optional_bold( to_string( identifiers( i ).name ) ) &
+                              " is a " & optional_bold( "not-limited variable" ) &
+                              " but expected a " & optional_bold( "limited" ) &
+                              ".  It (or its elements) are not used in expressions nor is assigned to." );
+                        end if;
                      end if;
                   end if;
                end if;
