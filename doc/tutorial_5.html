@@ -42,7 +42,7 @@
 <h2><a name="2.5"></a>Script Tutorial 2: Intermediate Program Scripts</h2>
 
 <p>The first script tutorial showed how to write a basic script.  This
-tutorial discusses how execute statements and delcarations can be
+tutorial discusses how execute statements and declarations can be
 organized.  It also discusses how scripts can evolve and grow under
 SparForte.</p>
 
@@ -364,11 +364,18 @@ is discussed in the reference section.</p>
 programmer, SparForte has a design mode that is turned on
 with the command line option <span style="font-weight: bold;">--design</span>.</p>
 
-<p>In design mode, "spec out" your project by declaring types, global
-variables and empty functions and procedures.  These subprograms that
-do nothing are sometimes called "stubs".  Using stubs creates a
-skeleton program that has enough structure to be tested by SparForte.
-Comment that your work is unfinished with a
+<p>In design phase mode, you can "spec out" (or create a high level
+design) for your project.  You can declaring types, global
+variables and empty functions and procedures.  Unfinished items can
+be declared using the word <span style="font-weight: bold;">abstract</span>,
+which means they are not ready for use.  Subprograms that do nothing
+are called "stubs".  Using stubs creates a skeleton program that has
+enough structure to be tested by SparForte.</p>
+
+<p>Explain your unfinished work with
+<span style="font-weight: bold;">pragma todo</span>, describing
+the work owner, effort and priority.</p>
+
 <span style="font-weight: bold;">pragma annotate( todo )</span>.
 Then run syntax checking to confirm that your overall design is
 well-crafted.</p>
@@ -388,30 +395,20 @@ well-crafted.</p>
 <br>
 &nbsp;&nbsp;total : integer;<br>
 <br>
-&nbsp;&nbsp;<b>function</b> get_customer <b>return</b> customer <b>is</b><br>
-&nbsp;&nbsp;<b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> no_customer;<br>
-&nbsp;&nbsp;<b>end</b> get_customer;<br>
+&nbsp;&nbsp;<b>function</b> get_customer <b>return</b> customer <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;-- a stub function
 <br>
-&nbsp;&nbsp;<b>function</b> get_supplier <b>return</b> supplier <b>is</b><br>
-&nbsp;&nbsp;<b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> no_supplier;<br>
-&nbsp;&nbsp;<b>end</b> get_supplier;<br>
+&nbsp;&nbsp;<b>function</b> get_supplier <b>return</b> supplier <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;-- a stub function
 <br>
-&nbsp;&nbsp;<b>procedure</b> set_customer( c : customer; name : string ) <b>is</b><br>
-&nbsp;&nbsp;<b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
-&nbsp;&nbsp;<b>end</b> set_customer;<br>
+&nbsp;&nbsp;<b>procedure</b> set_customer( c : customer; name : string ) <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;-- a stub function
 <br>
-&nbsp;&nbsp;<b>procedure</b> set_supplier( c : supplier; name : string ) <b>is</b><br>
-&nbsp;&nbsp;<b>begin</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
-&nbsp;&nbsp;<b>end</b> set_supplier;<br>
+&nbsp;&nbsp;<b>procedure</b> set_supplier( s : supplier; name : string ) <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;-- a stub function
 <br>
 <b>begin</b><br>
-&nbsp;&nbsp;<b>pragma</b> annotate( todo, "unfinished" );<br>
+&nbsp;&nbsp;<b>null</b>; -- no main program
 <b>end</b> design_example;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
@@ -429,12 +426,13 @@ well-crafted.</p>
         </center>
 
 <p>In design mode, SparForte will focus on design errors and will ignore
-errors related to unfinished work.</p>
+errors related to unfinished work.  If no errors are reported, the
+design is good.</p>
 
 <p>This is also a good time to choose any architectural pragmas to shape
 the design of your project.</p>
 
-<p>Specing out your project instead of immediately writing executable
+<p>If you spec out your project instead of immediately writing executable
 code has several advantages:</p>
 
 <ul>
@@ -515,19 +513,103 @@ case, set the size estimate to unknown.  SparForte will treat these as
 tasks that have not been started and will not ignore these for
 release purposes.</p>
 
+        <center>
+        <div class="code">
+        <p class="code">
+#!/usr/local/bin/spar<br>
+&nbsp;<br>
+<b>procedure</b> design_example <b>is</b><br>
+<br>
+&nbsp;&nbsp;team : teams.member;<br>
+&nbsp;&nbsp;-- for this example, all work is assigned to the team<br>
+<br>
+&nbsp;&nbsp;<b>type</b> customer <b>is</b> <b>new</b> natural;<br>
+&nbsp;&nbsp;no_customer : <b>constant</b> customer := 0;<br>
+<br>
+&nbsp;&nbsp;<b>type</b> supplier <b>is</b> <b>new</b> natural;<br>
+&nbsp;&nbsp;no_supplier : <b>constant</b> supplier := 0;<br>
+<br>
+&nbsp;&nbsp;total : integer;<br>
+<br>
+&nbsp;&nbsp;<b>function</b> get_customer <b>return</b> customer <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;<b>pragma</b> todo( team,<br>
+&nbsp;&nbsp;&nbsp;"get_customer is unfinished",<br>
+&nbsp;&nbsp;&nbsp;work_measure.story_points, 2,<br>
+&nbsp;&nbsp;&nbsp; work_priority.level, 'm' );<br>
+&nbsp;&nbsp;-- a stub function, medium priority, 2 story points of work to complete<br>
+<br>
+&nbsp;&nbsp;<b>function</b> get_supplier <b>return</b> supplier <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;<b>pragma</b> todo( team,<br>
+&nbsp;&nbsp;&nbsp;"get_supplier is unfinished",<br>
+&nbsp;&nbsp;&nbsp;work_measure.story_points, 2,<br>
+&nbsp;&nbsp;&nbsp; work_priority.level, 'm' );<br>
+&nbsp;&nbsp;-- a stub function, medium priority, 2 story points of work to complete<br>
+<br>
+&nbsp;&nbsp;<b>procedure</b> set_customer( c : customer; name : string ) <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;<b>pragma</b> todo( team,<br>
+&nbsp;&nbsp;&nbsp;"set_customer is unfinished",<br>
+&nbsp;&nbsp;&nbsp;work_measure.story_points, 3,<br>
+&nbsp;&nbsp;&nbsp; work_priority.level, 'm' );<br>
+&nbsp;&nbsp;-- a stub function, medium priority, 3 story points of work to complete<br>
+<br>
+&nbsp;&nbsp;<b>procedure</b> set_supplier( s : supplier; name : string ) <b>is</b> <b>null</b> <b>abstract</b>;<br>
+&nbsp;&nbsp;<b>pragma</b> todo( team,<br>
+&nbsp;&nbsp;&nbsp;"set_supplier is unfinished",<br>
+&nbsp;&nbsp;&nbsp;work_measure.story_points, 3,<br>
+&nbsp;&nbsp;&nbsp; work_priority.level, 'm' );<br>
+&nbsp;&nbsp;-- a stub function, medium priority, 3 story points of work to complete<br>
+<br>
+<b>begin</b><br>
+&nbsp;&nbsp;<b>pragma</b> todo( team,<br>
+&nbsp;&nbsp;&nbsp;"main program is unfinished",<br>
+&nbsp;&nbsp;&nbsp;work_measure.story_points, 1,<br>
+&nbsp;&nbsp;&nbsp; work_priority.level, 'h' );<br>
+&nbsp;&nbsp;-- high priority, 1 story point of work to complete<br>
+<b>end</b> design_example;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: Simple Example of Specing Out a Project
+        </div>
+        </div>
+        </center>
+
 <p>The <span style="font-weight: bold;">help -t</span> command will scan a project and create an unfinished
 work report.  The start of the report is a list of outstanding tasks in
 CSV format.  These can
 be imported into a spreadsheet or any ticket system supporting CSV
-imports.  The end of the report is a summary of the oustanding tasks.
-This summary can be used, for example, to create burn-down charts if  you
+imports.  The end of the report is a summary of the outstanding tasks.
+This summary can be used, for example, to create burn-down charts if you
 are using Scrum.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">=&gt; help -t design_example.sp<br>
+Help for script t.sp:<br>
+<br>
+team,"get_customer is unfinished",work_measure.story_points, 2,work_priority.level,m<br>
+team,"get_supplier is unfinished",work_measure.story_points, 2,work_priority.level,m<br>
+team,"set_customer is unfinished",work_measure.story_points, 3,work_priority.level,m<br>
+team,"set_supplier is unfinished",work_measure.story_points, 3,work_priority.level,m<br>
+team,"main program is unfinished",work_measure.story_points, 1,work_priority.level,h<br>
+<br>
+Amount of Work<br>
+<br>
+Story Points: 11<br>
+<br>
+Priorities of  Work<br>
+<br>
+Medium: 4<br>
+High: 1<br>
+</p>
+        </div>
+        </center>
+
 
 <h3>Team Collaboration During Development</h3>
 
 <p>SparForte has features for team communication.  Acting like a messenging
 system within the project, team members can propose changes, request
-assistance and so forth.  This is particularily useful in open source
+assistance and so forth.  This is particularly useful in open source
 projects or teams with geographically remote members.</p>
 
 <p>The help command will display these messages, which can be filtered
@@ -547,7 +629,7 @@ command.&nbsp; This debugging statements only run if SparForte is in
 debugging mode with the --debug option (or pragma debug with no
 parameters).&nbsp; With these pragmas, you won't need to remove
 or comment out your debugging statements and risk changing your script's
-behavior.</p>
+behaviour.</p>
 
         <center>
         <div class="code">
