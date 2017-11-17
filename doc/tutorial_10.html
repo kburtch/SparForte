@@ -40,22 +40,17 @@
 				<!-- Content Area -->
 
 <h2><a name="2.10"></a>Creating a Profile Script</h2>
-<p>When SparForte is started when a user first logs in, SparForte attempts to find
-and
-run "profile" scripts--a list of commands to set up a user's
-environment.
-By creating a profile script, a user can create variables or run
-programs
+<p>When SparForte is started when a user first logs in (or if it is started
+with --login), SparForte search for a profile script.  This is a list of
+commands to run that will set up a user's environment.  By creating a
+profile script, a user can create variables or run programs
 every time they log in.</p>
+<p>There are two profile scripts.</p>
 <p>First, SparForte looks for a script called "/etc/spar_profile". This
-script
-should contain commands to be run by every user logging in.
-</p>
-<p>Second, SparForte looks for a script called ".sparforte_profile" in the user's
-home directory. This script should contain commands specific to a
-particular
-user.
-</p>
+script should contain commands to be run by every user logging in.</p>
+<p>Second, SparForte looks for a script called ".sparforte_profile" in
+the user's home directory (for example, "/home/ken/.sparforte_profile").
+This script should contain commands specific to a particular user.</p>
 <p>The following is a sample ".sparforte_profile" script:
 </p>
 
@@ -140,6 +135,10 @@ date;
 <p>After the profile scripts are executed, the user sees the "=&gt;"
 prompt and
 can being entering commands.</p>
+
+<p>SparForte perform security checks before running a profile script,
+and will raise an exception if there is a problem.  The script file
+must be a regular file, not empty and must not be world writable.</p>
 
 <h3>Study Questions</h3>
 <ol>

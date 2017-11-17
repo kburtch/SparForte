@@ -115,8 +115,8 @@ can you use either of these new types with float function parameter.</p>
 <li>database id numbers</li>
 <li>different units of measurement</li>
 <li>different characteristics</li>
-<li>validated and unvalidated web application data</li>
-<li>encoded and unencoded data</li>
+<li>valid and unchecked web application data</li>
+<li>encoded and plain data</li>
 </ul>
 
 <p>The type system is static, which means the types are usually checked
@@ -153,14 +153,14 @@ same by using a type name as a function.  This is called <b>type casting</b>.
 Use type casting to override type incompatibilities.</p>
 
 <p>For example, suppose you have two types, one for HTML encoded strings
-and one for unencoded strings.</p>
+and one for plain HTML strings.</p>
 
         <center>
         <div class="code">
                 <p class="code"><b>type</b> html_encoded_string <b>is</b> <b>new</b> string;<br>
-<b>type</b> html_unencoded_string <b>is</b> <b>new</b> string;<br>
+<b>type</b> html_plain_string <b>is</b> <b>new</b> string;<br>
 ...<br>
-title : constant html_unencoded_string := "My Page Title";<br>
+title : constant html_plain_string := "My Page Title";<br>
 web_page : html_encoded_string;<br>
         </div>
         </center>
@@ -176,7 +176,7 @@ it to an html_encoded_string value using type casting.</p>
         </center>
 
 <p>In SparForte, the positive and natural types are treated specially.
-These are subranges of the integer type.  Positive values are always
+These are subsets of the integer type.  Positive values are always
 compatible with natural values, and natural values are always
 compatible with integer values.  But natural values cannot be assigned
 to a positive, for example, because the range of possible values for a
@@ -252,7 +252,7 @@ program runs.</p>
 more convenient when creating a quick prototype or a short script,
 but you also lose the safety, readability and easy scaling advantages
 of explicit types and compile-time error checking.  Like any data type,
-be cautious and chose the approprite type for your task.</p>
+be cautious and chose the appropriate type for your task.</p>
 
 <h3>Types, Subtypes and Aggregate Types</h3>
 
