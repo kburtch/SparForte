@@ -140,6 +140,7 @@ procedure StartupGnatCRC is
 begin
   declareNamespace( "gnat.crc32" );
   declareIdent( gnat_crc32_crc32_t, "gnat.crc32.crc32", uni_numeric_t, typeClass );
+  identifiers( gnat_crc32_crc32_t ).usage := limitedUsage;
   declareProcedure( gnat_crc32_initialize_t, "gnat.crc32.initialize", ParseGnatCRC32Initialize'access );
   declareProcedure( gnat_crc32_update_t, "gnat.crc32.update", ParseGnatCRC32Update'access );
   declareFunction( gnat_crc32_get_value_t, "gnat.crc32.get_value",ParseGnatCRC32GetValue'access );

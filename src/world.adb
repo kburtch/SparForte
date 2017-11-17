@@ -637,9 +637,9 @@ begin
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
        sc.svalue := to_unbounded_string( value );
-       sc.class := constClass;
+       sc.class := varClass;
        sc.static := true;                                       -- identifier
-       sc.usage := fullUsage;
+       sc.usage := constantUsage;
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
        sc.value := sc.svalue'access;
@@ -701,13 +701,13 @@ begin
        identifiers(id).name     := identifiers( proc_id ).name & "." & identifiers( id ).name;
     end if;
     identifiers(id).svalue   := to_unbounded_string( parameterNumber'img );
-    identifiers(id).class    := constClass;
+    identifiers(id).class    := varClass;
     identifiers(id).kind     := kind;
     identifiers(id).import   := false;
     identifiers(id).export   := false;
     identifiers(id).volatile := false;
     identifiers(id).static   := false;
-    identifiers(id).usage    := fullUsage;
+    identifiers(id).usage    := constantUsage;
     identifiers(id).list     := false;
     identifiers(id).field_of := proc_id;
     identifiers(id).inspect  := false;
@@ -791,14 +791,14 @@ begin
                  kind     => identifiers( i ).kind,
                  --value    => svalue'access,
                  value    => null,
-                 class    => constClass,
+                 class    => varClass,
                  import   => false,
                  method   => none,
                  mapping  => none,
                  export   => false,
                  volatile => false,
                  static   => false,
-                 usage    => fullUsage,
+                 usage    => constantUsage,
                  list     => identifiers( identifiers( i ).kind ).list,   -- arrays now supported
                  resource => false,
                  field_of => eof_t,
@@ -828,7 +828,7 @@ begin
      -- out or in out can be assigned to
      if identifiers( i ).passingMode = out_mode or
         identifiers( i ).passingMode = in_out_mode then
-        identifiers( id ).class := varClass;
+        identifiers( id ).usage := fullUsage;
      end if;
   end if;
 
@@ -862,14 +862,14 @@ begin
        kind     => identifiers( func_id ).kind,
        value    => null,
        --value    => svalue'access,
-       class    => constClass,
+       class    => varClass,
        import   => false,
        method   => none,
        mapping  => none,
        export   => false,
        volatile => false,
        static   => false,
-       usage    => fullUsage,
+       usage    => constantUsage,
        list     => false,
        resource => false,
        field_of => eof_t,
@@ -1750,7 +1750,6 @@ end checkAndInitializeDistributedMemcacheCluster;
 function getIdentifierClassImage( c : anIdentifierClass ) return string is
 begin
   case c is
-  when constClass       => return "constant";
   when subClass         => return "subtype";
   when typeClass        => return "type";
   when funcClass        => return "built-in function";

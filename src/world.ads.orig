@@ -255,7 +255,7 @@ libraryPath : Unbounded_String;
 --
 -- Identifier classes
 --
---   constClass    - a constant
+--   constClass    - a constant (removed 17/11/14)
 --   subClass      - a subtype
 --   typeClass     - a type
 --   funcClass     - a function
@@ -270,7 +270,7 @@ libraryPath : Unbounded_String;
 --   configurationClass - a configuration block
 --   otherClass    - an undefined class
 
-type anIdentifierClass is ( constClass, subClass, typeClass, funcClass,
+type anIdentifierClass is ( subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   exceptionClass, varClass, namespaceClass, enumClass, policyClass,
   configurationClass, genericTypeClass, otherClass );
@@ -296,7 +296,7 @@ type anImportMapping is ( none, json );
 -- limitedUsage  - no expressions or assignment
 -- constUsage    - read only (a constant)
 
-type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constUsage );
+type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constantUsage );
 
 ------------------------------------------------------------------------------
 --

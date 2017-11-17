@@ -241,7 +241,7 @@ begin
        put( "unknown" );
      end;
   end if;
-  if identifiers( token ).field_of /= eof_t and identifiers( token ).class = constClass then
+  if identifiers( token ).field_of /= eof_t and identifiers( token ).usage = constantUsage then
      Put( "formal parameter of " );
      begin
        put( identifiers( identifiers( token ).field_of ).name );
@@ -336,27 +336,31 @@ begin
            put( "subtype of " );
         end if;
         -- abstract/limited are the type itself, not its parent
-        if ident.usage = abstractUsage then
+        case ident.usage is
+        when abstractUsage =>
            put( "abstract " );
-        end if;
-        if ident.usage = limitedUsage then
+        when limitedUsage =>
            put( "limited " );
-        end if;
+        when constantUsage =>
+           put( "constant " );
+        when others =>
+           err( "internal error: unexpected usage qualifier" );
+        end case;
      when typeClass =>
         if not ident.list then
            put( "new type of " );
         end if;
         -- abstract/limited are the type itself, not its parent
-        if ident.usage = abstractUsage then
+        case ident.usage is
+        when abstractUsage =>
            put( "abstract " );
-        end if;
-        if ident.usage = limitedUsage then
+        when limitedUsage =>
            put( "limited " );
-        end if;
-     when constClass =>
-        if ident.field_of = eof_t then
+        when constantUsage =>
            put( "constant " );
-        end if;
+        when others =>
+           err( "internal error: unexpected usage qualifier" );
+        end case;
      when funcClass =>
         put( "built-in " );
         if ident.usage = abstractUsage then
@@ -397,17 +401,18 @@ begin
         put( "identifier of the type " );
      end case;
 
-     -- Abstract
+     -- Usage qualifier
 
-     if kind.usage = abstractUsage then
+     case kind.usage is
+     when abstractUsage =>
         put( "abstract " );
-     end if;
-
-     -- Limited type?
-
-     if kind.usage = limitedUsage then
+     when limitedUsage =>
         put( "limited " );
-     end if;
+     when constantUsage =>
+        put( "constant " );
+     when others =>
+        err( "internal error: unexpected type usage qualifier" );
+     end case;
 
      -- Show the type
      -- Failsafe: shouldn't be keyword, but just in case.
@@ -458,7 +463,7 @@ begin
            put( identifiers( ident.field_of ).name );
            put( " of type " );
            put( kind.name );
-        elsif ident.field_of /= eof_t and ident.class = constClass then
+        elsif ident.field_of /= eof_t and ident.usage = constantUsage then
            put( "formal parameter of " );
            put( identifiers( ident.field_of ).name );
            put( " of type " );
@@ -2816,7 +2821,7 @@ begin
      declareIdent( temp_id, "PATH", uni_string_t );           -- declare it
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).class := constClass;               -- PATH is a
+     identifiers( temp_id).usage := constantUsage;            -- PATH is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "PWD" ), temp_id );         -- PWD
   if temp_id = eof_t then                                     -- missing?
@@ -2836,21 +2841,21 @@ begin
      end;
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).class := constClass;               -- PWD is a
+     identifiers( temp_id).usage := constantUsage;            -- PWD is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "OLDPWD" ), temp_id );      -- OLDPWD
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "OLDPWD", uni_string_t );         -- declare it
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).class := constClass;               -- OLDPWD is a
+     identifiers( temp_id).usage := constantUsage;            -- OLDPWD is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "HOME" ), temp_id );        -- HOME
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "HOME", uni_string_t );           -- declare it
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).class := constClass;               -- HOME is a
+     identifiers( temp_id).usage := constantUsage;            -- HOME is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "SHELL" ), temp_id );       -- SHELL
   if temp_id = eof_t then                                     -- missing?
@@ -2864,7 +2869,7 @@ begin
      end if;
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).class := constClass;               -- SHELL is a
+     identifiers( temp_id).usage := constantUsage;            -- SHELL is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "TERM" ), temp_id );        -- TERM
   if temp_id = eof_t then                                     -- missing?
@@ -2886,7 +2891,7 @@ begin
   findIdent( to_unbounded_string( "SPAR_LIBRARY_PATH" ), temp_id ); -- SPAR_LIBRARY_PATH defined?
   if temp_id /= eof_t then                                    -- missing?
     if rshOpt then                                            -- restricted sh?
-       identifiers( temp_id).class := constClass;             -- it's a constant
+       identifiers( temp_id).usage := constantUsage;          -- it's a constant
     end if;
   end if;
   findIdent( to_unbounded_string( "TABSIZE" ), temp_id );        -- TABSIZE

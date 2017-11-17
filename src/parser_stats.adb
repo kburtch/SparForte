@@ -67,7 +67,7 @@ begin
   expect( stats_max_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -113,7 +113,7 @@ begin
   expect( stats_min_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -158,7 +158,7 @@ begin
   expect( stats_sum_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -200,7 +200,7 @@ begin
   expect( stats_average_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -246,7 +246,7 @@ begin
   expect( stats_variance_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
@@ -299,7 +299,7 @@ begin
   expect( stats_standard_deviation_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  if not (class_ok( var_id, varClass, constClass ) and identifiers( var_id ).list) then
+  if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      err( "Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then

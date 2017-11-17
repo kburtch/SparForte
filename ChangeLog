@@ -28,3 +28,5 @@ CHANGES SINCE 2.1
 
 12. New: return statements may have a when clause, like an exit statement.
 
+13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant".
+

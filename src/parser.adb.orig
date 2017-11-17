@@ -2710,7 +2710,7 @@ begin
      err( "aliased isn't supported" );
   elsif token = constant_t then                        -- handle constant
      expect( constant_t );                             -- by flagging variable
-     identifiers( id ).class := constClass;            -- as a constant and
+     identifiers( id ).usage := constantUsage;         -- as a constant and
      expr_expected := true;                            -- must assign value
   elsif token = abstract_t then                        -- abstract only makes sense
      err( optional_bold( "abstract" ) &                -- in type declarations since
@@ -2722,7 +2722,7 @@ begin
   if token = limited_t then                             -- limited access?
      if identifiers( id ).usage = abstractUsage then
         err( "abstract types don't need to be limited types" );
-     elsif identifiers( id ).class = constClass then
+     elsif identifiers( id ).usage = constantUsage then
         err( "constants don't need to be limited types" );
      end if;
      identifiers( id ).usage := limitedUsage;
@@ -3677,14 +3677,16 @@ begin
 
      declare
         -- the class will change when parsing the rename
-        originalClass : anIdentifierClass := identifiers( id ).class;
+        --originalClass : anIdentifierClass := identifiers( id ).class;
         originalFieldOf : identifier := identifiers( id ).field_of;
+        -- TODO: refactor these booleans
         wasLimited : boolean := identifiers( id ).usage = limitedUsage;
+        wasConstant : boolean := identifiers( id ).usage = constantUsage;
      begin
         -- Variable or Constant renaming
         ParseRenamesPart( canonicalRef, id, type_token );
         -- Prevent a constant from being turned into a variable by a renaming
-        if identifiers( canonicalRef.id).class = constClass and originalClass /= constClass then
+        if identifiers( canonicalRef.id).usage = constantUsage and not wasConstant then
            err( "a constant must be renamed by a constant" );
         elsif identifiers( canonicalRef.id ).class = enumClass then
            -- TODO: I could probably get this to work but it's a weird edge
@@ -3749,7 +3751,7 @@ begin
        -- Temporarily destroy identifer so that i : integer := i isn't circular
 
        var_name := identifiers( id ).name;                 -- remember name
-       if identifiers( id ).class = constClass then        -- a constant?
+       if identifiers( id ).usage = constantUsage then     -- a constant?
           is_constant := true;                             -- remember it
        end if;
        discardUnusedIdentifier( id );                      -- discard variable
@@ -3762,8 +3764,9 @@ begin
        -- and assign its type
 
        declareIdent( id, var_name, type_token, varClass );  -- declare var
+       -- TODO: refactor this
        if is_constant then                                  -- a constant?
-          identifiers( id ).class := constClass;            -- fix class
+          identifiers( id ).usage := constantUsage;
        end if;
        if wasLimited then
           identifiers( id ).usage := limitedUsage;
@@ -4470,7 +4473,8 @@ begin
   expect( case_t );                                        -- "case"
   ParseIdentifier( test_id );                              -- identifier to test
   -- we allow const because parameters are consts in Bush 1.x.
-  if class_ok( test_id, constClass, varClass ) then
+  --if class_ok( test_id, constClass, varClass ) then
+  if class_ok( test_id, varClass ) then
      expect( is_t );                                       -- "is"
   end if;
 
@@ -4502,7 +4506,7 @@ begin
            end if;
         else                                             -- constant allowed
            ParseIdentifier( case_id );                         -- get the case
-           if identifiers( case_id ).class /= constClass       -- is constant
+           if identifiers( case_id ).usage /= constantUsage    -- is constant
               and identifiers( case_id ).class /= enumClass then -- or enum?
               err( "variable not allowed as a case" );         -- error if not
            elsif baseTypesOk( identifiers( test_id ).kind,
@@ -4568,7 +4572,10 @@ begin
   expect( case_t );                                        -- "case"
   ParseStaticIdentifier( test_id );                        -- identifier to test
   -- we allow const because parameters are consts in Bush 1.x.
-  if class_ok( test_id, constClass ) then
+  if class_ok( test_id, varClass ) then
+     if identifiers( test_id ).usage /= constantUsage then
+        err( "constant expected" );
+     end if;
      expect( is_t );                                       -- "is"
   end if;
 
@@ -4600,7 +4607,7 @@ begin
            end if;
         else                                             -- constant allowed
            ParseIdentifier( case_id );                         -- get the case
-           if identifiers( case_id ).class /= constClass       -- is constant
+           if identifiers( case_id ).usage /= constantUsage    -- is constant
               and identifiers( case_id ).class /= enumClass then -- or enum?
               err( "variable not allowed as a case" );         -- error if not
            elsif baseTypesOk( identifiers( test_id ).kind,
@@ -4884,14 +4891,16 @@ begin
               if isReverse then
                  identifiers( for_var ).value.all := expr2_val; -- for var is
                  identifiers( for_var ).kind := expr2_type;     -- this type
-                 identifiers( for_var ).class := constClass;    -- make const
+                 identifiers( for_var ).class := varClass;      -- make const
+                 identifiers( for_var ).usage := constantUsage;
                  if isExecutingCommand then
                     expr2_num := to_numeric( expr1_val );
                  end if;
               else
                  identifiers( for_var ).value.all := expr1_val; -- for var is
                  identifiers( for_var ).kind := expr1_type;     -- this type
-                 identifiers( for_var ).class := constClass;    -- make const
+                 identifiers( for_var ).class := varClass;      -- make const
+                 identifiers( for_var ).usage := constantUsage;
                  if isExecutingCommand then
                     expr2_num := to_numeric( expr2_val );
                  end if;
@@ -6852,7 +6861,7 @@ begin
     identifiers( formalParamId ).kind
   );
   -- parameters may not be constants or enumerated items
-  if identifiers( actual_param_ref.id ).class = constClass then
+  if identifiers( actual_param_ref.id ).usage = constantUsage then
      err( "a constant cannot be used as an in out or out mode parameter" );
   elsif identifiers( actual_param_ref.id ).class = enumClass then
      -- TODO: I could probably get this to work for out parameters but
@@ -8523,7 +8532,7 @@ begin
 
   -- At a debug breakout prompt, constant assignment is permitted
 
-  if inputMode = breakout and identifiers( var_id ).class = constClass then
+  if inputMode = breakout and identifiers( var_id ).usage = constantUsage then
      put_trace( "Warning: assigning a new value to a constant" );
   elsif not class_ok( var_id, varClass ) then
      null;
