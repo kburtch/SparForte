@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.1.1's focus was bringing SparForte into Jenkins continuous integration.
+SparForte 2.2's additional testing and new data type features necessary to implement packages in the future.
 
 CHANGES SINCE 2.1
 
@@ -32,5 +32,5 @@ CHANGES SINCE 2.1
 
 14. Change: command variables must now be limited instead of constant, in line with new limited functionality.  They cannot be used in an expression or assigned to.
 
-15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning.
+15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning. [testing needed]
 

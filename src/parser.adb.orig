@@ -2677,26 +2677,32 @@ begin
       identifiers( newtype_id ).wasReferenced := true;  -- treat as used
       identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       expect( abstract_t );
-   end if;
+      if token = abstract_t or token = limited_t or token = constant_t then
+         err( "only one of abstract, limited or constant allowed" );
+      end if;
 
    -- limited types
 
-   if token = limited_t then
-      if identifiers( newtype_id ).usage = abstractUsage then
-         err( "abstract types don't need to be limited types" );
-      elsif onlyAda95 then
+   elsif token = limited_t then
+      if onlyAda95 then
          err( "limited types are not allowed with " & optional_bold( "pragma ada_95" ) );
       end if;
       identifiers( newtype_id ).usage := limitedUsage;  -- assign not allowed
       expect( limited_t );
+      if token = abstract_t or token = limited_t or token = constant_t then
+         err( "only one of abstract, limited or constant allowed" );
+      end if;
 
-      -- check for reverse ordering
+   -- constant types
 
-      if token = abstract_t then
-         err( optional_bold( "abstract" ) & " comes before " &
-              optional_bold( "limited" ) & ", but also abstract types " &
-              "don't need to be limited types" );
-         expect( abstract_t );
+   elsif token = constant_t then
+      if onlyAda95 then
+         err( "constant types are not allowed with " & optional_bold( "pragma ada_95" ) );
+      end if;
+      identifiers( newtype_id ).usage := constantUsage;  -- read-only
+      expect( constant_t );
+      if token = abstract_t or token = limited_t or token = constant_t then
+         err( "only one of abstract, limited or constant allowed" );
       end if;
    end if;
 end ParseTypeUsageQualifiers;
@@ -2708,27 +2714,28 @@ procedure ParseVarUsageQualifiers( id : identifier; expr_expected : out boolean 
   -- Syntax: [constant | limited]
 begin
   expr_expected := false;                              -- usually false
+
   if token = aliased_t then                            -- aliased not supported
      err( "aliased isn't supported" );
+
   elsif token = constant_t then                        -- handle constant
-     expect( constant_t );                             -- by flagging variable
      identifiers( id ).usage := constantUsage;         -- as a constant and
      expr_expected := true;                            -- must assign value
+     expect( constant_t );                             -- by flagging variable
+     if token = abstract_t or token = limited_t or token = constant_t then
+        err( "only one of abstract, limited or constant allowed" );
+     end if;
+
   elsif token = abstract_t then                        -- abstract only makes sense
      err( optional_bold( "abstract" ) &                -- in type declarations since
         " can only be used in type declarations" );    -- it's a no-use quality.
-  else
-     identifiers( id ).class := varClass;              -- some kind of variable
-  end if;
 
-  if token = limited_t then                             -- limited access?
-     if identifiers( id ).usage = abstractUsage then
-        err( "abstract types don't need to be limited types" );
-     elsif identifiers( id ).usage = constantUsage then
-        err( "constants don't need to be limited types" );
-     end if;
+  elsif token = limited_t then                         -- limited access?
      identifiers( id ).usage := limitedUsage;
      expect( limited_t );
+     if token = abstract_t or token = limited_t or token = constant_t then
+        err( "only one of abstract, limited or constant allowed" );
+     end if;
   end if;
 end ParseVarUsageQualifiers;
 
@@ -3480,6 +3487,7 @@ begin
   end if;
 
   ParseVarUsageQualifiers( id, expr_expected );             -- constant/limited...
+  --identifiers( id ).class := varClass;
 
   -- Anonymous Array?  Handled elsewhere.
 

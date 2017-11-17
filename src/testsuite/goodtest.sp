@@ -4651,6 +4651,16 @@ begin
   null;
 end;
 
+-- Constant types
+
+declare
+   type ct is new constant integer;
+   i : integer;
+begin
+   c : ct := 1;
+   i := c;
+end
+
 -- Pragmas
 
 pragma assumption( used, i );
