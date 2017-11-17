@@ -4656,10 +4656,10 @@ end;
 declare
    type ct is new constant integer;
    i : integer;
-begin
    c : ct := 1;
-   i := c;
-end
+begin
+   i := integer(c);
+end;
 
 -- Pragmas
 
