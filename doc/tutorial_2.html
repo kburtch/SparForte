@@ -172,9 +172,33 @@ a variable into the command prior to executing the command.</p>
 	</center>
 
 </p>
+
 <p>Each item separated by spaces in a POSIX format command is called a <span
- style="font-weight: bold;">shell word</span>.&nbsp; Quote marks
-control how the words are interpreted.&nbsp; Double quotes allow spaces
+ style="font-weight: bold;">shell word</span>.</p>
+
+<p>Some characters have special significance in the shell syntax.  For
+exmaple, the dollar sign causes an expansion.  Escaping means removing
+the special properties
+of a character and treat it as a normal character.  The term <span style="font-weight: bold;">escaping</span>
+comes from the use of the escape key (ESC) on older systems to denote
+special commands to terminals or printers.</p>
+
+<p>For example, to put the characters "$s" to the screen instead
+of the value of the variable s, you will need to "escape" the dollar
+sign so SparForte will treat it as a normal character.</p>
+
+<p>Characters can be escaped in three different ways.</p>
+
+<ul>
+<li><span style="font-weight: bold;">Double quotes</span>: enclosing the characters in double quotes will
+escape most special characters but will not affect the dollar sign</li>
+<li><span style="font-weight: bold;">Single quotes</span>: enclosing the characters in single quotes will
+escape most characters as well as the dollar sign</li>
+<li><span style="font-weight: bold;">Backslash</span>: this will escape the character following the backslash</li>
+</ul>
+
+<p>These escape characters control the shell words are interpreted.&nbsp;
+ Double quotes allow spaces
 to be included in the word.&nbsp; Single quotes also allow spaces in
 the word but prevent dollar expansions from taking place.&nbsp; Sets of
 quotes can be placed next to each other to form a single word.&nbsp;
@@ -188,14 +212,32 @@ Individual letters can be escaped using a backslash (\).</p>
 		s&nbsp;&nbsp;is &nbsp;--universal<br>
 		=&gt; echo 's&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s'<br>
 		s&nbsp;&nbsp; is &nbsp; $s<br>=&gt; echo 's is '"$s"<br>
-		s is --universal<br>&nbsp;<br>
+		s is --universal<br>
+=&gt; echo $s    $s<br>
+--universal --universal<br>
+=&gt; echo "$s&nbsp;&nbsp;&nbsp;&nbsp;$s"            <br>
+--universal&nbsp;&nbsp;&nbsp;&nbsp;--universal<br>
+=&gt; echo '$s&nbsp;&nbsp;&nbsp;&nbsp;$s'<br>
+$s&nbsp;&nbsp;&nbsp;&nbsp;$s<br>
+=&gt; echo '$s&nbsp;&nbsp;'"&nbsp;&nbsp;$s"<br>
+$s&nbsp;&nbsp;&nbsp;&nbsp;--universal<br>
+=&gt; echo \$s&nbsp;&nbsp;&nbsp;&nbsp;\$s <br>
+$s $s<br>
+=&gt; echo \\<br>
+\<br>
+=&gt; echo "'"<br>
+'<br>
+=&gt; echo '"'<br>
+"<br>&nbsp;<br>
                </p>
         <div class="code_caption">
-		<b>Example</b>: How Shell Words and Quotes Are Parsed
+		<b>Example</b>: How Shell Words and Escape Characters Are Parsed
         </div>
         </div>
 	</center>
 
+<p>Notice that shell words are processed by SparForte and the results are
+given to the echo command.</p>
 
 <h3>Filename Globbing (Bourne Arguments)</h3>
 
@@ -226,6 +268,10 @@ like "?" or "put".</p>
 <p>Using single or double quotes, or escaping the globbing
 characters with a backslash, will stop the file globbing.</p>
 
+<p>These features only apply when using shell commands.  Using
+AdaScript style commands, single quotes are for character literals
+and double quotes are for string literals.</p>
+
 <h3>Capturing Command Output (Bourne Arguments)</h3>
 
 <p>To work with the results of a command, you'll need to use backquote
@@ -249,6 +295,9 @@ used in string expressions.<br>
         </div>
         </div>
 	</center>
+
+<p>Escaping characters works the same way within backquotes as with
+any other Bourne shell style command.</p>
 
 <h3>Running Commands in the Background</h3>
 
