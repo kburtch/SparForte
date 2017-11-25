@@ -62,10 +62,10 @@ the assignment statement.</p>
 
 <h3>Boolean True Shortcut</h3>
 
-<p>As a special exception, stating a boolean's name implies that the
-boolean is assigned true.  This only applies to boolean or subtypes
-of boolean.  The shortcut only assigns true (not false).  It can
-only be used with scalar variables (not arrays or records)</p>
+<p>As a special exception, stating a Boolean variable's name implies that the
+variable is assigned true.  This only applies to variables that are
+Boolean or subtypes of Boolean.  The shortcut only assigns true (not false).
+It can only be used with scalar variables (not arrays or records)</p>
 
         <center>
         <div class="code">
@@ -84,14 +84,14 @@ only be used with scalar variables (not arrays or records)</p>
         </center>
 
 
-<p>Under <b>pragma ada_95</b>, the boolean true shortcut is not allowed.</p>
+<p>Under <b>pragma ada_95</b>, the Boolean variable shortcut is not allowed.</p>
 
 <h3>Primitive Operators</h3>
 
 <p>AdaScript expressions can contain the following operators:</p>
 
 <ul>
-  <li> <b>uniary</b>: +, -, not</li>
+  <li> <b>unary</b>: +, -, not</li>
 
   <li> <b>exponentiation</b>: **</li>
   <li> <b>arithmetic</b>: +, -, *, /, &amp; (string concatenation),
@@ -102,16 +102,16 @@ mod (modulo), and (bitwise and), or (bitwise or), xor (bitwise exclusive or), *
 
 &lt;,
 in, not in</li>
-  <li> <b>boolean</b>: and, or, xor (exclusive OR)</li>
+  <li> <b>Boolean</b>: and, or, xor (exclusive OR)</li>
 </ul>
 
-<p>The bitwise operators are identical to the boolean operators: SparForte
-choses
+<p>The bitwise operators are identical to the Boolean operators: SparForte
+chooses
 which to use on the context of the expression.</p>
 
 <p><tt>in</tt> and <tt>not in</tt> test for membership in a range. (In Ada, the range
 can be a type but under AdaScript types have no bounds.) The range can
-be an pair of numbers, characters (not strings) or a pair of enumerated items.
+be a pair of numbers, characters (not strings) or a pair of enumerated items.
 </p>
 
         <center>
@@ -134,7 +134,7 @@ compute a result value.</p>
 <p>Expression operators are evaluated in the following order:</p>
 
 <ul>
-  <li> <b>Factors</b>: literals, variables are other values, uniary +, uniary -, subexpressions</li>
+  <li> <b>Factors</b>: literals, variables are other values, unary +, unary -, subexpressions</li>
   <li> <b>Power Terms</b>: **</li>
   <li> <b>Terms</b>: /, mod, rem, *, &amp;</li>
   <li> <b>Simple Expressions</b>: +, -</li>
@@ -142,7 +142,7 @@ compute a result value.</p>
   <li> <b>Boolean Expressions</b>: and, or, xor</li>
 </ul>
 
-<p>Subexpressions can be created using parantheses.</p>
+<p>Subexpressions can be created using parentheses.</p>
 
 <p>If pragma ada_95 is used, expression parantheses are required in certain
 cases.</p>

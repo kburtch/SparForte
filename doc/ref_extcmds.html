@@ -66,7 +66,7 @@ is followed by a "(", the parameters are expected to be in AdaScript
 format
 with each parameter separated by a comma (","). These parameters may be
 any legitimate AdaScript expression and no shell quote removal or file
-globbing is performed.
+globbing pattern matching is performed.
 </p>
 
         <center>
@@ -81,7 +81,8 @@ to be in Bourne shell format. This is provided for convenience in
 interactive
 sessions.&nbsp; The parameters are shell "words" separated by spaces.
 Each
-word has file globbing performed. The words may be enclosed in double
+word has file globbing pattern matching performed. The words may be
+enclosed in double
 quotes
 to allow embedded spaces, or single quotes to inhibit file globbing.
 Special
