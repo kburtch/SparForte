@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with text_io;use text_io;
+with text_io;use text_io;
 
 with
     Ada.Containers,
@@ -1044,15 +1044,31 @@ begin
   ParseLastCursorParameter( secondCursId );
   genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
   if isExecutingCommand then
+put_line( "this should not happen on badtest061" ); -- DEBUG
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+     exception when storage_error =>
+       err( "storage_error: an invalid access occurred on list lookup" );
+     end;
+     begin
        findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
+     exception when storage_error =>
+       err( "storage_error: an invalid access occurred on cursor lookup" );
+     end;
+     begin
        findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
+     exception when storage_error =>
+       err( "storage_error: an invalid access occurred cursor 2 lookup" );
+     end;
+
+     begin
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "a cursor has no element" );
      when program_error =>
        err( "a cursor refers to a different list" );
+     when storage_error =>
+       err( "storage_error: an invalid access occurred" );
      end;
   end if;
 end ParseDoublySwap;
