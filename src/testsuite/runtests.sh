@@ -264,6 +264,10 @@ junit_fail_core_dump() {
   junit_fail "CORE DUMP"
 }
 
+junit_fail_exception() {
+  junit_fail "EXCEPTION - $1"
+}
+
 junit_fail_bad_status() {
   junit_fail "Bad status $1"
 }
@@ -400,7 +404,7 @@ bad_test() {
      cat "$1"
      echo "Output was:"
      echo "$OUTPUT"
-     junit_fail_core_dump
+     junit_fail_exception "$OUTPUT"
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
         exit 1
