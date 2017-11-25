@@ -485,9 +485,11 @@ begin
         end loop;
         put( standard_error, "^" );
      end if;
-  else
-     put( standard_error, "[" & getDateString( ada.calendar.clock ) &
-       "]" ); -- error time
+  -- TODO: if we include timestamps for templates, they should be in all error
+  -- procedures.
+  --else
+  --   put( standard_error, "[" & getDateString( ada.calendar.clock ) &
+  --     "]" ); -- error time
   end if;
 
   -- Error Message
