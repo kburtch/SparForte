@@ -3567,8 +3567,9 @@ begin
   elsif getBaseType( type_token ) = command_t then
      if onlyAda95 then
         err( "command types not allowed with " & optional_bold( "pragma ada_95" ) );
-     elsif identifiers( id ).usage /= limitedUsage then
-        err( "command variables must be " & optional_bold( "limited" ) );
+     elsif identifiers( id ).usage /= limitedUsage and
+        identifiers( id ).usage /= constantUsage then
+        err( "command variables must be " & optional_bold( "limited" ) & " or " & optional_bold( "constant" ) );
         expr_expected := true;
      end if;
   end if;
