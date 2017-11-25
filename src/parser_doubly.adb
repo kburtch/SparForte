@@ -1037,25 +1037,24 @@ procedure ParseDoublySwap is
   secondCursId   : identifier;
   theSecondCursor: resPtr;
 begin
+put_line( "swap" ); -- DEBUG
   expect( doubly_swap_t );
+put_line( "swap 1" ); -- DEBUG
   ParseFirstListParameter( listId );
+put_line( "swap 2" ); -- DEBUG
   ParseNextCursorParameter( firstCursId );
+put_line( "swap 3" ); -- DEBUG
   genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+put_line( "swap 4" ); -- DEBUG
   ParseLastCursorParameter( secondCursId );
+put_line( "swap 5" ); -- DEBUG
   genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+put_line( "swap 6" ); -- DEBUG
   if isExecutingCommand then
 put_line( "this should not happen on badtest061" ); -- DEBUG
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-     exception when storage_error =>
-       err( "storage_error: an invalid access occurred on list lookup" );
-     end;
-     begin
        findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
-     exception when storage_error =>
-       err( "storage_error: an invalid access occurred on cursor lookup" );
-     end;
-     begin
        findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
      exception when storage_error =>
        err( "storage_error: an invalid access occurred cursor 2 lookup" );
