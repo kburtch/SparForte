@@ -3432,6 +3432,12 @@ function genTypesOk( leftType, rightType : identifier ) return boolean is
   effectiveRightType : identifier;
 begin
 
+  -- If an error occurred, the identifiers passed to this test may be invalid.
+
+  if error_found then
+     return false;
+  end if;
+
   -- Basic checks: if the root types don't match, then the base types
   -- won't.  If either type is universal typeless, they automatically
   -- match.

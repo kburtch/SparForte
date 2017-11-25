@@ -1037,7 +1037,6 @@ procedure ParseDoublySwap is
   secondCursId   : identifier;
   theSecondCursor: resPtr;
 begin
-put_line( "swap" ); -- DEBUG
   expect( doubly_swap_t );
 put_line( "swap 1" ); -- DEBUG
   ParseFirstListParameter( listId );
