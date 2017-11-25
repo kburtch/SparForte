@@ -1980,18 +1980,16 @@ end getBlockName;
 procedure sawReturn is
   b : block := blocks_top;
 begin
-  if b > blocks'first then                                -- blocks_top is +1
-     b := b - 1;                                          -- current block
-     while b >= block'first loop                          -- while blocks
-        if blocks( b ).newScope and
-           blocks( b ).blockName /= "declare block" and
-           blocks( b ).blockName /= "begin block" then
-            blocks( b ).hasReturn := true;
-            exit;
-         end if;
-         b := b - 1;
-     end loop;
-  end if;
+  -- blocks_top is +1
+  while b > block'first loop                           -- while blocks
+     b := b - 1;                                       -- current block
+     if blocks( b ).newScope and
+        blocks( b ).blockName /= "declare block" and
+        blocks( b ).blockName /= "begin block" then
+        blocks( b ).hasReturn := true;
+        exit;
+     end if;
+  end loop;
 end sawReturn;
 
 
