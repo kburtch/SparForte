@@ -1393,7 +1393,11 @@ begin
      else
         if isExecutingCommand then
            pic := to_picture( to_string( pic_val ) );
-           expr_val := to_unbounded_string( image( decimal_output_type( to_numeric( expr_val ) ), pic ) );
+           begin
+              expr_val := to_unbounded_string( image( decimal_output_type( to_numeric( expr_val ) ), pic ) );
+           exception when LAYOUT_ERROR =>
+              err( "incorrect image picture " & ASCII.Quotation & to_string( toEscaped( pic_val ) ) & ASCII.Quotation );
+           end;
         end if;
         last_output_type := uni_string_t;
      end if;

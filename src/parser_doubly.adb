@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
 
 with
     Ada.Containers,
@@ -1038,28 +1038,16 @@ procedure ParseDoublySwap is
   theSecondCursor: resPtr;
 begin
   expect( doubly_swap_t );
-put_line( "swap 1" ); -- DEBUG
   ParseFirstListParameter( listId );
-put_line( "swap 2" ); -- DEBUG
   ParseNextCursorParameter( firstCursId );
-put_line( "swap 3" ); -- DEBUG
   genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
-put_line( "swap 4" ); -- DEBUG
   ParseLastCursorParameter( secondCursId );
-put_line( "swap 5" ); -- DEBUG
   genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
-put_line( "swap 6" ); -- DEBUG
   if isExecutingCommand then
-put_line( "this should not happen on badtest061" ); -- DEBUG
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
        findResource( to_resource_id( identifiers( firstCursId ).value.all ), theFirstCursor );
        findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
-     exception when storage_error =>
-       err( "storage_error: an invalid access occurred cursor 2 lookup" );
-     end;
-
-     begin
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
        err( "a cursor has no element" );
@@ -1098,6 +1086,8 @@ begin
        err( "a cursor has no element" );
      when program_error =>
        err( "a cursor refers to a different list" );
+     when storage_error =>
+       err( "storage_error: an invalid access occurred" );
      end;
   end if;
 end ParseDoublySwapLinks;
