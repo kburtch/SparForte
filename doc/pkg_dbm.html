@@ -196,7 +196,7 @@ accept that they also require a connection, query or both.</p>
 <td width="15%">&nbsp;</td>
 <td><p>Append the fields of record r to the query in the format of an ANSI SQL
 insert (that is, " ( a, b, ... ) VALUES ( 'a', 'b', ... )").  The record fields may be
-boolean, string, numeric or universal (treated as a string).  String values
+Boolean, string, numeric or universal (treated as a string).  String values
 are appended with Append_Quoted.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
@@ -258,7 +258,7 @@ dbm.append_for_insert( q, c, r ); -- (b,i,s) values (...)</span></td>
 <td width="15%">&nbsp;</td>
 <td><p>Append the fields of record r to the query in the format of an ANSI SQL
 update (that is," SET a = 'a', b = 'b', ..." ).  The record fields may be
-boolean, string, numeric or universal (treated as a string).  String values
+Boolean, string, numeric or universal (treated as a string).  String values
 are appended with Append_Quoted.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
@@ -1233,7 +1233,7 @@ if not dbm.end_of_query( Q ) then<br />
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>no_result, no_column exceptions may be raised.<br />no_tuple may be raised if there's no more data.<br />Assigning a
-string to a numeric or boolean field may raise an exception.<br />A field that is not in the query raises an exception.<br />A column that is not in the record raises an exception.<br />The wrong number of fields raises an exception.</p></td>
+string to a numeric or Boolean field may raise an exception.<br />A field that is not in the query raises an exception.<br />A column that is not in the record raises an exception.<br />The wrong number of fields raises an exception.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed in a restricted shell<br>Not allowed with no_postgresql_database restriction</p>
@@ -2284,7 +2284,7 @@ columns in the list depend on the database engine.</p></td>
 </tr>
 </table>
 
-<a name="dbm.value"></a><h3>s := dblm.value( q, i )</h3>
+<a name="dbm.value"></a><h3>s := dbm.value( q, i )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
