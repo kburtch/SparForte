@@ -43,7 +43,7 @@
 that
 SparForte knows what that type is.&nbsp; When new variables are created by
 assignment
-at the command prompt, SparForte choses an appropriate type for the new
+at the command prompt, SparForte chooses an appropriate type for the new
 variable.&nbsp;
 In scripts, all variables must be declared.</p>
 
@@ -601,7 +601,7 @@ some of the Ada complex number functions are not available.</p>
 <p>External operating system commands can be declared using <b>command</b>
 variables. When a command is declared, SparForte will ensure that the
 command
-exists and is runnable.
+exists and is can be run.
 </p>
 <p>Command types are similar to limited types and have several
 restrictions.
@@ -644,11 +644,11 @@ programming languages support JSON.</p>
 <p>SparForte contains several functions to convert variable values into JSON,
 and JSON into variable values.  JSON doesn't support enumerated types, so
 SparForte converts enumerated types into integer, the ordinal position of
-the enumerated values.  Records are coverted into JSON objects.</p>
+the enumerated values.  Records are converted into JSON objects.</p>
 
 <p>If an array or record has a json_string component within it, the content
 of the json_string is assumed to be JSON data and will be added as-is
-to the json-encoded aggregate.  Use json_string to build up more
+to the JSON-encoded aggregate.  Use json_string to build up more
 complex JSON structures like arrays of arrays.</p>
 
 <p>Currently, SparForte doesn't support UTF-8.  It doesn't support

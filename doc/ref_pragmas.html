@@ -191,7 +191,7 @@ licensing and feature restriction.</p>
   </li>
   <li> <b>pragma depreciated( "newscript" )</b> - when script finishes
 execution,
-SparForte will warn that the script is obsolete and has been superceded for
+SparForte will warn that the script is obsolete and has been superseded for
 "newscript".  The script name can be a static string expression.  If
 running in design mode, the message will be reported as an error.</li>
   <li><b>pragma license( license_name [, "extra"] )</b> - declare the
@@ -224,7 +224,7 @@ doesn't support the extra string.  It treats these as levels and will
 try to validate license compatibility where possible.</li>
   <li> <b>pragma restriction( annotations_not_options )</b> - if no pragma
 annotate's are in the script, report an error after the script runs.
-This is indended as a way to require developers to write
+This is intended as a way to require developers to write
 documentation.</li>
   <li> <b>pragma restriction( no_annotate_todos )</b> - if pragma
 annotate todo is used, report an error after the script runs.  This
@@ -337,7 +337,7 @@ inspect variables, except it doesn't break to a command prompt.</li>
   <li> <b>pragma inspection_point</b> - break to a command prompt as if
 SIGINT (control-C) was received, displaying the call stack and any
 variables marked for inspection with pragma inspect. Has no effect if
---break option isn't used. A "breakpoint".</li>
+--break option isn't used. A "break point".</li>
 <li><b>pragma suppress( word_quoting )</b> - disable style errors when
 dollar variables expansions are not double-quoted.  Dollar expansions
 should almost always be quoted to prevent whitespace from creating
@@ -366,7 +366,7 @@ the report will be in text format and written to standard output.</p>
 
 <p><b>pragma test</b> runs a test cases and gives it an optional
 description.  <b>pragma test_result</b>
-evaluates a boolean expression to check to see if the test ran
+evaluates a Boolean expression to check to see if the test ran
 correctly.  A test case or test_result expression is an "error" if
 the test case had an error when it ran.  Otherwise, a test result
 is either successful or a failure.</p>
@@ -428,7 +428,7 @@ Suite Summary for t: <br />
         </div>
         </center>
 
-<p>Xml reports are written to a file in JUnit format when the script
+<p>XML reports are written to a file in JUnit format when the script
 finishes running.  All tests, failed or successful, are included.
 SparForte treats each file as a JUnit test suite, and each <b>pragma
 test</b> as a JUnit test case.  Each <b>pragma test_result</b> is
@@ -452,7 +452,7 @@ is an optional explanation of the test.</li>
   <li> <b>pragma test_report( text|xml [, "filepath" ] )</b> - select the
 format of the test/test_result test report, and the path to the
 report file.  The path is a static expression so it can use constants.</p>
-  <li> <b>pragma test_result( expression )</b> - evaluates the boolean
+  <li> <b>pragma test_result( expression )</b> - evaluates the Boolean
 expression.
 If it isn't true, a "test failed" message is written to standard error.
 (The format of the message is affected by --gcc-errors.) Use this to check
@@ -462,7 +462,7 @@ Requires --test option or asserts will have no effect.</li>
 
 <h4>Documentation Pragmas</h4>
 
-<p>Interpreter directives used to describe a project, particularily real
+<p>Interpreter directives used to describe a project, particularly real
 world concerns that are not expressed in the source code.</p>
 
 <ul>
@@ -780,7 +780,7 @@ put them into SparForte.</p>
 
 <h4>Exporting Shell Environment Variables</h4>
 
-<p>To make your Sparforte variables visble to other programs, such
+<p>To make your SparForte variables available to other programs, such
 as external commands, you must export the variable into the
 operating system environment variables with <b>pragma export</b>.
 This exporting process occurs whenever an external command is
@@ -869,7 +869,7 @@ session_import_script</b>.  There can be only one callback of each
 type in a program.  Defining a session variable before these are
 defined may cause an error.  Keep in mind these callbacks may be
 executed for global variables before the main program is run,
-or before all variables are intialized.</p>
+or before all variables are initialized.</p>
 
 <p>When the callbacks are run, there are two variables in
 the sessions package that are used as parameters:
@@ -879,7 +879,7 @@ second contains the current value (on export) or can be written to
 to save the value (on import).</p>
 
 <p>Then create your session variables using an import-type or
-export-type pragma, using a import method of "session".</p>
+export-type pragma, using an import method of "session".</p>
 
 <p><b>pragma unchecked_import</b> behaves the same as <b>pragma
 import</b> since SparForte isn't able to check itself for the
@@ -963,7 +963,7 @@ if the variable doesn't exist in the environment, the value will
 be unchanged.  It is a good idea to assign a default value.</p>
 
 <p>The variable will normally be read at the time of importing,
-though this behaviour can be changed with pragam volatile (see below).</p>
+though this behaviour can be changed with pragma volatile (see below).</p>
 
 <p>You can use a <b>declare block</b> to get the value at your discretion
 by using an imported variable.</p>
@@ -988,7 +988,7 @@ by using an imported variable.</p>
 <h4>Exporting with Memcache</h4>
 
 <p>When exporting, the variable's final value will be stored in memcache
-with the memcache SET command when the varible goes out of scope or
+with the memcache SET command when the variable goes out of scope or
 is destroyed with unset.</p>
 
 <p>You can update the value at any time using a declare block and an
@@ -1060,8 +1060,8 @@ or a similar approach.</p>
 be found.  If it cannot connect, it marks the server as off-line
 and will return cache misses for several commands.  After enough
 commands have passed, it will attempt to reconnect to memcached.
-These "back offs" are escallating: each failed reconnect attempt
-will result in a longer backoff period.  This is done for
+These "back offs" are escalating: each failed reconnect attempt
+will result in a longer back off period.  This is done for
 performance reasons: establishing new network connections is a
 very slow operation.</p>
 
@@ -1110,7 +1110,7 @@ use with pragma register_memcache_server.</p>
         </center>
 
 <p>With more than one server, SparForte will store the variable on two servers.
-If one server should fail, it wil retrieve the variable value from the other.</p>
+If one server should fail, it will retrieve the variable value from the other.</p>
 
 <h3>Managing Script Licenses</h3>
 

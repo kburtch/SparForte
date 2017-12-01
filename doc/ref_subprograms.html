@@ -138,7 +138,7 @@ operators by defining functions with operator symbols.</p>
 
 <p>Both procedures and functions can have parameters.&nbsp;  If a
 procedure or function has no parameters, do not include any
-parantheses.  If there are parameters, they are listed with
+parentheses.  If there are parameters, they are listed with
 a name, a mode and a type.  By default, all parameters are "in" mode
 parameters: they give additional information to a subprogram
 and are treated as constants.&nbsp; The word "in" is optional
@@ -402,7 +402,7 @@ of a routine.</p>
         </div>
         </center>
 
-<p>The execption type name may be followed with a "with/use".  <b>with</b>
+<p>The exception type name may be followed with a "with/use".  <b>with</b>
 specifies a default message to accompany the exception error message.
 <b>use</b> specifies a status code to return if the exception is raised to
 the main program and is not handled.</p>
@@ -436,10 +436,10 @@ exception occurred: the exception handler replaces the remainder of the
 executable statements in the block.</p>
 
 <p>An exception handler is similar to a <b>case</b> statement.  <b>when</b>
-sections contain the executble code to run in the case of a specific exception.</p>
+sections contain the executable code to run in the case of a specific exception.</p>
 
 <p>If there is a <b>when</b> <b>others</b> section, it will run if none of the
-preceeding sections applied.  <b>when</b> <b>others</b> will also handle most
+preceding sections applied.  <b>when</b> <b>others</b> will also handle most
 run-time errors.</p>
 
         <center>
@@ -467,14 +467,14 @@ is in a corrupted or uncertain state.</p>
 be placed in the handler.</p>
 
 <p>If a block has no exception handler, the enclosing blocks will be
-searched for a handler.  (That is, the exception will propogate.)</p>
+searched for a handler.  (That is, the exception will propagate.)</p>
 
 <p>An exception handler can contain a declare/begin block with its own
 exception handlers.</p>
 
 <h4>Re-raising Exceptions</h4>
 
-<p>The <b>raise</b> command will propogate the exception after handling.
+<p>The <b>raise</b> command will propagate the exception after handling.
 That is, it will
 reinstate the exception to exception handlers in the surrounding blocks, just
 as if the exception was not handled.</p>
@@ -585,7 +585,7 @@ it searches for a file called <span class="code">/etc/sparforte_policy</span>.  
 file, similar to a profile file.  It's purpose is to setup any architectural
 pragmas common to all scripts
 on a server.  The policy file is not executed for interactive sessions.
-The file is indended to be used by architects who maintain the standards
+The file is intended to be used by architects who maintain the standards
 and integration of different computer systems, separating their concerns
 from those of the programmers.</p>
 
@@ -625,7 +625,7 @@ After running any global policy file, SparForte searches for a file called
 containing a configuration block.
 The configuration file is not executed for interactive sessions.  The
 file is intended to be used by system administrators who must maintain
-different enviroments, separating their concerns from those of the
+different environments, separating their concerns from those of the
 programmers.</p>
 
 <p>SparForte checks this file before opening it.  It must meet the
