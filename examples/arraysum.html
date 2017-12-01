@@ -45,4 +45,29 @@ $ spar arraysum
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<FONT COLOR=green><EM>-- arraysum as an unstructured script (no main program)</EM></FONT>
+
+<FONT COLOR=green><EM>-- Test data</EM></FONT>
+
+arr : <b>constant</b> <b>array</b>(1..10) <b>of</b> integer := (1,2,3,4,5,6,7,8,9,10 );
+
+<FONT COLOR=green><EM>-- Sum of the array</EM></FONT>
+
+? stats.sum( arr );
+
+<FONT COLOR=green><EM>-- Product of the array</EM></FONT>
+
+product : integer := 1;
+<b>for</b> i <b>in</b> arrays.first( arr )..arrays.last( arr ) <b>loop</b>
+    product := @ * arr(i);
+<b>end</b> <b>loop</b>;
+? product;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
 </PRE></BODY></HTML>

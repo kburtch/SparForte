@@ -59,6 +59,17 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="arraycat_unstructured.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+EXPECTED=" 1 2 3 4 5 6"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="arrayloop.sp"
 RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="aA1
@@ -73,6 +84,18 @@ else
 fi
 
 EXAMPLE="arraysum.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+EXPECTED=" 55
+ 3628800"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="arraysum_ss.sp"
 RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 55
  3628800"
