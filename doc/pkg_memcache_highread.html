@@ -121,7 +121,7 @@ the get function can read from any of the four servers.  This makes it a
 good choice for high redundancy tasks, or takes where there are more reads
 than writes.</p>
 
-<p>PegaSock implements an escallating backoff mechanism: if a server cannot
+<p>PegaSock implements an escalating back off mechanism: if a server cannot
 be accessed, it is marked as down.  After a suitable period, PegaSock will
 attempt to reconnect.  If both servers containing the data are down, the next
 few memcache calls automatically fail.  If the servers are still down, it

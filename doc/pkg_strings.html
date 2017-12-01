@@ -447,7 +447,7 @@ Base 64 encoded strings.</p>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>return true if string globbing expression e. Globbing characters include:</p>
+<td><p>return true if string glob expression e matches the string s. Globbing characters include:</p>
 <ul>
 <li>
 <b>*</b> - zero or more characters</li>
@@ -485,7 +485,7 @@ Base 64 encoded strings.</p>
 <td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the globbing pattern to use</span></td>
+<td><span>the glob pattern to use</span></td>
 </tr>
 <tr>
 <td><span>b</span></td>
@@ -578,7 +578,7 @@ padded using character p</p></td>
 <td><p>Convert numeric value n to a string representation of the same value (inverse of numerics.value)</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">r := strings.image( 35 ); -- retuns "35"</span></td>
+<td><span class="code">r := strings.image( 35 ); -- returns "35"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -680,7 +680,7 @@ padded using character p</p></td>
 <td><p>Return the first non-space position in string s in direction d.  Returns zero if the string is all spaces.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">n := strings.index_non_blank( " moon" ); -- retuns 2</span></td>
+<td><span class="code">n := strings.index_non_blank( " moon" ); -- returns 2</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -786,7 +786,7 @@ padded using character p</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the string completely contains alphanumeric chararacters (that is, the same as is_letter and is_digit).</p></td>
+<td><p>True if the string completely contains alphanumeric characters (that is, the same as is_letter and is_digit).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">r := strings.is_alphanumeric( "hello" ); -- returns true</span></td>
@@ -874,7 +874,7 @@ padded using character p</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the string completely contains control chararacters (ASCII/Latin-1 0..31 and 127..159).</p></td>
+<td><p>True if the string completely contains control characters (ASCII/Latin-1 0..31 and 127..159).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">r := strings.control( "hello" ); -- returns false</span></td>
@@ -962,7 +962,7 @@ padded using character p</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the string appears to be a fixed point number (that is, a number with a decimal point).  No check is made to see if the number is representable by AdaScript.</p></td>
+<td><p>True if the string appears to be a fixed point number (that is, a number with a decimal point).  No check is made to see if the number can be accurately stored by AdaScript.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">r := strings.is_fixed( "340.12" ); -- returns true</span></td>
@@ -1368,7 +1368,7 @@ padded using character p</p></td>
 <td><p>Return the number of characters in the string.  Returns zero if the string is empty.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">n := strings.length( "bounce" ); -- retuns 6</span></td>
+<td><span class="code">n := strings.length( "bounce" ); -- returns 6</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -1974,7 +1974,7 @@ padded using character p</p></td>
 <td><p>Encode to arbitrary (possibly binary) string to base 64 characters.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">r := strings.to_base64( "foobar" &amp; ASCII.FF ); -- retuns "Zm9vcmJhcgw="</span></td>
+<td><span class="code">r := strings.to_base64( "foobar" &amp; ASCII.FF ); -- returns "Zm9vcmJhcgw="</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2021,7 +2021,7 @@ padded using character p</p></td>
 <td><p>Convert the string to basic letters (as defined for strings.is_basic).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">r := strings.to_basic( "hello" ); -- retuns "hello"</span></td>
+<td><span class="code">r := strings.to_basic( "hello" ); -- returns "hello"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2065,7 +2065,7 @@ padded using character p</p></td>
 <td><p>Convert the string to printable character by replacing control characters with "[# n]" where n is the ASCII/Latin-1 position.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">r := strings.to_escaped( "hello" &amp; ASCII.CR ); -- retuns "hello[# 13]"</span></td>
+<td><span class="code">r := strings.to_escaped( "hello" &amp; ASCII.CR ); -- returns "hello[# 13]"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2109,7 +2109,7 @@ padded using character p</p></td>
 <td><p>Return the string in lower-case</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">r := strings.to_lower( "bOunce" ); -- retuns "bounce"</span></td>
+<td><span class="code">r := strings.to_lower( "bOunce" ); -- returns "bounce"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2153,7 +2153,7 @@ padded using character p</p></td>
 <td><p>Return the string in proper (or mixed or title) case</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">n := strings.to_proper( "proper" ); -- retuns "Proper"</span></td>
+<td><span class="code">n := strings.to_proper( "proper" ); -- returns "Proper"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2246,7 +2246,7 @@ padded using character p</p></td>
 
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := strings.to_string( some_unbounded_string );<br>r := strings.to_string( json_string( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ) ); -- returns a string with foobar, a line feed, and test<br>r := strings.to_string( strings.base64_string( "Zm9vcmJhcgw=" ) ); -- retuns "foobar" and a form feed</span></td>
+<td><span class="code">s := strings.to_string( some_unbounded_string );<br>r := strings.to_string( json_string( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ) ); -- returns a string with foobar, a line feed, and test<br>r := strings.to_string( strings.base64_string( "Zm9vcmJhcgw=" ) ); -- returns "foobar" and a form feed</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -2337,7 +2337,7 @@ padded using character p</p></td>
 <td><p>Return the string in upper-case</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">n := strings.to_upper( "BoUNCE" ); -- retuns "BOUNCE"</span></td>
+<td><span class="code">n := strings.to_upper( "BoUNCE" ); -- returns "BOUNCE"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
