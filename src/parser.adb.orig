@@ -6927,9 +6927,9 @@ end parseUsableOutModeParameter;
    parameterNumber : integer;
    paramName : unbounded_string;
    formalParamId : identifier;
+   seenBracket : boolean := false;
 
 begin
-  expect( symbol_t, "(" );                                  -- read constant
 
     -- In a syntax check, the formal parameters aren't created so there's
     -- no reason to look them up.  We're just reading through the parameters
@@ -6967,6 +6967,20 @@ begin
     paramName := identifiers( formalParamId ).name;
     paramName := delete( paramName, 1, index( paramName, "." ) );
 
+    -- On the first parameter, we expect the parameter to be in bracketed
+    -- list.
+
+    if not seenBracket then
+       if token = symbol_t and identifiers( token ).value.all = "(" then
+          expect( symbol_t, "(" );
+          seenBracket := true;
+       else
+          err( "too few parameters" );
+       end if;
+    end if;
+
+    -- Parse the parameter based on the passing mode (in, out, in out)
+
     case identifiers( formalParamId ).passingMode is
 
          when in_mode =>
@@ -6996,9 +7010,10 @@ begin
 
   -- if the parameter is not found, we don't know if it misnamed
   -- or if there were too many given.
+  -- This only applies if there were parameters.
   -- TODO: distinguish these error messages
 
-  if formalParamId = identifiers_top then
+  if formalParamId = identifiers_top and seenBracket then
      err( "parameter not found or too many parameters" );
 
   -- Check for too few formal parameters
@@ -7022,7 +7037,11 @@ begin
      end loop;
   end if;
 
-  expect( symbol_t, ")" );
+  -- If an open bracket, we need a closing bracket
+
+  if seenBracket then
+     expect( symbol_t, ")" );
+  end if;
 end ParseActualParameters;
 
 procedure ParseSeparateFuncHeader( func_id : identifier; funcStart : out natural ) is
@@ -7244,9 +7263,7 @@ begin
     -- check for itself.  If it exists, we must be in a chain
     markScanner( paramStart );
     syntax_check := true;
-    if token = symbol_t and identifiers( token ).value.all = "(" then
-       ParseActualParameters( proc_id, declareParams => false );
-    end if;
+    ParseActualParameters( proc_id, declareParams => false );
     if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
        in_chain := true;
     end if;
@@ -7333,9 +7350,9 @@ begin
   -- Notice nothing gets executed during syntax check.  Any variables/parameters
   -- will have wasReferenced as false.
   -- TODO: perhaps using syntax_check inside PAP would fix this.
-     if token = symbol_t and identifiers( token ).value.all = "(" then
-        ParseActualParameters( proc_id );
-     end if;
+     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     ParseActualParameters( proc_id );
+     --end if;
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
      expect( procedure_t );
@@ -7372,7 +7389,7 @@ begin
      -- at this point, we are still looking at call
      if length( s ) = 0 then
         err( "(forward) procedure declaration not completed" );
-     elsif token = symbol_t and identifiers( token ).value.all = "(" then
+     else
         -- because nothing executes during a syntax check, we still need
         -- to parse the parameters to check for errors, but don't declare
         -- anything because wasReferenced will be false.
@@ -7421,9 +7438,9 @@ begin
      newName => to_string (identifiers( func_id ).name ) );
   -- Parameters?  Create storage space in the symbol table
   if isExecutingCommand then
-     if token = symbol_t and identifiers( token ).value.all = "(" then
-        ParseActualParameters( func_id );
-     end if;
+     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     ParseActualParameters( func_id );
+     --end if;
      -- Prepare to execute.  This should probably be a utility function.
      parseNewCommands( scriptState, s );
      results := null_unbounded_string;        -- no results (yet)
@@ -7463,7 +7480,7 @@ begin
      -- at this point, we are still looking at call
      if length( s ) = 0 then
         err( "(forward) function declaration not completed" );
-     elsif token = symbol_t and identifiers( token ).value.all = "(" then
+     else
         -- because nothing executes during a syntax check, we still need
         -- to parse the parameters to check for errors, but don't declare
         -- anything because wasReferenced will be false.

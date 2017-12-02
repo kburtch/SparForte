@@ -11,20 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- abstract and limited are not working.  in mode or out mode sets the usage
-  to full (vs constant)  and the abstract property of a parameter is not set
-  and/or is lost.
-  - null abstract doesn't pull block...or maybe the main program
+- unstructured scripts
+  - additional examples to be added to automated tests
 - unsorted/misc
     - ./foo is recognized as a command but /bin/foo is not.  I don't remember
       how this is handled and it will require some investigation.
-    - null abstract parameters may conflict with other functions.  This
-      may be a more general problem of function parameters conflicting.
-    - update spar.vim on website for configuration/policy blocks
-    - spell and grammer check documentation
-    - no parameters when 1 or more are expected results in "identifier not
-      declared" instead of too few parameters message
-    - more simple scripts (instead of well-formed scripts) examples (for regression testing)
+    - is policy example, using pragma is, in tutorial 2 still correct?
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - an early return from the main program doesn't pull the final block,
@@ -132,7 +124,12 @@ Nice to Haves / Missing Functionality
     - this requires a new function to check for pre-exisiting names in a different
       scope.  It will need to apply to all variable declarations.
     - maybe just   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
-
+- type qualifiers
+    - private qualifier means copy-only on assignment...but aggregates
+      currently cannot be assigned to or copied so private hasn't been
+      implemented yet.
+- unstructured scripts
+  - how can unstructured scripts be more useful without losing features?
 - memcache/memcache.highread
     - update functionality to handle records, arrays, etc. like btree_io
     - element as an alias for "get" in memcache, etc.
