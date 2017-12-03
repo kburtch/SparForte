@@ -6952,6 +6952,13 @@ begin
   -- put_line( to_string( identifiers( proc_id ).name ) & " proc" ); -- DEBUG
   -- put_line( to_string( identifiers( proc_id+1 ).name ) ); -- DEBUG
   -- put_line( to_string( identifiers( proc_id+2 ).name ) ); -- DEBUG
+
+  -- if there are no parameters and this is a function, you will run into the function's return
+  -- value, which does not count as a parameter...abort the parameter search if it exists.
+  if identifiers( formalParamId ).name = "return value" then
+     formalParamId := identifiers_top; -- abort search
+  end if;
+
   loop
       while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
