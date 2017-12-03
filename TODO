@@ -16,14 +16,13 @@ Priority Issues (Fix These First)
 - unsorted/misc
     - ./foo is recognized as a command but /bin/foo is not.  I don't remember
       how this is handled and it will require some investigation.
-    - is policy example, using pragma is, in tutorial 2 still correct?
+    - env producing phantom errors when piped to fgrep
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
-    - env producing phantom errors when piped to fgrep
 
 
 Annoyances / Bugs with Workarounds / Updates

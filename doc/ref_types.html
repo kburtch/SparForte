@@ -514,40 +514,31 @@ properties as the string type) which may make porting to GCC Ada easier.
 <h3>Type and Variable Usage Qualifiers</h3>
 
 <p>Types and variables have an optional usage qualifier.  This places
-restrictions on how the type or variable may be used.</p>
+constraints on how the type or variable may be used.</p>
 
-<table width="100%">
-<tr><td>Qualifier</td><td>Example</td><td>Definition</td></tr>
-<tr><td>(full access)</td><td>type int is new integer;<br>i : integer;</td><td>Normal case</td></tr>
-<tr><td>constant</td><td>type int is new constant integer;<br>i : constant integer := 5;</td><td>Read-only, cannot be assigned</td></tr>
-<tr><td>limited</td><td>type int is new limited integer;<br>i : limited integer := 5;</td><td>Cannot be used in expression, cannot be assigned</td></tr>
-<tr><td>abstract</td><td>type int is new abstract integer;</td><td>Cannot be used to create variables or parameters</td></tr>
+<p>The following
+table lists the qualifiers from least restrictive to most
+restrictive.</p>
+
+<table nosave="" bgcolor="#F3F5F7" border="1" cols="3" width="100%">
+<tr><td><span style="font-weight: bold">Qualifier</span></td><td><span style="font-weight: bold">Example</span></td><td><span style="font-weight: bold">Definition</span></td></tr>
+<tr><td><i>none</i></td><td><span class="code"><span style="font-weight: bold">type</span> int <span style="font-weight: bold">is</span> <span style="font-weight: bold">new</span> integer;</span><br><span class="code">i : integer;</span></td><td>Full access</td></tr>
+<tr><td><span class="code">constant</span></td><td><span class="code"><span style="font-weight: bold">type</span> int <span style="font-weight: bold">is</span> <span style="font-weight: bold">new</span> <span style="font-weight: bold">constant</span> integer;</span><br><span class="code">i : <span style="font-weight: bold">constant</span> integer := 5;</span></td><td>Read-only, cannot be assigned a new value</td></tr>
+<tr><td><span class="code">limited</span></td><td><span class="code"><span style="font-weight: bold">type</span> int <span style="font-weight: bold">is</span> <span style="font-weight: bold">new</span> <span style="font-weight: bold">limited</span> integer;</span><br><span class="code">i : <span style="font-weight: bold">limited</span> integer := 5;</span></td><td>Cannot be used in expression, cannot be assigned a new value</td></tr>
+<tr><td><span class="code">abstract</span></td><td><span class="code"><span style="font-weight: bold">type</span> int <span style="font-weight: bold">is</span> <span style="font-weight: bold">new</span> <span style="font-weight: bold">abstract</span> integer;</span></td><td>Cannot be used to create variables or parameters</td></tr>
 </table>
 
-<p>These qualifiers are described more in the following sections.</p>
+<p>A constant is something that is defined once and never changed afterwards.
+For example, it may be used for the title of a report.</p>
 
-<h3>Constants</h3>
+<p>A limited is something that is a "black box" that is assigned once.
+It cannot be assigned a new value, copied or used
+in math expressions.  For example, id numbers returned by the system or the
+text_io file_type or socket_type types.</p>
 
-<p>Constants can be declared with the word "constant" for any type. The
-use of "constant" doesn't not affect the type of the variable--it
-simply
-prevents new values from being assigned by making the variable
-"read-only".</p>
-
-        <center>
-        <div class="code">
-                <p class="code">program_name : <b>constant</b> string := "Nightly FTP Transfer";</p>
-        </div>
-        </center>
-
-<h3>Limited Access Variables</h3>
-
-<p>file_type and socket_type variables are known as <i>limited</i>
-type
-variables. Limited types cannot be assigned a new value with an
-assignment
-statement
-</p>
+<p>An abstract is a type that is not to be used for storing values: it cannot
+be used to create variables or parameters.  They are especially useful when
+designing a project and the details of the type are not known.</p>
 
         <center>
         <div class="code">
@@ -561,9 +552,9 @@ a value </p>
         </div>
         </center>
 
-<p>SparForte manages the contents of these variables and scripts are not
-allowed
-to change the contents.</p>
+<p>Creating your own types and using the usage qualifiers are described
+in the
+<a href="ref_typedecl.html">User-Defined Types</a> section.</p>
 
 <h3>Complex Types</h3>
 
@@ -607,7 +598,7 @@ exists and is can be run.
 restrictions.
 </p>
 <ul>
-  <li>they must be declared as limited (previous to SparForte 2.2, they had to be constants)</li>
+  <li>they must be declared as limited or constant (previous to SparForte 2.2, they had to be constants)</li>
   <li>they cannot be assigned to other variables</li>
 
   <li>they cannot be used in expressions (although they can appear by
