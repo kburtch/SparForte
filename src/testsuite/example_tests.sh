@@ -95,7 +95,7 @@ else
    echo "OK - $EXAMPLE"
 fi
 
-EXAMPLE="arraysum_ss.sp"
+EXAMPLE="arraysum_unstructured.sp"
 RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED=" 55
  3628800"
