@@ -13,6 +13,13 @@ Priority Issues (Fix These First)
 
 - unstructured scripts
   - additional examples to be added to automated tests
+  - should I relax the restriction on declaring variables in unstructured
+    scripts?
+- the new type qualifiers system and remaning
+  - testing renamings and constants
+  - disabling qualifiers when tests are underway (-t) and special regression
+    tests for the same.
+  - should subprogram parameters allow qualifiers?
 - unsorted/misc
     - ./foo is recognized as a command but /bin/foo is not.  I don't remember
       how this is handled and it will require some investigation.
@@ -29,7 +36,6 @@ Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
 - create a logging package to enhance error handling
-- shell script software model errors not appearing, needs testing
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - btree_io/hash_io
@@ -123,10 +129,6 @@ Nice to Haves / Missing Functionality
     - this requires a new function to check for pre-exisiting names in a different
       scope.  It will need to apply to all variable declarations.
     - maybe just   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
-- type qualifiers
-    - private qualifier means copy-only on assignment...but aggregates
-      currently cannot be assigned to or copied so private hasn't been
-      implemented yet.
 - unstructured scripts
   - how can unstructured scripts be more useful without losing features?
 - memcache/memcache.highread
@@ -192,8 +194,9 @@ Nice to Haves / Missing Functionality
   - process id
 - types and expressions
   - type is new (record type) not yet implemented.
-  - constants, if they can be used like limited and applied to types, should
-    be a boolean property not an identifier class.
+  - private qualifier means copy-only on assignment...but aggregates
+    currently cannot be assigned to or copied so private hasn't been
+    implemented yet.
   - return arrays and records in expressions (requires records revamp)
   - allow users to create their own universal types
   - record system refactor (in prep for aggregate expressions)
@@ -216,14 +219,9 @@ Nice to Haves / Missing Functionality
   - dynamic loadable built-in packages
   - fuzz testing (i.e. oss fuzz) - testing for vulnerabilities with random data
   - memory leak testing
-- example programs
-  - a REST API
-    - with message envelope
-    - with call statistics
-    - with bandwidth calculations
-    - with state guarantees (how old the response)
 - packages
   - new vector or game math package (quads, etc).
+  - how can we enhance packages?  Should a "service" be a collection of packages?
 - unsorted/misc
     - alternatives to ParseGeneralStatement more appropriate for executable bodies
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io

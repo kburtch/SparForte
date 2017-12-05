@@ -34,3 +34,5 @@ CHANGES SINCE 2.1
 
 15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning. [testing needed]
 
+16. Fix: calling a procedure or function with no parameters when parameters were expected produces an appropriate error message.
+
