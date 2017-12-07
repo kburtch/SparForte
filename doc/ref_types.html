@@ -765,14 +765,18 @@ October<br>
 
 <p>The type must be identical, or subtypes of each other.  A
 universal_typeless variable must be renamed by another universal_typeless,
-for example.  Likewise, a constant must be renamed by another constant.</p>
+for example.</p>
 
 <p>Values can be assigned to the renaming variable (if the variable
-is not a constant, of course).  The original variable's value will
+is not a constant or limited, of course).  The original variable's value will
 also change.</p>
 
-<p>A renaming of a variable can be a constant, creating a read-only
-renaming.</p>
+<p>The type qualifier may be changed.  A renaming of a variable can be a constant,
+for example, creating a read-only renaming.
+However, you cannot reduce the constraints
+of the qualifier by a renaming.  A constant must be renamed by another constant
+or limited&nbsp;you cannot change a constant into a variable by renaming.  A
+limited must be renamed by another limited.</p>
 
         <center>
         <div class="code">

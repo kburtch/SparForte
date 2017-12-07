@@ -1022,7 +1022,7 @@ begin
        export   => false,
        volatile => false,
        static   => identifiers( canonicalRef.id ).static,
-       usage    => identifiers( canonicalRef.id ).usage,
+       usage    => identifiers( new_id ).usage,
        list     => identifiers( canonicalRef.id ).list,
        resource => false,  -- can't really look up a resource
        field_of => identifiers( canonicalRef.id ).field_of,

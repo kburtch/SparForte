@@ -11,15 +11,15 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- the new type qualifiers system and remaning
+  - testing renamings and constant arrays/records to constant/limited
+  - disabling qualifiers when tests are underway (-t) and special regression
+    tests for the same.
+  - should subprogram parameters allow qualifiers?
 - unstructured scripts
   - additional examples to be added to automated tests
   - should I relax the restriction on declaring variables in unstructured
     scripts?
-- the new type qualifiers system and remaning
-  - testing renamings and constants
-  - disabling qualifiers when tests are underway (-t) and special regression
-    tests for the same.
-  - should subprogram parameters allow qualifiers?
 - unsorted/misc
     - ./foo is recognized as a command but /bin/foo is not.  I don't remember
       how this is handled and it will require some investigation.

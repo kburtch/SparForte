@@ -2779,8 +2779,35 @@ begin
 
   -- only copy attributes if no error because copying attributes will
   -- declare the identifier as a side-effect
-  if isExecutingCommand then
-     declareRenaming( new_id, canonicalRef );
+  -- if isExecutingCommand then
+  if not error_found then
+     declare
+       oldUsage : aUsageQualifier := identifiers( new_id ).usage;
+     begin
+       declareRenaming( new_id, canonicalRef );
+
+       -- check to see that the usage qualifier isn't less restrictive
+       -- compared to the canonical identifier being renamed
+
+       case identifiers( canonicalRef.id ).usage is
+       when fullUsage =>
+          null; -- always good
+       when constantUsage =>
+          if identifiers( new_id ).usage = fullUsage then
+             err( "no qualifier is less restrictive than constant" );
+          end if;
+       when limitedUsage =>
+          if identifiers( new_id ).usage = fullUsage then
+             err( "no qualifier is less restrictive than limited" );
+          elsif identifiers( new_id ).usage = constantUsage then
+             err( "constant is less restrictive than limited" );
+          end if;
+       when abstractUsage =>
+          err( "internal error: abstract usage qualifier not expected" );
+       when others =>
+          err( "internal error: unexpected usage qualifier" );
+       end case;
+     end;
   end if;
 end ParseRenamesPart;
 
@@ -3055,7 +3082,7 @@ begin
 end ParseAnonymousArray;
 
 procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
-  -- Syntax: array-declaration = " := array_assign"
+  -- Syntax: array-declaration = " := array_assign" | renames oldarray
   -- ParseDeclarationPart was getting complicated so this procedure
   -- was declared separately.
   -- array_id : arrayID;
@@ -3486,8 +3513,9 @@ begin
      return; -- done
   end if;
 
-  ParseVarUsageQualifiers( id, expr_expected );             -- constant/limited...
-  --identifiers( id ).class := varClass;
+  -- Check for constant, limited qualifiers
+
+  ParseVarUsageQualifiers( id, expr_expected );
 
   -- Anonymous Array?  Handled elsewhere.
 
@@ -3509,15 +3537,40 @@ begin
      identifiers( type_token ).wasApplied := true;     -- used
   end if;
 
-  -- Limited Type?  Inherited from the type (if any).
+  -- Variable vs. Type Qualifiers
+  --
+  -- If the variable has an explicit qualifier, it will have been applied
+  -- above.  So if it's full usage, check the type and inherit any qualifier
+  -- from the type.  The variable is allowed to be more constrained than
+  -- the type, but it must not reduce constraint.
 
-  if identifiers( type_token ).usage = limitedUsage then
-     if identifiers( id ).usage = limitedUsage then
-        err( "the type is already limited" );
-     else
-        identifiers( id ).usage := limitedUsage;
-     end if;
-  end if;
+  case identifiers( id ).usage is
+  when fullUsage =>
+        case identifiers( type_token ).usage is
+        when fullUsage =>
+           null;
+        when constantUsage =>
+           identifiers( id ).usage := constantUsage;
+        when limitedUsage =>
+           identifiers( id ).usage := limitedUsage;
+        when abstractUsage =>
+           err( "internal error: variables should not have abstract types" );
+        when others =>
+           err( "internal error: unknown var qualifier" );
+        end case;
+  when constantUsage =>
+       if identifiers( type_token ).usage = limitedUsage then
+          err( "constant is less restrictive than " & optional_bold( "limited" ) );
+       end if;
+  when limitedUsage =>
+       null; -- this is the most constrained
+  when abstractUsage =>
+       err( "variables cannot be declared as type " &
+         optional_bold( to_string( identifiers( type_token ).name ) ) &
+         " because it is " & optional_bold( "abstract" ) );
+  when others =>
+      err( "internal error: unknown var qualifier" );
+  end case;
 
   if token = private_t then                             -- private access?
      err( "not yet implemented" );
@@ -3529,10 +3582,10 @@ begin
   if identifiers( getBaseType( type_token ) ).list then       -- array type?
      if not anon_arrays then
         err( "nested arrays not yet supported" );
-     elsif identifiers( type_token ).usage = abstractUsage then
-        err( "constants and variables cannot be declared as " &
-          optional_bold( to_string( identifiers( type_token ).name ) ) &
-          " because it is " & optional_bold( "abstract" ) );
+     --elsif identifiers( type_token ).usage = abstractUsage then
+     --   err( "constants and variables cannot be declared as " &
+     --     optional_bold( to_string( identifiers( type_token ).name ) ) &
+     --     " because it is " & optional_bold( "abstract" ) );
      else
         ParseArrayDeclaration( id, type_token );                -- handle it
      end if;
@@ -3544,10 +3597,10 @@ begin
   if identifiers( getBaseType( type_token ) ).kind = root_record_t then  -- record type?
      if not anon_arrays then
         err( "nested records not yet supported" );
-     elsif identifiers( type_token ).usage = abstractUsage then
-        err( "constants and variables cannot be declared as " &
-          optional_bold( to_string( identifiers( type_token ).name ) ) &
-          " because it is " & optional_bold( "abstract" ) );
+     --elsif identifiers( type_token ).usage = abstractUsage then
+     --   err( "constants and variables cannot be declared as " &
+     --     optional_bold( to_string( identifiers( type_token ).name ) ) &
+     --     " because it is " & optional_bold( "abstract" ) );
      else
         ParseRecordDeclaration( id, type_token );          -- handle it
      end if;
@@ -3567,6 +3620,7 @@ begin
   elsif getBaseType( type_token ) = command_t then
      if onlyAda95 then
         err( "command types not allowed with " & optional_bold( "pragma ada_95" ) );
+     -- Special case: command type qualifiers
      elsif identifiers( id ).usage /= limitedUsage and
         identifiers( id ).usage /= constantUsage then
         err( "command variables must be " & optional_bold( "limited" ) & " or " & optional_bold( "constant" ) );
@@ -3578,11 +3632,11 @@ begin
   --
   -- These cannot be declared.
 
-  if identifiers( type_token ).usage = abstractUsage then
-     err( "constants and variables cannot be declared as " &
-          optional_bold( to_string( identifiers( type_token ).name ) ) &
-          " because it is " & optional_bold( "abstract" ) );
-  end if;
+  --if identifiers( type_token ).usage = abstractUsage then
+  --   err( "constants and variables cannot be declared as " &
+  --        optional_bold( to_string( identifiers( type_token ).name ) ) &
+  --        " because it is " & optional_bold( "abstract" ) );
+  --end if;
 
   -- Generic Parameters
   --
@@ -4052,7 +4106,7 @@ begin
    --
    -- type ... abstract record... or abstract array...
 
-   elsif token = abstract_t or token = limited_t then
+   elsif token = abstract_t or token = limited_t or token = constant_t then
       ParseTypeUsageQualifiers( newtype_id );
       if token = array_t then
          ParseArrayTypePart( newtype_id );
@@ -4064,6 +4118,7 @@ begin
          --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = new_t then
         err( optional_bold( "abstract" ) & " or " &
+             optional_bold( "constant" ) & " or " &
              optional_bold( "limited" ) &  " goes after " &
              optional_bold( "new" ) );
       else
