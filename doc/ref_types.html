@@ -744,8 +744,8 @@ object(stdClass)#1 (4) {<br>
 <p>A renaming is a second name (or alias) for a variable.  Both the renaming
 variable and the original (or canonical) variable share the same value.</p>
 
-<p>Variables renaming other variables can be done for scalar variables or
-constants, command constants, arrays, array elements, records, record
+<p>Variables renaming other variables can be done for scalar variables,
+commands, arrays, array elements, records, record
 fields and enumerated variables.  An exception cannot be renamed.</p>
 
         <center>
@@ -771,9 +771,13 @@ for example.</p>
 is not a constant or limited, of course).  The original variable's value will
 also change.</p>
 
-<p>The type qualifier may be changed.  A renaming of a variable can be a constant,
-for example, creating a read-only renaming.
-However, you cannot reduce the constraints
+<p>The type qualifier may be changed.
+You can "downgrade" the usage on a type in a renaming.  For example,
+a constant variable can be renamed as a limited variable because limited
+is more constrained than a constant.
+Also a renaming of a variable can be a constant, creating a read-only
+renaming.
+However, you cannot remove constraints
 of the qualifier by a renaming.  A constant must be renamed by another constant
 or limited&nbsp;you cannot change a constant into a variable by renaming.  A
 limited must be renamed by another limited.</p>

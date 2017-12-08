@@ -24,11 +24,11 @@ CHANGES SINCE 2.1
 
 10. New: "nonstandard" software model.
 
-11. Fix: variables with explicit limited qualifier are now limited.  limited renames. [Doc/tests required]
+11. Fix: variables with explicit limited qualifier are now limited.
 
 12. New: return statements may have a when clause, like an exit statement.
 
-13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant". [tests, docs to update]
+13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant".
 
 14. Change: command variables must now be limited instead of constant, in line with new limited functionality.  They cannot be used in an expression or assigned to.
 

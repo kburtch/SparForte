@@ -12,7 +12,6 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - the new type qualifiers system and remaning
-  - testing renamings and constant arrays/records to constant/limited
   - disabling qualifiers when tests are underway (-t) and special regression
     tests for the same.
   - should subprogram parameters allow qualifiers?

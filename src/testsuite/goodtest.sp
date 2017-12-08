@@ -1358,7 +1358,18 @@ pragma assert( sa2(1) = 5 );
 type nullarray is array(1..0) of integer;
 nularr : nullarray;
 
+type constantarray is constant array(1..2) of integer;
+
+constarrayvar : constant nullarray; -- a little pointless...
+pragma assumption( used, constarrayvar );
+
+type limitedarray is limited array(1..2) of integer;
+
+limitedarrayvar : limited constantarray;
+pragma assumption( used, limitedarrayvar );
+
 type abstractarray is abstract array(1..2) of integer;
+
 
 -- type of an array type
 
@@ -1503,12 +1514,25 @@ type arec2 is record
      k   : character;
 end record;
 
+type arec3 is constant record
+     i : integer := 1;
+end record;
+
+type arec4 is limited record
+     i : integer := 1;
+end record;
+
 rec1 : arec1;
 rec2 : arec2;
 rec3 : arec1 := (5);
 rec4 : arec2 := (6,7,'8');
 rec5 : arec2 := rec4;
 rec6, rec7 : arec1 := (1);
+
+rec8 : constant arec1;
+pragma assumption( used, rec8 );
+rec9 : limited arec3;
+pragma assumption( used, rec9 );
 
 rec1.i := 1;
 rec2.i := 2;

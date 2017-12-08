@@ -200,6 +200,15 @@ abstract types as subprogram parameters.</p>
 
 <p><b>pragma ada_95</b>: Abstract types are not permitted.</p>
 
+<h3>Constant Variables and Types</h3>
+
+<p>A <b>constant variable</b> is a variable that cannot be assigned
+a new value.</p>
+
+<p>A variable can "downgrade" a type's qaulifier.  For example, a
+constant variable can be made for a type without a qualifier because
+constant is more constrained than normal usage.</p>
+
 <h3>Limited Variables and Types</h3>
 
 <p>A <b>limited variable</b> is a variable that cannot be copied
@@ -223,6 +232,10 @@ customer_id <b>:</b> <b>limited</b> integer;<br />
 <b>subtype</b> file_id <b>is</b> <b>limited</b> integer;<br/>
         </div>
         </center>
+
+<p>A variable can "downgrade" a type's qaulifier.  For example, a
+limited variable can be made for a constant type because limited
+is more constrained than a constant.</p>
 
 <p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
 <p><b>pragma ada_95</b>: Limited variables and types are not permitted.</p>
