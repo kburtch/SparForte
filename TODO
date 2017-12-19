@@ -15,11 +15,17 @@ Priority Issues (Fix These First)
   - disabling qualifiers when tests are underway (-t) and special regression
     tests for the same.
   - should subprogram parameters allow qualifiers?
+- programming-by-contract
+  - negative tests
+  - improve documentation / examples
+  - optimizations?
 - unstructured scripts
   - additional examples to be added to automated tests
   - should I relax the restriction on declaring variables in unstructured
     scripts?
+- complete log package
 - unsorted/misc
+    - raise and return are no longer unreachable code because of optional when
     - ./foo is recognized as a command but /bin/foo is not.  I don't remember
       how this is handled and it will require some investigation.
     - env producing phantom errors when piped to fgrep
@@ -34,9 +40,9 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
-- create a logging package to enhance error handling
 - add annotate/categories to example programs representing the example groupings
   they belong to
+- problem extracting byte code for blocks (copying whole lines)
 - btree_io/hash_io
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
@@ -334,6 +340,7 @@ New Unique Concepts
       keyword in declarations.
     - abstract should be usable anywhere to create a type that is not intended
       to have a variable created of that type.
+    - would syntax trees help? https://en.wikipedia.org/wiki/Abstract_syntax_tree
 
 -------------------------------------------------------------------------------
 KNOWN ISSUES/IDEAS

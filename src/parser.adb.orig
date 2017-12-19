@@ -564,6 +564,92 @@ end ParseStaticIdentifier;
 procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string );
 -- forward declaration
 
+procedure ParseAcceptBlock;
+
+
+-- DO CONTRACTS
+--
+-- Check for and execute a type's accept clauses.  Use recursion to move to
+-- the distant ancenstor type, then return, applying the clauses, ending
+-- with the clause on the type itself.  If no clause exists, do nothing.
+--
+-- kind_id is the data type.
+-- expr_val is the value to be tested for that type
+
+procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string ) is
+   type_value_id : identifier;
+
+   -- DO CONTRACT1
+   --
+   -- The inner recursive procedure.
+
+   procedure DoContract1( kind_id : identifier; expr_val : in out unbounded_string ) is
+      scriptState : aScriptState;
+   begin
+      if identifiers( kind_id ).kind /= variable_t then    -- not uni?
+         -- Cannot do DoContract1 because type identifier will change
+         -- So switched it to DoContracts
+         DoContracts( identifiers( kind_id ).kind, expr_val ); -- parents first
+      end if;
+      if identifiers( kind_id ).contract /= "" then        -- a contract?
+         if trace then                                     -- trace message
+            put_trace( to_string( identifiers( kind_id ).name ) & " accept clause" );
+         end if;
+         parseNewCommands( scriptState,
+           identifiers( kind_id ).contract,
+           fragment => true );                           -- setup byte code
+         ParseAcceptBlock;
+         expectSemicolon;
+         if not done then                                  -- not done?
+            expect( eof_t );                               -- should be eof
+         end if;
+         restoreScript( scriptState );            -- restore original script
+      end if;
+   end DoContract1;
+
+begin
+
+   -- Create a new block, declaring the data type variable
+   -- We don't need to assign the value until we know we're executing.
+
+   pushBlock( newScope => true, newName => "accept clause" );
+   declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
+
+   if isExecutingCommand then
+--put_line( "Starting Contract for value " & to_string( expr_val ) ); -- DEBUG
+--put_line( "Kind_id = " & kind_id'img ); -- DEBUG
+--put_line( to_string( identifiers( type_value_id ).name ) & " = " & type_value_id'img ); -- DEBUG
+
+      -- Disallow undefined or end_of_file tokens as a precaution.
+      -- Otherwise, assign the value to the variable and apply contracts.
+
+      if kind_id /= new_t and kind_id /= eof_t then
+         identifiers( type_value_id ).value.all := expr_val;
+         DoContract1( kind_id, expr_val );
+      end if;
+
+      -- If the validation function altered the data, return the new value
+      -- for the data.
+      -- We can't relay on wasWritten since it only applies to syntax checks.
+
+--put_trace( "end of contract, value is " & to_string( toEscaped( expr_val ) ) ); -- DEBUG
+--put_trace( "type_value is " & to_string( identifiers( type_value_id ).value.all ) ); -- DEBUG
+--put_trace( "type_value written " & identifiers( type_value_id ).wasWritten'img ); -- DEBUG
+      --if identifiers( type_value_id ).wasWritten then
+
+      -- Copying a value is not so easy for an array
+      expr_val := identifiers( type_value_id ).value.all;
+      if trace then                                     -- trace message
+         put_trace( "value after accept clause: " & to_string( toEscaped( expr_val ) ) );
+      end if;
+      --end if;
+   end if;
+
+   -- Tear down accept function block
+
+   pullBlock;
+end DoContracts;
+
 
 -----------------------------------------------------------------------------
 -- Expressions
@@ -3880,6 +3966,7 @@ begin
         --   end;
         --end if;
         expr_value := castToType( expr_value, type_token );
+        DoContracts( identifiers( id ).kind, expr_value );
         identifiers( id ).value.all := expr_value;
         if trace then
             put_trace(
@@ -4033,13 +4120,68 @@ begin
 
 end ParseArrayTypePart;
 
+procedure ParseExceptionHandler( errorOnEntry : boolean );
+--forward
+
+
+procedure ParseAcceptBlock is
+   -- Syntax: accept ... begin ... end accept;
+  --errorOnEntry : boolean := error_found;
+begin
+   -- Verify context
+   -- TODO: name of block should be a constant
+   --if blocks_top = block'first then
+   --   err( "accept block is only valid in a type or subtype declaration" );
+   --elsif getBlockName( blocks_top-1 ) /= "accept function" then
+   --   err( "accept block is only valid in a type or subtype declaration" );
+   --end if;
+   expect( accept_t );
+   --ParseDeclarations;
+   --expect( begin_t );
+   ParseBlock;
+   --if token = exception_t then
+   --   ParseExceptionHandler( errorOnEntry );
+   --end if;
+   expect( end_t );
+   expect( accept_t );
+end ParseAcceptBlock;
+
+procedure ParseAcceptClause( newtype_id : identifier ) is
+   -- Setup an accept block
+   type_value_id : identifier;
+   blockStart    : natural;
+   blockEnd      : natural;
+   save_syntax_check : boolean := syntax_check;
+begin
+   -- To execute a contract, we cannot use a function since we cannot
+   -- define one without knowing the data type of type_value.
+   -- TODO: handle backquoted accept clause
+
+   -- declare type_value
+   pushBlock( newScope => true, newName => "accept function" );
+   declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
+   blockStart := firstPos;
+   syntax_check := true;
+
+   ParseAcceptBlock;
+
+   syntax_check := save_syntax_check;
+   blockEnd := lastPos+1; -- include EOL ASCII.NUL
+   if not syntax_check then
+      -- TODO: copyByteCodeLines to be fixed
+      identifiers( newtype_id ).contract := to_unbounded_string( copyByteCodeLines( blockStart, blockEnd ) );
+   end if;
+   pullBlock;
+end ParseAcceptClause;
+
 procedure ParseType is
-   -- Syntax: type = "type newtype is new [abstract] oldtype"
+   -- Syntax: type = "type newtype is new [qualifier] oldtype [accept fn]"
    --         type = "type arraytype is array-type-part"
    -- NOTE: enumerateds aren't overloadable (yet)
-   newtype_id : identifier;
-   parent_id  : identifier;
-   enum_index : integer := 0;
+   newtype_id  : identifier;
+   parent_id   : identifier;
+   enum_index  : integer := 0;
+   contract_id : identifier := eof_t;
    b : boolean;
 begin
 
@@ -4129,11 +4271,15 @@ begin
 
    elsif token = array_t then
       ParseArrayTypePart( newtype_id );
+      -- for now, assignment is with a scalar so we don't have an accept
+      -- block for an array.
 
    -- type ... is record...
 
    elsif token = record_t then
       ParseRecordTypePart( newtype_id );
+      -- for now, assignment is with a scalar so we don't have an accept
+      -- block for a record.
    else
 
      -- type ... is new [abstract] ...
@@ -4182,11 +4328,16 @@ begin
         end if;
      end if;
 
+     -- Programming-by-contract (accept function)
+
+     if token = accept_t then
+        ParseAcceptClause( newtype_id );
+     end if;
    end if;
 end ParseType;
 
 procedure ParseSubtype is
-   -- Syntax: type = "subtype newtype is [abstract|limited] oldtype"
+   -- Syntax: type = "subtype newtype is [abstract|limited] oldtype [accept clause]"
    newtype_id : identifier;
    parent_id : identifier;
    b : boolean;
@@ -4219,6 +4370,11 @@ begin
          end if;
       else                                                 -- otherwise
          b := deleteIdent( newtype_id );                   -- discard subtype
+      end if;
+
+      -- Programming-by-contract (accept function)
+      if token = accept_t then
+         ParseAcceptClause( newtype_id );
       end if;
    end if;
 end ParseSubtype;
@@ -5992,14 +6148,37 @@ begin
   end loop;
 end ParseDeclarations;
 
+procedure ParseWhenClause( when_true : out boolean ) is
+  -- Syntax: ... when condition
+  -- True is returned if the when clause is true
+  expr_val    : unbounded_string;
+  expr_type   : identifier;
+begin
+  expect( when_t );
+  ParseExpression( expr_val, expr_type );
+  if baseTypesOk( boolean_t, expr_type ) then
+     if isExecutingCommand then
+        when_true :=  expr_val = "1";
+        if trace then
+           if when_true then
+              put_trace( "when condition is true" );
+           else
+              put_trace( "when condition is false" );
+           end if;
+        end if;
+     end if;
+  end if;
+end ParseWhenClause;
+
 -- Raise an exception outside of an exception block
 -- TODO: inside a block
 
 procedure ParseRaise is
--- Syntax: raise | raise e [with s]
+-- Syntax: raise [when...] | raise e [with s] [when...]
   id : identifier;
   with_text : unbounded_string;
   withTextType : identifier;
+  mustRaise : boolean := true;
 begin
   expect( raise_t );
 
@@ -6025,8 +6204,13 @@ begin
      --      err( "unreachable code" );
      --   end if;
      --elsif isExecutingCommand then
+     if token = when_t or token = if_t then
+        ParseWhenClause( mustRaise );
+     end if;
      if isExecutingCommand then
-        error_found := true;
+        if mustRaise then
+           error_found := true;
+        end if;
      end if;
   else
 
@@ -6048,38 +6232,43 @@ begin
            if token = use_t then
               err( optional_bold( "use" ) & " may only be used in exception declaration" );
            end if;
-        elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
-           err( "with or ';' expected" );
+        elsif token /= when_t and token /= symbol_t and identifiers( token ).value.all /= ";" then
+           err( "when, with or ';' expected" );
+        end if;
+        if token = when_t then
+           ParseWhenClause( mustRaise );
         end if;
      end if;
      if isExecutingCommand then
-        -- if no message, check for and use the default message
-        if length( with_text ) = 0 then
-           if length( identifiers( id ).value.all ) > 1 then
-              with_text := unbounded_slice( identifiers( id ).value.all, 2, length( identifiers( id ).value.all ) );
+        if mustRaise then
+           -- if no message, check for and use the default message
+           if length( with_text ) = 0 then
+              if length( identifiers( id ).value.all ) > 1 then
+                 with_text := unbounded_slice( identifiers( id ).value.all, 2, length( identifiers( id ).value.all ) );
+              end if;
            end if;
+           -- Record the exception id
+           -- Pull the declaration out of the symbol table.  Mark as not deleted.
+           -- Redirect storage pointer to point to local storage, not to the
+           -- symbol table svalue which could get disappear when a block is
+           -- deallocated.
+           err_exception := identifiers( id );
+           err_exception.deleted := false;
+           err_exception.value := err_exception.svalue'access;
+           if length( with_text ) > 0 then
+              raise_exception( "raised " &
+                   optional_bold( to_string( identifiers( id ).name ) ) &
+                   ": " &
+                   to_string( with_text )
+              );
+           else
+              raise_exception( "raised " &
+                   optional_bold( to_string( identifiers( id ).name ) )
+              );
+           end if;
+           -- set the exit status
+           last_status := character'pos( element( identifiers( id ).value.all, 1 ) );
         end if;
-        -- Record the exception id
-        -- Pull the declaration out of the symbol table.  Mark as not deleted.
-        -- Redirect storage pointer to point to local storage, not to the
-        -- symbol table svalue which could get disappear when a block is
-        -- deallocated.
-        err_exception := identifiers( id );
-        err_exception.deleted := false;
-        err_exception.value := err_exception.svalue'access;
-        if length( with_text ) > 0 then
-           raise_exception( "raised " &
-                optional_bold( to_string( identifiers( id ).name ) ) &
-                ": " &
-                to_string( with_text )
-           );
-        else
-           raise_exception( "raised " &
-                optional_bold( to_string( identifiers( id ).name ) )
-           );
-        end if;
-        -- set the exit status
-        last_status := character'pos( element( identifiers( id ).value.all, 1 ) );
      end if;
   end if;
 end ParseRaise;
@@ -6901,6 +7090,7 @@ begin
      --   identifiers( formalParamId ).kind,
      --   to_string( expr_value ) );
      if isExecutingCommand then
+        DoContracts( identifiers( formalParamId ).kind, expr_value );
         identifiers( usableParamId ).value.all := expr_value;
         if trace then
            put_trace(
@@ -7212,6 +7402,7 @@ begin
        newName => to_string (identifiers( func_id ).name ) );
      DeclareActualParameters( func_id );
      expect( is_t );
+
      if token = null_t then                               -- null abstract
         expect( null_t );
         expect( abstract_t );
@@ -8543,11 +8734,7 @@ begin
 
      if token = when_t or token = if_t then     -- if to give "expected when"
         has_when := true;
-        expect( when_t );
-        ParseExpression( expr_val, expr_type );
-        if baseTypesOk( boolean_t, expr_type ) then
-           must_return :=  expr_val = "1";
-        end if;
+        ParseWhenClause( must_return );
      else
          must_return := true;
      end if;
@@ -8797,6 +8984,11 @@ begin
   end if;
 
   if isExecutingCommand then
+
+     -- Programming-by-contract
+
+     DoContracts( identifiers( var_id ).kind, expr_value );
+
      if identifiers( var_id ).list then
         --mem_id := long_integer( to_numeric( identifiers( var_id ).value ) );
         --arrayIndex := long_integer( to_numeric( index_value ) );
@@ -8917,7 +9109,7 @@ end ParseVarDeclaration;
 procedure ParseGeneralStatement is
   -- Syntax: env-cmd | clear-cmd | ...
   expr_value : unbounded_string;
-  expr_type  : identifier;
+  --expr_type  : identifier;
   cmdStart   : aScannerState;
   must_exit  : boolean;
   eof_flag   : boolean := false;
@@ -8969,8 +9161,8 @@ begin
   itself_type := token;
   itself_question := false;
 
---put( "PGS: " ); -- DEBUG
---put_token; -- DEBUG
+-- put( "PGS: " ); -- DEBUG
+-- put_token; -- DEBUG
 
   if Token = command_t then
      err( "Bourne shell command command not implemented" );
@@ -9085,11 +9277,7 @@ begin
      end if;                                    -- but the block type isn't easily checked
      expect( exit_t );
      if token = when_t or token = if_t then     -- if to give "expected when"
-        expect( when_t );
-        ParseExpression( expr_value, expr_type );
-        if baseTypesOk( boolean_t, expr_type ) then
-           must_exit :=  expr_value = "1";
-        end if;
+        ParseWhenClause( must_exit );
      else
         -- check for unreachable code on a stand-alone exit
         if syntax_check then

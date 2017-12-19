@@ -370,6 +370,12 @@ type declaration is record
      firstBound : long_integer := 1;            -- first bound (array type only)
      lastBound  : long_integer := 0;            -- last bound (array type only)
 
+     -- Programming by Contract
+
+     contract : unbounded_string;               -- executable block
+
+     -- Storage
+
      avalue    : storagePtr := null;             -- array value (array variable)
      svalue    : aliased unbounded_string;       -- identifier's value
 

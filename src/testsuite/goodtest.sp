@@ -4685,6 +4685,63 @@ begin
    i := integer(c);
 end;
 
+-- Programming by Contract
+
+declare
+  validate_error : exception;
+
+  subtype long_string is string
+    accept
+       raise validate_error with "too short" when strings.length( long_string ) < 5;
+    end accept;
+  ls : long_string;
+  ls2 : long_string := "fooxx";
+  ls3 : constant long_string := "fooxx";
+
+  type long_string2 is new string
+    accept
+       raise validate_error with "too short" when strings.length( long_string2 ) < 5;
+    end accept;
+  ls4 : long_string2;
+
+  type small_int is new integer
+    accept
+      if small_int < 0 or small_int > 10 then
+         raise validate_error;
+      end if;
+    end accept;
+
+  procedure pbc_test( i1 : in out small_int ) is
+  begin
+    i1 := 5;
+  end pbc_test;
+
+  si : small_int;
+
+  procedure pbc_test2( i2 : in small_int ) is
+  begin
+    si := i2;
+  end pbc_test2;
+
+  type als is array( 1..3 ) of long_string;
+  als1 : array( 1..3 ) of long_string;
+  als2 : als;
+
+  type rls is record
+     ls : long_string;
+  end record;
+  rls1 : rls;
+
+begin
+  ls := "fooxx";
+  ls4 := "fooxx";
+  pbc_test( si );
+  pbc_test2( 5 );
+  als1(1) := "fooxx";
+  als2(2) := "fooxx";
+  rls1.ls := "fooxx";
+end;
+
 -- Pragmas
 
 pragma assumption( used, i );

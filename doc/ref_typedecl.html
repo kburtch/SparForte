@@ -42,11 +42,23 @@
 
 <p>You can extend the fundamental types to create your own types.</p>
 
+<h3>The Aspects of User-defined Types</h3>
+
+<p>Data types have four aspects:</p>
+
+<ol>
+<li><b>A parent type</b> - An existing type that the new type will be based on</li>
+<li><b>New type</b> or <b>subtype</b> - The type is logically incompatible or compatible with the parent type</li>
+<li><b>A usage qualifier</b> - Constraints on how the type may be used (e.g. constants)</li>
+<li><b>An accept clause</b> - Instructions for determining if a value is valid and acceptable.</li>
+</ol>
+
+<p>The usage qualifier and accept clauses are optional.</p>
+
 <h3>Subtypes</h3>
 
 <p>The <b>subtype</b> statement will create a type that is compatible
-with
-the original, as if it was a renaming of the original type.
+with the original, as if it was a renaming of the original type.
 </p>
 
         <center>
@@ -162,10 +174,10 @@ to create other types.</p>
 -- No customer id can be generic.  Only foreign or<br />
 -- domestic customers exist in the real world.<br />
 <br />
-<b>type</b> generic_customer_id <b>is</b> <b>new<b> <b>abstract</b> <b>integer</b>;<br />
+<b>type</b> generic_customer_id <b>is</b> <b>new</b> <b>abstract</b> <b>integer</b>;<br />
 <br />
-type domestic_customer_id <b>is</b> <b>new</b> generic_customer_id;<br />
-type foreign_customer_id <b>is </b><b>new</b> generic_customer_id;<br />
+<b>type</b> domestic_customer_id <b>is</b> <b>new</b> generic_customer_id;<br />
+<b>type</b> foreign_customer_id <b>is </b><b>new</b> generic_customer_id;<br />
         </div>
         </center>
 
@@ -240,6 +252,63 @@ is more constrained than a constant.</p>
 <p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
 <p><b>pragma ada_95</b>: Limited variables and types are not permitted.</p>
 
+<h3>Accept Clauses</h3>
+
+<p>An <b>accept clause</b> is an optional block of instructions that run
+whenever data is assigned.  These instructions validate whether or
+not the data meets the requirements of the type.  An exception can be raised
+if the requirements are not met.</p>
+
+<p>The accept clause doesn't have a declaration section, but you can include a
+declare block if you need declarations.  Within the accept clause, use the
+name of type as if it were a variable name and describe how to check the
+requirements.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+validation_error : <b>exception</b>;<br />
+<br />
+<b>type</b> customer_id <b>is</b> integer<br />
+&nbsp;<b>accept</b><br />
+&nbsp;&nbsp;&nbsp;<b>raise</b> validation_error <b>when</b> customer_id <b>not</b> <b>in</b> 100000..999999;<br/>
+&nbsp;<b>end</b> <b>accept</b>;<br />
+        </div>
+        </center>
+
+<p>In this example, a customer_id must be a six digit number or
+validation_error will be raised.  SparForte will run this check
+whenever a customer_id is changed.</p>
+        <center>
+        <div class="code">
+                <p class="code">
+i : customer_id := 100000; -- no exception<br />
+j : customer_id := 1; -- validation_error<br />
+        </div>
+        </center>
+
+<p>The accept clause runs whenever data is stored in a variable, such as
+assignment statements, assignments on variable declarations and passing
+data in a in mode paramter.</p>
+
+<p>The accept clauses are recursive.  If the parent type of a type has an
+accept clause, the parent type's clause will be run first.</p>
+
+<p>Accept clauses can only be applied to scalar types and subtypes.  Array
+and record types do not have accept clauses.  Record fields and array
+elements will be affected by accept clauses on their types.(Currently,
+only scalar values may be assigned values with assignment statements.)</p>
+
+<p>An accept clause can also alter the value being tested.  However,
+this will trigger the accept clauses again, so care must be taken to
+avoid infinite recursion.</p>
+
+<p><b>Implementation Note</b>: Unlike most programming-by-contract
+implementations, SparForte does not disable the accept clauses in
+maintenance phase mode.  This is performance penalty, but it
+is necessary for web application security: web applications are not
+self-contained systems and accept clauses are not synonymous with
+pragma assert.</p>
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

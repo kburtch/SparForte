@@ -1998,10 +1998,11 @@ begin
      startHelp( e, "raise" );
      summary( e, "raise statement" );
      categoryKeyword( e );
-     description( e, "Raise (throw) an exception" );
-     content( e, "raise   - re-raise an exception in an exception handler" );
-     content( e, "raise e - raise exception e" );
-     content( e, "raise e with s - raise exception e with new message s" );
+     description( e, "Raise (throw) an exception.  There is an optional raise " &
+       "condition which will raise if the condition is true." );
+     content( e, "raise [when condition]  - re-raise an exception in an exception handler" );
+     content( e, "raise e [when condition]- raise exception e" );
+     content( e, "raise e with s [when condition]- raise exception e with new message s" );
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
   elsif helpTopic = "reset" then
@@ -2020,7 +2021,8 @@ begin
      categoryKeyword( e );
      description( e, "Leave a procedure, function or main program.  If a " &
         "function, return a value that can be used in an expression.  There " &
-        "is an optional return condition.  With " &
+        "is an optional return condition which will return if the condition " &
+        "is true.  With " &
         "an interactive prompt, quits a shell.  In breakout mode, resumes " &
         "execution of the script." );
      content( e, "return [expression] [when condition]" );
@@ -2103,7 +2105,7 @@ begin
      categoryKeyword( e );
      description( e, "The subtype statement will create a type that is " &
                   "compatible with the original, as if it was a renaming of the original type. " );
-     content( e, "subtype newtype is [abstract|limited] oldtype " );
+     content( e, "subtype newtype is [abstract|limited] oldtype [accept...end accept]" );
      seeAlso( e, "doc/ref_typedecl.html" );
      endHelp( e );
   elsif helpTopic = "System" then
@@ -2166,8 +2168,8 @@ begin
                   "incompatible with the original type.  It is also " &
                   "used to create array, record and enumerated types. " &
                 "See also subtypes.");
-     content( e, "type newtype is new [abstract|limited] oldtype" );
-     content( e, "type newtype is ( enum1 [,enum2...] )" );
+     content( e, "type newtype is new [abstract|limited] oldtype [accept...end accept]" );
+     content( e, "type newtype is ( enum1 [,enum2...] [accept...end accept] )" );
      content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record" );
      content( e, "type newtype is [abstract|limited] array( low..high) of item_type [:= array( item,...)]" );
      seeAlso( e, "doc/ref_typedecl.html" );
