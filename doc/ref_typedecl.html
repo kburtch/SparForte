@@ -254,15 +254,15 @@ is more constrained than a constant.</p>
 
 <h3>Accept Clauses</h3>
 
-<p>An <b>accept clause</b> is an optional block of instructions that run
-whenever data is assigned.  These instructions validate whether or
+<p>An <b>accept clause</b> (or an accept block) is an optional instruction block
+that run whenever data is assigned.  These instructions validate whether or
 not the data meets the requirements of the type.  An exception can be raised
 if the requirements are not met.</p>
 
-<p>The accept clause doesn't have a declaration section, but you can include a
-declare block if you need declarations.  Within the accept clause, use the
-name of type as if it were a variable name and describe how to check the
-requirements.</p>
+<p>The accept clause doesn't have a declaration or exception handling section,
+but you can include begin and declare blocks inside the accept clause.
+Within the accept clause, use the type name as if it were a variable name.
+Describe how to check the value's requirements.</p>
 
         <center>
         <div class="code">
@@ -278,7 +278,8 @@ validation_error : <b>exception</b>;<br />
 
 <p>In this example, a customer_id must be a six digit number or
 validation_error will be raised.  SparForte will run this check
-whenever a customer_id is changed.</p>
+whenever a customer_id is assigned.</p>
+
         <center>
         <div class="code">
                 <p class="code">
@@ -288,27 +289,75 @@ j : customer_id := 1; -- validation_error<br />
         </center>
 
 <p>The accept clause runs whenever data is stored in a variable, such as
-assignment statements, assignments on variable declarations and passing
-data in a in mode paramter.</p>
+assignment statements, assignments on variable declarations, type casting
+and passing data in a in mode paramter.</p>
 
 <p>The accept clauses are recursive.  If the parent type of a type has an
 accept clause, the parent type's clause will be run first.</p>
 
+        <center>
+        <div class="code">
+                <p class="code">
+<b>type</b> integer64 <b>is</b> ...<br />
+<b>type</b> integer32 <b>is</b> <b>new</b> integer64 ...<br />
+x : integer32;
+        </div>
+        </center>
+
+<p>In this example, if both integer64 and integer32 have accept blocks,
+when x is assigned a value, the integer64 accept clause runs first, then
+the integer32 accept clause runs.</p>
+
 <p>Accept clauses can only be applied to scalar types and subtypes.  Array
 and record types do not have accept clauses.  Record fields and array
-elements will be affected by accept clauses on their types.(Currently,
+elements will be affected by accept clauses on their types.  (Currently,
 only scalar values may be assigned values with assignment statements.)</p>
 
-<p>An accept clause can also alter the value being tested.  However,
-this will trigger the accept clauses again, so care must be taken to
-avoid infinite recursion.</p>
+<p><b>pragma ada_95</b>: Accept clauses are not available.</p>
 
-<p><b>Implementation Note</b>: Unlike most programming-by-contract
-implementations, SparForte does not disable the accept clauses in
-maintenance phase mode.  This is performance penalty, but it
-is necessary for web application security: web applications are not
-self-contained systems and accept clauses are not synonymous with
-pragma assert.</p>
+<p><b>Ada</b>: Accept clauses are similar to Ada's programming-by-contract
+features.  The main difference is that they are not related to asserts:
+you cannot enable them with the debug option (-d) or disable them in
+maintenance mode (-m).  (An accept clause can test for maintenance phase
+mode using the System package.) Accept clauses can also modify their
+values.</p>
+
+<h3>Using Accept Clauses to Modify or Correct Values</h3>
+
+<p>An accept clause can also alter the value being tested.  Suppose you
+want to create an Ada 95 "mod" type.  You can create one with an accept
+clause.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>procedure</b> mod_example <b>is</b><br />
+<br />
+&nbsp;&nbsp;validate_error : <b>exception</b>;<br />
+<br />
+&nbsp;&nbsp;<b>subtype</b> mod_256 <b>is</b> <b>integer</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>accept</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b> mod_256 <b>not</b> <b>in</b> 0..255 <b>then</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mod_256 := @ <b>mod</b> 256;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>end</b> <b>if</b>;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>end</b> <b>accept</b>;<br />
+<br />
+&nbsp;&nbsp;unsigned_byte : mod_256;<br />
+<b>begin</b><br />
+&nbsp;&nbsp;unsigned_byte := 416;<br />
+&nbsp;&nbsp;? unsigned_byte;<br />
+<b>end</b> mod_example;<br />
+        </div>
+        </center>
+
+<p>In this example, the script displays 160, not 416.</p>
+
+<p>When you assign a new value in an accept clause, the accept
+accept clause runs again.
+Making a mistake, like assigning another unacceptable value,
+will cause a "too many blocks" error, the result of infinite
+recursion.</p>
+
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>
                                 <p class="rmt"><a class="rightmenutext" href="ref_adascript.html">&nbsp;AdaScript versus GCC</a></p>

@@ -695,6 +695,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           kind := castType;
           if isExecutingCommand then
              f := castToType( f, kind );
+             DoContracts( kind, f );
           end if;
        end if;
     elsif identifiers( t ).usage = limitedUsage then
@@ -4129,16 +4130,10 @@ procedure ParseAcceptBlock is
   --errorOnEntry : boolean := error_found;
 begin
    -- Verify context
-   -- TODO: name of block should be a constant
-   --if blocks_top = block'first then
-   --   err( "accept block is only valid in a type or subtype declaration" );
-   --elsif getBlockName( blocks_top-1 ) /= "accept function" then
-   --   err( "accept block is only valid in a type or subtype declaration" );
-   --end if;
    expect( accept_t );
-   --ParseDeclarations;
-   --expect( begin_t );
    ParseBlock;
+   -- I decided not to have an exception handler since the purpose of the
+   -- accept block is to raise exceptions.
    --if token = exception_t then
    --   ParseExceptionHandler( errorOnEntry );
    --end if;
@@ -4158,20 +4153,24 @@ begin
    -- TODO: handle backquoted accept clause
 
    -- declare type_value
-   pushBlock( newScope => true, newName => "accept function" );
-   declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
-   blockStart := firstPos;
-   syntax_check := true;
+   if onlyAda95 then
+      err( "accept clauses are not allowed with " & optional_bold( "pragma ada_95" ) );
+   else
+      pushBlock( newScope => true, newName => "accept function" );
+      declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
+      blockStart := firstPos;
+      syntax_check := true;
 
-   ParseAcceptBlock;
+      ParseAcceptBlock;
 
-   syntax_check := save_syntax_check;
-   blockEnd := lastPos+1; -- include EOL ASCII.NUL
-   if not syntax_check then
-      -- TODO: copyByteCodeLines to be fixed
-      identifiers( newtype_id ).contract := to_unbounded_string( copyByteCodeLines( blockStart, blockEnd ) );
+      syntax_check := save_syntax_check;
+      blockEnd := lastPos+1; -- include EOL ASCII.NUL
+      if not syntax_check then
+         -- TODO: copyByteCodeLines to be fixed
+         identifiers( newtype_id ).contract := to_unbounded_string( copyByteCodeLines( blockStart, blockEnd ) );
+      end if;
+      pullBlock;
    end if;
-   pullBlock;
 end ParseAcceptClause;
 
 procedure ParseType is
@@ -4332,6 +4331,8 @@ begin
 
      if token = accept_t then
         ParseAcceptClause( newtype_id );
+     elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
+        err( "accept or ';' expected" );
      end if;
    end if;
 end ParseType;
@@ -4375,6 +4376,8 @@ begin
       -- Programming-by-contract (accept function)
       if token = accept_t then
          ParseAcceptClause( newtype_id );
+      elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
+         err( "accept or ';' expected" );
       end if;
    end if;
 end ParseSubtype;

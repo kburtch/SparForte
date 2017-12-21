@@ -15,10 +15,6 @@ Priority Issues (Fix These First)
   - disabling qualifiers when tests are underway (-t) and special regression
     tests for the same.
   - should subprogram parameters allow qualifiers?
-- programming-by-contract
-  - negative tests
-  - improve documentation / examples
-  - optimizations?
 - unstructured scripts
   - additional examples to be added to automated tests
   - should I relax the restriction on declaring variables in unstructured
@@ -129,6 +125,9 @@ Annoyances / Bugs with Workarounds / Updates
 Nice to Haves / Missing Functionality
 -------------------------------------
 
+- programming-by-contract
+  - optimizations - mark places in type tree where we know there's no need to
+    search further for contracts.
 - overriding renamings
   - require overriding on renamings of same identifier name but in different scope?
     - this requires a new function to check for pre-exisiting names in a different

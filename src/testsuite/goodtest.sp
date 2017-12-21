@@ -4732,14 +4732,26 @@ declare
   end record;
   rls1 : rls;
 
+  subtype mod_256 is integer
+    accept
+      if mod_256 not in 0..255 then
+        mod_256 := @ mod 256;
+      end if;
+    end accept;
+
+  unsigned_byte : mod_256;
+
 begin
   ls := "fooxx";
+  s := string( long_string( "fooxx" ) );
   ls4 := "fooxx";
   pbc_test( si );
   pbc_test2( 5 );
   als1(1) := "fooxx";
   als2(2) := "fooxx";
   rls1.ls := "fooxx";
+  unsigned_byte := 416;
+  pragma assert( unsigned_byte = 160 );
 end;
 
 -- Pragmas
