@@ -30,6 +30,7 @@ with ada.text_io,
      scanner,
      user_io,
      parser,
+     interpreter,
      signal_flags;
 
 use ada.text_io,
@@ -42,6 +43,7 @@ use ada.text_io,
     scanner,
     user_io,
     parser,
+    interpreter,
     signal_flags;
 
 --with string_util; use string_util;
@@ -286,6 +288,7 @@ begin
   findIdent( to_unbounded_string( "TERM" ), term_id );
   checkDisplay( identifiers( term_id ).value.all );
   startParser;
+  startInterpreter;
 
   -- replace initialization message with copyright notice (if on
   -- a terminal and not running a script)
@@ -300,6 +303,7 @@ begin
 
   -- Shutdown
 
+  shutdownInterpreter;
   shutdownParser;
   shutdownScanner;
   shutdownCompiler;

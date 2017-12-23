@@ -86,6 +86,10 @@ procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
 procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded_string; fragment : boolean := true );
 -- for user-defined procedures, functions and backquoted literals
 
+-- Used by the interpreter
+procedure parseConfig;
+procedure parsePolicy;
+procedure parse;
 
 ------------------------------------------------------------------------------
 -- INTERPRETING
@@ -93,16 +97,16 @@ procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded
 -- Kicking off an AdaScript session or AdaScript commands
 ------------------------------------------------------------------------------
 
-procedure interactiveSession;
+--procedure interactiveSession;
 -- start an interactive session
 
-procedure interpretScript( scriptPath : string );
+--procedure interpretScript( scriptPath : string );
 
-procedure interpretCommands( commandString : string );
-procedure interpretCommands( commandString : unbounded_string );
+--procedure interpretCommands( commandString : string );
+--procedure interpretCommands( commandString : unbounded_string );
 -- run the string of commands
 
-procedure interpret;
+--procedure interpret;
 -- Check the command line options and run a session, script or strings as
 -- required.  Also, run any templates.
 
@@ -110,15 +114,15 @@ procedure interpret;
 -- For Foreign Languages (eg. C) who want to run BUSH as a library.
 ------------------------------------------------------------------------------
 
-type C_path is new char_array(0..1024);
-type C_cmds is new char_array(0..32768);
+--type C_path is new char_array(0..1024);
+--type C_cmds is new char_array(0..32768);
 
-procedure SPAR_interpretScript( C_scriptPath : C_path );
-pragma export( C, SPAR_interpretScript, "BUSH_interpretScript" );
+--procedure SPAR_interpretScript( C_scriptPath : C_path );
+--pragma export( C, SPAR_interpretScript, "SPAR_interpretScript" );
 
 -- run the indicated script
-procedure SPAR_interpretCommands( C_commandString : C_cmds );
-pragma export( C, SPAR_interpretCommands, "BUSH_interpretCommands" );
+--procedure SPAR_interpretCommands( C_commandString : C_cmds );
+--pragma export( C, SPAR_interpretCommands, "SPAR_interpretCommands" );
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
