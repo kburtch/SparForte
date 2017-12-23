@@ -1663,8 +1663,8 @@ procedure startOfStatementByteCode( ci : in out compressionInfo;
   ch : character;
   id             : identifier;
   -- backupPos      : natural;
+  shell_word : boolean := false; -- KB: 17/12/2
 begin
-
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
   -- variables.  Keywords are stored as their symbol table position with
@@ -1758,18 +1758,22 @@ begin
   -- not handled yet.
 
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
+        ch = '.' or ch = '/' or -- KB: 17/12/22
         ch > ASCII.DEL then
      lastpos := cmdpos+1;
      word := null_unbounded_string;
      if Element( command, cmdpos ) > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
      end if;
+     shell_word := shell_word or (ch = '.' or ch = '/'); -- KB: 17/12/2
      word := word & Element( command, cmdpos );
      if lastpos <= length( command ) then
         while is_alphanumeric( Element( command, lastpos ) ) or
               Element( command, lastpos ) = '_' or
               Element( command, lastpos ) = '.' or
+              Element( command, lastpos ) = '/' or -- KB: 17/12/22
               Element( command, lastpos ) > ASCII.DEL loop
+              shell_word := shell_word or (ch = '.' or ch = '/'); -- KB: 17/12/2
               if Element( command, lastpos ) > ASCII.DEL then
                  if Element( command, lastpos ) = ASCII.NUL or Element( command, lastpos ) = immediate_word_delimiter then
                     err_tokenize( "ASCII character not allowed", to_string( command ) );
@@ -1805,6 +1809,7 @@ begin
              toByteCode( id );                            -- sym table pos
        else                                                -- should not occur
           ci.compressedScript := ci.compressedScript &     -- store store as an
+             immediate_word_delimiter & -- KB: 17/12/22
              word & immediate_word_delimiter;              -- immediate word
        end if;
 
@@ -1861,8 +1866,17 @@ begin
        end if;
 
      else                                                  -- not reserved?
-       ci.compressedScript := ci.compressedScript &        -- store store as an
-           word & immediate_word_delimiter;                -- immediate word
+       -- it's either an identifier or a shell word (if it contains
+       -- path characaters).  Shell words start/end with a delim
+       -- while undeclared idents just end with a delim.
+       if shell_word then
+          ci.compressedScript := ci.compressedScript &        -- store store as an
+             immediate_word_delimiter & -- KB: 17/12/22
+              word & immediate_word_delimiter;                -- immediate word
+       else
+          ci.compressedScript := ci.compressedScript &        -- store store as an
+              word & immediate_word_delimiter;                -- immediate word
+       end if;
        ci.context := StartOfParameters;                    -- Shell or Ada
 
      end if;

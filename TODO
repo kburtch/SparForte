@@ -22,8 +22,6 @@ Priority Issues (Fix These First)
 - complete log package
 - unsorted/misc
     - raise and return are no longer unreachable code because of optional when
-    - ./foo is recognized as a command but /bin/foo is not.  I don't remember
-      how this is handled and it will require some investigation.
     - env producing phantom errors when piped to fgrep
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
