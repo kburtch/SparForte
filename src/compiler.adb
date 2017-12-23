@@ -1758,22 +1758,22 @@ begin
   -- not handled yet.
 
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
-        ch = '.' or ch = '/' or -- KB: 17/12/22
+        ch = '.' or ch = directory_delimiter or -- KB: 17/12/22
         ch > ASCII.DEL then
      lastpos := cmdpos+1;
      word := null_unbounded_string;
      if Element( command, cmdpos ) > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
      end if;
-     shell_word := shell_word or (ch = '.' or ch = '/'); -- KB: 17/12/2
+     shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
      word := word & Element( command, cmdpos );
      if lastpos <= length( command ) then
         while is_alphanumeric( Element( command, lastpos ) ) or
               Element( command, lastpos ) = '_' or
               Element( command, lastpos ) = '.' or
-              Element( command, lastpos ) = '/' or -- KB: 17/12/22
+              Element( command, lastpos ) = directory_delimiter or -- KB: 17/12/22
               Element( command, lastpos ) > ASCII.DEL loop
-              shell_word := shell_word or (ch = '.' or ch = '/'); -- KB: 17/12/2
+              shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
               if Element( command, lastpos ) > ASCII.DEL then
                  if Element( command, lastpos ) = ASCII.NUL or Element( command, lastpos ) = immediate_word_delimiter then
                     err_tokenize( "ASCII character not allowed", to_string( command ) );
@@ -1809,7 +1809,6 @@ begin
              toByteCode( id );                            -- sym table pos
        else                                                -- should not occur
           ci.compressedScript := ci.compressedScript &     -- store store as an
-             immediate_word_delimiter & -- KB: 17/12/22
              word & immediate_word_delimiter;              -- immediate word
        end if;
 
