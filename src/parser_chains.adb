@@ -27,12 +27,13 @@ with
     ada.strings.unbounded,
     world,
     scanner,
-    parser;
+    parser.adascript;
 use
     ada.strings.unbounded,
     world,
     scanner,
-    parser;
+    parser,
+    parser.adascript;
 
 package body parser_chains is
 

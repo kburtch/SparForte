@@ -34,7 +34,7 @@ with interfaces.c,
     scanner.calendar,
     parser_aux,
     parser_cal,
-    parser,
+    parser.adascript,
     parser_params;
 use interfaces.c,
     ada.exceptions,
@@ -51,6 +51,7 @@ use interfaces.c,
     parser_aux,
     parser_cal,
     parser,
+    parser.adascript,
     parser_params;
 
 package body parser_tio is

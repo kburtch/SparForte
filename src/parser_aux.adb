@@ -28,14 +28,15 @@ with ada.text_io,
      script_io,
      user_io,
      compiler,
-     parser;
+     parser.adascript;
 use  ada.text_io,
      Interfaces.C,
      string_util,
      script_io,
      user_io,
      compiler,
-     parser;
+     parser,
+     parser.adascript;
 
 
 package body parser_aux is
