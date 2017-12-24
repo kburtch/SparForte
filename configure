@@ -1334,11 +1334,11 @@ cp scanner_res.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb scanner_res.adb
 chmod 444 scanner_res.adb
 
-echo "Updating...parser.adb"
-test -f parser.adb && chmod 666 parser.adb
-cp parser.adb.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb parser.adb
-chmod 444 parser.adb
+#echo "Updating...parser.adb"
+#test -f parser.adb && chmod 666 parser.adb
+#cp parser.adb.orig temp.adb
+#gnatprep $GNATPREP_OPTS temp.adb parser.adb
+#chmod 444 parser.adb
 
 echo "Updating...builtins.adb"
 test -f builtins.adb && chmod 666 builtins.adb

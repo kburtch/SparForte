@@ -20,6 +20,9 @@ Priority Issues (Fix These First)
   - should I relax the restriction on declaring variables in unstructured
     scripts?
 - complete log package
+- refactor
+  - parser_tio globals should be put in a separate package, or a different
+    package, to help reduce circular dependencies
 - unsorted/misc
     - raise and return are no longer unreachable code because of optional when
     - env producing phantom errors when piped to fgrep
