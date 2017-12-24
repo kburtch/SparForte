@@ -32,6 +32,8 @@ package parser is
 
 ------------------------------------------------------------------------------
 -- ADASCRIPT CORE PARSER
+--
+-- Basic parsing for identifiers and expressions
 ------------------------------------------------------------------------------
 
 procedure ParseBasicShellWord( shell_word : out unbounded_string );

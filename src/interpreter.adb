@@ -76,7 +76,7 @@ use ada.text_io,
 package body interpreter is
 
 
-   -- INTERACTIVE SESSION
+--  INTERACTIVE SESSION
 --
 -- Begin an interactive session, processing a set of commands typed in by the
 -- user.  Handle SIGINT at the command prompt as well as restoring standard

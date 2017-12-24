@@ -39,6 +39,7 @@ procedure interactiveSession;
 -- start an interactive session
 
 procedure interpretScript( scriptPath : string );
+-- start interpreting a script
 
 procedure interpretCommands( commandString : string );
 procedure interpretCommands( commandString : unbounded_string );
@@ -62,9 +63,11 @@ pragma export( C, SPAR_interpretScript, "SPAR_interpretScript" );
 procedure SPAR_interpretCommands( C_commandString : C_cmds );
 pragma export( C, SPAR_interpretCommands, "SPAR_interpretCommands" );
 
+
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
+
 
 procedure startInterpreter;
 procedure shutdownInterpreter;
