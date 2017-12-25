@@ -83,6 +83,7 @@ type identifier is new integer range 1..30_000; -- 1..2750;
 subtype reservedWordRange is identifier range 1..8192;
 -- The limit of how many reserved words can be stored in the identifiers
 
+
 ------------------------------------------------------------------------------
 -- Modes
 ------------------------------------------------------------------------------
@@ -94,6 +95,7 @@ breakoutContinue : boolean := false;      -- true if execution should continue
 isLoginShell     : boolean := false;      -- true if a login shell
 stepFlag1        : boolean := false;      -- first parser step cmd flag
 stepFlag2        : boolean := false;      -- second parser step cmd flag
+isTesting        : boolean := false;      -- true if running a pragma test
 
 
 ------------------------------------------------------------------------------

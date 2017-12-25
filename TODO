@@ -12,7 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - the new type qualifiers system and remaning
-  - disabling qualifiers when tests are underway (-t) and special regression
+  - disabling qualifiers when tests are underway and special regression
     tests for the same.
   - should subprogram parameters allow qualifiers?
 - unstructured scripts

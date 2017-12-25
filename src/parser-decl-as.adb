@@ -4485,6 +4485,123 @@ begin
   end if;
 end ParseReturn;
 
+
+-- CHECK VAR USAGE QUALIFIER
+--
+-- Handle usage qualifiers (record fields)
+--
+-- At a debug breakout prompt, constant and limited assignment is permitted
+-- with a warning to the user.
+--
+-- When testing, constant and limited assignment is allowed.
+--
+-- Record fields are a little complicated.  As record are collections of
+-- variables, check both the parent record of the file and that record's
+-- type to see if it is constant or limited.  If so, treat the field as
+-- constant or limited.
+
+procedure checkVarUsageQualifier( var_id : identifier ) is
+begin
+  -- field of a record?
+
+  if identifiers( var_id ).field_of /= eof_t then
+
+     -- check the usage qualifier of the parent
+
+     case identifiers( identifiers( var_id ).field_of ).usage is
+     when abstractUsage =>
+        err( "internal error: variables should not have abstract types" );
+     when limitedUsage =>
+        if isTesting then
+           null;
+        elsif inputMode = breakout then
+           put_trace( "Warning: assigning a new value to a limited record field" );
+        else
+           err( "limited record fields cannot be assigned a value" );
+        end if;
+     when constantUsage =>
+        if isTesting then
+           null;
+        elsif inputMode = breakout then
+           put_trace( "Warning: assigning a new value to a constant record field" );
+        else
+           err( "constant record fields cannot be assigned a value" );
+        end if;
+     when fullUsage =>
+
+     -- check the usage qualifier of the parent's type
+
+        case identifiers(
+              identifiers (
+                  identifiers( var_id ).field_of
+              ).kind
+           ).usage is
+        when abstractUsage =>
+           null; -- don't bother checking
+        when limitedUsage =>
+           if isTesting then
+              null;
+           elsif inputMode = breakout then
+              put_trace( "Warning: assigning a new value to a limited record field" );
+           else
+              err( "limited record fields cannot be assigned a value" );
+           end if;
+        when constantUsage =>
+           if isTesting then
+              null;
+           elsif inputMode = breakout then
+              put_trace( "Warning: assigning a new value to a constant record field" );
+           else
+              err( "constant record fields cannot be assigned a value" );
+           end if;
+        when fullUsage =>
+           null;
+        when others =>
+           err( "internal error: unexpected usage qualifier" );
+        end case;
+
+     when others =>
+        err( "internal error: unexpected usage qualifier " &
+           identifiers( identifiers( var_id ).field_of ).usage'img );
+     end case;
+
+  end if;
+
+  -- Handle usage qualifiers
+  --
+  -- Check everything here. Including record fields that passed the parent
+  -- record tests.
+
+  case identifiers( var_id ).usage is
+
+  when abstractUsage =>
+     err( "internal error: variables should not be abstract" );
+
+  when limitedUsage =>
+     if isTesting then
+        null;
+     elsif inputMode = breakout then
+        put_trace( "Warning: assigning a new value to a limited variable" );
+     else
+        err( "limited variables cannot be assigned a value" );
+     end if;
+
+  when constantUsage =>
+     if isTesting then
+        null;
+     elsif inputMode = breakout then
+        put_trace( "Warning: assigning a new value to a constant variable" );
+     else
+        err( "constant variables cannot be assigned a value" );
+     end if;
+
+  when fullUsage =>
+     null;
+
+  when others =>
+     err( "internal error: unexpected usage qualifier " & identifiers( var_id ).usage'img );
+  end case;
+end checkVarUsageQualifier;
 procedure ParseAssignment is
   -- Basic variable assignment
   -- Syntax: var := expression or array(index) := expr
@@ -4523,105 +4640,8 @@ begin
   itself := identifiers( var_id ).value.all;
   itself_type := var_kind;
 
-  -- Handle usage qualifiers (record fields)
-  --
-  -- At a debug breakout prompt, constant and limited assignment is permitted
-  -- with a warning to the user.
-  --
-  -- Record fields are a little complicated.  As record are collections of
-  -- variables, check both the parent record of the file and that record's
-  -- type to see if it is constant or limited.  If so, treat the field as
-  -- constant or limited.
-
   if class_ok( var_id, varClass ) then
-
-     -- field of a record?
-
-     if identifiers( var_id ).field_of /= eof_t then
-
-        -- check the usage qualifier of the parent
-
-        case identifiers( identifiers( var_id ).field_of ).usage is
-        when abstractUsage =>
-           err( "internal error: variables should not have abstract types" );
-        when limitedUsage =>
-           if inputMode = breakout then
-              put_trace( "Warning: assigning a new value to a limited record field" );
-           else
-              err( "limited record fields cannot be assigned a value" );
-           end if;
-        when constantUsage =>
-           if inputMode = breakout then
-              put_trace( "Warning: assigning a new value to a constant record field" );
-           else
-              err( "constant record fields cannot be assigned a value" );
-           end if;
-        when fullUsage =>
-
-        -- check the usage qualifier of the parent's type
-
-           case identifiers(
-                 identifiers (
-                     identifiers( var_id ).field_of
-                 ).kind
-              ).usage is
-           when abstractUsage =>
-              null; -- don't bother checking
-           when limitedUsage =>
-              if inputMode = breakout then
-                 put_trace( "Warning: assigning a new value to a limited record field" );
-              else
-                 err( "limited record fields cannot be assigned a value" );
-              end if;
-           when constantUsage =>
-              if inputMode = breakout then
-                 put_trace( "Warning: assigning a new value to a constant record field" );
-              else
-                 err( "constant record fields cannot be assigned a value" );
-              end if;
-           when fullUsage =>
-              null;
-           when others =>
-              err( "internal error: unexpected usage qualifier" );
-           end case;
-
-        when others =>
-           err( "internal error: unexpected usage qualifier " &
-              identifiers( identifiers( var_id ).field_of ).usage'img );
-        end case;
-
-     end if;
-
-     -- Handle usage qualifiers
-     --
-     -- Check everything here. Including record fields that passed the parent
-     -- record tests.
-
-     case identifiers( var_id ).usage is
-
-     when abstractUsage =>
-        err( "internal error: variables should not be abstract" );
-
-     when limitedUsage =>
-        if inputMode = breakout then
-           put_trace( "Warning: assigning a new value to a limited variable" );
-        else
-           err( "limited variables cannot be assigned a value" );
-        end if;
-
-     when constantUsage =>
-        if inputMode = breakout then
-           put_trace( "Warning: assigning a new value to a constant variable" );
-        else
-           err( "constant variables cannot be assigned a value" );
-        end if;
-
-     when fullUsage =>
-        null;
-
-     when others =>
-        err( "internal error: unexpected usage qualifier " & identifiers( var_id ).usage'img );
-     end case;
+      checkVarUsageQualifier( var_id );
   end if;
 
   -- Handle aggregate type assignment checks

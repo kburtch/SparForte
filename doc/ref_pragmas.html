@@ -365,7 +365,11 @@ report.  The file path is a static static expression.  By default,
 the report will be in text format and written to standard output.</p>
 
 <p><b>pragma test</b> runs a test cases and gives it an optional
-description.  <b>pragma test_result</b>
+description.  While running a test, there will be full access on
+assignment to limited and constant variables.  This is to make
+testing easier.</p>
+
+<p><b>pragma test_result</b>
 evaluates a Boolean expression to check to see if the test ran
 correctly.  A test case or test_result expression is an "error" if
 the test case had an error when it ran.  Otherwise, a test result

@@ -1556,9 +1556,12 @@ begin
               declare
                 savershOpt : commandLineOption := rshOpt;
                 save_error_found : boolean := error_found;
+                isTesting_old : boolean := isTesting;
               begin
                  --rshOpt := true;            -- force restricted shell mode
+                 isTesting := true;
                  CompileRunAndCaptureOutput( expr_val, results );
+                 isTesting := isTesting_old;
                  --rshOpt := savershOpt;
                  put( results );
                  if error_found then
