@@ -48,7 +48,7 @@ with system,
     compiler,
     scanner,
     parser_aux,
-    parser.adascript,
+    parser.decl.as,
     parser_tio;
 use ada.text_io,
     ada.command_line,
@@ -70,7 +70,7 @@ use ada.text_io,
     scanner,
     parser_aux,
     parser,
-    parser.adascript,
+    parser.decl.as,
     parser_tio;
 
 package body interpreter is

@@ -46,7 +46,7 @@ with system,
     signal_flags,
     jobs, -- for clearCommandHash
     parser_aux,
-    parser.adascript,
+    parser.decl.as,
     parser_teams;
 use ada.text_io,
     ada.text_io.editing,
@@ -73,7 +73,7 @@ use ada.text_io,
     jobs,
     parser_aux,
     parser,
-    parser.adascript,
+    parser.decl.as,
     parser_teams;
 
 package body parser_pragmas is

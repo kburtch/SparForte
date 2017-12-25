@@ -23,38 +23,35 @@
 
 with Interfaces.C,
      ada.strings.unbounded,
-     world;
+     world, scanner;
 use Interfaces.C,
     ada.strings.unbounded,
-    world;
+    world, scanner;
 
-package parser is
+package parser.decl.as is
 
-------------------------------------------------------------------------------
--- ADASCRIPT CORE PARSER
---
--- Basic parsing for identifiers and expressions, split off to reduce the
--- size of the main parser file.
-------------------------------------------------------------------------------
+   ------------------------------------------------------------------------------
+   -- ADASCRIPT PARSER - Declarations - AdaScript
+   --
+   -- Remaining parsing functions not covered in core file, such as executable
+   -- features (loops, conditionals, blocks, Bourne shell, SQL, etc.)
+   ------------------------------------------------------------------------------
 
-procedure ParseBasicShellWord( shell_word : out unbounded_string );
-procedure ParseFieldIdentifier( record_id : identifier; id : out identifier );
-procedure ParseProcedureIdentifier( id : out identifier );
-procedure ParseNewIdentifier( id : out identifier );
-procedure ParseIdentifier( id : out identifier );
-procedure ParseStaticIdentifier( id : out identifier );
-procedure ParseProgramName( program_id : out identifier );
-procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier );
-procedure ParseStaticExpression( ex : out unbounded_string; expr_type : out identifier );
+   procedure CompileAndRun( commands : unbounded_string; firstLineNo : natural := 1; fragment : boolean := true );
+   procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
+      unbounded_string; firstLineNo : natural := 1  );
 
-procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string );
+   procedure ParseGeneralStatement;
+   procedure ParseStaticIfBlock;
+   procedure ParseStaticCaseBlock;
 
+--    procedure SkipBlock( termid1, termid2 : identifier := keyword_t );
+   procedure ParseBlock( termid1, termid2 : identifier := keyword_t );
+   procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded_string; fragment : boolean := true );
+   procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string );
 
-------------------------------------------------------------------------------
--- HOUSEKEEPING
-------------------------------------------------------------------------------
+   procedure parsePolicy;
+   procedure parseConfig;
+   procedure parse;
 
-procedure startParser;
-procedure shutdownParser;
-
-end parser;
+end parser.decl.as;

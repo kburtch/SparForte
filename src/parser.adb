@@ -52,7 +52,8 @@ with system,
     scanner_res,
     scanner_restypes,
     parser_aux,
-    parser.adascript, -- circular dependency for parse general statement, etc.
+    parser.decl,
+    parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_params,
     parser_pragmas,
     parser_tio,
@@ -83,7 +84,8 @@ use ada.text_io,
     scanner_res,
     scanner_restypes,
     parser_aux,
-    parser.adascript, -- circular dependency for parse general statement, etc.
+    parser.decl,
+    parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_params,
     parser_pragmas,
     parser_tio,

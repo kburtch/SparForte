@@ -28,14 +28,14 @@ with gen_list,
     world,
     user_io,
     scanner,
-    parser.adascript;
+    parser.decl.as;
 use ada.strings,
     ada.strings.unbounded,
     world,
     user_io,
     scanner,
     parser,
-    parser.adascript;
+    parser.decl.as;
 
 package body parser_params is
 

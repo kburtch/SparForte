@@ -21,40 +21,24 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Interfaces.C,
-     ada.strings.unbounded,
+with ada.strings.unbounded,
      world;
-use Interfaces.C,
-    ada.strings.unbounded,
+use ada.strings.unbounded,
     world;
 
-package parser is
+package parser.decl is
 
-------------------------------------------------------------------------------
--- ADASCRIPT CORE PARSER
---
--- Basic parsing for identifiers and expressions, split off to reduce the
--- size of the main parser file.
-------------------------------------------------------------------------------
+   ------------------------------------------------------------------------------
+   -- ADASCRIPT PARSER - DECLARATIONS
+   --
+   -- Declarations are split off here to reduce the size of the main parser file.
+   ------------------------------------------------------------------------------
 
-procedure ParseBasicShellWord( shell_word : out unbounded_string );
-procedure ParseFieldIdentifier( record_id : identifier; id : out identifier );
-procedure ParseProcedureIdentifier( id : out identifier );
-procedure ParseNewIdentifier( id : out identifier );
-procedure ParseIdentifier( id : out identifier );
-procedure ParseStaticIdentifier( id : out identifier );
-procedure ParseProgramName( program_id : out identifier );
-procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier );
-procedure ParseStaticExpression( ex : out unbounded_string; expr_type : out identifier );
+   procedure ParseAcceptBlock;
+   procedure ParseType;
+   procedure ParseSubtype;
+   procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean );
+   procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier );
+   procedure ParseRecordDeclaration( id : identifier; recType : identifier; canAssign : boolean := true );
 
-procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string );
-
-
-------------------------------------------------------------------------------
--- HOUSEKEEPING
-------------------------------------------------------------------------------
-
-procedure startParser;
-procedure shutdownParser;
-
-end parser;
+end parser.decl;

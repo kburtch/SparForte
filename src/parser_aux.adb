@@ -28,7 +28,7 @@ with ada.text_io,
      script_io,
      user_io,
      compiler,
-     parser.adascript;
+     parser.decl.as;
 use  ada.text_io,
      Interfaces.C,
      string_util,
@@ -36,7 +36,7 @@ use  ada.text_io,
      user_io,
      compiler,
      parser,
-     parser.adascript;
+     parser.decl.as;
 
 
 package body parser_aux is
