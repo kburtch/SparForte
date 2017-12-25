@@ -21,12 +21,7 @@ Priority Issues (Fix These First)
     scripts?
   - DoContracts to parser_aux?
 - complete log package
-- refactor
-  - parser_tio globals should be put in a separate package, or a different
-    package, to help reduce circular dependencies
-  - parser and interpreter circular dependency for breakout prompt
 - unsorted/misc
-    - raise and return are no longer unreachable code because of optional when
     - env producing phantom errors when piped to fgrep
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
@@ -136,6 +131,10 @@ Nice to Haves / Missing Functionality
     - this requires a new function to check for pre-exisiting names in a different
       scope.  It will need to apply to all variable declarations.
     - maybe just   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
+- refactor
+  - parser_tio globals should be put in a separate package, or a different
+    package, to help reduce circular dependencies
+  - parser and interpreter circular dependency for breakout prompt
 - unstructured scripts
   - how can unstructured scripts be more useful without losing features?
 - memcache/memcache.highread

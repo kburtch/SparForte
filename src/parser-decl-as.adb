@@ -1888,7 +1888,7 @@ end ParseWhenClause;
 -- Raise an exception outside of an exception block
 -- TODO: inside a block
 
-procedure ParseRaise is
+procedure ParseRaise( has_when : out boolean ) is
 -- Syntax: raise [when...] | raise e [with s] [when...]
   id : identifier;
   with_text : unbounded_string;
@@ -1896,6 +1896,7 @@ procedure ParseRaise is
   mustRaise : boolean := true;
 begin
   expect( raise_t );
+  has_when := false;
 
   -- re-raise?  restore the exception occurrence and announce an error
   -- It is only valid in an exception handler (as flagged in the block).
@@ -1952,6 +1953,7 @@ begin
         end if;
         if token = when_t then
            ParseWhenClause( mustRaise );
+           has_when := true;
         end if;
      end if;
      if isExecutingCommand then
@@ -4971,21 +4973,22 @@ begin
   elsif Token = package_t then
      err( "packages not implemented" );
   elsif Token = raise_t then
-     ParseRaise;
-     if syntax_check then
-        -- this is a bit slow but it's only during a syntax check
-        declare
-          atSemicolon : aScannerState;
-        begin
-          markScanner( atSemicolon );
-          getNextToken; -- skip semicolon
-          -- eof_t because a raise might be the last line in a simple script
-          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
+     declare
+        atSemicolon : aScannerState;
+        has_when : boolean;
+     begin
+        ParseRaise( has_when );
+        if syntax_check and not has_when then
+           -- this is a bit slow but it's only during a syntax check
+           markScanner( atSemicolon );
+           getNextToken; -- skip semicolon
+           -- eof_t because a raise might be the last line in a simple script
+           if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
              err( "unreachable code" );
           end if;
           resumeScanning( atSemicolon ); -- restore original position
-        end;
-     end if;
+        end if;
+     end;
   elsif Token = exit_t then
      if blocks_top = block'first then           -- not complete. should check
          err( "no enclosing loop to exit" );    -- not just for no blocks
