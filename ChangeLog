@@ -46,3 +46,5 @@ CHANGES SINCE 2.1
 
 21. Refactor: parser.adb broken up into interpreter.adb and parser child packages.
 
+22. Change: better error message for dollar expansions with missing variable names.
+

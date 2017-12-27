@@ -1114,7 +1114,12 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
           err( "style issue: expected double quoted word parameters in shell or SQL command to prevent word splitting" );
        end if;
        -- Regular variable substitution
-       findIdent( expansionVar, id );
+       if expansionVar = "" or expansionVar = " " then
+          err( "dollar expansion expects a variable name (or escape the $ if not an expansion)" );
+          id := eof_t;
+       else
+          findIdent( expansionVar, id );
+       end if;
        if id = eof_t then
           -- TODO: this check takes place after the token is read, so token
           -- following the one in question is highlighted
