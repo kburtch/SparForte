@@ -363,6 +363,20 @@ package body builtins.help is
                   discardUnusedIdentifier( token );
                   getNextToken;
                   expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "icon" ) then
+                  if last_tag = "icon" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Icon</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH ICON" );
+                  else
+                     info := to_unbounded_string( "Icon: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
                elsif identifiers( token ).name = to_unbounded_string( "modified" ) then
                   if last_tag = "modified" then
                      info := null_unbounded_string;
@@ -400,6 +414,20 @@ package body builtins.help is
                      info := to_unbounded_string( ".SH RETURN" );
                   else
                      info := to_unbounded_string( "Return: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "screenshot" ) then
+                  if last_tag = "screenshot" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Screenshot</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH SCREENSHOT" );
+                  else
+                     info := to_unbounded_string( "Screenshot: " );
                   end if;
                   last_tag := identifiers( token ).name;
                   discardUnusedIdentifier( token );

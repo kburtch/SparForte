@@ -276,9 +276,11 @@ begin
         name /= "category" and
         name /= "description" and
         name /= "errors" and
+        name /= "icon" and
         name /= "modified" and
         name /= "param" and
         name /= "return" and
+        name /= "screenshot" and
         name /= "see_also" and
         name /= "summary" and
         name /= "todo" and

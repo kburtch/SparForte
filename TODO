@@ -19,7 +19,7 @@ Priority Issues (Fix These First)
   - additional examples to be added to automated tests
   - should I relax the restriction on declaring variables in unstructured
     scripts?
-  - DoContracts to parser_aux?
+- DoContracts to parser_aux?
 - complete log package
 - unsorted/misc
     - control-c is propogating to all child processes when it shouldn't
@@ -133,9 +133,6 @@ Nice to Haves / Missing Functionality
 - refactor
   - parser_tio globals should be put in a separate package, or a different
     package, to help reduce circular dependencies
-  - parser and interpreter circular dependency for breakout prompt
-- unstructured scripts
-  - how can unstructured scripts be more useful without losing features?
 - memcache/memcache.highread
     - update functionality to handle records, arrays, etc. like btree_io
     - element as an alias for "get" in memcache, etc.
