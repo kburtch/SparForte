@@ -660,7 +660,8 @@ expression. Has no effect unless the variable is imported as well.</li>
   <li> <b>pragma prompt_script( `commands` )</b>
 <p>This pragma specifies a set of commands to run that will draw the
 command prompt.  The commands run in a restricted shell.  By default,
-the prompt will be in boldface.</p>
+the prompt will be in boldface.  (Boldface is currently not working with
+GNU readline but will be fixed in the future.)</p>
 
 <p>There are no special escape sequences like those used by Bash.
 Instead, the prompt is created by running normal AdaScript commands.
@@ -673,6 +674,61 @@ Some common tasks:</p>
 <li>To use colour - use the character codes for your terminal (usually ANSI)</li>
 <li>To restore the default prompt - use an empty command list</li>
 </ul>
+
+<p>For a short example, suppose you want to use that standard "$ " prompt used
+by Bourne shells.  The Text_IO's put procedure will write the prompt without
+starting a new line.  (You could also use echo.)</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+-- Several ways of printing a Bourne shell prompt<br />
+put( "$ " ); -- using Text_IO<br />
+echo -n '$ '; -- using echo as a Bourne shell command (escaping the dollar sign)<br />
+echo( "-n", "$ " ); -- using echo with AdaScript style parameters<br />
+                </p>
+        </div>
+        </center>
+
+<p>To make "$ " your prompt, put the command in a backquoted string in the
+pragma.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>=&gt;</b> pragma prompt_script( `put( "$ ");` );<br />
+                </p>
+        </div>
+        </center>
+
+<p>This prompt script will be performed each time the prompt is displayed.
+The prompt may change each time.  For example, the date command shows the
+current time.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>=&gt;</b> pragma prompt_script( `date;` );<br />
+                </p>
+        </div>
+        </center>
+
+<p>Now your prompt will be the current date and time.  It will change each time
+a prompt is displayed.</p>
+
+<p>The two commands can be combined to give you the data and a "$ " for your
+prompt.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>=&gt;</b> pragma prompt_script( `date; put( "$ " );` );<br />
+                </p>
+        </div>
+        </center>
+
+<p>This will be a two-line prompt because the date command starts a new line
+after displaying the date.</p>
 
 <p>Here are some examples:</p>
 
