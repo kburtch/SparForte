@@ -27,6 +27,7 @@ with interfaces.c,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
+     cgi,
      spar_os,
      string_util,
      world,
@@ -44,6 +45,7 @@ use  interfaces.c,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
+     cgi,
      spar_os,
      string_util,
      world,
@@ -503,7 +505,13 @@ package body builtins.help is
                   if length( exprVal ) = 0 then
                      info := info & "<br>&nbsp;";
                   end if;
-                  info := info & exprVal & "<br>";
+                  if last_tag = "icon" or last_tag = "screenshot" then
+                      info := info & "<img src=" & ASCII.Quotation &
+                         html_encode( to_string( exprval ) ) & ASCII.Quotation &
+                         ">" & html_encode( exprVal ) & "<br>";
+                  else
+                      info := info & html_encode( to_string( exprVal ) ) & "<br>";
+                  end if;
                elsif MANoutput then
                   if length( exprVal ) = 0 then
                      info := info & ASCII.LF & ".PP";

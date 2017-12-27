@@ -50,3 +50,5 @@ CHANGES SINCE 2.1
 
 23. New: pragma annotate extended with icon and screenshot fields.
 
+24. Fix: pragma annotate HTML output is html-encoded.
+
