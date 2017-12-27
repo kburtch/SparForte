@@ -44,16 +44,21 @@
 
 <h3>The Aspects of User-defined Types</h3>
 
-<p>Data types have four aspects:</p>
+<p>For some programming languages, a type is simply a way of describing how
+a variable will be stored in memory.  In AdaScript, types have much greater
+responsibility: they protect availability, intergrity and privacy.
+Data types have four common aspects:</p>
 
 <ol>
-<li><b>A parent type</b> - An existing type that the new type will be based on</li>
-<li><b>New type</b> or <b>subtype</b> - The type is logically incompatible or compatible with the parent type</li>
-<li><b>A usage qualifier</b> - Constraints on how the type may be used (e.g. constants)</li>
-<li><b>An accept clause</b> - Instructions for determining if a value is valid and acceptable.</li>
+<li><b>A parent type</b> - An existing type that the new type will be based on.  This, not only determines how the type is stored in memory, but also organizes and extends the data types.  Unlike some languages, this is not limited to object classes.</li>
+<li><b>New type</b> or <b>subtype</b> - The type is conceptually incompatible with the parent type, so that it requires type casting to be used with the parent time.  This protects real-world values that are not meant to be interact with each other. It can also be a subtype, a compatible variation on the parent type that doesn't require a type cast.</li>
+<li><b>A usage qualifier</b> - This is a constraint on how the type may be used (e.g. abstract, constant, limited).  This act like operating system file permissions, controlling how others may use the type.  This also acts as a "need-to-know", limiting permissions to what is necessary or makes sense.</li>
+<li><b>An accept clause</b> - Instructions for determining if a value is valid and acceptable.  Accept clauses protect the integrity of the data represented by the data type.</li>
 </ol>
 
 <p>The usage qualifier and accept clauses are optional.</p>
+
+<p>These aspects will be described in the following sections.</p>
 
 <h3>Subtypes</h3>
 

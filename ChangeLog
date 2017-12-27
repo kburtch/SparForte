@@ -42,3 +42,7 @@ CHANGES SINCE 2.1
 
 19. Fix: statements starting with paths like /bin/bash and bin/bash are now recognized as shell commands.
 
+20. Fix: broken pipes (such as env | head) no longer show meaningless error messages.
+
+21. Refactor: parser.adb broken up into interpreter.adb and parser child packages.
+

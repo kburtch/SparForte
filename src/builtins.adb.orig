@@ -198,43 +198,6 @@ begin
   end if;
 end old_cd;
 
------------------------------------------------------------------------------
---  ENV (ADASCRIPT COMMAND)
---
--- env : show the attributes of an identifier / all identifiers (if eof_t)
--- Syntax: env [id]
--- NOTE: another instance supports argument list params
------------------------------------------------------------------------------
-
---procedure env( id : identifier := eof_t ) is
---  perc : integer;
---begin
---  if identifiers( id ).kind = new_t then
---     discardUnusedIdentifier( id );
---     err( "identifier not declared" );
---     return;
---  end if;
---  if id /= eof_t then
---     Put_Identifier( id );
---     return;
---  end if;
---  for i in 1..identifiers_top-1 loop
---    if identifiers( i ).kind /= keyword_t then
---       Put_Identifier( i );
---    end if;
---  end loop;
---  perc := integer( ( ( identifiers_top - 1 ) * 100 ) / identifiers'last );
---  Put( "The symbol table is" );
---  Put( perc'img );
---  Put( "% full with" );
---  Put( identifier'image( identifiers_top-1 ) );
---  Put_Line( " identifiers." );
---exception
---   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
---   -- occurs, just stop outputing and exit.
---   when DEVICE_ERROR => null;
---end env;
-
 
 -----------------------------------------------------------------------------
 --  ALTER (SQL COMMAND)

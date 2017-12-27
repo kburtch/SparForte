@@ -727,7 +727,8 @@ begin
   end loop;
 exception
    -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
-   -- occurs, just stop outputing and exit.
+   -- occurs, just stop outputing and raise to the caller (e.g. env
+   -- command).
    when DEVICE_ERROR => raise;
 end put_all_identifiers;
 

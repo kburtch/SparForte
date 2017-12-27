@@ -13,7 +13,7 @@ Priority Issues (Fix These First)
 
 - the new type qualifiers system and remaning
   - disabling qualifiers when tests are underway and special regression
-    tests for the same.
+    tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
 - unstructured scripts
   - additional examples to be added to automated tests
@@ -22,7 +22,6 @@ Priority Issues (Fix These First)
   - DoContracts to parser_aux?
 - complete log package
 - unsorted/misc
-    - env producing phantom errors when piped to fgrep
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - an early return from the main program doesn't pull the final block,

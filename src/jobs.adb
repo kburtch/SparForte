@@ -531,8 +531,12 @@ begin
             spawnCommandOrRunBuiltin(
               cmd, paramToken, fullPath, ap, noReturn => true,
               success => success );
-            -- should never return, but...bail out of shell child process
-            error_found := true;             -- suppress errors
+            -- This normally never returns.  However, it can return in the
+            -- of a broken pipe signal (such as "| head").  In this case,
+            -- we treat the command as finished and abort processing in the
+            -- child shell for this command.
+            done := true;
+            token := eof_t;
          else                                -- parent process?
             newJob.pid := myPID;             -- record the job
             newJob.cmd := cmd;               -- in the job table
@@ -762,7 +766,12 @@ begin
                cmd, paramToken, fullPath, ap, noReturn => true,
                success => success );
             -- should never return, but...bail out of shell child process
-            error_found := true;
+            -- This normally never returns.  However, it can return in the
+            -- of a signal.  In this case, we treat the command as finished
+            -- and abort processing in the
+            -- child shell for this command.
+            done := true;
+            token := eof_t;
          else
             newJob.pid := myPID;
             newJob.cmd := cmd;
