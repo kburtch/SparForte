@@ -124,15 +124,18 @@ declaration parts of another procedure, function or declare block.
 These nested subprograms only exist for the scope of this parent
 block.</p>
 
+<p><b>Ada</b>: AdaScript doesn't support creating new arithmetic
+operators by defining functions with operator symbols.</p>
+
+<h3>The Return Statement</h3>
+
 <p>A procedure may be terminated early using a <tt>return</tt>
 statement.  A function uses <tt>return</tt> to return back a
 value.</p>
 
-<p>A return statement may contain an optional exit condition, similar
-to a loop exit statement.</p>
-
-<p><b>Ada</b>: AdaScript doesn't support creating new arithmetic
-operators by defining functions with operator symbols.</p>
+<p>A <tt>return</tt> statement may contain an optional <b>when</b> clause, similar
+to a loop <tt>exit</tt> statement.  The main advantage of the <tt>when</tt> clause over an
+<tt>if</tt> statement is to execution jumps in the source code more obvious.</p>
 
 <h3>Procedure and Function Parameters</h3>
 
@@ -503,30 +506,53 @@ as if the exception was not handled.</p>
 
 <h4>Raising New Exceptions</h4>
 
-<p>The <b>raise</b> command will raise user-declared exceptions.
-An alternate message can be given with a <b>with</b> clause.</p>
+<p>The <b>raise</b> command will raise user-declared exceptions.</p>
 
         <center>
         <div class="code">
         <p class="code">
-	<b>raise</b> file_load_error <b>with</b> "the customer file did not load";<br>
-	...<br>
-	<b>exception</b>  <b>when</b> some_other_exception =&gt;<br>
-        &nbsp;&nbsp;<b>null</b>; -- do something here<br>
-        <b>when</b> file_load_error =&gt;<br>
-        &nbsp;&nbsp;<b>null</b>; -- do something here<br>
-        <b>when</b> <b>others</b> =&gt;<br>
-        &nbsp;&nbsp;put_line( standard_error, "an unexpected exception occurred" );<br>&nbsp;<br>
+file_load_error : <b>exception</b>;<br>
+...<br>
+<b>raise</b> file_load_error;<br>&nbsp;<br>
         <div class="code_caption">
-                <b>Example</b>: Raising and handling a user exception
+                <b>Example</b>: A basic raise statement
         </div>
         </div>
         </center>
 
+<p>An alternate message can be given with a <b>with</b> clause.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+	<b>raise</b> file_load_error <b>with</b> "the customer file did not load";<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: A raise with a custom message
+        </div>
+        </div>
+        </center>
+
+<p>A raise can be conditional when a <b>when</b> clause is added.  The main
+advantage of the when clause, over an if statement, is that it makes
+execution jumps more visible in the source code.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+file_length_error : <b>exception</b>;<br>
+...<br>
+<b>raise</b> file_load_error <b>when</b> strings.length( file_contents ) = 0;<br>&nbsp;<br>
+        <div class="code_caption">
+                <b>Example</b>: A conditional raise statement with a custom message
+        </div>
+        </div>
+        </center>
+
+
 <p><b>raise</b> can be used within an exception handler to raise a different
 exception.</p>
 
-<p>The with clause is not allowed with pragma ada_95.</p>
+<p><b>Ada 95</b>: A raise when clause and with clause are not allowed with pragma ada_95.</p>
 
 <h2>Profile Files</h2>
 

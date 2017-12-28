@@ -3100,6 +3100,28 @@ begin
   exc5 := 0;
 end;
 
+-- conditional raise
+
+i := 1;
+declare
+  exc6 : exception;
+begin
+  raise exc6 when false;
+exception when others =>
+  i := 2;
+end;
+pragma assert( i = 1 );
+
+i := 1;
+declare
+  exc7 : exception;
+begin
+  raise exc7 when true;
+exception when others =>
+  i := 2;
+end;
+pragma assert( i = 2 );
+
 -- inner handler should not run
 
 begin

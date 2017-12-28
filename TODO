@@ -22,6 +22,8 @@ Priority Issues (Fix These First)
 - DoContracts to parser_aux?
 - complete log package
 - unsorted/misc
+    - env isn't showing limited variables properly (property missing).  This
+      probably has to do with changes to support both types and variables.
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - an early return from the main program doesn't pull the final block,

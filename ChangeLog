@@ -32,13 +32,13 @@ CHANGES SINCE 2.1
 
 14. Change: command variables must now be limited instead of constant, in line with new limited functionality.  They cannot be used in an expression or assigned to.
 
-15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning. [testing needed]
+15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning.
 
 16. Fix: calling a procedure or function with no parameters when parameters were expected produces an appropriate error message.
 
 17. New: types and subtypes may have an accept clause/block to validate values, as in programming-by-contract.
 
-18. New. raise statements can have a when clause, like an exit statement. [docs, testing needed]
+18. New. raise statements can have a when clause, like an exit statement.
 
 19. Fix: statements starting with paths like /bin/bash and bin/bash are now recognized as shell commands.
 
