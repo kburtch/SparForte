@@ -52,3 +52,5 @@ CHANGES SINCE 2.1
 
 24. Fix: pragma annotate HTML output is html-encoded.
 
+25. Fix: executable statements in blocks no longer allowed type and variable declarations. [verify negative tests]
+

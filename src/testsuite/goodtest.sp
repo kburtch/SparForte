@@ -4124,17 +4124,23 @@ end;
 
 -- commands
 
-x : limited command := "/bin/true";
-x2 : limited command renames x;
+declare
+  x : limited command := "/bin/true";
+  x2 : limited command renames x;
+begin
+  null;
+end;
 
 -- enumerated variables
 
-type fruit is (apple, banana, cherry );
-f : fruit;
-g : fruit renames f;
-
-g := apple;
-pragma assert( f = g );
+declare
+  type fruit is (apple, banana, cherry );
+  f : fruit;
+  g : fruit renames f;
+begin
+  g := apple;
+  pragma assert( f = g );
+end;
 
 end; -- renaming tests
 

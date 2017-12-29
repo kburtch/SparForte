@@ -24,6 +24,7 @@ Priority Issues (Fix These First)
 - unsorted/misc
     - env isn't showing limited variables properly (property missing).  This
       probably has to do with changes to support both types and variables.
+    - ../../../spar not found?
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - an early return from the main program doesn't pull the final block,
@@ -72,9 +73,6 @@ Annoyances / Bugs with Workarounds / Updates
   - SDL needs to be upgraded for version 2.0
 - type system
   - constant records are permitted but the fields are variables...the fields should all be constants
-  - programming-by-contract
-    - type validation function needed for database column integrity like
-      string length
 - build system
   - David B wants me to bring back SparForte shared library
     - shared library calling mechanism and integration with other languages
@@ -227,7 +225,6 @@ Nice to Haves / Missing Functionality
   - new vector or game math package (quads, etc).
   - how can we enhance packages?  Should a "service" be a collection of packages?
 - unsorted/misc
-    - alternatives to ParseGeneralStatement more appropriate for executable bodies
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
     - standardize get_first as first, etc.
     - safety check that a file cannot include itself

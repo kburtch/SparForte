@@ -253,7 +253,7 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
-      ParseGeneralStatement;         -- step through context
+      ParseExecutableStatement;         -- step through context
   end loop;
   syntax_check := old_error;
   skipping_block := old_skipping;
@@ -2016,7 +2016,7 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
-      ParseGeneralStatement;         -- step through context
+      ParseExecutableStatement;         -- step through context
   end loop;
   --error_found := old_error;          -- ignore any error while skipping
   syntax_check := old_error;
@@ -2032,7 +2032,7 @@ begin
      err( "missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
-     ParseGeneralStatement;
+     ParseExecutableStatement;
   end loop;
 end ParseBlock;
 
@@ -2049,40 +2049,8 @@ begin
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t  loop
      -- TODO: Really ParseBlockStatement but I haven't written it yet.
-     ParseGeneralStatement;
+     ParseExecutableStatement;
   end loop;
-
-  --   -- Re-eaise is a special case.  It must be handled here, in the
-  --   -- exception block
-  --   if token = raise_t then
-  --      expect( raise_t );
-  --      -- re-raise?  restore the exception occurrence
-  --      if token = symbol_t and identifiers( token ).value.all = to_unbounded_string( ";" ) then
-  --         err_exception := occurrence_exception;
-  --         err_message := occurrence_message;
-  --         last_status := occurrence_status;
-  --         expectSemicolon;
-  --         if syntax_check then
-  --           if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-  --              err( "unreachable code" );
-  --           end if;
-  --         elsif isExecutingCommand then
-  --           error_found := true;
-  --         end if;
-  --     else
-  --        ParseRestOfRaise;
-  --        expectSemicolon;
-  --        if syntax_check then
-  --          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-  --             err( "unreachable code" );
-  --          end if;
-  --        end if;
-  --     end if;
-  --   else
-  --      ParseGeneralStatement;
-  --   end if;
-  --end loop;
-
   if token = exception_t then
      err( "already in an exception handler" );
   end if;
@@ -2109,14 +2077,7 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t loop
-      ParseGeneralStatement;         -- step through context
-      -- if token = raise_t then -- TODO: wrong
-      --    expect( raise_t );
-      --    expectSemicolon;
-     --elsif token = exception_t then
-      -- else
-      --    ParseGeneralStatement;         -- step through context
-      -- end if;
+      ParseExecutableStatement;         -- step through context
   end loop;
   syntax_check := old_error;
   skipping_block := old_skipping;
@@ -4852,6 +4813,389 @@ begin
       discardUnusedIdentifier( var_id );
    end if;
 end ParseVarDeclaration;
+
+
+--  PARSE EXECUTABLE STATEMENT
+--
+-- This procedure is used when any executable statement is expected (such as
+-- if, for, shell commands, procedure calls, etc.  It also handles Control-C,
+-- itself, breakout stepping, return, exit, @ chaining and other common
+-- functions.
+--
+-- This differs from ParseGeneralStatement in that declarations are not
+-- allowed.
+-----------------------------------------------------------------------------
+
+procedure ParseExecutableStatement is
+  -- Syntax: env-cmd | clear-cmd | ...
+  expr_value : unbounded_string;
+  cmdStart   : aScannerState;
+  must_exit  : boolean;
+  eof_flag   : boolean := false;
+  term_id    : identifier;
+  startToken : identifier;
+  itself_question : boolean;
+begin
+
+  -- mark start of line (prior to breakout test which will change token
+  -- to eof )
+
+  startToken := Token;
+  markScanner( cmdStart );
+
+  -- interrupt handling
+
+  if stepFlag1 then
+     stepFlag1 := false;
+     stepFlag2 := true;
+  elsif stepFlag2 then
+     stepFlag2 := false;
+     wasSIGINT := true;
+  end if;
+  if wasSIGINT then                                      -- control-c?
+     if inputMode = interactive or inputMode = breakout then -- interactive?
+        wasSIGINT := false;                              -- just ignore
+     elsif not breakoutOpt then                          -- no breakouts?
+        wasSIGINT := false;                              -- clear flag
+        DoQuit;                                          -- stop BUSH
+     else                                                -- running script?
+        for i in 1..identifiers_top-1 loop
+            if identifiers( i ).inspect then
+               Put_Identifier( i );
+            end if;
+        end loop;
+        err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+     end if;
+  elsif wasSIGWINCH then                                 -- window change?
+     findIdent( to_unbounded_string( "TERM" ), term_id );
+     checkDisplay( identifiers( term_id ).value.all );       -- adjust size
+     wasSIGWINCH := false;
+  end if;
+
+  -- Parse the general statement
+  --
+  -- built-in?
+
+  itself := identifiers( token ).value.all;
+  itself_type := token;
+  itself_question := false;
+
+-- put( "PES: " ); -- DEBUG
+-- put_token; -- DEBUG
+
+  if Token = command_t then
+     err( "Bourne shell command command not implemented" );
+     --getNextToken;
+     --ParseShellCommand;
+  elsif identifiers( token ).procCB /= null then  -- built-in proc w/cb?
+     identifiers( token ).procCB.all;             -- call the callback
+  elsif Token = typeset_t then
+     ParseTypeSet;
+  elsif Token = pragma_t then
+     ParsePragma;
+  elsif Token = type_t then
+     err( "declarations not allowed in executable statements" );
+     -- ParseType;
+  elsif Token = null_t then
+     getNextToken;
+  elsif Token = subtype_t then
+     err( "declarations not allowed in executable statements" );
+     -- ParseSubtype;
+  elsif Token = if_t then
+     ParseIfBlock;
+  elsif Token = case_t then
+     ParseCaseBlock;
+  elsif Token = while_t then
+     ParseWhileBlock;
+  elsif Token = for_t then
+     ParseForBlock;
+  elsif Token = loop_t then
+     ParseLoopBlock;
+  elsif Token = return_t then
+     ParseReturn;
+     return;
+  elsif Token = step_t then
+     ParseStep;
+  elsif token = logout_t then
+     if not isLoginShell and inputMode /= breakout then
+        err( "warning: this is not a login shell: use " & optional_bold( "return" ) &
+             " to quit" );
+     end if;
+     getNextToken;
+     expectSemicolon;
+     if not error_found or inputMode = breakout then
+        DoQuit;
+     end if;
+     return;
+  elsif Token = create_t then
+     ParseOpen( create => true );
+  elsif Token = open_t then
+     ParseOpen;
+  elsif token = symbol_t and identifiers( token ).value.all = "?" then
+     -- To implement "itself" with the "?" is difficult because
+     -- "?" is a symbol and "@" is a symbol, so trying to look
+     -- up the symbol value to determine if is "?" is not possible.
+     -- So we flag this as a special case.
+     itself_question := true;
+     ParseQuestion;
+  elsif Token = reset_t then
+     ParseReset;
+  elsif Token = delete_t then                     -- special case
+     getNextToken;                                -- with possibilities
+     if token = symbol_t and identifiers( token ).value.all = "(" then
+        resumeScanning( cmdStart );
+        ParseDelete;                              -- delete file
+     else
+        discardUnusedIdentifier( token );
+        resumeScanning( cmdStart );
+        ParseShellCommand;                        -- SQL delete
+     end if;
+  elsif Token = delay_t then
+     ParseDelay;
+  elsif token = pen_set_font_t then                -- Pen.Set_Font
+     ParsePenSetFont;
+  elsif token = pen_put_t then                     -- Pen.Put
+     ParsePenPut;
+  elsif Token = else_t then
+     err( "else without if" );
+  elsif Token = elsif_t then
+     err( "elsif without if" );
+  elsif Token = with_t then
+     err( "with only allowed in declaration section or before main program" );
+  elsif Token = use_t then
+     err( "use not implemented" );
+  elsif Token = task_t then
+     err( "tasks not implemented" );
+  elsif Token = protected_t then
+     err( "protected types not implemented" );
+  elsif Token = package_t then
+     err( "packages not implemented" );
+  elsif Token = raise_t then
+     declare
+        atSemicolon : aScannerState;
+        has_when : boolean;
+     begin
+        ParseRaise( has_when );
+        if syntax_check and not has_when then
+           -- this is a bit slow but it's only during a syntax check
+           markScanner( atSemicolon );
+           getNextToken; -- skip semicolon
+           -- eof_t because a raise might be the last line in a simple script
+           if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
+             err( "unreachable code" );
+          end if;
+          resumeScanning( atSemicolon ); -- restore original position
+        end if;
+     end;
+  elsif Token = exit_t then
+     if blocks_top = block'first then           -- not complete. should check
+         err( "no enclosing loop to exit" );    -- not just for no blocks
+     end if;                                    -- but the block type isn't easily checked
+     expect( exit_t );
+     if token = when_t or token = if_t then     -- if to give "expected when"
+        ParseWhenClause( must_exit );
+     else
+        -- check for unreachable code on a stand-alone exit
+        if syntax_check then
+           if token = symbol_t and identifiers( token ).value.all = ";" then
+              -- we need to advance one to hilight the right token
+              getNextToken;
+              -- these are block ending tokens
+              if token /= eof_t and token /= end_t and token /= elsif_t and
+                 token /= else_t and token /= when_t and token /= others_t and
+                 token /= exception_t then
+                 err( "unreachable code" );
+              end if;
+              resumeScanning( cmdStart ); -- restore original position
+              getNextToken;
+           end if;
+        end if;
+        must_exit := true;
+     end if;
+     if isExecutingCommand and must_exit then
+        exit_block := true;
+        if trace then
+           put_trace( "exiting" );
+        end if;
+     end if;
+  elsif Token = declare_t then
+     ParseDeclareBlock;
+  elsif Token = begin_t then
+     ParseBeginBlock;
+  elsif token = word_t then
+     resumeScanning( cmdStart );
+     ParseShellCommand;
+  elsif token = backlit_t then
+     err( "unexpected backquote literal" );
+  elsif token = procedure_t then
+     err( "declare procedures in declaration sections" );
+  elsif token = function_t then
+     err( "declare functions in declaration sections" );
+  elsif Token = eof_t then
+     eof_flag := true;
+     -- a script could be a single comment without a ;
+  elsif Token = symbol_t and identifiers( token ).value.all = "@" then
+     err( "unexpeced @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
+           getNextToken;
+  elsif Token = symbol_t and identifiers( token ).value.all = ";" then
+     err( "statement expected" );
+  elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable
+     resumeScanning( cmdStart );           -- assume array assignment
+     ParseAssignment;                      -- looks like a AdaScript command
+     itself_type := new_t;                 -- except for token type...
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
+     DoUserDefinedProcedure( identifiers( token ).value.all );
+  else
+
+     -- we need to check the next token then back up
+     -- should really change scanner to double symbol look ahead?
+
+     getNextToken;
+
+     -- declarations
+
+     if Token = symbol_t and
+        (to_string( identifiers( token ).value.all ) = ":" or
+        to_string( identifiers( token ).value.all ) = ",") then
+        resumeScanning( cmdStart );
+        err( "variable declarations not allowed in executable statements" );
+        --ParseVarDeclaration;
+     else
+
+        -- assignments
+        --
+        -- for =, will be treated as a command if we don't force an error
+        -- here for missing :=, since it was probably intended as an assignment
+
+        if Token = symbol_t and to_string( identifiers( token ).value.all ) = "=" then
+           expect( symbol_t, ":=" );
+        elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
+           resumeScanning( cmdStart );
+           ParseAssignment;
+           itself_type := new_t;
+
+        -- Boolean true shortcut (boolean assertions)
+        -- new_t check because a command will produce an varClass with no type
+        elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
+           if onlyAda95 then
+              err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
+           end if;
+           if syntax_check and then not error_found then
+              identifiers( startToken ).wasWritten := true;
+           end if;
+           if isExecutingCommand then
+              identifiers( startToken ).value.all := to_unbounded_string( "1" );
+           end if;
+           --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
+           --end if;
+        else
+
+           -- assume it's a shell command and run it
+           -- current token is first "token" of parameter.  Blow it away
+           -- if able (ie. "ls file", current token is file but we don't
+           -- need that in our identifier list.)
+
+           discardUnusedIdentifier( token );
+           resumeScanning( cmdStart );
+           ParseShellCommand;
+        end if;
+     end if;
+  end if;
+
+  if not eof_flag then
+     -- itself?
+     -- procedure with no parameters can be interpreted as shell words by the
+     -- compiler because it doesn't know if something is a procedure or an
+     -- external command at compile time.
+     if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+        if onlyAda95 then
+           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           -- move to next token or inifinite loop if done = true
+           getNextToken;
+        elsif itself_type = new_t then
+           err( "@ is not defined" );
+           getNextToken;
+        -- shell commands have no class so we can't do this (without
+        -- changes, anyway...)
+        --elsif class_ok( itself_type, procClass ) then -- lift this?
+        else
+           token := itself_type;
+           -- question is a special case.  See ParseQuestion call above.
+           if itself_question then
+              itself_question := false;
+              identifiers( token ).value.all := to_unbounded_string( "?" );
+           end if;
+           if identifiers( token ).class = varClass then
+              -- not a procedure or keyword? restore value
+              identifiers( token ).value.all := itself;
+           end if;
+        end if;
+     else
+        itself_type := new_t;
+        -- interactive?
+        if inputMode = interactive or inputMode = breakout then
+           if token = eof_t then
+              err( "';' expected. Possibly hidden by a comment or unescaped '--'" );
+           end if;
+        end if;
+        expectSemicolon;
+     end if;
+  end if;
+
+  -- breakout handling
+  --
+  -- Breakout to a prompt if there was an error and --break is used.
+  -- Don't break out if syntax checking or the error was caused while
+  -- in the break out command prompt.
+
+  if error_found and then boolean(breakoutOpt) then
+     if not syntax_check and inputMode /= breakout then
+     declare                                          -- we need to save
+        saveMode    : anInputMode := inputMode;       -- BUSH's state
+        scriptState : aScriptState;                   -- current script
+     begin
+        wasSIGINT := false;                            -- clear sig flag
+        saveScript( scriptState );                     -- save position
+        error_found := false;                          -- not a real error
+        script := null;                                -- no script to run
+        inputMode := breakout;                         -- now interactive
+        interactiveSession;                            -- command prompt
+        restoreScript( scriptState );                  -- restore original script
+        if breakoutContinue then                       -- continuing execution?
+           resumeScanning( cmdStart );                 -- start of command
+           err( optional_inverse( "resuming here" ) ); -- redisplay line
+           done := false;                              --   clear logout flag
+           error_found := false;                       -- not a real error
+           exit_block := false;                        --   and don't exit
+           syntax_check := false;
+           breakoutContinue := false;                  --   we handled it
+        end if;
+        inputMode := saveMode;                         -- restore BUSH's
+        resumeScanning( cmdStart );                    --   overwrite EOF token
+     end;
+     end if;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+when block_table_overflow =>
+  err( optional_inverse( "too many nested statements/blocks (block table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;
+end ParseExecutableStatement;
+
+
+--  PARSE GENERAL STATEMENT
+--
+-- This procedure, for unstructured scripts, is used when any excutable or
+-- declaration statement is expected.  (such as if, for, shell commands,
+-- procedure calls, etc.  It also handles Control-C, itself, breakout
+-- stepping, return, exit, @ chaining and other common functions.
+--
+-- This differs from ParseExecutableStatement in that declarations are
+-- allowed.
+-----------------------------------------------------------------------------
 
 procedure ParseGeneralStatement is
   -- Syntax: env-cmd | clear-cmd | ...

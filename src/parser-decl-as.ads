@@ -42,6 +42,7 @@ package parser.decl.as is
       unbounded_string; firstLineNo : natural := 1  );
 
    procedure ParseGeneralStatement;
+   procedure ParseExecutableStatement;
    procedure ParseStaticIfBlock;
    procedure ParseStaticCaseBlock;
 
