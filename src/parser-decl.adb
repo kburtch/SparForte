@@ -1316,7 +1316,9 @@ begin
         --   end;
         --end if;
         expr_value := castToType( expr_value, type_token );
-        DoContracts( identifiers( id ).kind, expr_value );
+        if type_token /= right_type then
+           DoContracts( identifiers( id ).kind, expr_value );
+        end if;
         identifiers( id ).value.all := expr_value;
         if trace then
             put_trace(

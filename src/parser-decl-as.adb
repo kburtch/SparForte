@@ -2812,7 +2812,9 @@ begin
      --   identifiers( formalParamId ).kind,
      --   to_string( expr_value ) );
      if isExecutingCommand then
-        DoContracts( identifiers( formalParamId ).kind, expr_value );
+        if identifiers( formalParamId ).kind /= expr_type then
+           DoContracts( identifiers( formalParamId ).kind, expr_value );
+        end if;
         identifiers( usableParamId ).value.all := expr_value;
         if trace then
            put_trace(
@@ -4607,6 +4609,7 @@ begin
      err( "internal error: unexpected usage qualifier " & identifiers( var_id ).usage'img );
   end case;
 end checkVarUsageQualifier;
+
 procedure ParseAssignment is
   -- Basic variable assignment
   -- Syntax: var := expression or array(index) := expr
@@ -4729,7 +4732,9 @@ begin
 
      -- Programming-by-contract
 
-     DoContracts( identifiers( var_id ).kind, expr_value );
+     if var_kind /= right_type then
+        DoContracts( var_kind, expr_value );
+     end if;
 
      if identifiers( var_id ).list then
         --mem_id := long_integer( to_numeric( identifiers( var_id ).value ) );
