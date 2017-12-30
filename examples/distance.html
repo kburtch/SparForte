@@ -62,11 +62,13 @@ Distance between the two places is
     numerics.cos( here_lat, 360 ) * numerics.cos( there_lat, 360 ) *
     numerics.cos( there_long - here_long, 360 );
 
-  distance : <b>constant</b> float := earth_radius * numerics.arccos( distance_raw );
-
-  put_line( "Distance between the two places is" );
-  put( distance, "ZZZZZ.99999" );
-  put_line( " miles" );
+  <b>declare</b>
+     distance : <b>constant</b> float := earth_radius * numerics.arccos( distance_raw );
+  <b>begin</b>
+    put_line( "Distance between the two places is" );
+    put( distance, "ZZZZZ.99999" );
+    put_line( " miles" );
+  <b>end</b>;
 
 <b>end</b> distance;
 

@@ -23,6 +23,9 @@ Priority Issues (Fix These First)
 - complete log package
 - unsorted/misc
     - update distance example html
+    - echo "xx"`date;`".jpg" is showing
+       xxe;Fri Dec 29 20:24:54 EST 2017.jpg
+       but AdaScript parameters are OK
     - env isn't showing limited variables properly (property missing).  This
       probably has to do with changes to support both types and variables.
     - ../../../spar not found?
