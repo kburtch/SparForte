@@ -22,6 +22,7 @@ Priority Issues (Fix These First)
 - DoContracts to parser_aux?
 - complete log package
 - unsorted/misc
+    - update distance example html
     - env isn't showing limited variables properly (property missing).  This
       probably has to do with changes to support both types and variables.
     - ../../../spar not found?
