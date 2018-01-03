@@ -3,9 +3,9 @@
 validate_error : exception;
 
 type t is new integer
-  accept
+  affirm
     raise validate_error;
-  end accept;
+  end affirm;
 
 a : t := 1; -- should always fail
 ? a;

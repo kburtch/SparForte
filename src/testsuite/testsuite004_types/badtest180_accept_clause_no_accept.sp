@@ -1,7 +1,7 @@
 # This should fail
 
 type t is new integer
-  begin -- accept, not begin
+  begin -- affirm, not begin
      null;
-  end accept;
+  end affirm;
 

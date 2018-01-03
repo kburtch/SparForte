@@ -614,7 +614,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
          parseNewCommands( scriptState,
            identifiers( kind_id ).contract,
            fragment => true );                           -- setup byte code
-         ParseAcceptBlock;
+         ParseAffirmBlock;
          expectSemicolon;
          if not done then                                  -- not done?
             expect( eof_t );                               -- should be eof

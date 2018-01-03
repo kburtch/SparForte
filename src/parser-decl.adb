@@ -1472,12 +1472,12 @@ begin
 
 end ParseArrayTypePart;
 
-procedure ParseAcceptBlock is
-   -- Syntax: accept ... begin ... end accept;
+procedure ParseAffirmBlock is
+   -- Syntax: affirm ... begin ... end affirm;
   --errorOnEntry : boolean := error_found;
 begin
    -- Verify context
-   expect( accept_t );
+   expect( affirm_t );
    ParseBlock;
    -- I decided not to have an exception handler since the purpose of the
    -- accept block is to raise exceptions.
@@ -1485,11 +1485,11 @@ begin
    --   ParseExceptionHandler( errorOnEntry );
    --end if;
    expect( end_t );
-   expect( accept_t );
-end ParseAcceptBlock;
+   expect( affirm_t );
+end ParseAffirmBlock;
 
-procedure ParseAcceptClause( newtype_id : identifier ) is
-   -- Setup an accept block
+procedure ParseAffirmClause( newtype_id : identifier ) is
+   -- Setup an affirm block
    type_value_id : identifier;
    blockStart    : natural;
    blockEnd      : natural;
@@ -1497,18 +1497,18 @@ procedure ParseAcceptClause( newtype_id : identifier ) is
 begin
    -- To execute a contract, we cannot use a function since we cannot
    -- define one without knowing the data type of type_value.
-   -- TODO: handle backquoted accept clause
+   -- TODO: handle backquoted affirm clause
 
    -- declare type_value
    if onlyAda95 then
-      err( "accept clauses are not allowed with " & optional_bold( "pragma ada_95" ) );
+      err( "affirm clauses are not allowed with " & optional_bold( "pragma ada_95" ) );
    else
-      pushBlock( newScope => true, newName => accept_clause_str );
+      pushBlock( newScope => true, newName => affirm_clause_str );
       declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
       blockStart := firstPos;
       syntax_check := true;
 
-      ParseAcceptBlock;
+      ParseAffirmBlock;
 
       syntax_check := save_syntax_check;
       blockEnd := lastPos+1; -- include EOL ASCII.NUL
@@ -1518,10 +1518,10 @@ begin
       end if;
       pullBlock;
    end if;
-end ParseAcceptClause;
+end ParseAffirmClause;
 
 procedure ParseType is
-   -- Syntax: type = "type newtype is new [qualifier] oldtype [accept clause]"
+   -- Syntax: type = "type newtype is new [qualifier] oldtype [affirm clause]"
    --         type = "type arraytype is array-type-part"
    -- NOTE: enumerateds aren't overloadable (yet)
    newtype_id  : identifier;
@@ -1617,14 +1617,14 @@ begin
 
    elsif token = array_t then
       ParseArrayTypePart( newtype_id );
-      -- for now, assignment is with a scalar so we don't have an accept
+      -- for now, assignment is with a scalar so we don't have an affirm
       -- block for an array.
 
    -- type ... is record...
 
    elsif token = record_t then
       ParseRecordTypePart( newtype_id );
-      -- for now, assignment is with a scalar so we don't have an accept
+      -- for now, assignment is with a scalar so we don't have an affirm
       -- block for a record.
    else
 
@@ -1674,18 +1674,18 @@ begin
         end if;
      end if;
 
-     -- Programming-by-contract (accept clause)
+     -- Programming-by-contract (affirm clause)
 
-     if token = accept_t then
-        ParseAcceptClause( newtype_id );
+     if token = affirm_t then
+        ParseAffirmClause( newtype_id );
      elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
-        err( "accept or ';' expected" );
+        err( "affirm or ';' expected" );
      end if;
    end if;
 end ParseType;
 
 procedure ParseSubtype is
-   -- Syntax: type = "subtype newtype is [abstract|limited] oldtype [accept clause]"
+   -- Syntax: type = "subtype newtype is [abstract|limited] oldtype [affirm clause]"
    newtype_id : identifier;
    parent_id : identifier;
    b : boolean;
@@ -1720,9 +1720,9 @@ begin
          b := deleteIdent( newtype_id );                   -- discard subtype
       end if;
 
-      -- Programming-by-contract (accept clause)
-      if token = accept_t then
-         ParseAcceptClause( newtype_id );
+      -- Programming-by-contract (affirm clause)
+      if token = affirm_t then
+         ParseAffirmClause( newtype_id );
       elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
          err( "accept or ';' expected" );
       end if;

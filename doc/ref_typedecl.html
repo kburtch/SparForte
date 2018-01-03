@@ -53,10 +53,10 @@ Data types have four common aspects:</p>
 <li><b>A parent type</b> - An existing type that the new type will be based on.  This, not only determines how the type is stored in memory, but also organizes and extends the data types.  Unlike some languages, this is not limited to object classes.</li>
 <li><b>New type</b> or <b>subtype</b> - The type is conceptually incompatible with the parent type, so that it requires type casting to be used with the parent time.  This protects real-world values that are not meant to be interact with each other. It can also be a subtype, a compatible variation on the parent type that doesn't require a type cast.</li>
 <li><b>A usage qualifier</b> - This is a constraint on how the type may be used (e.g. abstract, constant, limited).  This act like operating system file permissions, controlling how others may use the type.  This also acts as a "need-to-know", limiting permissions to what is necessary or makes sense.</li>
-<li><b>An accept clause</b> - Instructions for determining if a value is valid and acceptable.  Accept clauses protect the integrity of the data represented by the data type.</li>
+<li><b>An affirm clause</b> - Instructions for determining if a value is valid and acceptable.  Affirm clauses protect the integrity of the data represented by the data type.</li>
 </ol>
 
-<p>The usage qualifier and accept clauses are optional.</p>
+<p>The usage qualifier and affirm clauses are optional.</p>
 
 <p>These aspects will be described in the following sections.</p>
 
@@ -257,16 +257,16 @@ is more constrained than a constant.</p>
 <p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
 <p><b>pragma ada_95</b>: Limited variables and types are not permitted.</p>
 
-<h3>Accept Clauses</h3>
+<h3>Affirm Clauses</h3>
 
-<p>An <b>accept clause</b> (or an accept block) is an optional instruction block
+<p>An <b>affirm clause</b> (or an affirm block) is an optional instruction block
 that run whenever data is assigned.  These instructions validate whether or
 not the data meets the requirements of the type.  An exception can be raised
 if the requirements are not met.</p>
 
-<p>The accept clause doesn't have a declaration or exception handling section,
-but you can include begin and declare blocks inside the accept clause.
-Within the accept clause, use the type name as if it were a variable name.
+<p>The affirm clause doesn't have a declaration or exception handling section,
+but you can include begin and declare blocks inside the affirm clause.
+Within the affirm clause, use the type name as if it were a variable name.
 Describe how to check the value's requirements.</p>
 
         <center>
@@ -275,9 +275,9 @@ Describe how to check the value's requirements.</p>
 validation_error : <b>exception</b>;<br />
 <br />
 <b>type</b> customer_id <b>is</b> integer<br />
-&nbsp;<b>accept</b><br />
+&nbsp;<b>affirm</b><br />
 &nbsp;&nbsp;&nbsp;<b>raise</b> validation_error <b>when</b> customer_id <b>not</b> <b>in</b> 100000..999999;<br/>
-&nbsp;<b>end</b> <b>accept</b>;<br />
+&nbsp;<b>end</b> <b>affirm</b>;<br />
         </div>
         </center>
 
@@ -293,12 +293,12 @@ j : customer_id := 1; -- validation_error<br />
         </div>
         </center>
 
-<p>The accept clause runs whenever data is stored in a variable, such as
+<p>The affirm clause runs whenever data is stored in a variable, such as
 assignment statements, assignments on variable declarations, type casting
 and passing data in a in mode paramter.</p>
 
-<p>The accept clauses are recursive.  If the parent type of a type has an
-accept clause, the parent type's clause will be run first.</p>
+<p>The affirm clauses are recursive.  If the parent type of a type has an
+affirm clause, the parent type's clause will be run first.</p>
 
         <center>
         <div class="code">
@@ -309,28 +309,28 @@ x : integer32;
         </div>
         </center>
 
-<p>In this example, if both integer64 and integer32 have accept blocks,
-when x is assigned a value, the integer64 accept clause runs first, then
-the integer32 accept clause runs.</p>
+<p>In this example, if both integer64 and integer32 have affirm clauses,
+when x is assigned a value, the integer64 affirm clause runs first, then
+the integer32 affirm clause runs.</p>
 
-<p>Accept clauses can only be applied to scalar types and subtypes.  Array
-and record types do not have accept clauses.  Record fields and array
-elements will be affected by accept clauses on their types.  (Currently,
+<p>Affirm clauses can only be applied to scalar types and subtypes.  Array
+and record types do not have affirm clauses.  Record fields and array
+elements will be affected by affirm clauses on their types.  (Currently,
 only scalar values may be assigned values with assignment statements.)</p>
 
-<p><b>pragma ada_95</b>: Accept clauses are not available.</p>
+<p><b>pragma ada_95</b>: Affirm clauses are not available.</p>
 
-<p><b>Ada</b>: Accept clauses are similar to Ada's programming-by-contract
+<p><b>Ada</b>: Affirm clauses are similar to Ada's programming-by-contract
 features.  The main difference is that they are not related to asserts:
 you cannot enable them with the debug option (-d) or disable them in
-maintenance mode (-m).  (An accept clause can test for maintenance phase
-mode using the System package.) Accept clauses can also modify their
+maintenance mode (-m).  (An affirm clause can test for maintenance phase
+mode using the System package.) Affirm clauses can also modify their
 values.</p>
 
-<h3>Using Accept Clauses to Modify or Correct Values</h3>
+<h3>Using Affirm Clauses to Modify or Correct Values</h3>
 
-<p>An accept clause can also alter the value being tested.  Suppose you
-want to create an Ada 95 "mod" type.  You can create one with an accept
+<p>An affirm clause can also alter the value being tested.  Suppose you
+want to create an Ada 95 "mod" type.  You can create one with an affirm
 clause.</p>
 
         <center>
@@ -341,11 +341,11 @@ clause.</p>
 &nbsp;&nbsp;validate_error : <b>exception</b>;<br />
 <br />
 &nbsp;&nbsp;<b>subtype</b> mod_256 <b>is</b> <b>integer</b><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>accept</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>affirm</b><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b> mod_256 <b>not</b> <b>in</b> 0..255 <b>then</b><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mod_256 := @ <b>mod</b> 256;<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>end</b> <b>if</b>;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>end</b> <b>accept</b>;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>end</b> <b>affirm</b>;<br />
 <br />
 &nbsp;&nbsp;unsigned_byte : mod_256;<br />
 <b>begin</b><br />
@@ -357,8 +357,8 @@ clause.</p>
 
 <p>In this example, the script displays 160, not 416.</p>
 
-<p>When you assign a new value in an accept clause, the accept
-accept clause runs again.
+<p>When you assign a new value in an affirm clause, the affirm
+affirm clause runs again.
 Making a mistake, like assigning another unacceptable value,
 will cause a "too many blocks" error, the result of infinite
 recursion.</p>

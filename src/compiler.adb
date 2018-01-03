@@ -1762,15 +1762,39 @@ begin
      if Element( command, cmdpos ) > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
      end if;
+     -- it's a shell word if the first character is a path character
      shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
      word := word & Element( command, cmdpos );
      if lastpos <= length( command ) then
-        while is_alphanumeric( Element( command, lastpos ) ) or
-              Element( command, lastpos ) = '_' or
-              Element( command, lastpos ) = '.' or
-              Element( command, lastpos ) = directory_delimiter or -- KB: 17/12/22
-              Element( command, lastpos ) > ASCII.DEL loop
-              shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
+--       while is_alphanumeric( Element( command, lastpos ) ) or
+--             Element( command, lastpos ) = '_' or
+--             Element( command, lastpos ) = '.' or
+--             Element( command, lastpos ) = directory_delimiter or -- KB: 17/12/22
+--             Element( command, lastpos ) > ASCII.DEL loop
+--             shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
+
+        -- This is a shell word or an AdaScript identifier
+        -- as a shell word, we don't support quoting yet.  Note that
+        -- space is graphical.
+        -- TODO: not sure about quotes
+        while -- is_alphanumeric( Element( command, lastpos ) ) or
+              ( is_graphic( Element( command, lastpos ) ) or
+                Element( command, lastpos ) > ASCII.DEL ) and
+                Element( command, lastpos ) /= ' ' and  -- these are the stop characters
+                Element( command, lastpos ) /= ASCII.HT and
+                Element( command, lastpos ) /= ',' and
+                Element( command, lastpos ) /= ';' and
+                Element( command, lastpos ) /= ':' and
+                Element( command, lastpos ) /= '=' and
+                Element( command, lastpos ) /= '(' loop
+              -- It must be a shell word if not an identifier...if it's not
+              -- alphabetical, an underscore or escaped Latin-1.
+              shell_word := shell_word or not
+                  ( is_alphanumeric( Element( command, lastpos ) ) or
+                   Element( command, lastpos ) = '_' or
+                   Element( command, lastpos ) = '.' or
+                   Element( command, lastpos ) > ASCII.DEL ); -- KB: 17/12/30
+                  -- ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
               if Element( command, lastpos ) > ASCII.DEL then
                  if Element( command, lastpos ) = ASCII.NUL or Element( command, lastpos ) = immediate_word_delimiter then
                     err_tokenize( "ASCII character not allowed", to_string( command ) );
@@ -1788,6 +1812,7 @@ begin
             exit when lastpos > length( command );
         end loop;
      end if;
+--put_line( "SOS: word = " & to_string( word ) ); -- DEBUG
      id := eof_t;
      lastpos := lastpos - 1;
      cmdpos := lastpos+1;
@@ -2501,6 +2526,7 @@ begin
   --
   -- Ada 2012 keywords (that we use)
 
+  declareKeyword( abstract_t, "abstract" );
   declareKeyword( abort_t, "abort" );
   declareKeyword( abs_t, "abs" );
   -- abstract
@@ -2575,8 +2601,9 @@ begin
   declareKeyword( with_t, "with" );
   declareKeyword( xor_t, "xor" );
 
-  declareKeyword( policy_t, "policy" );
+  declareKeyword( affirm_t, "affirm" );
   declareKeyword( configuration_t, "configuration" );
+  declareKeyword( policy_t, "policy" );
 
   -- This variable is for limiting searches of the symbol table.  Only
   -- keywords below keyword_top, but there may be more keywords above it.
@@ -2676,7 +2703,6 @@ begin
   -- keywords for performance purposes (they can compress to two-byte
   -- codes).
 
-  declareKeyword( abstract_t, "abstract" ); -- Ada 95
   declareKeyword( access_t, "access" );
   declareKeyword( aliased_t, "aliased" ); -- Ada 95
   declareKeyword( delta_t, "delta" );

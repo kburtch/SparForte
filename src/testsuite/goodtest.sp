@@ -4719,25 +4719,25 @@ declare
   validate_error : exception;
 
   subtype long_string is string
-    accept
+    affirm
        raise validate_error with "too short" when strings.length( long_string ) < 5;
-    end accept;
+    end affirm;
   ls : long_string;
   ls2 : long_string := "fooxx";
   ls3 : constant long_string := "fooxx";
 
   type long_string2 is new string
-    accept
+    affirm
        raise validate_error with "too short" when strings.length( long_string2 ) < 5;
-    end accept;
+    end affirm;
   ls4 : long_string2;
 
   type small_int is new integer
-    accept
+    affirm
       if small_int < 0 or small_int > 10 then
          raise validate_error;
       end if;
-    end accept;
+    end affirm;
 
   procedure pbc_test( i1 : in out small_int ) is
   begin
@@ -4761,11 +4761,11 @@ declare
   rls1 : rls;
 
   subtype mod_256 is integer
-    accept
+    affirm
       if mod_256 not in 0..255 then
         mod_256 := @ mod 256;
       end if;
-    end accept;
+    end affirm;
 
   unsigned_byte : mod_256;
 

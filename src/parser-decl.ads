@@ -34,7 +34,7 @@ package parser.decl is
    -- Declarations are split off here to reduce the size of the main parser file.
    ------------------------------------------------------------------------------
 
-   procedure ParseAcceptBlock;
+   procedure ParseAffirmBlock;
    procedure ParseType;
    procedure ParseSubtype;
    procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean );
