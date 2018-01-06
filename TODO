@@ -26,6 +26,7 @@ Priority Issues (Fix These First)
     - echo "xx"`date;`".jpg" is showing
        xxe;Fri Dec 29 20:24:54 EST 2017.jpg
        but AdaScript parameters are OK
+    - quote handling on first shell word
     - env isn't showing limited variables properly (property missing).  This
       probably has to do with changes to support both types and variables.
     - ../../../spar not found?
@@ -35,6 +36,11 @@ Priority Issues (Fix These First)
       even if the template isn't parsed.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
+    - check_types flag
+      - roll out more broadly for baseTypesOK
+      - roll out for uniTypesOK
+      - roll out for classOK
+      - check against -e, command prompt, breakout prompt and other special cases
 
 
 Annoyances / Bugs with Workarounds / Updates
@@ -229,6 +235,7 @@ Nice to Haves / Missing Functionality
   - new vector or game math package (quads, etc).
   - how can we enhance packages?  Should a "service" be a collection of packages?
 - unsorted/misc
+    - syntax check on templates, -e commands, policies, profiles
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
     - standardize get_first as first, etc.
     - safety check that a file cannot include itself

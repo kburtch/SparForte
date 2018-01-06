@@ -328,42 +328,22 @@ begin
      if isExecutingCommand then
         if not class_ok( second_array_id, varClass ) then    -- must be arr
            null;                                               -- and good type
-        elsif baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
-           --arrayIndex := firstBound( array_id2 );              -- low bound
-           --lastIndex := lastBound( array_id2 );                -- high bound
-           --second_array_id2 := arrayID( to_numeric( identifiers( second_array_id ).value ) );
-           -- for i in arrayIndex..lastIndex loop                 -- do the copy
-           --     expr_value := arrayElement( second_array_id2, i );
-           --     assignElement( array_id2, i, expr_value );
-           -- end loop;
+        elsif not check_types or else baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
            begin
              base_type := getBaseType( identifiers( array_id ).kind );
              arrayIndex := identifiers( base_type ).firstBound;
              lastIndex := identifiers( base_type ).lastBound;
--- put_line("C - Copying one array to another"); -- DEBUG NEWARRAY
--- put_line( "first array : " & to_string( identifiers( array_id ).name ) & " " & identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
--- put_line( "second array : " & to_string( identifiers( second_array_id ).name ) & " " & arrayIndex'img & " .. " & lastIndex'img );
--- copying one array to another
               if identifiers( array_id ).avalue = null then
--- put_line( "internal error: target array storage unexpectedly null" );
                  err( gnat.source_info.source_location &
                    ": internal error: target array storage unexpectedly null" );
               elsif identifiers( array_id ).avalue'first /= arrayIndex then
--- put_line( "internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
                  err( gnat.source_info.source_location &
                    ": internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
               elsif identifiers( array_id ).avalue'last /= lastIndex then
--- put_line( "internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
                  err( gnat.source_info.source_location &
                    ": internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
               elsif not error_found then
                  identifiers( array_id ).avalue.all := identifiers( second_array_id ).avalue.all;
-                 --for i in arrayIndex..lastIndex loop                 -- do the copy
--- put_line( i'img & " for " & arrayIndex'img & " .. " & lastIndex'img ); -- DEBUG NEWARRAY
-                 --    expr_value := identifiers( second_array_id ).avalue( i );
-                 --    identifiers( array_id ).avalue( i ) := expr_value; -- NEWARRAY
--- put_line( "OK - no exception raised" );
-                 --end loop;
               end if;
            exception when CONSTRAINT_ERROR =>
               err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
@@ -635,7 +615,7 @@ begin
                        err( "unable to find record field " &
                           optional_bold( to_string( fieldName ) ) );
                     else
-                       if baseTypesOK( identifiers( field_t ).kind, expr_type ) then
+                       if not check_types or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
                           if isExecutingCommand then
                              identifiers( field_t ).value.all := expr_value;
                              if trace then
@@ -668,7 +648,7 @@ begin
      if isExecutingCommand then
         if not class_ok( second_record_id, varClass ) then     -- must be rec
            null;                                               -- and good type
-        elsif baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
+        elsif not check_types or else baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
            begin
              expected_fields := integer'value( to_string( identifiers( recType ).value.all ) );
            exception when others =>
@@ -918,7 +898,7 @@ begin
              if uniTypesOK( messageType, uni_string_t ) then
                 expect( use_t );
                 ParseExpression( exception_status, statusType );
-                if baseTypesOK( statusType, natural_t ) then
+                if not check_types or else baseTypesOK( statusType, natural_t ) then
                    null;
                 end if;
              end if;

@@ -586,12 +586,12 @@ begin
         Put_Trace( "Executing Commands" );
      end if;
   end if;
-  if verboseOpt then
-     Put_Trace( "Compiling Byte Code" );
-  end if;
   scriptFilePath := to_unbounded_string( commandLineSource ); -- "script" name
   sourceFilesList.Clear( SourceFiles );
   sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( scriptFilePath ) ) );
+  if verboseOpt then
+     Put_Trace( "Compiling Byte Code" );
+  end if;
   compileCommand( commandString );
   parse;
   if error_found then                              -- was there an error?

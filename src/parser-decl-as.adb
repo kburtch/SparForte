@@ -2755,7 +2755,11 @@ procedure parseUsableInModeParameter( formalParamId : identifier; paramName : un
    typesOK : boolean;
 begin
   ParseExpression( expr_value, expr_type );
-  typesOK := baseTypesOK( identifiers( formalParamId ).kind, expr_type );
+  if check_types then
+     typesOK := baseTypesOK( identifiers( formalParamId ).kind, expr_type );
+  else
+     typesOK := true;
+  end if;
   if typesOK and then declareParams then
      declareIdent(
          usableParamId,
@@ -5669,6 +5673,14 @@ end ParseMainProgram;
 
 procedure parse is
 begin
+  -- check_types flag determines whether type checking is required.  It
+  -- only needs to be done during syntax checking phase or if there is
+  -- no syntax checking phase (such as an interactive prompt).  Once
+  -- types are checked, it is not necessary to check them again.
+  check_types := inputMode = interactive or
+                 inputMode = breakout or
+                 syntax_check;
+
   if not error_found then
      cmdpos := firstScriptCommandOffset;
      token := identifiers'first;                -- dummy, replaced by g_n_t
