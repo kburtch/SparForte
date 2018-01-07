@@ -328,7 +328,7 @@ begin
      if isExecutingCommand then
         if not class_ok( second_array_id, varClass ) then    -- must be arr
            null;                                               -- and good type
-        elsif not check_types or else baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
+        elsif type_checks_done or else baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
            begin
              base_type := getBaseType( identifiers( array_id ).kind );
              arrayIndex := identifiers( base_type ).firstBound;
@@ -397,7 +397,7 @@ begin
      ParseExpression( ab2, kind2 );                            -- high bound
      if token = symbol_t and identifiers( token ).value.all = "," then
         err( "array of arrays not yet supported" );
-     elsif baseTypesOk( kind1, kind2 ) then                    -- indexes good?
+     elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
         if isExecutingCommand then                             -- not on synchk
            if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
               if long_integer( to_numeric( ab1 ) ) /= 1 and    -- only 1..0
@@ -615,7 +615,7 @@ begin
                        err( "unable to find record field " &
                           optional_bold( to_string( fieldName ) ) );
                     else
-                       if not check_types or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
+                       if type_checks_done or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
                           if isExecutingCommand then
                              identifiers( field_t ).value.all := expr_value;
                              if trace then
@@ -648,7 +648,7 @@ begin
      if isExecutingCommand then
         if not class_ok( second_record_id, varClass ) then     -- must be rec
            null;                                               -- and good type
-        elsif not check_types or else baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
+        elsif type_checks_done or else baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
            begin
              expected_fields := integer'value( to_string( identifiers( recType ).value.all ) );
            exception when others =>
@@ -895,10 +895,10 @@ begin
                 err( "with message missing" );
              end if;
              ParseExpression( default_message, messageType );
-             if uniTypesOK( messageType, uni_string_t ) then
+             if type_checks_done or else uniTypesOK( messageType, uni_string_t ) then
                 expect( use_t );
                 ParseExpression( exception_status, statusType );
-                if not check_types or else baseTypesOK( statusType, natural_t ) then
+                if type_checks_done or else baseTypesOK( statusType, natural_t ) then
                    null;
                 end if;
              end if;
@@ -1264,7 +1264,7 @@ begin
     -- command types have special limitations
 
     elsif getBaseType( type_token ) = command_t then
-       if baseTypesOk( uni_string_t, right_type ) then
+       if baseTypesOK( uni_string_t, right_type ) then
           type_token := uni_string_t; -- pretend it's a string
           if not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
              err( '"' & to_string( expr_value) & '"' &
@@ -1272,29 +1272,13 @@ begin
           end if;
        end if;
 
-     elsif baseTypesOk( type_token, right_type ) then
+     elsif type_checks_done or else baseTypesOK( type_token, right_type ) then
         null;
      end if;
 
      -- perform assignment
 
      if isExecutingCommand then
-        --if getUniType( type_token ) = uni_numeric_t then
-        --   -- numeric test.  universal typelesses could result
-        --   -- in a non-numeric expression that baseTypesOk
-        --   -- doesn't catch.
-        --   declare
-        --      lf : long_float;
-        --   begin
-        --      lf := to_numeric( expr_value );
-        --      -- handle integer types
-        --      expr_value := castToType( lf, type_token );
-        --   exception when program_error =>
-        --      err( "program_error exception raised" );
-        --   when others =>
-        --      err( "exception raised" );
-        --   end;
-        --end if;
         expr_value := castToType( expr_value, type_token );
         if type_token /= right_type then
            DoContracts( identifiers( id ).kind, expr_value );
@@ -1399,7 +1383,7 @@ begin
    ParseExpression( ab2, kind2 );
    if token = symbol_t and identifiers( token ).value.all = "," then
       err( "array of arrays not yet supported" );
-   elsif baseTypesOk(kind1, kind2 ) then
+   elsif type_checks_done or else baseTypesOK(kind1, kind2 ) then
       if isExecutingCommand and not syntax_check then  -- ab1/2 undef on synchk
          if to_numeric( ab1 ) > to_numeric( ab2 ) then
             if long_integer( to_numeric( ab1 ) ) /= 1 and

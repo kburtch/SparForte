@@ -117,7 +117,9 @@ begin
      err( "redundant " & optional_bold( "if" ) );          -- from GNAT
   end if;
   ParseExpression( expr_val, expr_type );                  -- expression
-  if not baseTypesOk( boolean_t, expr_type ) then          -- not a bool result?
+  if type_checks_done then
+     b := expr_val = "1";                                  -- to real boolean
+  elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( "boolean expression expected" );
   else                                                     -- else convert bool
      b := expr_val = "1";                                  -- to real boolean
@@ -148,7 +150,9 @@ begin
         err( "redundant " & optional_bold( "elsif" ) );    -- from GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
-     if not baseTypesOk( boolean_t, expr_type ) then       -- not bool result?
+     if type_checks_done then
+        b := expr_val = "1";                               -- to real boolean
+     elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
         err( "boolean expression expected" );
      else                                                  -- else convert bool
         b := expr_val = "1";                               -- to real boolean
@@ -291,7 +295,9 @@ begin
      err( "redundant " & optional_bold( "if" ) );          -- from GNAT
   end if;
   ParseStaticExpression( expr_val, expr_type );            -- expression
-  if not baseTypesOk( boolean_t, expr_type ) then          -- not a bool result?
+  if type_checks_done then
+     b := expr_val = "1";                                  -- to real boolean
+  elsif not baseTypesOK( boolean_t, expr_type ) then          -- not a bool result?
      err( "boolean expression expected" );
   else                                                     -- else convert bool
      b := expr_val = "1";                                  -- to real boolean
@@ -322,7 +328,9 @@ begin
         err( "redundant " & optional_bold( "elsif" ) );    -- from GNAT
      end if;
      ParseStaticExpression( expr_val, expr_type );         -- expression
-     if not baseTypesOk( boolean_t, expr_type ) then       -- not bool result?
+     if type_checks_done then
+        b := expr_val = "1";                               -- to real boolean
+     elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
         err( "boolean expression expected" );
      else                                                  -- else convert bool
         b := expr_val = "1";                               -- to real boolean
@@ -404,17 +412,17 @@ begin
      b := false;                                          -- assume case fails
      loop
         if token = strlit_t then                          -- strlit allowed
-           if baseTypesOk( identifiers( test_id ).kind, string_t ) then
+           if type_checks_done or else baseTypesOK( identifiers( test_id ).kind, string_t ) then
               case_id := token;
               getNextToken;
            end if;
         elsif token = charlit_t then                      -- charlit allowed
-           if baseTypesOk( identifiers( test_id ).kind, character_t ) then
+           if type_checks_done or else baseTypesOK( identifiers( test_id ).kind, character_t ) then
               case_id := token;
               getNextToken;
            end if;
         elsif token = number_t then                       -- num lit allowed
-           if uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+           if type_checks_done or else uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
               case_id := token;
               getNextToken;
            end if;
@@ -423,7 +431,7 @@ begin
            if identifiers( case_id ).usage /= constantUsage    -- is constant
               and identifiers( case_id ).class /= enumClass then -- or enum?
               err( "variable not allowed as a case" );         -- error if not
-           elsif baseTypesOk( identifiers( test_id ).kind,
+           elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
                  identifiers( case_id ).kind ) then            -- types good?
               null;
            end if;
@@ -505,17 +513,17 @@ begin
      b := false;                                          -- assume case fails
      loop
         if token = strlit_t then                          -- strlit allowed
-           if baseTypesOk( identifiers( test_id ).kind, string_t ) then
+           if type_checks_done or else baseTypesOK( identifiers( test_id ).kind, string_t ) then
               case_id := token;
               getNextToken;
            end if;
         elsif token = charlit_t then                      -- charlit allowed
-           if baseTypesOk( identifiers( test_id ).kind, character_t ) then
+           if type_checks_done or else baseTypesOK( identifiers( test_id ).kind, character_t ) then
               case_id := token;
               getNextToken;
            end if;
         elsif token = number_t then                       -- num lit allowed
-           if uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+           if type_checks_done or else uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
               case_id := token;
               getNextToken;
            end if;
@@ -524,7 +532,7 @@ begin
            if identifiers( case_id ).usage /= constantUsage    -- is constant
               and identifiers( case_id ).class /= enumClass then -- or enum?
               err( "variable not allowed as a case" );         -- error if not
-           elsif baseTypesOk( identifiers( test_id ).kind,
+           elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
                  identifiers( case_id ).kind ) then            -- types good?
               null;
            end if;
@@ -630,7 +638,7 @@ begin
         err( "redundant " & optional_bold( "while" ) );    -- GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
-     if not baseTypesOk( boolean_t, expr_type ) then       -- not boolean?
+     if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( "boolean expression expected" );
      end if;
      expect( loop_t );                                     --- "loop"
@@ -641,7 +649,7 @@ begin
   loop
      expect( while_t );                                    -- "while"
      ParseExpression( expr_val, expr_type );               -- expression
-     if not baseTypesOk( boolean_t, expr_type ) then       -- not boolean?
+     if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( "boolean expression expected" );
         exit;
      elsif expr_val /= "1" or error_found or exit_block then -- skipping?
@@ -744,7 +752,7 @@ begin
         identifiers( for_var ).wasWritten := true;
         identifiers( for_var ).wasFactor := true;
      end if;
-     if baseTypesOk( expr1_type, expr2_type ) then      -- check types
+     if type_checks_done or else baseTypesOK( expr1_type, expr2_type ) then      -- check types
         if getUniType( expr1_type ) = uni_numeric_t then
            null;
        elsif getUniType( expr1_type ) = root_enumerated_t then
@@ -791,7 +799,7 @@ begin
         --if error_found then                              -- errors?
         --    goto abort_loop;                             -- go no further
         --end if;
-        if baseTypesOk( expr1_type, expr2_type ) then      -- check types
+        if type_checks_done or else baseTypesOK( expr1_type, expr2_type ) then      -- check types
            if getUniType( expr1_type ) = uni_numeric_t then
               null;
            elsif getUniType( expr1_type ) = root_enumerated_t then
@@ -895,7 +903,7 @@ procedure ParseDelay is
 begin
   expect( delay_t );
   ParseExpression( expr_val, expr_type );
-  if baseTypesOk( expr_type, duration_t ) then
+  if type_checks_done or else baseTypesOK( expr_type, duration_t ) then
      if isExecutingCommand then
         begin
           delay duration( to_numeric( expr_val ) );
@@ -1876,7 +1884,7 @@ procedure ParseWhenClause( when_true : out boolean ) is
 begin
   expect( when_t );
   ParseExpression( expr_val, expr_type );
-  if baseTypesOk( boolean_t, expr_type ) then
+  if type_checks_done or else baseTypesOK( boolean_t, expr_type ) then
      if isExecutingCommand then
         when_true :=  expr_val = "1";
         if trace then
@@ -1947,7 +1955,7 @@ begin
            end if;
            expect( with_t );
            ParseExpression( with_text, withTextType );
-           if uniTypesOK( withTextType, uni_string_t ) then
+           if type_checks_done or else uniTypesOK( withTextType, uni_string_t ) then
               null;
            end if;
            if token = use_t then
@@ -2755,10 +2763,10 @@ procedure parseUsableInModeParameter( formalParamId : identifier; paramName : un
    typesOK : boolean;
 begin
   ParseExpression( expr_value, expr_type );
-  if check_types then
-     typesOK := baseTypesOK( identifiers( formalParamId ).kind, expr_type );
-  else
+  if type_checks_done then
      typesOK := true;
+  else
+     typesOK := baseTypesOK( identifiers( formalParamId ).kind, expr_type );
   end if;
   if typesOK and then declareParams then
      declareIdent(
@@ -4668,7 +4676,7 @@ begin
   -- a special case
   if right_type = exception_t then
      err( "exceptions cannot be assigned" );
-  elsif baseTypesOk( var_kind, right_type ) then
+  elsif type_checks_done or else baseTypesOK( var_kind, right_type ) then
      if isExecutingCommand then
         expr_value := castToType( expr_value, var_kind );
      end if;
@@ -5673,13 +5681,13 @@ end ParseMainProgram;
 
 procedure parse is
 begin
-  -- check_types flag determines whether type checking is required.  It
+  -- type_checks_done flag determines whether type checking is required.  It
   -- only needs to be done during syntax checking phase or if there is
   -- no syntax checking phase (such as an interactive prompt).  Once
   -- types are checked, it is not necessary to check them again.
-  check_types := inputMode = interactive or
-                 inputMode = breakout or
-                 syntax_check;
+  type_checks_done := not (inputMode = interactive) and
+                      not (inputMode = breakout) and
+                      not syntax_check;
 
   if not error_found then
      cmdpos := firstScriptCommandOffset;

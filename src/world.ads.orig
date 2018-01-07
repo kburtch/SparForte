@@ -113,7 +113,7 @@ done_sub    : boolean := false;           -- true if done a subprogram
 exit_block  : boolean := false;           -- true if "exit"ing
 skipping_block : boolean := false;        -- true if skipping conditional code
 exception_handler : boolean := false;     -- true if handling an exception
-check_types : boolean := false;           -- true if type checking required
+type_checks_done : boolean := false;      -- true if type checking not required
 last_status : aStatusCode := 0;           -- status of last shell command
 tabSize     : natural := 8;               -- how many spaces for a tab
 

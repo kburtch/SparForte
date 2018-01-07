@@ -56,5 +56,5 @@ CHANGES SINCE 2.1
 
 26. Change: the first word in a statement can be a Bourne shell command with path characters and certain punctuation symbols allowed in the names (e.g. minus).
 
-27. Refactor: to improve performance, type checking suppressed at run-time unless necessary, 42% of the type checks for monty.sp.
+27. Refactor: to improve performance, type checking suppressed at run-time unless necessary, 11% faster for monty.sp example.
 

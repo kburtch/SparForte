@@ -707,7 +707,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        expect( symbol_t, "(" );
        ParseExpression( f, kind );
        expect( symbol_t, ")" );
-       if uniTypesOk( castType, kind ) then
+       if type_checks_done or else uniTypesOk( castType, kind ) then
           kind := castType;
           if isExecutingCommand then
              f := castToType( f, kind );
@@ -737,7 +737,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           --end if;
           -- TODO: make a utility function for doing all this.
           -- TODO: probably needs a better error message
-          if not check_types or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
+          if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
              if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
                 err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
              end if;
@@ -979,12 +979,12 @@ begin
   case uniOp is
   when noOp => null;
   when doPlus =>
-       if not check_types or else baseTypesOk( kind, uni_numeric_t ) then
+       if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
           null;
        end if;
   when doMinus =>
        begin
-          if not check_types or else baseTypesOk( kind, uni_numeric_t ) then
+          if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
              if isExecutingCommand then
                 f := to_unbounded_string( -to_numeric( f ) );
              end if;
@@ -994,7 +994,7 @@ begin
        end;
   when doNot =>
        begin
-          if not check_types or else baseTypesOk( kind, boolean_t ) then
+          if type_checks_done or else baseTypesOK( kind, boolean_t ) then
              if isExecutingCommand then
                 if to_numeric( f ) = 1.0 then
                    f := to_unbounded_string( "0" );
@@ -1043,7 +1043,7 @@ begin
   while identifiers( Token ).value.all = "**" loop
      ParsePowerTermOperator( operator );
      ParseFactor( factor2, kind2 );
-     if not check_types or else baseTypesOk( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         term_type := getBaseType( kind1 );
         operation := getUniType( kind1 );
         if operation = universal_t then
@@ -1120,7 +1120,7 @@ begin
         operation := uni_string_t;
      end if;
      if operation = uni_numeric_t then
-        if not check_types or else baseTypesOk( kind1, kind2 ) then
+        if type_checks_done or else baseTypesOK( kind1, kind2 ) then
              if operator = "*" then
                 begin
                   if isExecutingCommand then
@@ -1225,14 +1225,14 @@ begin
                     kind2 := kind1;
                     term_type := kind1;
                  end if;
-                 if not check_types or else baseTypesOk( kind1, kind2 ) then
+                 if type_checks_done or else baseTypesOK( kind1, kind2 ) then
                     if isExecutingCommand then
                        term := term & pterm2;
                     end if;
                  end if;
               elsif operator = "*" then
-                 if not check_types or else baseTypesOk( kind1, natural_t ) then
-                    if not check_types or else baseTypesOk( kind2, uni_string_t ) then
+                 if type_checks_done or else baseTypesOK( kind1, natural_t ) then
+                    if type_checks_done or else baseTypesOK( kind2, uni_string_t ) then
                        if isExecutingCommand then
                           term := natural( to_numeric( term ) ) * pterm2;
                        end if;
@@ -1310,7 +1310,7 @@ begin
      end if;
      -- Otherwise check the types normally
      if not typesOK then
-        typesOK := not check_types or else baseTypesOk( kind1, kind2 );
+        typesOK := type_checks_done or else baseTypesOK( kind1, kind2 );
         expr_type := getBaseType( kind1 );
         operation := getUniType( kind1 );
      end if;
@@ -1471,17 +1471,17 @@ begin
      ParseRelationalOperator( operator );
      if operator = "in" or operator = "not in" then
         ParseFactor( se2, kind2 );
-        if not check_types or else baseTypesOk( kind1, kind2 ) then -- redundant below but
+        if type_checks_done or else baseTypesOK( kind1, kind2 ) then -- redundant below but
            expect( symbol_t, ".." );        -- keeps error messages nice
            ParseFactor( se3, kind3 );       -- should probably restructure
-           if not check_types or else baseTypesOk( kind2, kind3 ) then
+           if type_checks_done or else baseTypesOK( kind2, kind3 ) then
               null;
            end if;
         end if;
      else
         ParseSimpleExpression( se2, kind2 );
      end if;
-     if not check_types or else baseTypesOk( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         operation := getUniType( kind1 );
         if operation = universal_t then
            operation := getUniType( kind2 );
@@ -1645,7 +1645,7 @@ begin
               optional_bold( "pragam ada_95" ) & " - use parantheses" );
      end if;
      ParseRelation( re2, kind2 );
-     if not check_types or else baseTypesOk( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         if getUniType( kind1 ) = uni_numeric_t then
            expr_type := getBaseType( kind1 );
            if operator = and_t then
@@ -1945,7 +1945,7 @@ begin
            expect( symbol_t, "(" );
            ParseExpression( f, kind );
            expect( symbol_t, ")" );
-           if uniTypesOk( castType, kind ) then
+           if type_checks_done or else uniTypesOk( castType, kind ) then
               kind := castType;
               if isExecutingCommand then
                  --f := castToType( to_numeric( f ), kind );
@@ -1971,7 +1971,7 @@ begin
               --end if;
               -- TODO: make a utility function for doing all this.
               -- TODO: probably needs a better error message
-              if not check_types or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
+              if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
                  if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
                     err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
                  end if;
@@ -2005,12 +2005,12 @@ begin
   case uniOp is
   when noOp => null;
   when doPlus =>
-       if not check_types or else baseTypesOk( kind, uni_numeric_t ) then
+       if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
           null;
        end if;
   when doMinus =>
        begin
-          if not check_types or else baseTypesOk( kind, uni_numeric_t ) then
+          if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
              if isExecutingCommand then
                 f := to_unbounded_string( -to_numeric( f ) );
              end if;
@@ -2020,7 +2020,7 @@ begin
        end;
   when doNot =>
        begin
-          if not check_types or else baseTypesOk( kind, boolean_t ) then
+          if type_checks_done or else baseTypesOK( kind, boolean_t ) then
              if isExecutingCommand then
                 if to_numeric( f ) = 1.0 then
                    f := to_unbounded_string( "0" );
@@ -2067,7 +2067,7 @@ begin
   while identifiers( Token ).value.all = "**" loop
      ParseStaticPowerTermOperator( operator );
      ParseStaticFactor( factor2, kind2 );
-     if not check_types or else baseTypesOk( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         term_type := getBaseType( kind1 );
         operation := getUniType( kind1 );
         if operation = universal_t then
@@ -2144,7 +2144,7 @@ begin
         operation := uni_string_t;
      end if;
      if operation = uni_numeric_t then
-        if not check_types or else baseTypesOk( kind1, kind2 ) then
+        if type_checks_done or else baseTypesOK( kind1, kind2 ) then
              if operator = "*" then
                 begin
                   if isExecutingCommand then
@@ -2249,14 +2249,14 @@ begin
                     kind2 := kind1;
                     term_type := kind1;
                  end if;
-                 if not check_types or else baseTypesOk( kind1, kind2 ) then
+                 if type_checks_done or else baseTypesOK( kind1, kind2 ) then
                     if isExecutingCommand then
                        term := term & pterm2;
                     end if;
                  end if;
               elsif operator = "*" then
-                 if not check_types or else baseTypesOk( kind1, natural_t ) then
-                    if not check_types or else baseTypesOk( kind2, uni_string_t ) then
+                 if type_checks_done or else baseTypesOK( kind1, natural_t ) then
+                    if type_checks_done or else baseTypesOK( kind2, uni_string_t ) then
                        if isExecutingCommand then
                           term := natural( to_numeric( term ) ) * pterm2;
                        end if;
@@ -2334,7 +2334,7 @@ begin
      end if;
      -- Otherwise check the types normally
      if not typesOK then
-        typesOK := not check_types or else baseTypesOk( kind1, kind2 );
+        typesOK := type_checks_done or else baseTypesOK( kind1, kind2 );
         expr_type := getBaseType( kind1 );
         operation := getUniType( kind1 );
      end if;
@@ -2495,17 +2495,17 @@ begin
      ParseStaticRelationalOperator( operator );
      if operator = "in" or operator = "not in" then
         ParseStaticFactor( se2, kind2 );
-        if not check_types or else baseTypesOk( kind1, kind2 ) then -- redundant below but
+        if type_checks_done or else baseTypesOK( kind1, kind2 ) then -- redundant below but
            expect( symbol_t, ".." );        -- keeps error messages nice
            ParseStaticFactor( se3, kind3 );       -- should probably restructure
-           if not check_types or else baseTypesOk( kind2, kind3 ) then
+           if type_checks_done or else baseTypesOK( kind2, kind3 ) then
               null;
            end if;
         end if;
      else
         ParseStaticSimpleExpression( se2, kind2 );
      end if;
-     if not check_types or else baseTypesOk( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         operation := getUniType( kind1 );
         if operation = universal_t then
            operation := getUniType( kind2 );
@@ -2669,7 +2669,7 @@ begin
               optional_bold( "pragam ada_95" ) & " - use parantheses" );
      end if;
      ParseStaticRelation( re2, kind2 );
-     if not check_types or else baseTypesOk( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         if getUniType( kind1 ) = uni_numeric_t then
            expr_type := getBaseType( kind1 );
            if operator = and_t then
