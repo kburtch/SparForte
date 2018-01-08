@@ -38,6 +38,7 @@ Priority Issues (Fix These First)
       choose not to?  What's the reason?
     - check types flag
       - refactor generic parameters to test types at compile-type (p-decl.adb)
+      - verify type checking not in executable parts
 
 
 Annoyances / Bugs with Workarounds / Updates

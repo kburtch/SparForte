@@ -845,6 +845,105 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   -- anon_arrays => actually, any nested structure allowed? for records
   -- exceptions => exceptions not allowed in records
 
+  procedure CheckGenericParameterType( id, type_token : identifier ) is
+     -- Type checks for the generic parameters
+     --
+     -- TODO: As a temporary situation, the generic type checks are hard-
+     -- coded here.  There is no field in an identifier to set the number
+     -- of expected parameters to a generic type.
+     --
+     -- TODO: I am permitting subtypes of generic types, but there's no
+     -- function currently in the scanner to track down type derived type of
+     -- generic type.  If I allowed new types from a generic type, the
+     -- hard-coded functionality will break.
+     baseType  : identifier := getBaseType( type_token );
+  begin
+     if baseType = doubly_list_t then
+        if identifiers( id ).genKind2 /= eof_t then
+           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+        else
+           declare
+              genKindId : identifier renames identifiers( id ).genKind;
+           begin
+              --genKindId := identifiers( id ).genKind;
+              if class_ok( genKindId, typeClass, subClass ) then
+                 if identifiers( genKindId ).list then
+                    err( "element type should be a scalar type" );
+                 elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                    err( "element type should be a scalar type" );
+                 end if;
+              end if;
+           end;
+        end if;
+     elsif baseType = doubly_cursor_t then
+        if identifiers( id ).genKind2 /= eof_t then
+           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+        end if;
+     elsif baseType = btree_file_t then
+        if identifiers( id ).genKind2 /= eof_t then
+           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+        end if;
+     elsif baseType = btree_cursor_t then
+        if identifiers( id ).genKind2 /= eof_t then
+           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+        end if;
+     elsif baseType = hash_file_t then
+        if identifiers( id ).genKind2 /= eof_t then
+           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+        end if;
+     elsif baseType = hash_cursor_t then
+        if identifiers( id ).genKind2 /= eof_t then
+           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+        end if;
+     elsif baseType = dht_table_t then
+        declare
+           genKindId : identifier renames identifiers( id ).genKind;
+        begin
+           --genKindId := identifiers( id ).genKind;
+           if class_ok( genKindId, typeClass, subClass ) then
+              if identifiers( genKindId ).list then
+                 err( "element type should be a scalar type" );
+              elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                 err( "element type should be a scalar type" );
+              end if;
+           end if;
+        end;
+     else
+       -- TODO: implement generic types
+        err( "expected a generic type" );
+     end if; -- base types
+  end CheckGenericParameterType;
+
+  procedure AttachGenericParameterResource( id, type_token : identifier ) is
+     -- create and attach a resource to the variable
+     baseType  : identifier := getBaseType( type_token );
+     resId     : resHandleId;
+  begin
+     if baseType = doubly_list_t then
+        declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
+     elsif baseType = doubly_cursor_t then
+        declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
+     elsif baseType = btree_file_t then
+        declareResource( resId, btree_file, getIdentifierBlock( id ) );
+     elsif baseType = btree_cursor_t then
+        declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
+     elsif baseType = hash_file_t then
+        declareResource( resId, hash_file, getIdentifierBlock( id ) );
+     elsif baseType = hash_cursor_t then
+        declareResource( resId, hash_cursor, getIdentifierBlock( id ) );
+     elsif baseType = dht_table_t then
+        declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
+     else
+        -- TODO: implement generic types
+        err( "expected a generic type" );
+     end if;
+     if isExecutingCommand then
+        identifiers( id ).svalue := to_unbounded_string( resId );
+        identifiers( id ).value := identifiers( id ).svalue'access;
+        identifiers( id ).resource := true;
+     end if;
+  end AttachGenericParameterResource;
+
   type_token    : identifier;
   expr_value    : unbounded_string;
   expr_type     : identifier := eof_t;
@@ -1001,7 +1100,6 @@ begin
      err( "not yet implemented" );
   end if;
 
-
   -- Array type?  Handled elsewhere.
 
   if identifiers( getBaseType( type_token ) ).list then       -- array type?
@@ -1055,16 +1153,6 @@ begin
      end if;
   end if;
 
-  -- Abstract Types
-  --
-  -- These cannot be declared.
-
-  --if identifiers( type_token ).usage = abstractUsage then
-  --   err( "constants and variables cannot be declared as " &
-  --        optional_bold( to_string( identifiers( type_token ).name ) ) &
-  --        " because it is " & optional_bold( "abstract" ) );
-  --end if;
-
   -- Generic Parameters
   --
   -- These only apply to built-in types and they are not arrays or records.
@@ -1073,96 +1161,14 @@ begin
 
   if identifiers( type_token ).class = genericTypeClass then
      ParseGenericParametersPart( id  );
+     if not type_checks_done then
+        CheckGenericParameterType( id, type_token );
+     end if;
      if isExecutingCommand then
-        -- create and attach a resource to the variable
-        --
-        -- TODO: As a temporary situation, the generic type checks are hard-
-        -- coded here.  There is no field in an identifier to set the number
-        -- of expected parameters to a generic type.
-        --
-        -- TODO: I am permitting subtypes of generic types, but there's no
-        -- function currently in the scanner to track down type derived type of
-        -- generic type.  If I allowed new types from a generic type, the
-        -- hard-coded functionality will break.
-        declare
-           baseType  : identifier := getBaseType( type_token );
-           resId     : resHandleId;
-           genKindId : identifier;
-        begin
-           if baseType = doubly_list_t then
-              if identifiers( id ).genKind2 /= eof_t then
-                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-              else
-                 genKindId := identifiers( id ).genKind;
-                 --if not type_checks_done then
-                    if class_ok( genKindId, typeClass, subClass ) then
-                       if identifiers( genKindId ).list then
-                          err( "element type should be a scalar type" );
-                       elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                          err( "element type should be a scalar type" );
-                       end if;
-                    end if;
-                 --end if;
-              end if;
-              if not error_found then
-                 declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
-              end if;
-           elsif baseType = doubly_cursor_t then
-              if identifiers( id ).genKind2 /= eof_t then
-                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-              else
-                 declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
-              end if;
-           elsif baseType = btree_file_t then
-              if identifiers( id ).genKind2 /= eof_t then
-                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-              else
-                 declareResource( resId, btree_file, getIdentifierBlock( id ) );
-              end if;
-           elsif baseType = btree_cursor_t then
-              if identifiers( id ).genKind2 /= eof_t then
-                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-              else
-                 declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
-              end if;
-           elsif baseType = hash_file_t then
-              if identifiers( id ).genKind2 /= eof_t then
-                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-              else
-                 declareResource( resId, hash_file, getIdentifierBlock( id ) );
-              end if;
-           elsif baseType = hash_cursor_t then
-              if identifiers( id ).genKind2 /= eof_t then
-                 err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-              else
-                 declareResource( resId, hash_cursor, getIdentifierBlock( id ) );
-              end if;
-           elsif baseType = dht_table_t then
-              genKindId := identifiers( id ).genKind;
-              --if not type_checks_done then
-                 if class_ok( genKindId, typeClass, subClass ) then
-                    if identifiers( genKindId ).list then
-                       err( "element type should be a scalar type" );
-                    elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                       err( "element type should be a scalar type" );
-                    end if;
-                 end if;
-              --end if;
-              if not error_found then
-                 declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
-              end if;
-           else
-              -- TODO: implement generic types
-              err( "expected a generic type" );
-           end if;
-           if isExecutingCommand then
-              identifiers( id ).svalue := to_unbounded_string( resId );
-              identifiers( id ).value := identifiers( id ).svalue'access;
-              identifiers( id ).resource := true;
-           end if;
-        end;
+        AttachGenericParameterResource( id, type_token );
      end if;
      identifiers( id ).kind := type_token;
+
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type but has parameters" );
 
