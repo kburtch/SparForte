@@ -186,12 +186,12 @@ begin
   end if;
   expect( symbol_t, "(" );
   ParseIdentifier( genKind );
-  if class_ok( genKind, typeClass, subClass ) then
+  if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
      identifiers( varId ).genKind := genKind;
      if token = symbol_t and identifiers( token ).svalue = "," then
         expect( symbol_t, "," );
         ParseIdentifier( genKind );
-        if class_ok( genKind, typeClass, subClass ) then
+        if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
            identifiers( varId ).genKind2 := genKind;
         end if;
      else
@@ -325,41 +325,45 @@ begin
      expect( symbol_t, ")" );
   else                                                         -- copying a
      ParseIdentifier( second_array_id );                       -- second array?
-     if isExecutingCommand then
-        if not class_ok( second_array_id, varClass ) then    -- must be arr
-           null;                                               -- and good type
-        elsif type_checks_done or else baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
-           begin
-             base_type := getBaseType( identifiers( array_id ).kind );
-             arrayIndex := identifiers( base_type ).firstBound;
-             lastIndex := identifiers( base_type ).lastBound;
-              if identifiers( array_id ).avalue = null then
-                 err( gnat.source_info.source_location &
-                   ": internal error: target array storage unexpectedly null" );
-              elsif identifiers( array_id ).avalue'first /= arrayIndex then
-                 err( gnat.source_info.source_location &
-                   ": internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
-              elsif identifiers( array_id ).avalue'last /= lastIndex then
-                 err( gnat.source_info.source_location &
-                   ": internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
-              elsif not error_found then
-                 identifiers( array_id ).avalue.all := identifiers( second_array_id ).avalue.all;
-              end if;
-           exception when CONSTRAINT_ERROR =>
-              err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
-           when STORAGE_ERROR =>
-              err( gnat.source_info.source_location &
-                 ": internal error : storage error raised when copying arrays" );
-           end;
-           if trace then
-              put_trace(
-                to_string( identifiers( array_id ).name ) & " := " &
-                to_string( identifiers( second_array_id ).name ) );
+     if not type_checks_done then
+        -- must be an array variable of an acceptable type
+        if class_ok( second_array_id, varClass ) then
+           if baseTypesOK( identifiers( array_id ).kind, identifiers( second_array_id ).kind ) then
+              null;
            end if;
         end if;
      end if;
+
+     if isExecutingCommand then
+        begin
+          base_type := getBaseType( identifiers( array_id ).kind );
+          arrayIndex := identifiers( base_type ).firstBound;
+          lastIndex := identifiers( base_type ).lastBound;
+           if identifiers( array_id ).avalue = null then
+              err( gnat.source_info.source_location &
+                ": internal error: target array storage unexpectedly null" );
+           elsif identifiers( array_id ).avalue'first /= arrayIndex then
+              err( gnat.source_info.source_location &
+                ": internal error: target array first bound doesn't match: " & identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img );
+           elsif identifiers( array_id ).avalue'last /= lastIndex then
+              err( gnat.source_info.source_location &
+                ": internal error: target array last bound doesn't match: " & identifiers( array_id ).avalue'last'img & " vs " &  lastIndex'img );
+           elsif not error_found then
+              identifiers( array_id ).avalue.all := identifiers( second_array_id ).avalue.all;
+           end if;
+        exception when CONSTRAINT_ERROR =>
+           err( "constraint_error : index out of range " & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+        when STORAGE_ERROR =>
+           err( gnat.source_info.source_location &
+              ": internal error : storage error raised when copying arrays" );
+        end;
+        if trace then
+           put_trace(
+             to_string( identifiers( array_id ).name ) & " := " &
+             to_string( identifiers( second_array_id ).name ) );
+        end if;
+     end if;
   end if;
-  -- should have put trace here to show assignment results
 end ParseArrayAssignPart;
 
 procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
@@ -439,7 +443,7 @@ begin
            identifiers( anonType ).wasApplied := true;
            identifiers( elementType ).wasApplied := true;
         end if;
-        if class_ok( elementType, typeClass, subClass ) then     -- item type OK?
+        if type_checks_done or else class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            --if isExecutingCommand then
            if isExecutingCommand and not syntax_check then
               --declareArrayType( id => type_id,
@@ -645,58 +649,63 @@ begin
      end if;
   else
      ParseIdentifier( second_record_id );                      -- second rec?
+     if not type_checks_done then
+        -- it must be a record variable of a compatible type
+        if class_ok( second_record_id, varClass ) then
+           if baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
+              null;
+           end if;
+         end if;
+     end if;
+
      if isExecutingCommand then
-        if not class_ok( second_record_id, varClass ) then     -- must be rec
-           null;                                               -- and good type
-        elsif type_checks_done or else baseTypesOK( identifiers( id ).kind, identifiers( second_record_id ).kind ) then
-           begin
-             expected_fields := integer'value( to_string( identifiers( recType ).value.all ) );
-           exception when others =>
-             expected_fields := 0;
-           end;
-           declare
-              sourceFieldName : unbounded_string;
-              targetFieldName : unbounded_string;
-              source_field_t : identifier;
-              target_field_t : identifier;
-           begin
-              for field_no in 1..expected_fields loop
-                 for j in 1..identifiers_top-1 loop
-                     if identifiers( j ).field_of = recType then
-                        if integer'value( to_string( identifiers( j ).value.all )) = field_no then
-                           -- find source field
-                           sourceFieldName := identifiers( j ).name;
-                           sourceFieldName := delete( sourceFieldName, 1, index( sourceFieldName, "." ) );
-                           sourceFieldName := identifiers( second_record_id ).name & "." & sourceFieldName;
-                           findIdent( sourceFieldName, source_field_t );
-                           if source_field_t = eof_t then
-                              err( gnat.source_info.source_location &
-                                 ": internal error: mismatched source field" );
-                              exit;
-                           end if;
-                           -- find target field
-                           targetFieldName := identifiers( j ).name;
-                           targetFieldName := delete( targetFieldName, 1, index( targetFieldName, "." ) );
-                           targetFieldName := identifiers( id ).name & "." & targetFieldName;
-                           findIdent( targetFieldName, target_field_t );
-                           if target_field_t = eof_t then
-                              err( gnat.source_info.source_location &
-                                 ": internal error: mismatched target field" );
-                              exit;
-                           end if;
-                           -- copy it
-                           identifiers( target_field_t ).value.all := identifiers( source_field_t ).value.all;
-                           if trace then
-                             put_trace(
-                               to_string( targetFieldName ) & " := " &
-                               to_string( identifiers( target_field_t ).value.all ) );
-                           end if;
-                        end if; -- right number
-                     end if; -- field member
-                 end loop; -- search loop
-              end loop; -- fields
-            end;
-        end if;
+        begin
+          expected_fields := integer'value( to_string( identifiers( recType ).value.all ) );
+        exception when others =>
+          expected_fields := 0;
+        end;
+        declare
+           sourceFieldName : unbounded_string;
+           targetFieldName : unbounded_string;
+           source_field_t : identifier;
+           target_field_t : identifier;
+        begin
+           for field_no in 1..expected_fields loop
+              for j in 1..identifiers_top-1 loop
+                  if identifiers( j ).field_of = recType then
+                     if integer'value( to_string( identifiers( j ).value.all )) = field_no then
+                        -- find source field
+                        sourceFieldName := identifiers( j ).name;
+                        sourceFieldName := delete( sourceFieldName, 1, index( sourceFieldName, "." ) );
+                        sourceFieldName := identifiers( second_record_id ).name & "." & sourceFieldName;
+                        findIdent( sourceFieldName, source_field_t );
+                        if source_field_t = eof_t then
+                           err( gnat.source_info.source_location &
+                              ": internal error: mismatched source field" );
+                           exit;
+                        end if;
+                        -- find target field
+                        targetFieldName := identifiers( j ).name;
+                        targetFieldName := delete( targetFieldName, 1, index( targetFieldName, "." ) );
+                        targetFieldName := identifiers( id ).name & "." & targetFieldName;
+                        findIdent( targetFieldName, target_field_t );
+                        if target_field_t = eof_t then
+                           err( gnat.source_info.source_location &
+                              ": internal error: mismatched target field" );
+                           exit;
+                        end if;
+                        -- copy it
+                        identifiers( target_field_t ).value.all := identifiers( source_field_t ).value.all;
+                        if trace then
+                          put_trace(
+                            to_string( targetFieldName ) & " := " &
+                            to_string( identifiers( target_field_t ).value.all ) );
+                        end if;
+                     end if; -- right number
+                  end if; -- field member
+              end loop; -- search loop
+           end loop; -- fields
+        end;
      end if;
   end if;
 end ParseRecordAssignPart;
@@ -1026,6 +1035,8 @@ begin
   -- Not an array or record?
   -- Verify that the type token is a type and check for types
   -- not allowed with certain pragmas.
+  -- We cannot use type_checks_done here unless we restructure because of
+  -- expr_expected.
 
   if not class_ok( type_token, typeClass, subClass, genericTypeClass ) then
      null;
@@ -1083,13 +1094,15 @@ begin
                  err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
               else
                  genKindId := identifiers( id ).genKind;
-                 if class_ok( genKindId, typeClass, subClass ) then
-                    if identifiers( genKindId ).list then
-                       err( "element type should be a scalar type" );
-                    elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                       err( "element type should be a scalar type" );
+                 --if not type_checks_done then
+                    if class_ok( genKindId, typeClass, subClass ) then
+                       if identifiers( genKindId ).list then
+                          err( "element type should be a scalar type" );
+                       elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                          err( "element type should be a scalar type" );
+                       end if;
                     end if;
-                 end if;
+                 --end if;
               end if;
               if not error_found then
                  declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
@@ -1126,13 +1139,15 @@ begin
               end if;
            elsif baseType = dht_table_t then
               genKindId := identifiers( id ).genKind;
-              if class_ok( genKindId, typeClass, subClass ) then
-                 if identifiers( genKindId ).list then
-                    err( "element type should be a scalar type" );
-                 elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                    err( "element type should be a scalar type" );
+              --if not type_checks_done then
+                 if class_ok( genKindId, typeClass, subClass ) then
+                    if identifiers( genKindId ).list then
+                       err( "element type should be a scalar type" );
+                    elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                       err( "element type should be a scalar type" );
+                    end if;
                  end if;
-              end if;
+              --end if;
               if not error_found then
                  declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
               end if;
@@ -1412,7 +1427,7 @@ begin
    elsif identifiers( elementBaseType ).list  then
       err( "array of arrays not yet supported" );
       b := deleteIdent( newtype_id );                       -- discard bad type
-   elsif class_ok( elementType, typeClass, subClass ) then  -- item type OK?
+   elsif type_checks_done or else class_ok( elementType, typeClass, subClass ) then  -- item type OK?
       if isExecutingCommand and not syntax_check then       -- not on synchk
          --declareArrayType( id => type_id,
          --           name => identifiers( newtype_id ).name,
@@ -1608,34 +1623,36 @@ begin
      end if;
 
      ParseIdentifier( parent_id );                         -- parent type name
-     if class_ok( parent_id, typeClass, subClass ) then    -- not a type?
-        if identifiers( getBaseType( parent_id ) ).kind = root_record_t then
-           -- TODO: we would have to generate all the field identifiers
-           -- for the record, renamed for the new type, which is not done
-           -- yet.  I will need this for objects later.
-           err( "new types based on records not supported yet" );
+     if not type_checks_done then
+        if class_ok( parent_id, typeClass, subClass ) then    -- not a type?
+           if identifiers( getBaseType( parent_id ) ).kind = root_record_t then
+              -- TODO: we would have to generate all the field identifiers
+              -- for the record, renamed for the new type, which is not done
+              -- yet.  I will need this for objects later.
+              err( "new types based on records not supported yet" );
+            end if;
         end if;
-        if isExecutingCommand then                         -- OK to do it?
-           identifiers( newtype_id ).kind := parent_id;    -- define the type
-           identifiers( newtype_id ).class := typeClass;
-           identifiers( newtype_id ).genKind :=            -- copy index type
-             identifiers( parent_id ).genKind;             -- / generic type
-           if identifiers( parent_id ).list then           -- an array?
-              identifiers( newtype_id ).list := true;      -- this also array
-              identifiers( newtype_id ).firstBound :=      -- copy first bnd
-                 identifiers( parent_id ).firstBound;
-              identifiers( newtype_id ).lastBound :=       -- copy last bnd
-                 identifiers( parent_id ).lastBound;
-           end if;
-        elsif syntax_check then                            -- syntax check?
-           identifiers( newtype_id ).kind := parent_id;    -- assign subtype
-           identifiers( newtype_id ).class := typeClass;   -- subtype class
-           if identifiers( parent_id ).list then           -- an array?
-              identifiers( newtype_id ).list := true;      -- this also array
-           end if;
-        else                                               -- otherwise
-          b := deleteIdent( newtype_id );                  -- discard new type
+     end if;
+     if isExecutingCommand then                         -- OK to do it?
+        identifiers( newtype_id ).kind := parent_id;    -- define the type
+        identifiers( newtype_id ).class := typeClass;
+        identifiers( newtype_id ).genKind :=            -- copy index type
+          identifiers( parent_id ).genKind;             -- / generic type
+        if identifiers( parent_id ).list then           -- an array?
+           identifiers( newtype_id ).list := true;      -- this also array
+           identifiers( newtype_id ).firstBound :=      -- copy first bnd
+              identifiers( parent_id ).firstBound;
+           identifiers( newtype_id ).lastBound :=       -- copy last bnd
+              identifiers( parent_id ).lastBound;
         end if;
+     elsif syntax_check then                            -- syntax check?
+        identifiers( newtype_id ).kind := parent_id;    -- assign subtype
+        identifiers( newtype_id ).class := typeClass;   -- subtype class
+        if identifiers( parent_id ).list then           -- an array?
+           identifiers( newtype_id ).list := true;      -- this also array
+        end if;
+     else                                               -- otherwise
+       b := deleteIdent( newtype_id );                  -- discard new type
      end if;
 
      -- Programming-by-contract (affirm clause)
@@ -1660,7 +1677,7 @@ begin
    ParseTypeUsageQualifiers( newtype_id );                 -- limited, etc.
    ParseIdentifier( parent_id );                           -- old type
 
-   if class_ok( parent_id, genericTypeClass, typeClass,
+   if type_checks_done or else class_ok( parent_id, genericTypeClass, typeClass,
                subClass ) then                             -- not a type?
       if isExecutingCommand then                           -- OK to execute?
          identifiers( newtype_id ).kind := parent_id;      -- assign subtype

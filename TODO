@@ -37,9 +37,7 @@ Priority Issues (Fix These First)
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
     - check types flag
-      - dojsontonumber being run 58 million times, but no output from put_lines
-      - roll out for classOK
-      - check against -e, command prompt, breakout prompt and other special cases
+      - refactor generic parameters to test types at compile-type (p-decl.adb)
 
 
 Annoyances / Bugs with Workarounds / Updates

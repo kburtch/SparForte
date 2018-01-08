@@ -396,7 +396,7 @@ begin
   ParseIdentifier( test_id );                              -- identifier to test
   -- we allow const because parameters are consts in Bush 1.x.
   --if class_ok( test_id, constClass, varClass ) then
-  if class_ok( test_id, varClass ) then
+  if type_checks_done or else class_ok( test_id, varClass ) then
      expect( is_t );                                       -- "is"
   end if;
 
@@ -494,7 +494,7 @@ begin
   expect( case_t );                                        -- "case"
   ParseStaticIdentifier( test_id );                        -- identifier to test
   -- we allow const because parameters are consts in Bush 1.x.
-  if class_ok( test_id, varClass ) then
+  if type_checks_done or else class_ok( test_id, varClass ) then
      if identifiers( test_id ).usage /= constantUsage then
         err( "constant expected" );
      end if;
@@ -4621,7 +4621,7 @@ begin
   itself := identifiers( var_id ).value.all;
   itself_type := var_kind;
 
-  if class_ok( var_id, varClass ) then
+  if type_checks_done or else class_ok( var_id, varClass ) then
       checkVarUsageQualifier( var_id );
   end if;
 
@@ -5171,6 +5171,7 @@ begin
         error_found := false;                          -- not a real error
         script := null;                                -- no script to run
         inputMode := breakout;                         -- now interactive
+        type_checks_done := false;                     -- enforce type checking
         interactiveSession;                            -- command prompt
         restoreScript( scriptState );                  -- restore original script
         if breakoutContinue then                       -- continuing execution?
@@ -5181,6 +5182,9 @@ begin
            exit_block := false;                        --   and don't exit
            syntax_check := false;
            breakoutContinue := false;                  --   we handled it
+           -- Type checks would have been re-instated for the command prompt.
+           -- Disable again now.
+           type_checks_done := true;
         end if;
         inputMode := saveMode;                         -- restore BUSH's
         resumeScanning( cmdStart );                    --   overwrite EOF token
@@ -5685,9 +5689,7 @@ begin
   -- only needs to be done during syntax checking phase or if there is
   -- no syntax checking phase (such as an interactive prompt).  Once
   -- types are checked, it is not necessary to check them again.
-  type_checks_done := not (inputMode = interactive) and
-                      not (inputMode = breakout) and
-                      not syntax_check;
+  type_checks_done := not (inputMode = interactive) and not syntax_check;
 
   if not error_found then
      cmdpos := firstScriptCommandOffset;
