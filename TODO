@@ -36,9 +36,6 @@ Priority Issues (Fix These First)
       even if the template isn't parsed.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
-    - check types flag
-      - refactor generic parameters to test types at compile-type (p-decl.adb)
-      - verify type checking not in executable parts
 
 
 Annoyances / Bugs with Workarounds / Updates
@@ -126,6 +123,7 @@ Annoyances / Bugs with Workarounds / Updates
     - Ada-compatible space in front of numbers should be pragma ada_95 because
       it's annoying throwback to line printers...but every conversion of a
       number would have to take into account adding/removing a space.
+    - verify type checking not in executable parts so is done at compile-time
 
 Nice to Haves / Missing Functionality
 -------------------------------------

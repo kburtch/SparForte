@@ -1136,21 +1136,28 @@ begin
   -- We cannot use type_checks_done here unless we restructure because of
   -- expr_expected.
 
-  if not class_ok( type_token, typeClass, subClass, genericTypeClass ) then
-     null;
-  elsif onlyAda95 and (type_token = uni_string_t or type_token =
-     uni_numeric_t or type_token = universal_t) then
-     err( "universal/typeless types not allowed with " &
-          optional_bold( "pragam ada_95" ) );
-  elsif getBaseType( type_token ) = command_t then
-     if onlyAda95 then
-        err( "command types not allowed with " & optional_bold( "pragma ada_95" ) );
-     -- Special case: command type qualifiers
-     elsif identifiers( id ).usage /= limitedUsage and
-        identifiers( id ).usage /= constantUsage then
-        err( "command variables must be " & optional_bold( "limited" ) & " or " & optional_bold( "constant" ) );
-        expr_expected := true;
+  if not type_checks_done then
+     if not class_ok( type_token, typeClass, subClass, genericTypeClass ) then
+        null;
+     elsif onlyAda95 and (type_token = uni_string_t or type_token =
+        uni_numeric_t or type_token = universal_t) then
+        err( "universal/typeless types not allowed with " &
+             optional_bold( "pragam ada_95" ) );
+     elsif getBaseType( type_token ) = command_t then
+        if onlyAda95 then
+           err( "command types not allowed with " & optional_bold( "pragma ada_95" ) );
+        -- Special case: command type qualifiers
+        elsif identifiers( id ).usage /= limitedUsage and
+           identifiers( id ).usage /= constantUsage then
+           err( "command variables must be " & optional_bold( "limited" ) & " or " & optional_bold( "constant" ) );
+        end if;
      end if;
+  end if;
+
+  -- An extra call to getBaseType.  Should probably cache.
+
+  if getBaseType( type_token ) = command_t then
+      expr_expected := true;
   end if;
 
   -- Generic Parameters
