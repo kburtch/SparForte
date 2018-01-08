@@ -58,3 +58,5 @@ CHANGES SINCE 2.1
 
 27. Refactor: to improve performance, type checking suppressed at run-time unless necessary, 11% faster for monty.sp example.
 
+28. Fix: backquotes in a shell word no longer have 2 extra characters after substitution.
+

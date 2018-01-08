@@ -23,9 +23,9 @@ Priority Issues (Fix These First)
 - complete log package
 - unsorted/misc
     - update distance example html
-    - echo "xx"`date;`".jpg" is showing
-       xxe;Fri Dec 29 20:24:54 EST 2017.jpg
-       but AdaScript parameters are OK
+    - High ASCII escaping failing on string literals
+      - cd "BANNIÈRE/";
+                 ^ Unexpected character ASCII 136
     - quote handling on first shell word
     - env isn't showing limited variables properly (property missing).  This
       probably has to do with changes to support both types and variables.

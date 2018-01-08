@@ -1583,7 +1583,7 @@ begin
             tempStr : unbounded_string := to_unbounded_string( slice( word, startOfBQuote+1, length( word ) ) );
             result : unbounded_string;
          begin
-            delete( word, startOfBQuote+1, length( tempStr ) );
+            delete( word, startOfBQuote+1, length( tempStr ) + 2 );
             CompileRunAndCaptureOutput( tempStr, result );
             word := word & result;
          end;
