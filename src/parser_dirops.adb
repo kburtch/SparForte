@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with text_io;use text_io;
+with text_io;use text_io;
 
 with gnat.directory_operations,
     ada.strings.unbounded,
@@ -381,10 +381,15 @@ begin
   end if;
   if isExecutingCommand then
      begin
-       identifiers( ref.id ).resource := true;
-       declareResource( resId, directory, getIdentifierBlock( ref.id ) );
-       AssignParameter( ref, to_unbounded_string( resId ) );
-       findResource( resId, theDir );
+       if not identifiers( ref.id ).resource then
+          identifiers( ref.id ).resource := true;
+          declareResource( resId, directory, getIdentifierBlock( ref.id ) );
+          AssignParameter( ref, to_unbounded_string( resId ) );
+          findResource( resId, theDir );
+       else
+          -- Reuse existing resource
+          findResource( to_resource_id( identifiers( ref.id ).value.all ), theDir );
+       end if;
        Open( theDir.dir, to_string( expr_val ) );
      exception when DIRECTORY_ERROR =>
        err( "directory does not exist" );
@@ -410,7 +415,7 @@ begin
         exception when DIRECTORY_ERROR =>
           err( "directory is not open" );
         when others =>
-          err_exception_raised;
+          raise; -- err_exception_raised;
         end;
      else
         err( "directory is not open" );

@@ -11,6 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- High ASCII escaping failing on string literals
+  - cd "BANNIÈRE/";
+             ^ Unexpected character ASCII 136
+  - check to see all string and character literals handle high ascii
+  - check to make sure get next token handles high ascii
+  - check to make sure parse shell word handles high ascii
 - the new type qualifiers system and remaning
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
@@ -19,21 +25,22 @@ Priority Issues (Fix These First)
   - additional examples to be added to automated tests
   - should I relax the restriction on declaring variables in unstructured
     scripts?
-- DoContracts to parser_aux?
+- affirm blocks
+    - test if HTML escaping can be implemented in an affirm block
+    - should affirm blocks have an expression short-form?
+    - should affirm blocks have storage specifications?
+    - move DoContracts to parser_aux?
 - complete log package
 - unsorted/misc
+    - an early return from the main program doesn't pull the final block,
+      even if the template isn't parsed.
     - update distance example html
-    - High ASCII escaping failing on string literals
-      - cd "BANNIÈRE/";
-                 ^ Unexpected character ASCII 136
     - quote handling on first shell word
     - env isn't showing limited variables properly (property missing).  This
       probably has to do with changes to support both types and variables.
     - ../../../spar not found?
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
-    - an early return from the main program doesn't pull the final block,
-      even if the template isn't parsed.
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
 

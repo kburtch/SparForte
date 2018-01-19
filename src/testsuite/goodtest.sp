@@ -4782,6 +4782,20 @@ begin
   pragma assert( unsigned_byte = 160 );
 end;
 
+-- I encountered a big where top-level resources threw an exception...
+diropid : directory_operations.dir_type_id;
+
+loop -- non-scope block
+  directory_operations.open ( diropid, "." );
+  directory_operations.close( diropid );
+  exit when true;
+end loop;
+
+begin -- scoped block
+  directory_operations.open ( diropid, "." );
+  directory_operations.close( diropid );
+end;
+
 -- Pragmas
 
 pragma assumption( used, i );

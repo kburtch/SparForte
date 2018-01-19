@@ -1816,12 +1816,18 @@ begin
      raise block_table_overflow with Gnat.Source_Info.Source_Location &
          ": too many nested blocks";
   else
-     if syntax_check and not error_found and not done then
-        checkIdentifiersInCurrentBlock;
+     -- If it was a block with a new scope, check the identifiers and pull
+     -- (discard) any resources prior to removing the block.
+     if blocks( blocks_top-1 ).newScope then -- KB: 18/01/17
+        if syntax_check and not error_found and not done then
+          checkIdentifiersInCurrentBlock;
+        end if;
+        -- Resources are assigned to blocks_top (i.e. the next free block )
+        -- so you must pull prior to decrementing.
+        pullResourceBlock( blocks_top );                        -- do any r's
      end if;
-     -- pullArrayBlock( blocks_top );                              -- do any a's
-     pullResourceBlock( blocks_top );                           -- do any r's
      blocks_top := blocks_top - 1;                              -- pop stack
+     --end if;
      -- delete the identifiers, exporting if necessary
      for i in reverse blocks( blocks_top ).identifiers_top .. identifiers_top-1 loop
          b := deleteIdent( i );
@@ -1834,6 +1840,12 @@ begin
 
   end if;
 end pullBlock;
+
+-- DEBUG
+procedure showBlock is
+begin
+  put_line( blocks_top'img );
+end showBlock;
 
 -----------------------------------------------------------------------------
 -- TOP OF BLOCK
@@ -1935,14 +1947,16 @@ end isLocal;
 
 
 -----------------------------------------------------------------------------
--- GET INDENTIFIER BLOCK
+-- GET IDENTIFIER BLOCK
 --
 -- Return the block number for an identifier
 -----------------------------------------------------------------------------
 
 function getIdentifierBlock( id : identifier ) return block is
-  theBlock : block;
+  -- the default block is block zero (blocks_top = 1 )
+  theBlock : block := block'first;
 begin
+--put_line( "getidentBlock: " & to_string( identifiers( id ).name ) ); -- DEBUG
   for b in reverse blocks'first..blocks_top-1 loop     -- from top down
       if blocks( b ).newScope then                     -- new scope?
          if id >= blocks( b ).identifiers_top then     -- id in it?
@@ -2960,7 +2974,6 @@ begin
   -- No last output
 
   last_output_type := eof_t;
-
 end startScanner;
 
 

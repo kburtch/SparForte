@@ -1277,8 +1277,9 @@ begin
     -- Second, check for characters that will interfere with the compressed
     -- tokens.
 
-    --if is_control( Element( command, cmdpos ) ) or Element( command, cmdpos ) > '~' then
-    if is_control( Element( command, cmdpos ) ) then
+    if ch > ASCII.DEL then
+        word := word & toByteCode( char_escape_t );
+    elsif is_control( Element( command, cmdpos ) ) then
        err_tokenize( "Unexpected character ASCII" & character'pos( Element( command, cmdpos ) )'img, to_string( command ) );
        cmdPos := cmdPos + 1;
        return;
@@ -1319,11 +1320,15 @@ begin
        inBackslash := false;
 
     end if; -- no quoting characters
+    word := word & ch;
     cmdpos := cmdpos + 1;
   end loop;
 
   ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
-     slice( command, firstpos, lastpos ) & toByteCode( imm_delim_t );
+     word & toByteCode( imm_delim_t );
+  --ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
+  --   slice( command, firstpos, lastpos ) & toByteCode( imm_delim_t );
+  word := null_unbounded_string;
   goto next;
 
 end shellStatementByteCode;

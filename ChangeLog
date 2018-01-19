@@ -60,3 +60,7 @@ CHANGES SINCE 2.1
 
 28. Fix: backquotes in a shell word no longer have 2 extra characters after substitution.
 
+29. Fix: unstructured scripts no longer pull/discard top-level declarations early nested block exit.
+
+30. Fix: fixed memory leak with directory_operations.open declaring new resources each time.
+
