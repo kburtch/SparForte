@@ -623,6 +623,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
       end if;
    end DoContract1;
 
+   oldRshOpt : commandLineOption := rshOpt;
 begin
 
    -- Create a new block, declaring the data type variable
@@ -630,6 +631,9 @@ begin
 
    pushBlock( newScope => true, newName => "accept clause" );
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
+
+   -- for now, treat as a restricted shell to reduce the risk of side-effects.
+   rshOpt := true;
 
    if isExecutingCommand then
 --put_line( "Starting Contract for value " & to_string( expr_val ) ); -- DEBUG
@@ -663,6 +667,7 @@ begin
 
    -- Tear down accept clause block
 
+   rshOpt := oldRshOpt;
    pullBlock;
 end DoContracts;
 

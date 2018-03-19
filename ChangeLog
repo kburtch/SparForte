@@ -64,3 +64,5 @@ CHANGES SINCE 2.1
 
 30. Fix: fixed memory leak with directory_operations.open declaring new resources each time.
 
+31. Change: affirm blocks run in restricted mode as a precaution against side-effects.
+
