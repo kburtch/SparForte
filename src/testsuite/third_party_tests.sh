@@ -116,6 +116,7 @@ if [ $? -ne 0 ] ; then
    echo "$RESULT"
    exit 192
 else
+   echo "$RESULT" # DEBUG
    echo "OK - $TESTSET"
 fi
 }
