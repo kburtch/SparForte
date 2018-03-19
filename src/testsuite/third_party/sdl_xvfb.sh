@@ -35,12 +35,12 @@ fi
 if [ $XVFB_PID -ne 0 ] ; then
    echo "Running"
    export DISPLAY=":99"
-   echo | spar chessboard
+   echo | ../../spar ../../../examples/chessboard
    if [ $RESULT -eq 0 ] ; then
-       echo | spar mandel
+       echo | ../../spar ../../../examples/mandel
    fi
    if [ $RESULT -eq 0 ] ; then
-       echo | spar geometry
+       echo | ../../spar ../../../examples/geometry
    fi
    if [ $RESULT -eq 0 ] ; then
       RESULT=$?
