@@ -42,12 +42,13 @@ if [ $XVFB_PID -ne 0 ] ; then
    if [ $RESULT -eq 0 ] ; then
        echo | ../../spar ../../../examples/geometry
    fi
-   if [ $RESULT -eq 0 ] ; then
-       echo | ../../spar ../../../examples/opengl_first.sp
-   fi
-   if [ $RESULT -eq 0 ] ; then
-       echo | ../../spar ../../../examples/opengl_second.sp
-   fi
+   # These tests wait for a keypress.
+   #if [ $RESULT -eq 0 ] ; then
+   #    echo | ../../spar ../../../examples/opengl_first.sp
+   #fi
+   #if [ $RESULT -eq 0 ] ; then
+   #    echo | ../../spar ../../../examples/opengl_second.sp
+   #fi
    if [ $RESULT -eq 0 ] ; then
       RESULT=$?
    fi
