@@ -100,6 +100,26 @@ else
 fi
 }
 
+# A minimal test of SDL using example programs in an
+# X virtual frame buffer
+# Doesn't check the output because "Press Return" is sent
+# back.
+
+do_sdl_xvfb_test() {
+TESTSET="sdl_xvfb.sh"
+if [ ! -f "$TESTSET" ] ; then
+   echo "Failed - $TESTSET is missing"
+fi
+RESULT=`bash ./$TESTSET 2>&1`
+if [ $? -ne 0 ] ; then
+   echo "Failed - $TESTSET Failed"
+   echo "$RESULT"
+   exit 192
+else
+   echo "OK - $TESTSET"
+fi
+}
+
 echo "$0: Testing thrid-party software..."
 echo "$0: "`date`
 
@@ -110,6 +130,7 @@ do_cgi_good_test
 do_btree_good_test
 do_hash_good_test
 do_memcache_good_test
+do_sdl_xvfb_test
 
 # ---------------------------------------------------------------------------
 

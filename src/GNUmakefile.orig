@@ -224,6 +224,7 @@ coverage: c_os.o c_scanner.o c_gstreamer.o
 	@echo "Coverage will require:"
 	@echo
 	@echo " - 2nd memcache (memcached -l 127.0.0.1 -p 11212 &)"
+	@echo " - Xvfb for SDL testing"
 	@echo " - gcov, gcovr and lcov installed"
 	@echo
 	@echo "Continuing in 3 secs..."
