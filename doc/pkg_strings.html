@@ -60,7 +60,7 @@ and character values. (The character positions are numbered from 1.)</p>
   <a href="#strings.is_lower">r := is_lower( s )</a>             <a href="#strings.is_slashed_date">r := is_slashed_date( s )</a>     <a href="#strings.is_special">r := is_special( s )</a>
   <a href="#strings.is_typo_of">b := is_typo_of( s1, s2 )</a>      <a href="#strings.is_upper">r := is_upper( s )</a>            <a href="#strings.length">n := length( s )</a>
   <a href="#strings.lookup">r := lookup( s, k [, d] )</a>      <a href="#strings.match">b := match( e, s )</a>            <a href="#strings.mktemp">r := mktemp( p )</a>
-  <a href="#strings.overwrite">r := overwrite( s, p, n )</a>      <a href="#strings.replace">replace( s, f, t [, d] )</a>      <a href="#strings.replace_slice">replace_slice( s, l, h, b )</a>
+  <a href="#strings.overwrite">r := overwrite( s, p, n )</a>      <a href="#strings.replace">replace( s, f, t [, d] )</a>      <a href="#strings.replace_slice">r := replace_slice( s, l, h, b )</a>
   <a href="#strings.set_unbounded_string">set_unbounded_string( u, s )</a>   <a href="#strings.slice">r := slice( s, l, h )</a>         <a href="#strings.split">split( s, l, r , p )</a>
   <a href="#strings.tail">r := tail( s, c [, p] )</a>        <a href="#strings.to_base64">r := strings.to_base64( s )</a>   <a href="#strings.to_basic">r := to_basic( s )</a>
   <a href="#strings.to_escaped">r := to_escaped( s )</a>           <a href="#strings.to_json">r := to_json( s )</a>             <a href="#strings.to_lower">r := to_lower( s )</a>
@@ -129,7 +129,7 @@ Base 64 encoded strings.</p>
 <tr>
 <td><span>p</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the substring to search for</span></td>
 </tr>
@@ -150,6 +150,9 @@ Base 64 encoded strings.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Count<br>PHP: substr_count<br>Python: count</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -194,7 +197,7 @@ Base 64 encoded strings.</p>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the field</span></td>
 </tr>
@@ -208,6 +211,9 @@ Base 64 encoded strings.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>PHP: str_getcsv</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -218,7 +224,7 @@ Base 64 encoded strings.</p>
 <td><p>replace the natural fth substring of s delimited by character d (typically a comma) with string t.  Double quotes will escape the delimiter.  For use with Comma Separated Value files (or ASCII.TAB for tab separated value file).  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">strings.csv_replace( "a/b/c", 2, "x", '/' ); -- now "a/x/c"</span></td>
+<td><span class="code">s := "a/b/c"; strings.csv_replace( s, 2, "x", '/' ); -- now "a/x/c"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -256,13 +262,6 @@ Base 64 encoded strings.</p>
 <td><span>','</span></td>
 <td><span>the character delimiter</span></td>
 </tr>
-<tr>
-<td><span>r</span></td>
-<td><span>return value</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the field</span></td>
-</tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
@@ -273,6 +272,9 @@ Base 64 encoded strings.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>PHP: str_putcsv</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -315,9 +317,9 @@ Base 64 encoded strings.</p>
 <td><span>the high position to delete.</span></td>
 </tr>
 <tr>
-<td><span>n</span></td>
+<td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>natural</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the string with the positions removed</span></td>
 </tr>
@@ -331,6 +333,9 @@ Base 64 encoded strings.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada.Strings.Unbounded.Delete</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -382,6 +387,9 @@ Base 64 encoded strings.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Element</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -426,7 +434,7 @@ Base 64 encoded strings.</p>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the field</span></td>
 </tr>
@@ -440,6 +448,9 @@ Base 64 encoded strings.</p>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Perl: split<br>PHP: explode</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -554,7 +565,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the substring</span></td>
 </tr>
@@ -568,6 +579,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Head</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -598,7 +612,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the value as a string</span></td>
 </tr>
@@ -612,6 +626,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: 'image attribute<br>PHP: strval</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -642,7 +659,7 @@ padded using character p</p></td>
 <tr>
 <td><span>p</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the substring to find</span></td>
 </tr>
@@ -670,6 +687,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Index<br>Perl: index / rindex<br>PHP: strpos / strrpos<br>Python: find/index/rfind/rindex</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -758,14 +778,14 @@ padded using character p</p></td>
 <tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the substring to insert</span></td>
 </tr>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the new string</span></td>
 </tr>
@@ -779,6 +799,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -809,7 +832,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is alphanumeric</span></td>
 </tr>
@@ -853,7 +876,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is basic</span></td>
 </tr>
@@ -897,7 +920,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is control characters</span></td>
 </tr>
@@ -941,7 +964,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is digits</span></td>
 </tr>
@@ -985,7 +1008,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is a number with a decimal point</span></td>
 </tr>
@@ -1029,7 +1052,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is printable</span></td>
 </tr>
@@ -1073,7 +1096,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is hexadecimal</span></td>
 </tr>
@@ -1117,7 +1140,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is letters</span></td>
 </tr>
@@ -1161,7 +1184,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is lower-case letters</span></td>
 </tr>
@@ -1205,7 +1228,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is a date</span></td>
 </tr>
@@ -1249,7 +1272,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is special</span></td>
 </tr>
@@ -1300,7 +1323,7 @@ padded using character p</p></td>
 <tr>
 <td><span>b</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the strings are a possible typo</span></td>
 </tr>
@@ -1344,7 +1367,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if the string is upper-case letters</span></td>
 </tr>
@@ -1446,7 +1469,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the value of the key</span></td>
 </tr>
@@ -1460,6 +1483,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -1558,7 +1584,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>univeral_string</span></td>
 <td><span>required</span></td>
 <td><span>the path with the dummy characters replaced with random characters</span></td>
 </tr>
@@ -1572,6 +1598,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>PHP: tempnam</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -1616,7 +1645,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the new string</span></td>
 </tr>
@@ -1630,6 +1659,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Overwrite<br>PHP: substr_replace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -1688,17 +1720,20 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Python: replace</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
-<a name="strings.replace_slice"></a><h3>replace_slice( s, l, h, b )</h3>
+<a name="strings.replace_slice"></a><h3>r := replace_slice( s, l, h, b )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Replace the characters in s between positions low l and high h with substring b</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">strings.replace_slice( s, 2, 3, , 'foo' ); -- if s is "1234", it is now "1foo34"</span></td>
+<td><span class="code">r := strings.replace_slice( s, 2, 3, , 'foo' ); -- if s is "1234", r is "1foo34"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -1708,6 +1743,12 @@ padded using character p</p></td>
 <td><span class="pkg_param">Type</span></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>r</span></td>
+<td><span>return value</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the new string</span></td>
 </tr><tr>
 <td><span>s</span></td>
 <td><span>in out</span></td>
@@ -1746,6 +1787,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -1834,7 +1878,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the new string</span></td>
 </tr>
@@ -1848,6 +1892,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Slice<br>PHP: substr</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -1878,7 +1925,7 @@ padded using character p</p></td>
 <tr>
 <td><span>l</span></td>
 <td><span>out</span></td>
-<td><span>unbounded_string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the left substring of s</span></td>
 </tr>
@@ -1906,6 +1953,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>PHP: wordwrap</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -1950,7 +2000,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the substring</span></td>
 </tr>
@@ -1964,6 +2014,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Tail</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -2041,7 +2094,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string or character type</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the basic string</span></td>
 </tr>
@@ -2085,7 +2138,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string or character type</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the escaped string</span></td>
 </tr>
@@ -2129,7 +2182,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string or character type</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the lower-case string</span></td>
 </tr>
@@ -2173,7 +2226,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string or character type</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the proper-case string</span></td>
 </tr>
@@ -2210,14 +2263,14 @@ padded using character p</p></td>
 </tr><tr>
 <td><span>s</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the string expression to encode</span></td>
 </tr>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>json_string</span></td>
 <td><span>required</span></td>
 <td><span>the JSON string</span></td>
 </tr>
@@ -2231,6 +2284,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>PHP: json_encode</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
@@ -2357,7 +2413,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string or character type</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the upper-case string</span></td>
 </tr>
@@ -2408,7 +2464,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the new string</span></td>
 </tr>
@@ -2422,6 +2478,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Strings.Unbounded.Trim<br>PHP: trim<br>Python: strip</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Notes</p></td>
+<td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
 </tr>
 </table>
 
