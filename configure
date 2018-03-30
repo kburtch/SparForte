@@ -589,27 +589,35 @@ if [ -z "$TMP" ] ; then
              echo "yes"
          else
              echo "no"
-             echo -n "checking for static libgnat.a only (e.g. Slackware)... "
-             TMP=`"$LOCATE" adalib/libgnat`
-             if [ $? -eq 0 ] ; then
-                TMP2=`"$LOCATE" adalib/libgnat.a`
+             echo -n "checking for libgnat.dll.a (Cygwin)..."
+             TMP=`"$LOCATE" adalib/libgnat | fgrep dll.a`
+             if [ ! -z "$TMP" ] ; then
+                 echo "yes"
              else
-                TMP2="fail-me"
-             fi
-             if [ "$TMP" = "$TMP2" ] ; then
-                echo "yes"
-             else
-                echo "no"
-                echo
-                echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
-                echo "(libgnat) was not found.  If libgnat.so was installed, you"
-                echo "may need to run ldconfig (as root) to update the shared"
-                echo "library search paths.  You may need to edit ld.so.conf first"
-                echo "and add the path to libgnat's directory.  If libgnat.a was"
-                echo "installed, run updatedb (as root) and this script should"
-                echo "detect it."
-                echo
-                exit 1
+                 echo "no"
+                 echo -n "checking for static libgnat.a only (e.g. Slackware)... "
+                 # In some cases, this may return multiple files.
+                 TMP=`"$LOCATE" adalib/libgnat`
+                 if [ $? -eq 0 ] ; then
+                    TMP2=`"$LOCATE" adalib/libgnat.a`
+                 else
+                    TMP2="fail-me"
+                 fi
+                 if [ "$TMP" = "$TMP2" ] ; then
+                    echo "yes"
+                     else
+                    echo "no"
+                    echo
+                    echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
+                    echo "(libgnat) was not found.  If libgnat.so was installed, you"
+                    echo "may need to run ldconfig (as root) to update the shared"
+                    echo "library search paths.  You may need to edit ld.so.conf first"
+                    echo "and add the path to libgnat's directory.  If libgnat.a was"
+                    echo "installed, run updatedb (as root) and this script should"
+                    echo "detect it."
+                    echo
+                    exit 1
+                  fi
               fi
           fi
       fi
@@ -728,12 +736,19 @@ if [ -z "$TMP" ] ; then
        echo "yes"
    else
        echo "no"
-       echo
-       echo "If you have libssl, it may be version specific"
-       echo "Please make a general symbol link libssl.so to the "
-       echo "correct version and run ldconfig to update the"
-       echo "shared library list."
-       exit 1
+       echo -n "checking for lib/openssl (Cygwin)..."
+       TMP=`"$LOCATE" lib/openssl`
+       if [ ! -z "$TMP" ] ; then
+           echo "yes"
+       else
+           echo "no"
+           echo
+           echo "If you have libssl, it may be version specific"
+           echo "Please make a general symbol link libssl.so to the "
+           echo "correct version and run ldconfig to update the"
+           echo "shared library list."
+           exit 1
+       fi
    fi
 else
    TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libssl.so`
@@ -867,8 +882,13 @@ else
    else
       (exec "$CC" sdlversion.c -I/usr/local/include -L/usr/local/lib -lSDL)
    fi
-   TMP=`./a.out`
-   rm a.out
+   if [ -f "./a.exe" ] ; then # Cygwin makes Windows executables
+      TMP=`./a.exe`
+      rm ./a.exe
+   elif [ -f "./a.out" ] ; then
+      TMP=`./a.out`
+      rm ./a.out
+   fi
    cd ../src
    if [ "$TMP" = "32" ] ; then
       cp spar_os-sdl-32bit.ads spar_os-sdl.ads
