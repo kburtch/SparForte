@@ -166,13 +166,15 @@ done
 
 # Debian warning
 
-TMP=`fgrep Ubuntu /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="ubuntu"
-fi
-TMP=`fgrep Mint /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="ubuntu"
+if [ -f "/etc/issue" ] ; then
+   TMP=`fgrep Ubuntu /etc/issue`
+   if [ "$TMP" != "" ] ; then
+      DISTRO="ubuntu"
+   fi
+   TMP=`fgrep Mint /etc/issue`
+   if [ "$TMP" != "" ] ; then
+      DISTRO="ubuntu"
+   fi
 fi
 
 if [ -z "$DISTRO" ] ; then
@@ -218,12 +220,18 @@ echo -n "checking for locate ($LOCATE)... "
 if [ $? -ne 0 ] ; then
   echo "no"
   LOCATE="locate"
-  echo -n "checking for locate ($LOCATE)... "
-  "$LOCATE" /bin/true >/dev/null 2>/dev/null
+  "$LOCATE" --help >/dev/null 2>/dev/null
   if [ $? -ne 0 ] ; then
-     echo "no"
-     # freebsd 8 has different parameters
-     "$LOCATE" thisisafakepatternbecausefreebsdlocatehasnohelp >/dev/null 2>/dev/null
+     LOCATE="locate"
+     echo -n "checking for locate ($LOCATE)... "
+     "$LOCATE" /bin/true >/dev/null 2>/dev/null
+     if [ $? -ne 0 ] ; then
+        echo "no"
+        # freebsd 8 has different parameters
+        "$LOCATE" thisisafakepatternbecausefreebsdlocatehasnohelp >/dev/null 2>/dev/null
+     else
+        echo "yes"
+     fi
   else
      echo "yes"
   fi
