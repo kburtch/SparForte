@@ -1,11 +1,10 @@
-
 ------------------------------------------------------------------------------
--- Linux Imported kernel syscalls / standard C functions                    --
+-- Cygwin Imported kernel syscalls / standard C functions                   --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2018 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -32,7 +31,7 @@
 with Interfaces.C, System.Address_To_Access_Conversions;
 use  Interfaces.C;
 
-package bush_os is
+package spar_os is
 
 
 ------------------------------------------------------------------------------
@@ -76,6 +75,8 @@ O_NONBLOCK : constant anOpenFlag := 8#4000#;
 O_SYNC     : constant anOpenFlag := 0;
 -- /usr/include/bits/fcntl.h
 
+type aModeType is new short;
+
 function getpid return aPID;
 pragma import( C, getpid );
 
@@ -97,7 +98,7 @@ procedure writechar( result : out size_t; fd : aFileDescriptor; char : in out ch
 pragma import( C, writechar, "write" );
 pragma import_valued_procedure( writechar, "write" );
 
-function open( path : string; flags : anOpenFlag; mode : integer ) return aFileDescriptor;
+function open( path : string; flags : anOpenFlag; mode : aModeType ) return aFileDescriptor;
 pragma import( C, open );
 
 function close( fd : aFileDescriptor ) return int;
@@ -627,5 +628,5 @@ function C_install_sigwinch_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigwinch_handler, "C_install_sigwinch_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
 
-end bush_os;
+end spar_os;
 
