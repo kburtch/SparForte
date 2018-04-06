@@ -72,10 +72,10 @@ O_CREAT    : constant anOpenFLag := 8#100#;
 O_TRUNC    : constant anOpenFlag := 8#1000#;
 O_APPEND   : constant anOpenFlag := 8#2000#;
 O_NONBLOCK : constant anOpenFlag := 8#4000#;
-O_SYNC     : constant anOpenFlag := 0;
+O_SYNC     : constant anOpenFlag := 8#20000#;
 -- /usr/include/bits/fcntl.h
 
-type aModeType is new short;
+type aModeType is new int;
 
 function getpid return aPID;
 pragma import( C, getpid );
@@ -105,9 +105,9 @@ function close( fd : aFileDescriptor ) return int;
 pragma import( C, close );
 
 function fdatasync( fd : aFileDescriptor ) return int;
-pragma import( C,  fdatasync );
+pragma import( C, fdatasync );
 
-function unlink( s : string ) return integer;
+function unlink( s : string ) return int;
 pragma import( C, unlink );
 
 WHENCE_SEEK_SET : constant integer := 0;
@@ -371,8 +371,8 @@ E2BIG   : constant integer := 7;      -- Arg list too long
 ENOEXEC : constant integer := 8;      -- Exec format error
 EBADF   : constant integer := 9;      -- Bad file number
 ECHILD  : constant integer := 10;     -- No children
-EAGAIN  : constant integer := 11;     -- No more processes
 EWOULDBLOCK : constant integer := 11;
+EAGAIN  : constant integer := 11;     -- No more processes
 ENOMEM  : constant integer := 12;     -- Not enough core
 EACCES  : constant integer := 13;     -- Permission denied
 EFAULT  : constant integer := 14;     -- Bad address
@@ -435,7 +435,7 @@ AF_INET : constant aProtocolFamily := 2;
 
 type aSocketType is new int;
 SOCK_STREAM : constant aSocketType := 1;
-SOCK_NONBLOCK : constant aSocketType := 0; -- Linux specific
+SOCK_NONBLOCK : constant aSocketType := 16#1000000#;
 
 -- this is for a steady connection.  Defined as 1 in
 -- /usr/include/linux/socket.h
@@ -596,6 +596,11 @@ function C_is_waiting_file( path : string ) return boolean;
 pragma import( C, C_is_waiting_file, "C_is_waiting_file" );
 --  True if a file exists, is readable and has data
 
+function C_is_includable_file( path : string ) return boolean;
+pragma import( C, C_is_includable_file, "C_is_includable_file" );
+--  True if a file exists, is readable, not world writable and has data
+-- (that is, that it has permissions for an include file)
+
 function C_file_length( path : string ) return long_integer;
 pragma import( C, C_file_length, "C_file_length" );
 --  Return length of file
@@ -627,6 +632,10 @@ pragma import( C, C_install_sigchld_handler, "C_install_sigchld_handler" );
 function C_install_sigwinch_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigwinch_handler, "C_install_sigwinch_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
+
+function C_install_sigpipe_handler( flag : system.address ) return boolean;
+pragma import( C, C_install_sigpipe_handler, "C_install_sigpipe_handler" );
+--  Mark an Ada boolean variable that will be TRUE if SIGPIPE occurs
 
 end spar_os;
 
