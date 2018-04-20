@@ -68,12 +68,12 @@ stderr : constant aFileDescriptor := 2;
 type anOpenFlag is new integer;
 O_RDONLY   : constant anOpenFlag := 0;
 O_WRONLY   : constant anOpenFlag := 1;
-O_CREAT    : constant anOpenFLag := 8#100#;
-O_TRUNC    : constant anOpenFlag := 8#1000#;
-O_APPEND   : constant anOpenFlag := 8#2000#;
-O_NONBLOCK : constant anOpenFlag := 8#4000#;
+O_CREAT    : constant anOpenFLag := 8#1000#;
+O_TRUNC    : constant anOpenFlag := 8#2000#;
+O_APPEND   : constant anOpenFlag := 8#10#;
+O_NONBLOCK : constant anOpenFlag := 8#40000#;
 O_SYNC     : constant anOpenFlag := 8#20000#;
--- /usr/include/bits/fcntl.h
+-- <fcntl.h>
 
 type aModeType is new int;
 
