@@ -1,11 +1,11 @@
 #!/bin/bash
 
-declare -r VERSION=1.5
+declare -r VERSION=2.1
 declare -r RELEASE=1
 
 declare -r ROOTDIR=`pwd`
 declare -r TAR_FILE="$ROOTDIR""/SOURCES/sparforte-$VERSION.tar.gz"
-declare -r SPEC_FILE="$ROOTDIR""/SPECS/sparforte_opensuse.spec"
+declare -r SPEC_FILE="$ROOTDIR""/SPECS/sparforte_redhat.spec"
 
 declare NOSIGN
 

@@ -224,6 +224,8 @@ Nice to Haves / Missing Functionality
   - epoll_ Linux commands and threads to scale
     - see libuv
     - see node.js talk https://www.youtube.com/watch?v=P9csgxBgaZ8&t=1186
+- strings package
+  - blocks should probably be inside isExecutingCommand if's
 - os package
   - process id
 - types and expressions

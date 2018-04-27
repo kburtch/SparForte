@@ -441,10 +441,10 @@ begin
            positive( to_numeric( before_val ) ),
            to_string( new_val )
         );
-     end if;
-  exception when others =>
-     err_exception_raised;
-  end;
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
 end ParseStringsInsert;
 
 procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
@@ -489,16 +489,16 @@ begin
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( low_val, low_type, positive_t );
   ParseLastNumericParameter( hi_val,  hi_type,  natural_t );
-  begin
-     if isExecutingCommand then
+  if isExecutingCommand then
+     begin
         result := Delete( str_val,
            positive( to_numeric( low_val ) ),
            natural( to_numeric( hi_val ) )
         );
-     end if;
-  exception when others =>
-     err_exception_raised;
-  end;
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
 end ParseStringsDelete;
 
 procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier ) is
@@ -1056,7 +1056,11 @@ begin
   ParseSingleStringParameter( src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := ToEscaped( src_val );
+     begin
+        result := ToEscaped( src_val );
+     exception when others =>
+        err_exception_raised;
+     end;
   end if;
 end ParseStringsToEscaped;
 
