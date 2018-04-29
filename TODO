@@ -32,6 +32,7 @@ Priority Issues (Fix These First)
     - move DoContracts to parser_aux?
 - complete log package
 - unsorted/misc
+    - raise <undeclared exception> shows the wrong error message
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - update distance example html
@@ -44,10 +45,11 @@ Priority Issues (Fix These First)
     - btree_io.cursor should have the key type assigned when declared.  Why did I
       choose not to?  What's the reason?
 
-
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- parameterized types cannot be renamed
+- parameterized types cannot be used as subprogram parameters
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - problem extracting byte code for blocks (copying whole lines)
@@ -238,6 +240,7 @@ Nice to Haves / Missing Functionality
   - new vector or game math package (quads, etc).
   - how can we enhance packages?  Should a "service" be a collection of packages?
 - unsorted/misc
+    - support for literals in different bases
     - syntax check on templates, -e commands, policies, profiles
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
     - standardize get_first as first, etc.
@@ -422,6 +425,7 @@ ISSUES (AdaScript)
     - vim syntax - $$ doesn't work
     - unreachable code error doesn't indent token hilight properly
     - case cases are not checked for identical cases but should be.
+    - cases should support ranges but don't yet.
     - should last output (%) be assignable?
 
   * assignments
