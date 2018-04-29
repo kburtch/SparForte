@@ -1,11 +1,10 @@
-
 ------------------------------------------------------------------------------
--- Linux Imported kernel syscalls / standard C functions                    --
+-- Cygwin Imported kernel syscalls / standard C functions                   --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2011 Free Software Foundation              --
+--            Copyright (C) 2001-2018 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -32,7 +31,7 @@
 with Interfaces.C, System.Address_To_Access_Conversions;
 use  Interfaces.C;
 
-package bush_os is
+package spar_os is
 
 
 ------------------------------------------------------------------------------
@@ -69,12 +68,14 @@ stderr : constant aFileDescriptor := 2;
 type anOpenFlag is new integer;
 O_RDONLY   : constant anOpenFlag := 0;
 O_WRONLY   : constant anOpenFlag := 1;
-O_CREAT    : constant anOpenFLag := 8#100#;
-O_TRUNC    : constant anOpenFlag := 8#1000#;
-O_APPEND   : constant anOpenFlag := 8#2000#;
-O_NONBLOCK : constant anOpenFlag := 8#4000#;
-O_SYNC     : constant anOpenFlag := 0;
--- /usr/include/bits/fcntl.h
+O_CREAT    : constant anOpenFLag := 8#1000#;
+O_TRUNC    : constant anOpenFlag := 8#2000#;
+O_APPEND   : constant anOpenFlag := 8#10#;
+O_NONBLOCK : constant anOpenFlag := 8#40000#;
+O_SYNC     : constant anOpenFlag := 8#20000#;
+-- <fcntl.h>
+
+type aModeType is new int;
 
 function getpid return aPID;
 pragma import( C, getpid );
@@ -97,16 +98,16 @@ procedure writechar( result : out size_t; fd : aFileDescriptor; char : in out ch
 pragma import( C, writechar, "write" );
 pragma import_valued_procedure( writechar, "write" );
 
-function open( path : string; flags : anOpenFlag; mode : integer ) return aFileDescriptor;
+function open( path : string; flags : anOpenFlag; mode : aModeType ) return aFileDescriptor;
 pragma import( C, open );
 
 function close( fd : aFileDescriptor ) return int;
 pragma import( C, close );
 
 function fdatasync( fd : aFileDescriptor ) return int;
-pragma import( C,  fdatasync );
+pragma import( C, fdatasync );
 
-function unlink( s : string ) return integer;
+function unlink( s : string ) return int;
 pragma import( C, unlink );
 
 WHENCE_SEEK_SET : constant integer := 0;
@@ -370,8 +371,8 @@ E2BIG   : constant integer := 7;      -- Arg list too long
 ENOEXEC : constant integer := 8;      -- Exec format error
 EBADF   : constant integer := 9;      -- Bad file number
 ECHILD  : constant integer := 10;     -- No children
-EAGAIN  : constant integer := 11;     -- No more processes
 EWOULDBLOCK : constant integer := 11;
+EAGAIN  : constant integer := 11;     -- No more processes
 ENOMEM  : constant integer := 12;     -- Not enough core
 EACCES  : constant integer := 13;     -- Permission denied
 EFAULT  : constant integer := 14;     -- Bad address
@@ -434,7 +435,7 @@ AF_INET : constant aProtocolFamily := 2;
 
 type aSocketType is new int;
 SOCK_STREAM : constant aSocketType := 1;
-SOCK_NONBLOCK : constant aSocketType := 0; -- Linux specific
+SOCK_NONBLOCK : constant aSocketType := 16#1000000#;
 
 -- this is for a steady connection.  Defined as 1 in
 -- /usr/include/linux/socket.h
@@ -595,6 +596,11 @@ function C_is_waiting_file( path : string ) return boolean;
 pragma import( C, C_is_waiting_file, "C_is_waiting_file" );
 --  True if a file exists, is readable and has data
 
+function C_is_includable_file( path : string ) return boolean;
+pragma import( C, C_is_includable_file, "C_is_includable_file" );
+--  True if a file exists, is readable, not world writable and has data
+-- (that is, that it has permissions for an include file)
+
 function C_file_length( path : string ) return long_integer;
 pragma import( C, C_file_length, "C_file_length" );
 --  Return length of file
@@ -627,5 +633,9 @@ function C_install_sigwinch_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigwinch_handler, "C_install_sigwinch_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
 
-end bush_os;
+function C_install_sigpipe_handler( flag : system.address ) return boolean;
+pragma import( C, C_install_sigpipe_handler, "C_install_sigpipe_handler" );
+--  Mark an Ada boolean variable that will be TRUE if SIGPIPE occurs
+
+end spar_os;
 

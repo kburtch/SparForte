@@ -53,6 +53,22 @@ Annoyances / Bugs with Workarounds / Updates
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - problem extracting byte code for blocks (copying whole lines)
+- the search with same name problem
+    procedure p is
+      x : integer := 5;
+      procedure put_x is
+      begin
+        ? x;
+      end put_x;
+      procedure inner is
+        x : string := "inner";
+      begin
+        put_x;
+        -- puts "inner", not 5, as there is a new x that overshadows the
+        -- x of the definition.  Would "overriding" help?  Or change when/how
+        -- identifiers are handled at compile time.
+      end inner;
+    end outer;
 - btree_io/hash_io
     - negative test btree_io.replace with cursor
     - negative test to ensure subprogram exceptions are not lost to parent
@@ -82,6 +98,11 @@ Annoyances / Bugs with Workarounds / Updates
   - some string functions have string, not universal_string, parameters, which
     means parameters often must be typecast.  Probably they should be universal
     types.
+  - strings.index is pretty useless without a position paramter.  Can we enhance
+    it?
+- dir ops
+  - can we add a parameter to disable returning "." and "..", which require
+    special handling in the majority of cases (because they are not needed)?
 - graphics and sound
   - SDL - hardware accelleration not working with ...why not?
   - SDL needs to be upgraded for version 2.0
@@ -207,6 +228,8 @@ Nice to Haves / Missing Functionality
   - epoll_ Linux commands and threads to scale
     - see libuv
     - see node.js talk https://www.youtube.com/watch?v=P9csgxBgaZ8&t=1186
+- strings package
+  - blocks should probably be inside isExecutingCommand if's
 - os package
   - process id
 - types and expressions

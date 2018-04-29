@@ -135,12 +135,12 @@ unbounded_slice_t  : identifier;
 strings_to_json_t : identifier;
 to_base64_t  : identifier;
 
-procedure ParseSingleStringExpression( expr_val : out unbounded_string;
+procedure ParseSingleStringExpression ( Expr_Val : out unbounded_string;
   expr_type : out identifier ) is
 begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
-  if baseTypesOk( expr_type, string_t ) then
+  if uniTypesOk( expr_type, Uni_String_T ) then
      expect( symbol_t, ")" );
   end if;
 end ParseSingleStringExpression;
@@ -248,7 +248,7 @@ procedure ParseStringsElement( result : out unbounded_string; kind : out identif
 begin
   kind := character_t;
   expect( element_t );
-  ParseFirstStringParameter( str_val, str_type, string_t );
+  ParseFirstStringParameter( str_val, str_type, Uni_String_T );
   ParseLastNumericParameter( index_val, index_type, positive_t );
   begin
      if isExecutingCommand then
@@ -270,8 +270,8 @@ procedure ParseStringsSlice( result : out unbounded_string; kind : out identifie
   hi_val   : unbounded_string;
   hi_type  : identifier;
 begin
-  kind := string_t;
-  expect( slice_t );
+  kind := uni_string_t;
+  expect( Slice_T );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( low_val, low_type, positive_t );
   ParseLastNumericParameter( hi_val,  hi_type,  natural_t );
@@ -303,7 +303,7 @@ begin
   kind := natural_t;
   expect( index_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextStringParameter( pat_val, pat_type, string_t );
+  ParseNextStringParameter( pat_val, pat_type, Uni_String_T );
   -- no value if syntax check
   if isExecutingCommand then
      if length( pat_val ) = 0 then
@@ -378,7 +378,7 @@ begin
   kind := natural_t;
   expect( count_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseLastStringParameter( pat_val, pat_type, string_t );
+  ParseLastStringParameter( pat_val, pat_type, Uni_String_T );
   begin
      if isExecutingCommand then
         result := to_unbounded_string( Ada.Strings.Unbounded.Count( str_val,
@@ -401,12 +401,12 @@ procedure ParseStringsReplaceSlice( result : out unbounded_string; kind : out id
   by_val : unbounded_string;
   by_type : identifier;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( replace_slice_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( low_val, low_type, positive_t );
   ParseNextNumericParameter( hi_val,  hi_type,  natural_t );
-  ParseLastStringParameter(  by_val,  by_type, string_t );
+  ParseLastStringParameter(  by_val,  by_type, Uni_String_T );
   begin
      if isExecutingCommand then
         result := Replace_Slice( str_val,
@@ -430,21 +430,21 @@ procedure ParseStringsInsert( result : out unbounded_string; kind : out identifi
   new_val : unbounded_string;
   new_type : identifier;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( strings_insert_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( before_val, before_type, positive_t );
-  ParseLastStringParameter( new_val, new_type, string_t );
+  ParseLastStringParameter( new_val, new_type, Uni_string_T );
   begin
      if isExecutingCommand then
         result := Insert( str_val,
            positive( to_numeric( before_val ) ),
            to_string( new_val )
         );
-     end if;
-  exception when others =>
-     err_exception_raised;
-  end;
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
 end ParseStringsInsert;
 
 procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
@@ -457,11 +457,11 @@ procedure ParseStringsOverwrite( result : out unbounded_string; kind : out ident
   new_val  : unbounded_string;
   new_type : identifier;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( overwrite_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( pos_val, pos_type, positive_t );
-  ParseLastStringParameter( new_val, new_type, string_t );
+  ParseLastStringParameter( new_val, new_type, Uni_String_T );
   begin
      if isExecutingCommand then
         result := Overwrite( str_val,
@@ -484,21 +484,21 @@ procedure ParseStringsDelete( result : out unbounded_string; kind : out identifi
   hi_val   : unbounded_string;
   hi_type  : identifier;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( sdelete_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( low_val, low_type, positive_t );
   ParseLastNumericParameter( hi_val,  hi_type,  natural_t );
-  begin
-     if isExecutingCommand then
+  if isExecutingCommand then
+     begin
         result := Delete( str_val,
            positive( to_numeric( low_val ) ),
            natural( to_numeric( hi_val ) )
         );
-     end if;
-  exception when others =>
-     err_exception_raised;
-  end;
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
 end ParseStringsDelete;
 
 procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier ) is
@@ -512,7 +512,7 @@ procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier
   the_trim_end : trim_end := both;
   has_end : boolean := false;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( trim_t );
   ParseFirstStringParameter( str_val, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -570,7 +570,7 @@ procedure ParseStringsHead( result : out unbounded_string; kind : out identifier
   pad_type : identifier;
   pad_char : character := ' ';
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( head_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
@@ -605,7 +605,7 @@ procedure ParseStringsTail( result : out unbounded_string; kind : out identifier
   pad_type : identifier;
   pad_char : character := ' ';
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( tail_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
@@ -640,7 +640,7 @@ procedure ParseStringsField( result : out unbounded_string; kind : out identifie
   del_type : identifier;
   delim    : character := defaultDelimiter;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
@@ -676,7 +676,7 @@ procedure ParseStringsCSVField( result : out unbounded_string; kind : out identi
   del_type : identifier;
   delim    : character := ',';
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( csv_field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
@@ -709,7 +709,7 @@ procedure ParseStringsMkTemp( result : out unbounded_string; kind : out identifi
   mkstemp_result : aFileDescriptor;
   closeResult : int;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( mktemp_t );
   ParseSingleStringParameter( str_val, str_type );
   if isExecutingCommand then
@@ -762,7 +762,7 @@ procedure ParseStringsImage( result : out unbounded_string; kind : out identifie
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( image_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
@@ -852,7 +852,7 @@ procedure ParseStringsToUString( result : out unbounded_string; kind : out ident
 begin
   kind := unbounded_string_t;
   expect( to_u_string_t );
-  ParseSingleStringParameter( expr_val, expr_type, string_t );
+  ParseSingleStringParameter( expr_val, expr_type, String_T );
   begin
     if isExecutingCommand then
        result := expr_val;
@@ -873,7 +873,7 @@ procedure ParseStringsLookup( result : out unbounded_string; kind : out identifi
   del_type : identifier;
   delim    : character := defaultDelimiter;
 begin
-  kind := string_t;
+  kind := uni_string_t;
   expect( lookup_t );
   ParseFirstStringParameter( src_val, src_type );
   ParseNextStringParameter( tar_val, tar_type );
@@ -914,9 +914,9 @@ begin
   expect( replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
-  if uniTypesOk( src_ref.kind, string_t ) then
+  if uniTypesOk( src_ref.kind, Uni_String_T ) then
      ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-     ParseNextStringParameter( tar_val, tar_type, string_t );
+     ParseNextStringParameter( tar_val, tar_type, Uni_String_T );
      if token = symbol_t and identifiers( token ).value.all = "," then
         ParseLastStringParameter( del_val, del_type, character_t );
         if isExecutingCommand then
@@ -960,7 +960,7 @@ begin
   expect( csv_replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
-  if uniTypesOk( src_ref.kind, string_t ) then
+  if uniTypesOk( src_ref.kind, Uni_String_T ) then
      ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
      ParseNextStringParameter( tar_val, tar_type );
      if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1056,7 +1056,11 @@ begin
   ParseSingleStringParameter( src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
-     result := ToEscaped( src_val );
+     begin
+        result := ToEscaped( src_val );
+     exception when others =>
+        err_exception_raised;
+     end;
   end if;
 end ParseStringsToEscaped;
 
@@ -1075,8 +1079,8 @@ procedure ParseStringsSplit is
 begin
   expect( split_t );
   ParseFirstStringParameter( src_val, src_type );
-  ParseNextOutParameter( left_ref, string_t );
-  ParseNextOutParameter( right_ref, string_t );
+  ParseNextOutParameter( left_ref, Uni_String_T );
+  ParseNextOutParameter( right_ref, Uni_String_T );
   ParseLastNumericParameter( field_val, field_type, natural_t );
   begin
      if isExecutingCommand then

@@ -2341,7 +2341,7 @@ begin
      content( e, "r := is_lower( s )","r := is_slashed_date( s )","r := is_special( s )" );
      content( e, "b := is_typo_of( s1, s2 )","r := is_upper( s )","n := length( s )" );
      content( e, "r := lookup( s, k [, d] )","b := match( e, s )","r := mktemp( p )" );
-     content( e, "r := overwrite( s, p, n )","replace( s, f, t [, d] )","replace_slice( s, l, h, b )" );
+     content( e, "r := overwrite( s, p, n )","replace( s, f, t [, d] )","r := replace_slice( s, l, h, b )" );
      content( e, "set_unbounded_string( u, s )","r := slice( s, l, h )","split( s, l, r , p )" );
      content( e, "r := tail( s, c [, p] )","r := strings.to_base64( s )","r := to_basic( s )" );
      content( e, "r := to_escaped( s )","r := to_json( s )","r := to_lower( s )" );

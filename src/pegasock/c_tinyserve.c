@@ -38,7 +38,9 @@ typedef struct {
   int socket_linger_seconds;
   int max_fd;                                           // highest fd
   int socket_listener;                                  // listen socket fd
-  unsigned int len_inet;                                // protocol addr length
+  //unsigned int len_inet;                              // protocol addr length
+  // CygWin: socklen_t is signed int
+  socklen_t len_inet;
   int timeout_secs;                                     // accept timeout
   int timeout_usecs;
   fd_set so_set;                                        // select() fd sets

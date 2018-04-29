@@ -15,7 +15,7 @@ procedure geometry is
 
 -- the c2
 
-  procedure draw_triangle( c2 : pen.canvas_id; x : pen.coordinate; y : pen.coordinate ) is
+  procedure draw_triangle( c2 : in out pen.canvas_id; x : pen.coordinate; y : pen.coordinate ) is
   begin
       pen.move_to( c2, x, y );
       pen.line( c2, 5, -10 );

@@ -64,3 +64,9 @@ CHANGES SINCE 2.1
 
 30. Fix: fixed memory leak with directory_operations.open declaring new resources each time.
 
+31. Change: affirm blocks run in restricted mode as a precaution against side-effects.
+
+32. Change: (Mehdi) Strings package now has more univeral parameters and return results to reduce type casting and to follow a similar design to the numerics package.
+
+33. New: SparForte core regression tests passing on Cygwin build.
+
