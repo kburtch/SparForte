@@ -1945,7 +1945,7 @@ begin
 
      -- Normal raise of an explicit exception
 
-     if identifiers( token ).class /= exceptionClass then
+     if identifiers( token ).class /= exceptionClass and identifiers( token ).kind /= new_t then
         err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
      else
         ParseIdentifier( id );
@@ -4583,7 +4583,7 @@ begin
   end case;
 end checkVarUsageQualifier;
 
-procedure ParseAssignment is
+procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
   -- Basic variable assignment
   -- Syntax: var := expression or array(index) := expr
   var_id     : identifier;
@@ -4597,7 +4597,7 @@ procedure ParseAssignment is
 begin
   -- Get the variable to assign to.  If interactive, consider
   -- auto-declarations.
-  if inputMode = interactive or inputMode = breakout then
+  if inputMode = interactive or inputMode = breakout or autoDeclareAllowed then
     if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations then
        ParseNewIdentifier( var_id );
        if token = symbol_t and identifiers( token ).value.all = "(" then
@@ -4655,7 +4655,7 @@ begin
 
   ParseAssignPart( expr_value, right_type );
 
-  if inputMode = interactive or inputMode = breakout then
+  if inputMode = interactive or inputMode = breakout or autoDeclareAllowed then
      if identifiers( var_id ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found then
         if index( identifiers( var_id ).name, "." ) /= 0 then
            err( "Identifier not declared.  Cannot auto-declare a record field" );
@@ -4663,9 +4663,11 @@ begin
            var_kind := right_type;
            identifiers( var_id ).kind := right_type;
            identifiers( var_id ).class := varClass;
-           put_trace( "Assuming " & to_string( identifiers( var_id ).name ) &
-              " is a new " & to_string( identifiers( right_type ).name ) &
-              " variable" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( identifiers( var_id ).name ) &
+                 " is a new " & to_string( identifiers( right_type ).name ) &
+                 " variable" );
+           end if;
         end if;
       end if;
   end if;
@@ -5458,12 +5460,13 @@ begin
         --
         -- for =, will be treated as a command if we don't force an error
         -- here for missing :=, since it was probably intended as an assignment
+        -- For unstructured scripts, allow variables to be auto-declared.
 
         if Token = symbol_t and to_string( identifiers( token ).value.all ) = "=" then
            expect( symbol_t, ":=" );
         elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
            resumeScanning( cmdStart );
-           ParseAssignment;
+           ParseAssignment( autoDeclareAllowed => true );
            itself_type := new_t;
 
         -- Boolean true shortcut (boolean assertions)
