@@ -442,10 +442,10 @@ begin
            positive( to_numeric( before_val ) ),
            to_string( new_val )
         );
+     end if;
      exception when others =>
         err_exception_raised;
      end;
-  end if;
 end ParseStringsInsert;
 
 procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
