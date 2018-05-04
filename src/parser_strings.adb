@@ -437,15 +437,14 @@ begin
   ParseLastStringParameter( new_val, new_type, uni_string_T );
   begin
      if isExecutingCommand then
-     begin
         result := Insert( str_val,
            positive( to_numeric( before_val ) ),
            to_string( new_val )
         );
      end if;
-     exception when others =>
-        err_exception_raised;
-     end;
+  exception when others =>
+     err_exception_raised;
+  end;
 end ParseStringsInsert;
 
 procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
