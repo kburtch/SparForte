@@ -23,16 +23,13 @@ Priority Issues (Fix These First)
   - should subprogram parameters allow qualifiers?
 - unstructured scripts
   - additional examples to be added to automated tests
-  - should I relax the restriction on declaring variables in unstructured
-    scripts?
 - affirm blocks
     - test if HTML escaping can be implemented in an affirm block
     - should affirm blocks have an expression short-form?
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
-- complete log package
+- complete built-in logging package
 - unsorted/misc
-    - raise <undeclared exception> shows the wrong error message
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - update distance example html

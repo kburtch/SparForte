@@ -434,9 +434,10 @@ begin
   expect( strings_insert_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( before_val, before_type, positive_t );
-  ParseLastStringParameter( new_val, new_type, Uni_string_T );
+  ParseLastStringParameter( new_val, new_type, uni_string_T );
   begin
      if isExecutingCommand then
+     begin
         result := Insert( str_val,
            positive( to_numeric( before_val ) ),
            to_string( new_val )

@@ -70,3 +70,10 @@ CHANGES SINCE 2.1
 
 33. New: SparForte core regression tests passing on Cygwin build.
 
+34. Change: Unstructured scripts no longer require variables to be declared
+before use.  This is to make unstructure scripts more convenient for simple
+tasks, and to give them different behaviour to structured scripts.
+
+35. Fix: raising an undeclared exception now shows an identifier not declared
+error, not a identifier of the wrong class error.
+
