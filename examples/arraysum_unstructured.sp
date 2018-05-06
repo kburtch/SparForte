@@ -12,7 +12,7 @@ arr : constant array(1..10) of integer := (1,2,3,4,5,6,7,8,9,10 );
 
 -- Product of the array
 
-product : integer := 1;
+product := 1;
 for i in arrays.first( arr )..arrays.last( arr ) loop
     product := @ * arr(i);
 end loop;

@@ -7,7 +7,7 @@ a1 : constant arrayOf3 := (1, 2, 3);
 a2 : constant arrayOf3 := (4, 5, 6);
 type arrayOf6 is array(1..6) of integer;
 a3 : arrayOf6;
-p  : natural := arrays.first(a3);
+p  := arrays.first(a3);
 
 -- In SparForte, & only works on strings and there's no indefinite ranges
 -- or array slicing.  We have to do this the hard way, one element at a

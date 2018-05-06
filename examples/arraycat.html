@@ -68,7 +68,7 @@ a1 : <b>constant</b> arrayOf3 := (1, 2, 3);
 a2 : <b>constant</b> arrayOf3 := (4, 5, 6);
 <b>type</b> arrayOf6 <b>is</b> <b>array</b>(1..6) <b>of</b> integer;
 a3 : arrayOf6;
-p  : natural := arrays.first(a3);
+p  := arrays.first(a3);
 
 <FONT COLOR=green><EM>-- In SparForte, &amp; only works on strings and there's no indefinite ranges</EM></FONT>
 <FONT COLOR=green><EM>-- or array slicing.  We have to do this the hard way, one element at a</EM></FONT>
