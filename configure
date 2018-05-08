@@ -9,6 +9,12 @@
 # default tcsh (which is based on csh and is not Bourne shell compatible).
 #set -eu
 
+# When this command was run (assumed to be build date)
+CONFIGBUILDDATE=`date "+%y%m%d"`
+
+# Default, this is not a release version
+CONFIGRELEASED="false"
+
 # Default installation prefix
 PREFIX="/usr/local"
 
@@ -63,6 +69,7 @@ while [ $# -gt 0 ] ; do
       echo "  --make=MAKE           name of GNU make"
       echo "  --prefix=PREFIX       root installation directory"
       echo "  --manprefix=MANPREFIX man page install directory"
+      echo "  --released            true if not a dev version"
       echo "  --with-gnat-cgi       enable GNAT.CGI support"
       echo "  --without-bdb         disable Berkeley DB support"
       echo "  --without-mysql       disable MySQL support"
@@ -86,6 +93,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --manprefix)
       MANPREFIX=`echo "$1" | cut -d= -f2`
+      ;;
+  --released)
+      CONFIGRELEASED="true"
       ;;
   --with-gnat-cgi)
       NO_GCGI=
@@ -1346,6 +1356,8 @@ if [ -n "$NEEDS_APQ" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=false"
 fi
+GNATPREP_OPTS="$GNATPREP_OPTS -D configbuildDate=\"$CONFIGBUILDDATE\""
+GNATPREP_OPTS="$GNATPREP_OPTS -D configreleased=$CONFIGRELEASED"
 
 # Run each ".orig" file through GnatPrep Ada pre-processor to create the
 # final file, with any disabled features removed.
