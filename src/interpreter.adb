@@ -100,7 +100,7 @@ begin
        if released then
           prompt := defaultPrompt;
        else
-          prompt := "spar-" & version & ' ' & defaultPrompt;
+          prompt := "spar-" & version & '-' & buildDate & ' ' & defaultPrompt;
        end if;
        if terminalWindowNaming then
           put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  ); -- xterm window title
