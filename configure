@@ -1108,17 +1108,29 @@ if [ -z "$NO_READLINE" ] ; then
       fi
    fi
    if [ -z "$READLINE_VERSION" ] ; then
-      echo -n "checking for readline (locate, Darwin)... "
-      TMP=`"$LOCATE" libreadline`
-      if [ -z "$TMP" ] ; then
-         echo "no"
+      if [ "$OS" = "cygwin" ] ; then
+         echo -n "checking for readline (locate, Cygwin)... "
+         TMP=`"$LOCATE" libreadline`
+         if [ -z "$TMP" ] ; then
+            echo "no"
+         else
+            HAS_READLINE=1
+            READLINE_VERSION=
+            echo "yes"
+         fi
       else
-         HAS_READLINE=1
-         READLINE_VERSION=6
-         echo "yes"
+         echo -n "checking for readline (locate, Darwin)... "
+         TMP=`"$LOCATE" libreadline`
+         if [ -z "$TMP" ] ; then
+            echo "no"
+         else
+            HAS_READLINE=1
+            READLINE_VERSION=6
+            echo "yes"
+         fi
       fi
    fi
-   if [ -z "$READLINE_VERSION" ] ; then
+   if [ -z "$HAS_READLINE" ] ; then
       echo
       echo "SparForte cannot find GNU readline and history libraries"
       echo "Please install them or run configure with --without-readline"
@@ -1508,7 +1520,11 @@ if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
    # Linux Mint doesn't need ncurses and breaks...needed for Slackware?
    #RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6\ \-lncurses"
-   RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.$READLINE_VERSION\ \-l:libhistory.so.$READLINE_VERSION"
+   if [ -z "$READLINE_VERSION" ] ; then
+      RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-lreadline\ \-lhistory"
+   else
+      RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.$READLINE_VERSION\ \-l:libhistory.so.$READLINE_VERSION"
+   fi
 else
    RLINCL=
    RLLIBS=
