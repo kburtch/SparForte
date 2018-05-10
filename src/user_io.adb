@@ -196,7 +196,11 @@ procedure displayVersionSplash is
 begin
   if isatty( stdout ) = 1 then
      Put( "SparForte version " );
-     Put_Line( version );
+     if released then
+        Put_Line( version );
+     else
+        Put_Line( version & " (Build Date " & buildDate & ')' );
+     end if;
      Put_Line( copyright );
      Put_Line( "This is free software; see the source for copying conditions." );
      Put_Line( "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." );

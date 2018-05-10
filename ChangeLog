@@ -77,3 +77,5 @@ tasks, and to give them different behaviour to structured scripts.
 35. Fix: raising an undeclared exception now shows an identifier not declared
 error, not a identifier of the wrong class error.
 
+36. New: configure --release flag toggles a development version default prompt or the normal release default prompt, "=>".
+

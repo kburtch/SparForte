@@ -97,7 +97,11 @@ begin
     updateJobStatus;                          -- cleanup any background jobs
     error_found := false;                     -- no err for prompt
     if length( promptScript ) = 0 then
-       prompt := defaultPrompt;
+       if released then
+          prompt := defaultPrompt;
+       else
+          prompt := "spar-" & version & '-' & buildDate & ' ' & defaultPrompt;
+       end if;
        if terminalWindowNaming then
           put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  ); -- xterm window title
        end if;
