@@ -29,7 +29,7 @@ Authors:
 %setup -q
 
 %build
-%configure
+%configure --released
 make max
 strip src/spar
 

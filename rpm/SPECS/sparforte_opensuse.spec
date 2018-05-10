@@ -27,7 +27,7 @@ project website
 %setup -q
 
 %build
-%configure --without-postgres
+%configure --released
 make max
 strip src/spar
 
