@@ -832,6 +832,7 @@ begin
    content( e, "jobs" );
    content( e, "keys" );
    content( e, "line" );
+   content( e, "logs" );
    content( e, "loop" );
    content( e, "memcache" );
    content( e, "mode" );
@@ -1843,6 +1844,27 @@ begin
      content( e, "lock_files.unlock_file( dir, file )" );
      content( e, "lock_files.unlock_file( file )" );
      seeAlso( e, "doc/pkg_lock_files.html" );
+     endHelp( e );
+  elsif helpTopic = "logs" then
+     discardUnusedIdentifier( token );
+     startHelp( e, "logs" );
+     summary( e, "logs package" );
+     categoryPackage( e );
+     description( e, "A collection of common routines for error logs.  " &
+                  "The error, info, ok and warning functions can be used in " &
+                  "chains to make a single log entry." );
+     content( e, "logs.close" );
+     content( e, "logs.error" );
+     content( e, "logs.info" );
+     content( e, "b := logs.is_open" );
+     content( e, "l := logs.level" );
+     content( e, "l := logs.level_begin" );
+     content( e, "logs.level_end( l )" );
+     content( e, "m := logs.mode" );
+     content( e, "logs.ok" );
+     content( e, "logs.open( pgm, path, mode [, width] )" );
+     content( e, "logs.warning" );
+     seeAlso( e, "doc/pkg_logs.html" );
      endHelp( e );
   elsif helpTopic = "loop" then
      startHelp( e, "loop" );

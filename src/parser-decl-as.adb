@@ -412,12 +412,12 @@ begin
      b := false;                                          -- assume case fails
      loop
         if token = strlit_t then                          -- strlit allowed
-           if type_checks_done or else baseTypesOK( identifiers( test_id ).kind, string_t ) then
+           if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
               case_id := token;
               getNextToken;
            end if;
         elsif token = charlit_t then                      -- charlit allowed
-           if type_checks_done or else baseTypesOK( identifiers( test_id ).kind, character_t ) then
+           if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
               case_id := token;
               getNextToken;
            end if;
