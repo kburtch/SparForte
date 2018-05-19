@@ -11,6 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- check to ensure procedures can't return values
 - High ASCII escaping failing on string literals
   - cd "BANNIÈRE/";
              ^ Unexpected character ASCII 136
@@ -621,8 +622,11 @@ ISSUES (Bourne Shell)
 
   - redirections (Shell Issues)
     - advanced job control (control-Z, fg, bg, etc.)
-    - 2>&1 doesn't work...2>, 2>>, >, >> work OK
+    - 2>&1 doesn't work...2>, 2>>, >, >> work OK (is this still true?)
     - pipelines not allowed after 2>&1
+      - 2>&1 is only allowed at the end of the pipeline. unlike the
+        other redirections, this one can occur on a per-command basis
+        and must not affect the next command in the pipeline.
     - errors in `..` backquotes don't terminate script - may be fixed
     - errors in `..` don't show outer script line number
     - line numbers and procedures: if an error occurs, the line number is not

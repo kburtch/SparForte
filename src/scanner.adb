@@ -83,7 +83,8 @@ with system,
     parser_btree_io,
     parser_hash_io,
     parser_templates,
-    parser_tinyserve;
+    parser_tinyserve,
+    parser_logs;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
@@ -140,7 +141,8 @@ use ada.text_io,
     parser_btree_io,
     parser_hash_io,
     parser_templates,
-    parser_tinyserve;
+    parser_tinyserve,
+    parser_logs;
 
 package body scanner is
 
@@ -2139,6 +2141,7 @@ end dumpSymbolTable;
 
 procedure shutdownScanner is
 begin
+  ShutdownLogs;
   ShutdownTemplates;
   ShutdownTinyServe;
   ShutdownHashIO;
@@ -2827,6 +2830,7 @@ begin
   StartupHashIO;
   StartupTinyServe;
   StartupTemplates;
+  StartupLogs;
 
   -- Declare all Environment Variables
   --

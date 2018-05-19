@@ -1850,19 +1850,25 @@ begin
      startHelp( e, "logs" );
      summary( e, "logs package" );
      categoryPackage( e );
-     description( e, "A collection of common routines for error logs.  " &
-                  "The error, info, ok and warning functions can be used in " &
-                  "chains to make a single log entry." );
+     description( e, "A collection of common routines for writing error logs.  " &
+                  "Log messages are in increasing in severity: info, " &
+                  "warning and error.  The ok message indicates a successful " &
+                  "completion of an action." );
+                  --"completion of an action.  A chain of message procedures " &
+                  --"will make a single log entry." );
      content( e, "logs.close" );
-     content( e, "logs.error" );
-     content( e, "logs.info" );
+     content( e, "logs.error( s )" );
+     content( e, "logs.info( s )" );
      content( e, "b := logs.is_open" );
+     content( e, "b := logs.is_rotating" );
      content( e, "l := logs.level" );
      content( e, "l := logs.level_begin" );
      content( e, "logs.level_end( l )" );
      content( e, "m := logs.mode" );
-     content( e, "logs.ok" );
+     content( e, "logs.ok( s )" );
      content( e, "logs.open( pgm, path, mode [, width] )" );
+     content( e, "logs.rotation_begin" );
+     content( e, "logs.rotation_end" );
      content( e, "logs.warning" );
      seeAlso( e, "doc/pkg_logs.html" );
      endHelp( e );

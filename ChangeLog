@@ -79,5 +79,7 @@ error, not a identifier of the wrong class error.
 
 36. New: configure --release flag toggles a development version default prompt or the normal release default prompt, "=>".
 
-37. Fix; Case statements no long require string and character types for corresponding literals, which was causing errors on derrived types.  Now match the semanitcs of the rest of the language.
+37. Fix: Case statements no long require string and character types for corresponding literals, which was causing errors on derrived types.  Now match the semanitcs of the rest of the language.
+
+38. New: logs package.  [Docs needed] [Tests needed] [Chain support required]
 

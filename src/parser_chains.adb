@@ -27,11 +27,13 @@ with
     ada.strings.unbounded,
     world,
     scanner,
+    chain_util,
     parser.decl.as;
 use
     ada.strings.unbounded,
     world,
     scanner,
+    chain_util,
     parser,
     parser.decl.as;
 
@@ -51,60 +53,6 @@ chains_in_chain_t       : identifier;
 chains_chain_context_t  : identifier;
 chains_chain_count_t    : identifier;
 
-type chain_types is ( none, program, subprogram );
-
-function in_chain return chain_types is
-  contextName : unbounded_string;
-  found : chain_types;
-  i : block;
-  --chain_count_id : identifier;
-begin
-  found := none;
-
-  -- when checking blocks, skip blocks that embed in a procedure/function
-  -- until we get to the procedure name
-
-  i := blocks_top - 1;
-  while i > 1 loop
-    if getBlockName( i ) = "begin block" then
-       null;
-    elsif getBlockName( i ) = "declare block" then
-       null;
-    elsif getBlockName( i ) = "while loop" then
-       null;
-    elsif getBlockName( i ) = "loop loop" then
-       null;
-    elsif getBlockName( i ) = "for loop" then
-       null;
-    else
-       exit;
-    end if;
-    i := i - 1;
-  end loop;
-
-  -- do we have a chain context?  Then we must be in a chain.
-  contextName := getBlockName( i ) & " chain";
-  -- if we already have a context block, don't create another
-  -- TODO: what if in declare block?
-  if i > 1 then
-     if ( getBlockName( i-1 ) = contextName ) then
-        found := subprogram;
-     end if;
-  else
-     -- if in a program block, check for the existence of a chain variable
-     -- this only counts in a program block
-     --findIdent( chain_count_str, chain_count_id );
-     --if chain_count_id /= eof_t then
-     --   -- safety check: imported variable
-     --   if identifiers( chain_count_id ).import then
-     --      found := program;
-     --   end if;
-     --end if;
-     null;
-  end if;
-  return found;
-end in_chain;
-
 procedure ParseChainsInChain( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: s := chains.in_chain
   -- Ada:    N/A
@@ -119,8 +67,6 @@ end ParseChainsInChain;
 procedure ParseChainsChainContext( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: s := chains.chain_context
   -- Ada:    N/A
-  chain_count_id : identifier;
-  last_in_chain_id : identifier;
 begin
   kind := chain_context_t;
   expect( chains_chain_context_t );
@@ -128,15 +74,14 @@ begin
      if in_chain = none then
         result := to_unbounded_string( "3" );
      else
-        findIdent( chain_count_str, chain_count_id );
-        findIdent( last_in_chain_str, last_in_chain_id );
-        if to_numeric( identifiers( chain_count_id ).value.all ) = 1.0 then
+        case chain_context is
+        when first =>
            result := to_unbounded_string( "0" );
-        elsif to_numeric( identifiers( last_in_chain_id ).value.all ) = 1.0 then
+        when last =>
            result := to_unbounded_string( "2" );
-        else
+        when others =>
            result := to_unbounded_string( "1" );
-        end if;
+        end case;
      end if;
   end if;
 end ParseChainsChainContext;
