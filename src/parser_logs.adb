@@ -191,7 +191,6 @@ end log_clean_message;
 -- These routines construct and write the log messages.
 -----------------------------------------------------------------------------
 
-
 --  LOG FIRST PART
 --
 -- Build the first part of the log message: date, program and location.
@@ -306,6 +305,28 @@ begin
   indent_required := 0;
   string_message := null_unbounded_string;
 end log_last_part;
+
+
+--  CLOSE LOG
+--
+-- Flush messages and write the closing message.
+-----------------------------------------------------------------------------
+
+procedure closeLog is
+  entity   : unbounded_string;
+  sourceFile : unbounded_string;
+begin
+  get_entity( entity );
+  log_clean_message( entity ); -- to be safe
+  sourceFile := basename( getSourceFileName );
+  log_clean_message( sourceFile );
+  level := 0;
+  log_first_part( sourceFile & ": 0", "INFO" );
+  log_last_part( "End " & entity & " logging" );
+  log_mode := stderr_log;
+  log_is_open := false;
+end closeLog;
+
 
 
 ------------------------------------------------------------------------------
@@ -521,23 +542,13 @@ end ParseOpen;
 
 procedure ParseClose is
 -- Syntax: logs.close
-  entity   : unbounded_string;
-  sourceFile : unbounded_string;
 begin
   expect( logs_close_t );
   if isExecutingCommand then
      if not log_is_open then
         err( "log is already closed" );
      else
-        get_entity( entity );
-        log_clean_message( entity ); -- to be safe
-        sourceFile := basename( getSourceFileName );
-        log_clean_message( sourceFile );
-        level := 0;
-        log_first_part( sourceFile & ": 0", "INFO" );
-        log_last_part( "End " & entity & " logging" );
-        log_mode := stderr_log;
-        log_is_open := false;
+        closeLog;
      end if;
   end if;
   resetLog;
@@ -664,7 +675,9 @@ end StartupLogs;
 
 procedure ShutdownLogs is
 begin
-  null;
+  if log_is_open then
+     closeLog;
+  end if;
 end ShutdownLogs;
 
 end parser_logs;
