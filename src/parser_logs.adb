@@ -49,23 +49,29 @@ use
 
 package body parser_logs is
 
+defaultWidth : constant positive := 1;
+
+-- stderr_log - output log messages to standard error
+-- file_log   - output log messages to a file
+-- echo_log   - output log messages to both a file and standard error
+
 type log_modes is ( stderr_log, file_log, echo_log );
 
-program_name    : unbounded_string;
-log_path        : unbounded_string;
-lock_file_path  : unbounded_string;                   -- path to lock file
-level           : natural := 0;
-width           : positive := 75;
+program_name    : unbounded_string;                     -- name of the program
+log_path        : unbounded_string;                        -- path to log file
+lock_file_path  : unbounded_string;                       -- path to lock file
+level           : natural;                                -- indentation level
+width           : positive;                        -- line column to start msg
 log_mode        : log_modes;
-log_is_open     : boolean := false;
-log_is_rotating : boolean := false;
+log_is_open     : boolean;                       -- true if open has been used
+log_is_rotating : boolean;                      -- true if rotating_begin used
 
-string_header   : unbounded_string;                 -- leading part of entry
-string_message  : unbounded_string;                        -- body of entry
-indent_required : natural;                   -- true if indent not applied
-started_message : boolean := true;                    -- true if new entry
-last_message    : unbounded_string := null_unbounded_string;-- last entry body for dup check
-dup_count       : natural := 0;                         -- number of dup entries
+string_header   : unbounded_string;                   -- leading part of entry
+string_message  : unbounded_string;                           -- body of entry
+indent_required : natural;                       -- > 0  if indent not applied
+started_message : boolean;
+last_message    : unbounded_string;           -- last entry body for dup check
+dup_count       : natural;                            -- number of dup entries
 
 
 ------------------------------------------------------------------------------
@@ -102,11 +108,32 @@ logs_is_rotating_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
+--  RESET LOG
+--
+-- Set the logger in its default state, writing to standard error.
+------------------------------------------------------------------------------
+
+procedure resetLog is
+begin
+  level := 0;
+  width := defaultWidth;
+  log_mode := stderr_log;
+  program_name := null_unbounded_string;
+  log_path := null_unbounded_string;
+  lock_file_path := null_unbounded_string;
+  log_is_open := false;
+  log_is_rotating := false;
+  started_message := true;
+  dup_count := 0;
+  last_message := null_unbounded_string;
+  indent_required := 0;
+end resetLog;
+
 
 --  GET ENTITY
 --
--- Get the enclosing entity message likes the source info package.
------------------------------------------------------------------------------
+-- Get the enclosing entity message like in the source info package.
+------------------------------------------------------------------------------
 
 procedure get_entity( entity : out unbounded_string ) is
 begin
@@ -160,6 +187,8 @@ end log_clean_message;
 
 -----------------------------------------------------------------------------
 -- Core Loggers
+--
+-- These routines construct and write the log messages.
 -----------------------------------------------------------------------------
 
 
@@ -208,6 +237,7 @@ procedure log_last_part( m : unbounded_string ) is
   log_file : file_type;                                        -- log file fd
   repeat_message : unbounded_string;                      -- entry about duptos
   entity : unbounded_string;
+  sourceFile : unbounded_string;
 begin
 
   if not started_message then
@@ -220,10 +250,14 @@ begin
   else
      -- Open the log file
      -- The lock file prevents two processes from logging on the same line
-     if lock_file_path /= "" and log_mode /= stderr_log then
+     if log_mode /= stderr_log then
         lock_file( to_string( lock_file_path ) );
+        begin
+           open( log_file, append_file, to_string( log_path ) );
+        exception when others =>
+           create( log_file, append_file, to_string( log_path ) );
+        end;
      end if;
-     create( log_file, append_file, to_string( log_path ) );
 
      -- Handle duplicate messages
      -- If there was one dup, just show it.
@@ -237,13 +271,12 @@ begin
         end if;
      elsif dup_count > 0 then
         repeat_message := trim( to_unbounded_string( aPID'image( getpid ) ), left ) & ":";
-        -- FIXME:
-        --repeat_message := repeat_message & source_info.enclosing_entity & ":";
         get_entity( entity );
+        log_clean_message( entity ); -- to be safe
         repeat_message := repeat_message & entity & ":";
-        -- FIXME:
-        --repeat_message := repeat_message & "INFO:" & source_info.file & ": 0:";
-        repeat_message := repeat_message & "INFO:" & basename( getSourceFileName ) & ": 0:";
+        sourceFile := basename( getSourceFileName );
+        log_clean_message( sourceFile );
+        repeat_message := repeat_message & "INFO:" & sourceFile & ": 0:";
         log_indent_message( repeat_message, false );
         repeat_message := repeat_message &  "... repeated" & natural'image( dup_count ) & " times";
         if log_mode = file_log or log_mode = echo_log then
@@ -265,8 +298,8 @@ begin
      last_message := string_message;
 
       -- Release the lock
-     close( log_file );
-     if lock_file_path /= "" and log_mode /= stderr_log then
+     if log_mode /= stderr_log then
+        close( log_file );
         unlock_file( to_string( lock_file_path ) );
      end if;
   end if;
@@ -276,7 +309,9 @@ end log_last_part;
 
 
 ------------------------------------------------------------------------------
--- Parser subprograms
+-- Log package subprogram parsers
+--
+-- These implement this package's subprograms in SparForte.
 ------------------------------------------------------------------------------
 
 
@@ -356,28 +391,25 @@ begin
   if isExecutingCommand then
      begin
         log_clean_message( msgExpr );
--- TODO: chain context
---
-  --case context is
-  --when chains.context_first =>
-  --   log_first_part( message, "OK" );
-  --when chains.context_middle =>
-  --   log_middle_part( m );
-  --when chains.context_last =>
-  --   log_last_part( m );
-  --when chains.not_in_chain =>
-  --   log_first_part( source_info.file & ": 0", "OK" );
-  --   log_last_part( m );
-  --when others =>
-  --   put_line( standard_error, "unexpect chain context" );
-  --end case;
-        log_first_part( basename( getSourceFileName ) & ": 0", "INFO" );
-        log_last_part( msgExpr );
+        if in_chain = none then
+           log_first_part( basename( getSourceFileName ) & ": 0", "INFO" );
+           log_last_part( msgExpr );
+        else
+           case chain_context is
+           when first =>
+              log_first_part( msgExpr, "INFO" );
+           when middle =>
+              log_middle_part( msgExpr );
+           when last =>
+              log_last_part( msgExpr );
+           when others =>
+              err( "internal error: unexpected chain context" );
+           end case;
+        end if;
      exception when others =>
         err_exception_raised;
      end;
   end if;
-  null;
 end ParseInfo;
 
 procedure ParseWarning is
@@ -389,28 +421,25 @@ begin
   if isExecutingCommand then
      begin
         log_clean_message( msgExpr );
--- TODO: chain context
---
-  --case context is
-  --when chains.context_first =>
-  --   log_first_part( message, "OK" );
-  --when chains.context_middle =>
-  --   log_middle_part( m );
-  --when chains.context_last =>
-  --   log_last_part( m );
-  --when chains.not_in_chain =>
-  --   log_first_part( source_info.file & ": 0", "OK" );
-  --   log_last_part( m );
-  --when others =>
-  --   put_line( standard_error, "unexpect chain context" );
-  --end case;
-        log_first_part( basename( getSourceFileName ) & ": 0", "WARNING" );
-        log_last_part( msgExpr );
+        if in_chain = none then
+           log_first_part( basename( getSourceFileName ) & ": 0", "WARNING" );
+           log_last_part( msgExpr );
+        else
+           case chain_context is
+           when first =>
+              log_first_part( msgExpr, "WARNING" );
+           when middle =>
+              log_middle_part( msgExpr );
+           when last =>
+              log_last_part( msgExpr );
+           when others =>
+              err( "internal error: unexpected chain context" );
+           end case;
+        end if;
      exception when others =>
         err_exception_raised;
      end;
   end if;
-  null;
 end ParseWarning;
 
 procedure ParseError is
@@ -422,32 +451,31 @@ begin
   if isExecutingCommand then
      begin
         log_clean_message( msgExpr );
--- TODO: chain context
---
-  --case context is
-  --when chains.context_first =>
-  --   log_first_part( message, "OK" );
-  --when chains.context_middle =>
-  --   log_middle_part( m );
-  --when chains.context_last =>
-  --   log_last_part( m );
-  --when chains.not_in_chain =>
-  --   log_first_part( source_info.file & ": 0", "OK" );
-  --   log_last_part( m );
-  --when others =>
-  --   put_line( standard_error, "unexpect chain context" );
-  --end case;
-        log_first_part( basename( getSourceFileName ) & ": 0", "ERROR" );
-        log_last_part( msgExpr );
+        if in_chain = none then
+           log_first_part( basename( getSourceFileName ) & ": 0", "ERROR" );
+           log_last_part( msgExpr );
+        else
+           case chain_context is
+           when first =>
+              log_first_part( msgExpr, "ERROR" );
+           when middle =>
+              log_middle_part( msgExpr );
+           when last =>
+              log_last_part( msgExpr );
+           when others =>
+              err( "internal error: unexpected chain context" );
+           end case;
+        end if;
      exception when others =>
         err_exception_raised;
      end;
   end if;
-  null;
 end ParseError;
 
 procedure ParseOpen is
   -- Syntax: logs.open( "program", "path", mode [,width] );
+  -- This does not actually open the file.  It sets the paramters for the
+  -- log file, which will be open and closed when required.
   nameExpr : unbounded_string;
   nameType : identifier;
   pathExpr : unbounded_string;
@@ -456,13 +484,15 @@ procedure ParseOpen is
   modeType : identifier;
   widthExpr: unbounded_string;
   widthType: identifier;
+  entity   : unbounded_string;
+  sourceFile : unbounded_string;
 begin
   expect( logs_open_t );
   ParseFirstStringParameter( nameExpr, nameType, string_t );
   ParseNextStringParameter(  pathExpr, pathType, string_t );
   ParseNextEnumParameter(    modeExpr, modeType, log_modes_t );
   if token = symbol_t and identifiers( token ).value.all = ")" then
-     widthExpr:= to_unbounded_string( " 75" );
+     widthExpr:= to_unbounded_string( defaultWidth'img );
      expect( symbol_t, ")" );
   else
      ParseLastNumericParameter( widthExpr, widthType, positive_t );
@@ -472,6 +502,10 @@ begin
      if log_is_open then
         err( "log is already open" );
      else
+        get_entity( entity );
+        log_clean_message( entity ); -- to be safe
+        sourceFile := basename( getSourceFileName );
+        log_clean_message( sourceFile );
         level := 0;
         width := positive( to_numeric( widthExpr ) );
         program_name := nameExpr;
@@ -479,25 +513,34 @@ begin
         lock_file_path := log_path & ".lck";
         log_mode := log_modes'val( integer( to_numeric( modeExpr ) ) );
         log_is_open := true;
-        --log_info( "Start " & log_program_name & " run" )
+        log_first_part( sourceFile & ": 0", "INFO" );
+        log_last_part( "Start " & entity & " logging" );
      end if;
   end if;
 end ParseOpen;
 
 procedure ParseClose is
 -- Syntax: logs.close
+  entity   : unbounded_string;
+  sourceFile : unbounded_string;
 begin
   expect( logs_close_t );
   if isExecutingCommand then
      if not log_is_open then
         err( "log is already closed" );
      else
+        get_entity( entity );
+        log_clean_message( entity ); -- to be safe
+        sourceFile := basename( getSourceFileName );
+        log_clean_message( sourceFile );
         level := 0;
-        -- log_info( "End " & log_program_name & " run" );
+        log_first_part( sourceFile & ": 0", "INFO" );
+        log_last_part( "End " & entity & " logging" );
         log_mode := stderr_log;
         log_is_open := false;
      end if;
   end if;
+  resetLog;
 end ParseClose;
 
 procedure ParseIsOpen( result : out unbounded_string; kind : out identifier ) is
@@ -616,6 +659,7 @@ begin
   declareStandardEnum( log_mode_echo_t,   "log_mode.echo",   log_modes_t, "2" );
 
   declareNamespaceClosed( "log_mode" );
+  resetLog;
 end StartupLogs;
 
 procedure ShutdownLogs is
