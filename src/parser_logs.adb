@@ -57,7 +57,6 @@ defaultWidth : constant positive := 1;
 
 type log_modes is ( stderr_log, file_log, echo_log );
 
-program_name    : unbounded_string;                     -- name of the program
 log_path        : unbounded_string;                        -- path to log file
 lock_file_path  : unbounded_string;                       -- path to lock file
 level           : natural;                                -- indentation level
@@ -133,7 +132,6 @@ begin
   level := 0;
   width := defaultWidth;
   log_mode := stderr_log;
-  program_name := null_unbounded_string;
   log_path := null_unbounded_string;
   lock_file_path := null_unbounded_string;
   log_is_open := false;
@@ -390,7 +388,7 @@ procedure ParseOK is
   msgType    : identifier;
 begin
   expect( logs_ok_t );
-  ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
+  ParseSingleStringParameter( msgExpr, msgType, universal_t );
   if isExecutingCommand then
      begin
         get_entity( entity );
@@ -423,7 +421,7 @@ procedure ParseInfo is
   msgType    : identifier;
 begin
   expect( logs_info_t );
-  ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
+  ParseSingleStringParameter( msgExpr, msgType, universal_t );
   if isExecutingCommand then
      begin
         get_entity( entity );
@@ -454,7 +452,7 @@ procedure ParseWarning is
   msgType    : identifier;
 begin
   expect( logs_warning_t );
-  ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
+  ParseSingleStringParameter( msgExpr, msgType, universal_t );
   if isExecutingCommand then
      begin
         get_entity( entity );
@@ -485,7 +483,7 @@ procedure ParseError is
   msgType    : identifier;
 begin
   expect( logs_error_t );
-  ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
+  ParseSingleStringParameter( msgExpr, msgType, universal_t );
   if isExecutingCommand then
      begin
         get_entity( entity );
@@ -515,8 +513,6 @@ procedure ParseOpen is
   -- Syntax: logs.open( "program", "path", mode [,width] );
   -- This does not actually open the file.  It sets the paramters for the
   -- log file, which will be open and closed when required.
-  nameExpr : unbounded_string;
-  nameType : identifier;
   pathExpr : unbounded_string;
   pathType : identifier;
   modeExpr : unbounded_string;
@@ -526,9 +522,8 @@ procedure ParseOpen is
   sourceFile : unbounded_string;
 begin
   expect( logs_open_t );
-  ParseFirstStringParameter( nameExpr, nameType, string_t );
-  ParseNextStringParameter(  pathExpr, pathType, string_t );
-  ParseNextEnumParameter(    modeExpr, modeType, log_modes_t );
+  ParseFirstStringParameter( pathExpr, pathType, string_t );
+  ParseNextEnumParameter( modeExpr, modeType, log_modes_t );
   if token = symbol_t and identifiers( token ).value.all = ")" then
      widthExpr:= to_unbounded_string( defaultWidth'img );
      expect( symbol_t, ")" );
@@ -545,7 +540,6 @@ begin
         log_clean_message( sourceFile );
         level := 0;
         width := positive( to_numeric( widthExpr ) );
-        program_name := nameExpr;
         log_path := pathExpr;
         lock_file_path := log_path & ".lck";
         log_mode := log_modes'val( integer( to_numeric( modeExpr ) ) );
