@@ -65,6 +65,7 @@ width           : positive;                        -- line column to start msg
 log_mode        : log_modes;
 log_is_open     : boolean;                       -- true if open has been used
 log_is_rotating : boolean;                      -- true if rotating_begin used
+log_open_time   : time;                       -- timestamp when log was opened
 
 string_header   : unbounded_string;                   -- leading part of entry
 string_message  : unbounded_string;                           -- body of entry
@@ -73,6 +74,8 @@ started_message : boolean;
 last_message    : unbounded_string;           -- last entry body for dup check
 dup_count       : natural;                            -- number of dup entries
 
+entity          : unbounded_string;  -- enclosing entity
+hasEntity       : boolean := false;
 
 ------------------------------------------------------------------------------
 -- Logs package identifiers
@@ -108,6 +111,18 @@ logs_is_rotating_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
+
+--  GET LINE NO
+--
+-- Return the current line number.
+------------------------------------------------------------------------------
+
+function getLineNo return unbounded_string is
+begin
+  return trim( to_unbounded_string( natural'image( getLineNo ) ), left );
+end getLineNo;
+
+
 --  RESET LOG
 --
 -- Set the logger in its default state, writing to standard error.
@@ -128,21 +143,6 @@ begin
   last_message := null_unbounded_string;
   indent_required := 0;
 end resetLog;
-
-
---  GET ENTITY
---
--- Get the enclosing entity message like in the source info package.
-------------------------------------------------------------------------------
-
-procedure get_entity( entity : out unbounded_string ) is
-begin
-   if blocks_top > block'First then
-      entity := getBlockName( block'First );
-   else
-      entity := to_unbounded_string( "script" );
-   end if;
-end get_entity;
 
 
 --  LOG INDENT MESSAGE
@@ -197,9 +197,7 @@ end log_clean_message;
 -----------------------------------------------------------------------------
 
 procedure log_first_part( m : unbounded_string; level_tag : string ) is
-  entity : unbounded_string;
 begin
-  get_entity( entity );
   string_header := getDateString( clock ) & ":";
   string_message := trim( to_unbounded_string( aPID'image( getpid ) ), left ) & ":";
   string_message := string_message & entity & ":";
@@ -235,7 +233,6 @@ end log_middle_part;
 procedure log_last_part( m : unbounded_string ) is
   log_file : file_type;                                        -- log file fd
   repeat_message : unbounded_string;                      -- entry about duptos
-  entity : unbounded_string;
   sourceFile : unbounded_string;
 begin
 
@@ -270,12 +267,10 @@ begin
         end if;
      elsif dup_count > 0 then
         repeat_message := trim( to_unbounded_string( aPID'image( getpid ) ), left ) & ":";
-        get_entity( entity );
-        log_clean_message( entity ); -- to be safe
         repeat_message := repeat_message & entity & ":";
         sourceFile := basename( getSourceFileName );
         log_clean_message( sourceFile );
-        repeat_message := repeat_message & "INFO:" & sourceFile & ": 0:";
+        repeat_message := repeat_message & "INFO:" & sourceFile & ":" & getLineNo & ":";
         log_indent_message( repeat_message, false );
         repeat_message := repeat_message &  "... repeated" & natural'image( dup_count ) & " times";
         if log_mode = file_log or log_mode = echo_log then
@@ -307,26 +302,45 @@ begin
 end log_last_part;
 
 
+--  GET ENTITY
+--
+-- Get the enclosing entity message like in the source info package.
+------------------------------------------------------------------------------
+
+procedure get_entity( entity : out unbounded_string ) is
+begin
+  if not hasEntity then
+     if blocks_top > block'First then
+        entity := getBlockName( block'First );
+     else
+        entity := to_unbounded_string( "script" );
+     end if;
+     log_clean_message( entity ); -- to be safe
+     hasEntity := true;
+  end if;
+end get_entity;
+
+
 --  CLOSE LOG
 --
 -- Flush messages and write the closing message.
 -----------------------------------------------------------------------------
 
 procedure closeLog is
-  entity   : unbounded_string;
   sourceFile : unbounded_string;
+  totalTime : duration;
 begin
-  get_entity( entity );
-  log_clean_message( entity ); -- to be safe
   sourceFile := basename( getSourceFileName );
   log_clean_message( sourceFile );
   level := 0;
-  log_first_part( sourceFile & ": 0", "INFO" );
+  totalTime := clock - log_open_time;
+  log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+  log_last_part( "Time of " & entity & " logging" & totalTime'img & " seconds" );
+  log_first_part( sourceFile & ":" & getLineNo, "INFO" );
   log_last_part( "End " & entity & " logging" );
   log_mode := stderr_log;
   log_is_open := false;
 end closeLog;
-
 
 
 ------------------------------------------------------------------------------
@@ -379,10 +393,11 @@ begin
   ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
   if isExecutingCommand then
      begin
+        get_entity( entity );
         log_clean_message( msgExpr );
 --put_line( "DEBUG: in_chain = " & in_chain'img );
         if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ": 0", "OK" );
+           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "OK" );
            log_last_part( msgExpr );
         else
 --put_line( "DEBUG: context = " & chain_context'img );
@@ -411,9 +426,10 @@ begin
   ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
   if isExecutingCommand then
      begin
+        get_entity( entity );
         log_clean_message( msgExpr );
         if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ": 0", "INFO" );
+           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "INFO" );
            log_last_part( msgExpr );
         else
            case chain_context is
@@ -441,9 +457,10 @@ begin
   ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
   if isExecutingCommand then
      begin
+        get_entity( entity );
         log_clean_message( msgExpr );
         if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ": 0", "WARNING" );
+           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "WARNING" );
            log_last_part( msgExpr );
         else
            case chain_context is
@@ -471,9 +488,10 @@ begin
   ParseSingleStringParameter( msgExpr, msgType, uni_string_t );
   if isExecutingCommand then
      begin
+        get_entity( entity );
         log_clean_message( msgExpr );
         if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ": 0", "ERROR" );
+           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "ERROR" );
            log_last_part( msgExpr );
         else
            case chain_context is
@@ -505,7 +523,6 @@ procedure ParseOpen is
   modeType : identifier;
   widthExpr: unbounded_string;
   widthType: identifier;
-  entity   : unbounded_string;
   sourceFile : unbounded_string;
 begin
   expect( logs_open_t );
@@ -524,7 +541,6 @@ begin
         err( "log is already open" );
      else
         get_entity( entity );
-        log_clean_message( entity ); -- to be safe
         sourceFile := basename( getSourceFileName );
         log_clean_message( sourceFile );
         level := 0;
@@ -534,7 +550,8 @@ begin
         lock_file_path := log_path & ".lck";
         log_mode := log_modes'val( integer( to_numeric( modeExpr ) ) );
         log_is_open := true;
-        log_first_part( sourceFile & ": 0", "INFO" );
+        log_open_time := clock;
+        log_first_part( sourceFile & ":" & getLineNo, "INFO" );
         log_last_part( "Start " & entity & " logging" );
      end if;
   end if;
