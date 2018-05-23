@@ -7,8 +7,8 @@
 	<title>SparForte - Packages - Logs</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
-	<link rel="prev" href="pkg_sound.html" />
-	<link rel="next" href="pkg_strings.html" />
+	<link rel="prev" href="pkg_lock_files.html" />
+	<link rel="next" href="pkg_memcache.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -29,7 +29,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_sinfo.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_strings.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_lock_files.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_memcache.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -41,7 +41,7 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.17"></a>Stats Package</h2>
+<h2><a NAME="4.17"></a>Logs Package</h2>
 <p>This package contains routines for creating simple program log files.</p>
 
         <center>
@@ -50,10 +50,10 @@
   <a href="#logs.close">close</a>                             <a href="#logs.error">error( s )
   <a href="#logs.info">info( s )</a>                         <a href="#logs.is_open">b := is_open
   <a href="#logs.is_rotating">b := is_rotating</a>                  <a href="#logs.level">l := level
-  <a href="#logs.level_begin">l := level_begin</a>                  <a href="logs.level_end">level_end( l )</a>
-  <a href="#logs.mode">m := mode</a>                         <a href="logs.ok">ok( s )</a>
-  <a href="logs.open">open( p, m [, w] )</a> <a href="logs.rotation_begin">rotation_begin</a>
-  <a href="logs.rotation_end">rotation_end</a>                      <a href="logs.warning">warning</a>
+  <a href="#logs.level_begin">l := level_begin</a>                  <a href="#logs.level_end">level_end( l )</a>
+  <a href="#logs.mode">m := mode</a>                         <a href="#logs.ok">ok( s )</a>
+  <a href="#logs.open">open( p, m [, w] )</a>                <a href="#logs.rotation_begin">rotation_begin</a>
+  <a href="#logs.rotation_end">rotation_end</a>                      <a href="#logs.warning">warning</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -62,10 +62,13 @@
         </div>
         </center>
 
-<p>Only one log may be opened at a time.  If no log is open, the logs package
-writes messages to standard_error.</p>
+<p>A log file records events that occur while a script is running, mainly to
+assist with debugging and security audits.</p>
 
-<p>Logs have mode which indicates where the log is stored.
+<p>Only one log may be opened by a script at a time.  If no log is open, the
+logs package writes messages to standard_error.</p>
+
+<p>Logs have mode which indicates how the log is stored.
 <b>logs.log_mode</b> is an enumerated type with the following values:</p>
 
 <ul>
@@ -75,7 +78,7 @@ writes messages to standard_error.</p>
 </ul>
 
 <p>Log messages have severity levels.  In increasing severity, they are info,
-error and warning.  An ok severity means an operating was successful.</p>
+error and warning.  An ok message means an operating was successful.</p>
 
 <p>Log messages may have an nesting level.  Increasing the level increases
 the indentation of the message.</p>
@@ -83,18 +86,53 @@ the indentation of the message.</p>
 <p>Log messages may not be written immediately to the log.  They may be
 buffered.</p>
 
+<p><b>Format of the Log File</b></p>
+
+<p>The log file has a series of colon-delimited fields.</p>
+
+<pre>
+05/21 12:19:39:31283:logs:OK:logs:13::this is ok
+</pre>
+
+<ul>
+<li><b>Timestamp</b> - the data and time of the entry</li>
+<li><b>PID</b> - the process id</li>
+<li><b>Script name</b> - the name of the script</li>
+<li><b>Severity</b> - the severity level</li>
+<li><b>Filename</b> - the current filename in the program</li>
+<li><b>Line number</b> - the current line number in the program</li>
+<li><b>Width Spacer</b> - contains enough spaces to reach the column width defined in logs.open</li>
+<li><b>Message</b> - the log message</li>
+</ul>
+
+<p>Except for the timestamp field, other fields are escaped for colons
+and by strings.to_escaped.</p>
+
+<p><b>Log Width and Nesting</b></p>
+
+<p>To make log files more readable by humans, you can specify a header
+width and a nesting level.  The header with helps to line up messages
+at the same position on a line.  The nesting level indents messages
+to show how messages relate to one another.</p>
+
+<pre>
+05/21 12:19:39:31283:logs:OK:logs:13:       :this is width 45
+05/21 12:19:39:31283:logs:OK:logs:134:      :  this is a new level
+</pre>
+
 <a name="logs.close"></a><h3>logs.close</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Closes the log.  Flushes any outstanding log messages.</p></td>
+<td><p>Closes the log.  Writes any outstanding log messages to the log file.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">logs.close;</span></p>
+</tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
 <tr>
-<td>None</td>
+<td><span>None</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -226,7 +264,7 @@ nesting level.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return true if log rotation has begin.</p></td>
+<td><p>Return true if log rotation has begun.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">if not logs.is_rotating then...</span></p>
@@ -341,7 +379,7 @@ nesting level.</p></td>
 returned by logs.level_start.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.level_begin( nesting );</span></p>
+<td><span class="code">logs.level_end( nesting );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -446,7 +484,7 @@ nesting level.</p></td>
 </tr>
 </table>
 
-<a name="logs.ok"></a><h3>logs.open( p, m [,w] )</h3>
+<a name="logs.open"></a><h3>logs.open( p, m [,w] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -455,7 +493,7 @@ begin at minimum character position w.  If mode is stderr, the path
 is ignored.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.ok( "report is complete" );</span></p>
+<td><span class="code">logs.open( "/var/log/script.log", log_mode.file, 40 );</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -506,7 +544,7 @@ file can be safely deleted, moved or archived.
 This does not perform the rotation.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">nesting := logs.level_begin;</span></p>
+<td><span class="code">logs.rotation_begin;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -533,7 +571,7 @@ This does not perform the rotation.</p></td>
 <td><p>Unlock the log previously locked by logs.rotation_begin.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">nesting := logs.level_begin;</span></p>
+<td><span class="code">logs.rotation_end;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -612,6 +650,7 @@ nesting level.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_hash_io.html">&nbsp;hash_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_logs.html">&nbsp;<b>logs</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_memcache_highread.html">&nbsp;memcache.highread</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_mysql.html">&nbsp;mysql</a></p>
@@ -623,7 +662,7 @@ nesting level.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_records.html">&nbsp;records</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sound.html">&nbsp;sound</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_sinfo.html">&nbsp;source_info</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;<b>stats</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_stats.html">&nbsp;stats</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_strings.html">&nbsp;strings</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_system.html">&nbsp;System</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_teams.html">&nbsp;teams</a></p>
