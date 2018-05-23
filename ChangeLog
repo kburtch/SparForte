@@ -83,3 +83,5 @@ error, not a identifier of the wrong class error.
 
 38. New: logs package.  [Docs needed] [Tests needed] [Chain support required]
 
+39. Fix: removed comment on waiting after pipelines to cleanup zombied processes.
+

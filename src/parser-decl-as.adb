@@ -4054,8 +4054,11 @@ begin
         closePipeline;
         -- certain cmds (like "less") need to be cleaned up
         -- with wait4children.  Others are OK.  Why?
-        -- wait4children                                    -- (child cleanup)
-        -- wait4LastJob?
+        -- KB: 18/05/23: because some commands expect child proceses and do
+        -- a wait, others like "cut" and "less" do not.  SparForte must
+        -- always wait4children to prevent zombies from being left behind
+        -- by the commands of the pipeline.
+         wait4children                                      -- (child cleanup)
      elsif pipeFromLast and pipe2next then                  -- inside pipeline?
         run_bothpipe( cmdName, cmdNameToken, ap, Success,   -- pipe in & out
            background => true,
