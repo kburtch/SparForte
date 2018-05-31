@@ -85,3 +85,7 @@ error, not a identifier of the wrong class error.
 
 39. Fix: removed comment on waiting after pipelines to cleanup zombied processes.
 
+40. Fix: 2>&1 on a non-existent command no longer crashes the SparForte/Ada.Text_IO.
+
+41. New: 2>&1 was limited to the end of a command pipeline, but now may be
+used with any command in a pipeline.

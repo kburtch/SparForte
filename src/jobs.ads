@@ -65,7 +65,8 @@ procedure run_inpipe( cmd : unbounded_string;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true );
+   cache : boolean := true;
+   pipeStderr : boolean := false );
 -- Run this program, attaching it to the the previous program executed
 -- with run_frompipe or run_bothpipe, terminating the pipeline.
 
@@ -83,7 +84,8 @@ procedure run_bothpipe( cmd : unbounded_string;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true );
+   cache : boolean := true;
+   pipeStderr : boolean := false );
 -- Run this program which exists in in the middle of a pipeline, neither
 -- the first program nor the last.
 

@@ -111,7 +111,21 @@ the first command), one output redirection and one error redirection
 (for
 the final command).&nbsp; Pipelines cannot be run in the background
 using
-&amp;.
+&amp;.</p>
+
+<p>The special symbol "2&gt;&amp;1" will redirect standard error to
+standard output.  This can be used on any command in a pipeline.
+If used before the pipe symbol, standard error will also be sent
+through the pipe as input to the next command.</p>
+
+<p>As a simple example, to count the number of characters in the
+error message when giving an unrecognized option to the tr command:</p>
+        <center>
+        <div class="code">
+                <p class="code"><b>=&gt;</b> tr -z 2&gt;&amp;1 | wc -c</p>
+        </div>
+        </center>
+
 <br>
 &nbsp;
 <br>

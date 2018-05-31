@@ -3628,7 +3628,7 @@ procedure ParseShellCommand is
   shellWord  : aShellWord;
 
   itselfNext : boolean := false;  -- true if a @ was encountered
-
+  pipeStderr : boolean := false;  -- true stderr through pipeline
 begin
 
   -- ParseGeneralStatement just did a resumeScanning.  The token should
@@ -3662,6 +3662,7 @@ begin
      cmdNameToken := token;                       -- avoid prob below w/discard
      ParseOneShellWord( wordType, pattern, cmdName, First => true );
      itself := cmdName;                                    -- this is new @
+     pipeStderr := false;
 
   -- AdaScript Syntax: count the number of parameters, generate an argument
   -- list of the correct length, interpret the parameters "for real".
@@ -3994,16 +3995,26 @@ begin
               -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrAppendFD := 0;
               err( "cannot redirect using two of 2>, 2>> and 2>&1" );
-           elsif pipe2Next then
-              err( "2>&1 file should only be after the last pipeline command" );
+           -- KB: debugging
+           --elsif pipe2Next then
+           --   err( "2>&1 file should only be after the last pipeline command" );
            else
-<<retry24>>   redirectedErrOutputFd := dup2( currentStandardOutput, stderr );
-              if redirectedErrOutputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry24;
+              -- When redirecting standard error to standard output, how we
+              -- do it depends on the context.  If we are in a pipeline,
+              -- the jobs package must redirect both standard error and
+              -- output to the pipe.  If we are not in a pipeline, or
+              -- are the last command, we redirect it here.
+              if pipe2Next then
+                 pipeStderr := true; -- jobs package will handle it
+              else
+<<retry24>>      redirectedErrOutputFd := dup2( currentStandardOutput, stderr );
+                 if redirectedErrOutputFd < 0 then
+                    if C_errno = EINTR then
+                       goto retry24;
+                    end if;
+                    redirectedErrOutputFd := 0;
+                    err( "unable to set error output: " & OSerror( C_errno ) );
                  end if;
-                 redirectedErrOutputFd := 0;
-                 err( "unable to set error output: " & OSerror( C_errno ) );
               end if;
            end if;
            shellWordList.Clear( wordList, long_integer( paramCnt ) );
@@ -4046,7 +4057,8 @@ begin
      elsif not pipeFromLast and pipe2next then              -- first in pipeln?
         run_inpipe( cmdName, cmdNameToken, ap, Success,     -- pipe output
            background => true,
-           cache => inputMode /= interactive );
+           cache => inputMode /= interactive,
+           pipeStderr => pipeStderr );
      elsif pipeFromLast and not pipe2next then              -- last in pipeln?
         run_frompipe( cmdName, cmdNameToken, ap, Success,   -- pipe input
            background => false,
@@ -4062,7 +4074,8 @@ begin
      elsif pipeFromLast and pipe2next then                  -- inside pipeline?
         run_bothpipe( cmdName, cmdNameToken, ap, Success,   -- pipe in & out
            background => true,
-           cache => inputMode /= interactive );
+           cache => inputMode /= interactive,
+           pipeStderr => pipeStderr );
      else                                                   -- no pipeline?
         run( cmdName, cmdNameToken, ap, Success,            -- just run it
            background => inBackground,
@@ -4132,7 +4145,11 @@ begin
         end if;
         err( "unable to restore current error output: " & OSerror( C_errno ) );
      end if;
-     closeResult := close( redirectedErrOutputFd );  -- done with file
+     -- If we redirected standard error to standard output, do not close
+     -- standard error (fd 2).
+     if redirectedErrOutputFd /= 2 then
+        closeResult := close( redirectedErrOutputFd );  -- done with file
+     end if;
      -- close EINTR is a diagnostic message.  Do not handle.
   elsif redirectedErrAppendFd > 0 then                      -- append redirect?
 <<retry28b>>result := dup2( currentStandardError, stderr ); -- restore stderr
@@ -5273,8 +5290,8 @@ begin
   itself_type := token;
   itself_question := false;
 
--- put( "PGS: " ); -- DEBUG
--- put_token; -- DEBUG
+ -- put( "PGS: " ); -- DEBUG
+ -- put_token; -- DEBUG
 
   if Token = command_t then
      err( "Bourne shell command command not implemented" );

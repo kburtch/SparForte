@@ -2521,6 +2521,13 @@ echo | head;
 echo | sort | head;
 echo "test" | head;
 echo ( "test" ) | head;
+-- Piping standard error in a pipeline
+s := `tr -z 2>&1 | wc -c;`;
+i := numerics.value( s );
+pragma assert( i > 0 );
+s := `echo | tr -z 2>&1 | wc -c;`;
+i := numerics.value( s );
+pragma assert( i > 0 );
 
 -- character escaping tests
 

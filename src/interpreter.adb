@@ -190,16 +190,25 @@ begin
        end if;
     end if;
     -- restore original standard input, output, error for the command line
-    result := dup2( originalStandardInput, stdin );   -- restore standard input
+<<retry1>> result := dup2( originalStandardInput, stdin );   -- restore standard input
     if result < 0 then
+       if C_errno = EINTR then
+          goto retry1;
+       end if;
        err( "Unable to restore standard input" );
     end if;
-    result := dup2( originalStandardOutput, stdout ); -- restore standard output
+<<retry2>> result := dup2( originalStandardOutput, stdout ); -- restore standard output
     if result < 0 then
+       if C_errno = EINTR then
+          goto retry2;
+       end if;
        err( "Unable to restore standard output" );
     end if;
-    result := dup2( originalStandardError, stderr );  -- restore standard error
+<<retry3>>    result := dup2( originalStandardError, stderr );  -- restore standard error
     if result < 0 then
+       if C_errno = EINTR then
+          goto retry3;
+       end if;
        err( "Unable to restore standard error" );
     end if;
     exit when done;                                   -- and stop when done

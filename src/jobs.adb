@@ -396,9 +396,6 @@ procedure run( cmd : unbounded_string;
    newJob   : aJob;
 begin
 
--- put_line( "cmd      = " & cmd ); -- DEBUG
--- put_line( "fullPath = " & fullPath );
-
    -- Locate the command
 
    getHashInfo( cmd, che );
@@ -413,6 +410,7 @@ begin
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
       err( "'" & to_string( toEscaped( cmd ) ) & "' command not found" );
+      Success := false;
    else
       if Trace then
          put_trace( to_string( fullPath ) );
@@ -457,7 +455,8 @@ procedure run_inpipe( cmd : unbounded_string;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true ) is
+   cache : boolean := true;
+   pipeStderr : boolean := false ) is
 
    fullpath : unbounded_string;
    che  : cmdHashEntry;
@@ -506,8 +505,9 @@ begin
             -- to clear this flag, the subprocess will fail to terminate without
             -- "logout".
             isLoginShell := false;
-            closeResult := close( stdout );                 -- redirect stdout to pipe
-            -- close EINTR is a diagnostic message.  Do not handle.
+            -- We do not close stdout first because it's a potential race
+            -- condition. dup2 will implicitly close the target.
+            -- closeResult := close( stdout );                 -- redirect stdout to pipe
 <<retry1b>>
             result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stdout ) );
             if result < 0 then               -- failed?
@@ -518,6 +518,20 @@ begin
               Success := false;
               return;
             end if;
+            -- Stderr = Stdout, we should pipe it as well.
+            if pipeStderr then
+<<retry1c>>
+               result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stderr ) );
+               if result < 0 then               -- failed?
+                  if C_errno = EINTR then
+                     goto retry1c;
+                  end if;
+                  err( "unable to dup2 the pipe: errno " & C_errno'img );
+                  Success := false;
+                  return;
+                end if;
+            end if;
+            -- close EINTR is a diagnostic message.  Do not handle.
             closeResult := close( pipeStack( pipeStackTop )( intoPipe ) ); -- copied this
             -- close EINTR is a diagnostic message.  Do not handle.
             closeResult := close( pipeStack( pipeStackTop )( outOfPipe ) ); -- not using pipe output
@@ -611,8 +625,9 @@ begin
          closePipeline;
          return;
       end if;
-      closeResult := close( stdin );           -- redirect standard input
-      -- close EINTR is a diagnostic message.  Do not handle.
+      -- We do not close stdin first because it's a potential race
+      -- condition. dup2 will implicitly close the target.
+      -- closeResult := close( stdin );           -- redirect standard input
 <<retry3>>
       result := integer( dup2( pipeStack( pipeStackTop )( outOfPipe), stdin ) );
       if result < 0 then                    -- failed?
@@ -668,7 +683,8 @@ procedure run_bothpipe( cmd : unbounded_string;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true ) is
+   cache : boolean := true;
+   pipeStderr : boolean := false ) is
    fullpath : unbounded_string;
    che  : cmdHashEntry;
 
@@ -722,7 +738,9 @@ begin
             -- to clear this flag, the subprocess will fail to terminate without
             -- "logout".
             isLoginShell := false;
-            result := integer( close( stdin ) );
+            -- We do not close stdin first because it's a potential race
+            -- condition. dup2 will implicitly close the target.
+            --result := integer( close( stdin ) );
             -- close EINTR is a diagnostic message.  Do not handle.
 <<retrydupout>>
             result := integer( dup2( pipeStack( pipeStackTop-1 )( outOfPipe ), stdin ) );
@@ -735,9 +753,9 @@ begin
                Success := false;
                return;
             end if;
-<<retryclosein>>
-            result := integer( close( stdout ) );
-            -- close EINTR is a diagnostic message.  Do not handle.
+            -- We do not close stdout first because it's a potential race
+            -- condition. dup2 will implicitly close the target.
+            -- result := integer( close( stdout ) );
 <<retrydupin>>
             result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stdout ) );
             if result < 0 then
@@ -748,6 +766,19 @@ begin
                  " output: errno " & C_errno'img );
                Success := false;
                return;
+            end if;
+            -- Stderr = Stdout, we should pipe it as well.
+            if pipeStderr then
+<<retrydupin2>>
+               result := integer( dup2( pipeStack( pipeStackTop )( intoPipe ), stderr ) );
+               if result < 0 then               -- failed?
+                  if C_errno = EINTR then
+                     goto retrydupin2;
+                  end if;
+                  err( "unable to dup2 the pipe: errno " & C_errno'img );
+                  Success := false;
+                  return;
+                end if;
             end if;
             -- close all the pipe file descriptors.  We've copied the ones
             -- we need with dup2.
