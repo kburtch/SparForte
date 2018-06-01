@@ -107,11 +107,13 @@ the pipe (|) symbol.</p>
 <p>The result from a command pipeline is the result of the last command
 in the pipeline.&nbsp; Pipelines can only have one input redirection
 (for
-the first command), one output redirection and one error redirection
-(for
+the first command), one output redirection (for
 the final command).&nbsp; Pipelines cannot be run in the background
-using
-&amp;.</p>
+using &amp;.  Each command implicitly runs in the background (except
+for the last one, which runs in the main process).</p>
+
+<p>Error redirection with 2&gt; and 2&gt;&gt; can be used
+after any command in a pipeline.</p>
 
 <p>The special symbol "2&gt;&amp;1" will redirect standard error to
 standard output.  This can be used on any command in a pipeline.
@@ -126,10 +128,6 @@ error message when giving an unrecognized option to the tr command:</p>
         </div>
         </center>
 
-<br>
-&nbsp;
-<br>
-</p>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

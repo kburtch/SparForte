@@ -2529,6 +2529,23 @@ s := `echo | tr -z 2>&1 | wc -c;`;
 i := numerics.value( s );
 pragma assert( i > 0 );
 
+-- 2> redirection
+-- TODO: this could be a race condition since pid isn't in the filename
+tr -z 2> "/tmp/foo";
+s := `cat "/tmp/foo";`;
+pragma assert( s /= "" );
+rm "/tmp/foo";
+
+tr -z 2> "/tmp/foo" | cat;
+s := `cat "/tmp/foo";`;
+pragma assert( s /= "" );
+rm "/tmp/foo";
+
+echo | tr -z 2> "/tmp/foo" | cat;
+s := `cat "/tmp/foo";`;
+pragma assert( s /= "" );
+rm "/tmp/foo";
+
 -- character escaping tests
 
 echo h;
