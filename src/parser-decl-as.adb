@@ -3880,9 +3880,11 @@ begin
               -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
-           elsif pipe2Next then
-              err( "2> file should only be after the last pipeline command" );
            elsif isExecutingCommand then
+              -- Note: redirecting 2> to the same file twice in a pipeline
+              -- is a race condition, but I don't know an easy way to
+              -- guarantee a file isn't reused as multiple paths may lead
+              -- to the same file.
 <<retry12>>   redirectedErrOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
                  O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
               if redirectedErrOutputFd < 0 then
@@ -3921,8 +3923,6 @@ begin
               -- close EINTR is a diagnostic message.  Do not handle.
               redirectedErrOutputFD := 0;
               err( "cannot redirect using both 2> and 2>>" );
-           elsif pipe2Next then
-              err( "2>> file should only be after the last pipeline command" );
            elsif isExecutingCommand then
 <<retry17>>   redirectedErrAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
               if redirectedErrAppendFd < 0 then
