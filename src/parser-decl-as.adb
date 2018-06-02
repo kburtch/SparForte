@@ -4091,7 +4091,7 @@ begin
      -- pipe command is finished before returning to the command prompt.
      --   For example, "cat | grep "h" < t.t" will fail because "<" must
      -- be on the first command.  However, cat will already be running
-     -- in the background when the error occurs.  BUSH will wait until
+     -- in the background when the error occurs.  Spar will wait until
      -- ctrl-d is pressed, at which time the user is presented with the
      -- command prompt.  (This is the same behaviour as BASH.)
      --   Background commands do not require special handling.

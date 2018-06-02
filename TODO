@@ -11,6 +11,10 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- enabling 2>&1 anywhere
+  - wx -z 2>&1 causes Spar to exit back to parent but shouldn't exit
+  -  echo "hello" | wc -z 2>&1 | cat > /dev/null
+     still prints an error message
 - check to ensure procedures can't return values
 - High ASCII escaping failing on string literals
   - cd "BANNIÈRE/";
