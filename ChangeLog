@@ -91,3 +91,6 @@ error, not a identifier of the wrong class error.
 used with any command in a pipeline.
 
 42. Change: 2> / 2>> was limited to the end of a command pipeline, but now may be used with any command in a pipeline.
+
+43. Fix: exception messages now appear in gcc format when -g/gcc_errors is used.
+

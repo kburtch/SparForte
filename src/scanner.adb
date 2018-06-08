@@ -1152,6 +1152,12 @@ begin
 
   getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
 
+  -- Clear any old error messages from both the screen error and the
+  -- template error (if one exists)
+
+  fullErrorMessage := null_unbounded_string;
+  fullTemplateErrorMessage := null_unbounded_string;
+
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, if we're just at
   -- the command prompt, don't bother with the location/traceback.
@@ -1221,7 +1227,6 @@ begin
   --
   -- First, add the line the exception occurred in.  As a precaution,
   -- escape the command line.
-
   fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
 
   -- Draw the underline error pointer
@@ -1234,7 +1239,8 @@ begin
   end if;
   outLine := outLine & ' ';                                  -- token start
   outLine := outLine & msg;
-  fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  -- DEBUG
+  -- fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
 
   -- Even for a template, if the user selected gccOpt specifically,
   -- use it.
@@ -1243,6 +1249,12 @@ begin
   --
   -- TODO: we're using UNIX eof's but should ideally be o/s
   -- independent
+
+  if gccOpt then
+     fullErrorMessage := gccOutLine;
+  else
+     fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  end if;
 
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
      case templateHeader.templateType is
