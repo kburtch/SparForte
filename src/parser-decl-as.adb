@@ -2003,7 +2003,12 @@ begin
   end if;
 end ParseRaise;
 
--- skip a block of code
+--  SKIP BLOCK
+--
+-- Read to the end of a block of code, executing nothing.
+-- Stop reading when termid1, termid2 or a common end of block keyword is
+-- seen.
+------------------------------------------------------------------------------
 
 procedure SkipBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;

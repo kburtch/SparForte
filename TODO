@@ -11,21 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- enabling 2>&1 anywhere
-  - wx -z 2>&1 causes Spar to exit back to parent but shouldn't exit
-  -  echo "hello" | wc -z 2>&1 | cat > /dev/null
-     still prints an error message
-- check to ensure procedures can't return values
-- High ASCII escaping failing on string literals
-  - cd "BANNIÈRE/";
-             ^ Unexpected character ASCII 136
-  - check to see all string and character literals handle high ascii
-  - check to make sure get next token handles high ascii
-  - check to make sure parse shell word handles high ascii
 - the new type qualifiers system and remaning
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
+- passing resources from parameterized types.  Also, what happens when the
+  parameters are destroyed...we don't want the resource to be destroyed also
 - unstructured scripts
   - additional examples to be added to automated tests
 - affirm blocks
@@ -33,7 +24,7 @@ Priority Issues (Fix These First)
     - should affirm blocks have an expression short-form?
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
-- complete built-in logging package
+- complete built-in logging package - support @
 - unsorted/misc
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
@@ -113,6 +104,9 @@ Annoyances / Bugs with Workarounds / Updates
 - build system
   - David B wants me to bring back SparForte shared library
     - shared library calling mechanism and integration with other languages
+- procedures can't return values is a run-time check, but should be a
+  compile-time check.  Do we need to record the type of current block in a
+  scanner variable so the parser has a context to know what is allowed?
 
     Lua's approach to being called by another language:
 

@@ -5083,17 +5083,32 @@ begin
      -- The preprocessor will have placed delimiters around the word so we
      -- shouldn't have to check for a missing one.
 
-     cmdpos := cmdpos+1;                                      -- continue
-     lastpos := cmdpos;                                       -- reading
-     while script( lastpos ) /= immediate_word_delimiter loop -- until last
-        lastpos := lastpos+1;
+     word := null_unbounded_string;
+     cmdpos := cmdpos + 1;
+     while script( cmdpos ) /= immediate_word_delimiter loop
+        if ch = high_ascii_escape then  -- high_ascii escape?
+           cmdpos := cmdpos + 1;
+        end if;
+        word := word & script( cmdpos );
+        cmdpos := cmdpos + 1;
      end loop;
-     lastpos := lastpos-1;
-     identifiers( word_t ).value.all := To_Unbounded_String(      -- extract string
-       script( cmdpos..lastpos ) );
-     cmdpos := lastpos+2;                                     -- skip last "
-     token := word_t;                                         -- word literal
+     lastpos := cmdpos - 1; -- last char
+     cmdpos := cmdpos + 1; -- skip delim
+     token := word_t;
+     identifiers( word_t ).value.all := word;
      return;
+
+     --cmdpos := cmdpos+1;                                      -- continue
+     --lastpos := cmdpos;                                       -- reading
+     --while script( lastpos ) /= immediate_word_delimiter loop -- until last
+     --   lastpos := lastpos+1;
+     --end loop;
+     --lastpos := lastpos-1;
+     --identifiers( word_t ).value.all := To_Unbounded_String(      -- extract string
+     --  script( cmdpos..lastpos ) );
+     --cmdpos := lastpos+2;                                     -- skip last "
+     --token := word_t;                                         -- word literal
+     --return;
 
   elsif  ch = immediate_sql_word_delimiter then
 

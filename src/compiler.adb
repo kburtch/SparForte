@@ -989,15 +989,22 @@ begin
      ci.compressedScript := ci.compressedScript & word;     -- add literal
      goto next;
   elsif Element( command, cmdpos ) = '"' then
+     -- Originally, I sliced the characters from the string literal.  However,
+     -- to handle high ASCII, I now have to build a string to return, even
+     -- that this is slower.
      cmdpos := cmdpos+1;
-     lastpos := cmdpos;
-     if lastpos <= length( command ) then  -- quote as last char on line
-        while Element( command, lastpos ) /= '"' loop
-            lastpos := lastpos+1;
-            exit when lastpos > length( command );
+     word := null_unbounded_string;
+     if cmdpos <= length( command ) then  -- quote as last char on line
+        while Element( command, cmdpos ) /= '"' loop
+            if Element( command, cmdpos ) > ASCII.DEL then
+               word := word & toByteCode( char_escape_t );
+            end if;
+            word := word & Element( command, cmdpos );
+            cmdpos := cmdpos+1;
+            exit when cmdpos > length( command );
         end loop;
      end if;
-     if lastpos > length( command ) then
+     if cmdpos > length( command ) then
         err_tokenize( "missing double quote", to_string( command ) );
         return;
      else
@@ -1026,7 +1033,11 @@ begin
 -- put_line( "No free string registers" );
      --       end if;
      --    end if;
-        cmdpos := lastpos+1; -- skip last "
+        --cmdpos := lastpos+1; -- skip last "
+        cmdpos := cmdpos + 1; -- skip last "
+        lastpos := cmdpos;
+        ci.compressedScript := ci.compressedScript & '"' & word & '"';     -- add literal
+        goto next;
      end if;
   elsif Element( command, cmdpos ) = '`' then
      cmdpos := cmdpos+1;
@@ -1073,7 +1084,7 @@ begin
           if cmdpos < length( command ) then
              if Element( command, cmdpos+1 ) = '>' then
                 -- A big arrow can be the start of a case/when.
-                ci.context := startOfStatement; --DEBUGME
+                --ci.context := startOfStatement; --DEBUGME
                 cmdpos := cmdpos + 1;
              end if;
           end if;
@@ -1737,24 +1748,50 @@ begin
 
   elsif ch = '"' then
      cmdpos := cmdpos+1;
-     lastpos := cmdpos;
-     if lastpos <= length( command ) then  -- quote as last char on line
-        while Element( command, lastpos ) /= '"' loop
-            lastpos := lastpos+1;
-            exit when lastpos > length( command );
+     word := null_unbounded_string;
+     if cmdpos <= length( command ) then  -- quote as last char on line
+        while Element( command, cmdpos ) /= '"' loop
+            if Element( command, cmdpos ) > ASCII.DEL then
+               word := word & toByteCode( char_escape_t );
+            end if;
+            word := word & Element( command, cmdpos );
+            cmdpos := cmdpos+1;
+            exit when cmdpos > length( command );
         end loop;
      end if;
-     if lastpos > length( command ) then
+     if cmdpos > length( command ) then
         err_tokenize( "missing double quote", to_string( command ) );
-        return;
      else
-        cmdpos := lastpos+1; -- skip last "
+        cmdpos := cmdpos + 1; -- skip last "
+        lastpos := cmdpos;
+        --ci.compressedScript := ci.compressedScript & '"' & word & '"';     -- add literal
+        --goto next;
+        ci.compressedScript := ci.compressedScript &
+           immediate_word_delimiter & word &
+           immediate_word_delimiter;
+        ci.context := startOfParameters;
      end if;
-     ci.compressedScript := ci.compressedScript &
-        immediate_word_delimiter & slice( command, firstpos, lastpos ) &
-        immediate_word_delimiter;
-     ci.context := startOfParameters;
      return;
+
+     --cmdpos := cmdpos+1;
+     --lastpos := cmdpos;
+     --if lastpos <= length( command ) then  -- quote as last char on line
+     --   while Element( command, lastpos ) /= '"' loop
+     --       lastpos := lastpos+1;
+     --       exit when lastpos > length( command );
+     --   end loop;
+     --end if;
+     --if lastpos > length( command ) then
+     --   err_tokenize( "missing double quote", to_string( command ) );
+     --   return;
+     --else
+     --   cmdpos := lastpos+1; -- skip last "
+     --end if;
+     --ci.compressedScript := ci.compressedScript &
+     --   immediate_word_delimiter & slice( command, firstpos, lastpos ) &
+     --   immediate_word_delimiter;
+     --ci.context := startOfParameters;
+     --return;
 
   -- Get the first token on the line.  This could be a shell command or an
   -- AdaScript identifier...we don't know which.
@@ -2645,19 +2682,19 @@ begin
   declareIdent( imm_delim_t, "", symbol_t );
   toByteCode( imm_delim_t, immediate_word_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: imm_delim_t is declared two late" );
+     put_line( standard_error, "internal error: imm_delim_t is declared too late" );
   end if;
 
   declareIdent( imm_sql_delim_t, "", symbol_t );
   toByteCode( imm_sql_delim_t, immediate_sql_word_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: imm_sql_delim_t is declared two late" );
+     put_line( standard_error, "internal error: imm_sql_delim_t is declared too late" );
   end if;
 
   declareIdent( char_escape_t, "", symbol_t );
   toByteCode( char_escape_t, high_ascii_escape, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: high_ascii_escape is declared two late" );
+     put_line( standard_error, "internal error: high_ascii_escape is declared too late" );
   end if;
 
   declareIdent( word_t, "Word", uni_string_t );

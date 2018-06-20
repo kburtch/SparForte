@@ -81,11 +81,11 @@ error, not a identifier of the wrong class error.
 
 37. Fix: Case statements no long require string and character types for corresponding literals, which was causing errors on derrived types.  Now match the semanitcs of the rest of the language.
 
-38. New: logs package.  [Docs needed] [Tests needed] [Chain support required]
+38. New: logs package. [Tests needed] [Chain support required]
 
 39. Fix: removed comment on waiting after pipelines to cleanup zombied processes.
 
-40. Fix: 2>&1 on a non-existent command no longer crashes the SparForte/Ada.Text_IO.
+40. Fix: 2>&1 on a non-existent command no longer crashes due to the Ada.Text_IO package.
 
 41. Change: 2>&1 was limited to the end of a command pipeline, but now may be
 used with any command in a pipeline.
@@ -93,4 +93,6 @@ used with any command in a pipeline.
 42. Change: 2> / 2>> was limited to the end of a command pipeline, but now may be used with any command in a pipeline.
 
 43. Fix: exception messages now appear in gcc format when -g/gcc_errors is used.
+
+44. Fix: Latin-1 support fixed in string literals: => "cmd", cmd "param".  The high ASCII charaters are still escaped in error messages.
 
