@@ -11,7 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- the new type qualifiers system and remaning
+- the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
@@ -22,8 +22,23 @@ Priority Issues (Fix These First)
     - should affirm blocks have an expression short-form?
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
+- generic (parameterized) types
+  - currently, a generic type declaration is an instantiation.
+    - there's no way to create types from a generic type
+    - there's no way to create types from an instantiated generic type
+    - there's no way to pass parameters with generic types
+  - derived types of generic types not implemented (see ParseDeclaration)
+  - generics don't have meaning until constructed in a declaration, where
+    types are given.
+  - passing resources from parameterized types.  Also, what happens when the
+    parameters are destroyed...we don't want the resource to be destroyed also
+- unstructured scripts
+  - additional examples to be added to automated tests
 - complete built-in logging package - support @
 - unsorted/misc
+    - generally, we need to identify built-in types.  It's not enough that
+      they are descended from universals.  We need to understand what a
+      base type is.
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - update distance example html
