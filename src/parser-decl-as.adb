@@ -5069,7 +5069,7 @@ begin
      eof_flag := true;
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value.all = "@" then
-     err( "unexpeced @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
+     err( "unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
   elsif Token = symbol_t and identifiers( token ).value.all = ";" then
      err( "statement expected" );
@@ -5450,7 +5450,7 @@ begin
      eof_flag := true;
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value.all = "@" then
-     err( "unexpeced @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
+     err( "unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
   elsif Token = symbol_t and identifiers( token ).value.all = ";" then
      err( "statement expected" );
