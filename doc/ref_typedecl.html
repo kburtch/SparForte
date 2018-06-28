@@ -318,6 +318,26 @@ and record types do not have affirm clauses.  Record fields and array
 elements will be affected by affirm clauses on their types.  (Currently,
 only scalar values may be assigned values with assignment statements.)</p>
 
+<p>This is another example.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+no_path_error : <b>exception</b>;<br />
+<br />
+<b>type</b> file_path <b>is</b> <b>new</b> <b>string</b>;<br />
+<br />
+<b>subtype</b> dir_path <b>is</b> file_path<br />
+&nbsp;&nbsp;<b>affirm</b><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>raise</b> no_path_error <b>with</b> "directory " &amp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strings.to_escaped( dir_path ) &amp; " was not found"<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> <b>not</b> files.is_directory( string( dir_path ) );<br />
+&nbsp;&nbsp;  <b>end</b> <b>affirm</b>;<br />
+<br />
+picture_dir : <b>constant</b> dir_path := "pictures";<br />
+        </div>
+        </center>
+
 <p><b>pragma ada_95</b>: Affirm clauses are not available.</p>
 
 <p><b>Ada</b>: Affirm clauses are similar to Ada's programming-by-contract
@@ -326,6 +346,17 @@ you cannot enable them with the debug option (-d) or disable them in
 maintenance mode (-m).  (An affirm clause can test for maintenance phase
 mode using the System package.) Affirm clauses can also modify their
 values.</p>
+
+<p><b>Implementation Note</b>: Why use a code block instead of an expression?
+Do not code blocks risk side-effects (race conditions)?  Expressions are
+not intended as a tool to remove side-effects.  They also open up all sorts
+of issues when you add "if", "case" and so on to expressions, as a kludge
+to get expressions to work like blocks, as Ada did.  Side-effects are a risk,
+but a much greater risk (outside of closed systems like space exploration,
+perhaps) is failure to validate inputs.  It's a matter of severity.
+However, to reduce the risk of side-effects, the affrim block runs in
+restricted shell mode.  Eliminiating side-effects is a bigger issue that
+won't be solved by the implementation of the affirm clause.</p>
 
 <h3>Using Affirm Clauses to Modify or Correct Values</h3>
 
