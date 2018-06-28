@@ -405,14 +405,24 @@ begin
      when genericTypeClass =>
         put( "generic type using " );
      when others =>
+        case ident.usage is
+        when abstractUsage =>
+           put( "abstract " );
+        when limitedUsage =>
+           put( "limited " );
+        when constantUsage =>
+           put( "constant " );
+        when fullUsage =>
+           null;
+        when others =>
+           err( "internal error: unexpected usage qualifier " & ident.usage'img );
+        end case;
         put( "identifier of the type " );
      end case;
 
      -- Usage qualifier
 
      case kind.usage is
-     when abstractUsage =>
-        put( "abstract " );
      when limitedUsage =>
         put( "limited " );
      when constantUsage =>
@@ -420,6 +430,7 @@ begin
      when fullUsage =>
         null;
      when others =>
+        -- bastract should not occur
         err( "internal error: unexpected usage qualifier " & ident.usage'img );
      end case;
 

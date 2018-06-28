@@ -96,3 +96,5 @@ used with any command in a pipeline.
 
 44. Fix: Latin-1 support fixed in string literals: => "cmd", cmd "param".  The high ASCII charaters are still escaped in error messages.
 
+45. Fix: env shows limited and constant variables with the appropriate word.
+
