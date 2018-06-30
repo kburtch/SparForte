@@ -44,6 +44,13 @@ Annoyances / Bugs with Workarounds / Updates
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - problem extracting byte code for blocks (copying whole lines)
+- doubly linked lists ought to automatically JSON encode aggregates, like
+  btree_io does.?
+- if you bungle "end record", the fields remain declared
+  => type r is record i : integer; end x;
+  (error)
+  => type r is record i : integer; end record;
+                      ^ already declared r.i
 - the search with same name problem
     procedure p is
       x : integer := 5;
