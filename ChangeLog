@@ -98,3 +98,5 @@ used with any command in a pipeline.
 
 45. Fix: env shows limited and constant variables with the appropriate word.
 
+46. Fix: declared but never used errors are working again.
+

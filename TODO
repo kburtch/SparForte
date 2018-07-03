@@ -15,8 +15,6 @@ Priority Issues (Fix These First)
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
-- unstructured scripts
-  - additional examples to be added to automated tests
 - affirm blocks
     - test if HTML escaping can be implemented in an affirm block
     - should affirm blocks have an expression short-form?
@@ -27,6 +25,7 @@ Priority Issues (Fix These First)
     - there's no way to create types from a generic type
     - there's no way to create types from an instantiated generic type
     - there's no way to pass parameters with generic types
+    - parameterized types cannot be renamed
   - derived types of generic types not implemented (see ParseDeclaration)
   - generics don't have meaning until constructed in a declaration, where
     types are given.
@@ -38,7 +37,7 @@ Priority Issues (Fix These First)
 - unsorted/misc
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
-      base type is.
+      base type is.  That is, the difference from a standard package type.
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - update distance example html
@@ -52,10 +51,6 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
-- parameterized types cannot be renamed
-- parameterized types cannot be used as subprogram parameters
-  - passing resources from parameterized types.  Also, what happens when the
-    parameters are destroyed...we don't want the resource to be destroyed also
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - problem extracting byte code for blocks (copying whole lines)

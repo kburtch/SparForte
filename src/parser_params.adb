@@ -762,6 +762,12 @@ begin
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( ref.id ).name & "." & fieldName;
                       declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
+                      -- Fields of the formal parameter are not checked for these.
+                      if syntax_check and then not error_found then
+                         identifiers( dont_care_t ).wasReferenced := true;
+                         identifiers( dont_care_t ).wasWritten := true;
+                         identifiers( dont_care_t ).wasFactor := true;
+                      end if;
                    end;
                 end if;
              end if;

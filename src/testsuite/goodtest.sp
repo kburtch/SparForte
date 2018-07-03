@@ -4152,7 +4152,8 @@ declare
   x : limited command := "/bin/true";
   x2 : limited command renames x;
 begin
-  null;
+  x;
+  x2;
 end;
 
 -- enumerated variables
@@ -4471,7 +4472,7 @@ declare
   end user_f;
   procedure user_p( b : boolean ) is
   begin
-    null;
+    ? b;
   end user_p;
 
   b : boolean := false;
@@ -4690,7 +4691,7 @@ end abstract2;
 
 procedure abstract4( a2 : abstract_type ) is abstract
 begin
-  null;
+  ? a2; -- reference abstract parameter
 end abstract4;
 
 function abstract5 return boolean is abstract
@@ -4702,6 +4703,7 @@ end abstract5;
 
 function abstract7( a4 : abstract_type ) return boolean is abstract
 begin
+  ? a4; -- reference abstract parameter
   return false;
 end abstract7;
 
@@ -4723,6 +4725,8 @@ declare
   -- no easy way to create a limited record and use it as we currently
   -- need a built-in procedure that accepts one as a paramter.
   pragma assumption( applied, lr );
+  pragma assumption( used, la1 );
+  pragma assumption( used, la3 );
 begin
   null;
 end;
@@ -4749,6 +4753,8 @@ declare
   ls : long_string;
   ls2 : long_string := "fooxx";
   ls3 : constant long_string := "fooxx";
+  pragma assumption( used, ls2 );
+  pragma assumption( used, ls3 );
 
   type long_string2 is new string
     affirm
