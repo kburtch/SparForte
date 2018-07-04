@@ -20,20 +20,8 @@ Priority Issues (Fix These First)
     - should affirm blocks have an expression short-form?
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
-- generic (parameterized) types
-  - currently, a generic type declaration is an instantiation.
-    - there's no way to create types from a generic type
-    - there's no way to create types from an instantiated generic type
-    - there's no way to pass parameters with generic types
-    - parameterized types cannot be renamed
-  - derived types of generic types not implemented (see ParseDeclaration)
-  - generics don't have meaning until constructed in a declaration, where
-    types are given.
-  - passing resources from parameterized types.  Also, what happens when the
-    parameters are destroyed...we don't want the resource to be destroyed also
 - unstructured scripts
   - additional examples to be added to automated tests
-- complete built-in logging package - support @
 - unsorted/misc
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
@@ -45,12 +33,22 @@ Priority Issues (Fix These First)
     - ../../../spar not found?
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
-    - btree_io.cursor should have the key type assigned when declared.  Why did I
-      choose not to?  What's the reason?
+    - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- generic (parameterized) types
+  - currently, a generic type declaration is an instantiation.
+    - there's no way to create types from a generic type
+    - there's no way to create types from an instantiated generic type
+    - there's no way to pass parameters with generic types
+    - parameterized types cannot be renamed
+  - derived types of generic types not implemented (see ParseDeclaration)
+  - generics don't have meaning until constructed in a declaration, where
+    types are given.
+  - passing resources from parameterized types.  Also, what happens when the
+    parameters are destroyed...we don't want the resource to be destroyed also
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - problem extracting byte code for blocks (copying whole lines)

@@ -78,13 +78,23 @@ logs package writes messages to standard_error.</p>
 </ul>
 
 <p>Log messages have severity levels.  In increasing severity, they are info,
-error and warning.  An ok message means an operating was successful.</p>
+error and warning.  An ok message means an operation was successful.</p>
 
 <p>Log messages may have an nesting level.  Increasing the level increases
-the indentation of the message.</p>
+the indentation of the message.  Use the nesting level to make your logs
+easier to read, by grouping related items or showing dependencies.</p>
 
-<p>Log messages may not be written immediately to the log.  They may be
-buffered.</p>
+<p>When you record an event in a log, the message may not be written
+immediately to the log.  They may be buffered which the logs package
+checks for duplicate messages.</p>
+
+<p><b>Chaining Messages</b></p>
+
+<p>logs.ok and the other logging message functions may be run in a chain
+with "@".  The first message is assumed to be a custom location string.
+This location will replace the default filename/line number fields.
+The remaining messages will be concatenated together to form the log
+message.</p>
 
 <p><b>Format of the Log File</b></p>
 
@@ -97,9 +107,9 @@ buffered.</p>
 <ul>
 <li><b>Timestamp</b> - the data and time of the entry</li>
 <li><b>PID</b> - the process id</li>
-<li><b>Script name</b> - the name of the script</li>
+<li><b>Enclosing Entity</b> - the name of the script (or subprogram)</li>
 <li><b>Severity</b> - the severity level</li>
-<li><b>Filename</b> - the current filename in the program</li>
+<li><b>Filename</b> - the file where the error occurred</li>
 <li><b>Line number</b> - the current line number in the program</li>
 <li><b>Width Spacer</b> - contains enough spaces to reach the column width defined in logs.open</li>
 <li><b>Message</b> - the log message</li>

@@ -194,13 +194,18 @@ end log_clean_message;
 -- Build the first part of the log message: date, program and location.
 -----------------------------------------------------------------------------
 
-procedure log_first_part( m : unbounded_string; level_tag : string ) is
+--procedure log_first_part( m : unbounded_string; level_tag : string ) is
+procedure log_first_part( level_tag : string ) is
+  sourceFile : unbounded_string;
 begin
   string_header := getDateString( clock ) & ":";
+  sourceFile := basename( getSourceFileName );
   string_message := trim( to_unbounded_string( aPID'image( getpid ) ), left ) & ":";
   string_message := string_message & entity & ":";
   string_message := string_message & level_tag & ":";
-  string_message := string_message & m & ":";
+-- TODO: we don't need a custom first field anymore
+  string_message := string_message & to_string( sourceFile ) & ":" & getLineNo;
+  --string_message := string_message & m & ":";
   indent_required := level * 2;
   started_message := false;
 end log_first_part;
@@ -332,9 +337,11 @@ begin
   log_clean_message( sourceFile );
   level := 0;
   totalTime := clock - log_open_time;
-  log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+  --log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+  log_first_part( "INFO" );
   log_last_part( "Time of " & entity & " logging" & totalTime'img & " seconds" );
-  log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+  --log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+  log_first_part( "INFO" );
   log_last_part( "End " & entity & " logging" );
   log_mode := stderr_log;
   log_is_open := false;
@@ -386,22 +393,38 @@ end ParseLevelEnd;
 procedure ParseOK is
   msgExpr    : unbounded_string;
   msgType    : identifier;
+  cc         : chain_contexts := none;
 begin
   expect( logs_ok_t );
+<<repeat_ok>>
   ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  -- Here we fake a chain context.  We don't create the chain identifiers
+  -- but instead read the script and determine the chain position, which
+  -- is all we need.
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     if cc = none then
+        cc := first;
+     else
+        cc := middle;
+     end if;
+  else
+     if cc /= none then
+        cc := last;
+     end if;
+  end if;
   if isExecutingCommand then
      begin
         get_entity( entity );
         log_clean_message( msgExpr );
---put_line( "DEBUG: in_chain = " & in_chain'img );
-        if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "OK" );
+        if cc = none then
+           --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "OK" );
+           log_first_part( "OK" );
            log_last_part( msgExpr );
         else
---put_line( "DEBUG: context = " & chain_context'img );
-           case chain_context is
+           case cc is
            when first =>
-              log_first_part( msgExpr, "OK" );
+              log_first_part( "OK" );
+              log_middle_part( msgExpr );
            when middle =>
               log_middle_part( msgExpr );
            when last =>
@@ -413,26 +436,49 @@ begin
      exception when others =>
         err_exception_raised;
      end;
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     expect( symbol_t );
+     goto repeat_ok;
   end if;
 end ParseOK;
 
 procedure ParseInfo is
   msgExpr    : unbounded_string;
   msgType    : identifier;
+  cc         : chain_contexts := none;
 begin
   expect( logs_info_t );
+<<repeat_info>>
   ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  -- Here we fake a chain context.  We don't create the chain identifiers
+  -- but instead read the script and determine the chain position, which
+  -- is all we need.
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     if cc = none then
+        cc := first;
+     else
+        cc := middle;
+     end if;
+  else
+     if cc /= none then
+        cc := last;
+     end if;
+  end if;
   if isExecutingCommand then
      begin
         get_entity( entity );
         log_clean_message( msgExpr );
-        if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "INFO" );
+        if cc = none then
+           --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "INFO" );
+           log_first_part( "INFO" );
            log_last_part( msgExpr );
         else
-           case chain_context is
+           case cc is
            when first =>
-              log_first_part( msgExpr, "INFO" );
+              -- log_first_part( msgExpr, "INFO" );
+              log_first_part( "INFO" );
+              log_middle_part( msgExpr );
            when middle =>
               log_middle_part( msgExpr );
            when last =>
@@ -444,26 +490,49 @@ begin
      exception when others =>
         err_exception_raised;
      end;
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     expect( symbol_t );
+     goto repeat_info;
   end if;
 end ParseInfo;
 
 procedure ParseWarning is
   msgExpr    : unbounded_string;
   msgType    : identifier;
+  cc         : chain_contexts := none;
 begin
   expect( logs_warning_t );
+<<repeat_warning>>
   ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  -- Here we fake a chain context.  We don't create the chain identifiers
+  -- but instead read the script and determine the chain position, which
+  -- is all we need.
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     if cc = none then
+        cc := first;
+     else
+        cc := middle;
+     end if;
+  else
+     if cc /= none then
+        cc := last;
+     end if;
+  end if;
   if isExecutingCommand then
      begin
         get_entity( entity );
         log_clean_message( msgExpr );
-        if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "WARNING" );
+        if cc = none then
+           -- log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "WARNING" );
+           log_first_part( "WARNING" );
            log_last_part( msgExpr );
         else
-           case chain_context is
+           case cc is
            when first =>
-              log_first_part( msgExpr, "WARNING" );
+              -- log_first_part( msgExpr, "WARNING" );
+              log_first_part( "WARNING" );
+              log_middle_part( msgExpr );
            when middle =>
               log_middle_part( msgExpr );
            when last =>
@@ -476,25 +545,48 @@ begin
         err_exception_raised;
      end;
   end if;
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     expect( symbol_t );
+     goto repeat_warning;
+  end if;
 end ParseWarning;
 
 procedure ParseError is
   msgExpr    : unbounded_string;
   msgType    : identifier;
+  cc         : chain_contexts := none;
 begin
   expect( logs_error_t );
+<<repeat_error>>
   ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  -- Here we fake a chain context.  We don't create the chain identifiers
+  -- but instead read the script and determine the chain position, which
+  -- is all we need.
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     if cc = none then
+        cc := first;
+     else
+        cc := middle;
+     end if;
+  else
+     if cc /= none then
+        cc := last;
+     end if;
+  end if;
   if isExecutingCommand then
      begin
         get_entity( entity );
         log_clean_message( msgExpr );
-        if in_chain = none then
-           log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "ERROR" );
+        if cc = none then
+           --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "ERROR" );
+           log_first_part( "ERROR" );
            log_last_part( msgExpr );
         else
-           case chain_context is
+           case cc is
            when first =>
-              log_first_part( msgExpr, "ERROR" );
+              --log_first_part( msgExpr, "ERROR" );
+              log_first_part( "ERROR" );
+              log_middle_part( msgExpr );
            when middle =>
               log_middle_part( msgExpr );
            when last =>
@@ -506,6 +598,10 @@ begin
      exception when others =>
         err_exception_raised;
      end;
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "@" then
+     expect( symbol_t );
+     goto repeat_error;
   end if;
 end ParseError;
 
@@ -545,7 +641,8 @@ begin
         log_mode := log_modes'val( integer( to_numeric( modeExpr ) ) );
         log_is_open := true;
         log_open_time := clock;
-        log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+        --log_first_part( sourceFile & ":" & getLineNo, "INFO" );
+        log_first_part( "INFO" );
         log_last_part( "Start " & entity & " logging" );
      end if;
   end if;
