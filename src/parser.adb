@@ -133,6 +133,7 @@ begin
       shell_word := identifiers( token ).value.all;
       if syntax_check then
          identifiers( token ).wasReferenced := true;
+         --identifiers( token ).referencedByThread := getThreadName;
       end if;
   elsif token = symbol_t then
      shell_word := identifiers( token ).value.all;
@@ -486,9 +487,11 @@ begin
            -- TODO: this could be more efficient
            if recId in reserved_top..identifiers'last then
               identifiers( recId ).wasReferenced := true;
+              --identifiers( recId ).referencedByThread := getThreadName;
            else
               -- mark the value as used because it was referred to
               identifiers( token ).wasReferenced := true;
+              --identifiers( token ).referencedByThread := getThreadName;
            end if;
      end if;
      id := token;
@@ -556,6 +559,7 @@ begin
            -- the value (during syntax check only because value is otherwise
            -- unused).  When blocks are pulled, this will be checked.
            identifiers( token ).wasReferenced := true;
+           --identifiers( token ).referencedByThread := getThreadName;
      end if;
      id := token;
   end if;
@@ -579,6 +583,7 @@ begin
   identifiers( program_id ).class := mainProgramClass;
   if syntax_check then
      identifiers( program_id ).wasReferenced := true;
+     --identifiers( program_id ).referencedByThread := getThreadName;
   end if;
 end ParseProgramName;
 
@@ -629,7 +634,8 @@ begin
    -- Create a new block, declaring the data type variable
    -- We don't need to assign the value until we know we're executing.
 
-   pushBlock( newScope => true, newName => "accept clause" );
+   pushBlock( newScope => true, newName => affirm_clause_str, newThread
+     => identifiers( kind_id ).name & " affirm" );
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
 
    -- for now, treat as a restricted shell to reduce the risk of side-effects.
@@ -698,9 +704,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   begin
     ParseIdentifier( t );
     if identifiers( t ).volatile then           -- volatile user identifier
-       refreshVolatile( t );
-       f := identifiers( t ).value.all;
-       kind := identifiers( t ).kind;
+       err( to_string( identifiers( t ).name ) & " is " & optional_bold( "volatile" ) &
+          " and not allowed in expressions because it may cause side-effects" );
+       --refreshVolatile( t );
+       --f := identifiers( t ).value.all;
+       --kind := identifiers( t ).kind;
     end if;
     if identifiers( t ).class = subClass or             -- type cast
        identifiers( t ).class = typeClass then

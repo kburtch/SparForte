@@ -684,4 +684,33 @@ begin
   identifiers( renamingArray ).kind := canonicalRef.kind;
 end FixRenamedArray;
 
+procedure checkDoubleThreadWrite( id : identifier ) is
+-- TODO: move to parser.adb
+begin
+  if identifiers( id ).field_of /= eof_t then
+     -- we don't track record fields, only the record
+     if identifiers( identifiers( id  ).field_of ).writtenByThread /= noThread then
+        if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
+           err( "style issue: " & to_string( identifiers( identifiers( id ).field_of ).name &
+                " (in " & optional_bold( to_string( getThreadName ) ) &
+                ") is also changed by " &
+                optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) &
+                ".  Values could change unexpectedly." ) );
+        end if;
+     end if;
+     identifiers( identifiers( id ).field_of ).writtenByThread := getThreadName;
+  else
+     if identifiers( id ).writtenByThread /= noThread then
+        if identifiers( id ).writtenByThread /= getThreadName then
+           err( "style issue: " & to_string( identifiers( id ).name &
+                " (in " & optional_bold( to_string( getThreadName ) ) &
+                ") is also changed by " &
+                optional_bold( to_string( identifiers( id ).writtenByThread ) ) &
+                ".  Values could change unexpectedly." ) );
+        end if;
+     end if;
+     identifiers( id ).writtenByThread := getThreadName;
+  end if;
+end checkDoubleThreadWrite;
+
 end parser_aux;

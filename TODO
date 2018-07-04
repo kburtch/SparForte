@@ -20,6 +20,15 @@ Priority Issues (Fix These First)
     - should affirm blocks have an expression short-form?
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
+    - constant limited?
+    - copying volatiles?
+    - copying arrays
+    - copying records
+      - full copy of arrays and records
+      - document new keyword copying
+      - was wasWritten obsolete with writtenByThread?
+    - the affect of renamings?
+    - this probably need to be run-time
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc

@@ -2644,6 +2644,7 @@ begin
   declareKeyword( xor_t, "xor" );
 
   declareKeyword( affirm_t, "affirm" );
+  declareKeyword( copies_t, "copies" );
   declareKeyword( configuration_t, "configuration" );
   declareKeyword( policy_t, "policy" );
 

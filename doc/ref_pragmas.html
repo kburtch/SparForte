@@ -650,8 +650,10 @@ in a normal shell with no security restrictions.  The type parameter
 is described under pragma template.</li>
   <li> <b>pragma volatile( var )</b> - the variable is assumed to be
 an variable which may change unexpectedly during the script's execution.
-The variable's value will be updated each time it is referenced in an
-expression. Has no effect unless the variable is imported as well.</li>
+If the variable is imported, the variable's value will be updated each
+time it is referenced. Volatile variables must be limited so they are
+not used in an expression.  Otherwise, expressions may have "side-effects",
+values that change unexpectedly in the middle of a calculation.</li>
 </ul>
 
 <h4>Miscellaneous Pragmas</h4>
@@ -1083,14 +1085,14 @@ exported using both import/export pragmas.</p>
 value can change unexpectedly and SparForte should reload the value from the
 memcached whenever it is referenced.</p>
 
-<p>You can declare a variable as import, export and volatile.
+<p>You can declare a variable as import, export and volatile at the same time.
 For example:</p>
 
         <center>
         <div class="code">
                 <p class="code">
 		<b>declare</b><br>
-		&nbsp;&nbsp;user_count : string;<br>
+		&nbsp;&nbsp;user_count : limited string;<br>
 		&nbsp;&nbsp;<b>pragma</b> import( local_memcache, user_count );<br>
 		&nbsp;&nbsp;<b>pragma</b> export( local_memcache, user_count );<br>
 		&nbsp;&nbsp;<b>pragma</b> volatile( user_count );<br>

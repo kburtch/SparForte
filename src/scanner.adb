@@ -1839,7 +1839,7 @@ end completeSoftwareModelRequirements;
 -----------------------------------------------------------------------------
 
 procedure pushBlock( newScope : boolean := false;
-  newName : string := "" ) is
+  newName : string := ""; newThread : aThreadName := noThread ) is
 begin
   if blocks_top = block'last then                               -- no room?
      raise block_table_overflow with Gnat.Source_Info.Source_Location &
@@ -1847,13 +1847,23 @@ begin
   else
      -- start new scope by recording current
      declare
-        block : blockDeclaration renames blocks( blocks_top );  -- new block
+        theBlock : blockDeclaration renames blocks( blocks_top );  -- new block
      begin
-        block.startpos := scriptLineStart;                      -- current line
-        block.identifiers_top := identifiers_top;               -- last ident
-        block.newScope := newScope;                             -- scope flag
-        block.blockName := To_Unbounded_String( newName );      -- name if any
-        markScanner( block.state );                             -- scanner pos
+        theBlock.startpos := scriptLineStart;                      -- current line
+        theBlock.identifiers_top := identifiers_top;               -- last ident
+        theBlock.newScope := newScope;                             -- scope flag
+        theBlock.blockName := To_Unbounded_String( newName );      -- name if any
+        if newThread = noThread then
+           if blocks_top = block'first then
+              theBlock.threadName := mainThread;
+           else
+              -- inheret name from parent
+              theBlock.threadName := blocks( blocks_top-1 ).threadName;
+           end if;
+        else
+           theBlock.threadName := newThread;
+        end if;
+        markScanner( theBlock.state );                            -- scanner pos
      end;
      blocks_top := blocks_top + 1;                              -- push stack
 
@@ -2033,6 +2043,30 @@ begin
   end loop;
   return theBlock;
 end getIdentifierBlock;
+
+
+-----------------------------------------------------------------------------
+-- GET THREAD NAME
+--
+-- return the name of the given thread.  If in doubt, presume the main
+-- program is the thread.
+-----------------------------------------------------------------------------
+
+function getThreadName return aThreadName is
+begin
+  if blocks_top = block'first then
+     return mainThread;
+  end if;
+  return blocks( blocks_top-1 ).threadName;
+end getThreadName;
+
+function getThreadName( b : block ) return aThreadName is
+begin
+  if b >= blocks_top then
+     return mainThread;
+  end if;
+  return blocks( b ).threadName;
+end getThreadName;
 
 
 -----------------------------------------------------------------------------

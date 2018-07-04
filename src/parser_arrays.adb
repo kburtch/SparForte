@@ -27,12 +27,14 @@ with gnat.bubble_sort_a,
      world,
      string_util,
      scanner,
+     parser_aux,
      parser,
      parser_params;
 use
      world,
      string_util,
      scanner,
+     parser_aux,
      parser,
      parser_params;
 
@@ -308,6 +310,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -345,10 +348,11 @@ begin
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
-  if syntax_check then
+  if syntax_check and not error_found then
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -390,6 +394,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -431,6 +436,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -469,6 +475,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( array_id );
      -- last  := lastBound( array_id );
@@ -519,6 +526,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( array_id );
      --last  := lastBound( array_id );
@@ -564,6 +572,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
      --last  := lastBound( arrayIdBeingSorted );
@@ -599,6 +608,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
      --last  := lastBound( arrayIdBeingSorted );
@@ -635,6 +645,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
      -- last  := lastBound( arrayIdBeingSorted );
@@ -677,6 +688,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( var_id );
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
      --last  := lastBound( arrayIdBeingSorted );
@@ -738,6 +750,7 @@ begin
      identifiers( target_var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkDoubleThreadWrite( target_var_id );
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
      -- assignParameter( target_var_id, jsonString );
      begin

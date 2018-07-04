@@ -1082,14 +1082,15 @@ begin
   if syntax_check then
      if pragmaKind = assumption_used then
         identifiers( var_id ).wasReferenced := true;
+        --identifiers( var_id ).referencedByThread := getThreadName;
      elsif pragmaKind = assumption_written then
         if identifiers( var_id ).field_of /= eof_t and
            -- KLUDGE: should never be zero...should be eof_t
            identifiers( var_id ).field_of /= 0 then
-            identifiers( identifiers( var_id ).field_of ).wasWritten := true;
+           identifiers( identifiers( var_id ).field_of ).wasWritten := true;
         else
-            identifiers( var_id ).wasWritten := true;
-         end if;
+           identifiers( var_id ).wasWritten := true;
+        end if;
      elsif pragmaKind = assumption_applied then
         if identifiers( var_id ).class /= typeClass and
            identifiers( var_id ).class /= subClass then

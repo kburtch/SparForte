@@ -286,6 +286,18 @@ function getIdentifierClassImage( c : anIdentifierClass ) return string;
 
 ------------------------------------------------------------------------------
 --
+-- Threads
+--
+-- Not actually threads, but for tracking asynchronous actions for
+-- side-effects.  Threads include contracts.
+
+subtype aThreadName is unbounded_string;
+
+noThread : aThreadName := to_unbounded_string( "none" );
+mainThread : aThreadName := to_unbounded_string( "main task" );
+
+------------------------------------------------------------------------------
+--
 -- Import/Export Methods
 -- Note: http_cgi to avoid ambiguity over "cgi" package name
 
@@ -358,7 +370,9 @@ type declaration is record
      inspect  : boolean := false;               -- show value on breakout
      deleted  : boolean := false;               -- marked for deletion
      wasReferenced : boolean := false;          -- true if ref'd in syn chk
+     --referencedByThread : aThreadName;
      wasWritten    : boolean := false;          -- true if written in syn chk
+     writtenByThread : aThreadName;
      wasApplied    : boolean := false;          -- true if type was used
      wasFactor     : boolean := false;          -- true if used in expression
      renaming_of : identifier := identifier'first; -- renaming or dereference
@@ -558,6 +572,7 @@ xor_t      : identifier;
 ------------------------------------------------------------------------------
 
 affirm_t   : identifier;
+copies_t   : identifier;
 configuration_t : identifier;
 policy_t   : identifier;
 
