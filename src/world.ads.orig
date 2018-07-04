@@ -375,6 +375,7 @@ type declaration is record
      writtenByThread : aThreadName;
      wasApplied    : boolean := false;          -- true if type was used
      wasFactor     : boolean := false;          -- true if used in expression
+     factorTime  : natural := 0;                -- when last used as a factor
      renaming_of : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident

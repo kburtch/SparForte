@@ -537,6 +537,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -597,6 +598,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -819,6 +821,7 @@ begin
                  writtenByThread => noThread,
                  wasApplied => false,
                  wasFactor => false,
+                 factorTime => 0,
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
@@ -897,6 +900,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -986,6 +990,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1051,6 +1056,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
        funcCB => identifiers( canonicalRef.id ).funcCB,
        genKind => identifiers( canonicalRef.id ).genKind,
@@ -1186,6 +1192,7 @@ begin
            identifiers( field_id ).writtenByThread := noThread;
            identifiers( field_id ).wasApplied := false;
            identifiers( field_id ).wasFactor := false;
+           identifiers( field_id ).factorTime := 0;
         end if;
      end;
      j := identifier( integer( j ) + 1 );
@@ -1239,6 +1246,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1371,6 +1379,7 @@ begin
        writtenByThread => noThread,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,

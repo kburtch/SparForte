@@ -29,6 +29,7 @@ Priority Issues (Fix These First)
       - was wasWritten obsolete with writtenByThread?
     - the affect of renamings?
     - this probably need to be run-time
+* improve first word parsing on the command
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc
