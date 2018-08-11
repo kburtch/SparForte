@@ -171,6 +171,7 @@ restriction_no_external_commands : boolean := false; -- pragma restriction
 restriction_no_memcache          : boolean := false; -- pragma restriction
 restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
+restriction_no_risky_side_effects: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 suppress_word_quoting            : boolean := false; -- pragma suppress
 allowLowPriorityTodosForRelease  : boolean := false; -- pragma suppress
@@ -295,6 +296,13 @@ subtype aThreadName is unbounded_string;
 
 noThread : aThreadName := to_unbounded_string( "none" );
 mainThread : aThreadName := to_unbounded_string( "main task" );
+
+-- Expression Instruction
+--
+-- The instruction number of the last expression to execute (if any).
+
+noExpressionInstruction : constant long_long_integer := long_long_integer'last;
+lastExpressionInstruction : long_long_integer;
 
 ------------------------------------------------------------------------------
 --

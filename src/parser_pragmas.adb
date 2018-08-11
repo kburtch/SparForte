@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2017 Free Software Foundation              --
+--            Copyright (C) 2001-2018 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -119,6 +119,7 @@ type aPragmaKind is (
      restriction_memcache,
      restriction_mysql,
      restriction_postgresql,
+     restriction_side_effects,
      restriction_todos,
      session_export_script,
      session_import_script,
@@ -784,6 +785,10 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_postgresql;
+     elsif identifiers( token ).name = "no_risky_side_effects" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_side_effects;
      elsif identifiers( token ).name = "no_unused_identifiers" then
         discardUnusedIdentifier( token );
         getNextToken;
@@ -1450,6 +1455,8 @@ begin
         restriction_no_postgresql_database := true;
      when restriction_todos =>
         restriction_no_annotate_todos := true;
+     when restriction_side_effects =>
+        restriction_no_risky_side_effects := true;
      when promptChange =>
         if not error_found then
            promptScript := expr_val;

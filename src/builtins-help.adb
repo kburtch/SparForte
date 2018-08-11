@@ -1230,6 +1230,7 @@ begin
   content( e, "pragma restriction( no_memcache ) - disable connections to memcache" );
   content( e, "pragma restriction( no_mysql_database ) - disable connections to mysql" );
   content( e, "pragma restriction( no_postgresql_database ) - disable connections to postgresql" );
+  content( e, "pragma restriction( no_risky_side_effects ) - enable risky side-effect tests" );
   content( e, "pragma restriction( no_unused_identifiers ) - stricter unused tests" );
   content( e, "pragma session_export_script( `commands` ) - commands to export session variables" );
   content( e, "pragma session_import_script( `commands` ) - commands to import session variables" );

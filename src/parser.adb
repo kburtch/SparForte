@@ -639,7 +639,9 @@ begin
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
 
    -- for now, treat as a restricted shell to reduce the risk of side-effects.
-   rshOpt := true;
+   if restriction_no_risky_side_effects then
+      rshOpt := true;
+   end if;
 
    if isExecutingCommand then
 --put_line( "Starting Contract for value " & to_string( expr_val ) ); -- DEBUG

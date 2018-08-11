@@ -2845,7 +2845,9 @@ begin
      -- Run-time side-effects tracking and test
      -- Test for two or more "threads" writing to one unprotected variable
 
-     checkDoubleThreadWrite( actual_param_ref.id );
+     if restriction_no_risky_side_effects then
+        checkDoubleThreadWrite( actual_param_ref.id );
+     end if;
 
        -- the actual parameter will be the canonical identifier for
        -- the renaming
@@ -4756,7 +4758,9 @@ begin
      -- Run-time side-effects tracking and test
      -- Test for two or more "threads" writing to one unprotected variable
 
-     checkDoubleThreadWrite( var_id );
+     if restriction_no_risky_side_effects then
+        checkDoubleThreadWrite( var_id );
+     end if;
 
      -- Programming-by-contract
 
@@ -5153,7 +5157,9 @@ begin
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
               -- Test for two or more "threads" writing to one unprotected variable
-              checkDoubleThreadWrite( startToken );
+              if restriction_no_risky_side_effects then
+                 checkDoubleThreadWrite( startToken );
+              end if;
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
@@ -5537,7 +5543,9 @@ begin
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
               -- Test for two or more "threads" writing to one unprotected variable
-              checkDoubleThreadWrite( startToken );
+              if restriction_no_risky_side_effects then
+                 checkDoubleThreadWrite( startToken );
+              end if;
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then

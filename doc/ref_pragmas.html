@@ -80,6 +80,7 @@ environment.</p>
   <b>pragma</b> restriction( no_memcache )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
+  <b>pragma</b> restriction( no_risky_side_effects )
   <b>pragma</b> restriction( no_unused_identifiers )
   <b>pragma</b> session_export_script( `commands` )
   <b>pragma</b> session_import_script( `commands` )
@@ -248,6 +249,10 @@ other programs from using MySQL.</li>
   <li> <b>pragma restriction( no_postgresql_database )</b> - disable
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
+  <li> <b>pragma restriction( no_risky_side_effects )</b> - enable
+checking for some common risky side-effect behaviours.  It also makes
+contracts run in restricted shell mode.  This may reduce performance.
+It should be enabled for high-integrity applications.</li>
   <li> <b>pragma restriction( no_unused_identifiers )</b> - normally in
 testing mode,
 SparForte will not check enumerated types to see if they are mentioned.
