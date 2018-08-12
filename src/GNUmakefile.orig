@@ -192,7 +192,7 @@ max: clean c_os.o c_scanner.o c_gstreamer.o
 	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
 
 clean:
-	$(MAKE) -C areadline clean
+	-$(MAKE) -C areadline clean
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C apq-2.1 clean
 	$(MAKE) -C bdb clean
@@ -202,7 +202,7 @@ clean:
 	-rm -f *.gcda *.gcno *.gcov coverage.info gmon.out testsuite/templates/gmon.out testsuite/goodsuite/gmon.out testsuite/helpsuite/gmon.out testsuite/third_party/gmon.out testsuite/gmon.out testsuite/testsuite010_pragmas/gmon.out testsuite/testsuite015_arrays/gmon.out testsuite/testsuite012_calendar/gmon.out
 
 distclean:
-	$(MAKE) -C areadline clean
+	-$(MAKE) -C areadline clean
 	$(MAKE) -C adacgi-1.6 clean
 	#$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber

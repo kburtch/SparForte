@@ -4,7 +4,7 @@
 # Licensed under the ACL (Ada Community License)
 # or GPL2 :
 
-include Makeincl
+#include Makeincl
 
 DISTDIR=apq-$(VERSION)
 DISTFILE=apq-$(VERSION).tar.gz
@@ -25,7 +25,7 @@ all:	setup$(HAVE_MY) mysql$(HAVE_MY) postgresql$(HAVE_PG) libapq.a finish
 
 tmysql::
 	rm -f tmysql mysql.trc
-	gnatmake -gnatf tmysql -largs -lapq $(MY_LIBS) 
+	gnatmake -gnatf tmysql -largs -lapq $(MY_LIBS)
 
 
 setup0: # MySQL support is not being included
@@ -85,7 +85,7 @@ install: libapq.a
 	@echo "  2. make"
 	@echo "  3. follow instructions given."
 	@echo "--"
-	
+
 uninstall:
 	HAVE_PG=1 HAVE_MY=1 ./install_lib uninstall
 
