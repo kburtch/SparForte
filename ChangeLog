@@ -104,9 +104,11 @@ used with any command in a pipeline.
 
 48. New: double-write data race side-effects not allowed in function calls or type contracts.
 
-49. New:
+49. Fix: enabling trace no longer disables performance monitoring line counting.
 
 50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles. [docs needed] [tests needed]
 
-51. New: pragma restriction( no_risky_side_effects ) to enable side-effects checking.
+51. New: pragma restriction( no_risky_side_effects ) to enable side-effects checking. [may be removed later]
+
+52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
 

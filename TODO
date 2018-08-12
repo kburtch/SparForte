@@ -8,6 +8,8 @@ NEW ISSUES
 These are new issues identified but not entered into the outstanding bug list
 -----------------------------------------------------------------------------
 
+Note: runs about 6 million years before throwing an exception.
+
 Priority Issues (Fix These First)
 -------------------------------
 
@@ -185,6 +187,8 @@ Nice to Haves / Missing Functionality
     - this requires a new function to check for pre-exisiting names in a different
       scope.  It will need to apply to all variable declarations.
     - maybe just   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
+- in python,files are opened like a declaration so they close automatically
+   at end-of-block. Can I do something similar?
 - refactor
   - parser_tio globals should be put in a separate package, or a different
     package, to help reduce circular dependencies

@@ -2828,15 +2828,21 @@ begin
      -- not yet implemented
      err( "enumerated items cannot be used as an in out or out mode parameter" );
   end if;
-  -- whether declaring the params or not, during a syntax check, the actual
-  -- parameter must be marked as "written" to avoid an error over not being
-  -- a constant
-  if syntax_check and then not error_found then
-     if identifiers( actual_param_ref.id ).field_of /= eof_t then
-        identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
+  if not error_found then
+     -- whether declaring the params or not, during a syntax check, the actual
+     -- parameter must be marked as "written" to avoid an error over not being
+     -- a constant
+     if syntax_check then
+        if identifiers( actual_param_ref.id ).field_of /= eof_t then
+           identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
+        else
+           identifiers( actual_param_ref.id ).wasWritten := true;
+           identifiers( actual_param_ref.id ).wasFactor := true;
+        end if;
      else
-        identifiers( actual_param_ref.id ).wasWritten := true;
-        identifiers( actual_param_ref.id ).wasFactor := true;
+        -- when running, mark that the actual parameter was written for
+        -- side-effect prevention.
+        identifiers( actual_param_ref.id ).writtenOn := perfStats.lineCnt;
      end if;
   end if;
 
@@ -4658,7 +4664,7 @@ begin
        ParseIdentifier( var_id );
     end if;
   else
-    ParseIdentifier( var_id );
+     ParseIdentifier( var_id );
   end if;
 
   -- Copy the type for convenience
@@ -4755,6 +4761,13 @@ begin
 
   if isExecutingCommand then
 
+     -- Expression Side-effects: record how many lines run by this point in time
+     -- so we can determine later if this assignment occurred after the current
+     -- expression started (if any).  lineCnt will be zero if not checking for
+     -- side-effects.
+
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
+
      -- Run-time side-effects tracking and test
      -- Test for two or more "threads" writing to one unprotected variable
 
@@ -4812,7 +4825,7 @@ begin
               to_string( ToEscaped( expr_value ) ) &
               """" );
         end if;
-    end if;
+     end if;
   end if;
   itself_type := new_t;
 end ParseAssignment;

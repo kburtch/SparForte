@@ -535,6 +535,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,
@@ -596,6 +597,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,
@@ -652,7 +654,8 @@ begin
        sc.list := identifiers( kind ).list;
        sc.value := sc.svalue'access;
        sc.writtenByThread := noThread;
-       -- since this is only called at startup, the default
+       sc.writtenOn := 0;
+      -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
      id := identifiers_top;
@@ -692,6 +695,7 @@ begin
        sc.field_of := eof_t;
        sc.value := sc.svalue'access;
        sc.writtenByThread := noThread;
+       sc.writtenOn := 0;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
@@ -819,6 +823,7 @@ begin
                  --referencedByThread => noThread,
                  wasWritten => false,
                  writtenByThread => noThread,
+                 writtenOn => 0,
                  wasApplied => false,
                  wasFactor => false,
                  factorTime => 0,
@@ -898,6 +903,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,
@@ -988,6 +994,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,
@@ -1054,6 +1061,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,
@@ -1193,6 +1201,7 @@ begin
            identifiers( field_id ).wasApplied := false;
            identifiers( field_id ).wasFactor := false;
            identifiers( field_id ).factorTime := 0;
+           identifiers( field_id ).writtenOn := 0;
         end if;
      end;
      j := identifier( integer( j ) + 1 );
@@ -1244,6 +1253,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,
@@ -1377,6 +1387,7 @@ begin
        --referencedByThread => noThread,
        wasWritten => false,
        writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
        factorTime => 0,

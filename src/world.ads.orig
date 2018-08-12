@@ -52,6 +52,8 @@ copyright : constant string  :=  " Copyright (c)2001-2018 Free Software Foundati
 
 random_generator : ada.numerics.float_random.generator;
 
+type line_count is new long_long_integer;
+
 ------------------------------------------------------------------------------
 -- Unbounded String Constants
 ------------------------------------------------------------------------------
@@ -301,8 +303,8 @@ mainThread : aThreadName := to_unbounded_string( "main task" );
 --
 -- The instruction number of the last expression to execute (if any).
 
-noExpressionInstruction : constant long_long_integer := long_long_integer'last;
-lastExpressionInstruction : long_long_integer;
+noExpressionInstruction : constant line_count := line_count'last;
+lastExpressionInstruction : line_count;
 
 ------------------------------------------------------------------------------
 --
@@ -375,16 +377,16 @@ type declaration is record
      list     : boolean := false;               -- array or array type
      resource : boolean := false;               -- resource type
      field_of : identifier;                     -- record superclass
-     inspect  : boolean := false;               -- show value on breakout
-     deleted  : boolean := false;               -- marked for deletion
-     wasReferenced : boolean := false;          -- true if ref'd in syn chk
-     --referencedByThread : aThreadName;
-     wasWritten    : boolean := false;          -- true if written in syn chk
+     inspect         : boolean := false;        -- show value on breakout
+     deleted         : boolean := false;        -- marked for deletion
+     wasReferenced   : boolean := false;        -- true if ref'd in syn chk
+     wasWritten      : boolean := false;        -- true if written in syn chk
      writtenByThread : aThreadName;
-     wasApplied    : boolean := false;          -- true if type was used
-     wasFactor     : boolean := false;          -- true if used in expression
-     factorTime  : natural := 0;                -- when last used as a factor
-     renaming_of : identifier := identifier'first; -- renaming or dereference
+     writtenOn       : line_count       ;       -- side-effect protection
+     wasApplied      : boolean := false;        -- true if type was used
+     wasFactor       : boolean := false;        -- true if used in expression
+     factorTime      : natural := 0;            -- when last used as a factor
+     renaming_of     : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident
      renamed_count : natural := 0;              -- times renamed

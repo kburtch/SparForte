@@ -23,12 +23,14 @@
 
 with ada.strings.unbounded,
      ada.calendar,
-     Gnat.Dynamic_HTables;
-
+     Gnat.Dynamic_HTables,
+     world;
 use  ada.strings.unbounded,
-     ada.calendar;
+     ada.calendar,
+     world;
 
 package performance_monitoring is
+
 
 -- Hash Table (not used yet)
 
@@ -57,7 +59,7 @@ package dynamic_string_hash_tables is
 type performanceStats is record
   startTime : time;
   endTime   : time;
-  lineCnt   : long_long_integer := 0; -- executed lines
+  lineCnt   : line_count := 0;        -- executed lines
   loc       : natural := 0;           -- lines of code
   numProcs  : natural := 0;           -- number of procedures
   numFuncs  : natural := 0;           -- number of functions

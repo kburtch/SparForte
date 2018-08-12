@@ -354,7 +354,7 @@ begin
                     identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
              when STORAGE_ERROR =>
                err( gnat.source_info.source_location &
-                 ": internal error : storage error raised in ParseAssignment" );
+                 ": internal error : storage error raised in ParseAssignmentPart" );
              end;
           --end if;
        end if;
@@ -1331,6 +1331,7 @@ begin
         if wasLimited then
            identifiers( id ).usage := limitedUsage;
         end if;
+        identifiers( id ).writtenOn := perfStats.lineCnt;
      end;
 
      -- Complete the declaration
