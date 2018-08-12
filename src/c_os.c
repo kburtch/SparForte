@@ -366,11 +366,11 @@ int C_install_sigpipe_handler( int *flag_address ) {
 // SDL TESTING
 
 #ifdef FREEBSD
-#include <SDL/SDL.h>
-#include <SDL/SDL_video.h>
+#include <SDL.h>
+#include <SDL_video.h>
 #else
-#include <SDL/SDL.h>
-#include <SDL/SDL_video.h>
+#include <SDL.h>
+#include <SDL_video.h>
 #endif
 
 
