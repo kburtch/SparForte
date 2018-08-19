@@ -105,6 +105,8 @@ type aPragmaKind is (
      inspection,
      inspect_var,
      license,
+     manual_test,
+     manual_test_result,
      noCommandHash,
      peek,
      promptChange,
@@ -204,6 +206,10 @@ begin
      pragmaKind := license;
   elsif name = "inspection_peek" then
      pragmaKind := peek;
+  elsif name = "manual_test" then
+     pragmaKind :=  manual_test;
+  elsif name = "manual_test_result" then
+     pragmaKind :=  manual_test_result;
   elsif name = "no_command_hash" then
      pragmaKind := noCommandHash;
   elsif name = "prompt_script" then
@@ -614,6 +620,138 @@ begin
 end ParseSoftwareModelName;
 
 
+--  PARSE WORK ESTIMATE
+--
+-- Syntax: measure, value
+-- Where measure can be size, hours, feature points, story points or sloc
+-- Used by pragma todo and pragma manual_test
+-----------------------------------------------------------------------------
+
+procedure ParseWorkEstimate is
+   unused_bool : boolean;
+   work_estimate_unknown : boolean;
+begin
+  -- the work estimate measure
+
+  ParseIdentifier( var_id );
+  unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_measure_t );
+  expect( symbol_t, "," );
+  work_estimate_unknown := false;
+
+  -- the work estimate value
+
+  if var_id = teams_work_measure_unknown_t then
+     expect( number_t, " 0" );
+     work_estimate_unknown := true;
+  elsif var_id = teams_work_measure_size_t then
+     if identifiers( token ).value.all /= "s" and
+        identifiers( token ).value.all /= "m" and
+        identifiers( token ).value.all /= "l" and
+        identifiers( token ).value.all /= "xl" then
+        err( "expected ""s"", ""m"", ""l"" or ""xl""" );
+     end if;
+    expect( strlit_t );
+  elsif var_id = teams_work_measure_hours_t or
+        var_id = teams_work_measure_fpoints_t or
+        var_id = teams_work_measure_spoints_t or
+        var_id = teams_work_measure_sloc_t then
+    expect( number_t );
+  else
+     err( "internal error: don't know how to handle this type of work measure value" );
+  end if;
+  expect( symbol_t, "," );
+end ParseWorkEstimate;
+
+
+--  PARSE WORK PRIORITY
+--
+-- Syntax: measure, value
+-- Where measure can be unknown, completed, level, severity, risk, cvss
+-- Used by pragma todo and pragma manual_test
+-----------------------------------------------------------------------------
+
+procedure ParseWorkPriority is
+   unused_bool : boolean;
+begin
+  -- the work priority measure
+
+  ParseIdentifier( var_id );
+  unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_priority_t );
+  expect( symbol_t, "," );
+
+  -- the work priority value
+
+  if var_id = teams_work_priority_unknown_t then
+     expect( number_t, " 0" );
+  elsif var_id = teams_work_priority_completed_t then
+     expect( number_t, " 0" );
+  elsif var_id = teams_work_priority_level_t then
+     if identifiers( token ).value.all /= "l" and
+        identifiers( token ).value.all /= "m" and
+        identifiers( token ).value.all /= "h" then
+        err( "expected 'l', 'm' or 'h'" );
+     end if;
+     if not work_estimate_unknown and not allowAllTodosForRelease then
+        if boolean( testOpt ) or boolean( maintenanceOpt ) then
+           if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
+              null;
+           else
+              err( "priority todo task not yet completed" );
+           end if;
+        end if;
+     end if;
+     expect( charlit_t );
+  elsif var_id = teams_work_priority_severity_t then
+     if identifiers( token ).value.all < " 1" or
+        identifiers( token ).value.all > " 5" then
+        err( "expected 1..5" );
+     end if;
+     if not work_estimate_unknown and not allowAllTodosForRelease then
+        if boolean( testOpt ) or boolean( maintenanceOpt ) then
+           if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
+              null;
+           else
+              err( "priority todo task not yet completed" );
+           end if;
+        end if;
+     end if;
+     expect( number_t );
+  elsif var_id = teams_work_priority_risk_t then
+     if not work_estimate_unknown and not allowAllTodosForRelease then
+        if boolean( testOpt ) or boolean( maintenanceOpt ) then
+           -- any financial risk
+           if identifiers( token ).value.all /= " 0" then
+              err( "priority todo task not yet completed" );
+           end if;
+        end if;
+     end if;
+     expect( number_t );
+  elsif var_id = teams_work_priority_cvss_t then
+     declare
+        v1 : long_float;
+     begin
+        v1 := to_numeric( identifiers( token ).value.all );
+        if v1 < 0.0 or v1 > 10.0 then
+           err( "expected 1..10" );
+        end if;
+        -- CVSS 2 says a score of 3.9 or lower is low risk
+        if not work_estimate_unknown and not allowAllTodosForRelease then
+           if boolean( testOpt ) or boolean( maintenanceOpt ) then
+              if allowLowPriorityTodosForRelease and v1 < 4.0 then
+                 null;
+              elsif v1 > 0.0 then
+                 err( "priority todo task not yet completed" );
+              end if;
+           end if;
+        end if;
+     exception when others => null;
+     end;
+     expect( number_t );
+  else
+     err( "internal error: don't know how to handle this type of work priority value" );
+  end if;
+end ParseWorkPriority;
+
 --  PARSE PRAGMA STATEMENT
 --
 -- Syntax: ... kind [params]
@@ -716,6 +854,44 @@ begin
      null;
   when inspection =>                         -- pragma inspection point
      null;
+  when manual_test =>                        -- pragma manual_test
+     ParseIdentifier( var_id );                -- test owner
+     if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
+        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
+           expect( symbol_t, "," );
+           ParseStaticExpression( expr_val, var_id );  -- test name
+           baseTypesOK( var_id, uni_string_t );
+           ParseStaticExpression( expr_val, var_id );  -- test objective
+           baseTypesOK( var_id, uni_string_t );
+           ParseStaticExpression( expr_val, var_id );  -- test description
+           baseTypesOK( var_id, uni_string_t );
+           ParseStaticExpression( expr_val, var_id );  -- preconditions
+           baseTypesOK( var_id, uni_string_t );
+           ParseStaticExpression( expr_val, var_id );  -- steps/expected results
+           baseTypesOK( var_id, uni_string_t );
+           ParseStaticExpression( expr_val, var_id );  -- postconditions/cleanup
+           baseTypesOK( var_id, uni_string_t );
+           ParseWorkEstimate;                          -- work estimate
+           ParseWorkPriority;                          -- work priority
+        end if;
+     end if;
+  when manual_test_result =>                 -- pragma manual_test_result
+      ParseIdentifier( var_id );                -- tester
+      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
+           expect( symbol_t, "," );
+           if token = true_t then
+              expect( true_t );
+           elsif token = false_t then
+              expect( false_t );
+           else
+              err( "true or false expected" );
+           end if;
+          if token = symbol_t and identifiers( token ).value = "," then
+             expect( symbol_t, "," );
+             ParseStaticExpression( expr_val, var_id );  -- actual result
+             baseTypesOK( var_id, uni_string_t );
+          end if;
+      end if;
   when peek =>                               -- pragma inspection peek
      null;
   when noCommandHash =>                      -- pragma no_command_hash
@@ -937,124 +1113,17 @@ begin
      -- example: pragma to-do( me, "something", work_measure.story_points, 2, work_priority.level, 'l', "ticket" );
      declare
        unused_bool : boolean;
-       work_estimate_unknown : boolean;
      begin
        ParseIdentifier( var_id );              -- the person
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
        expect( symbol_t, "," );
-       --expr_val := identifiers( token ).value.all;
-       --expect( strlit_t );
        ParseStaticExpression( expr_val, var_id );
        baseTypesOK( var_id, uni_string_t );
        expect( symbol_t, "," );
 
-       -- pragma to-do: the work estimate measure
+       ParseWorkEstimate;
+       ParseWorkPriority;
 
-       ParseIdentifier( var_id );
-       unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_measure_t );
-       expect( symbol_t, "," );
-       work_estimate_unknown := false;
-
-       -- pragma to-do: the work estimate value
-
-       if var_id = teams_work_measure_unknown_t then
-          expect( number_t, " 0" );
-          work_estimate_unknown := true;
-       elsif var_id = teams_work_measure_size_t then
-          if identifiers( token ).value.all /= "s" and
-             identifiers( token ).value.all /= "m" and
-             identifiers( token ).value.all /= "l" and
-             identifiers( token ).value.all /= "xl" then
-             err( "expected ""s"", ""m"", ""l"" or ""xl""" );
-          end if;
-         expect( strlit_t );
-       elsif var_id = teams_work_measure_hours_t or
-             var_id = teams_work_measure_fpoints_t or
-             var_id = teams_work_measure_spoints_t or
-             var_id = teams_work_measure_sloc_t then
-         expect( number_t );
-       else
-          err( "internal error: don't know how to handle this type of work measure value" );
-       end if;
-       expect( symbol_t, "," );
-
-       -- pragma to-do: the work priority measure
-
-       ParseIdentifier( var_id );
-       unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_priority_t );
-       expect( symbol_t, "," );
-
-       -- pragma to-do: the work priority value
-
-       if var_id = teams_work_priority_unknown_t then
-          expect( number_t, " 0" );
-       elsif var_id = teams_work_priority_completed_t then
-          expect( number_t, " 0" );
-       elsif var_id = teams_work_priority_level_t then
-          if identifiers( token ).value.all /= "l" and
-             identifiers( token ).value.all /= "m" and
-             identifiers( token ).value.all /= "h" then
-             err( "expected 'l', 'm' or 'h'" );
-          end if;
-          if not work_estimate_unknown and not allowAllTodosForRelease then
-             if boolean( testOpt ) or boolean( maintenanceOpt ) then
-                if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
-                   null;
-                else
-                   err( "priority todo task not yet completed" );
-                end if;
-             end if;
-          end if;
-          expect( charlit_t );
-       elsif var_id = teams_work_priority_severity_t then
-          if identifiers( token ).value.all < " 1" or
-             identifiers( token ).value.all > " 5" then
-             err( "expected 1..5" );
-          end if;
-          if not work_estimate_unknown and not allowAllTodosForRelease then
-             if boolean( testOpt ) or boolean( maintenanceOpt ) then
-                if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
-                   null;
-                else
-                   err( "priority todo task not yet completed" );
-                end if;
-             end if;
-          end if;
-          expect( number_t );
-       elsif var_id = teams_work_priority_risk_t then
-          if not work_estimate_unknown and not allowAllTodosForRelease then
-             if boolean( testOpt ) or boolean( maintenanceOpt ) then
-                -- any financial risk
-                if identifiers( token ).value.all /= " 0" then
-                   err( "priority todo task not yet completed" );
-                end if;
-             end if;
-          end if;
-          expect( number_t );
-       elsif var_id = teams_work_priority_cvss_t then
-          declare
-             v1 : long_float;
-          begin
-             v1 := to_numeric( identifiers( token ).value.all );
-             if v1 < 0.0 or v1 > 10.0 then
-                err( "expected 1..10" );
-             end if;
-             -- CVSS 2 says a score of 3.9 or lower is low risk
-             if not work_estimate_unknown and not allowAllTodosForRelease then
-                if boolean( testOpt ) or boolean( maintenanceOpt ) then
-                   if allowLowPriorityTodosForRelease and v1 < 4.0 then
-                      null;
-                   elsif v1 > 0.0 then
-                      err( "priority todo task not yet completed" );
-                   end if;
-                end if;
-             end if;
-          exception when others => null;
-          end;
-          expect( number_t );
-       else
-          err( "internal error: don't know how to handle this type of work priority value" );
-       end if;
        -- optional ticket id
        if token = symbol_t and identifiers( token ).value.all = "," then
           expect( symbol_t, "," );
