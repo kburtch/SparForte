@@ -749,6 +749,7 @@ begin
      -- might not be used within the loop...might just be a repeat loop
      if syntax_check and then not error_found then
         identifiers( for_var ).wasReferenced := true;
+        --identifiers( for_var ).referencedByThread := getThreadName;
         identifiers( for_var ).wasWritten := true;
         identifiers( for_var ).wasFactor := true;
      end if;
@@ -1135,6 +1136,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        else
           if syntax_check then
              identifiers( id ).wasReferenced := true;
+             --identifiers( id ).referencedByThread := getThreadName;
              subword := to_unbounded_string( "undefined" );
           else
              subword := identifiers( id ).value.all;       -- word to substit.
@@ -2342,6 +2344,7 @@ begin
 
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
+     --identifiers( formal_param_id ).referencedByThread := getThreadName;
      identifiers( type_token ).wasApplied := true;
   end if;
 
@@ -2399,6 +2402,7 @@ begin
   declareIdent( formal_param_id, return_value_str, type_token, varClass );
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
+     --identifiers( formal_param_id ).referencedByThread := getThreadName;
   end if;
   updateFormalParameter( formal_param_id, type_token, func_id, 0, none );
 
@@ -2431,6 +2435,7 @@ begin
             proc_id );
          if syntax_check then
             identifiers( actual_param_t ).wasReferenced := true;
+            --identifiers( actual_param_t ).referencedByThread := getThreadName;
             identifiers(
               identifiers( actual_param_t ).kind
               ).wasApplied := true; -- type was used
@@ -2569,6 +2574,7 @@ begin
         identifiers( proc_id ).usage := abstractUsage;
         if syntax_check then
            identifiers( proc_id ).wasReferenced := true;
+           --identifiers( proc_id ).referencedByThread := getThreadName;
         end if;
         pullBlock;
      else
@@ -2588,6 +2594,7 @@ begin
            identifiers( proc_id ).usage := abstractUsage;
            if syntax_check then
               identifiers( proc_id ).wasReferenced := true;
+              --identifiers( proc_id ).referencedByThread := getThreadName;
            end if;
         elsif abstract_parameter /= eof_t then
            err( "procedure must be abstract because parameter type " &
@@ -2739,6 +2746,7 @@ begin
     -- main record identifier.
     if syntax_check then
        identifiers( usableFieldId ).wasReferenced := true;
+       --identifiers( usableFieldId ).referencedByThread := getThreadName;
        identifiers(
          identifiers( recordTypeFieldId ).kind
          ).wasApplied := true;
@@ -2820,18 +2828,34 @@ begin
      -- not yet implemented
      err( "enumerated items cannot be used as an in out or out mode parameter" );
   end if;
-  -- whether declaring the params or not, during a syntax check, the actual
-  -- parameter must be marked as "written" to avoid an error over not being
-  -- a constant
-  if syntax_check and then not error_found then
-     if identifiers( actual_param_ref.id ).field_of /= eof_t then
-        identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
+  if not error_found then
+     -- whether declaring the params or not, during a syntax check, the actual
+     -- parameter must be marked as "written" to avoid an error over not being
+     -- a constant
+     if syntax_check then
+        if identifiers( actual_param_ref.id ).field_of /= eof_t then
+           identifiers( identifiers( actual_param_ref.id ).field_of ).wasWritten := true;
+        else
+           identifiers( actual_param_ref.id ).wasWritten := true;
+           identifiers( actual_param_ref.id ).wasFactor := true;
+        end if;
      else
-        identifiers( actual_param_ref.id ).wasWritten := true;
-        identifiers( actual_param_ref.id ).wasFactor := true;
+        -- when running, mark that the actual parameter was written for
+        -- side-effect prevention.
+        -- As a kludge, the line count hasn't advanced yet from the expression
+        -- so add one, otherwise it won't recognize that the write happend
+        -- after the expression started.
+        identifiers( actual_param_ref.id ).writtenOn := perfStats.lineCnt+1;
      end if;
   end if;
+
   if declareParams then
+
+     -- Run-time side-effects tracking and test
+     -- Test for two or more "threads" writing to one unprotected variable
+
+     checkDoubleThreadWrite( actual_param_ref.id );
+
        -- the actual parameter will be the canonical identifier for
        -- the renaming
        declareIdent(
@@ -3111,6 +3135,7 @@ begin
         identifiers( func_id ).usage := abstractUsage;
         if syntax_check then
            identifiers( func_id ).wasReferenced := true;
+           --identifiers( func_id ).referencedByThread := getThreadName;
         end if;
         pullBlock;
      else
@@ -3130,6 +3155,7 @@ begin
            identifiers( func_id ).usage := abstractUsage;
            if syntax_check then
               identifiers( func_id ).wasReferenced := true;
+              --identifiers( func_id ).referencedByThread := getThreadName;
            end if;
         elsif abstract_parameter /= eof_t then
            err( "function must be abstract because parameter type " &
@@ -3190,6 +3216,7 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( proc_id ).wasReferenced := true;
+     --identifiers( proc_id ).referencedByThread := getThreadName;
      if identifiers( proc_id ).usage = abstractUsage then
         err( optional_bold( to_string( identifiers( proc_id ).name ) ) &
           " is abstract and cannot be run" );
@@ -3271,9 +3298,11 @@ begin
           declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, varClass );
           if syntax_check then
              identifiers( chain_count_id ).wasReferenced := true;
+             --identifiers( chain_count_id ).referencedByThread := getThreadName;
              identifiers( chain_count_id ).wasWritten := true;
              identifiers( chain_count_id ).wasFactor := true;
              identifiers( last_in_chain_id ).wasReferenced := true;
+             --identifiers( last_in_chain_id ).referencedByThread := getThreadName;
              identifiers( last_in_chain_id ).wasWritten := true;
              identifiers( last_in_chain_id ).wasFactor := true;
           else
@@ -3384,6 +3413,7 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( func_id ).wasReferenced := true;
+     --identifiers( func_id ).referencedByThread := getThreadName;
      if identifiers( func_id ).usage = abstractUsage then
         err( optional_bold( to_string( identifiers( func_id ).name ) ) &
           " is abstract and cannot be run" );
@@ -3392,7 +3422,8 @@ begin
   getNextToken;
   -- Parameters will be in the new scope block
   pushBlock( newScope => true,
-     newName => to_string (identifiers( func_id ).name ) );
+     newName => to_string (identifiers( func_id ).name ),
+     newThread => identifiers( func_id ).name );
   -- Parameters?  Create storage space in the symbol table
   if isExecutingCommand then
      --if token = symbol_t and identifiers( token ).value.all = "(" then
@@ -4634,7 +4665,7 @@ begin
        ParseIdentifier( var_id );
     end if;
   else
-    ParseIdentifier( var_id );
+     ParseIdentifier( var_id );
   end if;
 
   -- Copy the type for convenience
@@ -4720,6 +4751,7 @@ begin
 
   if syntax_check and then not error_found then
      if identifiers( var_id ).field_of /= eof_t then
+        -- we don't track record fields, only the record
         identifiers( identifiers( var_id ).field_of ).wasWritten := true;
         identifiers( identifiers( var_id ).field_of ).wasFactor := true;
      else
@@ -4729,6 +4761,23 @@ begin
   end if;
 
   if isExecutingCommand then
+
+     -- Expression Side-effects: record how many lines run by this point in time
+     -- so we can determine later if this assignment occurred after the current
+     -- expression started (if any).  lineCnt will be zero if not checking for
+     -- side-effects.
+     -- For a record field, mark the whole record.
+
+     if identifiers( var_id ).field_of /= eof_t then
+        identifiers( identifiers( var_id ).field_of ).writtenOn := perfStats.lineCnt;
+     else
+        identifiers( var_id ).writtenOn := perfStats.lineCnt;
+     end if;
+
+     -- Run-time side-effects tracking and test
+     -- Test for two or more "threads" writing to one unprotected variable
+
+     checkDoubleThreadWrite( var_id );
 
      -- Programming-by-contract
 
@@ -4780,7 +4829,7 @@ begin
               to_string( ToEscaped( expr_value ) ) &
               """" );
         end if;
-    end if;
+     end if;
   end if;
   itself_type := new_t;
 end ParseAssignment;
@@ -5123,6 +5172,9 @@ begin
               identifiers( startToken ).wasWritten := true;
            end if;
            if isExecutingCommand then
+              -- Run-time side-effects tracking and test
+              -- Test for two or more "threads" writing to one unprotected variable
+              checkDoubleThreadWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
@@ -5504,6 +5556,9 @@ begin
               identifiers( startToken ).wasWritten := true;
            end if;
            if isExecutingCommand then
+              -- Run-time side-effects tracking and test
+              -- Test for two or more "threads" writing to one unprotected variable
+              checkDoubleThreadWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then

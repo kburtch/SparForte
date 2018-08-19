@@ -1266,8 +1266,8 @@ pragma assert( FOOBAR_INT = 98 );
 FOOBAR_STRING : import_string;
 pragma import_json( shell, FOOBAR_STRING );
 pragma export_json( shell, FOOBAR_STRING );
-pragma volatile( FOOBAR_STRING );
 pragma assert( FOOBAR_STRING = "foobar" );
+pragma volatile( FOOBAR_STRING );
 type FIA_TYPE is array(1..1) of integer;
 FOOBAR_INT_ARRAY : FIA_TYPE;
 pragma import_json( shell, FOOBAR_INT_ARRAY );
@@ -2929,9 +2929,9 @@ end if;
 
 -- elsif should not run if the "if" is performed
 
-i := 0;
-
 declare
+
+i : integer := 0;
 
 function test_f1 return boolean is
 begin
@@ -2953,13 +2953,13 @@ elsif test_f1 then
 end if;
 pragma assert( i = 1 );
 
-i := 0;
+-- i := 0; -- can't do this, side-effects
 if not test_f1 then
    null;
 elsif not test_f1 then
    null;
 end if;
-pragma assert( i = 2 );
+pragma assert( i = 3 );
 
 -- test that @ is ? not fn's return
 -- When using debugging messages during development, the following test may
@@ -4168,6 +4168,119 @@ begin
 end;
 
 end; -- renaming tests
+
+-- copying tests
+
+begin
+
+-- integers
+
+declare
+  i : integer := 5;
+  j : integer copies i;
+begin
+  pragma assert( i = j );
+  j := 6;
+  pragma assert( i = 5 );
+  pragma assert( j = 6 );
+end;
+
+-- two copies
+
+declare
+  i : integer := 5;
+  j : integer copies i;
+  k : integer copies i;
+begin
+  pragma assert( j = i );
+  pragma assert( j = k );
+  j := 6;
+  k := 7;
+  pragma assert( i = 5 );
+  pragma assert( j = 6 );
+  pragma assert( k = 7 );
+end;
+
+-- copy of a copy
+
+declare
+  i : integer := 5;
+  j : integer copies i;
+  m : integer copies j;
+begin
+  pragma assert( i = j );
+  pragma assert( i = m );
+  m := 7;
+  pragma assert( i = 5 );
+  pragma assert( i = 5 );
+  pragma assert( m = 7 );
+  j := 6;
+  pragma assert( i = 5 );
+  pragma assert( j = 6 );
+  pragma assert( m = 7 );
+end;
+
+-- constant
+
+declare
+  b : constant integer := 1;
+  b2 : constant integer copies b;
+begin
+  null;
+  pragma assert( b = 1 );
+  pragma assert( b2 = b );
+end;
+
+-- system constant
+
+declare
+  qu : constant character copies Latin_1.Quotation;
+begin
+  null;
+  pragma assert( qu = '"' );
+end;
+
+-- read-only copying
+
+declare
+  i : integer := 5;
+  c : constant integer copies i;
+begin
+  pragma assert( c = 5 );
+  pragma assert( c = i );
+  i := 4;
+  pragma assert( i = 4 );
+  pragma assert( c = 5 );
+end;
+
+-- subtypes and copies
+
+declare
+  subtype int is integer;
+  i2 : integer := 9;
+  j2 : int copies i2;
+begin
+  null;
+  pragma assert( j2 = 9 );
+end;
+
+-- enumerated variables
+
+declare
+  type fruit is (apple, banana, cherry );
+  f : fruit;
+begin
+  f := apple;
+  declare
+    g : fruit copies f;
+  begin
+    null;
+    pragma assert( f = g );
+  end;
+end;
+
+end; --copy tests
+
 
 -- in out parameter tests
 

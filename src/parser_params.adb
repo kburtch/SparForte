@@ -28,12 +28,14 @@ with gen_list,
     world,
     user_io,
     scanner,
+    parser_aux,
     parser.decl.as;
 use ada.strings,
     ada.strings.unbounded,
     world,
     user_io,
     scanner,
+    parser_aux,
     parser,
     parser.decl.as;
 
@@ -261,6 +263,9 @@ begin
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
   end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( param_id );
+  end if;
 end ParseFirstInOutParameter;
 
 
@@ -276,6 +281,9 @@ begin
   discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( param_id );
   end if;
 end ParseNextInOutParameter;
 
@@ -296,6 +304,9 @@ begin
   discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( param_id );
   end if;
   expect( symbol_t, ")" );
 end ParseLastInOutParameter;
@@ -318,6 +329,9 @@ begin
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
   end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( param_id );
+  end if;
   expect( symbol_t, ")" );
 end ParseSingleInOutParameter;
 
@@ -333,6 +347,9 @@ begin
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
   end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( param_id );
+  end if;
   expect( symbol_t, ")" );
 end ParseLastInOutRecordParameter;
 
@@ -347,6 +364,9 @@ begin
   ParseIdentifier( param_id ); -- in out
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( param_id );
   end if;
 end ParseNextInOutRecordParameter;
 
@@ -661,6 +681,9 @@ begin
         identifiers( ref.id ).wasWritten := true;
      end if;
   end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( ref.id );
+  end if;
 end ParseOutParameter;
 
 procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier ) is
@@ -765,6 +788,7 @@ begin
                       -- Fields of the formal parameter are not checked for these.
                       if syntax_check and then not error_found then
                          identifiers( dont_care_t ).wasReferenced := true;
+                         --identifiers( dont_care_t ).referencedByThread := getThreadName;
                          identifiers( dont_care_t ).wasWritten := true;
                          identifiers( dont_care_t ).wasFactor := true;
                       end if;
@@ -783,6 +807,9 @@ begin
      else
         identifiers( ref.id ).wasWritten := true;
      end if;
+  end if;
+  if isExecutingCommand then
+     checkDoubleThreadWrite( ref.id );
   end if;
 end ParseInOutParameter;
 

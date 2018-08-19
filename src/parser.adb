@@ -133,6 +133,7 @@ begin
       shell_word := identifiers( token ).value.all;
       if syntax_check then
          identifiers( token ).wasReferenced := true;
+         --identifiers( token ).referencedByThread := getThreadName;
       end if;
   elsif token = symbol_t then
      shell_word := identifiers( token ).value.all;
@@ -486,9 +487,11 @@ begin
            -- TODO: this could be more efficient
            if recId in reserved_top..identifiers'last then
               identifiers( recId ).wasReferenced := true;
+              --identifiers( recId ).referencedByThread := getThreadName;
            else
               -- mark the value as used because it was referred to
               identifiers( token ).wasReferenced := true;
+              --identifiers( token ).referencedByThread := getThreadName;
            end if;
      end if;
      id := token;
@@ -556,6 +559,7 @@ begin
            -- the value (during syntax check only because value is otherwise
            -- unused).  When blocks are pulled, this will be checked.
            identifiers( token ).wasReferenced := true;
+           --identifiers( token ).referencedByThread := getThreadName;
      end if;
      id := token;
   end if;
@@ -579,6 +583,7 @@ begin
   identifiers( program_id ).class := mainProgramClass;
   if syntax_check then
      identifiers( program_id ).wasReferenced := true;
+     --identifiers( program_id ).referencedByThread := getThreadName;
   end if;
 end ParseProgramName;
 
@@ -629,7 +634,8 @@ begin
    -- Create a new block, declaring the data type variable
    -- We don't need to assign the value until we know we're executing.
 
-   pushBlock( newScope => true, newName => "accept clause" );
+   pushBlock( newScope => true, newName => affirm_clause_str, newThread
+     => identifiers( kind_id ).name & " affirm" );
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
 
    -- for now, treat as a restricted shell to reduce the risk of side-effects.
@@ -698,9 +704,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   begin
     ParseIdentifier( t );
     if identifiers( t ).volatile then           -- volatile user identifier
-       refreshVolatile( t );
-       f := identifiers( t ).value.all;
-       kind := identifiers( t ).kind;
+       err( to_string( identifiers( t ).name ) & " is " & optional_bold( "volatile" ) &
+          " and not allowed in expressions because it may cause side-effects" );
+       --refreshVolatile( t );
+       --f := identifiers( t ).value.all;
+       --kind := identifiers( t ).kind;
     end if;
     if identifiers( t ).class = subClass or             -- type cast
        identifiers( t ).class = typeClass then
@@ -732,6 +740,12 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           err( "array index must be a scalar type" );
        end if;                                   -- variables are not
        if isExecutingCommand then                -- declared in syntax chk
+          -- expression side-effect prevention
+          if lastExpressionInstruction <= identifiers( t ).writtenOn then
+             err( to_string( identifiers( t ).name ) & " is not " &
+                  optional_bold( "volatile" ) & " but was written to after " &
+                  "evaluating the start of the expression" );
+          end if;
           arrayIndex := long_integer(to_numeric(f));  -- convert to number
           --array_id2 := arrayID( to_numeric(      -- array_id2=reference
           --   identifiers( array_id ).value ) );  -- to the array table
@@ -775,6 +789,22 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        if token = symbol_t and then identifiers( token ).value.all = "(" then
          err( optional_bold( to_string( identifiers( t ).name ) ) &
              " has an array index but is not an array" );
+       end if;
+       -- expression side-effect prevention
+       if not syntax_check then
+          if identifiers( t ).field_of /= eof_t then
+             if lastExpressionInstruction < identifiers( identifiers( t ).field_of ).writtenOn then
+                err( to_string( identifiers( t ).name ) & " is not " &
+                     optional_bold( "volatile" ) & " but was written to after " &
+                     "evaluating the start of the expression" );
+             end if;
+          else
+             if lastExpressionInstruction < identifiers( t ).writtenOn then
+                err( to_string( identifiers( t ).name ) & " is not " &
+                     optional_bold( "volatile" ) & " but was written to after " &
+                     "evaluating the start of the expression" );
+             end if;
+          end if;
        end if;
        f := identifiers( t ).value.all;
        kind := identifiers( t ).kind;
@@ -1639,7 +1669,13 @@ procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier
   last_op  : identifier := eof_t;
   b        : boolean;
   type bitwise_number is mod 2**64;
+  oldExpressionInstruction : line_count := lastExpressionInstruction;
 begin
+  -- expression side-effects.  Remember how many lines have run prior to this
+  -- expression to determine if variables in the expression were altered
+  -- later than this line.  Remember that expressions can be nested.
+  -- If not checking side-effects, this will be zer0.
+  lastExpressionInstruction := perfStats.lineCnt;
   ParseRelation( re1, kind1 );
   ex := re1;
   expr_type := kind1;
@@ -1738,6 +1774,9 @@ begin
      last_op := operator;
   end loop;
   ex := re1;
+  -- expression side-effects: we're now whatever the previous expression
+  -- instruction was.
+  lastExpressionInstruction := oldExpressionInstruction;
   --put_line( "Expression value = " & to_string( ex ) );
 end ParseExpression;
 
@@ -1990,7 +2029,7 @@ begin
                      identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
                  when STORAGE_ERROR =>
                    err( gnat.source_info.source_location &
-                     ": internal error : storage error raised in ParseFactor" );
+                     ": internal error : storage error raised in ParseStaticFactor" );
                  end;
               end if;
            end if;
@@ -2774,7 +2813,8 @@ end ParseStaticExpression;
 
 procedure startParser is
 begin
-  null;
+  -- expression side-effect detection: no expressions have run yet.
+  lastExpressionInstruction := noExpressionInstruction;
 end startParser;
 
 

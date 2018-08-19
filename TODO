@@ -8,6 +8,8 @@ NEW ISSUES
 These are new issues identified but not entered into the outstanding bug list
 -----------------------------------------------------------------------------
 
+Note: runs about 6 million years before throwing an exception.
+
 Priority Issues (Fix These First)
 -------------------------------
 
@@ -20,6 +22,16 @@ Priority Issues (Fix These First)
     - should affirm blocks have an expression short-form?
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
+    - constant limited?
+    - copying volatiles?
+    - copying arrays
+    - copying records
+      - full copy of arrays and records
+      - document new keyword copying
+      - was wasWritten obsolete with writtenByThread?
+    - the affect of renamings?
+    - this probably need to be run-time
+* improve first word parsing on the command
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc
@@ -175,6 +187,8 @@ Nice to Haves / Missing Functionality
     - this requires a new function to check for pre-exisiting names in a different
       scope.  It will need to apply to all variable declarations.
     - maybe just   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
+- in python,files are opened like a declaration so they close automatically
+   at end-of-block. Can I do something similar?
 - refactor
   - parser_tio globals should be put in a separate package, or a different
     package, to help reduce circular dependencies

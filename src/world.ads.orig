@@ -52,6 +52,8 @@ copyright : constant string  :=  " Copyright (c)2001-2018 Free Software Foundati
 
 random_generator : ada.numerics.float_random.generator;
 
+type line_count is new long_long_integer;
+
 ------------------------------------------------------------------------------
 -- Unbounded String Constants
 ------------------------------------------------------------------------------
@@ -171,6 +173,7 @@ restriction_no_external_commands : boolean := false; -- pragma restriction
 restriction_no_memcache          : boolean := false; -- pragma restriction
 restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
+restriction_no_risky_side_effects: boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 suppress_word_quoting            : boolean := false; -- pragma suppress
 allowLowPriorityTodosForRelease  : boolean := false; -- pragma suppress
@@ -286,6 +289,25 @@ function getIdentifierClassImage( c : anIdentifierClass ) return string;
 
 ------------------------------------------------------------------------------
 --
+-- Threads
+--
+-- Not actually threads, but for tracking asynchronous actions for
+-- side-effects.  Threads include contracts.
+
+subtype aThreadName is unbounded_string;
+
+noThread : aThreadName := to_unbounded_string( "none" );
+mainThread : aThreadName := to_unbounded_string( "main task" );
+
+-- Expression Instruction
+--
+-- The instruction number of the last expression to execute (if any).
+
+noExpressionInstruction : constant line_count := line_count'last;
+lastExpressionInstruction : line_count;
+
+------------------------------------------------------------------------------
+--
 -- Import/Export Methods
 -- Note: http_cgi to avoid ambiguity over "cgi" package name
 
@@ -355,13 +377,16 @@ type declaration is record
      list     : boolean := false;               -- array or array type
      resource : boolean := false;               -- resource type
      field_of : identifier;                     -- record superclass
-     inspect  : boolean := false;               -- show value on breakout
-     deleted  : boolean := false;               -- marked for deletion
-     wasReferenced : boolean := false;          -- true if ref'd in syn chk
-     wasWritten    : boolean := false;          -- true if written in syn chk
-     wasApplied    : boolean := false;          -- true if type was used
-     wasFactor     : boolean := false;          -- true if used in expression
-     renaming_of : identifier := identifier'first; -- renaming or dereference
+     inspect         : boolean := false;        -- show value on breakout
+     deleted         : boolean := false;        -- marked for deletion
+     wasReferenced   : boolean := false;        -- true if ref'd in syn chk
+     wasWritten      : boolean := false;        -- true if written in syn chk
+     writtenByThread : aThreadName;
+     writtenOn       : line_count       ;       -- side-effect protection
+     wasApplied      : boolean := false;        -- true if type was used
+     wasFactor       : boolean := false;        -- true if used in expression
+     factorTime      : natural := 0;            -- when last used as a factor
+     renaming_of     : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident
      renamed_count : natural := 0;              -- times renamed
@@ -558,6 +583,7 @@ xor_t      : identifier;
 ------------------------------------------------------------------------------
 
 affirm_t   : identifier;
+copies_t   : identifier;
 configuration_t : identifier;
 policy_t   : identifier;
 

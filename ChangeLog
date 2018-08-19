@@ -100,3 +100,15 @@ used with any command in a pipeline.
 
 46. Fix: declared but never used errors are working again.
 
+47. Change: volatiles are no longer allowed in expressions (to avoid side-effects).  See #48.
+
+48. New: double-write data race side-effects not allowed in function calls or type contracts.
+
+49. Fix: enabling trace no longer disables performance monitoring line counting.
+
+50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles. [docs needed] [tests needed]
+
+51.
+
+52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
+

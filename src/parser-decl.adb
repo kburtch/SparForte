@@ -111,6 +111,7 @@ begin
       end if;
       identifiers( newtype_id ).usage := abstractUsage; -- vars not allowed
       identifiers( newtype_id ).wasReferenced := true;  -- treat as used
+      --identifiers( newtype_id ).referencedByThread := getThreadName;
       identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       expect( abstract_t );
       if token = abstract_t or token = limited_t or token = constant_t then
@@ -247,6 +248,62 @@ begin
   end if;
 end ParseRenamesPart;
 
+procedure ParseCopiesPart( canonicalRef : out renamingReference;
+  new_id, new_type_id : identifier ) is
+  -- Syntax: ... copies ident ...
+  -- the caller must setup the value pointer for the renaming
+  -- new id / type refers to the renaming variable.
+begin
+  expect( copies_t );
+  canonicalRef.id := token;
+  -- To support array element renaming, we need a reference not an identifier.
+
+  -- This is the same syntax as a renaming
+  ParseRenamingReference( canonicalRef, new_type_id );
+
+  -- only copy attributes if no error because copying attributes will
+  -- declare the identifier as a side-effect
+  if not error_found then
+     declare
+       oldUsage : aUsageQualifier := identifiers( new_id ).usage;
+     begin
+       identifiers( new_id ).usage := identifiers( canonicalRef.id ).usage;
+       identifiers( new_id ).value := identifiers( new_id ).svalue'access;
+
+       -- For a volatile, update the value before copying
+       if isExecutingCommand then
+          if identifiers( new_id ).volatile then
+             refreshVolatile( new_id );
+          end if;
+       end if;
+
+       if canonicalRef.index = 0 then
+          identifiers( new_id ).svalue := identifiers( canonicalRef.id ).value.all;
+       else
+          identifiers( new_id ).svalue := identifiers( canonicalRef.id ).avalue( canonicalRef.index );
+       end if;
+
+       -- check to see that the usage qualifier isn't less restrictive
+       -- compared to the canonical identifier being renamed
+
+       case identifiers( canonicalRef.id ).usage is
+       when fullUsage =>
+          null; -- always good
+       when constantUsage =>
+          if identifiers( new_id ).usage = fullUsage then
+             err( "no qualifier is less restrictive than constant" );
+          end if;
+       when limitedUsage =>
+          err( "limited identifiers cannot be copied" );
+       when abstractUsage =>
+          err( "internal error: abstract usage qualifier not expected" );
+       when others =>
+          err( "internal error: unexpected usage qualifier" );
+       end case;
+     end;
+  end if;
+end ParseCopiesPart;
+
 procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier ) is
   -- Syntax: assign-part = " := default_value_expression"
   -- return value and type for expression
@@ -297,7 +354,7 @@ begin
                     identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
              when STORAGE_ERROR =>
                err( gnat.source_info.source_location &
-                 ": internal error : storage error raised in ParseAssignment" );
+                 ": internal error : storage error raised in ParseAssignmentPart" );
              end;
           --end if;
        end if;
@@ -433,6 +490,7 @@ begin
            elementType, typeClass );
         identifiers( anonType ).list := true;
         identifiers( anonType ).wasReferenced := true; -- only referenced when declared
+        --identifiers( anonType ).referencedByThread := getThreadName;
         -- mark as limited, if necessary
         if limit then
            identifiers( anonType ).usage := limitedUsage;
@@ -806,6 +864,7 @@ begin
                -- main record identifier.
                if syntax_check and then not error_found then
                   identifiers( dont_care_t ).wasReferenced := true;
+                  --identifiers( dont_care_t ).referencedByThread := getThreadName;
                   identifiers( dont_care_t ).wasWritten := true;
                   identifiers( dont_care_t ).wasFactor := true;
                end if;
@@ -1238,6 +1297,63 @@ begin
         end if;
      end if;
 
+  elsif token = copies_t then
+
+     declare
+        -- the class will change when parsing the rename
+        --originalClass : anIdentifierClass := identifiers( id ).class;
+        originalFieldOf : identifier := identifiers( id ).field_of;
+        -- TODO: refactor these booleans
+        wasLimited : boolean := identifiers( id ).usage = limitedUsage;
+        wasConstant : boolean := identifiers( id ).usage = constantUsage;
+     begin
+        -- Variable or Constant renaming
+        ParseCopiesPart( canonicalRef, id, type_token );
+        -- Prevent a constant from being turned into a variable by a renaming
+        -- It must be renamed as a constant or a limited.
+        if identifiers( canonicalRef.id).usage = constantUsage and
+           not wasConstant and not wasLimited then
+           err( "a " & optional_bold( "constant" ) & " must be copied by a constant or a limited" );
+        elsif identifiers( canonicalRef.id ).class = enumClass then
+           -- TODO: I could probably get this to work but it's a weird edge
+           -- case.
+           err( "enumerated items cannot be renamed" );
+        elsif identifiers( canonicalRef.id ).usage = limitedUsage and not wasLimited then
+           err( "a " & optional_bold( "limited" ) & " must be copied by a limited" );
+        elsif identifiers( canonicalRef.id ).field_of /= eof_t then
+           if identifiers( identifiers( canonicalRef.id ).field_of ).usage = limitedUsage and not wasLimited then
+              err( "limited record fields must be copied by a limited identifier" );
+           end if;
+        end if;
+        -- If the identifier is a record field, it must refer to the
+        -- renaming record, not the canonical record.
+        identifiers( id ).field_of := originalFieldOf;
+        if wasLimited then
+           identifiers( id ).usage := limitedUsage;
+        end if;
+        identifiers( id ).writtenOn := perfStats.lineCnt;
+     end;
+
+     -- Complete the declaration
+     identifiers( id ).kind := type_token;
+
+     if identifiers( canonicalRef.id ).list then
+        if canonicalRef.hasIndex then
+           -- don't do this on an error or an excepion may be thrown
+           if isExecutingCommand then
+              begin
+                 identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
+              exception when storage_error =>
+                 err( gnat.source_info.source_location &
+                    ": internal error: storage_error exception raised" );
+              when others =>
+                 err( gnat.source_info.source_location &
+                    ": internal error: exception raised" );
+              end;
+           end if;
+        end if;
+     end if;
+
   -- Check for optional assignment
 
   elsif (token = symbol_t and identifiers( token ).value.all = ":=") or -- assign part?
@@ -1347,6 +1463,7 @@ begin
   identifiers( field_id ).value.all := to_unbounded_string( field_no'img );
   if syntax_check then
      identifiers( field_id ).wasReferenced := true;
+     --identifiers( field_id ).referencedByThread := getThreadName;
   end if;
   expectSemicolon;
   if not error_found and  token /= eof_t and token /= end_t then
@@ -1481,7 +1598,7 @@ begin
 end ParseAffirmBlock;
 
 procedure ParseAffirmClause( newtype_id : identifier ) is
-   -- Setup an affirm block
+   -- Setup an affirm block.  This happens at compile-time.
    type_value_id : identifier;
    blockStart    : natural;
    blockEnd      : natural;
@@ -1495,7 +1612,11 @@ begin
    if onlyAda95 then
       err( "affirm clauses are not allowed with " & optional_bold( "pragma ada_95" ) );
    else
-      pushBlock( newScope => true, newName => affirm_clause_str );
+      pushBlock(
+        newScope => true,
+        newName => affirm_clause_str,
+        newThread => identifiers( newtype_id ).name & " affirm"
+      );
       declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
       blockStart := firstPos;
       syntax_check := true;
@@ -1544,6 +1665,7 @@ begin
       -- use the type name anywhere).
       if syntax_check and not restriction_no_unused_identifiers then
          identifiers( parent_id ).wasReferenced := true;
+         --identifiers( parent_id ).referencedByThread := getThreadName;
       end if;
       expect( symbol_t, "(" );                             -- "("
       while token /= eof_t loop                            -- name [,name]
@@ -1558,6 +1680,7 @@ begin
             -- if they are used or not.  Unless user explicitly requests
             -- that they are tested.
             if syntax_check and not restriction_no_unused_identifiers then
+               --identifiers( newtype_id ).referencedByThread := getThreadName;
                identifiers( newtype_id ).wasReferenced := true;
             end if;
             declare

@@ -958,8 +958,10 @@ begin
      if syntax_check and then not error_found then
         if identifiers( itemRef.id ).field_of /= eof_t then
            identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
+           identifiers( identifiers( itemRef.id ).field_of ).writtenByThread := getThreadName;
         else
            identifiers( itemRef.id ).wasWritten := true;
+           identifiers( itemRef.id ).writtenByThread := getThreadName;
         end if;
      end if;
   -- array?
@@ -973,7 +975,9 @@ begin
      if syntax_check and then not error_found then
         if identifiers( itemRef.id ).field_of /= eof_t then
            identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
+           identifiers( identifiers( itemRef.id ).field_of ).writtenByThread := getThreadName;
         else
+           identifiers( itemRef.id ).wasWritten := true;
            identifiers( itemRef.id ).wasWritten := true;
         end if;
      end if;
@@ -1887,14 +1891,20 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2038,14 +2048,20 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2189,14 +2205,20 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
@@ -2340,14 +2362,20 @@ begin
      isRecord := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   -- array?
   elsif identifiers( genKindId ).list then
      -- ParseOutParam doesn't handle full records or arrays
      isArray := true;
      ParseIdentifier( valRef.id );
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
-     identifiers( valRef.id ).wasWritten := true;
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );

@@ -80,6 +80,7 @@ environment.</p>
   <b>pragma</b> restriction( no_memcache )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
+  <b>pragma</b> restriction( no_risky_side_effects )
   <b>pragma</b> restriction( no_unused_identifiers )
   <b>pragma</b> session_export_script( `commands` )
   <b>pragma</b> session_import_script( `commands` )
@@ -248,6 +249,10 @@ other programs from using MySQL.</li>
   <li> <b>pragma restriction( no_postgresql_database )</b> - disable
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
+  <li> <b>pragma restriction( no_risky_side_effects )</b> - enable
+checking for some common risky side-effect behaviours.  It also makes
+contracts run in restricted shell mode.  This may reduce performance.
+It should be enabled for high-integrity applications.</li>
   <li> <b>pragma restriction( no_unused_identifiers )</b> - normally in
 testing mode,
 SparForte will not check enumerated types to see if they are mentioned.
@@ -650,8 +655,10 @@ in a normal shell with no security restrictions.  The type parameter
 is described under pragma template.</li>
   <li> <b>pragma volatile( var )</b> - the variable is assumed to be
 an variable which may change unexpectedly during the script's execution.
-The variable's value will be updated each time it is referenced in an
-expression. Has no effect unless the variable is imported as well.</li>
+If the variable is imported, the variable's value will be updated each
+time it is referenced. Volatile variables must be limited so they are
+not used in an expression.  Otherwise, expressions may have "side-effects",
+values that change unexpectedly in the middle of a calculation.</li>
 </ul>
 
 <h4>Miscellaneous Pragmas</h4>
@@ -1083,14 +1090,14 @@ exported using both import/export pragmas.</p>
 value can change unexpectedly and SparForte should reload the value from the
 memcached whenever it is referenced.</p>
 
-<p>You can declare a variable as import, export and volatile.
+<p>You can declare a variable as import, export and volatile at the same time.
 For example:</p>
 
         <center>
         <div class="code">
                 <p class="code">
 		<b>declare</b><br>
-		&nbsp;&nbsp;user_count : string;<br>
+		&nbsp;&nbsp;user_count : limited string;<br>
 		&nbsp;&nbsp;<b>pragma</b> import( local_memcache, user_count );<br>
 		&nbsp;&nbsp;<b>pragma</b> export( local_memcache, user_count );<br>
 		&nbsp;&nbsp;<b>pragma</b> volatile( user_count );<br>

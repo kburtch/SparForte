@@ -421,6 +421,7 @@ begin
      for i in old_identifiers_top..identifiers_top-1 loop
          put_trace( "global config declared " & to_string( identifiers( i ).name ) );
          identifiers( i ).wasReferenced := true;
+         --identifiers( i ).referencedByThread := mainThread;
      end loop;
      --set_exit_status( 0 );                         -- return no error
      --if trace then                                 -- -x? show 0 exit status

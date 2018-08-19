@@ -532,9 +532,13 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -590,9 +594,13 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -645,7 +653,9 @@ begin
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
        sc.value := sc.svalue'access;
-       -- since this is only called at startup, the default
+       sc.writtenByThread := noThread;
+       sc.writtenOn := 0;
+      -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
      id := identifiers_top;
@@ -684,6 +694,8 @@ begin
        sc.usage := fullUsage;
        sc.field_of := eof_t;
        sc.value := sc.svalue'access;
+       sc.writtenByThread := noThread;
+       sc.writtenOn := 0;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
      end;
@@ -808,9 +820,13 @@ begin
                  inspect  => false,
                  deleted  => false,
                  wasReferenced => false,
+                 --referencedByThread => noThread,
                  wasWritten => false,
+                 writtenByThread => noThread,
+                 writtenOn => 0,
                  wasApplied => false,
                  wasFactor => false,
+                 factorTime => 0,
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
@@ -884,9 +900,13 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -971,9 +991,13 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1034,9 +1058,13 @@ begin
        inspect  => identifiers( canonicalRef.id ).inspect,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
        funcCB => identifiers( canonicalRef.id ).funcCB,
        genKind => identifiers( canonicalRef.id ).genKind,
@@ -1167,9 +1195,13 @@ begin
            -- main record identifier.
         if syntax_check then
            identifiers( field_id ).wasReferenced := true;
+           --identifiers( field_id ).referencedByThread := noThread;
            identifiers( field_id ).wasWritten := true;
+           identifiers( field_id ).writtenByThread := noThread;
            identifiers( field_id ).wasApplied := false;
            identifiers( field_id ).wasFactor := false;
+           identifiers( field_id ).factorTime := 0;
+           identifiers( field_id ).writtenOn := 0;
         end if;
      end;
      j := identifier( integer( j ) + 1 );
@@ -1218,9 +1250,13 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1348,9 +1384,13 @@ begin
        inspect  => false,
        deleted  => false,
        wasReferenced => false,
+       --referencedByThread => noThread,
        wasWritten => false,
+       writtenByThread => noThread,
+       writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       factorTime => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,

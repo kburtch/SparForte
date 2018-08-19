@@ -22,12 +22,10 @@
 ------------------------------------------------------------------------------
 
 with ada.calendar,
-     ada.text_io,
-     world;
+     ada.text_io;
 
 use ada.calendar,
-    ada.text_io,
-    world;
+    ada.text_io;
 
 package body performance_monitoring is
 

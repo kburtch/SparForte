@@ -27,6 +27,7 @@ with
     ada.calendar,
     gnat.lock_files,
     spar_os,
+    user_io,
     world,
     string_util,
     compiler,
@@ -40,6 +41,7 @@ use
     ada.calendar,
     gnat.lock_files,
     spar_os,
+    user_io,
     world,
     string_util,
     compiler,
@@ -254,7 +256,11 @@ begin
         begin
            open( log_file, append_file, to_string( log_path ) );
         exception when others =>
-           create( log_file, append_file, to_string( log_path ) );
+           if rshOpt then
+              err( "creating new logs is not allowed in a " & optional_bold( "restricted shell" ) );
+           else
+              create( log_file, append_file, to_string( log_path ) );
+           end if;
         end;
      end if;
 
@@ -609,6 +615,7 @@ procedure ParseOpen is
   -- Syntax: logs.open( "program", "path", mode [,width] );
   -- This does not actually open the file.  It sets the paramters for the
   -- log file, which will be open and closed when required.
+  -- In a restricted shell, you cannot create logs.
   pathExpr : unbounded_string;
   pathType : identifier;
   modeExpr : unbounded_string;
