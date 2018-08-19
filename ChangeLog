@@ -108,7 +108,7 @@ used with any command in a pipeline.
 
 50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles. [docs needed] [tests needed]
 
-51. New: pragma restriction( no_risky_side_effects ) to enable side-effects checking. [may be removed later]
+51.
 
 52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
 

@@ -685,7 +685,6 @@ begin
 end FixRenamedArray;
 
 procedure checkDoubleThreadWrite( id : identifier ) is
--- TODO: move to parser.adb
 begin
   if identifiers( id ).field_of /= eof_t then
      -- we don't track record fields, only the record
@@ -693,9 +692,8 @@ begin
         if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
            err( to_string( identifiers( identifiers( id ).field_of ).name &
                 " (in " & optional_bold( to_string( getThreadName ) ) &
-                ") is also changed by " &
-                optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) &
-                ".  Values could change unexpectedly." ) );
+                ") is not volatile but is also changed by " &
+                optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) );
         end if;
      end if;
      identifiers( identifiers( id ).field_of ).writtenByThread := getThreadName;
@@ -704,9 +702,8 @@ begin
         if identifiers( id ).writtenByThread /= getThreadName then
            err( to_string( identifiers( id ).name &
                 " (in " & optional_bold( to_string( getThreadName ) ) &
-                ") is also changed by " &
-                optional_bold( to_string( identifiers( id ).writtenByThread ) ) &
-                ".  Values could change unexpectedly." ) );
+                ") is not volatile but is also changed by " &
+                optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) );
         end if;
      end if;
      identifiers( id ).writtenByThread := getThreadName;

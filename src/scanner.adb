@@ -5126,16 +5126,16 @@ begin
             cmdpos := cmdpos - 2;
          end if;
       end if;
-      if boolean(perfOpt) or restriction_no_risky_side_effects then
-         if not syntax_check and (not exit_block or not error_found) then
-            begin
-               perfStats.lineCnt := perfStats.lineCnt + 1;
-            exception when constraint_error =>
-               -- at 50,000 lines per second, this theoretically happens at
-               -- 5.8 million years on 64-bit Linux.
-               err( "performance stats: line count overflow" );
-            end;
-         end if;
+      -- The counting of line was original when "--perf" was used but is now
+      -- used for the side-effect detection so it is always done.
+      if not syntax_check and (not exit_block or not error_found) then
+         begin
+            perfStats.lineCnt := perfStats.lineCnt + 1;
+         exception when constraint_error =>
+            -- at 50,000 lines per second, this theoretically happens at
+            -- 5.8 million years on my 64-bit Linux laptop computer.
+            err( "performance stats: line count overflow" );
+         end;
       end if;
       cmdpos := cmdpos+nextScriptCommandOffset; -- line header and indent marker
       ch := script( cmdpos );

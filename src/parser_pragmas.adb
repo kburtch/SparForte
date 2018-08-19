@@ -785,10 +785,6 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_postgresql;
-     elsif identifiers( token ).name = "no_risky_side_effects" then
-        discardUnusedIdentifier( token );
-        getNextToken;
-        pragmaKind := restriction_side_effects;
      elsif identifiers( token ).name = "no_unused_identifiers" then
         discardUnusedIdentifier( token );
         getNextToken;
@@ -1455,8 +1451,6 @@ begin
         restriction_no_postgresql_database := true;
      when restriction_todos =>
         restriction_no_annotate_todos := true;
-     when restriction_side_effects =>
-        restriction_no_risky_side_effects := true;
      when promptChange =>
         if not error_found then
            promptScript := expr_val;

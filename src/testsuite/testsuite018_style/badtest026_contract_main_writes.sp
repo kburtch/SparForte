@@ -1,5 +1,4 @@
 procedure t is
-  pragma restriction( no_risky_side_effects );
   i : integer := 5;
 
   exc : exception;

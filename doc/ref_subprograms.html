@@ -693,6 +693,71 @@ files.</p>
 the configuration file.   It is assumed that some declarations will not be
 used in some scripts.</p>
 
+<h2>Side-Effects and Data Safety</h2>
+
+<p>SparForte does not permit certain combinations of statements that may have risky
+or unpredictable consequences.</p>
+
+<p>A volatile variable is a variable that changes unexpectedly.  A variable can be
+designated volatile with <b>pragma volatile</b>.  Changing a variable's value
+while it is used in an expression is one way to make a variable's value volatile.
+Volatile variables cannot be used in expression.</p>
+
+<p>In a function, a function must not change a variable's value that is also being used at
+the same time in an expression.  If the variable's value were to change, it could cause
+the value of the expression to be unpredictable.  (This is sometimes called "expression
+side-effects".)</p>
+
+        <center>
+        <div class="code">
+        <p class="code"><b>procedure</b> side_effect <b>is</b><br>
+&nbsp;&nbsp;i : integer := 5;<br>
+<br>
+&nbsp;&nbsp;<b>function</b> risky <b>return</b> integer <b>is</b><br>
+&nbsp;&nbsp;<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;i := 10;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> 1;<br>
+&nbsp;&nbsp;<b>end</b> risky;<br>
+<br>
+<b>begin</b><br>
+&nbsp;&nbsp;? i * risky + i; -- changing i during an expression<br>
+<b>end</b> side_effect;<br>&nbsp;<br>
+</p>
+        <div class="code_caption">
+        <b>Example</b>: An expression side-effect
+        </div>
+        </div>
+        </center>
+
+<p>i is not volatile but it should be volatile.  This will cause the following error:</p>
+
+<div class="code">
+<p class="code">
+&nbsp;&nbsp;? i * risky + i;  -- changing i during an expression
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ i is not volatile but was written to after evaluating the start of the expression
+</p>
+</div>
+
+<p>This also applies to arrays.  The value of any element in an array may not change
+while the array variable is also being used in an expression.  This restriction
+applies even if the particular element isn't referred to in the expression, as there
+are array functions that can affect the whole array.</p>
+
+<p>The same is true for records.  No field in a record used actively in an expression
+can have its value changed.</p>
+
+<p>A two different functions (or a function and the main program, or a function and
+a contract) are not allowed to write to the same variable.  Only one function may
+write to a variable in a more global scope.  This is done to prevent data races,
+where two functions in an expression may try to update the same variable in an
+unpredictable way.  It also prevents variable's value from changing unexpectedly
+in a program when a function is used in an expression.</p>
+
+<p>For any global variable, any function can change a global variable.  However,
+only that function and no other function can change that variable.</p>
+
+<p>These restrictions do not apply to procedures.</p>
+
 <br>&nbsp;
 
 			</td>

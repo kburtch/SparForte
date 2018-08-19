@@ -2842,7 +2842,10 @@ begin
      else
         -- when running, mark that the actual parameter was written for
         -- side-effect prevention.
-        identifiers( actual_param_ref.id ).writtenOn := perfStats.lineCnt;
+        -- As a kludge, the line count hasn't advanced yet from the expression
+        -- so add one, otherwise it won't recognize that the write happend
+        -- after the expression started.
+        identifiers( actual_param_ref.id ).writtenOn := perfStats.lineCnt+1;
      end if;
   end if;
 
@@ -2851,9 +2854,7 @@ begin
      -- Run-time side-effects tracking and test
      -- Test for two or more "threads" writing to one unprotected variable
 
-     if restriction_no_risky_side_effects then
-        checkDoubleThreadWrite( actual_param_ref.id );
-     end if;
+     checkDoubleThreadWrite( actual_param_ref.id );
 
        -- the actual parameter will be the canonical identifier for
        -- the renaming
@@ -4765,15 +4766,18 @@ begin
      -- so we can determine later if this assignment occurred after the current
      -- expression started (if any).  lineCnt will be zero if not checking for
      -- side-effects.
+     -- For a record field, mark the whole record.
 
-     identifiers( var_id ).writtenOn := perfStats.lineCnt;
+     if identifiers( var_id ).field_of /= eof_t then
+        identifiers( identifiers( var_id ).field_of ).writtenOn := perfStats.lineCnt;
+     else
+        identifiers( var_id ).writtenOn := perfStats.lineCnt;
+     end if;
 
      -- Run-time side-effects tracking and test
      -- Test for two or more "threads" writing to one unprotected variable
 
-     if restriction_no_risky_side_effects then
-        checkDoubleThreadWrite( var_id );
-     end if;
+     checkDoubleThreadWrite( var_id );
 
      -- Programming-by-contract
 
@@ -5170,9 +5174,7 @@ begin
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
               -- Test for two or more "threads" writing to one unprotected variable
-              if restriction_no_risky_side_effects then
-                 checkDoubleThreadWrite( startToken );
-              end if;
+              checkDoubleThreadWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
@@ -5556,9 +5558,7 @@ begin
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
               -- Test for two or more "threads" writing to one unprotected variable
-              if restriction_no_risky_side_effects then
-                 checkDoubleThreadWrite( startToken );
-              end if;
+              checkDoubleThreadWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then

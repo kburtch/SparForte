@@ -1,15 +1,16 @@
 procedure t is
-  i : integer := 5;
+  type risky_array is array(1..2) of integer;
+  i : risky_array := (1,2);
 
   function risky1 return integer is
   begin
-    i := 10; -- double-write to global by function
+    i(1) := 10; -- double-write to global by function
     return 1;
   end risky1;
 
   function risky2 return integer is
   begin
-    i := 10; -- double-write to global by function
+    i(2) := 10; -- double-write to global by function
     return 1;
   end risky2;
 

@@ -639,9 +639,7 @@ begin
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
 
    -- for now, treat as a restricted shell to reduce the risk of side-effects.
-   if restriction_no_risky_side_effects then
-      rshOpt := true;
-   end if;
+   rshOpt := true;
 
    if isExecutingCommand then
 --put_line( "Starting Contract for value " & to_string( expr_val ) ); -- DEBUG
@@ -743,12 +741,10 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        end if;                                   -- variables are not
        if isExecutingCommand then                -- declared in syntax chk
           -- expression side-effect prevention
-          if restriction_no_risky_side_effects then
-             if lastExpressionInstruction <= identifiers( t ).writtenOn then
-                err( to_string( identifiers( t ).name ) & " is not " &
-                     optional_bold( "volatile" ) & " but was written to after " &
-                     "evaluating the start of the expression" );
-               end if;
+          if lastExpressionInstruction <= identifiers( t ).writtenOn then
+             err( to_string( identifiers( t ).name ) & " is not " &
+                  optional_bold( "volatile" ) & " but was written to after " &
+                  "evaluating the start of the expression" );
           end if;
           arrayIndex := long_integer(to_numeric(f));  -- convert to number
           --array_id2 := arrayID( to_numeric(      -- array_id2=reference
@@ -795,11 +791,19 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
              " has an array index but is not an array" );
        end if;
        -- expression side-effect prevention
-       if restriction_no_risky_side_effects then
-          if lastExpressionInstruction <= identifiers( t ).writtenOn then
-             err( to_string( identifiers( t ).name ) & " is not " &
-                  optional_bold( "volatile" ) & " but was written to after " &
-                  "evaluating the start of the expression" );
+       if not syntax_check then
+          if identifiers( t ).field_of /= eof_t then
+             if lastExpressionInstruction < identifiers( identifiers( t ).field_of ).writtenOn then
+                err( to_string( identifiers( t ).name ) & " is not " &
+                     optional_bold( "volatile" ) & " but was written to after " &
+                     "evaluating the start of the expression" );
+             end if;
+          else
+             if lastExpressionInstruction < identifiers( t ).writtenOn then
+                err( to_string( identifiers( t ).name ) & " is not " &
+                     optional_bold( "volatile" ) & " but was written to after " &
+                     "evaluating the start of the expression" );
+             end if;
           end if;
        end if;
        f := identifiers( t ).value.all;
