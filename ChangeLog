@@ -108,7 +108,7 @@ used with any command in a pipeline.
 
 50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles. [docs needed] [tests needed]
 
-51.
+51. New: pragma manual_test and manual_test_result [not tested, docs needed].
 
 52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
 

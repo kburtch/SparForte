@@ -628,9 +628,11 @@ end ParseSoftwareModelName;
 -- Used by pragma todo and pragma manual_test
 -----------------------------------------------------------------------------
 
-procedure ParseWorkEstimate is
+work_estimate_unknown : boolean;
+
+procedure ParseWorkEstimate( work_estimate_unknown : out boolean ) is
    unused_bool : boolean;
-   work_estimate_unknown : boolean;
+   var_id : identifier;
 begin
   -- the work estimate measure
 
@@ -671,8 +673,9 @@ end ParseWorkEstimate;
 -- Used by pragma todo and pragma manual_test
 -----------------------------------------------------------------------------
 
-procedure ParseWorkPriority is
+procedure ParseWorkPriority( work_estimate_unknown : boolean ) is
    unused_bool : boolean;
+   var_id : identifier;
 begin
   -- the work priority measure
 
@@ -872,8 +875,8 @@ begin
            baseTypesOK( var_id, uni_string_t );
            ParseStaticExpression( expr_val, var_id );  -- postconditions/cleanup
            baseTypesOK( var_id, uni_string_t );
-           ParseWorkEstimate;                          -- work estimate
-           ParseWorkPriority;                          -- work priority
+           ParseWorkEstimate( work_estimate_unknown ); -- work estimate
+           ParseWorkPriority( work_estimate_unknown ); -- work priority
         end if;
      end if;
   when manual_test_result =>                 -- pragma manual_test_result
@@ -887,7 +890,7 @@ begin
            else
               err( "true or false expected" );
            end if;
-          if token = symbol_t and identifiers( token ).value = "," then
+          if token = symbol_t and identifiers( token ).value.all = "," then
              expect( symbol_t, "," );
              ParseStaticExpression( expr_val, var_id );  -- actual result
              baseTypesOK( var_id, uni_string_t );
@@ -1122,8 +1125,8 @@ begin
        baseTypesOK( var_id, uni_string_t );
        expect( symbol_t, "," );
 
-       ParseWorkEstimate;
-       ParseWorkPriority;
+       ParseWorkEstimate( work_estimate_unknown );
+       ParseWorkPriority( work_estimate_unknown );
 
        -- optional ticket id
        if token = symbol_t and identifiers( token ).value.all = "," then
