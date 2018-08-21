@@ -31,7 +31,12 @@ begin
   ? sum_of_squares(fa, 0);
 
   -- Non-zero length (result 133)
-  fa(1) := 3.0; fa(2) := 1.0; fa(3) := 4.0; fa(4) := 1.0; fa(5) := 5.0; fa(6) := 9.0;
+  fa(1) := 3.0;
+  fa(2) := 1.0;
+  fa(3) := 4.0;
+  fa(4) := 1.0;
+  fa(5) := 5.0;
+  fa(6) := 9.0;
   ? sum_of_squares(fa, 6);
 end sumsq;
 
