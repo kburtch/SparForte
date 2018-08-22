@@ -184,6 +184,19 @@ if you can configure one of these plug-ins to recognize Sparforte scripts
 as Ada.  This may give you 90% of the hilighting and other features you are
 looking for.</p>
 
+<h4>How Do I Use Microsoft VS Code with SparForte</h4>
+
+<p>Ada support will give you most of the features you are looking for.
+Install the Ada support plug-in.  Then change the user settings in
+the File / Preferences / Settings screen and map the SparForte file
+extension to the Ada language:</p>
+
+<pre>
+{
+"files.associations": { "*.sp": "ada"}
+}
+</pre>
+
 <h4>How Do I Use NetBeans with Sparforte?</h4>
 
 <p>NetBeans has support for Ada (though I've never tried it).  There is
