@@ -28,14 +28,18 @@ with gen_list,
     world,
     user_io,
     scanner,
+    performance_monitoring,
     parser_aux,
+    parser_sidefx,
     parser.decl.as;
 use ada.strings,
     ada.strings.unbounded,
     world,
     user_io,
     scanner,
+    performance_monitoring,
     parser_aux,
+    parser_sidefx,
     parser,
     parser.decl.as;
 
@@ -264,7 +268,10 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
      checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
 end ParseFirstInOutParameter;
 
@@ -283,7 +290,10 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
      checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
 end ParseNextInOutParameter;
 
@@ -306,7 +316,10 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
      checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
   expect( symbol_t, ")" );
 end ParseLastInOutParameter;
@@ -330,7 +343,10 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
      checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
   expect( symbol_t, ")" );
 end ParseSingleInOutParameter;
@@ -348,7 +364,10 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
      checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
   expect( symbol_t, ")" );
 end ParseLastInOutRecordParameter;
@@ -366,7 +385,10 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
      checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
 end ParseNextInOutRecordParameter;
 
@@ -682,7 +704,10 @@ begin
      end if;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite(ref.id, lastExpressionInstruction );
      checkDoubleThreadWrite( ref.id );
+     --checkDoubleGlobalWrite( ref.id );
+     identifiers( ref.id ).writtenOn := perfStats.lineCnt;
   end if;
 end ParseOutParameter;
 
@@ -809,7 +834,10 @@ begin
      end if;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite(ref.id, lastExpressionInstruction );
      checkDoubleThreadWrite( ref.id );
+     --checkDoubleGlobalWrite( ref.id );
+     identifiers( ref.id ).writtenOn := perfStats.lineCnt;
   end if;
 end ParseInOutParameter;
 

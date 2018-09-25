@@ -105,8 +105,4 @@ procedure FixRenamedArray( canonicalRef : renamingReference;
 -- Given a renamed array set up by ParseRenamingPart, fix the attributes
 -- for field type.
 
-procedure checkDoubleThreadWrite( id : identifier );
--- Check to see if, at run-time, two different "threads" write to the same
--- unprotected variable.  Also updates writtenByThread.
-
 end parser_aux;

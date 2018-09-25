@@ -538,7 +538,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -600,7 +600,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -826,7 +826,7 @@ begin
                  writtenOn => 0,
                  wasApplied => false,
                  wasFactor => false,
-                 factorTime => 0,
+                 factorOn => 0,
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
@@ -906,7 +906,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -997,7 +997,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1064,7 +1064,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
        funcCB => identifiers( canonicalRef.id ).funcCB,
        genKind => identifiers( canonicalRef.id ).genKind,
@@ -1200,7 +1200,7 @@ begin
            identifiers( field_id ).writtenByThread := noThread;
            identifiers( field_id ).wasApplied := false;
            identifiers( field_id ).wasFactor := false;
-           identifiers( field_id ).factorTime := 0;
+           identifiers( field_id ).factorOn := 0;
            identifiers( field_id ).writtenOn := 0;
         end if;
      end;
@@ -1256,7 +1256,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1390,7 +1390,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
-       factorTime => 0,
+       factorOn => 0,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,

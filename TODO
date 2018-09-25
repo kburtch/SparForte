@@ -13,6 +13,9 @@ Note: runs about 6 million years before throwing an exception.
 Priority Issues (Fix These First)
 -------------------------------
 
+- side-effects
+  - side-effects and static expressions
+  - factorOn tested on Assignment, but also needs to be tested on params
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
@@ -175,6 +178,9 @@ Annoyances / Bugs with Workarounds / Updates
       it's annoying throwback to line printers...but every conversion of a
       number would have to take into account adding/removing a space.
     - verify type checking not in executable parts so is done at compile-time
+    - after running one of my scripts, the less command doesn't work
+      properly, suggesting that some characteristic of the terminal
+      was not restored properly
 
 Nice to Haves / Missing Functionality
 -------------------------------------

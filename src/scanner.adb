@@ -2002,7 +2002,9 @@ begin
   if blocks_top > blocks'first then                    -- in a nested block?
      nextBlock := blocks_top - 1;                      -- start with latest
      hasLocalBlock := true;                            -- assume we'll find one
-     while not blocks( nextBlock ).newScope loop       -- if not new scope
+     --while not blocks( nextBlock ).newScope            -- if not new scope
+     while not blocks( nextBlock ).newScope            -- if not new scope
+       or blocks( nextBlock ).blockName = "for loop" loop   -- for is a special case
         if nextBlock = 1 then                          -- hit bottom?
            hasLocalBlock := false;                     -- no local blocks
            exit;                                       -- and quit
@@ -2839,6 +2841,11 @@ begin
   done := false;                                              -- not quitting
   trace := false;                                             -- not tracing
   cmdpos := 3;                                                -- first char
+
+  -- side-effect handling
+  --
+  lastExpressionInstruction := noExpressionInstruction;
+  firstExpressionInstruction := noExpressionInstruction;
 
   -- reset namespace
 

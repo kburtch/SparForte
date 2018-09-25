@@ -52,6 +52,7 @@ with system,
     scanner_res,
     scanner_restypes,
     parser_aux,
+    parser_sidefx,
     parser_params,
     parser_pragmas,
     parser_tio,
@@ -82,6 +83,7 @@ use ada.text_io,
     scanner_res,
     scanner_restypes,
     parser_aux,
+    parser_sidefx,
     parser_params,
     parser_pragmas,
     parser_tio,
@@ -2842,6 +2844,7 @@ begin
      else
         -- when running, mark that the actual parameter was written for
         -- side-effect prevention.
+        --checkDoubleGlobalWrite( actual_param_ref.id );
         -- As a kludge, the line count hasn't advanced yet from the expression
         -- so add one, otherwise it won't recognize that the write happend
         -- after the expression started.
@@ -4650,6 +4653,7 @@ procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
   index_kind : identifier;
   -- array_id   : arrayID;
   arrayIndex : long_integer;
+  expressionContext : line_count;
 begin
   -- Get the variable to assign to.  If interactive, consider
   -- auto-declarations.
@@ -4709,6 +4713,9 @@ begin
      var_kind := identifiers( var_kind ).kind; -- array of what?
   end if;
 
+  -- For assignments, we don't care if we read in our expression before write.
+  -- We only care about the greater expression context in which we run.
+  expressionContext := lastExpressionInstruction;
   ParseAssignPart( expr_value, right_type );
 
   if inputMode = interactive or inputMode = breakout or autoDeclareAllowed then
@@ -4761,6 +4768,21 @@ begin
   end if;
 
   if isExecutingCommand then
+     -- parse assignment: side-effect checking
+     --
+     -- Double write races (strict)
+
+     --checkDoubleGlobalWrite( var_id );
+
+     -- parse assignment: side-effect checking
+     --
+     -- Read in factor, then wrote
+
+     checkExpressionFactorVolatilityOnWrite( var_id, expressionContext );
+
+     -- parse assignment: expression side-effects
+     -- writing to a variable that is already read?
+     -- How do we do that?
 
      -- Expression Side-effects: record how many lines run by this point in time
      -- so we can determine later if this assignment occurred after the current
@@ -4774,6 +4796,10 @@ begin
         identifiers( var_id ).writtenOn := perfStats.lineCnt;
      end if;
 
+     -- parse assignment: side-effect checking
+     --
+     -- Double write races (relaxed)
+     --
      -- Run-time side-effects tracking and test
      -- Test for two or more "threads" writing to one unprotected variable
 
@@ -5174,6 +5200,7 @@ begin
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
               -- Test for two or more "threads" writing to one unprotected variable
+              checkExpressionFactorVolatilityOnWrite( startToken, lastExpressionInstruction );
               checkDoubleThreadWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;

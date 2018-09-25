@@ -26,15 +26,19 @@ with gnat.bubble_sort_a,
      ada.numerics.float_random,
      world,
      string_util,
+     performance_monitoring,
      scanner,
      parser_aux,
+     parser_sidefx,
      parser,
      parser_params;
 use
      world,
      string_util,
      scanner,
+     performance_monitoring,
      parser_aux,
+     parser_sidefx,
      parser,
      parser_params;
 
@@ -310,7 +314,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -352,7 +359,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -394,7 +404,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -436,7 +449,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
@@ -475,7 +491,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( array_id );
      -- last  := lastBound( array_id );
@@ -526,7 +545,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( array_id );
      --last  := lastBound( array_id );
@@ -572,7 +594,10 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
      --last  := lastBound( arrayIdBeingSorted );
@@ -608,7 +633,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
      --last  := lastBound( arrayIdBeingSorted );
@@ -645,7 +673,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      -- first := firstBound( arrayIdBeingSorted );
      -- last  := lastBound( arrayIdBeingSorted );
@@ -688,7 +719,10 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( var_id );
+     --checkDoubleGlobalWrite( var_id );
+     identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
      --first := firstBound( arrayIdBeingSorted );
      --last  := lastBound( arrayIdBeingSorted );
@@ -750,7 +784,10 @@ begin
      identifiers( target_var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( target_var_id, lastExpressionInstruction );
      checkDoubleThreadWrite( target_var_id );
+     --checkDoubleGlobalWrite( target_var_id );
+     identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
      -- assignParameter( target_var_id, jsonString );
      begin
