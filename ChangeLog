@@ -112,3 +112,7 @@ used with any command in a pipeline.
 
 52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
 
+53. Change: semi-colons are now optional in backquoted expressions (except if the expression includes a comment). [test]
+
+54. Fix: echo `foo` now works.  It was disabled in the code...why did I do that? [test]
+

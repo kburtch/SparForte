@@ -35,6 +35,7 @@ Priority Issues (Fix These First)
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc
+    - mis-spelling annotate resulted in a program error but shouldn't
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
       base type is.  That is, the difference from a standard package type.
@@ -46,6 +47,8 @@ Priority Issues (Fix These First)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
+    - echo "foo"`bar` works but echo `bar` does not
+      - `word` not allowed in BasicShellWord?
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------

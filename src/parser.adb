@@ -138,12 +138,14 @@ begin
   elsif token = symbol_t then
      shell_word := identifiers( token ).value.all;
   elsif token = word_t then
-     if head( identifiers( token ).value.all, 1 ) = "`" then
-        err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
-     else
-        shell_word := identifiers( token ).value.all;
-     end if;
+     -- KB: 19/10/01 - this was disallowed...but I don't remember why.
+     --if head( identifiers( token ).value.all, 1 ) = "`" then
+     --   err( optional_bold( "shell word" ) & " expected, not a " &
+     --     optional_bold( "backquoted literal" ) );
+     --else
+     --   shell_word := identifiers( token ).value.all;
+     --end if;
+     shell_word := identifiers( token ).value.all;
   elsif token = cd_t then
      shell_word := identifiers( token ).name;
   elsif token = clear_t then
@@ -699,6 +701,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   type aUniOp is ( noOp, doPlus, doMinus, doNot );
   uniOp : aUniOp := noOp;
   t : identifier;
+  codeFragment : unbounded_string;
 
   procedure ParseFactorIdentifier is
   begin
@@ -941,7 +944,14 @@ begin
         getNextToken;
      elsif token = backlit_t then           -- `cmds`
         kind := identifiers( token ).kind;
-        CompileRunAndCaptureOutput( identifiers( token ).value.all, f, getLineNo );
+        -- If the backquoted commands don't end with a semi-colon, add one.
+        -- There is a chance that the semi-colon could be hidden by a
+        -- comment symbol (--).
+        codeFragment := identifiers( token ).value.all;
+        if tail( codeFragment, 1 ) /= ";" then
+           codeFragment := codeFragment & ";";
+        end if;
+        CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         getNextToken;
      elsif token = abs_t then                             -- abs function
         ParseNumericsAbs( f );
@@ -1794,6 +1804,7 @@ procedure ParseStaticFactor( f : out unbounded_string; kind : out identifier ) i
   type aUniOp is ( noOp, doPlus, doMinus, doNot );
   uniOp : aUniOp := noOp;
   t : identifier;
+  codeFragment : unbounded_string;
 begin
   if Token = symbol_t and identifiers( Token ).value.all = "+" then
      uniOp := doPlus;
@@ -1911,7 +1922,14 @@ begin
         getNextToken;
      elsif token = backlit_t then           -- `cmds`
         kind := identifiers( token ).kind;
-        CompileRunAndCaptureOutput( identifiers( token ).value.all, f, getLineNo );
+        -- If the backquoted commands don't end with a semi-colon, add one.
+        -- There is a chance that the semi-colon could be hidden by a
+        -- comment symbol (--).
+        codeFragment := identifiers( token ).value.all;
+        if tail( codeFragment, 1 ) /= ";" then
+           codeFragment := codeFragment & ";";
+        end if;
+        CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         getNextToken;
      -- Static expressions must not run built-in functions because they will
      -- accept regular expressions
