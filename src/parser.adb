@@ -55,6 +55,7 @@ with system,
     parser.decl,
     parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_params,
+    parser_sidefx,
     parser_pragmas,
     parser_tio,
     parser_numerics,
@@ -87,6 +88,7 @@ use ada.text_io,
     parser.decl,
     parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_params,
+    parser_sidefx,
     parser_pragmas,
     parser_tio,
     parser_numerics,
@@ -743,12 +745,9 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           err( "array index must be a scalar type" );
        end if;                                   -- variables are not
        if isExecutingCommand then                -- declared in syntax chk
+          -- parse factor identifier: arrays
           -- expression side-effect prevention
-          if lastExpressionInstruction <= identifiers( t ).writtenOn then
-             err( to_string( identifiers( t ).name ) & " is not " &
-                  optional_bold( "volatile" ) & " but was written to after " &
-                  "evaluating the start of the expression" );
-          end if;
+          checkExpressionFactorVolatility( t );
           arrayIndex := long_integer(to_numeric(f));  -- convert to number
           --array_id2 := arrayID( to_numeric(      -- array_id2=reference
           --   identifiers( array_id ).value ) );  -- to the array table
@@ -777,6 +776,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
                 ": internal error : storage error raised in ParseFactor" );
              end;
           end if;
+          identifiers( array_id ).factorOn := perfStats.LineCnt;
        elsif syntax_check then
           identifiers( array_id ).wasFactor := true;
        end if;
@@ -793,19 +793,15 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
          err( optional_bold( to_string( identifiers( t ).name ) ) &
              " has an array index but is not an array" );
        end if;
+       -- parse factor identifier: scalar or record
        -- expression side-effect prevention
        if not syntax_check then
-          if identifiers( t ).field_of /= eof_t then
-             if lastExpressionInstruction < identifiers( identifiers( t ).field_of ).writtenOn then
-                err( to_string( identifiers( t ).name ) & " is not " &
-                     optional_bold( "volatile" ) & " but was written to after " &
-                     "evaluating the start of the expression" );
-             end if;
-          else
-             if lastExpressionInstruction < identifiers( t ).writtenOn then
-                err( to_string( identifiers( t ).name ) & " is not " &
-                     optional_bold( "volatile" ) & " but was written to after " &
-                     "evaluating the start of the expression" );
+          checkExpressionFactorVolatility( t );
+          if t /= eof_t then
+             if identifiers( t ).field_of /= eof_t then
+                identifiers( identifiers( t ).field_of ).factorOn := perfStats.LineCnt;
+             else
+                identifiers( t ).factorOn := perfStats.LineCnt;
              end if;
           end if;
        end if;
@@ -1680,12 +1676,16 @@ procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier
   b        : boolean;
   type bitwise_number is mod 2**64;
   oldExpressionInstruction : line_count := lastExpressionInstruction;
+  oldFirstExpressionInstruction : line_count := firstExpressionInstruction;
 begin
   -- expression side-effects.  Remember how many lines have run prior to this
   -- expression to determine if variables in the expression were altered
   -- later than this line.  Remember that expressions can be nested.
   -- If not checking side-effects, this will be zer0.
   lastExpressionInstruction := perfStats.lineCnt;
+  if firstExpressionInstruction = noExpressionInstruction then
+     firstExpressionInstruction := perfStats.lineCnt;
+  end if;
   ParseRelation( re1, kind1 );
   ex := re1;
   expr_type := kind1;
@@ -1787,6 +1787,7 @@ begin
   -- expression side-effects: we're now whatever the previous expression
   -- instruction was.
   lastExpressionInstruction := oldExpressionInstruction;
+  firstExpressionInstruction := oldFirstExpressionInstruction;
   --put_line( "Expression value = " & to_string( ex ) );
 end ParseExpression;
 

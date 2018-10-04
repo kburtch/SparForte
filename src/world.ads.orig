@@ -304,7 +304,10 @@ mainThread : aThreadName := to_unbounded_string( "main task" );
 -- The instruction number of the last expression to execute (if any).
 
 noExpressionInstruction : constant line_count := line_count'last;
+-- start of latest expression
 lastExpressionInstruction : line_count;
+-- start of top-most expression
+firstExpressionInstruction : line_count;
 
 ------------------------------------------------------------------------------
 --
@@ -383,9 +386,11 @@ type declaration is record
      wasWritten      : boolean := false;        -- true if written in syn chk
      writtenByThread : aThreadName;
      writtenOn       : line_count       ;       -- side-effect protection
+                                                --   when last written to
      wasApplied      : boolean := false;        -- true if type was used
      wasFactor       : boolean := false;        -- true if used in expression
-     factorTime      : natural := 0;            -- when last used as a factor
+     factorOn        : line_count := 0;         -- side-effect protection
+                                                --   when last used as a factor
      renaming_of     : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident
