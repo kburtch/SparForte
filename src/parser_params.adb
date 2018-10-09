@@ -268,7 +268,7 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( param_id );
      checkDoubleThreadWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
@@ -290,7 +290,7 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( param_id );
      checkDoubleThreadWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
@@ -316,7 +316,7 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( param_id );
      checkDoubleThreadWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
@@ -343,7 +343,7 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( param_id );
      checkDoubleThreadWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
@@ -364,7 +364,7 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( param_id );
      checkDoubleThreadWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
@@ -385,7 +385,7 @@ begin
      identifiers( param_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( param_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( param_id );
      checkDoubleThreadWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
@@ -704,7 +704,7 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite(ref.id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite(ref.id );
      checkDoubleThreadWrite( ref.id );
      --checkDoubleGlobalWrite( ref.id );
      identifiers( ref.id ).writtenOn := perfStats.lineCnt;
@@ -834,7 +834,7 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite(ref.id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite(ref.id );
      checkDoubleThreadWrite( ref.id );
      --checkDoubleGlobalWrite( ref.id );
      identifiers( ref.id ).writtenOn := perfStats.lineCnt;

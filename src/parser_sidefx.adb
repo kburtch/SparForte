@@ -23,25 +23,106 @@
 
 with ada.text_io,
      scanner,
-     --Interfaces.C,
-     --gnat.source_info,
-     --string_util,
-     --script_io,
      user_io;
-     --compiler,
-     --parser.decl.as;
 use  ada.text_io,
      scanner,
-     --nterfaces.C,
-     --string_util,
-     --script_io,
      user_io;
-     --compiler,
-     --parser,
-     --parser.decl.as;
 
 
 package body parser_sidefx is
+
+--- The Active Expression Identifier Linked List
+
+activeExpressionIdList : activeExpressionIdLists.List;
+
+
+--  ACTIVE EXPRESSION ID SORT
+--
+-- This is the sort function for the stack.  Since we are not actually
+-- sorting, this is not used, but is still required to define the list.
+
+function activeExpressionIdSort( left, right : activeExpressionId ) return boolean is
+begin
+  return right.id >= left.id;
+end activeExpressionIdSort;
+
+
+--- Expression Factor Stack
+--
+-- This is used by checkExpressionFactorVolatilityOnWrite
+-------------------------------------------------------------------------------
+
+
+--  PUSH EXPRESSION ID
+--
+-- Push an identifier which is used in an expression factor to the active
+-- expression identifiers stack, associating it with the current expression.
+-- (The current expression is found in the global lastExpressionInstruction.)
+
+procedure pushExpressionId( id : identifier ) is
+  aei_record : activeExpressionId;
+begin
+  --put_line( "Push active id = " & id'img ); -- DEBUG
+  aei_record.id := id;
+  aei_record.exprId := lastExpressionInstruction;
+  activeExpressionIdLists.Push( activeExpressionIdList, aei_record );
+end pushExpressionId;
+
+
+--  PULL EXPRESSION IDS
+--
+-- Discard all identifiers associated with the current expression.  This is
+-- done when an expression is finished.
+-- (The current expression is found in the global lastExpressionInstruction.)
+
+procedure pullExpressionIds is
+  aei_record : activeExpressionId;
+begin
+  while not activeExpressionidLists.isEmpty( activeExpressionidList ) loop
+     activeExpressionIdLists.Pull( activeExpressionIdList, aei_record );
+     if aei_record.exprId /= lastExpressionInstruction then
+        activeExpressionIdLists.Push( activeExpressionIdList, aei_record );
+        exit;
+     end if;
+     --put_line( "Pulled active id = " & aei_record.id'img ); -- DEBUG
+  end loop;
+end pullExpressionIds;
+
+
+--  IS ACTIVE EXPRESSION ID
+--
+-- True if id is in use in an active expression.  That is, that it is found in
+-- the active expression identifiers stack.
+
+function isActiveExpressionId( id : identifier ) return boolean is
+  aei_record : activeExpressionId;
+  found : boolean := false;
+begin
+  for i in 1..activeExpressionIdLists.Length( activeExpressionIdList ) loop
+      activeExpressionIdLists.Find( activeExpressionIdList, i, aei_record );
+      if aei_record.id = id then
+         found := true;
+      end if;
+  end loop;
+  return found;
+end isActiveExpressionId;
+
+
+--  CLEAR ACTIVE EXPRESSION IDS
+--
+-- Erase the active expression identifiers stack.
+
+procedure clearActiveExpressionIds is
+begin
+  activeExpressionIdLists.Clear( activeExpressionIdList );
+end clearActiveExpressionIds;
+
+
+-- Side-effect tests
+--
+-- These procedures test for a side-effect issues and report an error if one is
+-- detected.
+-------------------------------------------------------------------------------
 
 
 -- CHECK EXPRESSION FACTOR VOLATILITY
@@ -59,7 +140,7 @@ begin
         -- we don't track record fields, only the record
         if lastExpressionInstruction < identifiers( identifiers( id ).field_of ).writtenOn then
            if not identifiers( identifiers( id ).field_of ).volatile then
-              err( to_string( identifiers( identifiers( id ).field_of ).name ) & " is not " &
+              err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) & " is not " &
                    optional_bold( "volatile" ) & " but was written to after " &
                    "evaluating the start of the expression" );
            end if;
@@ -67,7 +148,7 @@ begin
      else
         if lastExpressionInstruction < identifiers( id ).writtenOn then
            if not identifiers( id ).volatile then
-              err( to_string( identifiers( id ).name ) & " is not " &
+              err( "side-effects: " & to_string( identifiers( id ).name ) & " is not " &
                    optional_bold( "volatile" ) & " but was written to after " &
                    "evaluating the start of the expression" );
            end if;
@@ -95,27 +176,28 @@ end checkExpressionFactorVolatility;
 -- the assignment's expression with the context parameter.  Context is the
 -- instruction containing the assignment.
 
-procedure checkExpressionFactorVolatilityOnWrite( id: identifier; context : line_count ) is
+procedure checkExpressionFactorVolatilityOnWrite( id: identifier ) is
 begin
   -- if variable exists...
   if id /= eof_t then
      if identifiers( id ).field_of /= eof_t then
         -- we don't track record fields, only the record
-        if lastExpressionInstruction < identifiers( identifiers( id ).field_of ).factorOn and
-           identifiers( identifiers( id ).field_of ).factorOn < context then
+        if isActiveExpressionId( identifiers( id ).field_of ) then
+        --if lastExpressionInstruction <= identifiers( identifiers( id ).field_of ).factorOn then
            if not identifiers( identifiers( id ).field_of ).volatile then
-              err( to_string( identifiers( identifiers( id ).field_of ).name ) & " is not " &
+              err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) & " is not " &
                    optional_bold( "volatile" ) & " but was written after read " &
                    "within an expression" );
            end if;
         end if;
      else
---put_line( "LEI=" & lastExpressionInstruction'img ); -- DEBUG
---put_line( "factorOn=" & identifiers( id ).factorOn'img ); -- DEBUG
-        if lastExpressionInstruction < identifiers( id ).factorOn and
-           identifiers( id ).factorOn < context then
+--put_line("Written after read test" );
+--put_line( "LEI=" & lastExpressionInstruction'img );
+--put_line( "  " & to_string(identifiers(id).name) & ".factorOn=" & identifiers( id ).factorOn'img );
+        if isActiveExpressionId( id ) then
+        --if lastExpressionInstruction <= identifiers( id ).factorOn then
            if not identifiers( id ).volatile then
-              err( to_string( identifiers( id ).name ) & " is not " &
+              err( "side-effects: " & to_string( identifiers( id ).name ) & " is not " &
                    optional_bold( "volatile" ) & " but was written after read " &
                    "within an expression" );
            end if;
@@ -138,7 +220,7 @@ begin
      if identifiers( identifiers( id  ).field_of ).writtenByThread /= noThread then
         if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
            if not identifiers( identifiers( id ).field_of ).volatile then
-              err( to_string( identifiers( identifiers( id ).field_of ).name &
+              err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
                    " (in " & optional_bold( to_string( getThreadName ) ) &
                    ") is not volatile but is also changed by " &
                    optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) );
@@ -150,7 +232,7 @@ begin
      if identifiers( id ).writtenByThread /= noThread then
         if identifiers( id ).writtenByThread /= getThreadName then
            if not identifiers( identifiers( id ).field_of ).volatile then
-              err( to_string( identifiers( id ).name &
+              err( "side-effects: " & to_string( identifiers( id ).name &
                    " (in " & optional_bold( to_string( getThreadName ) ) &
                    ") is not volatile but is also changed by " &
                    optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) );
@@ -184,7 +266,7 @@ begin
         if not isLocal( id ) then
            if not identifiers( identifiers( id ).field_of ).volatile then
               if identifiers( identifiers( id ).field_of ).writtenOn > firstExpressionInstruction then
-                 err( to_string( identifiers( identifiers( id ).field_of ).name &
+                 err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
                       " is not volatile and not local and is written to two or more times" &
                       " during an expression" ) );
               end if;
@@ -203,7 +285,7 @@ begin
     --put_line( "written on = " & identifiers( var_id ).writtenOn'img );
           if not identifiers( id ).volatile then
              if identifiers( id ).writtenOn > firstExpressionInstruction then
-                err( to_string( identifiers( id ).name &
+                err( "side-effects: " & to_string( identifiers( id ).name &
                      " is not volatile and not local but is written to two or more times" &
                      " during an expression" ) );
              end if;

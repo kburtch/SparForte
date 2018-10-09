@@ -314,7 +314,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -359,7 +359,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -404,7 +404,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -449,7 +449,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -491,7 +491,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -545,7 +545,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -594,7 +594,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -633,7 +633,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -673,7 +673,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -719,7 +719,7 @@ begin
      identifiers( var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( var_id );
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
@@ -784,7 +784,7 @@ begin
      identifiers( target_var_id ).wasWritten := true;
   end if;
   if isExecutingCommand then
-     checkExpressionFactorVolatilityOnWrite( target_var_id, lastExpressionInstruction );
+     checkExpressionFactorVolatilityOnWrite( target_var_id );
      checkDoubleThreadWrite( target_var_id );
      --checkDoubleGlobalWrite( target_var_id );
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;

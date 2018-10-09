@@ -4653,7 +4653,7 @@ procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
   index_kind : identifier;
   -- array_id   : arrayID;
   arrayIndex : long_integer;
-  expressionContext : line_count;
+  targetExpression : line_count;
 begin
   -- Get the variable to assign to.  If interactive, consider
   -- auto-declarations.
@@ -4713,10 +4713,24 @@ begin
      var_kind := identifiers( var_kind ).kind; -- array of what?
   end if;
 
-  -- For assignments, we don't care if we read in our expression before write.
-  -- We only care about the greater expression context in which we run.
-  expressionContext := lastExpressionInstruction;
+  -- Side-effect checking.  The time the variable being assigned to was used
+  -- as a factor must be saved and recovered as we want to know if it was a
+  -- factor in the previous nested expression context.
+  --
+  -- Example:
+  --   x = y + f1() where f1(): y = 1
+  --   x = y + f1() where f1(): y = y + 1
+  --
+  -- The first works fine.  The second has a problem.  y will be noted as a
+  -- factor on the second expression, losing its association as a factor in
+  -- the first expression.  It won't be detected as a side-effect.  This is
+  -- because expressions can be nested.
+
+  targetExpression := lastExpressionInstruction;
+
   ParseAssignPart( expr_value, right_type );
+
+  lastExpressionInstruction := targetExpression;
 
   if inputMode = interactive or inputMode = breakout or autoDeclareAllowed then
      if identifiers( var_id ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found then
@@ -4778,7 +4792,7 @@ begin
      --
      -- Read in factor, then wrote
 
-     checkExpressionFactorVolatilityOnWrite( var_id, expressionContext );
+     checkExpressionFactorVolatilityOnWrite( var_id );
 
      -- parse assignment: expression side-effects
      -- writing to a variable that is already read?
@@ -5200,7 +5214,7 @@ begin
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
               -- Test for two or more "threads" writing to one unprotected variable
-              checkExpressionFactorVolatilityOnWrite( startToken, lastExpressionInstruction );
+              checkExpressionFactorVolatilityOnWrite( startToken );
               checkDoubleThreadWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;

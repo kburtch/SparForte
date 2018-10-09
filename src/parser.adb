@@ -773,7 +773,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
                 ": internal error : storage error raised in ParseFactor" );
              end;
           end if;
-          identifiers( array_id ).factorOn := perfStats.LineCnt;
+          pushExpressionId( array_id );
        elsif syntax_check then
           identifiers( array_id ).wasFactor := true;
        end if;
@@ -796,9 +796,9 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           checkExpressionFactorVolatility( t );
           if t /= eof_t then
              if identifiers( t ).field_of /= eof_t then
-                identifiers( identifiers( t ).field_of ).factorOn := perfStats.LineCnt;
+                pushExpressionId( identifiers( t ).field_of );
              else
-                identifiers( t ).factorOn := perfStats.LineCnt;
+                pushExpressionId( t );
              end if;
           end if;
        end if;
@@ -1676,6 +1676,7 @@ begin
   if firstExpressionInstruction = noExpressionInstruction then
      firstExpressionInstruction := perfStats.lineCnt;
   end if;
+  --put_line( "ParseExpression: LEI =" & lastExpressionInstruction'img );
   ParseRelation( re1, kind1 );
   ex := re1;
   expr_type := kind1;
@@ -1774,6 +1775,8 @@ begin
      last_op := operator;
   end loop;
   ex := re1;
+  -- Must pull before resetting...
+  pullExpressionIds;
   -- expression side-effects: we're now whatever the previous expression
   -- instruction was.
   lastExpressionInstruction := oldExpressionInstruction;
@@ -2816,6 +2819,7 @@ procedure startParser is
 begin
   -- expression side-effect detection: no expressions have run yet.
   lastExpressionInstruction := noExpressionInstruction;
+  clearActiveExpressionIds;
 end startParser;
 
 
@@ -2826,7 +2830,7 @@ end startParser;
 
 procedure shutdownParser is
 begin
-  null;
+  clearActiveExpressionIds;
 end shutdownParser;
 
 end parser;

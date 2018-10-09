@@ -389,8 +389,6 @@ type declaration is record
                                                 --   when last written to
      wasApplied      : boolean := false;        -- true if type was used
      wasFactor       : boolean := false;        -- true if used in expression
-     factorOn        : line_count := 0;         -- side-effect protection
-                                                --   when last used as a factor
      renaming_of     : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident

@@ -4925,6 +4925,22 @@ begin
   pragma assert( unsigned_byte = 160 );
 end;
 
+-- A particular case of side-effect testing: the integer i
+-- should not be flagged as a side-effect when the assignment
+-- is within a larger expression
+
+declare
+  i : integer := 0;
+
+  function test_f1 return boolean is
+  begin
+    i := i + 1;
+    return true;
+  end test_f1;
+begin
+  ? test_f1;
+end;
+
 -- I encountered a big where top-level resources threw an exception...
 diropid : directory_operations.dir_type_id;
 

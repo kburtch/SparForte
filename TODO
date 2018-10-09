@@ -15,7 +15,7 @@ Priority Issues (Fix These First)
 
 - side-effects
   - side-effects and static expressions
-  - factorOn tested on Assignment, but also needs to be tested on params
+    - what is the role of volatile?
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
@@ -214,6 +214,8 @@ Nice to Haves / Missing Functionality
     - distinguish types of pragmas, to later separate by block or context
     - a pragma to check for the version of SparForte?  Is it a doc pragma,
       executable or both?
+    - pragma no_bourne_shell
+    - pragma no_universal_types
     - pragma restriction is too restrictive.  If the goal is to migrate
       designs, we need levels of restrictions.  For example, pragma
       pending_restriction( x ), similar to pragma deprecated, which is
@@ -292,6 +294,7 @@ Nice to Haves / Missing Functionality
   - new vector or game math package (quads, etc).
   - how can we enhance packages?  Should a "service" be a collection of packages?
 - unsorted/misc
+    - should using too many built-in types in a formal script produce a style error?
     - support for literals in different bases
     - syntax check on templates, -e commands, policies, profiles
     - update dynamic_hash_table functionality to handle records, arrays, etc. like btree_io
