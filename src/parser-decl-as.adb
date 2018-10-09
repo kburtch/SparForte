@@ -1587,7 +1587,13 @@ begin
             tempStr : unbounded_string := to_unbounded_string( slice( word, startOfBQuote+1, length( word ) ) );
             result : unbounded_string;
          begin
-            delete( word, startOfBQuote+1, length( tempStr ) + 2 );
+            delete( word, startOfBQuote+1, length( tempStr ) - 1 );
+            -- If the backquoted commands don't end with a semi-colon, add one.
+            -- There is a chance that the semi-colon could be hidden by a
+            -- comment symbol (--).
+            if tail( tempStr, 1 ) /= ";" then
+               tempStr := tempStr & ";";
+            end if;
             CompileRunAndCaptureOutput( tempStr, result );
             word := word & result;
          end;

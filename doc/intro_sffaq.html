@@ -247,10 +247,16 @@ documentation.</p>
 
 <h4>Why do I get an error when I run commands in backquotes?</h4>
 
-<p>Sparforte requires all commands to be terminated with a semi-colon.  This
-includes commands in backquotes.  For example,</p>
+<p>Sparforte requires all commands to be terminated with a semi-colon.
+With more recent versions, a semi-colon is provided for you if the
+commands do not end with one.  However, this added semi-colon is
+useless if the command contains a comment&mdash;it will be hidden
+as part of the comment.  For example,</p>
 
-<p><tt>files : string := `ls;`;</tt></p>
+<p><tt>files : string := `ls;`;</tt> -- good</p>
+<p><tt>files : string := `ls`;</tt> -- good (with recent versions)</p>
+<p><tt>files : string := `ls; -- comment`;</tt> --good</p>
+<p><tt>files : string := `ls -- comment`;</tt> --this will fail</p>
 
 <h4>Why do I get an error when I run a command with a long option on the command prompt?</h4>
 
