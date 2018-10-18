@@ -121,8 +121,8 @@ type aPragmaKind is (
      restriction_memcache,
      restriction_mysql,
      restriction_postgresql,
-     restriction_side_effects,
      restriction_todos,
+     restriction_volatiles,
      session_export_script,
      session_import_script,
      software_model,
@@ -968,6 +968,10 @@ begin
         discardUnusedIdentifier( token );
         getNextToken;
         pragmaKind := restriction_unused;
+     elsif identifiers( token ).name = "no_volatiles" then
+        discardUnusedIdentifier( token );
+        getNextToken;
+        pragmaKind := restriction_volatiles;
      else
         discardUnusedIdentifier( token );
         err( "unknown restriction" );
@@ -1137,6 +1141,9 @@ begin
   when uninspect_var =>                      -- pragma uninspect
      ParseIdentifier( var_id );
   when volatile =>                           -- pragma volatile
+     if restriction_no_volatiles then
+        err( "pragma restriction( no_volatiles ) does not allow pragma volatile" );
+     end if;
      ParseIdentifier( var_id );
   when others =>
      err( "Internal error: can't handle pragma" );
@@ -1523,6 +1530,8 @@ begin
         restriction_no_postgresql_database := true;
      when restriction_todos =>
         restriction_no_annotate_todos := true;
+     when restriction_volatiles =>
+        restriction_no_volatiles := true;
      when promptChange =>
         if not error_found then
            promptScript := expr_val;

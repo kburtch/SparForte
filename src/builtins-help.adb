@@ -1231,6 +1231,7 @@ begin
   content( e, "pragma restriction( no_mysql_database ) - disable connections to mysql" );
   content( e, "pragma restriction( no_postgresql_database ) - disable connections to postgresql" );
   content( e, "pragma restriction( no_unused_identifiers ) - stricter unused tests" );
+  content( e, "pragma restriction( no_volatiles ) - volatile identifiers not allowed" );
   content( e, "pragma session_export_script( `commands` ) - commands to export session variables" );
   content( e, "pragma session_import_script( `commands` ) - commands to import session variables" );
   content( e, "pragma software_model( model_name ) - specify the category of the program" );
@@ -1975,7 +1976,8 @@ begin
      categoryPackage( e );
      description( e, "A collection of common bindings for the operating system." );
      content( e, "s := error_string( i )" );
-     content( e, "i := pid" );
+     content( e, "n := last_child" );
+     content( e, "n := pid" );
      content( e, "i := status" );
      content( e, "system( s )" );
      footer( e, "The Bourne shell style $? operand is the same as os.status" );

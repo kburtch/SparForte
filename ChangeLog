@@ -116,3 +116,7 @@ used with any command in a pipeline.
 
 54. Fix: echo `foo` now works.  It was disabled in the code...why did I do that? [test]
 
+55. New: pragma restriction( no_volatiles );
+
+56. New. os.last_child.  Get the pid of the last child run in the background.
+

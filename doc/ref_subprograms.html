@@ -695,17 +695,20 @@ used in some scripts.</p>
 
 <h2>Side-Effects and Data Safety</h2>
 
-<p>SparForte does not permit certain combinations of statements that may have risky
-or unpredictable consequences.</p>
+<p>SparForte does not permit certain combinations of statements that may
+have risky or unpredictable consequences.</p>
 
-<p>A volatile variable is a variable that changes unexpectedly.  A variable can be
-designated volatile with <b>pragma volatile</b>.  Changing a variable's value
-while it is used in an expression is one way to make a variable's value volatile.
-Volatile variables cannot be used in expression.</p>
+<p>A volatile variable has a value that can change unexpectedly.  A variable
+can be designated volatile with <b>pragma volatile</b>.  In an expression,
+a changing a variable's value while also reading the variable's value will
+make the variable volatile.  Volatile variables cannot be used in expression,
+although their values may be copied with a copies clause declaration.
+(There are also other ways a variable can be volatile.)</p>
 
-<p>In a function, a function must not change a variable's value that is also being used at
-the same time in an expression.  If the variable's value were to change, it could cause
-the value of the expression to be unpredictable.  (This is sometimes called "expression
+<p>A function (or anything run by a function) must not change a variable's
+value while that value is also being used in an expression at the same time.
+If the variable's value were to change, it could cause the value of the
+expression to be unpredictable.  (This is sometimes called "expression
 side-effects".)</p>
 
         <center>
@@ -734,7 +737,7 @@ side-effects".)</p>
 <div class="code">
 <p class="code">
 &nbsp;&nbsp;? i * risky + i;  -- changing i during an expression
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ i is not volatile but was written to after evaluating the start of the expression
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ side-effects: i is not volatile but but was read after written within an expression.  Perhaps a copy should be used.
 </p>
 </div>
 
@@ -746,17 +749,43 @@ are array functions that can affect the whole array.</p>
 <p>The same is true for records.  No field in a record used actively in an expression
 can have its value changed.</p>
 
-<p>A two different functions (or a function and the main program, or a function and
-a contract) are not allowed to write to the same variable.  Only one function may
-write to a variable in a more global scope.  This is done to prevent data races,
-where two functions in an expression may try to update the same variable in an
-unpredictable way.  It also prevents variable's value from changing unexpectedly
-in a program when a function is used in an expression.</p>
+<p>The reverse case, to read and then write, is technically not a side-effect
+since the changed value is never used in the expression.  However, it is also
+treated as a side-effect because it could become volatile if the expression
+is changed.  In this case, the error message would be</p>
+
+<div class="code">
+<p class="code">
+side-effects: i is not volatile but was written after read within an expression.  Perhaps a copy should be used.
+</p>
+</div>
+
+<p>To solve these errors, use a copy of the original variable.</p>
+
+<p>A two different functions (or a function and the main program, or a
+function and a contract) are not allowed to write to the same variable.
+Only one function may write to a variable in a more global scope.  This is
+done to prevent data races, where two functions in an expression may try to
+update the same variable in an unpredictable way.  Instead, only one function
+is responsible for updating the value.</p>
 
 <p>For any global variable, any function can change a global variable.  However,
 only that function and no other function can change that variable.</p>
 
-<p>These restrictions do not apply to procedures.</p>
+<p>In this case, there error will be like this example:</p>
+
+<div class="code">
+<p class="code">
+side-effects: i (in func1) is not volatile but is also changed by func2.  Perhaps refactor so only one source is responsible for changes.
+</p>
+</div>
+
+<p>The solution is to ensure only one function is used to update the
+variable.  Alternatively, make the variable volatile with pragma volatile.</p>
+
+<p>These restrictions do not apply to procedures.  Two or more procedures
+can write to variables of a more global scope (unless, of course, they
+create expression side-effects as mentioned at the start of this section).</p>
 
 <br>&nbsp;
 

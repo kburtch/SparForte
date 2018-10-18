@@ -14,12 +14,12 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - side-effects
-  - side-effects and static expressions
-    - what is the role of volatile?
+  - what is the role of volatile?
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
+* improve first word parsing on the command
 - affirm blocks
     - test if HTML escaping can be implemented in an affirm block
     - should affirm blocks have an expression short-form?
@@ -34,11 +34,9 @@ Priority Issues (Fix These First)
       - was wasWritten obsolete with writtenByThread?
     - the affect of renamings?
     - this probably need to be run-time
-* improve first word parsing on the command
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc
-    - mis-spelling annotate resulted in a program error but shouldn't
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
       base type is.  That is, the difference from a standard package type.

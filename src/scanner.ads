@@ -107,6 +107,7 @@ sound_unmute_t     : identifier;
 
 os_error_string_t : identifier;
 os_pid_t          : identifier;
+os_last_child_t   : identifier;
 os_status_t       : identifier;
 os_system_t       : identifier;
 

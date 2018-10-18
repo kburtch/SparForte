@@ -378,7 +378,7 @@ end spawnCommandOrRunBuiltin;
 -----------------------------------------------------------------------------
 --  RUN
 --
--- Run an external command or a BUSH built-in without any pipeline.  If
+-- Run an external command or a Spar built-in without any pipeline.  If
 -- background is true, run the program in the background.  If cache is true,
 -- save the pathname in the command hash table.
 -----------------------------------------------------------------------------
@@ -425,6 +425,7 @@ begin
               cmd, paramToken, fullPath, ap, noReturn => true,
               success => success );
          else -- parent
+            lastChild := myPID;
             newJob.pid := myPID;
             newJob.cmd := cmd;
             newJob.status := running;
@@ -552,6 +553,7 @@ begin
             done := true;
             token := eof_t;
          else                                -- parent process?
+            lastChild := myPID;
             newJob.pid := myPID;             -- record the job
             newJob.cmd := cmd;               -- in the job table
             newJob.status := running;
@@ -804,6 +806,7 @@ begin
             done := true;
             token := eof_t;
          else
+            lastChild := myPID;
             newJob.pid := myPID;
             newJob.cmd := cmd;
             newJob.status := running;

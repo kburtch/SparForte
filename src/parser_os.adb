@@ -93,6 +93,16 @@ begin
   end if;
 end ParseOSErrorString;
 
+procedure ParseOSLastChild( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: os.last_child
+begin
+  kind := natural_t;
+  expect( os_last_child_t );
+  if isExecutingCommand then
+     result := to_unbounded_string( aPID'image( lastChild ) );
+  end if;
+end ParseOSLastChild;
+
 procedure StartupSparOS is
 begin
   declareNamespace( "os" );
@@ -100,6 +110,7 @@ begin
   declareFunction( os_pid_t, "os.pid", ParseOSPid'access );
   declareFunction( os_status_t, "os.status", ParseOSStatus'access );
   declareProcedure( os_system_t, "os.system", ParseOSSystem'access );
+  declareFunction( os_last_child_t, "os.last_child", ParseOSLastChild'access );
   declareNamespaceClosed( "os" );
 end StartupSparOS;
 
