@@ -847,6 +847,10 @@ begin
         f := to_unbounded_string( aPID'image( getpid ) );
         kind := uni_numeric_t;
         getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
+        f := to_unbounded_string( aPID'image( lastChild ) );
+        kind := uni_numeric_t;
+        getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
         if onlyAda95 then
            err( "$# not allowed with " & optional_bold( "pragma ada_95" ) &
@@ -1831,6 +1835,10 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$$" then
         f := to_unbounded_string( aPID'image( getpid ) );
+        kind := uni_numeric_t;
+        getNextToken;
+     elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
+        f := to_unbounded_string( aPID'image( lastChild ) );
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then

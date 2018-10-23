@@ -1084,7 +1084,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
      ch      : character;
   begin
     --put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
-    -- Handle Special Substitutions ($#, $? $$, $0...$9 )
+    -- Handle Special Substitutions ($#, $? $$, $!, $0...$9 )
     if expansionVar = "#" then
        if isExecutingCommand then
           subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
@@ -1098,6 +1098,11 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     elsif expansionVar = "$" then
        if isExecutingCommand then
           subword := to_unbounded_string( aPID'image( getpid ) );
+          delete( subword, 1, 1 );
+       end if;
+    elsif expansionVar = "!" then
+       if isExecutingCommand then
+          subword := to_unbounded_string( aPID'image( lastChild ) );
           delete( subword, 1, 1 );
        end if;
     elsif expansionVar = "0" then

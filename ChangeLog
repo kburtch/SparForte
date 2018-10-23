@@ -118,5 +118,5 @@ used with any command in a pipeline.
 
 55. New: pragma restriction( no_volatiles );
 
-56. New. os.last_child.  Get the pid of the last child run in the background.
+56. New. os.last_child and equivalent $!.  Get the pid of the last child run in the background.
 

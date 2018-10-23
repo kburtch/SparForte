@@ -1007,6 +1007,7 @@ i := $?; -- status
 i := $#; -- number of arguments
 pragma assert( i = 3 );
 i := $$; -- pid
+i := $!; -- last pid
 s := $0; -- command name
 s := $1; -- first argument
 pragma assert( s = "a" );
@@ -1026,6 +1027,8 @@ i := os.status;
 pragma assert( i = 0 );
 n := os.pid;
 pragma assert( n /= 0 );
+n := $!;
+pragma assert( n = os.last_child );
 s := os.error_string( 1 );
 pragma assert( strings.length( s ) > 0 );
 

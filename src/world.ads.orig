@@ -259,7 +259,7 @@ engineOpen    : boolean := false;
 libraryPath : Unbounded_String;
 -- list of library directories (-L) from command line
 
-lastChild : aPID;
+lastChild : aPID := 0;
 -- the process ID of the last child process (i.e. command with ampersand)
 
 ------------------------------------------------------------------------------

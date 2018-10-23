@@ -5441,6 +5441,8 @@ begin
              cmdpos := cmdpos + 1;
           elsif script( cmdpos ) = '?' then
              cmdpos := cmdpos + 1;
+          elsif script( cmdpos ) = '!' then
+             cmdpos := cmdpos + 1;
           elsif script( cmdpos ) >= '0' and script( cmdpos ) <= '9' then
              cmdpos := cmdpos + 1;
           end if;
