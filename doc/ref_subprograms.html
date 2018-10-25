@@ -760,6 +760,9 @@ side-effects: i is not volatile but was written after read within an expression.
 </p>
 </div>
 
+<p>This check is not performed when running in maintenace mode because
+the check is slow and is a test for bad design.</p>
+
 <p>To solve these errors, use a copy of the original variable.</p>
 
 <p>A two different functions (or a function and the main program, or a
