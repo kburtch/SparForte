@@ -58,14 +58,19 @@ end activeExpressionIdSort;
 -- Push an identifier which is used in an expression factor to the active
 -- expression identifiers stack, associating it with the current expression.
 -- (The current expression is found in the global lastExpressionInstruction.)
+--
+-- Skip this when running in maintenance mode because it is expensive and
+-- the OnWrite test is more of a design issue.
 
 procedure pushExpressionId( id : identifier ) is
   aei_record : activeExpressionId;
 begin
-  --put_line( "Push active id = " & id'img ); -- DEBUG
-  aei_record.id := id;
-  aei_record.exprId := lastExpressionInstruction;
-  activeExpressionIdLists.Push( activeExpressionIdList, aei_record );
+  if not boolean(maintenanceOpt) then
+     --put_line( "Push active id = " & id'img ); -- DEBUG
+     aei_record.id := id;
+     aei_record.exprId := lastExpressionInstruction;
+     activeExpressionIdLists.Push( activeExpressionIdList, aei_record );
+  end if;
 end pushExpressionId;
 
 
@@ -74,18 +79,23 @@ end pushExpressionId;
 -- Discard all identifiers associated with the current expression.  This is
 -- done when an expression is finished.
 -- (The current expression is found in the global lastExpressionInstruction.)
+--
+-- Skip this when running in maintenance mode because it is expensive and
+-- the OnWrite test is more of a design issue.
 
 procedure pullExpressionIds is
   aei_record : activeExpressionId;
 begin
-  while not activeExpressionidLists.isEmpty( activeExpressionidList ) loop
-     activeExpressionIdLists.Pull( activeExpressionIdList, aei_record );
-     if aei_record.exprId /= lastExpressionInstruction then
-        activeExpressionIdLists.Push( activeExpressionIdList, aei_record );
-        exit;
-     end if;
-     --put_line( "Pulled active id = " & aei_record.id'img ); -- DEBUG
-  end loop;
+  if not boolean(maintenanceOpt) then
+     while not activeExpressionidLists.isEmpty( activeExpressionidList ) loop
+        activeExpressionIdLists.Pull( activeExpressionIdList, aei_record );
+        if aei_record.exprId /= lastExpressionInstruction then
+           activeExpressionIdLists.Push( activeExpressionIdList, aei_record );
+           exit;
+        end if;
+        --put_line( "Pulled active id = " & aei_record.id'img ); -- DEBUG
+     end loop;
+  end if;
 end pullExpressionIds;
 
 
@@ -93,17 +103,22 @@ end pullExpressionIds;
 --
 -- True if id is in use in an active expression.  That is, that it is found in
 -- the active expression identifiers stack.
+--
+-- Skip this when running in maintenance mode because it is expensive and
+-- the OnWrite test is more of a design issue.
 
 function isActiveExpressionId( id : identifier ) return boolean is
   aei_record : activeExpressionId;
   found : boolean := false;
 begin
-  for i in 1..activeExpressionIdLists.Length( activeExpressionIdList ) loop
-      activeExpressionIdLists.Find( activeExpressionIdList, i, aei_record );
-      if aei_record.id = id then
-         found := true;
-      end if;
-  end loop;
+  if not boolean(maintenanceOpt) then
+     for i in 1..activeExpressionIdLists.Length( activeExpressionIdList ) loop
+         activeExpressionIdLists.Find( activeExpressionIdList, i, aei_record );
+         if aei_record.id = id then
+            found := true;
+         end if;
+     end loop;
+  end if;
   return found;
 end isActiveExpressionId;
 
@@ -176,11 +191,15 @@ end checkExpressionFactorVolatility;
 -- if the identifier we're assigning to is read before we write it.  So we discount
 -- the assignment's expression with the context parameter.  Context is the
 -- instruction containing the assignment.
+--
+-- Skip this when running in maintenance mode because it is expensive and
+-- the OnWrite test is more of a design issue.
 
 procedure checkExpressionFactorVolatilityOnWrite( id: identifier ) is
 begin
-  -- if variable exists...
-  if id /= eof_t then
+  -- Skip these tests in maintenance mode as they are expensive.  Ignore
+  -- identifiers that are not defined (i.e. eof_t).
+  if not boolean(maintenanceOpt) and id /= eof_t then
      if identifiers( id ).field_of /= eof_t then
         -- we don't track record fields, only the record
         if isActiveExpressionId( identifiers( id ).field_of ) then
@@ -260,43 +279,43 @@ end checkDoubleThreadWrite;
 -- and it has already been written since the beginning of the
 -- expression context, show an error.
 --
--- This is the strictest test.
+-- This is the strictest test.  It is not currently used.
 
-procedure checkDoubleGlobalWrite( id : identifier ) is
-begin
-  if identifiers( id ).field_of /= eof_t then
-     if blocks_top > block'first then
-        if not isLocal( id ) then
-           if not identifiers( identifiers( id ).field_of ).volatile then
-              if identifiers( identifiers( id ).field_of ).writtenOn > firstExpressionInstruction then
-                 err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
-                      " is not volatile and not local and is written to two or more times" &
-                      " during an expression" ) );
-              end if;
-           end if;
-        end if;
-     end if;
-  else
-    --put_line( "firstExpression = " & firstExpressionInstruction'img ); -- DEBUG
-    --put_line( "identifiers_top = " & identifiers_top'img ); -- DEBUG
-    --put_line( "id = " & var_id'img );
-    if blocks_top > block'first then
-       if not isLocal( id ) then
-    --put_line( "blocks_top = " & blocks_top'img );
-    --put_line( "id's block = " & block( getIdentifierBlock(var_id))'img );
-    --put_line( "is more global" );
-    --put_line( "written on = " & identifiers( var_id ).writtenOn'img );
-          if not identifiers( id ).volatile then
-             if identifiers( id ).writtenOn > firstExpressionInstruction then
-                err( "side-effects: " & to_string( identifiers( id ).name &
-                     " is not volatile and not local but is written to two or more times" &
-                     " during an expression" ) );
-             end if;
-          end if;
-       end if;
-    end if;
-  end if;
-
-end checkDoubleGlobalWrite;
+--procedure checkDoubleGlobalWrite( id : identifier ) is
+--begin
+--  if identifiers( id ).field_of /= eof_t then
+--     if blocks_top > block'first then
+--        if not isLocal( id ) then
+--           if not identifiers( identifiers( id ).field_of ).volatile then
+--              if identifiers( identifiers( id ).field_of ).writtenOn > firstExpressionInstruction then
+--                 err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
+--                      " is not volatile and not local and is written to two or more times" &
+--                      " during an expression" ) );
+--              end if;
+--           end if;
+--        end if;
+--     end if;
+--  else
+--    --put_line( "firstExpression = " & firstExpressionInstruction'img ); -- DEBUG
+--    --put_line( "identifiers_top = " & identifiers_top'img ); -- DEBUG
+--    --put_line( "id = " & var_id'img );
+--    if blocks_top > block'first then
+--       if not isLocal( id ) then
+--    --put_line( "blocks_top = " & blocks_top'img );
+--    --put_line( "id's block = " & block( getIdentifierBlock(var_id))'img );
+--    --put_line( "is more global" );
+--    --put_line( "written on = " & identifiers( var_id ).writtenOn'img );
+--          if not identifiers( id ).volatile then
+--             if identifiers( id ).writtenOn > firstExpressionInstruction then
+--                err( "side-effects: " & to_string( identifiers( id ).name &
+--                     " is not volatile and not local but is written to two or more times" &
+--                     " during an expression" ) );
+--             end if;
+--          end if;
+--       end if;
+--    end if;
+--  end if;
+--
+--end checkDoubleGlobalWrite;
 
 end parser_sidefx;
