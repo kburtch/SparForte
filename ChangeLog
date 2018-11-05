@@ -120,3 +120,5 @@ used with any command in a pipeline.
 
 56. New. os.last_child and equivalent $!.  Get the pid of the last child run in the background.
 
+57. Change: trailing whitespace is an error in backquote literals.
+

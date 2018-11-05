@@ -13,8 +13,16 @@ Note: runs about 6 million years before throwing an exception.
 Priority Issues (Fix These First)
 -------------------------------
 
+- declared but not used would benefit from the original file/line location
+- raise in an exception handler was not recognized as such
+- there are functions used in stand-alone expressions or have no parameters.
+  Should they have special handling?
+- logging functions cannot be used in functions since the write to a
+  global variable...an example where volatile is good if it could be used
+   without disabling it in expressions
 - side-effects
-  - what is the role of volatile?
+  - what is the role of volatile?  it cannot be used in any expression, meaning
+    it's essentially a constant.  Perhaps we need a pragma unchecked_volatile()
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)

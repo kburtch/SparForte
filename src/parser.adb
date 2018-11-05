@@ -948,7 +948,10 @@ begin
         -- There is a chance that the semi-colon could be hidden by a
         -- comment symbol (--).
         codeFragment := identifiers( token ).value.all;
-        if tail( codeFragment, 1 ) /= ";" then
+        if tail( codeFragment, 1 ) = " " or
+           tail( codeFragment, 1 ) = "" & ASCII.HT then
+           err( "trailing whitespace" );
+        elsif tail( codeFragment, 1 ) /= ";" then
            codeFragment := codeFragment & ";";
         end if;
         CompileRunAndCaptureOutput( codeFragment, f, getLineNo );

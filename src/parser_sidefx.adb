@@ -244,7 +244,7 @@ begin
                    " (in " & optional_bold( to_string( getThreadName ) ) &
                    ") is not volatile but is also changed by " &
                    optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
-                   ".  Perhaps refactor so only one source is responsible for changes." );
+                   ".  Perhaps refactor so only one source is a procedure." );
            end if;
         end if;
      end if;
@@ -257,7 +257,7 @@ begin
                    " (in " & optional_bold( to_string( getThreadName ) ) &
                    ") is not volatile but is also changed by " &
                    optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) &
-                   ".  Perhaps refactor so only one source is responsible for changes." );
+                   ".  Perhaps refactor so only one source is a procedure." );
            end if;
         end if;
      end if;
