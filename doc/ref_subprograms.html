@@ -746,8 +746,9 @@ while the array variable is also being used in an expression.  This restriction
 applies even if the particular element isn't referred to in the expression, as there
 are array functions that can affect the whole array.</p>
 
-<p>The same is true for records.  No field in a record used actively in an expression
-can have its value changed.</p>
+<p>The same is true for records.  No field in a record used actively in an
+expression can have its value changed.  For simplicity, SparForte only
+treats any field as the whole record.</p>
 
 <p>The reverse case, to read and then write, is technically not a side-effect
 since the changed value is never used in the expression.  However, it is also
@@ -784,7 +785,9 @@ side-effects: i (in func1) is not volatile but is also changed by func2.  Perhap
 </div>
 
 <p>The solution is to ensure only one function is used to update the
-variable.  Alternatively, make the variable volatile with pragma volatile.</p>
+variable and change one to a procedure, or to restructure you script
+so the two functions are not used in the same expression, or to
+make the variable volatile with pragma unchecked_volatile.</p>
 
 <p>These restrictions do not apply to procedures.  Two or more procedures
 can write to variables of a more global scope (unless, of course, they

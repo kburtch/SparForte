@@ -14,6 +14,6 @@ procedure t is
   end risky2;
 
 begin
-  ? risky1;
-  ? risky2;
+  -- two functions writing the same variable in the same expression
+  ? risky1 + risky2;
 end t;

@@ -15,14 +15,17 @@ Priority Issues (Fix These First)
 
 - declared but not used would benefit from the original file/line location
 - raise in an exception handler was not recognized as such
-- there are functions used in stand-alone expressions or have no parameters.
-  Should they have special handling?
 - logging functions cannot be used in functions since the write to a
   global variable...an example where volatile is good if it could be used
    without disabling it in expressions
 - side-effects
-  - what is the role of volatile?  it cannot be used in any expression, meaning
-    it's essentially a constant.  Perhaps we need a pragma unchecked_volatile()
+  - what is the role of volatile?  If a volatile variable cannot be used
+    in any expression, it cannot be used in an assignment statement either.
+    Essentially, a marking a variable as a volatile makes it a constant.
+    Perhaps we need a pragma unchecked_volatile() to acknowledge a volatile
+    variable but still allow it to be assigned new values or used in
+    expressions.  This also means removing possibly volatile for regular,
+    not imported variables as it no longer serves a purpose.
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)

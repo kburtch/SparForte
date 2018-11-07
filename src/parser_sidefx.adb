@@ -230,38 +230,51 @@ end checkExpressionFactorVolatilityOnWrite;
 --  CHECK DOUBLE GLOBAL WRITE
 --
 -- This is the ownership test.  Check to see if a variable is written to
--- by two different expression-tasks (functions, contracts) and report
--- an error if two use it.
+-- by two different expression-tasks (functions, contracts) during an
+-- expression and report an error if at least two use it.
 
 procedure checkDoubleThreadWrite( id : identifier ) is
 begin
+  -- Is this a record?
   if identifiers( id ).field_of /= eof_t then
-     -- we don't track record fields, only the record
-     if identifiers( identifiers( id  ).field_of ).writtenByThread /= noThread then
-        if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
-           if not identifiers( identifiers( id ).field_of ).volatile then
-              err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
-                   " (in " & optional_bold( to_string( getThreadName ) ) &
-                   ") is not volatile but is also changed by " &
-                   optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
-                   ".  Perhaps refactor so only one source is a procedure." );
+     -- Was this written since the start of the expression?
+     if lastExpressionInstruction < identifiers( identifiers( id ).field_of ).writtenOn then
+        -- If never been written, we don't test yet.
+        if identifiers( identifiers( id  ).field_of ).writtenByThread /= noThread then
+           -- Is the name of the writer function, contract or task different?
+           if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
+              -- Unless it is volatile, it is an error.
+              if not identifiers( identifiers( id ).field_of ).volatile then
+                 err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
+                      " (in " & optional_bold( to_string( getThreadName ) ) &
+                      ") is not volatile but is also changed by " &
+                      optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
+                      ".  Perhaps refactor so only one source is a procedure." );
+              end if;
            end if;
         end if;
+        identifiers( identifiers( id ).field_of ).writtenByThread := getThreadName;
      end if;
-     identifiers( identifiers( id ).field_of ).writtenByThread := getThreadName;
   else
-     if identifiers( id ).writtenByThread /= noThread then
-        if identifiers( id ).writtenByThread /= getThreadName then
-           if not identifiers( identifiers( id ).field_of ).volatile then
-              err( "side-effects: " & to_string( identifiers( id ).name &
-                   " (in " & optional_bold( to_string( getThreadName ) ) &
-                   ") is not volatile but is also changed by " &
-                   optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) &
-                   ".  Perhaps refactor so only one source is a procedure." );
+     -- Else if this is not a record,
+     -- Was this written since the start of the expression?
+     if lastExpressionInstruction < identifiers( id ).writtenOn then
+        -- If never been written, we don't test yet.
+        if identifiers( id ).writtenByThread /= noThread then
+           -- Is the name of the writer function, contract or task different?
+           if identifiers( id ).writtenByThread /= getThreadName then
+              -- Unless it is volatile, it is an error.
+              if not identifiers( identifiers( id ).field_of ).volatile then
+                 err( "side-effects: " & to_string( identifiers( id ).name &
+                      " (in " & optional_bold( to_string( getThreadName ) ) &
+                      ") is not volatile but is also changed by " &
+                      optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) &
+                      ".  Perhaps refactor so only one source is a procedure." );
+              end if;
            end if;
         end if;
+        identifiers( id ).writtenByThread := getThreadName;
      end if;
-     identifiers( id ).writtenByThread := getThreadName;
   end if;
 end checkDoubleThreadWrite;
 
