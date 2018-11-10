@@ -154,19 +154,15 @@ begin
      if identifiers( id ).field_of /= eof_t then
         -- we don't track record fields, only the record
         if lastExpressionInstruction < identifiers( identifiers( id ).field_of ).writtenOn then
-           if not identifiers( identifiers( id ).field_of ).volatile then
-              err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) & " is not " &
-                   optional_bold( "volatile" ) & " but was read after written within " &
-                   "an expression.  Perhaps a copy should be used." );
-           end if;
+           err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) &
+                " was read after written within " &
+                "an expression.  Perhaps a copy should be used." );
         end if;
      else
         if lastExpressionInstruction < identifiers( id ).writtenOn then
-           if not identifiers( id ).volatile then
-              err( "side-effects: " & to_string( identifiers( id ).name ) & " is not " &
-                   optional_bold( "volatile" ) & " but was read after written to within " &
-                   "an expression.  Perhaps a copy should be used." );
-           end if;
+           err( "side-effects: " & to_string( identifiers( id ).name ) &
+                " was read after written to within " &
+                "an expression.  Perhaps a copy should be used." );
         end if;
      end if;
   end if;
@@ -204,11 +200,9 @@ begin
         -- we don't track record fields, only the record
         if isActiveExpressionId( identifiers( id ).field_of ) then
         --if lastExpressionInstruction <= identifiers( identifiers( id ).field_of ).factorOn then
-           if not identifiers( identifiers( id ).field_of ).volatile then
-              err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) & " is not " &
-                   optional_bold( "volatile" ) & " but was written after read " &
-                   "within an expression.  Perhaps a copy should be used." );
-           end if;
+           err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) &
+                " was written after read " &
+                "within an expression.  Perhaps a copy should be used." );
         end if;
      else
 --put_line("Written after read test" );
@@ -216,11 +210,9 @@ begin
 --put_line( "  " & to_string(identifiers(id).name) & ".factorOn=" & identifiers( id ).factorOn'img );
         if isActiveExpressionId( id ) then
         --if lastExpressionInstruction <= identifiers( id ).factorOn then
-           if not identifiers( id ).volatile then
-              err( "side-effects: " & to_string( identifiers( id ).name ) & " is not " &
-                   optional_bold( "volatile" ) & " but was written after read " &
-                   "within an expression.  Perhaps a copy should be used." );
-           end if;
+           err( "side-effects: " & to_string( identifiers( id ).name ) &
+                " was written after read " &
+                "within an expression.  Perhaps a copy should be used." );
         end if;
      end if;
   end if;
@@ -244,12 +236,12 @@ begin
            -- Is the name of the writer function, contract or task different?
            if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
               -- Unless it is volatile, it is an error.
-              if not identifiers( identifiers( id ).field_of ).volatile then
+              if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
                  err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
                       " (in " & optional_bold( to_string( getThreadName ) ) &
-                      ") is not volatile but is also changed by " &
+                      ") is not unchecked_volatile but is also changed by " &
                       optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
-                      ".  Perhaps refactor so only one source is a procedure." );
+                      ".  Perhaps refactor so one source is a procedure or break up the expression." );
               end if;
            end if;
         end if;
@@ -264,12 +256,12 @@ begin
            -- Is the name of the writer function, contract or task different?
            if identifiers( id ).writtenByThread /= getThreadName then
               -- Unless it is volatile, it is an error.
-              if not identifiers( identifiers( id ).field_of ).volatile then
+              if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
                  err( "side-effects: " & to_string( identifiers( id ).name &
                       " (in " & optional_bold( to_string( getThreadName ) ) &
-                      ") is not volatile but is also changed by " &
+                      ") is not unchecked_volatile but is also changed by " &
                       optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) &
-                      ".  Perhaps refactor so only one source is a procedure." );
+                      ".  Perhaps refactor so one source is a procedure or break up the expression." );
               end if;
            end if;
         end if;

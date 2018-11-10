@@ -523,7 +523,7 @@ begin
        method   => shell,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => false,
        usage    => fullUsage,
        list     => false,
@@ -584,7 +584,7 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => false,
        usage    => identifiers( kind ).usage,
        list     => false,
@@ -717,7 +717,7 @@ begin
     identifiers(id).kind     := kind;
     identifiers(id).import   := false;
     identifiers(id).export   := false;
-    identifiers(id).volatile := false;
+    identifiers(id).volatile := none;
     identifiers(id).static   := false;
     --identifiers(id).usage    := constantUsage;
     identifiers(id).list     := false;
@@ -808,7 +808,7 @@ begin
                  method   => none,
                  mapping  => none,
                  export   => false,
-                 volatile => false,
+                 volatile => none,
                  static   => false,
                  --usage    => constantUsage,
                  usage    => identifiers( i ).usage,
@@ -888,7 +888,7 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => false,
        usage    => constantUsage,
        list     => false,
@@ -978,7 +978,7 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => false,
        usage    => fullUsage,
        list     => false,
@@ -1044,7 +1044,7 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => identifiers( canonicalRef.id ).static,
        usage    => identifiers( new_id ).usage,
        list     => identifiers( canonicalRef.id ).list,
@@ -1234,7 +1234,7 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => false,
        usage    => fullUsage,
        list     => false,
@@ -1367,7 +1367,7 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
-       volatile => false,
+       volatile => none,
        static   => false,
        usage    => fullUsage,
        list     => false,

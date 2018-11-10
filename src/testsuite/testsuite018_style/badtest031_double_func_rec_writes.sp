@@ -18,6 +18,5 @@ procedure t is
   end risky2;
 
 begin
-  ? risky1;
-  ? risky2;
+  ? risky1 + risky2; --writing twice in a single expression
 end t;

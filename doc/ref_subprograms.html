@@ -698,18 +698,37 @@ used in some scripts.</p>
 <p>SparForte does not permit certain combinations of statements that may
 have risky or unpredictable consequences.</p>
 
-<p>A volatile variable has a value that can change unexpectedly.  A variable
-can be designated volatile with <b>pragma volatile</b>.  In an expression,
-a changing a variable's value while also reading the variable's value will
-make the variable volatile.  Volatile variables cannot be used in expression,
-although their values may be copied with a copies clause declaration.
-(There are also other ways a variable can be volatile.)</p>
+<p>A <b>volatile</b> variable is any variable that has a value that can
+change unexpectedly.  Volatile variables are a problem in expressions
+because the value of a variable could change while tn expression is being
+calculated.</p>
+
+<p>One way a variable can be volatile is by designating one volatile with
+<b>pragma volatile</b>.  For an imported variable, pragma volatile will
+cause the variable's value to be re-imported every time the variable is
+read.  There is no guarantee in an expression like "x + x that both
+occurrences of x will have the same value.  Any variable can be designated
+volatile, even if it isn't imported.  It is an error to use volatile
+variables in an expression.</p>
+
+<p>Variables can also be volatile if their values are changed during an
+expression by a <b>function</b> called in the same expression.  In this
+case, it is made more complex because of the order of operations.  By
+changing the operations in an expression, the order of the computations
+are changed, and this can change when a function is run.  This
+unpredictability can make debugging difficult.</p>
+
+<p>This can happen not only in the function itself, but in other
+procedures and functions run by the original function.</p>
+
+<p>To deal with volatile variables, SparForte detects three different
+types of risky actions in expressions: write then read, read then write
+and write then write.</p>
+
+<p><b>Write then Read</b></p>
 
 <p>A function (or anything run by a function) must not change a variable's
-value while that value is also being used in an expression at the same time.
-If the variable's value were to change, it could cause the value of the
-expression to be unpredictable.  (This is sometimes called "expression
-side-effects".)</p>
+value when that value is also read later in the expression.</p>
 
         <center>
         <div class="code">
@@ -737,40 +756,43 @@ side-effects".)</p>
 <div class="code">
 <p class="code">
 &nbsp;&nbsp;? i * risky + i;  -- changing i during an expression
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ side-effects: i is not volatile but but was read after written within an expression.  Perhaps a copy should be used.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ side-effects: i was read after written within an expression.  Perhaps a copy should be used.
 </p>
 </div>
 
-<p>This also applies to arrays.  The value of any element in an array may not change
-while the array variable is also being used in an expression.  This restriction
-applies even if the particular element isn't referred to in the expression, as there
-are array functions that can affect the whole array.</p>
+<p>To avoid this message, declare a new variable using the <b>copies</b> clause to
+get a value in a moment of time, and use the copy in the expression.</p>
 
-<p>The same is true for records.  No field in a record used actively in an
-expression can have its value changed.  For simplicity, SparForte only
-treats any field as the whole record.</p>
+<p>With arrays and records, writing to an array element or any record field will
+cause the entire array or record to be treated as volatile.</p>
 
-<p>The reverse case, to read and then write, is technically not a side-effect
-since the changed value is never used in the expression.  However, it is also
-treated as a side-effect because it could become volatile if the expression
-is changed.  In this case, the error message would be</p>
+<p><b>Read then Write</b></p>
+
+<p>The reverse case is to read a variable first, then a function changes it
+aftewards in an expression.  Technically, this is not a side-effect because
+the variable's value isn't affected by the function.  However, it is treated
+as a side-effect because if the math changes in the expression and the
+expression is evaluated in a different order, it could become one.</p>
 
 <div class="code">
 <p class="code">
-side-effects: i is not volatile but was written after read within an expression.  Perhaps a copy should be used.
+side-effects: i was written after read within an expression.  Perhaps a copy should be used.
 </p>
 </div>
 
-<p>This check is not performed when running in maintenace mode because
-the check is slow and is a test for bad design.</p>
-
 <p>To solve these errors, use a copy of the original variable.</p>
 
-<p>A two different functions (or a function and the main program, or a
-function and a contract) are not allowed to write to the same variable.
+<p>This particular check is expensive and tests for a potential problem,
+so SparForte does not run this check in maintenace mode.</p>
+
+<p><b>Write then Write</b></p>
+
+<p>Two different functions (or a function and the main program, or a
+function and a contract) in an expression are not allowed to write to the
+same variable.
 Only one function may write to a variable in a more global scope.  This is
-done to prevent data races, where two functions in an expression may try to
-update the same variable in an unpredictable way.  Instead, only one function
+done to prevent data races, where two functions in an expression compete
+to update the same variable first.  Instead, only one function
 is responsible for updating the value.</p>
 
 <p>For any global variable, any function can change a global variable.  However,
@@ -780,18 +802,28 @@ only that function and no other function can change that variable.</p>
 
 <div class="code">
 <p class="code">
-side-effects: i (in func1) is not volatile but is also changed by func2.  Perhaps refactor so only one source is responsible for changes.
+side-effects: i (in func1) is not unchecked_volatile but is also changed by func2.  Perhaps refactor so one source is a procedure or break up the expression.
 </p>
 </div>
 
-<p>The solution is to ensure only one function is used to update the
-variable and change one to a procedure, or to restructure you script
-so the two functions are not used in the same expression, or to
-make the variable volatile with pragma unchecked_volatile.</p>
+<p>The solution is to change one function into a procedure, or to
+break the expression into two separate statements.</p>
 
-<p>These restrictions do not apply to procedures.  Two or more procedures
-can write to variables of a more global scope (unless, of course, they
-create expression side-effects as mentioned at the start of this section).</p>
+<p><b>pragma unchecked_volatile</b></p>
+
+<p>There may be certain cases where "write then write" is the intended
+behaviour.  One example would be creating a log of the functions
+where each function writes an entry to the log when it runs.  In this case,
+you can declare the variable as an unchecked volatile using
+<b>pragma unchecked_volatile</b>.  SparForte will ignore "write then
+write" tests, but will still do "write then read" and "read then
+write" tests.</p>
+
+<p>An unchecked volatile variable can also be used in expressions.</p>
+
+<p>Declaring volatile and unchecked_volatile variables can be disabled
+entirely with <b>pragma restriction</b>.  See the pragma section for
+more information.</p>
 
 <br>&nbsp;
 

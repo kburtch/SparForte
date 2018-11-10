@@ -272,7 +272,7 @@ begin
 
        -- For a volatile, update the value before copying
        if isExecutingCommand then
-          if identifiers( new_id ).volatile then
+          if identifiers( new_id ).volatile /= none then
              refreshVolatile( new_id );
           end if;
        end if;

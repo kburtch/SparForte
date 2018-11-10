@@ -708,7 +708,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   procedure ParseFactorIdentifier is
   begin
     ParseIdentifier( t );
-    if identifiers( t ).volatile then           -- volatile user identifier
+    if identifiers( t ).volatile = checked then    -- volatile user identifier
        err( to_string( identifiers( t ).name ) & " is " & optional_bold( "volatile" ) &
           " and not allowed in expressions because it may cause side-effects" );
        --refreshVolatile( t );
@@ -2007,7 +2007,7 @@ begin
         err( "variable, value or expression expected" );
      else                                                  -- some kind of user ident?
         ParseStaticIdentifier( t );
-        if identifiers( t ).volatile then           -- volatile user identifier
+        if identifiers( t ).volatile /= none then  -- volatile user identifier
            refreshVolatile( t );
            f := identifiers( t ).value.all;
            kind := identifiers( t ).kind;

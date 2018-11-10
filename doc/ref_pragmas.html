@@ -82,6 +82,7 @@ environment.</p>
   <b>pragma</b> restriction( no_postgresql_database )
   <b>pragma</b> restriction( no_risky_side_effects )
   <b>pragma</b> restriction( no_unused_identifiers )
+  <b>pragma</b> restriction( no_volatiles )
   <b>pragma</b> session_export_script( `commands` )
   <b>pragma</b> session_import_script( `commands` )
   <b>pragma</b> software_model( model_name )
@@ -94,6 +95,7 @@ environment.</p>
   <b>pragma</b> test_report( text|xml [, "filepath"] )
   <b>pragma</b> test_result( condition )
   <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache | session, var )
+  <b>pragma</b> unchecked_volatile( var )
   <b>pragma</b> uninspect( var )
   <b>pragma</b> unrestricted_template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> volatile( var )
@@ -648,6 +650,9 @@ the SparForte variable is unchanged.</li>
   <li> <b>pragma unchecked_import_json( shell | cgi | local_memcache | memcache | session, var )</b> - the same as import_json execpt that there is no existence check.
 If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
+  <li><b>pragma unchecked_volatile( var )</b> - like volatile, but
+allows the variable to be used in expressions. Side-effects will
+still raise exceptions.</li>
   <li> <b>pragma unrestricted_template( css|html|js|json|text|wml|xml [, template] )</b> -
 SparForte will act like a template processor (like PHP). This pragma is
 the same as pragma template except that the embedded scripts are executed

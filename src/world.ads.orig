@@ -358,6 +358,10 @@ pragma inline( findStorage );
 
 type aParameterPassingMode is (none, in_mode, out_mode, in_out_mode );
 
+-- Types of volatility
+
+type aVolatileMode is (none, unchecked, checked);
+
 ------------------------------------------------------------------------------
 -- Identifier Declarations
 --
@@ -379,7 +383,8 @@ type declaration is record
      method   : anImportMethod := none;         -- how to import
      mapping  : anImportMapping := none;        -- how to translate on import
      export   : boolean := false;               -- marked by pragma export
-     volatile : boolean := false;               -- marked by pragma volatile
+     volatile : aVolatileMode := none;          -- marked by pragma volatile
+                                                --   or unchecked_volatile
      static   : boolean := false;               -- if value is known at syn chk
      usage    : aUsageQualifier := fullUsage;   -- limits on use
      list     : boolean := false;               -- array or array type

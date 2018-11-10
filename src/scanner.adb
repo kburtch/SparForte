@@ -295,8 +295,10 @@ begin
      if ident.export then
         put( "exported " );
      end if;
-     if ident.volatile then
+     if ident.volatile = checked then
         put( "volatile " );
+     elsif ident.volatile = unchecked then
+        put( "unchecked volatile " );
      end if;
      if ident.inspect then
         put( "inspected " );
@@ -3923,7 +3925,7 @@ begin
   identifiers( id ).list   := false;
   identifiers( id ).field_of  := eof_t;
   identifiers( id ).renaming_of := identifiers'first;
-  identifiers( id ).volatile := false;
+  identifiers( id ).volatile := none;
   identifiers( id ).usage  := fullUsage;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
@@ -3975,7 +3977,7 @@ begin
   identifiers( id ).list   := false;
   identifiers( id ).field_of  := eof_t;
   identifiers( id ).renaming_of := identifiers'first;
-  identifiers( id ).volatile := false;
+  identifiers( id ).volatile := none;
   identifiers( id ).usage := fullUsage;
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;

@@ -137,6 +137,7 @@ type aPragmaKind is (
      todo,
      unchecked_import,
      unchecked_import_json,
+     unchecked_volatile,
      uninspect_var,
      unrestricted_template,
      volatile,
@@ -248,6 +249,8 @@ begin
      pragmaKind := unchecked_import;
   elsif name = "unchecked_import_json" then
      pragmaKind := unchecked_import_json;
+  elsif name = "unchecked_volatile" then
+     pragmaKind := unchecked_volatile;
   elsif name = "uninspect" then
      pragmaKind := uninspect_var;
   elsif name = "unrestricted_template" then
@@ -1145,6 +1148,11 @@ begin
         err( "pragma restriction( no_volatiles ) does not allow pragma volatile" );
      end if;
      ParseIdentifier( var_id );
+  when unchecked_volatile =>                 -- pragma volatile
+     if restriction_no_volatiles then
+        err( "pragma restriction( no_volatiles ) does not allow pragma unchecked_volatile" );
+     end if;
+     ParseIdentifier( var_id );
   when others =>
      err( "Internal error: can't handle pragma" );
   end case;
@@ -1842,7 +1850,9 @@ begin
      when uninspect_var =>
         identifiers( var_id ).inspect := false;
      when volatile =>
-        identifiers( var_id ).volatile := true;
+        identifiers( var_id ).volatile := checked;
+     when unchecked_volatile =>
+        identifiers( var_id ).volatile := unchecked;
      when others =>
         err( "Internal error: unable to execute pragma" );
      end case;
