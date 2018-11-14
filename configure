@@ -819,7 +819,7 @@ if [ -z "$TMP" ] ; then
    if [ -n "$PKGCONFIG" ] ; then
       echo -n "configuring SDL (pkg-config)... "
       # bundled SDL here
-      SDLLIBS=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`
+      SDLLIBS=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`" -lSDL_image"
       SDLINCL=`(exec $PKGCONFIG --cflags sdl 2>/dev/null)`
       if [ $? -ne 0 ] ; then
          SDLLIBS=""
@@ -837,10 +837,10 @@ if [ -z "$TMP" ] ; then
          SDLINCL="-I/usr/local/include/SDL11"
       elif [ "$OS" = "darwin" ] ; then
          SDLLIBS="/Library/Frameworks/SDL.framework/SDL /Library/Frameworks/SDL_image.framework/SDL_image"
-         SDLINCL="-I/Library/Frameworks/SDL.framework/include"
+         SDLINCL="-I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers"
       else
-         SDLLIBS="-l SDL -l SDL_image"
-         SDLINCL="-I/usr/include/SDL"
+         SDLLIBS="-L/usr/local/lib -lSDL -lSDL_image"
+         SDLINCL="-I/usr/local/include/SDL"
       fi
    fi
 else
@@ -888,9 +888,9 @@ if test -r spar_os-sdl.ads ; then
 else
    cd ../test
    if [ "$OS" = "darwin" ] ; then
-      (exec "$CC" sdlversion.c "$SDLINCL" "$SDLLIBS" > /dev/null 2>/dev/null )
+      (exec "$CC" sdlversion.c $SDLINCL $SDLLIBS > /dev/null 2>/dev/null )
    else
-      (exec "$CC" sdlversion.c -I/usr/local/include -L/usr/local/lib -lSDL)
+      (exec "$CC" sdlversion.c -I/usr/local/include/SDL -L/usr/local/lib -lSDL)
    fi
    if [ -f "./a.exe" ] ; then # Cygwin makes Windows executables
       TMP=`./a.exe`
