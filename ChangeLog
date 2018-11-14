@@ -124,4 +124,5 @@ used with any command in a pipeline.
 
 58. New: pragma unchecked_volatile( var ) to create a volatile which is allowed in expressions (provided restriction( no_volatiles ) is not used).
 
+59. (Blady) Fixed: SDL fixes for SDL support on Mac OS/X.
 
