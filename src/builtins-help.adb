@@ -1864,7 +1864,7 @@ begin
      content( e, "b := logs.is_open" );
      content( e, "b := logs.is_rotating" );
      content( e, "l := logs.level" );
-     content( e, "l := logs.level_begin" );
+     content( e, "logs.level_begin( l )" );
      content( e, "logs.level_end( l )" );
      content( e, "m := logs.mode" );
      content( e, "logs.ok( m )" );

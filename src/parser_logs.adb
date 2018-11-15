@@ -361,14 +361,16 @@ end closeLog;
 ------------------------------------------------------------------------------
 
 
-procedure ParseLevelBegin( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: lvl := level_being;
+procedure ParseLevelBegin is
+  -- Syntax: level_being( lvl );
+  ref : reference;
 begin
-  kind := log_level_t;
+  --kind := log_level_t;
   expect( logs_level_begin_t );
+  ParseSingleOutParameter( ref, log_level_t );
   if isExecutingCommand then
      begin
-        result := to_unbounded_string( long_float( level ) );
+        AssignParameter( ref, to_unbounded_string( long_float( level ) ) );
         level := level + 1;
      exception when constraint_error =>
         err( "constraint_error raised" );
@@ -754,7 +756,7 @@ begin
 
   declareIdent( log_level_t, "logs.log_level", natural_t, typeClass );
 
-  declareFunction(  logs_level_begin_t, "logs.level_begin",  ParseLevelBegin'access );
+  declareProcedure( logs_level_begin_t, "logs.level_begin",  ParseLevelBegin'access );
   declareProcedure( logs_level_end_t,   "logs.level_end",    ParseLevelEnd'access );
 
   declareProcedure( logs_ok_t,          "logs.ok",           ParseOK'access );
