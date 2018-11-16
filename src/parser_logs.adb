@@ -755,6 +755,7 @@ begin
   declareNamespace( "logs" );
 
   declareIdent( log_level_t, "logs.log_level", natural_t, typeClass );
+  identifiers( log_level_t ).usage := limitedUsage;
 
   declareProcedure( logs_level_begin_t, "logs.level_begin",  ParseLevelBegin'access );
   declareProcedure( logs_level_end_t,   "logs.level_end",    ParseLevelEnd'access );
