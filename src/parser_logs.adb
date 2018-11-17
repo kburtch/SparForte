@@ -152,6 +152,7 @@ end resetLog;
 
 procedure log_indent_message( msg : in out unbounded_string; clear_indent : boolean ) is
 begin
+  msg := msg  &  ":";
   while length( string_header & msg ) < width loop
      msg := msg & ' ';
   end loop;
@@ -240,7 +241,6 @@ procedure log_last_part( m : unbounded_string ) is
   repeat_message : unbounded_string;                      -- entry about duptos
   sourceFile : unbounded_string;
 begin
-
   if not started_message then
      log_indent_message( string_message, false );
      started_message := true;
@@ -370,7 +370,7 @@ begin
   ParseSingleOutParameter( ref, log_level_t );
   if isExecutingCommand then
      begin
-        AssignParameter( ref, to_unbounded_string( long_float( level ) ) );
+        AssignParameter(ref, to_unbounded_string( long_float( level ) ) );
         level := level + 1;
      exception when constraint_error =>
         err( "constraint_error raised" );
@@ -382,14 +382,13 @@ end ParseLevelBegin;
 
 procedure ParseLevelEnd is
   -- Syntax: level_end( lvl );
-  levelExpr    : unbounded_string;
-  levelType    : identifier;
+  id : identifier;
 begin
   expect( logs_level_end_t );
-  ParseSingleNumericParameter( levelExpr, levelType, log_level_t );
+  ParseSingleInOutParameter( id, log_level_t );
   if isExecutingCommand then
      begin
-        level := natural'value( ' ' & to_string( levelExpr ) );
+        level := natural'value( ' ' & to_string( identifiers( id ).value.all ) );
      exception when constraint_error =>
         err( "constraint_error raised" );
      when others =>
