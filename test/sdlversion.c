@@ -1,5 +1,20 @@
+// FREEBSD possibly should be __FreeBSD__
+#ifdef FREEBSD
 #include <SDL.h>
 #include <SDL_video.h>
+#endif
+#ifdef __APPLE__
+#include <SDL.h>
+#include <SDL_video.h>
+#endif
+#ifdef __CYGWIN__
+#include <SDL/SDL.h>
+#include <SDL/SDL_video.h>
+#endif
+#ifdef __linux__
+#include <SDL/SDL.h>
+#include <SDL/SDL_video.h>
+#endif
 
 #include <stdio.h>
 
