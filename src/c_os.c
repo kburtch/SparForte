@@ -364,13 +364,22 @@ int C_install_sigpipe_handler( int *flag_address ) {
 }
 
 // SDL TESTING
-
+// FREEBSD possibly should be __FreeBSD__
 #ifdef FREEBSD
 #include <SDL.h>
 #include <SDL_video.h>
-#else
+#endif
+#ifdef __APPLE__
 #include <SDL.h>
 #include <SDL_video.h>
+#endif
+#ifdef __CYGWIN__
+#include <SDL/SDL.h>
+#include <SDL/SDL_video.h>
+#endif
+#ifdef __linux__
+#include <SDL/SDL.h>
+#include <SDL/SDL_video.h>
 #endif
 
 
