@@ -1863,14 +1863,13 @@ begin
      content( e, "logs.info( m )" );
      content( e, "b := logs.is_open" );
      content( e, "b := logs.is_rotating" );
-     content( e, "l := logs.level" );
      content( e, "logs.level_begin( l )" );
      content( e, "logs.level_end( l )" );
      content( e, "m := logs.mode" );
      content( e, "logs.ok( m )" );
      content( e, "logs.open( path, mode [, width] )" );
-     content( e, "logs.rotation_begin" );
-     content( e, "logs.rotation_end" );
+     content( e, "logs.rotate_begin" );
+     content( e, "logs.rotate_end" );
      content( e, "logs.warning( m )" );
      seeAlso( e, "doc/pkg_logs.html" );
      endHelp( e );

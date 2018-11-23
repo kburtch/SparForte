@@ -81,7 +81,7 @@ error, not a identifier of the wrong class error.
 
 37. Fix: Case statements no long require string and character types for corresponding literals, which was causing errors on derrived types.  Now match the semanitcs of the rest of the language.
 
-38. New: logs package. [Tests needed] [Chain support required]
+38. New: logs package. [Negative Tests needed] [Chain tests needed]
 
 39. Fix: removed comment on waiting after pipelines to cleanup zombied processes.
 

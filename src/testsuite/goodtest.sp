@@ -4958,6 +4958,58 @@ begin -- scoped block
   directory_operations.close( diropid );
 end;
 
+-- Logs package
+
+declare
+  s : string;
+  log : constant string := "./testlog.log";
+begin
+  if files.exists( log ) then
+     rm "$log";
+  end if;
+
+  logs.open( log, log_mode.file );
+  logs.info("a test");
+  pragma assert( logs.is_open );
+  pragma assert( logs.mode = log_mode.file );
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  pragma assert( not logs.is_rotating );
+  pragma assert( not logs.is_open );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.warning("a test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":WARNING:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.error("a test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.ok("a test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":OK:" ) > 0 );
+  rm "$log";
+
+  logs.rotate_begin;
+  pragma assert( logs.is_rotating );
+  logs.rotate_end;
+  pragma assert( not logs.is_rotating );
+end;
+
 -- Pragmas
 
 pragma assumption( used, i );

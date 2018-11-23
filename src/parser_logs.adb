@@ -101,7 +101,7 @@ logs_close_t       : identifier;
 
 logs_is_open_t     : identifier;
 logs_mode_t        : identifier;
-logs_level_t       : identifier;
+-- logs_level_t       : identifier;
 logs_width_t       : identifier;
 
 logs_rotate_begin_t : identifier;
@@ -272,7 +272,7 @@ begin
            put_line( log_file, to_string( string_header & last_message ) );
         end if;
         if log_mode = stderr_log or log_mode = echo_log then
-           put_line( standard_error, to_string( string_header & last_message ) );
+           put_line( current_error, to_string( string_header & last_message ) );
         end if;
      elsif dup_count > 0 then
         repeat_message := trim( to_unbounded_string( aPID'image( getpid ) ), left ) & ":";
@@ -286,7 +286,7 @@ begin
            put_line( log_file, to_string( string_header & repeat_message ) );
         end if;
         if log_mode = stderr_log or log_mode = echo_log then
-           put_line( standard_error, to_string( string_header & repeat_message ) );
+           put_line( current_error, to_string( string_header & repeat_message ) );
         end if;
         dup_count := 0;
      end if;
@@ -296,7 +296,7 @@ begin
         put_line( log_file, to_string( string_header & string_message ) );
      end if;
      if log_mode = stderr_log or log_mode = echo_log then
-        put_line( standard_error, to_string( string_header & string_message ) );
+        put_line( current_error, to_string( string_header & string_message ) );
      end if;
      last_message := string_message;
 
@@ -689,13 +689,15 @@ begin
   expect( logs_mode_t );
 end ParseMode;
 
-procedure ParseLevel( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: l := logs.level
-begin
-  result :=to_unbounded_string( natural'image( level ) );
-  kind := natural_t;
-  expect( logs_level_t );
-end ParseLevel;
+-- Note: disabled because logs.level is limited so can't be returned in an
+-- expression
+--procedure ParseLevel( result : out unbounded_string; kind : out identifier ) is
+--  -- Syntax: l := logs.level
+--begin
+--  result :=to_unbounded_string( natural'image( level ) );
+--  kind := natural_t;
+--  expect( logs_level_t );
+--end ParseLevel;
 
 procedure ParseWidth( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: w := logs.width
@@ -769,7 +771,7 @@ begin
 
   declareFunction(  logs_is_open_t,     "logs.is_open",      ParseIsOpen'access );
   declareFunction(  logs_mode_t,        "logs.mode",         ParseMode'access );
-  declareFunction(  logs_level_t,       "logs.level",        ParseLevel'access );
+  --declareFunction(  logs_level_t,       "logs.level",        ParseLevel'access );
   declareFunction(  logs_width_t,       "logs.width",        ParseWidth'access );
 
   declareProcedure( logs_rotate_begin_t, "logs.rotate_begin", ParseRotateBegin'access );
