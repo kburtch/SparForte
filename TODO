@@ -40,6 +40,9 @@ Priority Issues (Fix These First)
       - was wasWritten obsolete with writtenByThread?
     - the affect of renamings?
     - this probably need to be run-time
+- logs
+  - logs should use not use ada.text_io since they should support
+    sparforte redirection
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc

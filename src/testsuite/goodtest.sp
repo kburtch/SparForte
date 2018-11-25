@@ -4981,7 +4981,31 @@ begin
   rm "$log";
 
   logs.open( log, log_mode.file );
+  logs.info("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.info("a ") @ ("test ") @ ("again");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test again" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
   logs.warning("a test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":WARNING:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.warning("a ") @ ("test");
   logs.close;
   s := `cat "$log"`;
   pragma assert( strings.index( s, "a test" ) > 0 );
@@ -4997,11 +5021,39 @@ begin
   rm "$log";
 
   logs.open( log, log_mode.file );
+  logs.error("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
   logs.ok("a test");
   logs.close;
   s := `cat "$log"`;
   pragma assert( strings.index( s, "a test" ) > 0 );
   pragma assert( strings.index( s, ":OK:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.ok("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":OK:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.error("repeat test"); logs.error("repeat test"); logs.error("repeat test");
+  logs.error("a different line");
+  logs.close;
+  s := `cat "$log"`;
+  ? s;
+  pragma assert( strings.index( s, "repeat test" ) > 0 );
+  pragma assert( strings.index( s, "a different line" ) > 0 );
+  pragma assert( strings.index( s, "repeated" ) > 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
   rm "$log";
 
   logs.rotate_begin;

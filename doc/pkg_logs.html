@@ -49,7 +49,7 @@
 <pre>
   <a href="#logs.close">close</a>                             <a href="#logs.error">error( s )
   <a href="#logs.info">info( s )</a>                         <a href="#logs.is_open">b := is_open
-  <a href="#logs.is_rotating">b := is_rotating</a>                  <a href="#logs.level">l := level
+  <a href="#logs.is_rotating">b := is_rotating</a>
   <a href="#logs.level_begin">l := level_begin</a>                  <a href="#logs.level_end">level_end( l )</a>
   <a href="#logs.mode">m := mode</a>                         <a href="#logs.ok">ok( s )</a>
   <a href="#logs.open">open( p, m [, w] )</a>                <a href="#logs.rotation_begin">rotation_begin</a>
@@ -293,43 +293,6 @@ nesting level.</p></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if log is being rotated</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr>
-</table>
-
-<a name="logs.level"></a><h3>l := logs.level</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the current nesting level.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">if logs.level &gt; 0 then...</span></p>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>l</span></td>
-<td><span>result</span></td>
-<td><span>natural</span></td>
-<td><span>required</span></td>
-<td><span>the amount of nesting</span></td>
 </tr>
 </table></td>
 </tr><tr>
