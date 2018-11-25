@@ -4998,6 +4998,7 @@ begin
   rm "$log";
 
   logs.open( log, log_mode.file, 80 );
+  pragma assert( logs.width = 80 );
   logs.info("indent test");
   logs.close;
   s := `cat "$log"`;
