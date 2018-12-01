@@ -1,0 +1,288 @@
+<HEAD><TITLE>graph_series.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : graph_series.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD align="center" BGCOLOR="#000040"><SPAN STYLE="color: #00CC00">
+<img src="graph_series.png" alt="[Graph image]">
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "graph_series.sp" )
+              @( description, "Plot one or more series of data points on " )
+              @( description, "a graph.  The maximum number of series is 3. " )
+              @( description, "A history of 30 data points is maintained. " )
+              @( description, "The graph will be saved as a bmp file. If " )
+              @( description, "Imagemagick is installed, it will also be " )
+              @( description, "saved as a png file." )
+              @( param, "the graph name" )
+              @( param, "one, two or three data points" )
+              @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+<b>pragma</b> software_model( shell_script );
+
+<b>procedure</b> graph <b>is</b>
+  graph_name : string;
+  num_series : natural;
+
+  <b>type</b> data_arrays <b>is</b> <b>array</b>(1..30) <b>of</b> float;
+
+  data_file : file_type;
+  data_array1 : data_arrays;
+  data_array2 : data_arrays;
+  data_array3 : data_arrays;
+  data_point : universal_numeric;
+  data_file_name : string;
+
+  canvas : pen.canvas_id;
+
+  <FONT COLOR=green><EM>-- For Y-axis scale, 1 = 0..100, 2 = 0..200, etc.</EM></FONT>
+  base_y_axis_scale : <b>constant</b> float := 3;
+  y_axis_scale : float := base_y_axis_scale;
+  candidate_scale : float;
+
+  <FONT COLOR=green><EM>--  TO X</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Constrain the given horizontal coordinate to the graph.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>function</b> to_x( f : float ) <b>return</b> pen.coordinate <b>is</b>
+     x : pen.coordinate;
+  <b>begin</b>
+     x := pen.coordinate( f );
+     <b>if</b> x &lt; 2 <b>then</b>
+        x := 2;
+     <b>elsif</b> x &gt; 98 <b>then</b>
+        x := 98;
+     <b>end</b> <b>if</b>;
+     <b>return</b> x;
+  <b>end</b> to_x;
+
+
+  <FONT COLOR=green><EM>--  TO Y</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Constrain the given vertical coordinate to the graph.  Also flip</EM></FONT>
+  <FONT COLOR=green><EM>-- origin to bottom of display.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>function</b> to_y( f : float ) <b>return</b> pen.coordinate <b>is</b>
+     y : pen.coordinate;
+  <b>begin</b>
+     y := pen.coordinate( 100 - f );
+     <b>if</b> y &lt; 2 <b>then</b>
+        y := 2;
+     <b>elsif</b> y &gt; 98 <b>then</b>
+        y := 98;
+     <b>end</b> <b>if</b>;
+     <b>return</b> y;
+  <b>end</b> to_y;
+
+
+  <FONT COLOR=green><EM>--  DRAW GRAPH BACKGROUND</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Draw the graph background and borders</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> draw_graph_background <b>is</b>
+    x : pen.coordinate;
+  <b>begin</b>
+    pen.wait_to_reveal( canvas );
+    pen.set_pen_ink(canvas, 20, 20, 20);
+    <b>for</b> i <b>in</b> arrays.first(data_array1)..arrays.last(data_array1) <b>loop</b>
+        data_point := natural(i) - natural(arrays.first(data_array1));
+        data_point := 1+(100 * data_point) / float(arrays.length( data_array1) );
+        x := pen.coordinate( data_point );
+        pen.vline( canvas, x, 1, 99 );
+    <b>end</b> <b>loop</b>;
+    <b>for</b> i <b>in</b> 1..9 <b>loop</b>
+        pen.hline( canvas, 1, 99, i*10 );
+    <b>end</b> <b>loop</b>;
+    pen.set_pen_ink(canvas, pen_color_name.white );
+    pen.hline(canvas,1,99,1);
+    pen.hline(canvas,1,99,99);
+    pen.vline(canvas,1,1,99);
+    pen.vline(canvas,99,1,99);
+    pen.reveal( canvas );
+  <b>end</b> draw_graph_background;
+
+
+  <FONT COLOR=green><EM>--  DRAW SERIES</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Plot a series of points on the graph in the given colours.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> draw_series( series : <b>in</b> <b>out</b> data_arrays; scale : float;
+     point_color : pen.color_name; line_color : pen.color_name ) <b>is</b>
+     x : pen.coordinate;
+     y : pen.coordinate;
+  <b>begin</b>
+     pen.wait_to_reveal( canvas );
+     pen.set_pen_ink(canvas, point_color);
+     <b>for</b> i <b>in</b> arrays.first(series)..arrays.last(series) <b>loop</b>
+         y := to_y( series(i) / scale );
+         data_point := natural(i) - natural(arrays.first(series));
+         data_point := 1+(100 * data_point) / float(arrays.length(series) );
+         x := to_x( data_point );
+         pen.move_to(canvas, x, y-0.5 );
+         pen.line_to(canvas, x+0.5, y)
+                   @(canvas, x, y+0.5)
+                   @(canvas, x-0.5, y)
+                   @(canvas, x, y-0.5);
+     <b>end</b> <b>loop</b>;
+     pen.set_pen_ink(canvas, line_color);
+     <b>for</b> i <b>in</b> arrays.first(series)..arrays.last(series) <b>loop</b>
+         y := to_y( series(i) / scale );
+         data_point := natural(i) - natural(arrays.first(series));
+         data_point := 1+(100 * data_point) / float(arrays.length( series ) );
+         x := to_x( data_point );
+         <b>if</b> i = 1 <b>then</b>
+            pen.move_to( canvas, x, y );
+         <b>end</b> <b>if</b>;
+         pen.line_to( canvas, x, y );
+     <b>end</b> <b>loop</b>;
+     pen.reveal( canvas );
+  <b>end</b> draw_series;
+
+
+  <FONT COLOR=green><EM>-- USAGE</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Show the help based on the pragma annotate documentation</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> usage <b>is</b>
+  <b>begin</b>
+    <b>help</b>( source_info.enclosing_entity );
+  <b>end</b> usage;
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- parameter handling</EM></FONT>
+
+  <b>if</b> $# &lt; 2 <b>then</b>
+     put_line( "At least two parameters are required" );
+     command_line.set_exit_status(192);
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <b>if</b> $1 = "-h" <b>or</b> $1 = "<FONT COLOR=green><EM>--help" then</EM></FONT>
+     usage;
+     command_line.set_exit_status(192);
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  graph_name := strings.trim( $1 );
+  <b>if</b> graph_name = "" <b>then</b>
+     put_line( "the graph name is empty" );
+     command_line.set_exit_status(192);
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  num_series := $# - 1;
+  <b>if</b> num_series &gt; 3 <b>then</b>
+     put_line( "the maximum number of series is 3" );
+     command_line.set_exit_status(192);
+     <b>return</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- read the history</EM></FONT>
+
+  data_file_name := graph_name &amp; ".dat";
+  <b>if</b> files.exists( "data/" &amp; data_file_name ) <b>then</b>
+     open( data_file, in_file, "data/" &amp; data_file_name );
+     <b>for</b> i <b>in</b> arrays.first(data_array1)..arrays.last(data_array1) <b>loop</b>
+         data_point := numerics.value( get_line( data_file ));
+         data_array1(i) := data_point;
+         candidate_scale := numerics.ceiling( data_point / 100 );
+         <b>if</b> candidate_scale &gt; y_axis_scale <b>then</b>
+            y_axis_scale := candidate_scale;
+         <b>end</b> <b>if</b>;
+         data_point := numerics.value( get_line( data_file ));
+         data_array2(i) := data_point;
+         candidate_scale := numerics.ceiling( data_point / 100 );
+         <b>if</b> candidate_scale &gt; y_axis_scale <b>then</b>
+            y_axis_scale := candidate_scale;
+         <b>end</b> <b>if</b>;
+         data_point := numerics.value( get_line( data_file ));
+         data_array3(i) := data_point;
+         candidate_scale := numerics.ceiling( data_point / 100 );
+         <b>if</b> candidate_scale &gt; y_axis_scale <b>then</b>
+            y_axis_scale := candidate_scale;
+         <b>end</b> <b>if</b>;
+     <b>end</b> <b>loop</b>;
+     close( data_file );
+  <b>else</b>
+     <b>for</b> i <b>in</b> arrays.first(data_array1)..arrays.last(data_array1) <b>loop</b>
+         data_array1(i) := 0;
+         data_array2(i) := 0;
+         data_array3(i) := 0;
+     <b>end</b> <b>loop</b>;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Record the new data points in the series</EM></FONT>
+
+  arrays.shift_left( data_array1 );
+  data_point := natural( numerics.value( $2 ));
+  data_array1( arrays.last( data_array1 ) ) := data_point;
+  <b>if</b> num_series &gt; 1 <b>then</b>
+     arrays.shift_left( data_array2 );
+     data_point := natural( numerics.value( $3 ));
+     data_array2( arrays.last( data_array2 ) ) := data_point;
+  <b>end</b> <b>if</b>;
+  <b>if</b> num_series &gt; 2 <b>then</b>
+     arrays.shift_left( data_array3 );
+     data_point := natural( numerics.value( $4 ));
+     data_array3( arrays.last( data_array3 ) ) := data_point;
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Note that off-screen canvases are broken.  We will need a frame buffer.</EM></FONT>
+  <b>begin</b>
+    pen.new_window_canvas(512, 512, 32, canvas );
+  <b>exception</b> <b>when</b> <b>others</b> =&gt;
+    put_line( "Failed to create new canvas" );
+    <b>return</b>;
+  <b>end</b>;
+
+  <FONT COLOR=green><EM>-- Draw the graph</EM></FONT>
+
+  draw_graph_background;
+  draw_series( data_array1, y_axis_scale, pen_color_name.darkred, pen_color_name.red );
+  <b>if</b> num_series &gt; 1 <b>then</b>
+     draw_series( data_array2, y_axis_scale, pen_color_name.darkgreen, pen_color_name.green );
+  <b>end</b> <b>if</b>;
+  <b>if</b> num_series &gt; 2 <b>then</b>
+     draw_series( data_array3, y_axis_scale, pen_color_name.darkblue, pen_color_name.blue );
+  <b>end</b> <b>if</b>;
+
+  <FONT COLOR=green><EM>-- Save the graph</EM></FONT>
+
+  pen.save_canvas( graph_name &amp; ".bmp", canvas );
+  pen.close_canvas( canvas );
+
+  <FONT COLOR=green><EM>-- This depends on imagemagick convert being installed</EM></FONT>
+
+  convert( graph_name &amp; ".bmp", graph_name &amp; ".png" );
+  mv( graph_name &amp; ".png", "/var/www/html/pegasoft/ssds/" );
+  chown( "webadmin:apache", "/var/www/html/pegasoft/ssds/" &amp; graph_name &amp; ".png" );
+  chmod( "750", "/var/www/html/pegasoft/ssds/" &amp; graph_name &amp; ".png" );
+  rm( graph_name &amp; ".bmp" );
+
+  <FONT COLOR=green><EM>-- Save the history data</EM></FONT>
+
+  create( data_file, out_file, "data/" &amp; data_file_name );
+  <b>for</b> i <b>in</b> arrays.first(data_array1)..arrays.last(data_array1) <b>loop</b>
+      put_line( data_file, strings.image( data_array1(i) ) )
+             @( data_file, strings.image( data_array2(i) ) )
+             @( data_file, strings.image( data_array3(i) ) );
+  <b>end</b> <b>loop</b>;
+  close( data_file );
+<b>end</b> graph;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+</PRE></BODY></HTML>
