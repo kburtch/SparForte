@@ -4963,6 +4963,7 @@ end;
 declare
   s : string;
   log : constant string := "./testlog.log";
+  lvl : logs.log_level;
 begin
   if files.exists( log ) then
      rm "$log";
@@ -4981,10 +4982,69 @@ begin
   rm "$log";
 
   logs.open( log, log_mode.file );
+  logs.info("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.info("a ") @ ("test ") @ ("again");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test again" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file, 80 );
+  pragma assert( logs.width = 80 );
+  logs.info("indent test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "   :indent test" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.info("clean:test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, ":clean[# 58]test" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file, 80 );
+  logs.level_begin( lvl );
+  logs.info("level test");
+  logs.level_end( lvl );
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "   :level test" ) > 0 );
+  pragma assert( strings.index( s, ":INFO:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
   logs.warning("a test");
   logs.close;
   s := `cat "$log"`;
   pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":WARNING:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.warning("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":WARNING:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.warning("a ") @ ("test ") @ ("again");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test again" ) > 0 );
   pragma assert( strings.index( s, ":WARNING:" ) > 0 );
   rm "$log";
 
@@ -4997,11 +5057,76 @@ begin
   rm "$log";
 
   logs.open( log, log_mode.file );
+  logs.error("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.error("a ") @ ("test ") @ ("again");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test again" ) > 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
   logs.ok("a test");
   logs.close;
   s := `cat "$log"`;
   pragma assert( strings.index( s, "a test" ) > 0 );
   pragma assert( strings.index( s, ":OK:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.ok("a ") @ ("test");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test" ) > 0 );
+  pragma assert( strings.index( s, ":OK:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.ok("a ") @ ("test ") @ ("again");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "a test again" ) > 0 );
+  pragma assert( strings.index( s, ":OK:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.error("repeat test"); logs.error("repeat test");
+  logs.error("a different line");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "repeat test" ) > 0 );
+  pragma assert( strings.index( s, "a different line" ) > 0 );
+  pragma assert( strings.index( s, "repeated" ) = 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.file );
+  logs.error("repeat test"); logs.error("repeat test"); logs.error("repeat test");
+  logs.error("a different line");
+  logs.close;
+  s := `cat "$log"`;
+  pragma assert( strings.index( s, "repeat test" ) > 0 );
+  pragma assert( strings.index( s, "a different line" ) > 0 );
+  pragma assert( strings.index( s, "repeated" ) > 0 );
+  pragma assert( strings.index( s, ":ERROR:" ) > 0 );
+  rm "$log";
+
+  logs.open( log, log_mode.stderr );
+  logs.info("stderr test");
+  logs.close;
+  pragma assert( not files.exists( log ) );
+
+  logs.open( log, log_mode.echo );
+  logs.info("stderr test");
+  logs.close;
+  pragma assert( files.exists( log ) );
   rm "$log";
 
   logs.rotate_begin;
