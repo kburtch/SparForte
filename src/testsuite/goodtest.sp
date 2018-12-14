@@ -5118,7 +5118,7 @@ begin
   pragma assert( strings.index( s, ":ERROR:" ) > 0 );
   rm "$log";
 
-  logs.open( log, log_mode.stderr );
+  logs.open( "", log_mode.stderr );
   logs.info("stderr test");
   logs.close;
   pragma assert( not files.exists( log ) );
