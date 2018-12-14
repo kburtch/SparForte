@@ -22,6 +22,7 @@
 ------------------------------------------------------------------------------
 
 with
+    gnat.os_lib,
     ada.text_io,
     ada.strings.unbounded,
     ada.calendar,
@@ -35,6 +36,7 @@ with
     chain_util,
     parser_params;
 use
+    gnat.os_lib,
     ada.text_io,
     ada.strings,
     ada.strings.unbounded,
@@ -258,8 +260,16 @@ begin
         exception when others =>
            if rshOpt then
               err( "creating new logs is not allowed in a " & optional_bold( "restricted shell" ) );
+              unlock_file( to_string( lock_file_path ) );
+              return; -- must abort
            else
-              create( log_file, append_file, to_string( log_path ) );
+              begin
+                 create( log_file, append_file, to_string( log_path ) );
+              exception when others =>
+                 err_exception_raised;
+                 unlock_file( to_string( lock_file_path ) );
+                 return; -- must abort
+              end;
            end if;
         end;
      end if;
@@ -638,6 +648,13 @@ begin
   if isExecutingCommand then
      if log_is_open then
         err( "log is already open" );
+     -- Except for stderr, we need a file path
+     elsif modeExpr /= "0" and length( pathExpr ) = 0 then
+        err( "log path is an empty string" );
+     elsif modeExpr = "0" and length( pathExpr ) > 0 then
+        err( "log path should be an empty string" );
+     elsif Is_Directory( to_string( pathExpr ) & ASCII.NUL ) then
+        err( "log path is a directory" );
      else
         get_entity( entity );
         sourceFile := basename( getSourceFileName );

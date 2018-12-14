@@ -44,16 +44,20 @@
 <h2><a NAME="4.17"></a>Logs Package</h2>
 <p>This package contains routines for creating simple program log files.</p>
 
+<p><u>Introduced</u>: SparForte 2.2<br>
+
+<p><u>GCC Ada Equivalent</u>: none<br>
+
         <center>
         <div class="code">
 <pre>
   <a href="#logs.close">close</a>                             <a href="#logs.error">error( s )
   <a href="#logs.info">info( s )</a>                         <a href="#logs.is_open">b := is_open
   <a href="#logs.is_rotating">b := is_rotating</a>
-  <a href="#logs.level_begin">l := level_begin</a>                  <a href="#logs.level_end">level_end( l )</a>
+  <a href="#logs.level_begin">level_begin( l )</a>                  <a href="#logs.level_end">level_end( l )</a>
   <a href="#logs.mode">m := mode</a>                         <a href="#logs.ok">ok( s )</a>
-  <a href="#logs.open">open( p, m [, w] )</a>                <a href="#logs.rotation_begin">rotation_begin</a>
-  <a href="#logs.rotation_end">rotation_end</a>                      <a href="#logs.warning">warning</a>
+  <a href="#logs.open">open( p, m [, w] )</a>                <a href="#logs.rotate_begin">rotate_begin</a>
+  <a href="#logs.rotate_end">rotate_end</a>                        <a href="#logs.warning">warning</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -66,15 +70,16 @@
 assist with debugging and security audits.</p>
 
 <p>Only one log may be opened by a script at a time.  If no log is open, the
-logs package writes messages to standard_error.</p>
+logs package writes messages to current_error (which is standard_error, if
+it is not redirected).</p>
 
 <p>Logs have mode which indicates how the log is stored.
 <b>logs.log_mode</b> is an enumerated type with the following values:</p>
 
 <ul>
-<li><b>log_mode.stderr</b> - the log is written to standard_error</li>
+<li><b>log_mode.stderr</b> - the log is written to current_error</li>
 <li><b>log_mode.file</b> - the log is written to a file</li>
-<li><b>log_mode.echo</b> - the log is written to both standard_error and a file</li>
+<li><b>log_mode.echo</b> - the log is written to both current_error and a file</li>
 </ul>
 
 <p>Log messages have severity levels.  In increasing severity, they are info,
@@ -91,10 +96,8 @@ checks for duplicate messages.</p>
 <p><b>Chaining Messages</b></p>
 
 <p>logs.ok and the other logging message functions may be run in a chain
-with "@".  The first message is assumed to be a custom location string.
-This location will replace the default filename/line number fields.
-The remaining messages will be concatenated together to form the log
-message.</p>
+with "@".  The messages will be concatenated together to form the
+full message.</p>
 
 <p><b>Format of the Log File</b></p>
 
@@ -508,7 +511,7 @@ is ignored.</p></td>
 </tr>
 </table>
 
-<a name="logs.rotation_begin"></a><h3>logs.rotation_begin</h3>
+<a name="logs.rotate_begin"></a><h3>logs.rotate_begin</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -517,7 +520,7 @@ file can be safely deleted, moved or archived.
 This does not perform the rotation.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.rotation_begin;</span></p>
+<td><span class="code">logs.rotate_begin;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -537,14 +540,14 @@ This does not perform the rotation.</p></td>
 </tr>
 </table>
 
-<a name="logs.rotation_end"></a><h3>logs.rotation_end</h3>
+<a name="logs.rotate_end"></a><h3>logs.rotate_end</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Unlock the log previously locked by logs.rotation_begin.</p></td>
+<td><p>Unlock the log previously locked by logs.rotate_begin.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.rotation_end;</span></p>
+<td><span class="code">logs.rotate_end;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
