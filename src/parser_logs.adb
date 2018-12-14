@@ -23,6 +23,8 @@
 
 with
     gnat.os_lib,
+    interfaces.c,
+    ada.exceptions,
     ada.text_io,
     ada.strings.unbounded,
     ada.calendar,
@@ -34,9 +36,14 @@ with
     compiler,
     scanner,
     chain_util,
-    parser_params;
+    parser_aux,
+    parser_params,
+    -- for writeCurrentError
+    parser_tio;
 use
     gnat.os_lib,
+    interfaces.c,
+    ada.exceptions,
     ada.text_io,
     ada.strings,
     ada.strings.unbounded,
@@ -49,7 +56,9 @@ use
     compiler,
     scanner,
     chain_util,
-    parser_params;
+    parser_aux,
+    parser_params,
+    parser_tio;
 
 package body parser_logs is
 
@@ -126,6 +135,81 @@ begin
 end getLineNo;
 
 
+--  WRITE CURRENT ERROR
+--
+-- Write a message to the current error file (or standard error).  This
+-- handles redirection of current error.
+--
+-- This source code is copied from the SparForte text_io package so we
+-- can handle I/O redirection of standard error.  This is primarily
+-- from Put_Line.
+------------------------------------------------------------------------------
+
+procedure writeCurrentError( expr_val : unbounded_string ) is
+  ref       : reference;
+  result    : size_t;
+  ch        : character;
+  fd        : aFileDescriptor;
+  retry     : boolean;
+begin
+  -- This is an alias to the variable with the file
+  ref.id := identifier( to_numeric( identifiers(current_error_t).value.all ) );
+
+  -- Check to see that the file is open
+  if length( identifiers( ref.id ).value.all ) = 0 then
+     err( "log file is not open" );
+     return;
+  end if;
+
+  -- If current_error is standard-error, use Ada's Text_IO
+
+  if ref.id = standard_error_t then
+     -- Ada doesn't handle interrupted system calls properly.
+     -- maybe a more elegant way to do this...
+     loop
+        retry := false;
+        begin
+          Put_Line( standard_error, to_string( expr_val ) );
+        exception when msg: device_error =>
+          if exception_message( msg ) = "interrupted system call" then
+             retry := true;
+          else
+             err( exception_message( msg ) );
+          end if;
+        end;
+     exit when not retry;
+     end loop;
+
+  -- If redirected to a file, handle that here.
+
+  else
+     fd := aFileDescriptor'value( to_string( stringField( ref, fd_field ) ) );
+     for i in 1..length( expr_val ) loop
+         ch := Element( expr_val, i );
+<<logwrite>> writechar( result, fd, ch, 1 );
+         if result < 0 then
+            if C_errno = EAGAIN or C_errno = EINTR then
+               goto logwrite;
+            end if;
+            err( "unable to write: " & OSerror( C_errno ) );
+            exit;
+         end if;
+     end loop;
+     ch := ASCII.LF;
+<<logwrite2>>
+     writechar( result, fd, ch, 1 ); -- add a line feed
+     if result < 0 then
+        if C_errno = EAGAIN or C_errno = EINTR then
+            goto logwrite2;
+        end if;
+        err( "unable to write: " & OSerror( C_errno ) );
+      else
+        replaceField( ref, line_field,
+           long_integer'image( long_integer'value(
+              to_string( stringField( ref, line_field ) ) ) + 1 ) );
+     end if;
+  end if;
+end writeCurrentError;
 --  RESET LOG
 --
 -- Set the logger in its default state, writing to standard error.
@@ -282,7 +366,8 @@ begin
            put_line( log_file, to_string( string_header & last_message ) );
         end if;
         if log_mode = stderr_log or log_mode = echo_log then
-           put_line( current_error, to_string( string_header & last_message ) );
+           writeCurrentError( string_header & last_message );
+           --put_line( current_error, to_string( string_header & last_message ) );
         end if;
      elsif dup_count > 0 then
         repeat_message := trim( to_unbounded_string( aPID'image( getpid ) ), left ) & ":";
@@ -296,7 +381,8 @@ begin
            put_line( log_file, to_string( string_header & repeat_message ) );
         end if;
         if log_mode = stderr_log or log_mode = echo_log then
-           put_line( current_error, to_string( string_header & repeat_message ) );
+           writeCurrentError( string_header & repeat_message );
+           --put_line( current_error, to_string( string_header & repeat_message ) );
         end if;
         dup_count := 0;
      end if;
@@ -306,7 +392,8 @@ begin
         put_line( log_file, to_string( string_header & string_message ) );
      end if;
      if log_mode = stderr_log or log_mode = echo_log then
-        put_line( current_error, to_string( string_header & string_message ) );
+        writeCurrentError( string_header & string_message );
+        -- put_line( current_error, to_string( string_header & string_message ) );
      end if;
      last_message := string_message;
 
