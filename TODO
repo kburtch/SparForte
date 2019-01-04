@@ -35,6 +35,7 @@ Priority Issues (Fix These First)
     - this probably need to be run-time
 - unstructured scripts
   - additional examples to be added to automated tests
+- static expressions
 - unsorted/misc
     - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
@@ -48,6 +49,8 @@ Priority Issues (Fix These First)
     - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
     - echo "foo"`bar` works but echo `bar` does not
       - `word` not allowed in BasicShellWord?
+    - spell checking comments (as Windows does?)  must whitelist all
+      identifiers.  See /usr/include/aspell.h for interface to spell checker.
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------

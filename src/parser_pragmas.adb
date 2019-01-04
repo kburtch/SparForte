@@ -289,6 +289,7 @@ begin
         name /= "icon" and
         name /= "modified" and
         name /= "param" and
+        name /= "rationale" and
         name /= "return" and
         name /= "screenshot" and
         name /= "see_also" and

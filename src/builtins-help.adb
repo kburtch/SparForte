@@ -421,6 +421,20 @@ package body builtins.help is
                   discardUnusedIdentifier( token );
                   getNextToken;
                   expect( symbol_t, "," );
+               elsif identifiers( token ).name = to_unbounded_string( "rationale" ) then
+                  if last_tag = "return" then
+                     info := null_unbounded_string;
+                  elsif HTMLOutput then
+                     info := to_unbounded_string( "</p><p><b>Rationale</b>: " );
+                  elsif MANOutput then
+                     info := to_unbounded_string( ".SH RATIONALE" );
+                  else
+                     info := to_unbounded_string( "Rationale: " );
+                  end if;
+                  last_tag := identifiers( token ).name;
+                  discardUnusedIdentifier( token );
+                  getNextToken;
+                  expect( symbol_t, "," );
                elsif identifiers( token ).name = to_unbounded_string( "screenshot" ) then
                   if last_tag = "screenshot" then
                      info := null_unbounded_string;

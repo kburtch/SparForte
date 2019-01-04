@@ -48,7 +48,7 @@ CHANGES SINCE 2.1
 
 22. Change: better error message for dollar expansions with missing variable names.
 
-23. New: pragma annotate extended with icon and screenshot fields.
+23. New: pragma annotate extended with icon, rationale and screenshot fields.
 
 24. Fix: pragma annotate HTML output is html-encoded.
 
