@@ -106,7 +106,7 @@ used with any command in a pipeline.
 
 49. Fix: enabling trace no longer disables performance monitoring line counting.
 
-50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles. [docs needed] [tests needed]
+50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles.
 
 51. New: pragma manual_test and manual_test_result [not tested, docs needed].
 
@@ -125,4 +125,8 @@ used with any command in a pipeline.
 58. New: pragma unchecked_volatile( var ) to create a volatile which is allowed in expressions (provided restriction( no_volatiles ) is not used).
 
 59. (Blady) Fixed: SDL fixes for SDL support on Mac OS/X.
+
+60. Fixed: a command with a & immediately following no longer has the & treated as part of the command name.
+
+61. Change: if a statement begins with a shell command, shell quoting is now supported.  Enclosing the command in double quotes no longer uses string literal rules but is treated a quoted shell word.
 

@@ -8,24 +8,18 @@ NEW ISSUES
 These are new issues identified but not entered into the outstanding bug list
 -----------------------------------------------------------------------------
 
-Note: runs about 6 million years before throwing an exception.
-
 Priority Issues (Fix These First)
 -------------------------------
 
-- declared but not used would benefit from the original file/line location
-- raise in an exception handler was not recognized as such
-- side-effects
-  - what is the role of volatile?  If a volatile variable cannot be used
-    in any expression, it cannot be used in an assignment statement either.
-  - logging functions cannot be used in functions since the write to a
-    global variable...an example where volatile is good if it could be used
-     without disabling it in expressions
+* improve first word parsing on the command
+    - ../../../spar is being truncated to '../'
+    - pwd\ ; runs but should not: trailing spaces of the word are being stripped
+- raise in one of my exception handlers did not function properly...
+  investigate what happened.
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
-* improve first word parsing on the command
 - affirm blocks
     - test if HTML escaping can be implemented in an affirm block
     - should affirm blocks have an expression short-form?
@@ -40,9 +34,6 @@ Priority Issues (Fix These First)
       - was wasWritten obsolete with writtenByThread?
     - the affect of renamings?
     - this probably need to be run-time
-- logs
-  - logs should use not use ada.text_io since they should support
-    sparforte redirection
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc
@@ -52,8 +43,6 @@ Priority Issues (Fix These First)
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
     - update distance example html
-    - quote handling on first shell word
-    - ../../../spar not found?
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
@@ -63,6 +52,7 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- declared but not used would benefit from the original file/line location
 - generic (parameterized) types
   - currently, a generic type declaration is an instantiation.
     - there's no way to create types from a generic type

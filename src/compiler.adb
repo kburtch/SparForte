@@ -1165,6 +1165,7 @@ procedure shellStatementByteCode( ci : in out compressionInfo;
   inSingleQuotes : boolean;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
+  inRedirect     : boolean;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1202,6 +1203,11 @@ begin
      ci.compressedScript := ci.compressedScript & ch;
      cmdpos := cmdpos + 1;
      return;
+  elsif ch = '&' then
+     ci.context := startOfStatement;
+     ci.compressedScript := ci.compressedScript & ch;
+     cmdpos := cmdpos + 1;
+     return;
   end if;
 
   -- Check for an Ada-style comment
@@ -1231,6 +1237,7 @@ begin
   inSingleQuotes := false;
   inBackQuotes   := false;
   inBackslash    := false;
+  inRedirect     := false;
 
   -- Check for special single-character shell words
   --
@@ -1278,6 +1285,10 @@ begin
           err_tokenize( "missing backslashed character", to_string( command ) );
           return;
        end if;
+       if inRedirect then
+          err_tokenize( "missing end of redirect", to_string( command ) );
+          return;
+       end if;
        lastpos := cmdpos - 1;
        ci.context := startOfStatement;
        exit;
@@ -1306,9 +1317,13 @@ begin
        inBackQuotes := not inBackQuotes;
     elsif ch = '\' and not inSingleQuotes and not inBackslash then
        inBackslash := true;
+    elsif ch = '>' and not inSingleQuotes and not inBackslash then
+       inRedirect := true;
     else
 
     -- Fourth, look for word terminators
+    -- These only terminate if they're not the first character, which is
+    -- checked up front.
 
        if not (inSingleQuotes or inDoubleQuotes or inBackQuotes or inBackslash) then
           if ch = ' ' then
@@ -1323,12 +1338,16 @@ begin
           elsif ch = '|' then
              lastpos := cmdpos - 1;
              exit;
+          elsif ch = '&' and not inRedirect then
+             lastpos := cmdpos - 1;
+             exit;
           end if;
        end if; -- escaped
 
        -- Got here? Character is good.  Backslashing?  Turn it off.
 
        inBackslash := false;
+       inRedirect  := false;
 
     end if; -- no quoting characters
     word := word & ch;
@@ -1680,6 +1699,11 @@ procedure startOfStatementByteCode( ci : in out compressionInfo;
   id             : identifier;
   -- backupPos      : natural;
   shell_word : boolean := false; -- KB: 17/12/2
+  inDoubleQuotes : boolean;
+  inSingleQuotes : boolean;
+  inBackQuotes   : boolean;
+  inBackslash    : boolean;
+  inRedirect     : boolean;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1746,32 +1770,33 @@ begin
      ci.context := adaScriptStatement;
      return;
 
-  elsif ch = '"' then
-     cmdpos := cmdpos+1;
-     word := null_unbounded_string;
-     if cmdpos <= length( command ) then  -- quote as last char on line
-        while Element( command, cmdpos ) /= '"' loop
-            if Element( command, cmdpos ) > ASCII.DEL then
-               word := word & toByteCode( char_escape_t );
-            end if;
-            word := word & Element( command, cmdpos );
-            cmdpos := cmdpos+1;
-            exit when cmdpos > length( command );
-        end loop;
-     end if;
-     if cmdpos > length( command ) then
-        err_tokenize( "missing double quote", to_string( command ) );
-     else
-        cmdpos := cmdpos + 1; -- skip last "
-        lastpos := cmdpos;
-        --ci.compressedScript := ci.compressedScript & '"' & word & '"';     -- add literal
-        --goto next;
-        ci.compressedScript := ci.compressedScript &
-           immediate_word_delimiter & word &
-           immediate_word_delimiter;
-        ci.context := startOfParameters;
-     end if;
-     return;
+  -- KB: 19/01/02: now handled below
+  --elsif ch = '"' then
+  --   cmdpos := cmdpos+1;
+  --   word := null_unbounded_string;
+  --   if cmdpos <= length( command ) then  -- quote as last char on line
+  --      while Element( command, cmdpos ) /= '"' loop
+  --          if Element( command, cmdpos ) > ASCII.DEL then
+  --             word := word & toByteCode( char_escape_t );
+  --          end if;
+  --          word := word & Element( command, cmdpos );
+  --          cmdpos := cmdpos+1;
+  --          exit when cmdpos > length( command );
+  --      end loop;
+  --   end if;
+  --   if cmdpos > length( command ) then
+  --      err_tokenize( "missing double quote", to_string( command ) );
+  --   else
+  --      cmdpos := cmdpos + 1; -- skip last "
+  --      lastpos := cmdpos;
+  --      --ci.compressedScript := ci.compressedScript & '"' & word & '"';     -- add literal
+  --      --goto next;
+  --      ci.compressedScript := ci.compressedScript &
+  --         immediate_word_delimiter & word &
+  --         immediate_word_delimiter;
+  --      ci.context := startOfParameters;
+  --   end if;
+  --   return;
 
      --cmdpos := cmdpos+1;
      --lastpos := cmdpos;
@@ -1793,66 +1818,126 @@ begin
      --ci.context := startOfParameters;
      --return;
 
-  -- Get the first token on the line.  This could be a shell command or an
-  -- AdaScript identifier...we don't know which.
+  -- Get the first token on the line.
+  --
+  -- Determine if this could be an Adascript identifier.  If it's not, then
+  -- it mus be a Bourne shell word.
 
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
         ch = '.' or ch = directory_delimiter or -- KB: 17/12/22
+        ch = '"' or ch = ''' or ch = '`' or ch = '\' or
         ch > ASCII.DEL then
+     -- get ready to scan the word/identifier
      lastpos := cmdpos+1;
-     word := null_unbounded_string;
-     if Element( command, cmdpos ) > ASCII.DEL then
+     word    := null_unbounded_string;
+     inDoubleQuotes := false;
+     inSingleQuotes := false;
+     inBackQuotes   := false;
+     inBackslash    := false;
+     inRedirect     := false;
+     -- read the first character, escaping high ascii if needed
+     if ch > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
      end if;
-     -- it's a shell word if the first character is a path character
-     shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
-     word := word & Element( command, cmdpos );
-     if lastpos <= length( command ) then
---       while is_alphanumeric( Element( command, lastpos ) ) or
---             Element( command, lastpos ) = '_' or
---             Element( command, lastpos ) = '.' or
---             Element( command, lastpos ) = directory_delimiter or -- KB: 17/12/22
---             Element( command, lastpos ) > ASCII.DEL loop
---             shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
+     word := word & ch;
 
+     if ch = '"' then
+        inDoubleQuotes := true;
+        shell_word := true;
+     elsif ch = ''' then
+        inSingleQuotes := true;
+        shell_word := true;
+     elsif ch = '`' then
+        inBackQuotes := true;
+        shell_word := true;
+     elsif ch = '\' then
+        inBackslash := true;
+        shell_word := true;
+     elsif ch = '>' then
+        inRedirect := true;
+        shell_word := true;
+     else
+        -- it's a shell word if the first character is a path character
+        shell_word := shell_word or (ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
+     end if;
+
+     if lastpos <= length( command ) then
         -- This is a shell word or an AdaScript identifier
         -- as a shell word, we don't support quoting yet.  Note that
         -- space is graphical.
-        -- TODO: not sure about quotes
-        while -- is_alphanumeric( Element( command, lastpos ) ) or
-              ( is_graphic( Element( command, lastpos ) ) or
-                Element( command, lastpos ) > ASCII.DEL ) and
-                Element( command, lastpos ) /= ' ' and  -- these are the stop characters
-                Element( command, lastpos ) /= ASCII.HT and
-                Element( command, lastpos ) /= ',' and
-                Element( command, lastpos ) /= ';' and
-                Element( command, lastpos ) /= ':' and
-                Element( command, lastpos ) /= '=' and
-                Element( command, lastpos ) /= '(' loop
-              -- It must be a shell word if not an identifier...if it's not
-              -- alphabetical, an underscore or escaped Latin-1.
-              shell_word := shell_word or not
-                  ( is_alphanumeric( Element( command, lastpos ) ) or
-                   Element( command, lastpos ) = '_' or
-                   Element( command, lastpos ) = '.' or
-                   Element( command, lastpos ) > ASCII.DEL ); -- KB: 17/12/30
-                  -- ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
-              if Element( command, lastpos ) > ASCII.DEL then
-                 if Element( command, lastpos ) = ASCII.NUL or Element( command, lastpos ) = immediate_word_delimiter then
-                    err_tokenize( "ASCII character not allowed", to_string( command ) );
-                 end if;
-                 if Element( command, lastpos ) > ASCII.DEL then
-                    word := word & toByteCode( char_escape_t );
-                 end if;
-              elsif Element( command, lastpos ) = '.' and then lastpos < length( command ) then
-                 if Element( command, lastpos+1 ) = '.' then -- ".."
-                    exit;
-                 end if;
+        loop
+           -- reusing ch variable
+<<next_word_char>>
+           ch := Element( command, lastpos );
+           -- Follow the quoting
+           if ch = '"' and not inSingleQuotes and not inBackslash then
+              inDoubleQuotes := not inDoubleQuotes;
+           elsif ch = ''' and not inDoubleQuotes and not inBackslash then
+              inSingleQuotes := not inSingleQuotes;
+           elsif ch = '`' and not inSingleQuotes and not inBackslash then
+              inBackQuotes := not inBackQuotes;
+           elsif ch = '\' and not inSingleQuotes and not inBackslash then
+              -- flag we saw it, add it, then get the next character
+              inBackslash := true;
+              word := word & ch;
+              lastpos := lastpos+1;
+              exit when lastpos > length( command );
+              goto next_word_char;
+           elsif ch = '>' and not inSingleQuotes and not inBackslash then
+              -- this affects & as in >& as a stopword
+              inRedirect := true;
+              word := word & ch;
+              lastpos := lastpos+1;
+              exit when lastpos > length( command );
+              goto next_word_char;
+           end if;
+
+           -- various stop characters only have meaning if not escaped
+           if not inSingleQuotes and not inDoubleQuotes and not inBackQuotes
+              and not inBackslash then
+              exit when
+                 -- quotes will affect these
+                 not is_graphic( ch ) or
+                 ch = ' ' or
+                 ch = ASCII.HT or
+                 ch = ',' or
+                 ch = ';' or
+                 ch = ':' or
+                 ch = '=' or
+                 ch = '(' ;
+              exit when
+                 ch = '&' and not inRedirect;
+           end if;
+
+           -- It must be a shell word if not an identifier...if it's not
+           -- alphabetical, an underscore or escaped Latin-1.
+           shell_word := shell_word or not
+               ( is_alphanumeric( ch ) or
+                 ch = '_' or
+                 ch = '.' or
+                 ch > ASCII.DEL ); -- KB: 17/12/30
+           -- ch = '.' or ch = directory_delimiter); -- KB: 17/12/2
+           -- escape high ASCII characters
+           if ch > ASCII.DEL then
+              if ch = ASCII.NUL or ch = immediate_word_delimiter then
+                 err_tokenize( "ASCII character not allowed", to_string( command ) );
               end if;
-              word := word & Element( command, lastpos );
-            lastpos := lastpos+1;
-            exit when lastpos > length( command );
-        end loop;
+              word := word & toByteCode( char_escape_t );
+           -- I can't remember why I did this.
+           elsif ch = '.' and then lastpos < length( command ) then
+              if Element( command, lastpos+1 )  = '.' then -- ".."
+                 exit;
+              end if;
+           end if;
+           -- add the character to the word/identifier.  The backslash, if
+           -- any, is consumed.
+           word := word & ch;
+           lastpos := lastpos+1;
+           inBackslash := false;
+           inRedirect := false;
+           -- exit when there are no more characters in the command line
+           exit when lastpos > length( command );
+        end loop; -- while
      end if;
 --put_line( "SOS: word = " & to_string( word ) ); -- DEBUG
      id := eof_t;

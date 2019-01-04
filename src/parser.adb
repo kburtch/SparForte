@@ -594,7 +594,7 @@ end ParseProgramName;
 
 -- DO CONTRACTS
 --
--- Check for and execute a type's accept clauses.  Use recursion to move to
+-- Check for and execute a type's affirm clauses.  Use recursion to move to
 -- the distant ancenstor type, then return, applying the clauses, ending
 -- with the clause on the type itself.  If no clause exists, do nothing.
 --
@@ -618,7 +618,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
       end if;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
-            put_trace( to_string( identifiers( kind_id ).name ) & " accept clause" );
+            put_trace( to_string( identifiers( kind_id ).name ) & " affirm clause" );
          end if;
          parseNewCommands( scriptState,
            identifiers( kind_id ).contract,
@@ -670,12 +670,12 @@ begin
       -- Copying a value is not so easy for an array
       expr_val := identifiers( type_value_id ).value.all;
       if trace then                                     -- trace message
-         put_trace( "value after accept clause: " & to_string( toEscaped( expr_val ) ) );
+         put_trace( "value after affirm clause: " & to_string( toEscaped( expr_val ) ) );
       end if;
       --end if;
    end if;
 
-   -- Tear down accept clause block
+   -- Tear down affirm clause block
 
    rshOpt := oldRshOpt;
    pullBlock;
