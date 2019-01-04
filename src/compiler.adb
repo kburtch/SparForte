@@ -1770,54 +1770,6 @@ begin
      ci.context := adaScriptStatement;
      return;
 
-  -- KB: 19/01/02: now handled below
-  --elsif ch = '"' then
-  --   cmdpos := cmdpos+1;
-  --   word := null_unbounded_string;
-  --   if cmdpos <= length( command ) then  -- quote as last char on line
-  --      while Element( command, cmdpos ) /= '"' loop
-  --          if Element( command, cmdpos ) > ASCII.DEL then
-  --             word := word & toByteCode( char_escape_t );
-  --          end if;
-  --          word := word & Element( command, cmdpos );
-  --          cmdpos := cmdpos+1;
-  --          exit when cmdpos > length( command );
-  --      end loop;
-  --   end if;
-  --   if cmdpos > length( command ) then
-  --      err_tokenize( "missing double quote", to_string( command ) );
-  --   else
-  --      cmdpos := cmdpos + 1; -- skip last "
-  --      lastpos := cmdpos;
-  --      --ci.compressedScript := ci.compressedScript & '"' & word & '"';     -- add literal
-  --      --goto next;
-  --      ci.compressedScript := ci.compressedScript &
-  --         immediate_word_delimiter & word &
-  --         immediate_word_delimiter;
-  --      ci.context := startOfParameters;
-  --   end if;
-  --   return;
-
-     --cmdpos := cmdpos+1;
-     --lastpos := cmdpos;
-     --if lastpos <= length( command ) then  -- quote as last char on line
-     --   while Element( command, lastpos ) /= '"' loop
-     --       lastpos := lastpos+1;
-     --       exit when lastpos > length( command );
-     --   end loop;
-     --end if;
-     --if lastpos > length( command ) then
-     --   err_tokenize( "missing double quote", to_string( command ) );
-     --   return;
-     --else
-     --   cmdpos := lastpos+1; -- skip last "
-     --end if;
-     --ci.compressedScript := ci.compressedScript &
-     --   immediate_word_delimiter & slice( command, firstpos, lastpos ) &
-     --   immediate_word_delimiter;
-     --ci.context := startOfParameters;
-     --return;
-
   -- Get the first token on the line.
   --
   -- Determine if this could be an Adascript identifier.  If it's not, then
@@ -1923,7 +1875,7 @@ begin
                  err_tokenize( "ASCII character not allowed", to_string( command ) );
               end if;
               word := word & toByteCode( char_escape_t );
-           -- I can't remember why I did this.
+           -- I can't remember why I did this.  was breaking ../../x
            --elsif ch = '.' and then lastpos < length( command ) then
            --   if Element( command, lastpos+1 )  = '.' then -- ".."
            --      exit;

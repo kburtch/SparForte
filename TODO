@@ -36,6 +36,7 @@ Priority Issues (Fix These First)
 - unstructured scripts
   - additional examples to be added to automated tests
 - unsorted/misc
+    - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
       base type is.  That is, the difference from a standard package type.
