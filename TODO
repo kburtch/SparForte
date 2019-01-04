@@ -12,7 +12,6 @@ Priority Issues (Fix These First)
 -------------------------------
 
 * improve first word parsing on the command
-    - ../../../spar is being truncated to '../'
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 - raise in one of my exception handlers did not function properly...
   investigate what happened.

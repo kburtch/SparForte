@@ -1924,10 +1924,10 @@ begin
               end if;
               word := word & toByteCode( char_escape_t );
            -- I can't remember why I did this.
-           elsif ch = '.' and then lastpos < length( command ) then
-              if Element( command, lastpos+1 )  = '.' then -- ".."
-                 exit;
-              end if;
+           --elsif ch = '.' and then lastpos < length( command ) then
+           --   if Element( command, lastpos+1 )  = '.' then -- ".."
+           --      exit;
+           --   end if;
            end if;
            -- add the character to the word/identifier.  The backslash, if
            -- any, is consumed.

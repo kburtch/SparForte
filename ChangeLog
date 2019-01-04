@@ -126,7 +126,7 @@ used with any command in a pipeline.
 
 59. (Blady) Fixed: SDL fixes for SDL support on Mac OS/X.
 
-60. Fixed: a command with a & immediately following no longer has the & treated as part of the command name.
+60. Fix: a command with a & immediately following no longer has the & treated as part of the command name.
 
 61. Change: if a statement begins with a shell command, shell quoting is now supported.  Enclosing the command in double quotes no longer uses string literal rules but is treated a quoted shell word.
 
