@@ -293,9 +293,9 @@ j : customer_id := 1; -- validation_error<br />
         </div>
         </center>
 
-<p>The affirm clause runs whenever data is stored in a variable, such as
-assignment statements, assignments on variable declarations, type casting
-and passing data in a in mode paramter.</p>
+<p>The affirm clause runs whenever data is converted from one type to
+another: this can happen when data is stored in a variable, assigned,
+type casted or used with a in mode paramter.</p>
 
 <p>The affirm clauses are recursive.  If the parent type of a type has an
 affirm clause, the parent type's clause will be run first.</p>
