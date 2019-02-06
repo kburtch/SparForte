@@ -36,6 +36,12 @@ Priority Issues (Fix These First)
 - unstructured scripts
   - additional examples to be added to automated tests
 - static expressions
+- csv support
+  - should probably support RFC 4180:
+     - DOS eol's
+     - embedded newline support - how?
+     - single quote support
+     - see https://en.wikipedia.org/wiki/Comma-separated_values
 - unsorted/misc
     - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
@@ -51,6 +57,8 @@ Priority Issues (Fix These First)
       - `word` not allowed in BasicShellWord?
     - spell checking comments (as Windows does?)  must whitelist all
       identifiers.  See /usr/include/aspell.h for interface to spell checker.
+    - a variable not declared is said to be declared but not used (this_run_on in
+      ssds project) - could not duplicate in simple test
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
@@ -188,6 +196,9 @@ Annoyances / Bugs with Workarounds / Updates
 Nice to Haves / Missing Functionality
 -------------------------------------
 
+- Java-style monitor
+  - a restricted shell should prohibit certain Linux command names like "nc"
+    (netcat) due to security, reading /etc/passwd, etc.
 - programming-by-contract
   - optimizations - mark places in type tree where we know there's no need to
     search further for contracts.

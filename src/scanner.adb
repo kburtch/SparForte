@@ -2960,20 +2960,22 @@ begin
   findIdent( to_unbounded_string( "PWD" ), temp_id );         -- PWD
   if temp_id = eof_t then                                     -- missing?
      declareIdent( temp_id, "PWD", uni_string_t );            -- declare it
-     declare
-       -- lookup current working directory
-       -- perhaps a spar_os.pwd package is in order to share
-       -- this with scanner and builtins?
-       buffer : string( 1..4096 );
-     begin
-       C_reset_errno;
-       getcwd( buffer, buffer'length );
-       if C_errno = 0 then
-          identifiers( temp_id ).value.all := to_unbounded_string(
-              buffer( 1..index( buffer, ASCII.NUL & "" ) - 1 ) ) ;
-       end if;
-     end;
   end if;
+  -- Always set the value.  PWD could be defined in the environment
+  -- by something else
+  declare
+    -- lookup current working directory
+    -- perhaps a spar_os.pwd package is in order to share
+    -- this with scanner and builtins?
+    buffer : string( 1..4096 );
+  begin
+    C_reset_errno;
+    getcwd( buffer, buffer'length );
+    if C_errno = 0 then
+       identifiers( temp_id ).value.all := to_unbounded_string(
+           buffer( 1..index( buffer, ASCII.NUL & "" ) - 1 ) ) ;
+    end if;
+  end;
   if rshOpt then                                              -- restricted sh?
      identifiers( temp_id).usage := constantUsage;            -- PWD is a
   end if;                                                     -- constant

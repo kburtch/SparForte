@@ -1,109 +1,132 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.1's focus was bringing SparForte into Jenkins continuous integration.
+SparForte 2.2's additional testing and new data type features necessary to implement packages in the future.
 
-CHANGES SINCE 2.0.3
+CHANGES SINCE 2.1
 
-1. Fix: backquoted strings cannot be used as a Bourne shell command.
+1. New: Can now subtract one calendar.time value from another.
 
-2. Fix: type error when using env; to show all parameters, resulting from new parameterized generic type handling error, has been fixed.
+2. New: New examples: game_24.sp, string_prepend.sp, sumseries.sp, sumsq.sp, ternary_logic.sp, twelve_days.sp, time_function.sp, graph_series.sp.
 
-3. Refactor: help command split out from builtins package.
+3. Fix: Anonymous array element type is treated as applied to eliminate concrete/abstract error.
 
-4. Refactor: new report system created, built-in help topics converted to use it.
+4. New: OS package functions.  os.pid, equivalent to Bourne shell $$. os.error_string (strerror) and documentation fixed.
 
-5. Change: pragma deprecated/depreciated is now an error when running in design phase mode, but remains a warning otherwise.
+5. Fix: instead of "identifier not declared", now get "too few parameter" when calling a user function with too few parameters.  Might be a more efficient way to implement this.
 
-6. Fix: spar -e with an empty string now produces an appropriate error message instead of "empty script name".
+6. New: abstract procedures and subprograms.
 
-7: Fix: a file or spar -e string with only whitespace is now an error.
+7. Fix: functions without a return value statement produce an error.
 
-8: Fix: "hash clash" internal error message corrected, typically on shell exit.
+8. New: limited arrays, records and anonymous arrays.
 
-9. Fix: dbm online help fixed.
+9. Fix: re-raise fixed to work in if statements in an exception handler.
 
-10. Fix: strings.match online help no longer "help match" but "help strings.match" as in the index page.
+10. New: "nonstandard" software model as a catch-all for no standard.
 
-11. Fix: set_input added to the help index.
+11. Fix: variables with explicit limited qualifier are now limited.
 
-12. Fix: with separate added to help command.
+12. New: return statements may have a when clause, like an exit statement.
 
-13. Change: make coverage regression and coverage tests now support Jenkins using JUnit/Cobetura.
+13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant".
 
-14. New: user types and subtypes can be declared abstract.  [TODO: check parameters, negative tests, and docs.]
+14. Change: command variables must now be limited instead of constant, in line with new limited functionality.  They cannot be used in an expression or assigned to.
 
-15. New: scalar variables can be declared limited.  [TODO: check parameters, negative tests - arrays, records, which can't be assigned yet].  This isn't that useful until packages or some other context is defined where it can be assigned.]
+15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning.
 
-16. Fix: passing a record to an array index no longer results in an exception crash.
+16. Fix: calling a procedure or function with no parameters when parameters were expected produces an appropriate error message.
 
-17. New: gprof profiling enabled on make coverage
+17. New: types and subtypes may have an affirm clause/block to validate values, as in programming-by-contract.
 
-18. Fix: rounding errors in calendar.time arithmetic fixed.
+18. New. raise statements can have a when clause, like an exit statement.
 
-19. Fix: functions many no longer be called in static expressions (since they use regular expressions, not static ones).
+19. Fix: statements starting with paths like /bin/bash and bin/bash are now recognized as shell commands.
 
-20. Refactor: expression handling redesigned to get some minor speed improvements.
+20. Fix: broken pipes (such as env | head) no longer show meaningless error messages.
 
-21. Fix: passing a record to an array index in an anonymous array longer results in an exception crash.
+21. Refactor: parser.adb broken up into interpreter.adb and parser child packages.
 
-23. Fix: PWD's value is set when SparForte starts and no longer shows the PWD value imported from the environment, which could possibly be incorrect.
+22. Change: better error message for dollar expansions with missing variable names.
 
-24. New: changes to provision and configure scripts for Debian.
+23. New: pragma annotate extended with icon, rationale and screenshot fields.
 
-25. Change: whitespace at end of line no longer an error in maintenance phase.
+24. Fix: pragma annotate HTML output is html-encoded.
 
-26. Fix: constraint error caught when setting values too large in btree_io and hash_io.
+25. Fix: executable statements in blocks no longer allowed type and variable declarations.
 
-27. Fix: formal parmeters of procedures and functions no longer clash with pre-existing identifiers of the same name.
+26. Change: the first word in a statement can be a Bourne shell command with path characters and certain punctuation symbols allowed in the names (e.g. minus).
 
-28. Fix: arrays.shuffle rare constraint error (should be) fixed.
+27. Refactor: to improve performance, type checking suppressed at run-time unless necessary, 11% faster for monty.sp example.
 
-29. Fix: last in chain internal identifier no longer shows a "should be constant" error in test phase mode.
+28. Fix: backquotes in a shell word no longer have 2 extra characters after substitution.
 
-30. Fix: scalar user types no longer incorrectly treated as subtypes during syntax check.
+29. Fix: unstructured scripts no longer pull/discard top-level declarations early nested block exit.
 
-31. New: abstract enforced for un-applied types in design and test modes.
+30. Fix: fixed memory leak with directory_operations.open declaring new resources each time.
 
-32. Change: all id numbers (e.g. files, lists, canvases)  are now limited types.
+31. Change: affirm blocks run in restricted mode as a precaution against side-effects.
 
-33. New: pragma assumption applied and factor, for abstract and limited type tests.
+32. Change: (Mehdi) Strings package now has more univeral parameters and return results to reduce type casting and to follow a similar design to the numerics package.
 
-34. New: trailing underscores not allowed in identifiers.
+33. New: SparForte core regression tests passing on Cygwin build.
 
-35. Fix: records.to_record now marks the record as written, elimintating the
-"expected a constant" error message.
+34. Change: Unstructured scripts no longer require variables to be declared
+before use.  This is to make unstructure scripts more convenient for simple
+tasks, and to give them different behaviour to structured scripts.
 
-36. Fix: "expected a constant" check not applied to record fields.
+35. Fix: raising an undeclared exception now shows an identifier not declared
+error, not a identifier of the wrong class error.
 
-37. Fix: case..when now handles shell commands correctly.
+36. New: configure --release flag toggles a development version default prompt or the normal release default prompt, "=>".
 
-38. Fix: json enumerateds how handled correctly in case...when.
+37. Fix: Case statements no long require string and character types for corresponding literals, which was causing errors on derrived types.  Now match the semanitcs of the rest of the language.
 
-39. Change: scripts that end in ".sh" (traditionally a shell script) now do not run...an error is reported.
+38. New: logs package.
 
-40. Fix: records.to_json no longer raises an exception on an undefined boolean field.
+39. Fix: removed comment on waiting after pipelines to cleanup zombied processes.
 
-41. New: pragma test has an optional test description.
+40. Fix: 2>&1 on a non-existent command no longer crashes due to the Ada.Text_IO package.
 
-42. New: pragma test_report to specify a test report type and filename.
+41. Change: 2>&1 was limited to the end of a command pipeline, but now may be
+used with any command in a pipeline.
 
-43. New: test failures no longer abort immediately but produce a report after the program finishes.
+42. Change: 2> / 2>> was limited to the end of a command pipeline, but now may be used with any command in a pipeline.
 
-44. Fix: assigning in a record declaration now works with types containing a period (e.g. teams.member ).
+43. Fix: exception messages now appear in gcc format when -g/gcc_errors is used.
 
-45. Fix: btree_io and hash_io cursors now closed at end-of-block to prevent indefinite row locking on a control-c exit.
+44. Fix: Latin-1 support fixed in string literals: => "cmd", cmd "param".  The high ASCII charaters are still escaped in error messages.
 
-46. Fix: text_io package workaround for Ada.Text_IO not handling interrupted system calls on Put/Put_Line.
+45. Fix: env shows limited and constant variables with the appropriate word.
 
-47. Fix: arrays.to_array and records.to_record handle JSON conversion exceptions properly.
+46. Fix: declared but never used errors are working again.
 
-48. Fix: records.to_record fixed so "?" will display the name, not ordinal position, of enumerated items.
+47. Change: volatiles are no longer allowed in expressions (to avoid side-effects).  See #48.
 
-49. Fix: records.to_record memory leak fixed.
+48. New: double-write data race side-effects not allowed in function calls or type contracts.
 
-50. XML report for test pragmas tested under Jenkins and JUnit plugin.
+49. Fix: enabling trace no longer disables performance monitoring line counting.
 
-51. [Blady-Com] Change: contributor changes for better Darwin support.
+50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles.
 
-22. Fix: fixed third-party APQ library for newer versions of BASH.
+51. New: pragma manual_test and manual_test_result [not tested, docs needed].
+
+52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
+
+53. Change: semi-colons are now optional in backquoted expressions (except if the expression includes a comment). [test]
+
+54. Fix: echo `foo` now works.  It was disabled in the code...why did I do that? [test]
+
+55. New: pragma restriction( no_volatiles );
+
+56. New: os.last_child and equivalent $!.  Get the pid of the last child run in the background.
+
+57. Change: trailing whitespace is an error in backquote literals.
+
+58. New: pragma unchecked_volatile( var ) to create a volatile which is allowed in expressions (provided restriction( no_volatiles ) is not used).
+
+59. (Blady) Fixed: SDL fixes for SDL support on Mac OS/X.
+
+60. Fix: a command with a & immediately following no longer has the & treated as part of the command name.
+
+61. Change: if a statement begins with a shell command, shell quoting is now supported.  Enclosing the command in double quotes no longer uses string literal rules but is treated a quoted shell word.
 
