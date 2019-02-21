@@ -429,9 +429,12 @@ begin
             newJob.pid := myPID;
             newJob.cmd := cmd;
             newJob.status := running;
-            newJob.quiet := false;
+            -- if not input mode, always quiet
+            newJob.quiet := not ( boolean( inputMode = interactive ) or boolean( inputMode = breakout ) );
             jobList.Insert( jobs, newJob );
-            put_line( cmd & " (" & myPID'img & ") has started" );
+            if not newJob.quiet then
+               put_line( cmd & " (" & myPID'img & ") has started" );
+            end if;
             Success := true;
          end if;
       else
@@ -911,7 +914,7 @@ begin
          jobList.Clear( jobs, i );                -- then it's done
           if not job.quiet then
             put_line( job.cmd &" (" & job.pid'img & ") has finished" );
-         end if;
+          end if;
       elsif result = 0 then                       -- unable to get status?
          if job.status /= running then            -- show status on a change
             if not job.quiet then

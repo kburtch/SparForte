@@ -2,5 +2,7 @@ For the latest news, visit the SparForte web site.
 
 CHANGES SINCE 2.2
 
-1. The PWD variable value is always revised when SparForte (or, at least, the scanner) starts.  This prevents an exported PWD variable from another shell confusion SparForte.
+1. Fix: The PWD variable value is always revised when SparForte (or, at least, the scanner) starts.  This prevents an exported PWD variable from another shell confusion SparForte.
+
+2. Fix: The job control messages now only display in interactive or breakout sessions (unless hidden for another reason).
 
