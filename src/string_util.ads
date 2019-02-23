@@ -131,7 +131,7 @@ return unbounded_string;
 -- return the fth field delimited by delimiter
 
 function stringCSVField( s1 : unbounded_string; delimiter : character;
-f : natural ) return unbounded_string;
+f : natural; allowSingleQuotes : boolean := false ) return unbounded_string;
 -- return the fth field delimited by delimiter (typically a comma) but
 -- allow the delimiter to be escaped by double quote marks
 

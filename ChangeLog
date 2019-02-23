@@ -6,5 +6,5 @@ CHANGES SINCE 2.2
 
 2. Fix: The job control messages now only display in interactive or breakout sessions (unless hidden for another reason).
 
-3. Fix: The strings.csv_field function is more in line with RFC 4180.  CR+LF line ending no longer returned on the last field.
+3. Fix: The strings.csv_field function is more in line with RFC 4180.  CR+LF line ending no longer returned on the last field.  Single quotes flag.
 

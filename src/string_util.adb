@@ -33,6 +33,7 @@
 pragma suppress( index_check );
 pragma suppress( range_check );
 
+with text_io; use text_io;
 with spar_os, Ada.Characters.Handling;
 use  Ada.Characters.Handling;
 
@@ -587,9 +588,11 @@ begin
 end stringField;
 
 function stringCSVField( s1 : unbounded_string; delimiter : character;
-f : natural ) return unbounded_string is
+f : natural; allowSingleQuotes : boolean := false ) return unbounded_string is
 -- return the fth field delimited by delimiter (typically a comma) but
 -- allow the delimiter to be escaped by double quote marks
+-- if allowSingleQuotes is true, allow the field to be enclosed by single
+-- quotes as well as double quotes.
   firstPos    : natural := 1;
   currentPos  : natural := 1;
   delimCnt    : natural := 0;
@@ -600,11 +603,15 @@ f : natural ) return unbounded_string is
     -- strip enclosing single or double quotes (RFC 4180)
   begin
     if s'length > 1 then
-       if s(s'first) = s(s'last) and s(s'first)='"' then
-          return to_unbounded_string( s(s'first+1..s'last-1) );
-       -- Single quotes are not a part of RFC 4180
-       --elsif s(s'first) = s(s'last) and s(s'first)=''' then
-       --   return to_unbounded_string( s(s'first+1..s'last-1) );
+       if s(s'first) = s(s'last) then
+          if s(s'first)='"' then
+             return to_unbounded_string( s(s'first+1..s'last-1) );
+          -- Single quotes are not a part of RFC 4180, but some allow
+          elsif allowSingleQuotes then
+             if s(s'first)=''' then
+                return to_unbounded_string( s(s'first+1..s'last-1) );
+             end if;
+          end if;
        end if;
     end if;
     return to_unbounded_string( s );

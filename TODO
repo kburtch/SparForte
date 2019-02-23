@@ -37,11 +37,7 @@ Priority Issues (Fix These First)
   - additional examples to be added to automated tests
 - static expressions
 - csv support
-  - should probably support RFC 4180:
-     - DOS eol's
-     - embedded newline support - how?
-     - single quote support
-     - see https://en.wikipedia.org/wiki/Comma-separated_values
+     - csv_replace - single quote, cr+lf ending
 - unsorted/misc
     - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
