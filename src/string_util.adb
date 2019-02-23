@@ -586,7 +586,7 @@ begin
   end if;
 end stringField;
 
-function stringCSVField( s : unbounded_string; delimiter : character;
+function stringCSVField( s1 : unbounded_string; delimiter : character;
 f : natural ) return unbounded_string is
 -- return the fth field delimited by delimiter (typically a comma) but
 -- allow the delimiter to be escaped by double quote marks
@@ -597,19 +597,38 @@ f : natural ) return unbounded_string is
   returnStr   : unbounded_string;
 
   function stripQuotes( s : string ) return unbounded_string is
+    -- strip enclosing single or double quotes (RFC 4180)
   begin
     if s'length > 1 then
        if s(s'first) = s(s'last) and s(s'first)='"' then
           return to_unbounded_string( s(s'first+1..s'last-1) );
+       -- Single quotes are not a part of RFC 4180
+       --elsif s(s'first) = s(s'last) and s(s'first)=''' then
+       --   return to_unbounded_string( s(s'first+1..s'last-1) );
        end if;
     end if;
     return to_unbounded_string( s );
   end stripQuotes;
 
+  function stripEOL( s : unbounded_string ) return unbounded_string is
+    -- strip ending CRLF, if it exists (RFC 4180)
+    len : natural := length( s );
+  begin
+    if length( s ) > 2 then
+      if Element(s, len-1) = ASCII.CR and Element(s,len) = ASCII.LF then
+         return head( s, len-2 );
+      end if;
+    end if;
+    return s;
+  end stripEOL;
+
+  s : unbounded_string;
+
 begin
-  if f = 0 or length( s ) = 0 then
+  if f = 0 or length( s1 ) = 0 then
      return null_unbounded_string;
   end if;
+  s := stripEOL( s1 );
   for i in 1..length( s ) loop
       if Element( s, i ) = delimiter and not inQuotes then
          delimCnt := delimCnt + 1;
