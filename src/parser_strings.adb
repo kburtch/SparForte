@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with text_io;use text_io;
+--with text_io;
 
 with interfaces.c,
     ada.strings.unbounded.text_io,
@@ -666,7 +666,7 @@ begin
 end ParseStringsField;
 
 procedure ParseStringsCSVField( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.csv_field( s, c [, d] )
+  -- Syntax: strings.csv_field( s, c [, d [, q]] )
   -- Source: N/A
   str_val  : unbounded_string;
   str_type : identifier;
@@ -675,13 +675,17 @@ procedure ParseStringsCSVField( result : out unbounded_string; kind : out identi
   del_val  : unbounded_string;
   del_type : identifier;
   delim    : character := ',';
+  squotes_val  : unbounded_string;
+  squotes_type : identifier;
+  squotes : boolean := false;
 begin
   kind := uni_string_t;
   expect( csv_field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
+  -- Optional delimiter
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( del_val, del_type, character_t );
+     ParseNextStringParameter( del_val, del_type, character_t );
      if isExecutingCommand then
         begin
           delim := element( del_val, 1 );
@@ -689,12 +693,25 @@ begin
           err_exception_raised;
         end;
      end if;
+     -- Optional single quotes flag
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        ParseLastEnumParameter( squotes_val, squotes_type, boolean_t );
+        if isExecutingCommand then
+           begin
+             squotes := to_string( squotes_val ) = "1";
+           exception when others =>
+             err_exception_raised;
+           end;
+        end if;
+     else
+        expect( symbol_t, ")" );
+     end if;
   else
      expect( symbol_t, ")" );
   end if;
   begin
      if isExecutingCommand then
-        result := stringCSVField( str_val, delim, natural( to_numeric( cnt_val ) ) );
+        result := stringCSVField( str_val, delim, natural( to_numeric( cnt_val ) ), squotes );
      end if;
   exception when others =>
      err_exception_raised;
