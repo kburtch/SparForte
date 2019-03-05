@@ -8,3 +8,5 @@ CHANGES SINCE 2.2
 
 3. Fix: The strings.csv_field function is more in line with RFC 4180.  CR+LF line ending no longer returned on the last field.
 
+4. Fix: using equals for assignment gives an error message to use := instead.
+

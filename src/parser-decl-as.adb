@@ -5206,7 +5206,7 @@ begin
         -- for =, will be treated as a command if we don't force an error
         -- here for missing :=, since it was probably intended as an assignment
 
-        if Token = symbol_t and to_string( identifiers( token ).value.all ) = "=" then
+        if Token = word_t and to_string( identifiers( token ).value.all ) = "=" then
            expect( symbol_t, ":=" );
         elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
            resumeScanning( cmdStart );
@@ -5591,7 +5591,7 @@ begin
         -- here for missing :=, since it was probably intended as an assignment
         -- For unstructured scripts, allow variables to be auto-declared.
 
-        if Token = symbol_t and to_string( identifiers( token ).value.all ) = "=" then
+        if Token = word_t and to_string( identifiers( token ).value.all ) = "=" then
            expect( symbol_t, ":=" );
         elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
            resumeScanning( cmdStart );

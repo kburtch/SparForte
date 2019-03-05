@@ -13,6 +13,7 @@ Priority Issues (Fix These First)
 
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
+* waitToReveal sometimes throws an unexpected exception
 - raise in one of my exception handlers did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
@@ -43,6 +44,10 @@ Priority Issues (Fix These First)
      - single quote support
      - see https://en.wikipedia.org/wiki/Comma-separated_values
 - unsorted/misc
+    - --break may be broken (request by CY)
+    - do exceptions set an error code, even if handled?  if so, handling
+      them should clear the error code. (request by CY)
+    - strings functions could be improved (request by CY)
     - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
