@@ -124,6 +124,9 @@ os_system_t       : identifier;
 --
 ------------------------------------------------------------------------------
 
+function get_script_execution_position return unbounded_string;
+-- get the script position but do not cause an error
+
 procedure err( msg : string );
 -- if this is the first error encountered, display the message
 -- set the token to eof_t to abort the parsing and set the

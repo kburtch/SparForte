@@ -878,6 +878,192 @@ begin
    return s;
  end convertToPlainText;
 
+
+--  GET SCRIPT POSITION MESSAGE
+--
+-----------------------------------------------------------------------------
+
+function get_script_execution_position return unbounded_string is
+  cmdline    : unbounded_string;
+  firstpos   : natural;
+  lastpos    : natural;
+  lineStr    : unbounded_string;
+  firstposStr : unbounded_string;
+  lineno     : natural;
+  fileno     : natural;
+  outLine    : unbounded_string;
+  gccOutLine : unbounded_string;
+  sfr        : aSourceFile;
+  needGccVersion : boolean := false;
+begin
+  -- Only create the abbreviated GCC-style error message if we need it
+  --
+  -- In the case of templates, we need both the Gcc version and the non-Gcc
+  -- version of the error message.  In a CGI script that isn't a template,
+  -- regular errors are reported back.
+
+  needGccVersion := boolean( gccOpt ) or hasTemplate;
+
+  -- Decode a copy of the command line to show the error.  Also returns
+  -- the current token position and the line number.
+
+  if script /= null then
+     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+  else
+     -- can't use optional_inverse here because the text will be
+     -- escaped later
+     cmdLine := to_unbounded_string( "<No executable line to show> in <no script loaded>" );
+  end if;
+
+  -- Clear any old error messages from both the screen error and the
+  -- template error (if one exists)
+
+  fullErrorMessage := null_unbounded_string;
+  fullTemplateErrorMessage := null_unbounded_string;
+
+  -- If in a script (that is, a non-interactive input mode) then
+  -- show the location and traceback.  Otherwise, if we're just at
+  -- the command prompt, don't bother with the location/traceback.
+
+  if inputMode /= interactive and inputMode /= breakout then
+
+  -- Get the location information.  If gcc option, strip the leading
+  -- blanks form the location information.  Use outLine to generate a full
+  -- line of text because individual Put's are shown as individual lines
+  -- in Apache's error logs for templates...a real mess.
+  --
+  -- The basic GCC message will be recorded in a separate "out line"
+  -- as we may need both message formats for a web template.
+
+     if script /= null then
+
+        if needGccVersion then                            -- gcc style?
+           lineStr := to_unbounded_string( lineno'img );  -- remove leading
+           if length( lineStr ) > 0 then                  -- space (if any)
+              if element( lineStr, 1 ) = ' ' then
+                 delete( lineStr, 1, 1 );
+              end if;
+           end if;
+           firstposStr := to_unbounded_string( firstpos'img );
+           if length( firstposStr ) > 0 then              -- here, too
+              if element( firstposStr, 1 ) = ' ' then
+                 delete( firstposStr, 1, 1 );
+              end if;
+           end if;
+           sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+           gccOutLine := sfr.name
+             & ":" & lineStr
+             & ":" & firstposStr
+             & ":";                                       -- no traceback
+           gccOutLine := gccOutLine & ' ';                -- token start
+           --gccOutLine := gccOutLine & msg;
+        end if;
+
+        -- For the regular format, show the location and traceback
+
+        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+        outLine := sfr.name                               -- location
+           & ":" & lineno'img
+           & ":" & firstpos'img
+           & ": ";
+
+        -- TODO: we're using UNIX eof's but should ideally be o/s
+        -- independent
+
+        if blocks_top > blocks'first then                 -- in a block?
+           for i in reverse blocks'first..blocks_top-1 loop -- show the
+               if i /= blocks_top-1 then                  -- simplified
+                  outLine := outLine & " in ";            -- traceback
+               end if;
+               outLine := outLine & ToEscaped( blocks( i ).blockName );
+           end loop;
+           fullErrorMessage := outLine & ASCII.LF;
+           outLine := null_unbounded_string;
+        else                                              -- if no blocks
+           outLine := outLine & "in script";              -- just say
+           fullErrorMessage := outLine & ASCII.LF;        -- "in script"
+           outLine := null_unbounded_string;
+        end if;
+     else
+        -- no script?
+        outLine := null_unbounded_string;
+     end if; -- a script exists
+  end if;
+
+  -- For the normal version, we must follow the traceback with the
+  -- message, error underline and show the error message.
+  -- Output only full lines to avoid messy Apache error logs.
+  --
+  -- First, add the line the error occurred in
+
+  fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
+
+  -- Draw the underline error pointer
+
+  if script /= null then
+     outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
+     outLine := outLine & '^';                                  -- token start
+     if lastpos > firstpos then                                 -- multi chars?
+        outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+        outLine := outLine & '^';                               -- token end
+     end if;
+     outLine := outLine & ' ';                                  -- token start
+  end if;
+  --outLine := outLine & msg;
+
+  -- Even for a template, if the user selected gccOpt specifically,
+  -- use it.
+
+  -- Pick which format the user wants for the full message.
+  --
+  -- TODO: we're using UNIX eof's but should ideally be o/s
+  -- independent
+
+  if gccOpt then
+     fullErrorMessage := gccOutLine;
+  else
+     fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  end if;
+
+  -- If we are in any mode of the development cycle except maintenance
+  -- mode, create an error message to display.  If we're in maintenance
+  -- mode, create an error message only if debug is enabled.
+
+  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+     case templateHeader.templateType is
+     when htmlTemplate | wmlTemplate =>
+        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+           "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
+           "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
+           "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
+           "<p>" & convertToHTML( fullErrorMessage ) & "</p>" &
+           "</div>" &
+           "</div>" &
+           "<br />";
+     when cssTemplate | jsTemplate =>
+        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
+     when xmlTemplate =>
+        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+     when textTemplate =>
+        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
+     when noTemplate | jsonTemplate =>
+        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage );
+     end case;
+     -- In the case of the template, the error output must always
+     -- be in gcc format (a single line) for the web server log.
+     --
+     -- This affects exception handling since HTML output for template
+     -- will differ from error message in exceptions package.  Also,
+     -- format this for Apache by stripping out the boldface or
+     -- other effects.
+     --
+     -- TODO: document this
+     fullErrorMessage := ConvertToPlainText( gccOutLine );
+  end if;
+  return fullErrorMessage;
+end get_script_execution_position;
+
+
 --  ERR
 --
 -- Stop execution and record an compile-time or run-time error.  Format the

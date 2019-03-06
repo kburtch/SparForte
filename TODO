@@ -14,6 +14,8 @@ Priority Issues (Fix These First)
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
+*--break may be broken (request by CY)
+   - not printing error location or other break messages (BREAKDBG)
 - raise in one of my exception handlers did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
@@ -40,7 +42,6 @@ Priority Issues (Fix These First)
 - csv support
      - csv_replace - single quote, cr+lf ending
 - unsorted/misc
-    - --break may be broken (request by CY)
     - do exceptions set an error code, even if handled?  if so, handling
       them should clear the error code. (request by CY)
     - strings functions could be improved (request by CY)

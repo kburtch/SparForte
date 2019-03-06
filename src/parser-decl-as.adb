@@ -5003,7 +5003,10 @@ begin
                Put_Identifier( i );
             end if;
         end loop;
-        err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        --BREAKDBG
+        put_line( standard_error, get_script_execution_position );
+        put_line( standard_error, optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
   elsif wasSIGWINCH then                                 -- window change?
      findIdent( to_unbounded_string( "TERM" ), term_id );
@@ -5307,7 +5310,10 @@ begin
         restoreScript( scriptState );                  -- restore original script
         if breakoutContinue then                       -- continuing execution?
            resumeScanning( cmdStart );                 -- start of command
-           err( optional_inverse( "resuming here" ) ); -- redisplay line
+           --BREAKDBG
+           put_line( standard_error, get_script_execution_position );
+           put_line( standard_error, optional_inverse( "resuming here" ) ); -- redisplay line
+           --err( optional_inverse( "resuming here" ) ); -- redisplay line
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
            exit_block := false;                        --   and don't exit
@@ -5383,7 +5389,10 @@ begin
                Put_Identifier( i );
             end if;
         end loop;
-        err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        --BREAKDBG
+        put_line( standard_error, get_script_execution_position );
+        put_line( standard_error, optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
   elsif wasSIGWINCH then                                 -- window change?
      findIdent( to_unbounded_string( "TERM" ), term_id );
@@ -5690,7 +5699,10 @@ begin
         restoreScript( scriptState );                  -- restore original script
         if breakoutContinue then                       -- continuing execution?
            resumeScanning( cmdStart );                 -- start of command
-           err( optional_inverse( "resuming here" ) ); -- redisplay line
+           --BREAKDBG
+           --err( optional_inverse( "resuming here" ) ); -- redisplay line
+           put_line( standard_error, get_script_execution_position );
+           put_line( standard_error, optional_inverse( "resuming here" ) ); -- redisplay line
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
            exit_block := false;                        --   and don't exit
