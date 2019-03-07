@@ -124,7 +124,7 @@ os_system_t       : identifier;
 --
 ------------------------------------------------------------------------------
 
-function get_script_execution_position return unbounded_string;
+function get_script_execution_position( msg : string ) return unbounded_string;
 -- get the script position but do not cause an error
 
 procedure err( msg : string );

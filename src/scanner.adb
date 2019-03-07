@@ -883,7 +883,7 @@ begin
 --
 -----------------------------------------------------------------------------
 
-function get_script_execution_position return unbounded_string is
+function get_script_execution_position( msg : string ) return unbounded_string is
   cmdline    : unbounded_string;
   firstpos   : natural;
   lastpos    : natural;
@@ -895,6 +895,7 @@ function get_script_execution_position return unbounded_string is
   gccOutLine : unbounded_string;
   sfr        : aSourceFile;
   needGccVersion : boolean := false;
+  fullErrorMessage : unbounded_string;
 begin
   -- Only create the abbreviated GCC-style error message if we need it
   --
@@ -919,7 +920,6 @@ begin
   -- template error (if one exists)
 
   fullErrorMessage := null_unbounded_string;
-  fullTemplateErrorMessage := null_unbounded_string;
 
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, if we're just at
@@ -956,7 +956,7 @@ begin
              & ":" & firstposStr
              & ":";                                       -- no traceback
            gccOutLine := gccOutLine & ' ';                -- token start
-           --gccOutLine := gccOutLine & msg;
+           gccOutLine := gccOutLine & msg;
         end if;
 
         -- For the regular format, show the location and traceback
@@ -1009,7 +1009,7 @@ begin
      end if;
      outLine := outLine & ' ';                                  -- token start
   end if;
-  --outLine := outLine & msg;
+  outLine := outLine & msg;
 
   -- Even for a template, if the user selected gccOpt specifically,
   -- use it.
@@ -1032,7 +1032,7 @@ begin
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
-        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+        fullErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
@@ -1041,13 +1041,13 @@ begin
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
+        fullErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+        fullErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
      when textTemplate =>
-        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
+        fullErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
      when noTemplate | jsonTemplate =>
-        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage );
+        fullErrorMessage := convertToPlainText( fullErrorMessage );
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -1057,7 +1057,6 @@ begin
      -- format this for Apache by stripping out the boldface or
      -- other effects.
      --
-     -- TODO: document this
      fullErrorMessage := ConvertToPlainText( gccOutLine );
   end if;
   return fullErrorMessage;

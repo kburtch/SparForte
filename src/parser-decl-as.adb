@@ -5004,8 +5004,8 @@ begin
             end if;
         end loop;
         --BREAKDBG
-        put_line( standard_error, get_script_execution_position );
-        put_line( standard_error, optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        put_line( standard_error, get_script_execution_position(
+           optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
         --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
   elsif wasSIGWINCH then                                 -- window change?
@@ -5300,6 +5300,8 @@ begin
         saveMode    : anInputMode := inputMode;       -- BUSH's state
         scriptState : aScriptState;                   -- current script
      begin
+        --BREAKDBG: 2
+        put_line( standard_error, fullErrorMessage );
         wasSIGINT := false;                            -- clear sig flag
         saveScript( scriptState );                     -- save position
         error_found := false;                          -- not a real error
@@ -5311,8 +5313,8 @@ begin
         if breakoutContinue then                       -- continuing execution?
            resumeScanning( cmdStart );                 -- start of command
            --BREAKDBG
-           put_line( standard_error, get_script_execution_position );
-           put_line( standard_error, optional_inverse( "resuming here" ) ); -- redisplay line
+           put_line( standard_error, get_script_execution_position(
+              optional_inverse( "resuming here" ) ) ); -- redisplay line
            --err( optional_inverse( "resuming here" ) ); -- redisplay line
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
@@ -5323,7 +5325,7 @@ begin
            -- Disable again now.
            type_checks_done := true;
         end if;
-        inputMode := saveMode;                         -- restore BUSH's
+        inputMode := saveMode;                         -- restore Spar's
         resumeScanning( cmdStart );                    --   overwrite EOF token
      end;
      end if;
@@ -5390,8 +5392,8 @@ begin
             end if;
         end loop;
         --BREAKDBG
-        put_line( standard_error, get_script_execution_position );
-        put_line( standard_error, optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        put_line( standard_error, get_script_execution_position(
+            optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
         --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
   elsif wasSIGWINCH then                                 -- window change?
@@ -5690,24 +5692,31 @@ begin
         saveMode    : anInputMode := inputMode;       -- BUSH's state
         scriptState : aScriptState;                   -- current script
      begin
+        --BREAKDBG: 2
+        put_line( standard_error, fullErrorMessage );
         wasSIGINT := false;                            -- clear sig flag
         saveScript( scriptState );                     -- save position
         error_found := false;                          -- not a real error
         script := null;                                -- no script to run
         inputMode := breakout;                         -- now interactive
+        -- Check: this type_checks_done line was missing
+        type_checks_done := false;                     -- enforce type checking
         interactiveSession;                            -- command prompt
         restoreScript( scriptState );                  -- restore original script
         if breakoutContinue then                       -- continuing execution?
            resumeScanning( cmdStart );                 -- start of command
            --BREAKDBG
            --err( optional_inverse( "resuming here" ) ); -- redisplay line
-           put_line( standard_error, get_script_execution_position );
-           put_line( standard_error, optional_inverse( "resuming here" ) ); -- redisplay line
+           put_line( standard_error, get_script_execution_position(
+              optional_inverse( "resuming here" ) ) ); -- redisplay line
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
            exit_block := false;                        --   and don't exit
            syntax_check := false;
            breakoutContinue := false;                  --   we handled it
+           -- Type checks would have been re-instated for the command prompt.
+           -- Disable again now.
+           type_checks_done := true;
         end if;
         inputMode := saveMode;                         -- restore BUSH's
         resumeScanning( cmdStart );                    --   overwrite EOF token
