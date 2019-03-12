@@ -217,6 +217,10 @@ begin
            put_trace( "Input from file descriptor" & to_string(
               stringField( file_ref, fd_field ) ) );
         end if;
+        if stringField(file_ref, eof_field ) = "1" then
+           err( "end of file" );
+           return;
+        end if;
         if file_kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
            DoGet( file_ref );
            replaceField( file_ref, doget_field, boolean'image( false ) );
@@ -225,7 +229,6 @@ begin
           GetParameterValue( file_ref, fileInfo );
           ch := Element( fileInfo, 1 );
           if stringField(file_ref, eof_field ) = "1" then
-             err( "end of file" );
              exit;
           end if;
           DoGet( file_ref );

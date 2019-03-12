@@ -10,3 +10,5 @@ CHANGES SINCE 2.2
 
 4. Fix: using equals for assignment gives an error message to use := instead.
 
+5. Fix: get_line no longer reports an end-of-file when reading the last line of a file that doesn't have a newline.
+

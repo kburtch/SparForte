@@ -44,7 +44,11 @@ Priority Issues (Fix These First)
 - unsorted/misc
     - do exceptions set an error code, even if handled?  if so, handling
       them should clear the error code. (request by CY)
-    - strings functions could be improved (request by CY)
+    - strings functions could be improved. e.g. regular expressions (request by CY)
+    - in some edge cases, you can invoke procedures before they are declared.
+      As Spar reads the code, it treats the procedure call as a shell
+      command (unless no_external_commands is specified).  This is caught in
+      test mode, but should be caught in development mode as well (CY).
     - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
