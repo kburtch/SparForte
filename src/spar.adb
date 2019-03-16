@@ -55,6 +55,10 @@ use ada.text_io,
 procedure spar is
   term_id : identifier;
   libraryPathNext : boolean := false;
+  wasCoding : boolean := false;
+  wasDesign : boolean := false;
+  wasMaintenance : boolean := false;
+  wasTest : boolean := false;
 begin
   startSignalFlags;
 
@@ -72,7 +76,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--coding][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
@@ -127,10 +131,13 @@ begin
             syntaxOpt := true;
          elsif Argument(i) = "--coding" then
             testOpt := false;
+            wasCoding := true;
          elsif Argument(i) = "--debug" then
             debugOpt := true;
          elsif Argument(i) = "--design" then
+            testOpt   := false;
             designOpt := true;
+            wasDesign := true;
          elsif Argument(i) = "--exec" then
             execOpt := true;
          elsif Argument(i) = "--gcc-errors" then
@@ -144,7 +151,9 @@ begin
          elsif Argument(i) = "--login" then
             isLoginShell := true;
          elsif Argument(i) = "--maintenance" then
+            testOpt   := false;
             maintenanceOpt := true;
+            wasMaintenance := true;
          elsif Argument(i) = "--perf" then
             perfOpt := true;
          elsif Argument(i) = "--profile" then
@@ -153,6 +162,7 @@ begin
             rshOpt := true;
          elsif Argument(i) = "--test" then
             testOpt := true;
+            wasTest := true;
          elsif Argument(i) = "--trace" then
             traceOpt := true;
          --elsif Argument(i) = "--tabsize" then
@@ -206,10 +216,13 @@ begin
                       syntaxOpt := true;
                    elsif Args(letter) = 'C' then
                       testOpt := false;
+                      wasCoding := true;
                    elsif Args(letter) = 'd' then
                       debugOpt := true;
                    elsif Args(letter) = 'D' then
+                      testOpt   := false;
                       designOpt := true;
+                      wasDesign := true;
                    elsif Args(letter) = 'e' then
                       execOpt := true;
                    elsif Args(letter) = 'h' then
@@ -221,7 +234,9 @@ begin
                    elsif Args(letter) = 'l' then
                       isLoginShell := true;
                    elsif Args(letter) = 'm' then
+                      testOpt   := false;
                       maintenanceOpt := true;
+                      wasMaintenance := true;
                    elsif Args(letter) = 'p' then
                       perfOpt := true;
                    elsif Args(letter) = 'P' then
@@ -231,7 +246,9 @@ begin
                    elsif Args(letter) = 'r' then
                       rshOpt := true;
                    elsif Args(letter) = 't' then
+                      testOpt   := false;
                       testOpt := true;
+                      wasTest := true;
                    elsif Args(letter) = 'v' then
                       verboseOpt := true;
                    elsif Argument(i) = "-V" then
@@ -276,7 +293,7 @@ begin
 
   -- Illegal option switch combinations
 
-  if (designOpt and maintenanceOpt) or (designOpt and testOpt) or (maintenanceOpt and testOpt) then
+  if (wasDesign and wasCoding) or (wasDesign and wasMaintenance) or (wasDesign and wasTest) or (wasCoding and wasMaintenance) or (wasCoding and wasTest) or (wasMaintenance and wasTest) then
      Put_Line( standard_error, Command_Name & ": only one of --design, --maintenance or --test is allowed" );
      Set_Exit_Status( 192 );
      return;
