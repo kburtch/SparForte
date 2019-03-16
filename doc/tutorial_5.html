@@ -616,6 +616,11 @@ projects or teams with geographically remote members.</p>
 with a command like <span style="font-weight: bold;">grep</span> and <span style="font-weight: bold;">sort</span> to see the ones you are
 interested in.</p>
 
+<p>During development, you can suppress test phase mode (the default)
+by using "--coding" or "-C".  This will disable unit tests and
+will not perform certain tests that assume a program is complete.
+There is more on test phase mode below.</p>
+
 <h3>Debugging</h3>
 
 <p>The <span style="font-weight: bold;">trace</span> command will show each line of a script as
@@ -655,7 +660,8 @@ for more info</p>
 <h3>Automated Testing</h3>
 
 <p>SparForte has a testing mode which can be turned on with with the
-command line option "--test".</p>
+command line option "--test". (As of SparForte 2.2.1, testing mode
+is the default).</p>
 
 <h4>Source Code Analysis</h4>
 

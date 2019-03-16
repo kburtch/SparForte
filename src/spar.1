@@ -3,9 +3,9 @@
 spar \- SparForte, the Business Shell
 .SH SYNOPSIS
 .B spar
-[\-bcdDeghilLmpPrtvVx] [\-\-break] [\-\-check] [\-\-debug] [\-\-exec]
+[\-bcCdDeghilLmpPrtvVx] [\-\-break] [\-\-check] [\-\-debug] [\-\-exec]
 [\-\-gcc-errors] [\-\-login|\-\-profile] [\-\-verbose] [\-\-version]
-[\-\-restricted] [\-\-perf] [\-\-design|\-\-maintenance|\-\-test][\-\-trace]
+[\-\-restricted] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test][\-\-trace]
 [\-\-] [script [param1 ...] ]
 .SH DESCRIPTION
 .\" Add any additional description here
@@ -31,6 +31,8 @@ enable breakout debugging prompt
 \fB\-c\fR, \fB\-\-check\fR
 syntax check the script but do not run
 .TP
+\fB\-C\fR, \fB\-\-coding\fR
+development phase mode
 \fB\-d\fR, \fB\-\-debug\fR
 enable pragma assert and pragma debug
 .TP
@@ -65,7 +67,7 @@ run the profile script when not logging in
 restricted shell mode
 .TP
 \fB\-t\fR, \fB\-\-test\fR
-test phase mode
+test phase mode (default SDLC mode)
 .TP
 \fB\-x\fR, \fB\-\-trace\fR
 show script lines as they run

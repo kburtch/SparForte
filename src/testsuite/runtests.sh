@@ -619,7 +619,7 @@ good_test() {
   start_junit_case "$1_check" "good_test"
   JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
   setup
-  ../spar --debug --check "$1" a b c
+  ../spar --coding --debug --check "$1" a b c
   RESULT=$?
   teardown
   test -f ./test.txt && rm ./test.txt
@@ -635,7 +635,7 @@ good_test() {
   start_junit_case "$1" "good_test"
   JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
   setup
-  ../spar --debug "$1" a b c
+  ../spar --coding --debug "$1" a b c
   RESULT=$?
   teardown
   test -f ./test.txt && rm ./test.txt
@@ -669,7 +669,7 @@ good_test_in_dir() {
   start_junit_case "$1_check" "good_test_in_dir"
   JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
   #setup
-  ../../spar --debug --check "$1" a b c
+  ../../spar --coding --debug --check "$1" a b c
   RESULT=$?
   #teardown
   test -f ./test.txt && rm ./test.txt
@@ -685,7 +685,7 @@ good_test_in_dir() {
   start_junit_case "$1" "good_test_in_dir"
   JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
   #setup
-  ../../spar --debug "$1" a b c
+  ../../spar --coding --debug "$1" a b c
   RESULT=$?
   #teardown
   test -f ./test.txt && rm ./test.txt
@@ -711,7 +711,7 @@ good_test_in_dir() {
 help_test_in_dir() {
   echo "Running $1..."
   start_junit_case "$1" "help_test_in_dir"
-  ../../spar --debug "$1" a b c > "./test.txt"
+  ../../spar --coding --debug "$1" a b c > "./test.txt"
   RESULT=$?
   if [ $RESULT -ne 0 ] ; then
      cat "./test.txt"
@@ -736,7 +736,7 @@ help_test_in_dir() {
 test_template() {
   echo "$1 ..."
   start_junit_case "$1" "test_template"
-  TMP=`../../spar $1`
+  TMP=`../../spar --coding $1`
   STATUS=$?
   RESULT=$STATUS
   if [ $STATUS -ne 0 ] ; then

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2017 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -63,14 +63,19 @@ begin
 
   isLoginShell := Command_Name(1) = '-';
 
+  -- test phase mode is now the default
+
+  testOpt := true;
+
   -- collect command line options
 
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte (Business Shell) usage" );
-        Put_Line( "spar [-bcdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--coding][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
+        Put_Line( "  --coding or -C      - development phase mode" );
         Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );
         Put_Line( "  --design or -D      - design phase mode" );
         Put_Line( "  --exec or -e        - script is a string containing BUSH commands" );
@@ -84,7 +89,7 @@ begin
         Put_Line( "  --profile or -P     - run the profile script when not logging in" );
         Put_Line( "  --pref or -p        - show performance stats" );
         Put_Line( "  --restricted or -r  - restricted shell mode" );
-        Put_Line( "  --test or -t        - test phase mode" );
+        Put_Line( "  --test or -t        - test phase mode (default)" );
         Put_Line( "  --trace or -x       - show script lines as they run" );
         Put_Line( "  --verbose or -v     - show shell activity" );
         Put_Line( "  --version or -V     - show version" );
@@ -120,6 +125,8 @@ begin
             breakoutOpt := true;
          elsif Argument(i) = "--check" then
             syntaxOpt := true;
+         elsif Argument(i) = "--coding" then
+            testOpt := false;
          elsif Argument(i) = "--debug" then
             debugOpt := true;
          elsif Argument(i) = "--design" then
@@ -197,6 +204,8 @@ begin
                       breakoutOpt := true;
                    elsif Args(letter) = 'c' then
                       syntaxOpt := true;
+                   elsif Args(letter) = 'C' then
+                      testOpt := false;
                    elsif Args(letter) = 'd' then
                       debugOpt := true;
                    elsif Args(letter) = 'D' then

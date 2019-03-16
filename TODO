@@ -15,8 +15,8 @@ Priority Issues (Fix These First)
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
 *--break may be broken (request by CY)
-   - not printing error location or other break messages (BREAKDBG)
-- raise in one of my exception handlers did not function properly...
+   - line numbers / file names are wrong
+- raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
   - disabling qualifiers when tests are underway and special regression
@@ -45,6 +45,7 @@ Priority Issues (Fix These First)
     - do exceptions set an error code, even if handled?  if so, handling
       them should clear the error code. (request by CY)
     - strings functions could be improved. e.g. regular expressions (request by CY)
+      - e.g. https://linux.die.net/man/3/regex
     - in some edge cases, you can invoke procedures before they are declared.
       As Spar reads the code, it treats the procedure call as a shell
       command (unless no_external_commands is specified).  This is caught in
