@@ -12,7 +12,8 @@ CHANGES SINCE 2.2
 
 5. Fix: get_line no longer reports an end-of-file when reading the last line of a file that doesn't have a newline.
 
-6. Fix: --break now shows the line where the execution stopped, although the file name and line number is wrong in some cases.
+6. Fix: --break once again shows the line where the execution stopped.
 
 7. Change: test phase mode (--test) replaces development phase mode as the default.  Use development phase mode (--coding) to change to development phase.
+
 

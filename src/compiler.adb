@@ -305,6 +305,7 @@ begin
      token_lastpos := token_firstpos;                     -- one char past end
   end if;
 end getCommandLine;
+
 function getCommandLine return unbounded_string is
   -- Return current command line, fully indented, but not including
   -- the LF separating lines.  This function version doesn't compute

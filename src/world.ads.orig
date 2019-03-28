@@ -227,6 +227,7 @@ type commandLineOption is new boolean;
 
 breakoutOpt  : commandLineOption := false;           -- true if -b
 syntaxOpt    : commandLineOption := false;           -- true if -c
+codingOpt    : commandLineOption := false;           -- true if -C
 debugOpt     : commandLineOption := false;           -- true if -d
 testOpt      : commandLineOption := false;           -- true if -D
 execOpt      : commandLineOption := false;           -- true if -e

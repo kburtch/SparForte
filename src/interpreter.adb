@@ -169,8 +169,16 @@ begin
              command := command & ";";
           end if;
        end if;                                          -- w/space in case shell cmd
-       sourceFilesList.Clear( SourceFiles );
-       sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => to_unbounded_string( commandLineSource ) ) );
+       -- Things get a little confusing in breakout mode because we have two
+       -- programs: the original script, and the command being typed.  So which
+       -- source do we name if an error occurs?
+       --
+       -- For now, we don't want to change the name of the source line in error
+       -- messages
+       if inputMode /= breakout then
+          sourceFilesList.Clear( SourceFiles );
+          sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => to_unbounded_string( commandLineSource ) ) );
+       end if;
        compileCommand( command );
        if not error_found then
           cmdpos := firstScriptCommandOffset;           -- start at first char
