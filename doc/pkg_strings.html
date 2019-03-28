@@ -53,7 +53,7 @@ and character values. (The character positions are numbered from 1.)</p>
   <a href="#strings.count">n := count( s, p )</a>             <a href="#strings.csv_field">r := csv_field(s,c[,d[ q]])</a>   <a href="#strings.csv_replace">r := csv_replace( s, f, t, [, d] )</a>
   <a href="#strings.delete">r := delete( s, l, h )</a>         <a href="#strings.element">c := element( s, p )</a>          <a href="#strings.field">r := field( s, c [, d] )</a>
   <a href="#strings.glob">b := glob( e, s )</a>              <a href="#strings.head">r := head( s, c [, p] )</a>
-  <a href="#strings.image">r := strings.image( n )</a>        <a href="#strings.index">n := index( s, p [, d] )</a>      <a href="#strings.index_non_blank">n := index_non_blank( s [,d] )</a>
+  <a href="#strings.image">r := image( n )</a>                <a href="#strings.index">n := index( s, p [, d] )</a>      <a href="#strings.index_non_blank">n := index_non_blank( s [,d] )</a>
   <a href="#strings.insert">r := insert( s, b, n )</a>         <a href="#strings.is_alphanumeric">r := is_alphanumeric( s )</a>     <a href="#strings.is_basic">r := is_basic( s )</a>
   <a href="#strings.is_control">r := is_control( s )</a>           <a href="#strings.is_digit">r := is_digit( s )</a>            <a href="#strings.is_fixed">r := is_fixed( s )</a>
   <a href="#strings.is_graphic">r := is_graphic( s )</a>           <a href="#strings.is_hexadecimal_digit">r := is_hexadecimal_digit(s)</a>  <a href="#strings.is_letter">r := is_letter( s )</a>
@@ -66,7 +66,7 @@ and character values. (The character positions are numbered from 1.)</p>
   <a href="#strings.to_escaped">r := to_escaped( s )</a>           <a href="#strings.to_json">r := to_json( s )</a>             <a href="#strings.to_lower">r := to_lower( s )</a>
   <a href="#strings.to_proper">r := to_proper( s )</a>            <a href="#strings.to_string">r := to_string( s )</a>           <a href="#strings.to_upper">r := to_upper( s )</a>
   <a href="#strings.to_unbounded_string">u := to_unbounded_string( s )</a>  <a href="#strings.trim">r := trim( s [, e] )</a>          <a href="#strings.unbounded_slice">r := unbounded_slice(s, l, h)</a>
-  <a href="#strings.val">c := val( n )</a> 
+  <a href="#strings.val">c := val( n )</a>                  <a href="#strings.perl_match">c := perl_match( e, s )</a> 
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -1554,10 +1554,10 @@ padded using character p</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#strings.csv_field">strings.csv_field</a><br><a href="#strings.field">strings.field</a><br><a href="#strings.glob">strings.glob</a><br><a href="#strings.index">strings.index</a><br><a href="#strings.index">strings.index</a>_non_blank<br><a href="#strings.lookup">strings.lookup</a></p></td>
+<td><p><a href="#strings.csv_field">strings.csv_field</a><br><a href="#strings.field">strings.field</a><br><a href="#strings.glob">strings.glob</a><br><a href="#strings.index">strings.index</a><br><a href="#strings.index_non_blank">strings.index_non_blank</a><br><a href="#strings.lookup">strings.lookup</a><br><a href="#strings.perl_match">strings.perl_match</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.RegExp.Match<br>Perl: m//<br>PHP: preg_match</p></td>
+<td><p>Ada: GNAT.RegExp.Match</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>There's a known bug in GNAT 3.12 and 3.13 which causes strings.match to fail.</p></td>
@@ -1608,6 +1608,68 @@ padded using character p</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Notes</p></td>
 <td><p>Parameters changed to universal_strings for SparForte 2.2</p></td>
+</tr>
+</table>
+
+<a name="strings.perl_match"></a><h3>b := strings.perl_match( e, s )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if the string matches Perl Compatible regular expression.
+This has more features than strings.match.</p>
+</td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">b := strings.perl_match( "^app", "apple" ); -- returns true</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</span></td>
+<td><span>required</span></td>
+<td><span>the string to search</span></td>
+</tr>
+<tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the PCRE regular expression</span></td>
+</tr>
+<tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the pattern matched</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>Various errors may be returned by the C function</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>Not allowed with pragma ada_95</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#strings.csv_field">strings.csv_field</a><br><a href="#strings.field">strings.field</a><br><a href="#strings.glob">strings.glob</a><br><a href="#strings.match">strings.match</a><br><a href="#strings.index">strings.index</a><br><a href="#strings.index_non_blank">strings.index_non_blank</a><br><a href="#strings.lookup">strings.lookup</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Perl: m//<br>PHP: preg_match</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>SparForte 2.2.1</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Uses the C pcre library.</p></td>
 </tr>
 </table>
 

@@ -12,6 +12,10 @@
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
+//#include <regex.h>
+#include <string.h>
+#include <pcre.h>
+#include <stdio.h>
 
 /* C ERRNO                                                  */
 /*                                                          */
@@ -362,6 +366,61 @@ int C_install_sigpipe_handler( int *flag_address ) {
      handler_installed = 1;                      // mark as installed
   return handler_installed;
 }
+
+/*
+void C_regex( const char *regex, const char* str, char *errmsg, size_t errmax,
+   int *result ) {
+
+   regex_t preg;
+   int regex_errno = 0;
+
+   errmsg[0] = '\0';
+   regex_errno = regcomp( &preg, regex, REG_EXTENDED|REG_NOSUB );
+   if (regex_errno == 0) {
+      regex_errno = regexec( &preg, str, 0, 0, 0 );
+   }
+
+   if (regex_errno == 0 ) {
+      *result = 1;
+   } else if (regex_errno == REG_NOMATCH) {
+      *result = 0;
+   } else {
+      regerror( regex_errno, &preg, errmsg, errmax );
+   }
+   regfree( &preg );
+}
+*/
+
+void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
+   int *result ) {
+   pcre *regex_ptr;
+   char no_error = '\0';
+   const char *errmsg_ptr = &no_error;
+   int erroffset = 0;            // location of error in pattern
+   int res = 0;
+
+   /* For Perl-compatible Regular Expressions, there are UTF-8, 16
+    * and 32 variants and this may also affect the parameters.
+    * for here, this is UTF-8 (even though, at this time,
+    * SparForte is Latin-1 only).
+    */
+
+   regex_ptr = pcre_compile(regex, 0, &errmsg_ptr, &erroffset, NULL );
+   if (regex_ptr != NULL ) {
+      // This should not typically fail.  It does not return an
+      // error message, just a negative error code.
+      res = pcre_exec( regex_ptr, NULL, str, strlen(str), 0, 0, NULL, 0);
+      if ( res >= 0 ) {
+         *result = 1;
+      } else if ( res < 0 ) {
+         *result = 0;
+      } else {
+         fprintf( stderr, "%s %d\n", "pcre_exec failed with code", res );
+      }
+      pcre_free( regex_ptr );
+   }
+}
+
 
 // SDL TESTING
 // FREEBSD possibly should be __FreeBSD__
