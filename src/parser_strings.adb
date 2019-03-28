@@ -134,6 +134,7 @@ set_unbounded_string_t  : identifier;
 unbounded_slice_t  : identifier;
 strings_to_json_t : identifier;
 to_base64_t  : identifier;
+perl_match_t : identifier;
 
 procedure ParseSingleStringExpression ( Expr_Val : out unbounded_string;
   expr_type : out identifier ) is
@@ -1466,6 +1467,60 @@ begin
   end;
 end ParseStringsToJSON;
 
+procedure ParseStringsPerlMatch( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: perl_match( s, e )
+  -- Source: N/A
+  expr_val  : unbounded_string;
+  expr_type : identifier;
+  pat_val   : unbounded_string;
+  pat_type  : identifier;
+  --b         : boolean;
+begin
+  kind := boolean_t;
+  result := null_unbounded_string;
+  expect( perl_match_t );
+  if onlyAda95 then
+     err( optional_bold( "pragma ada_95" ) & " doesn't allow perl_match" );
+  end if;
+  ParseFirstStringParameter( pat_val, pat_type );
+  ParseLastStringParameter( expr_val, expr_type );
+  if isExecutingCommand then
+     declare
+       regex_errmsg : regex_errmsgs;
+       res_int   : interfaces.C.int := 0;
+       errmsg : unbounded_string;
+     begin
+       -- combines the compile and execute steps for regular expressions
+       C_pcre( to_string(pat_val) & ASCII.NUL, to_string(expr_val) & ASCII.NUL, regex_errmsg, regex_errmsg'length, res_int );
+       if Interfaces.C.To_Ada(regex_errmsg(1)) /= ASCII.NUL then
+          for i in 1..regex_errmsg'last loop
+              exit when interfaces.C.To_Ada( regex_errmsg(i) ) = ASCII.NUL;
+              errmsg := errmsg & interfaces.C.To_Ada( regex_errmsg(i) );
+          end loop;
+          err( to_string( errmsg ) );
+       elsif integer(res_int) = 1 then
+          result := to_unbounded_string( "1" );
+          if trace then
+             put_trace( "'" & to_string( pat_val ) &
+                        "' pattern matches string '" &
+                        to_string( expr_val ) &
+                        "'" );
+          end if;
+       else
+          result := to_unbounded_string( "0" );
+          if trace then
+             put_trace( "'" & to_string( pat_val ) &
+                        "' pattern does not match string '" &
+                        to_string( expr_val ) &
+                        "'" );
+          end if;
+       end if;
+     exception when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseStringsPerlMatch;
+
 procedure StartupStrings is
 begin
   declareNamespace( "strings" );
@@ -1519,6 +1574,7 @@ begin
   declareFunction( unbounded_slice_t, "strings.unbounded_slice", ParseStringsUnboundedSlice'access );
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
   declareFunction( to_base64_t, "strings.to_base64", ParseStringsToBase64'access );
+  declareFunction( perl_match_t, "strings.perl_match", ParseStringsPerlMatch'access );
 
   -- enumerateds - values defined below
   declareIdent( strings_alignment_t, "strings.alignment",

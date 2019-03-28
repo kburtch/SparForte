@@ -16,4 +16,5 @@ CHANGES SINCE 2.2
 
 7. Change: test phase mode (--test) replaces development phase mode as the default.  Use development phase mode (--coding) to change to development phase.
 
+8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
 

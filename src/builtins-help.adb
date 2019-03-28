@@ -876,6 +876,7 @@ begin
    content( e, "step" );
    content( e, "strings" );
    content( e, "strings.match" );
+   content( e, "strings.perl_match" );
    content( e, "subtype" );
    content( e, "System" );
    content( e, "teams" );
@@ -1923,7 +1924,16 @@ begin
      content( e, "\ - escape character" );
      content( e, "(e) - nested expression" );
      content( e, "| - alternative" );
+     seeAlso( e, "doc/pkg_strings.html" );
      footer( e, "Regular expressions are described in ""man 5 regexp""" );
+     endHelp( e );
+  elsif helpTopic = "strings.perl_match" then
+     startHelp( e, "strings.perl_match" );
+     summary( e, "strings.perl_match (strings package)" );
+     categoryFunction( e );
+     description( e, "Pattern matching with PCRE regular expressions." );
+     section( e, "Syntax" );
+     content( e, "bool := perl_match( expression, string )" );
      seeAlso( e, "doc/pkg_strings.html" );
      endHelp( e );
   elsif helpTopic = "mysql" then

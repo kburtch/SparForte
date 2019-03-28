@@ -616,5 +616,15 @@ function C_install_sigwinch_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigwinch_handler, "C_install_sigwinch_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGWINCH occurs
 
+type regex_errmsgs is array(0..255) of interfaces.C.char;
+
+--procedure C_regex( regex : string; str : string; errmsg : in out regex_errmsgs;
+--  errmax : interfaces.C.size_t; result : in out interfaces.C.int );
+--pragma import( C, C_regex, "C_regex" );
+
+procedure C_pcre( regex : string; str : string; errmsg : in out regex_errmsgs;
+  errmax : interfaces.C.size_t; result : in out interfaces.C.int );
+pragma import( C, C_pcre, "C_pcre" );
+
 end spar_os;
 

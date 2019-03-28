@@ -48,8 +48,7 @@ Priority Issues (Fix These First)
 - unsorted/misc
     - do exceptions set an error code, even if handled?  if so, handling
       them should clear the error code. (request by CY)
-    - strings functions could be improved. e.g. regular expressions (request by CY)
-      - e.g. https://linux.die.net/man/3/regex
+    - strings functions could be improved. (request by CY)
     - in some edge cases, you can invoke procedures before they are declared.
       As Spar reads the code, it treats the procedure call as a shell
       command (unless no_external_commands is specified).  This is caught in
