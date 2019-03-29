@@ -415,9 +415,13 @@ void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
       } else if ( res < 0 ) {
          *result = 0;
       } else {
-         fprintf( stderr, "%s %d\n", "pcre_exec failed with code", res );
+         strncpy( errmsg, "pcre_exec failed", 255 );
       }
       pcre_free( regex_ptr );
+      errmsg[0] = '\0';
+   } else {
+      strncpy( errmsg, errmsg_ptr, 255 );
+      errmsg[255] = '\0';
    }
 }
 

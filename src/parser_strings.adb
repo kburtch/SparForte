@@ -1492,12 +1492,12 @@ begin
      begin
        -- combines the compile and execute steps for regular expressions
        C_pcre( to_string(pat_val) & ASCII.NUL, to_string(expr_val) & ASCII.NUL, regex_errmsg, regex_errmsg'length, res_int );
-       if Interfaces.C.To_Ada(regex_errmsg(1)) /= ASCII.NUL then
-          for i in 1..regex_errmsg'last loop
+       if Interfaces.C.To_Ada(regex_errmsg(0)) /= ASCII.NUL then
+          for i in 0..regex_errmsg'last loop
               exit when interfaces.C.To_Ada( regex_errmsg(i) ) = ASCII.NUL;
               errmsg := errmsg & interfaces.C.To_Ada( regex_errmsg(i) );
           end loop;
-          err( to_string( errmsg ) );
+          err( to_string( toescaped( errmsg ) ) );
        elsif integer(res_int) = 1 then
           result := to_unbounded_string( "1" );
           if trace then
