@@ -27,7 +27,7 @@ Information on porting SparForte to other platforms can be found in the
 documentation: SparForte should port to a modern Unix-compatible platform
 within a few hours by creating a bush_os interface file based on the
 standard C libraries for your operating system.  Please contribute new
-bush_os files to the SparForte project.
+os_bindings files to the SparForte project.
 
 
 REQUIREMENTS
@@ -50,6 +50,8 @@ The following software packages are required for SparForte:
     available recent versions of GCC.  Most modern Linux distributions,
     including Red Hat,  have GCC with Ada and C support active or available
     from an online repository.
+
+  * PCRE (Perl Compatible Regular Expressions) library
 
   * gzip is needed to unpack the source code in the first place.  If you are
     reading this, you know this already.
