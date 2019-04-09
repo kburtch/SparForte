@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-* enum items override existing identifiers but shouldn't.  when they do
-  override a pre-existing procedure, a "shell word expected" error occurs.
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
