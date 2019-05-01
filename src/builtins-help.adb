@@ -2413,6 +2413,7 @@ begin
      description( e, "How to declare variables:" );
      content( e, "var [,var2...] : [constant|limited] type [:= expression]" );
      content( e, "var : [constant] type renames var2[(element)]" );
+     content( e, "var : [constant] type copies var2[(element)]" );
      content( e, "array_var :  [limited] array( low..high) of item-type [ := array | (item,...) ]" );
      content( e, "array_var :  array_type [ := array | (item,...) ]" );
      seeAlso( e, "doc/ref_typedecl.html, doc/ref_enum.html, doc/ref_arrays.html and doc/ref_records.html" );
