@@ -916,7 +916,7 @@ begin
      content( e, "decrement( f, k [,n] )","open_cursor( f, c )" );
      content( e, "delete( f )","prepend( f, k, v )" );
      content( e, "flush( f )","raise_exceptions( f, b )" );
-     content( e, "v := get( f, k )","remove( f, k )" );
+     content( e, "get( f, k, v )","remove( f, k )" );
      content( e, "get_first( f, c, k, v )","replace( f, k, v )" );
      content( e, "get_last( f, c, k, v )","set( f, k, v )" );
      content( e, "get_next( f, c, k, v )","truncate( f )" );
@@ -1026,7 +1026,7 @@ begin
      content( e, "decrement( f, k [,n] )","open_cursor( f, c )" );
      content( e, "delete( f )","prepend( f, k, v )" );
      content( e, "flush( f )","raise_exceptions( f, b )" );
-     content( e, "v := get( f, k )","remove( f, k )" );
+     content( e, "get( f, k, v )","remove( f, k )" );
      content( e, "get_first( f, c, k, v )","replace( f, k, v )" );
      content( e, "get_last( f, c, k, v )","set( f, k, v )" );
      content( e, "get_next( f, c, k, v )","truncate( f )" );
