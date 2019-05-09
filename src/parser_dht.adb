@@ -74,45 +74,24 @@ dht_decrement_t     : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
---procedure CheckTableIsInitialized( tableId : identifier ) is
---begin
---  if identifiers( tableId ).genKind = eof_t then
---     err( optional_bold( "new_table" ) & " has not been called to initialize " &
---        optional_bold( to_string( identifiers( tableId ).name ) ) &
---       "; Note: a bug in this version of SparForte requires 'new' " &
---       "to be located just after the variable's declaration." );
---  elsif isExecutingCommand then
---     if identifiers( tableId ).svalue = "" then
---        err( optional_bold( "new_table" ) & " has not been called to initialize " &
---           optional_bold( to_string( identifiers( tableId ).name ) ) &
---           "; Note: a bug in this version of SparForte requires 'new' " &
---           "to be located just after the variable's declaration." );
---     end if;
---  end if;
---end CheckTableIsInitialized;
-
 procedure ParseSingleTableParameter( tableId : out identifier ) is
 begin
-  ParseSingleInOutParameter( tableId, dht_table_t );
-  --CheckTableIsInitialized( tableId );
+  ParseSingleInOutInstantiatedParameter( tableId, dht_table_t );
 end ParseSingleTableParameter;
 
 procedure ParseFirstTableParameter( tableId : out identifier ) is
 begin
-  ParseFirstInOutParameter( tableId, dht_table_t );
-  --CheckTableIsInitialized( tableId );
+  ParseFirstInOutInstantiatedParameter( tableId, dht_table_t );
 end ParseFirstTableParameter;
 
 procedure ParseNextTableParameter( tableId : out identifier ) is
 begin
-  ParseNextInOutParameter( tableId, dht_table_t );
-  --CheckTableIsInitialized( tableId );
+  ParseNextInOutInstantiatedParameter( tableId, dht_table_t );
 end ParseNextTableParameter;
 
 procedure ParseLastTableParameter( tableId : out identifier ) is
 begin
-  ParseLastInOutParameter( tableId, dht_table_t );
-  --CheckTableIsInitialized( tableId );
+  ParseLastInOutInstantiatedParameter( tableId, dht_table_t );
 end ParseLastTableParameter;
 
 ------------------------------------------------------------------------------

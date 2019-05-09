@@ -117,25 +117,25 @@ doubly_disassemble_t   : identifier;
 
 procedure ParseSingleListParameter( listId : out identifier ) is
 begin
-  ParseSingleInOutParameter( listId, doubly_list_t );
+  ParseSingleInOutInstantiatedParameter( listId, doubly_list_t );
   --CheckListIsInitialized( listId );
 end ParseSingleListParameter;
 
 procedure ParseFirstListParameter( listId : out identifier ) is
 begin
-  ParseFirstInOutParameter( listId, doubly_list_t );
+  ParseFirstInOutInstantiatedParameter( listId, doubly_list_t );
   --CheckListIsInitialized( listId );
 end ParseFirstListParameter;
 
 procedure ParseNextListParameter( listId : out identifier ) is
 begin
-  ParseNextInOutParameter( listId, doubly_list_t );
+  ParseNextInOutInstantiatedParameter( listId, doubly_list_t );
   --CheckListIsInitialized( listId );
 end ParseNextListParameter;
 
 procedure ParseLastListParameter( listId : out identifier ) is
 begin
-  ParseLastInOutParameter( listId, doubly_list_t );
+  ParseLastInOutInstantiatedParameter( listId, doubly_list_t );
   --CheckListIsInitialized( listId );
 end ParseLastListParameter;
 
@@ -156,25 +156,25 @@ end ParseLastListParameter;
 
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
-  ParseSingleInOutParameter( cursId, doubly_cursor_t );
+  ParseSingleInOutInstantiatedParameter( cursId, doubly_cursor_t );
   --CheckCursorIsInitialized( cursId );
 end ParseSingleCursorParameter;
 
 procedure ParseFirstCursorParameter( cursId : out identifier ) is
 begin
-  ParseFirstInOutParameter( cursId, doubly_cursor_t );
+  ParseFirstInOutInstantiatedParameter( cursId, doubly_cursor_t );
   --CheckCursorIsInitialized( cursId );
 end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
-  ParseNextInOutParameter( cursId, doubly_cursor_t );
+  ParseNextInOutInstantiatedParameter( cursId, doubly_cursor_t );
   --CheckCursorIsInitialized( cursId );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
-  ParseLastInOutParameter( cursId, doubly_cursor_t );
+  ParseLastInOutInstantiatedParameter( cursId, doubly_cursor_t );
   --CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
@@ -311,8 +311,8 @@ begin
 end ParseDoublyLength;
 
 procedure ParseDoublyAppend is
-  -- Syntax: doubly_linked_list.append( l, s );
-  -- Ada:    doubly_linked_list.append( l, s );
+  -- Syntax: doubly_linked_list.append( l, s [,c] );
+  -- Ada:    doubly_linked_list.append( l, s [,c] );
   --listExpr : unbounded_string;
   --listType : identifier;
   listId : identifier;

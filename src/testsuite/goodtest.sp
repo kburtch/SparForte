@@ -5144,6 +5144,99 @@ end;
 pragma assumption( used, i );
 pragma assumption( written, i );
 
+-- Types derived from parameterized types
+
+declare
+  -- the basic type
+  type list_type is new doubly_linked_lists.list( string );
+
+  -- Derrived types
+  type list_type2 is new list_type;
+  list : list_type;
+  list2 : list_type2;
+
+  subtype list_type3 is list_type;
+  list3 : list_type3;
+  subtype list_type4 is list_type3;
+  list4 : list_type4;
+  subtype list_type5 is list_type2;
+  list5 : list_type5;
+
+  -- User Functions for each type
+
+  function len( lst : list_type ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len;
+
+  procedure free( lst : in out list_type ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free;
+
+  function len2( lst : list_type2 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len2;
+
+  procedure free2( lst : in out list_type2 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free2;
+
+  function len3( lst : list_type3 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len3;
+
+  procedure free3( lst : in out list_type3 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free3;
+
+  function len4( lst : list_type4 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len4;
+
+  procedure free4( lst : in out list_type4 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free4;
+
+  function len5( lst : list_type5 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len5;
+
+  procedure free5( lst : in out list_type5 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free5;
+
+begin
+  doubly_linked_lists.append( list, "foobar" );
+  pragma assert( doubly_linked_lists.length( list ) =  len( list ) );
+  free( list );
+  pragma assert( doubly_linked_lists.length( list ) =  0 );
+  doubly_linked_lists.append( list2, "foobar" );
+  pragma assert( doubly_linked_lists.length( list2 ) =  len2( list2 ) );
+  free2( list2 );
+  pragma assert( doubly_linked_lists.length( list2 ) =  0 );
+  doubly_linked_lists.append( list3, "foobar" );
+  pragma assert( doubly_linked_lists.length( list3 ) =  len3( list3 ) );
+  free3( list3 );
+  pragma assert( doubly_linked_lists.length( list3 ) =  0 );
+  doubly_linked_lists.append( list4, "foobar" );
+  pragma assert( doubly_linked_lists.length( list4 ) =  len4( list4 ) );
+  free4( list4 );
+  pragma assert( doubly_linked_lists.length( list4 ) =  0 );
+  doubly_linked_lists.append( list5, "foobar" );
+  pragma assert( doubly_linked_lists.length( list5 ) =  len5( list5 ) );
+  free5( list5 );
+  pragma assert( doubly_linked_lists.length( list5 ) =  0 );
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;

@@ -11,6 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+
+- generic/parameterized types
+  - test renaming and copying generic types
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
@@ -71,18 +74,6 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
-- declared but not used would benefit from the original file/line location
-- generic (parameterized) types
-  - currently, a generic type declaration is an instantiation.
-    - there's no way to create types from a generic type
-    - there's no way to create types from an instantiated generic type
-    - there's no way to pass parameters with generic types
-    - parameterized types cannot be renamed
-  - derived types of generic types not implemented (see ParseDeclaration)
-  - generics don't have meaning until constructed in a declaration, where
-    types are given.
-  - passing resources from parameterized types.  Also, what happens when the
-    parameters are destroyed...we don't want the resource to be destroyed also
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - problem extracting byte code for blocks (copying whole lines)

@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with ada.text_io; use ada.text_io;
+with ada.text_io; use ada.text_io;
 
 with gen_list,
     ada.strings.unbounded,
@@ -80,9 +80,11 @@ begin
    end if;
 end GetParameterValue;
 
+
 ------------------------------------------------------------------------------
 -- Renaming Declarations
 ------------------------------------------------------------------------------
+
 
 --  PARSE RENAMING REFERENCE
 --
@@ -176,11 +178,13 @@ end ParseRenamingReference;
 -- Unchecked Parameters
 ------------------------------------------------------------------------------
 
+
 --  PARSE NEXT GEN ITEM PARAMETER
 --
 -- Expect an "in" parameter.  Don't check the type.  This is used when
 -- there is more than one possible parameter type and you don't know which
 -- one it is.
+------------------------------------------------------------------------------
 
 procedure ParseNextGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
   u : identifier;
@@ -196,11 +200,13 @@ begin
   end if;
 end ParseNextGenItemParameter;
 
+
 --  PARSE LAST GEN ITEM PARAMETER
 --
 -- Expect an "in" parameter.  Don't check the type.  This is used when
 -- there is more than one possible parameter type and you don't know which
 -- one it is.
+------------------------------------------------------------------------------
 
 procedure ParseLastGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
   u : identifier;
@@ -217,11 +223,13 @@ begin
   end if;
 end ParseLastGenItemParameter;
 
+
 --  PARSE GEN ITEM PARAMETER
 --
 -- Expect an "in" parameter.  Don't check the type.  This is used when
 -- there is more than one possible parameter type and you don't know which
 -- one it is.
+------------------------------------------------------------------------------
 
 procedure ParseGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
   u : identifier;
@@ -236,10 +244,12 @@ begin
   end if;
 end ParseGenItemParameter;
 
+
 --  PARSE SINGLE STRING PARAMETER
 --
 -- Expect a parameter with a single string expression.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseSingleStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t  ) is
@@ -258,6 +268,7 @@ end ParseSingleStringParameter;
 --
 -- Expect a first parameter that is a numeric expression.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : identifier  ) is
 begin
@@ -280,6 +291,7 @@ end ParseFirstInOutParameter;
 --
 -- Expect a next parameter that is a numeric expression.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseNextInOutParameter( param_id : out identifier; expected_type : identifier  ) is
 begin
@@ -302,6 +314,7 @@ end ParseNextInOutParameter;
 --
 -- Expect a last parameter that is an in out identifier.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseLastInOutParameter( param_id : out identifier; expected_type : identifier ) is
 begin
@@ -327,17 +340,13 @@ end ParseLastInOutParameter;
 
 --  PARSE SINGLE IN OUT PARAMETER
 --
--- Expect a first parameter that is a numeric expression.  If there is no expected
--- type, assume it's a universal string type.
+-- Expect a first parameter that is an identifier.  Check for side-effects.
+------------------------------------------------------------------------------
 
 procedure ParseSingleInOutParameter( param_id : out identifier; expected_type : identifier  ) is
 begin
   expect( symbol_t, "(" );
   ParseIdentifier( param_id ); -- in out
-  --ParseExpression( expr_val, expr_type );
-  --if isExecutingCommand then
-  --   expr_val := castToType( expr_val, expected_type );
-  --end if;
   discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
   if syntax_check and then not error_found then
      identifiers( param_id ).wasWritten := true;
@@ -351,10 +360,12 @@ begin
   expect( symbol_t, ")" );
 end ParseSingleInOutParameter;
 
+
 --  PARSE LAST IN OUT RECORD PARAMETER
 --
 -- Expect a last parameter that is an in out identifier.  It is expected to be
 -- some kind of record, but we don't know the type beforehand.
+------------------------------------------------------------------------------
 
 procedure ParseLastInOutRecordParameter( param_id : out identifier ) is
 begin
@@ -372,10 +383,12 @@ begin
   expect( symbol_t, ")" );
 end ParseLastInOutRecordParameter;
 
+
 --  PARSE NEXT IN OUT RECORD PARAMETER
 --
 -- Expect a next parameter that is an in out identifier.  It is expected to be
 -- some kind of record, but we don't know the type beforehand.
+------------------------------------------------------------------------------
 
 procedure ParseNextInOutRecordParameter( param_id : out identifier ) is
 begin
@@ -393,10 +406,116 @@ begin
 end ParseNextInOutRecordParameter;
 
 
+------------------------------------------------------------------------------
+-- Instantiated Generics Parameters
+--
+-- Currently, all generic types are built-in types.  They are treated as
+-- universal types.
+------------------------------------------------------------------------------
+
+
+--  PARSE FIRST IN OUT INSTANTIATED PARAMETER
+--
+-- Expect an indentifier that derives from an instantiated generic type.
+-- The generic type is a universal type.  Check for side-effects.
+------------------------------------------------------------------------------
+
+procedure ParseFirstInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+begin
+  expect( symbol_t, "(" );
+  ParseIdentifier( param_id ); -- in out
+  if identifiers( param_id ).genKind = eof_t then -- DEBUG
+     put_line( "parser_params: " & to_string( identifiers( param_id ).name ) & " has a genKind of EOF" ); -- DEBUG
+  end if;
+  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id );
+     checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+  end if;
+end ParseFirstInOutInstantiatedParameter;
+
+
+--  PARSE NEXT IN OUT INSTANTIATED PARAMETER
+--
+-- Expect an indentifier that derives from an instantiated generic type.
+-- The generic type is a universal type.  Check for side-effects.
+------------------------------------------------------------------------------
+
+procedure ParseNextInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+begin
+  expect( symbol_t, "," );
+  ParseIdentifier( param_id ); -- in out
+  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id );
+     checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+  end if;
+end ParseNextInOutInstantiatedParameter;
+
+
+--  PARSE LAST IN OUT INSTANTIATED PARAMETER
+--
+-- Expect an indentifier that derives from an instantiated generic type.
+-- The generic type is a universal type.  Check for side-effects.
+------------------------------------------------------------------------------
+
+procedure ParseLastInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier ) is
+begin
+  expect( symbol_t, "," );
+  ParseIdentifier( param_id ); -- in out
+  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id );
+     checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+  end if;
+  expect( symbol_t, ")" );
+end ParseLastInOutInstantiatedParameter;
+
+
+--  PARSE SINGLE IN OUT INSTANTIATED PARAMETER
+--
+-- Expect an indentifier that derives from an instantiated generic type.
+-- The generic type is a universal type.  Check for side-effects.
+------------------------------------------------------------------------------
+
+procedure ParseSingleInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+begin
+  expect( symbol_t, "(" );
+  ParseIdentifier( param_id ); -- in out
+  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id );
+     checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+  end if;
+  expect( symbol_t, ")" );
+end ParseSingleInOutInstantiatedParameter;
+
+
 --  PARSE FIRST STRING PARAMETER
 --
 -- Expect a first parameter that is string expression.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseFirstStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t ) is
@@ -414,6 +533,7 @@ end ParseFirstStringParameter;
 --
 -- Expect another parameter that is string expression.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseNextStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t ) is
@@ -431,6 +551,7 @@ end ParseNextStringParameter;
 --
 -- Expect another parameter that is string expression.  If there is no expected
 -- type, assume it's a universal string type.
+------------------------------------------------------------------------------
 
 procedure ParseLastStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t ) is
@@ -446,6 +567,9 @@ end ParseLastStringParameter;
 
 
 --  PARSE SINGLE ENUM PARAMETER
+--
+-- Expect a single parameter that is an enum expression.
+------------------------------------------------------------------------------
 
 procedure ParseSingleEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier ) is
@@ -459,6 +583,9 @@ end ParseSingleEnumParameter;
 
 
 --  PARSE FIRST ENUM PARAMETER
+--
+-- Expect a first parameter that is an enum expression.
+------------------------------------------------------------------------------
 
 procedure ParseFirstEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier ) is
@@ -473,6 +600,7 @@ end ParseFirstEnumParameter;
 --  PARSE NEXT ENUM PARAMETER
 --
 -- Expect another parameter that is an enum expression.
+------------------------------------------------------------------------------
 
 procedure ParseNextEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier ) is
@@ -486,7 +614,8 @@ end ParseNextEnumParameter;
 
 --  PARSE LAST ENUM PARAMETER
 --
--- Expect another parameter that is an enum expression.
+-- Expect a final parameter that is an enum expression.
+------------------------------------------------------------------------------
 
 procedure ParseLastEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier ) is
@@ -499,9 +628,15 @@ begin
 end ParseLastEnumParameter;
 
 
+------------------------------------------------------------------------------
+-- Numeric Parameters
+------------------------------------------------------------------------------
+
+
 --  PARSE SINGLE NUMERIC PARAMETER
 --
 -- typeTypesOK not yet implemented here
+------------------------------------------------------------------------------
 
 procedure ParseSingleNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
@@ -515,8 +650,10 @@ begin
   expect( symbol_t, ")" );
 end ParseSingleNumericParameter;
 
+
 --  PARSE FIRST NUMERIC PARAMETER
 --
+------------------------------------------------------------------------------
 
 procedure ParseFirstNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
@@ -532,6 +669,7 @@ end ParseFirstNumericParameter;
 
 --  PARSE NEXT NUMERIC PARAMETER
 --
+------------------------------------------------------------------------------
 
 procedure ParseNextNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
@@ -547,6 +685,7 @@ end ParseNextNumericParameter;
 
 --  PARSE LAST NUMERIC PARAMETER
 --
+------------------------------------------------------------------------------
 
 procedure ParseLastNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
@@ -564,6 +703,7 @@ end ParseLastNumericParameter;
 --  PARSE NUMERIC PARAMETER
 --
 -- Special case: don't read ( / , / )
+------------------------------------------------------------------------------
 
 procedure ParseNumericParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
@@ -586,6 +726,7 @@ end ParseNumericParameter;
 -- Parse an "out" parameter for a procedure call.  Return a reference
 -- to it.  If the variable being referenced doesn't exist, declare it
 -- (if the pragmas allow it).
+------------------------------------------------------------------------------
 
 procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
   -- syntax: identifier [ (index) ]
@@ -744,6 +885,7 @@ end ParseLastOutParameter;
 -- to it.  The variable being referenced must already exist.
 --
 -- TODO: check this fits with the other in out param fns here
+------------------------------------------------------------------------------
 
 procedure ParseInOutParameter( ref : out reference ) is
   -- syntax: identifier [ (index) ]

@@ -14,11 +14,13 @@ CHANGES SINCE 2.2
 
 6. Fix: --break once again shows the line where the execution stopped.
 
-7. Change: test phase mode (--test) replaces development phase mode as the default.  Use development phase mode (--coding) to change to development phase.
+7. (Cameron Y) Change: test phase mode (--test) replaces development phase mode as the default.  Use development phase mode (--coding) to change to development phase.
 
 8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
 
 9. Fix: using a built-in procedure as a function shows an appropriate error message rather than raising an exception.
 
 10. Fix: using a built-in function as a shell command shows an appropriate error message rather than saying it's a field of a record type.
+
+11. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
 

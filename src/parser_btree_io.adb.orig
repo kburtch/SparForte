@@ -112,96 +112,46 @@ btree_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
--- CHECK FILE IS INITIALIZED
---
--- Check to see if a type is defined for the generic tree elements.
--- If actually running, check to see if a resource has been associated
--- with this file.  This only occurs at run-time.
-
---procedure CheckFileIsInitialized( fileId : identifier ) is
---begin
---  if identifiers( fileId ).genKind = eof_t then
---     err( optional_bold( "new_file" ) & " has not been called to initialize " &
---          optional_bold( to_string( identifiers( fileId ).name ) ) &
---          "; Note: a bug in this version of SparForte requires 'new' " &
---          "to be located just after the variable's declaration) " );
---  elsif isExecutingCommand then
---     if identifiers( fileId ).svalue = "" then
---        err( optional_bold( "new_file" ) & " has not been called to initialize " &
---          optional_bold( to_string( identifiers( fileId ).name ) ) &
---          "; Note: a bug in this version of SparForte requires 'new' " &
---          "to be located just after the variable's declaration) " );
---     end if;
---  end if;
---end CheckFileIsInitialized;
-
 procedure ParseSingleFileParameter( fileId : out identifier ) is
 begin
-  ParseSingleInOutParameter( fileId, btree_file_t );
-  --CheckFileIsInitialized( fileId );
+  ParseSingleInOutInstantiatedParameter( fileId, btree_file_t );
 end ParseSingleFileParameter;
 
 procedure ParseFirstFileParameter( fileId : out identifier ) is
 begin
-  ParseFirstInOutParameter( fileId, btree_file_t );
-  --CheckFileIsInitialized( fileId );
+  ParseFirstInOutInstantiatedParameter( fileId, btree_file_t );
 end ParseFirstFileParameter;
 
 procedure ParseNextFileParameter( fileId : out identifier ) is
 begin
-  ParseNextInOutParameter( fileId, btree_file_t );
-  --CheckFileIsInitialized( fileId );
+  ParseNextInOutInstantiatedParameter( fileId, btree_file_t );
 end ParseNextFileParameter;
 
 procedure ParseLastFileParameter( fileId : out identifier ) is
 begin
-  ParseLastInOutParameter( fileId, btree_file_t );
-  --CheckFileIsInitialized( fileId );
+  ParseLastInOutInstantiatedParameter( fileId, btree_file_t );
 end ParseLastFileParameter;
 
 ------------------------------------------------------------------------------
 
--- CHECK CURSOR IS INITIALIZED
---
--- Check to see if a type is defined for the generic cursor elements.
--- If actually running, check to see if a resource has been associated
--- with this cursor.  This only occurs at run-time.
-
---procedure CheckCursorIsInitialized( cursId : identifier ) is
---begin
---  if identifiers( cursId ).genKind = eof_t then
---     err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
---        optional_bold( to_string( identifiers( cursId ).name ) ) );
---  elsif isExecutingCommand then
---     if identifiers( cursId ).svalue = "" then
---        err( optional_bold( "new_cursor" ) & " has not been called to initialize " &
---          optional_bold( to_string( identifiers( cursId ).name ) ) );
---     end if;
---  end if;
---end CheckCursorIsInitialized;
-
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
-  ParseSingleInOutParameter( cursId, btree_cursor_t );
-  --CheckCursorIsInitialized( cursId );
+  ParseSingleInOutInstantiatedParameter( cursId, btree_cursor_t );
 end ParseSingleCursorParameter;
 
 procedure ParseFirstCursorParameter( cursId : out identifier ) is
 begin
-  ParseFirstInOutParameter( cursId, btree_cursor_t );
-  --CheckCursorIsInitialized( cursId );
+  ParseFirstInOutInstantiatedParameter( cursId, btree_cursor_t );
 end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
-  ParseNextInOutParameter( cursId, btree_cursor_t );
-  --CheckCursorIsInitialized( cursId );
+  ParseNextInOutInstantiatedParameter( cursId, btree_cursor_t );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
-  ParseLastInOutParameter( cursId, btree_cursor_t );
-  --CheckCursorIsInitialized( cursId );
+  ParseLastInOutInstantiatedParameter( cursId, btree_cursor_t );
 end ParseLastCursorParameter;
 
 #if BDB
