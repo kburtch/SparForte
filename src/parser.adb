@@ -199,6 +199,9 @@ begin
   elsif is_keyword( token ) then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "keyword" ) );
+  elsif identifiers( token ).funcCB /= null then
+     err( optional_bold( "shell word" ) & " expected, not a " &
+           optional_bold( "built-in function" ) );
   elsif identifiers( token ).field_of /= eof_t then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "field of a record type" ) );
@@ -1006,6 +1009,9 @@ begin
         end if;
         kind := string_t;
         getNextToken;
+     elsif identifiers( token ).procCB /= null then         -- a built-in procedure?
+        err( optional_bold( to_string( identifiers( token ).name ) ) &
+           " is a built-in procedure not a function" );
      else
         -- System package constants, etc.
         ParseFactorIdentifier;
