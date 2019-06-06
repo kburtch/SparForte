@@ -24,3 +24,5 @@ CHANGES SINCE 2.2
 
 11. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
 
+12. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
+

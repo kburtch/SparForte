@@ -1528,8 +1528,22 @@ begin
    ParseTypeUsageQualifiers( newtype_id );
    expect( record_t );
    ParseRecordFields( newtype_id, field_no );
+   -- end record (or end name)
    expect( end_t );
-   expect( record_t );
+   if token = record_t then
+      expect( record_t );
+   elsif token = newtype_id then
+      if not onlyAda95 then
+         expect( newtype_id );
+      else
+         err( "end record required with " & optional_bold( "pragma ada_95" ) );
+      end if;
+  else
+      err( optional_bold( "end record" ) &
+          " or " &
+              optional_bold( "end " & to_string( identifiers( newtype_id ).name ) ) &
+              " expected" );
+   end if;
    -- if isExecutingCommand then
    if not error_found then
       identifiers( newtype_id ).kind := root_record_t;      -- a record
