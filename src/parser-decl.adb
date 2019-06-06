@@ -100,7 +100,7 @@ package body parser.decl is
 
 procedure ParseTypeUsageQualifiers( newtype_id : identifier ) is
   -- Handle the usage qualifiers that go before a types's parent type
-  -- Syntax: [abstract | limited]
+  -- Syntax: [abstract | limited | constant]
 begin
    -- abstract types
 
@@ -141,8 +141,35 @@ begin
       if token = abstract_t or token = limited_t or token = constant_t then
          err( "only one of abstract, limited or constant allowed" );
       end if;
+
+   -- default same as parent
+
    end if;
 end ParseTypeUsageQualifiers;
+
+--procedure checkTypeUsageAgainstParent( newtype_id, parent_id : identifier ) is
+--  -- Check for more restrictive usage qualifiers than a parent.  Also assigns
+--  -- the parent usage as a default.
+--begin
+--  if identifiers( newtype_id ).usage = fullUsage then
+--     identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
+--  elsif identifiers( parent_id ).usage = limitedUsage and identifiers( newtype_id ).usage = constantUsage then
+--     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
+--          " is less restrictive than its parent type " &
+--          optional_bold( to_string( identifiers( parent_id ).name ) ) &
+--          ", which is limited" );
+--  elsif identifiers( parent_id ).usage = abstractUsage and identifiers( newtype_id ).usage = constantUsage then
+--     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
+--          " is less restrictive than its parent type " &
+--          optional_bold( to_string( identifiers( parent_id ).name ) ) &
+--          ", which is abstract" );
+--  elsif identifiers( parent_id ).usage = abstractUsage and identifiers( newtype_id ).usage = limitedUsage then
+--     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
+--          " is less restrictive than its parent type " &
+--          optional_bold( to_string( identifiers( parent_id ).name ) ) &
+--          ", which is abstract" );
+--  end if;
+--end checkTypeUsageAgainstParent;
 
 procedure ParseVarUsageQualifiers( id : identifier; expr_expected : out boolean ) is
   -- Handle the usage qualifiers that go before a variable's type
@@ -300,6 +327,16 @@ begin
        when others =>
           err( "internal error: unexpected usage qualifier" );
        end case;
+
+       -- All of our resources are limited.  However, as a safety precaution:
+       -- If an identifier has an external reference, we cannot copy it because
+       -- we could inadvertantly deallocate it in one place while keeping it open
+       -- in another.
+
+       if identifiers( canonicalRef.id ).resource then
+          err( "internal error: resource identifiers cannot be copied" );
+       end if;
+
      end;
   end if;
 end ParseCopiesPart;
@@ -1256,6 +1293,7 @@ begin
         AttachGenericParameterResource( id, type_token );
      end if;
      identifiers( id ).kind := type_token;
+     identifiers( id ).usage := identifiers( type_token ).usage;
 
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type but has parameters" );
@@ -1829,6 +1867,16 @@ begin
         end if;
      end if;
 
+     -- Types are generally allowed to change the type usage in any way they want.
+     -- As a special case, resources must always be limited.
+
+     if identifiers( parent_id ).resource then
+        if identifiers( newtype_id ).usage /= limitedUsage then
+           err("resource identifiers must always be limited" );
+        end if;
+        identifiers( newtype_id ).resource := true;
+     end if;
+
      -- For a generic/parameterized type, if type checks need to be performed,
      -- check the supplied parameters and ensure they are compatible with the
      -- built-in generic type.  For example, assure a doubly_linked_list has
@@ -1847,6 +1895,8 @@ begin
 --put_line( "ParseType: Generics done" ); -- DEBUG
 --put_identifier( identifiers( newtype_id ).genKind ); -- DEBUG
         end if;
+        -- currently, it will always be limitedUsage
+        identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
      elsif token = symbol_t and identifiers( token ).value.all = "(" then
         err( "parameters were supplied but " &
              optional_bold( to_string( identifiers( parent_id ).name ) ) &
@@ -1934,6 +1984,16 @@ begin
    expect( is_t );                                         -- "is"
    ParseTypeUsageQualifiers( newtype_id );                 -- limited, etc.
    ParseIdentifier( parent_id );                           -- old type
+
+   -- Types are generally allowed to change the type usage in any way they want.
+   -- As a special case, resources must always be limited.
+
+   if identifiers( parent_id ).resource then
+      if identifiers( newtype_id ).usage /= limitedUsage then
+         err("resource identifiers must always be limited" );
+      end if;
+      identifiers( newtype_id ).resource := true;
+   end if;
 
    if identifiers( parent_id ).class = genericTypeClass then
       err( "subtypes require an instantiated generic type but " &

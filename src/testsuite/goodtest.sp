@@ -5164,7 +5164,7 @@ declare
 
   -- User Functions for each type
 
-  function len( lst : list_type ) return containers.count_type is
+  function len( lst : in out list_type ) return containers.count_type is
   begin
     return doubly_linked_lists.length( lst );
   end len;
@@ -5174,7 +5174,7 @@ declare
     doubly_linked_lists.clear( lst );
   end free;
 
-  function len2( lst : list_type2 ) return containers.count_type is
+  function len2( lst : in out list_type2 ) return containers.count_type is
   begin
     return doubly_linked_lists.length( lst );
   end len2;
@@ -5184,7 +5184,7 @@ declare
     doubly_linked_lists.clear( lst );
   end free2;
 
-  function len3( lst : list_type3 ) return containers.count_type is
+  function len3( lst : in out list_type3 ) return containers.count_type is
   begin
     return doubly_linked_lists.length( lst );
   end len3;
@@ -5194,7 +5194,7 @@ declare
     doubly_linked_lists.clear( lst );
   end free3;
 
-  function len4( lst : list_type4 ) return containers.count_type is
+  function len4( lst : in out list_type4 ) return containers.count_type is
   begin
     return doubly_linked_lists.length( lst );
   end len4;
@@ -5204,7 +5204,7 @@ declare
     doubly_linked_lists.clear( lst );
   end free4;
 
-  function len5( lst : list_type5 ) return containers.count_type is
+  function len5( lst : in out list_type5 ) return containers.count_type is
   begin
     return doubly_linked_lists.length( lst );
   end len5;

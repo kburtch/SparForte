@@ -11,9 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-
 - generic/parameterized types
   - test renaming and copying generic types
+  - is copying done for in mode parameters
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
