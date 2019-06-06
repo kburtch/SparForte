@@ -2260,7 +2260,7 @@ begin
                 "See also subtypes.");
      content( e, "type newtype is new [abstract|limited] oldtype [affirm...end affirm]" );
      content( e, "type newtype is ( enum1 [,enum2...] [affirm...end affirm] )" );
-     content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record" );
+     content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record|newtype" );
      content( e, "type newtype is [abstract|limited] array( low..high) of item_type [:= array( item,...)]" );
      seeAlso( e, "doc/ref_typedecl.html" );
      endHelp( e );
