@@ -96,6 +96,8 @@ package body parser.decl.as is
 
 procedure SkipBlock( termid1, termid2 : identifier := keyword_t );
 
+procedure VerifyForwardFormalParameters( proc_id : identifier; is_function : boolean := false );
+
 procedure ParseIfBlock is
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
   expr_val  : unbounded_string;
@@ -2267,25 +2269,34 @@ begin
   pullBlock;
 end ParseBeginBlock;
 
-procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; abstract_parameter : in out identifier; is_function : boolean := false ) is
--- Syntax: (field = declaration [; declaration ... ] )
--- Fields are implemented using records
-   formal_param_id : identifier;
-   b : boolean;
-   paramName    : unbounded_string;
-   type_token   : identifier;
-   passingMode  : aParameterPassingMode;
+
+--  PARSE FORMAL PARAMETER PROPERTIES
+--
+-- Interpret a formal subprogram parameter but do not declare it.  Instead,
+-- return its properties.
+------------------------------------------------------------------------------
+-- TODO: this approach won't work if we do a list of parameters.
+
+procedure ParseFormalParameterProperties(
+  formalParamId : out identifier;
+  passingMode : out aParameterPassingMode;
+  paramKind : out identifier;
+  abstractKind : out identifier;
+  subId : identifier;
+  isFunction : boolean ) is
 begin
-  param_no := param_no + 1;
-  ParseNewIdentifier( formal_param_id );
+  abstractKind := eof_t;
+
+  -- Parse the new parameter name
+
+  ParseNewIdentifier( formalParamId );
   expect( symbol_t, ":" );
 
-  -- Check the parameter mode
+  -- Parse the access mode
 
   if token = out_t then
      expect( out_t );
      passingMode := out_mode;
-     -- err( "out parameters not yet supported" );
   elsif token = in_t then
      -- TODO: deny in (just use default)?  Or require in?
      passingMode := in_mode;
@@ -2308,42 +2319,46 @@ begin
      err( "anonymous array parameters not yet supported" );
   end if;
 
-  -- The name of the type
+  -- Parse the name of the type
   --
   -- If it's an abstract type, record it because the subproram must be
   -- abstract also.
 
-  ParseIdentifier( type_token );
-  if identifiers( type_token ).usage = abstractUsage then
-     if abstract_parameter = eof_t then
-        abstract_parameter := type_token;
+  ParseIdentifier( paramKind );
+  if identifiers( paramKind ).usage = abstractUsage then
+     if abstractKind = eof_t then
+        abstractKind := paramKind;
      end if;
   end if;
+
+  ----------------------------------------------------------------------------
+  -- Perform checks on the parameter
+  ----------------------------------------------------------------------------
 
   -- Check type
   --
   -- in mode for aggregates not yet written.
 
    if passingMode = out_mode then
-      if is_function then
+      if isFunction then
          err( "out mode parameters not allowed in functions" );
      end if;
    end if;
    if passingMode = in_out_mode then
-      if is_function and onlyAda95 then
+      if isFunction and onlyAda95 then
          err( "in out mode parameters not allowed in functions with " &
              optional_bold( "pragma ada_95" ) );
       end if;
    end if;
   if passingMode = in_mode then
-     if identifiers( getBaseType( type_token ) ).list then
+     if identifiers( getBaseType( paramKind ) ).list then
          err( "array parameters not yet supported" );
-     elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
+     elsif identifiers( getBaseType( paramKind ) ).kind = root_record_t then
         err( "records not yet supported" );
      end if;
   end if;
   --elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
-  if getBaseType( type_token ) = command_t then
+  if getBaseType( paramKind ) = command_t then
      err( "commands not yet supported" );
   end if;
 
@@ -2352,6 +2367,33 @@ begin
   if token = symbol_t and identifiers( token ).value.all = ":=" then
      err( "default values are not yet supported" );
   end if;
+
+end ParseFormalParameterProperties;
+
+
+procedure ParseFormalParameter(
+   formal_param_id : out identifier; -- the parameter's id
+   proc_id : identifier;             -- the procedure (or function) id
+   param_no : in out integer;        -- the parameter number
+   abstract_parameter : in out identifier; -- any abstract param (or eof)
+   is_function : boolean := false ) is   -- is this a function parameter?
+   -- TODO: declare it won't work
+-- Syntax: name : mode type
+-- Parameters are implemented using the same scheme as records
+   b : boolean;
+   paramName    : unbounded_string;
+   type_token   : identifier;
+   passingMode  : aParameterPassingMode;
+begin
+  param_no := param_no + 1;
+
+  ParseFormalParameterProperties(
+    formalParamId => formal_param_id,
+    passingMode => passingMode,
+    paramKind => type_token,
+    abstractKind => abstract_parameter,
+    subId => proc_id,
+    isFunction => is_function );
 
   -- Create the parameter, associating it to the procedure/function
 
@@ -2364,19 +2406,26 @@ begin
   updateFormalParameter( formal_param_id, type_token, proc_id, param_no,
     passingMode );
 
-  -- Check for further parameters
-
-  if not error_found and token /= eof_t and not (token = symbol_t and identifiers( token ).value.all = ")" ) then
-     expectSemicolon;
-     ParseFormalParameters( proc_id, param_no, abstract_parameter );
-     -- the symbol table will overflow before field_no does
-  end if;
-
   -- Blow away on error
 
   if error_found then
      b := deleteIdent( formal_param_id );
   end if;
+end ParseFormalParameter;
+
+procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; abstract_parameter : in out identifier; is_function : boolean := false ) is
+-- Syntax: parameter-declaration [; parameter-declaration]
+-- Fields are implemented using records
+   formal_param_id : identifier;
+begin
+  loop
+    ParseFormalParameter( formal_param_id, proc_id, param_no, abstract_parameter, is_function );
+    if error_found or token = eof_t or (token = symbol_t and identifiers( token ).value.all = ")" ) then
+       exit;
+    end if;
+    expectSemicolon;
+    -- the symbol table will overflow before field_no does
+  end loop;
 end ParseFormalParameters;
 
 procedure ParseFunctionReturnPart( func_id : identifier; abstract_return : in out identifier ) is
@@ -2557,26 +2606,37 @@ begin
   procStart := firstPos;
   expect( procedure_t );
   ParseProcedureIdentifier( proc_id );
-  -- A forward declaration?
-  if token /= is_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
-     -- the following is only true for a forward declaration
-     -- (otherwise PPI will return varClass)
+
+  -- Whether forward or not, handle the parameters
+
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     no_params := 0;
+     ParseFormalParameters( proc_id, no_params, abstract_parameter );
+     expect( symbol_t, ")" );
+        --identifiers( proc_id ).value := to_unbounded_string( no_params );
+  end if;
+
+  -- Is it a forward declaration?
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( proc_id ).class = userProcClass then
         err( "already forward declared " & optional_bold( to_string( identifiers( proc_id ).name ) ) );
      end if;
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
-     -- otherwise, nothing special for a forward declaration
+
   else
+
+     -- It's not forward but it is fulfilling a forward declaration
+     -- Validate the parameters against the forward declaration.
+
+     if identifiers( proc_id ).class = userProcClass then
+        VerifyForwardFormalParameters( proc_id );
+     end if;
+
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
-     if token = symbol_t and identifiers( token ).value.all = "(" then
-        expect( symbol_t, "(" );
-        no_params := 0;
-        ParseFormalParameters( proc_id, no_params, abstract_parameter );
-        expect( symbol_t, ")" );
-        --identifiers( proc_id ).value := to_unbounded_string( no_params );
-     end if;
      pushBlock( newScope => true,
        newName => to_string (identifiers( proc_id ).name ) );
      DeclareActualParameters( proc_id );
@@ -2632,6 +2692,96 @@ begin
   end if;
   expectSemicolon;
 end ParseProcedureBlock;
+
+--  VERIFY FORWARD FORMAL PARAMETERS
+--
+-- Given an incomplete, forward declaration, confirm that the
+-- parameters given and the same as the forward declaration.
+
+procedure VerifyForwardFormalParameters( proc_id : identifier; is_function : boolean := false ) is
+  formalParamId : identifier;
+  parameterNumber : natural;
+  paramName : unbounded_string;
+
+  newParameterNumber : natural := 0;
+  --abstract_parameter : identifier;
+begin
+  formalParamId := proc_id + 1;
+  parameterNumber := 1;
+
+  -- if there are no parameters and this is a function, you will run into the function's return
+  -- value, which does not count as a parameter...abort the parameter search if it exists.
+  if identifiers( formalParamId ).name = "return value" then
+     formalParamId := identifiers_top; -- abort search
+  end if;
+
+  -- TODO: probably less brute-force ways to do this.
+  loop
+      while formalParamId < identifiers_top loop
+        if identifiers( formalParamId ).field_of = proc_id then
+           if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
+              exit;
+           end if;
+        end if;
+        formalParamId := identifier( integer( formalParamId ) + 1 );
+      end loop;
+
+    exit when formalParamId = identifiers_top;
+
+    paramName := identifiers( formalParamId ).name;
+    paramName := delete( paramName, 1, index( paramName, "." ) );
+
+    -- Now we need to parse the formal parameter
+    -- TODO: how do I map formal the parameters?  Will I end up with duplicate
+    -- parameters when parsed.
+
+    newParameterNumber := newParameterNumber + 1;
+    if newParameterNumber > 1 then
+       if token = symbol_t and identifiers( token ).value.all = ";" then
+          -- TODO: should be more sophisticated error message
+          expectSemicolon;
+       end if;
+    end if;
+
+    --ParseFormalParameter( proc_id, new_param_no, abstract_parameter, is_function, false );
+    --declare
+   -- begin
+   --   ParseFormalParameterProperties(
+   --     formalParamId : out identifier;
+   --     passingMode : out aParameterPassingMode;
+   --     paramKind : out identifier;
+   --     abstractKind => abstract_parameter,
+   --     subId => proc_id,
+   --     isFunction => false );
+   -- end;
+
+   -- Now compare
+
+   declare
+     actualId : identifier;
+     actualPassingMode :aParameterPassingMode;
+     actualParamKind : identifier;
+     actualAbstractKind : identifier;
+   begin
+      ParseFormalParameterProperties(
+        formalParamId => actualId,
+        passingMode => actualPassingMode,
+        paramKind => actualParamKind,
+        abstractKind => actualAbstractKind,
+        subId => proc_id,
+        isFunction => false
+     );
+
+     put_line( standard_error, "validating: formal " & to_string( paramName ) &
+       " id" & formalParamId'img );
+     put_line( standard_error,  "            actual " & to_string( identifiers( actualId ).name ) & " id" & actualId'img  );
+   end;
+
+    formalParamId := identifier( integer( formalParamId ) + 1 );
+  end loop;
+  -- TODO: verify length
+
+end VerifyForwardFormalParameters;
 
 procedure ParseActualParameters( proc_id : identifier;
   declareParams : boolean := true ) is
@@ -3119,25 +3269,55 @@ begin
   funcStart := firstPos;
   expect( function_t );
   ParseProcedureIdentifier( func_id );
-  identifiers( func_id ).class := userFuncClass;
   identifiers( func_id ).kind := new_t;
-  if token = is_t then -- common error
+
+  if token = is_t then
      expect( return_t );
-  elsif token /= return_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
-     -- the following is only true for a forward declaration
-     -- (otherwise PPI will return varClass)
+  elsif token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     no_params := 0;
+     ParseFormalParameters( func_id, no_params, abstract_parameter, is_function => true );
+     expect( symbol_t, ")" );
+  end if;
+  ParseFunctionReturnPart( func_id, abstract_return );
+
+  -- Is it a forward declaration?
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( func_id ).class = userFuncClass then
         err( "already forward declared " & optional_bold( to_string( identifiers( func_id ).name ) ) );
      end if;
-     -- otherwise, nothing special for a forward declaration
+     identifiers( func_id ).class := userFuncClass;
+     --identifiers( func_id ).kind := new_t;
   else
-     if token = symbol_t and identifiers( token ).value.all = "(" then
-        expect( symbol_t, "(" );
-        no_params := 0;
-        ParseFormalParameters( func_id, no_params, abstract_parameter, is_function => true );
-        expect( symbol_t, ")" );
+
+     -- It's not forward but it is fulfilling a forward declaration
+     -- Validate the parameters against the forward declaration.
+
+     if identifiers( func_id ).class = userFuncClass then
+        VerifyForwardFormalParameters( func_id );
+        -- TODO: also validate the return type for a function
      end if;
-     ParseFunctionReturnPart( func_id, abstract_return );
+     identifiers( func_id ).class := userFuncClass;
+     --identifiers( func_id ).kind := new_t;
+
+  --if token = is_t then -- common error
+  --   expect( return_t );
+  --elsif token /= return_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
+  --   -- the following is only true for a forward declaration
+  --   -- (otherwise PPI will return varClass)
+  --   if identifiers( func_id ).class = userFuncClass then
+  --      err( "already forward declared " & optional_bold( to_string( identifiers( func_id ).name ) ) );
+  --   end if;
+  --   -- otherwise, nothing special for a forward declaration
+  -- else
+  --   if token = symbol_t and identifiers( token ).value.all = "(" then
+  --      expect( symbol_t, "(" );
+  --      no_params := 0;
+  --      ParseFormalParameters( func_id, no_params, abstract_parameter, is_function => true );
+  --      expect( symbol_t, ")" );
+  --   end if;
+
      pushBlock( newScope => true,
        newName => to_string (identifiers( func_id ).name ) );
      DeclareActualParameters( func_id );
@@ -5006,7 +5186,7 @@ begin
         --BREAKDBG
         put_line( standard_error, get_script_execution_position(
            optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
-put_line( "sourceFiles: " & long_integer'image( sourceFilesList.length( sourceFiles ) ) ); -- DEBUG
+--put_line( "sourceFiles: " & long_integer'image( sourceFilesList.length( sourceFiles ) ) ); -- DEBUG
         error_found := true;
      end if;
   elsif wasSIGWINCH then                                 -- window change?
@@ -5396,7 +5576,7 @@ begin
         put_line( standard_error, get_script_execution_position(
             optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
         error_found := true;
-put_line( "sourceFiles: " & long_integer'image( sourceFilesList.length( sourceFiles ) ) ); -- DEBUG
+--put_line( "sourceFiles: " & long_integer'image( sourceFilesList.length( sourceFiles ) ) ); -- DEBUG
         --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
   elsif wasSIGWINCH then                                 -- window change?

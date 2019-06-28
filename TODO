@@ -11,9 +11,45 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- ACE.ALM.ActivityManager.CallReport.AggregatedColumns1,ACE.ALM.ActivityManager.CallReport.AggregatedColumns2:CORE,AggregatedColumns3,FALSE,,,,,,
+- ^(ACE[\w.]+:CORE),(\w+),(?!\1:\2)+
+-pcre failing on
+   if (regex_ptr != NULL ) {
+      // This should not typically fail.  It does not return an
+      // error message, just a negative error code.
+      res = pcre_exec( regex_ptr, NULL, str, strlen(str), 0, 0, NULL, 0);
+      *result = 0;
+      if ( res >= 0 ) {
+         *result = 1;
+         *errmsg = no_error;
+      } else if ( res == PCRE_ERROR_NULL ) {
+         strncpy( errmsg, "pcre_exec failed: null error", 255 );
+      } else if ( res == PCRE_ERROR_BADOPTION ) {
+         strncpy( errmsg, "pcre_exec failed: bad option", 255 );
+      } else if ( res == PCRE_ERROR_BADMAGIC ) {
+         strncpy( errmsg, "pcre_exec failed: bad magic number", 255 );
+      } else if ( res == PCRE_ERROR_UNKNOWN_NODE ) {
+         strncpy( errmsg, "pcre_exec failed: unknown_node", 255 );
+      } else if ( res == PCRE_ERROR_NOMEMORY ) {
+         strncpy( errmsg, "pcre_exec failed: no memory", 255 );
+      } else if ( res != PCRE_ERROR_NOMATCH ) {
+         strncpy( errmsg, "pcre_exec failed", 255 );
+      }
+      pcre_free( regex_ptr );
+      errmsg[255] = '\0';
+   } else {
+      strncpy( errmsg, errmsg_ptr, 255 );
+      errmsg[255] = '\0';
+   }
+
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
+- testing validator project I noticed
+  - profile summary is showing zero procedures (in, at least, some cases)
+  - under some conditions, the breakout prompt my have end-of-file and be
+    interpreted as a return to resume execution.  I have not identified what
+    those conditions are.
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
@@ -77,6 +113,8 @@ Annoyances / Bugs with Workarounds / Updates
 
 - add annotate/categories to example programs representing the example groupings
   they belong to
+- attaching comments to declarations so the comments can be parsed and displayed
+  by the language.  This is to make configuration and debugging easier.
 - problem extracting byte code for blocks (copying whole lines)
 - doubly linked lists ought to automatically JSON encode aggregates, like
   btree_io does.?

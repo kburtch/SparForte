@@ -321,7 +321,8 @@ begin
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "field of a record type" ) );
      -- if old, don't redeclare if it was a forward declaration
-     elsif identifiers( token ).class = userProcClass then       -- a proc?
+     elsif identifiers( token ).class = userProcClass or         -- a proc?
+           identifiers( token ).class = userFuncClass then       -- or func?
         if isLocal( token ) then                                 -- local?
            if length( identifiers( token ).value.all ) = 0 then      -- forward?
               id := token;                                       -- then it's
