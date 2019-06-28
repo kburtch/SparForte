@@ -405,6 +405,9 @@ void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
     * SparForte is Latin-1 only).
     */
 
+  *result = 0;
+  *errmsg = no_error;
+
    regex_ptr = pcre_compile(regex, 0, &errmsg_ptr, &erroffset, NULL );
    if (regex_ptr != NULL ) {
       // This should not typically fail.  It does not return an
@@ -412,17 +415,26 @@ void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
       res = pcre_exec( regex_ptr, NULL, str, strlen(str), 0, 0, NULL, 0);
       if ( res >= 0 ) {
          *result = 1;
-      } else if ( res < 0 ) {
-         *result = 0;
-      } else {
+      } else if ( res == PCRE_ERROR_NULL ) {
+         strncpy( errmsg, "pcre_exec failed: null error", 255 );
+      } else if ( res == PCRE_ERROR_BADOPTION ) {
+         strncpy( errmsg, "pcre_exec failed: bad option", 255 );
+      } else if ( res == PCRE_ERROR_BADMAGIC ) {
+         strncpy( errmsg, "pcre_exec failed: bad magic number", 255 );
+      } else if ( res == PCRE_ERROR_UNKNOWN_NODE ) {
+         strncpy( errmsg, "pcre_exec failed: unknown_node", 255 );
+      } else if ( res == PCRE_ERROR_NOMEMORY ) {
+         strncpy( errmsg, "pcre_exec failed: no memory", 255 );
+      } else if ( res != PCRE_ERROR_NOMATCH ) {
          strncpy( errmsg, "pcre_exec failed", 255 );
+         *errmsg = no_error;
       }
       pcre_free( regex_ptr );
-      errmsg[0] = '\0';
    } else {
       strncpy( errmsg, errmsg_ptr, 255 );
-      errmsg[255] = '\0';
    }
+   // Safety precaution to prevent buffer overruns.
+   errmsg[255] = '\0';
 }
 
 
