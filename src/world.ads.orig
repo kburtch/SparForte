@@ -359,6 +359,8 @@ pragma inline( findStorage );
 
 type aParameterPassingMode is (none, in_mode, out_mode, in_out_mode );
 
+function to_string( mode : aParameterPassingMode ) return string;
+
 -- Types of volatility
 
 type aVolatileMode is (none, unchecked, checked);

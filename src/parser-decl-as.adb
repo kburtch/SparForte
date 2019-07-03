@@ -2599,7 +2599,7 @@ procedure ParseProcedureBlock is
   proc_id   : identifier;
   procStart : natural;
   procEnd   : natural;
-  no_params   : integer;
+  no_params   : integer := 0;  -- TODO: delete this
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
 begin
@@ -2611,17 +2611,23 @@ begin
 
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
-     no_params := 0;
-     ParseFormalParameters( proc_id, no_params, abstract_parameter );
-     expect( symbol_t, ")" );
+     if identifiers( proc_id ).class = userProcClass then
+        VerifyForwardFormalParameters( proc_id );
+     else
+     --no_params := 0;
+        ParseFormalParameters( proc_id, no_params, abstract_parameter );
         --identifiers( proc_id ).value := to_unbounded_string( no_params );
+     end if;
+     expect( symbol_t, ")" );
+  elsif identifiers( proc_id ).class = userProcClass then
+     VerifyForwardFormalParameters( proc_id );
   end if;
 
   -- Is it a forward declaration?
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( proc_id ).class = userProcClass then
-        err( "already forward declared " & optional_bold( to_string( identifiers( proc_id ).name ) ) );
+        err( "already declared specification for " & optional_bold( to_string( identifiers( proc_id ).name ) ) );
      end if;
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
@@ -2631,9 +2637,9 @@ begin
      -- It's not forward but it is fulfilling a forward declaration
      -- Validate the parameters against the forward declaration.
 
-     if identifiers( proc_id ).class = userProcClass then
-        VerifyForwardFormalParameters( proc_id );
-     end if;
+     --if identifiers( proc_id ).class = userProcClass then
+     --   VerifyForwardFormalParameters( proc_id );
+     --end if;
 
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
@@ -2706,6 +2712,8 @@ procedure VerifyForwardFormalParameters( proc_id : identifier; is_function : boo
   newParameterNumber : natural := 0;
   --abstract_parameter : identifier;
 begin
+   put_line( standard_error, "Verifying " & to_string( identifiers( proc_id ).name ) ); -- DEBUG
+   put_token;
   formalParamId := proc_id + 1;
   parameterNumber := 1;
 
@@ -2717,7 +2725,10 @@ begin
 
   -- TODO: probably less brute-force ways to do this.
   loop
-      while formalParamId < identifiers_top loop
+
+     put_line( standard_error, "starting search" );
+     while formalParamId < identifiers_top loop
+        put_line( "trying " & to_string( identifiers( formalParamId ).name ) & " id" & formalParamid'img );
         if identifiers( formalParamId ).field_of = proc_id then
            if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
               exit;
@@ -2736,51 +2747,77 @@ begin
     -- parameters when parsed.
 
     newParameterNumber := newParameterNumber + 1;
-    if newParameterNumber > 1 then
-       if token = symbol_t and identifiers( token ).value.all = ";" then
-          -- TODO: should be more sophisticated error message
-          expectSemicolon;
-       end if;
-    end if;
 
-    --ParseFormalParameter( proc_id, new_param_no, abstract_parameter, is_function, false );
-    --declare
-   -- begin
-   --   ParseFormalParameterProperties(
-   --     formalParamId : out identifier;
-   --     passingMode : out aParameterPassingMode;
-   --     paramKind : out identifier;
-   --     abstractKind => abstract_parameter,
-   --     subId => proc_id,
-   --     isFunction => false );
-   -- end;
+      -- Now compare
 
-   -- Now compare
+    if token = is_t then
+       err( "no parameters found but earlier specification had parameters" );
+       exit;
+    elsif token = symbol_t and identifiers( token ).value.all = ")" then
+       err( "missing parameter " & to_string(paramName) & " from earlier specification" );
+       exit;
+    else
+       declare
+         actualId : identifier;
+         actualPassingMode :aParameterPassingMode;
+         actualParamKind : identifier;
+         actualAbstractKind : identifier;
+         b : boolean;
+       begin
+         -- put_token; -- DEBUG
+         ParseFormalParameterProperties(
+            formalParamId => actualId,
+            passingMode => actualPassingMode,
+            paramKind => actualParamKind,
+            abstractKind => actualAbstractKind,
+            subId => proc_id,
+            isFunction => false
+            );
 
-   declare
-     actualId : identifier;
-     actualPassingMode :aParameterPassingMode;
-     actualParamKind : identifier;
-     actualAbstractKind : identifier;
-   begin
-      ParseFormalParameterProperties(
-        formalParamId => actualId,
-        passingMode => actualPassingMode,
-        paramKind => actualParamKind,
-        abstractKind => actualAbstractKind,
-        subId => proc_id,
-        isFunction => false
-     );
+         put_line( standard_error, "validating: formal " & to_string( paramName ) &
+           " id" & formalParamId'img );
+         put_line( standard_error,  "            actual " & to_string( identifiers( actualId ).name ) & " id" & actualId'img  );
 
-     put_line( standard_error, "validating: formal " & to_string( paramName ) &
-       " id" & formalParamId'img );
-     put_line( standard_error,  "            actual " & to_string( identifiers( actualId ).name ) & " id" & actualId'img  );
-   end;
+         -- check the name
+         if paramName /= identifiers( actualId ).name then
+            err("name " &
+                optional_bold( to_string( identifiers( actualId ).name )) &
+                " was " & optional_bold( to_string( paramName )) &
+                " in the earlier specification");
+         end if;
+         -- check the type
+         if identifiers( formalParamId ).kind /= actualParamKind then
+            err("type " &
+                optional_bold( to_string( identifiers( actualParamKind ).name ) ) &
+                " was " & optional_bold( to_string( identifiers( identifiers( formalParamId ).kind ).name )) &
+                " in the earlier specification");
+         end if;
+         -- check the qualifier (currently not possible)
+         -- check the passing mode
+         if identifiers( formalParamId ).passingMode /= actualPassingMode then
+            err("mode " &
+                optional_bold( to_string( actualPassingMode ) ) &
+                " was " & optional_bold( to_string( identifiers( formalParamId ).passingMode ) ) &
+                " in the earlier specification");
+         end if;
+
+         b := deleteIdent( actualId );
+       end;
+     end if;
+
+     if token = symbol_t and identifiers( token ).value.all = ";" then
+        -- TODO: should be more sophisticated error message
+        expectSemicolon;
+     end if;
 
     formalParamId := identifier( integer( formalParamId ) + 1 );
   end loop;
   -- TODO: verify length
-
+  if error_found then
+     put_line( standard_error, "Done but error occurred" );
+  end if;
+  put_line( standard_error, "Done verifying" );
+  put_token;
 end VerifyForwardFormalParameters;
 
 procedure ParseActualParameters( proc_id : identifier;

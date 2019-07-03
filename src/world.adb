@@ -199,6 +199,23 @@ begin
   return sp;
 end findStorage;
 
+function to_string( mode : aParameterPassingMode ) return string is
+begin
+  case mode is
+     when none =>
+        return "none";
+     when in_mode =>
+        return "in";
+     when out_mode =>
+        return "out";
+     when in_out_mode =>
+        return "in out";
+     when others =>
+        raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+          ": internal error: unexpected mode ";
+  end case;
+end to_string;
+
 -- Symbol Table Utilities
 --
 
@@ -1898,7 +1915,7 @@ begin
   when others => -- includes noTemplate
      --s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-       ": Internal error: internal error: unknown template type " &
+       ": internal error: unknown template type " &
        header.templateType'img;
   end case;
   s := s & ASCII.CR & ASCII.LF;
