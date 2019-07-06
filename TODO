@@ -11,37 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- ACE.ALM.ActivityManager.CallReport.AggregatedColumns1,ACE.ALM.ActivityManager.CallReport.AggregatedColumns2:CORE,AggregatedColumns3,FALSE,,,,,,
-- ^(ACE[\w.]+:CORE),(\w+),(?!\1:\2)+
--pcre failing on
-   if (regex_ptr != NULL ) {
-      // This should not typically fail.  It does not return an
-      // error message, just a negative error code.
-      res = pcre_exec( regex_ptr, NULL, str, strlen(str), 0, 0, NULL, 0);
-      *result = 0;
-      if ( res >= 0 ) {
-         *result = 1;
-         *errmsg = no_error;
-      } else if ( res == PCRE_ERROR_NULL ) {
-         strncpy( errmsg, "pcre_exec failed: null error", 255 );
-      } else if ( res == PCRE_ERROR_BADOPTION ) {
-         strncpy( errmsg, "pcre_exec failed: bad option", 255 );
-      } else if ( res == PCRE_ERROR_BADMAGIC ) {
-         strncpy( errmsg, "pcre_exec failed: bad magic number", 255 );
-      } else if ( res == PCRE_ERROR_UNKNOWN_NODE ) {
-         strncpy( errmsg, "pcre_exec failed: unknown_node", 255 );
-      } else if ( res == PCRE_ERROR_NOMEMORY ) {
-         strncpy( errmsg, "pcre_exec failed: no memory", 255 );
-      } else if ( res != PCRE_ERROR_NOMATCH ) {
-         strncpy( errmsg, "pcre_exec failed", 255 );
-      }
-      pcre_free( regex_ptr );
-      errmsg[255] = '\0';
-   } else {
-      strncpy( errmsg, errmsg_ptr, 255 );
-      errmsg[255] = '\0';
-   }
-
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -101,6 +70,7 @@ Priority Issues (Fix These First)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
+    - pragma risk_tolerance(amt) - forcing static side-effect checking
     - echo "foo"`bar` works but echo `bar` does not
       - `word` not allowed in BasicShellWord?
     - spell checking comments (as Windows does?)  must whitelist all
