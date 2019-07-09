@@ -70,7 +70,10 @@ Priority Issues (Fix These First)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
-    - pragma risk_tolerance(amt) - forcing static side-effect checking
+    - pragma risk_tolerance(amt) or pragma optimize( reliability )
+      - perhaps optimize is too simplistic: these need to be ranked/rated
+        (like pragma emphasize/deemphasize).
+      - forcing static side-effect checking
     - echo "foo"`bar` works but echo `bar` does not
       - `word` not allowed in BasicShellWord?
     - spell checking comments (as Windows does?)  must whitelist all

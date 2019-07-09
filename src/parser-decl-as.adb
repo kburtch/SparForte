@@ -2445,6 +2445,8 @@ begin
   -- The name of the type
 
   ParseIdentifier( resultKind );
+  put_line( "ParseFunctionReturnPartProperties: kind = " &
+    to_string( identifiers( resultKind ).name ) ); -- DEBUG
   if syntax_check then
      identifiers( resultKind ).wasApplied := true; -- type was used
      if identifiers( resultKind ).usage = abstractUsage then
@@ -2729,8 +2731,8 @@ procedure VerifyForwardFormalParameters( proc_id : identifier; is_function : boo
   newParameterNumber : natural := 0;
   --abstract_parameter : identifier;
 begin
-   put_line( standard_error, "Verifying " & to_string( identifiers( proc_id ).name ) ); -- DEBUG
-   put_token;
+  -- put_line( standard_error, "Verifying " & to_string( identifiers( proc_id ).name ) ); -- DEBUG
+  -- put_token;
   formalParamId := proc_id + 1;
   parameterNumber := 1;
 
@@ -2743,7 +2745,7 @@ begin
   -- TODO: probably less brute-force ways to do this.
   loop
 
-     put_line( standard_error, "starting search" );
+     --put_line( standard_error, "starting search" );
      while formalParamId < identifiers_top loop
         put_line( "trying " & to_string( identifiers( formalParamId ).name ) & " id" & formalParamid'img );
         if identifiers( formalParamId ).field_of = proc_id then
@@ -2795,9 +2797,9 @@ begin
             isFunction => false
             );
 
-         put_line( standard_error, "validating: formal " & to_string( paramName ) &
-           " id" & formalParamId'img );
-         put_line( standard_error,  "            actual " & to_string( identifiers( actualId ).name ) & " id" & actualId'img  );
+         --put_line( standard_error, "validating: formal " & to_string( paramName ) &
+         --  " id" & formalParamId'img );
+         --put_line( standard_error,  "            actual " & to_string( identifiers( actualId ).name ) & " id" & actualId'img  );
 
          -- check the name
          if paramName /= identifiers( actualId ).name then
@@ -2834,12 +2836,32 @@ begin
     formalParamId := identifier( integer( formalParamId ) + 1 );
     parameterNumber := parameterNumber + 1;
   end loop;
-  if error_found then
-     put_line( standard_error, "Done but error occurred" );
-  end if;
-  put_line( standard_error, "Done verifying" );
-  put_token;
+  --if error_found then
+  --   put_line( standard_error, "Done but error occurred" );
+  --end if;
+  --put_line( standard_error, "Done verifying" );
+  --put_token;
 end VerifyForwardFormalParameters;
+
+procedure VerifyForwardReturnPart( func_id : identifier ) is
+  resultKind     : identifier;
+  abstractReturn : identifier;
+begin
+  if error_found then
+     put_line( standard_error, "An error occurred before parsing return properties" );
+  end if;
+  ParseFunctionReturnPartProperties(
+      resultKind => resultKind,
+      abstractKind => abstractReturn,
+      funcId => func_id
+   );
+  if resultKind /= identifiers( func_id ).kind then
+     err("function return type " &
+         optional_bold( to_string( identifiers( resultKind ).name ) ) &
+         " was " & optional_bold( to_string( identifiers( identifiers( func_id ).kind ).name )) &
+                " in the earlier specification");
+  end if;
+end VerifyForwardReturnPart;
 
 procedure ParseActualParameters( proc_id : identifier;
   declareParams : boolean := true ) is
@@ -3323,36 +3345,63 @@ procedure ParseFunctionBlock is
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
   abstract_return    : identifier := eof_t;
+  --b : boolean;
 begin
   funcStart := firstPos;
   expect( function_t );
+
+  -- If this is a completion of a forwarded declaration, func_id will
+  -- bee a new id, not the original.
+
   ParseProcedureIdentifier( func_id );
-  identifiers( func_id ).kind := new_t;
 
   -- Whether forward or not, handle the parameters.  If there's a
   -- forward specification, verify the new parameters match the old
   -- ones.  Otherwise, parse the parameters as normal.
 
+
   if token = is_t then
+     -- force error for this common mistake
      expect( return_t );
   elsif token = symbol_t and identifiers( token ).value.all = "(" then
+     -- has parameters
      expect( symbol_t, "(" );
      if identifiers( func_id ).class = userFuncClass then
+        -- has a forward specification
         VerifyForwardFormalParameters( func_id, is_function => true );
+        expect( symbol_t, ")" );
+        -- we won't be able to see the specification until we delete
+        -- the new one.
+        --b := deleteIdent( func_id );
+        --findIdent( identifiers( func_id ).name, func_id );
+        VerifyForwardReturnPart( func_id );
      else
-     --no_params := 0;
+        identifiers( func_id ).kind := new_t;
+        -- normal function, no forward specification
         ParseFormalParameters( func_id, no_params, abstract_parameter,
           is_function => true );
-        --identifiers( proc_id ).value := to_unbounded_string( no_params );
+        expect( symbol_t, ")" );
+        ParseFunctionReturnPart( func_id, abstract_return );
      end if;
-     expect( symbol_t, ")" );
   elsif identifiers( func_id ).class = userFuncClass then
+     -- no parameters but has a forward specification
      VerifyForwardFormalParameters( func_id, is_function => true );
+     -- we won't be able to see the specification until we delete
+     -- the new one.
+     --b := deleteIdent( func_id );
+     --findIdent( identifiers( func_id ).name, func_id );
+     VerifyForwardReturnPart( func_id );
+  else
+     -- no parameters and no forward specification
+     identifiers( func_id ).kind := new_t;
+     ParseFunctionReturnPart( func_id, abstract_return );
   end if;
 
-  ParseFunctionReturnPart( func_id, abstract_return );
 
   -- Is it a forward declaration?
+  --
+  -- The function type must be set on a forward declaration because
+  -- FunctionReturnPart is not run.
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( func_id ).class = userFuncClass then
