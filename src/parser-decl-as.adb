@@ -2445,8 +2445,6 @@ begin
   -- The name of the type
 
   ParseIdentifier( resultKind );
-  put_line( "ParseFunctionReturnPartProperties: kind = " &
-    to_string( identifiers( resultKind ).name ) ); -- DEBUG
   if syntax_check then
      identifiers( resultKind ).wasApplied := true; -- type was used
      if identifiers( resultKind ).usage = abstractUsage then
