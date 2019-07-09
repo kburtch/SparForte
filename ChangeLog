@@ -18,7 +18,11 @@ CHANGES SINCE 2.2
 
 8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
 
+CHANGES SINCE 2.2
+
 9. Fix: using a built-in procedure as a function shows an appropriate error message rather than raising an exception.
 
 10. Fix: using a built-in function as a shell command shows an appropriate error message rather than saying it's a field of a record type.
+
+11. Fix: strings.perl_match() now works correctly.
 
