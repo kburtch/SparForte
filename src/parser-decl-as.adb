@@ -5006,7 +5006,6 @@ begin
         --BREAKDBG
         put_line( standard_error, get_script_execution_position(
            optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
-put_line( "sourceFiles: " & long_integer'image( sourceFilesList.length( sourceFiles ) ) ); -- DEBUG
         error_found := true;
      end if;
   elsif wasSIGWINCH then                                 -- window change?
@@ -5396,7 +5395,6 @@ begin
         put_line( standard_error, get_script_execution_position(
             optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
         error_found := true;
-put_line( "sourceFiles: " & long_integer'image( sourceFilesList.length( sourceFiles ) ) ); -- DEBUG
         --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
   elsif wasSIGWINCH then                                 -- window change?
