@@ -75,14 +75,14 @@ begin
 
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
-        Put_Line( "SparForte (Business Shell) usage" );
+        Put_Line( "SparForte usage" );
         Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
         Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );
         Put_Line( "  --design or -D      - design phase mode" );
-        Put_Line( "  --exec or -e        - script is a string containing BUSH commands" );
+        Put_Line( "  --exec or -e        - script is a string containing SparForte commands" );
         Put_Line( "  --gcc-errors or -g  - simple GCC-style errors (good for IDEs)" );
         Put_Line( "  --help or -h        - show this help" );
         Put_Line( "  --import-all or -i  - import all environment variables" );
