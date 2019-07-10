@@ -365,6 +365,10 @@ function to_string( mode : aParameterPassingMode ) return string;
 
 type aVolatileMode is (none, unchecked, checked);
 
+-- value indicating no forward specification exists
+
+noSpec : constant natural := 0;
+
 ------------------------------------------------------------------------------
 -- Identifier Declarations
 --
@@ -395,6 +399,7 @@ type declaration is record
      field_of : identifier;                     -- record superclass
      inspect         : boolean := false;        -- show value on breakout
      deleted         : boolean := false;        -- marked for deletion
+     specAt          : natural := noSpec;       -- line where forward spec
      wasReferenced   : boolean := false;        -- true if ref'd in syn chk
      wasWritten      : boolean := false;        -- true if written in syn chk
      writtenByThread : aThreadName;

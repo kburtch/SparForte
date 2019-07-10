@@ -11,6 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- repeating -L doesn't seem to work.  Only first is honoured.
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters

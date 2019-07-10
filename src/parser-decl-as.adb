@@ -2626,9 +2626,11 @@ procedure ParseProcedureBlock is
   no_params   : integer := 0;  -- TODO: delete this
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
+  declarationLine : natural;
 begin
   procStart := firstPos;
   expect( procedure_t );
+  declarationLine := getLineNo;
   ParseProcedureIdentifier( proc_id );
 
   -- Whether forward or not, handle the parameters.  If there's a
@@ -2657,9 +2659,11 @@ begin
      end if;
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specAt := declarationLine;
   else
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specAt := noSpec;
      pushBlock( newScope => true,
        newName => to_string (identifiers( proc_id ).name ) );
      DeclareActualParameters( proc_id );
@@ -2804,14 +2808,16 @@ begin
             err("parameter name " &
                 optional_bold( to_string( identifiers( actualId ).name )) &
                 " was " & optional_bold( to_string( paramName )) &
-                " in the earlier specification");
+                " in the earlier specification at line" &
+                identifiers( proc_id ).specAt'img);
          end if;
          -- check the type
          if identifiers( formalParamId ).kind /= actualParamKind then
             err("parameter type " &
                 optional_bold( to_string( identifiers( actualParamKind ).name ) ) &
                 " was " & optional_bold( to_string( identifiers( identifiers( formalParamId ).kind ).name )) &
-                " in the earlier specification");
+                " in the earlier specification at line" &
+                identifiers( proc_id ).specAt'img);
          end if;
          -- check the qualifier (currently not possible)
          -- check the passing mode
@@ -2819,7 +2825,8 @@ begin
             err("parameter mode " &
                 optional_bold( to_string( actualPassingMode ) ) &
                 " was " & optional_bold( to_string( identifiers( formalParamId ).passingMode ) ) &
-                " in the earlier specification");
+                " in the earlier specification at line" &
+                identifiers( proc_id ).specAt'img);
          end if;
 
          b := deleteIdent( actualId );
@@ -2857,7 +2864,8 @@ begin
      err("function return type " &
          optional_bold( to_string( identifiers( resultKind ).name ) ) &
          " was " & optional_bold( to_string( identifiers( identifiers( func_id ).kind ).name )) &
-                " in the earlier specification");
+                " in the earlier specification at line" &
+                identifiers( func_id ).specAt'img);
   end if;
 end VerifyForwardReturnPart;
 
@@ -3344,8 +3352,11 @@ procedure ParseFunctionBlock is
   abstract_parameter : identifier := eof_t;
   abstract_return    : identifier := eof_t;
   --b : boolean;
+  declarationLine : natural;
 begin
   funcStart := firstPos;
+  declarationLine := getLineNo;
+
   expect( function_t );
 
   -- If this is a completion of a forwarded declaration, func_id will
@@ -3406,8 +3417,10 @@ begin
         err( "already declared specification for " & optional_bold( to_string( identifiers( func_id ).name ) ) );
      end if;
      identifiers( func_id ).class := userFuncClass;
+     identifiers( func_id ).specAt := declarationLine;
   else
      identifiers( func_id ).class := userFuncClass;
+     identifiers( func_id ).specAt := noSpec;
 
      pushBlock( newScope => true,
        newName => to_string (identifiers( func_id ).name ) );
