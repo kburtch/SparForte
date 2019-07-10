@@ -26,13 +26,13 @@ CHANGES SINCE 2.2
 
 11. Fix: strings.perl_match() now works correctly.
 
-12. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
+12. Fix: removed "sourceFiles:" debugging statement from breakout prompt.
 
-13. New: parameterized (generic) types can now be defined as types and subtypes.  These types and subtypes can be passed as parameters to user subprograms.  Types extending resource types must be limited.
+13. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
 
-14. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
+14. New: parameterized (generic) types can now be defined as types and subtypes.  These types and subtypes can be passed as parameters to user subprograms.  Types extending resource types must be limited.
 
-15. Fix: removed "sourceFiles:" debugging statement from breakout prompt.
+15. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
 
 16. New: function and procedure forward specifications. [docs needed][tests needed].
 
