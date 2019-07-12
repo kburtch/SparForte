@@ -378,49 +378,52 @@ noSpec : constant natural := 0;
 type declaration;
 
 type declaration is record
-     name     : unbounded_string                -- identifier name
+     name            : unbounded_string        -- identifier's name
                 := Null_Unbounded_String;
-     value    : valuePtr := null;
+     value           : valuePtr := null;       -- identifier's value
      --value    : unbounded_string                -- identifier's value
      --           := Null_Unbounded_String;
-     kind     : identifier;                     -- identifier's type
-     class    : anIdentifierClass               -- identifier's class
-                := otherClass;
-     import   : boolean := false;               -- marked by pragma import
-     method   : anImportMethod := none;         -- how to import
-     mapping  : anImportMapping := none;        -- how to translate on import
-     export   : boolean := false;               -- marked by pragma export
-     volatile : aVolatileMode := none;          -- marked by pragma volatile
+     kind            : identifier;              -- identifier's type
+     class           : anIdentifierClass        -- identifier's class
+                       := otherClass;
+     import          : boolean := false;        -- marked by pragma import
+     method          : anImportMethod := none;  -- where to import values
+     mapping         : anImportMapping := none; -- how to translate on import
+     export          : boolean := false;        -- marked by pragma export
+     volatile        : aVolatileMode := none;   -- marked by pragma volatile
                                                 --   or unchecked_volatile
-     static   : boolean := false;               -- if value is known at syn chk
-     usage    : aUsageQualifier := fullUsage;   -- limits on use
-     list     : boolean := false;               -- array or array type
-     resource : boolean := false;               -- resource type
-     field_of : identifier;                     -- record superclass
+     static          : boolean := false;        -- if value is known at syn chk
+     usage           : aUsageQualifier := fullUsage; -- limits on use
+     list            : boolean := false;        -- array or array type
+     resource        : boolean := false;        -- resource type
+     field_of        : identifier;              -- record superclass
      inspect         : boolean := false;        -- show value on breakout
      deleted         : boolean := false;        -- marked for deletion
      specAt          : natural := noSpec;       -- line where forward spec
+     specFile        : unbounded_string         -- file of forward spec
+                       := Null_Unbounded_String;
      wasReferenced   : boolean := false;        -- true if ref'd in syn chk
      wasWritten      : boolean := false;        -- true if written in syn chk
      writtenByThread : aThreadName;
-     writtenOn       : line_count       ;       -- side-effect protection
+     writtenOn       : line_count;              -- side-effect protection
                                                 --   when last written to
      wasApplied      : boolean := false;        -- true if type was used
      wasFactor       : boolean := false;        -- true if used in expression
      renaming_of     : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident
-     renamed_count : natural := 0;              -- times renamed
-     passingMode : aParameterPassingMode := none; -- in, out, etc.
+     renamed_count   : natural := 0;            -- number of times renamed
+     passingMode     : aParameterPassingMode    -- in, out, in out, none
+                       := none;
 
      -- New fields for symbol table
 
-     procCB   : aBuiltinProcedureCallback := null;  -- built-in proc only
-     funcCB   : aBuiltinFunctionCallback := null;  -- built-in func only
-     genKind  : identifier;                     -- generic type (if any)
-     genKind2 : identifier;                     -- generic type (if any)
-     firstBound : long_integer := 1;            -- first bound (array type only)
-     lastBound  : long_integer := 0;            -- last bound (array type only)
+     procCB   : aBuiltinProcedureCallback := null;  -- built-in proc CB
+     funcCB   : aBuiltinFunctionCallback := null;  -- built-in func CB
+     genKind         : identifier;              -- generic type (if any)
+     genKind2        : identifier;              -- generic type (if any)
+     firstBound      : long_integer := 1;       -- first bound (array type only)
+     lastBound       : long_integer := 0;       -- last bound (array type only)
 
      -- Programming by Contract
 

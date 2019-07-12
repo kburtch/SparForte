@@ -18,7 +18,7 @@ CHANGES SINCE 2.2
 
 8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
 
-CHANGES SINCE 2.2
+CHANGES SINCE 2.2.1
 
 9. Fix: using a built-in procedure as a function shows an appropriate error message rather than raising an exception.
 
@@ -34,5 +34,5 @@ CHANGES SINCE 2.2
 
 15. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
 
-16. New: function and procedure forward specifications. [docs needed][tests needed].
+16. New: function and procedure forward specifications. [docs needed].
 

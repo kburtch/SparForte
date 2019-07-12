@@ -2626,11 +2626,14 @@ procedure ParseProcedureBlock is
   no_params   : integer := 0;  -- TODO: delete this
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
+  declarationFile : unbounded_string;
   declarationLine : natural;
 begin
   procStart := firstPos;
-  expect( procedure_t );
+  declarationFile := getSourceFileName;
   declarationLine := getLineNo;
+
+  expect( procedure_t );
   ParseProcedureIdentifier( proc_id );
 
   -- Whether forward or not, handle the parameters.  If there's a
@@ -2639,30 +2642,39 @@ begin
 
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
-     if identifiers( proc_id ).class = userProcClass then
+     if identifiers( proc_id ).specAt /= noSpec then
         VerifyForwardFormalParameters( proc_id );
+        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+           err( "too many parameters compared to earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
+        end if;
      else
      --no_params := 0;
         ParseFormalParameters( proc_id, no_params, abstract_parameter );
         --identifiers( proc_id ).value := to_unbounded_string( no_params );
      end if;
      expect( symbol_t, ")" );
-  elsif identifiers( proc_id ).class = userProcClass then
+  elsif identifiers( proc_id ).specAt /= noSpec then
      VerifyForwardFormalParameters( proc_id );
   end if;
 
   -- Is it a forward declaration?
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
-     if identifiers( proc_id ).class = userProcClass then
-        err( "already declared specification for " & optional_bold( to_string( identifiers( proc_id ).name ) ) );
+     if identifiers( proc_id ).specAt /= noSpec then
+        err( "already declared specification for " & optional_bold( to_string( identifiers( proc_id ).name ) ) & " (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
      end if;
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specFile := declarationFile;
      identifiers( proc_id ).specAt := declarationLine;
   else
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specFile := null_unbounded_string;
      identifiers( proc_id ).specAt := noSpec;
      pushBlock( newScope => true,
        newName => to_string (identifiers( proc_id ).name ) );
@@ -2749,7 +2761,7 @@ begin
 
      --put_line( standard_error, "starting search" );
      while formalParamId < identifiers_top loop
-        put_line( "trying " & to_string( identifiers( formalParamId ).name ) & " id" & formalParamid'img );
+        --put_line( "trying " & to_string( identifiers( formalParamId ).name ) & " id" & formalParamid'img );
         if identifiers( formalParamId ).field_of = proc_id then
            if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
               exit;
@@ -2772,14 +2784,21 @@ begin
       -- Now compare
 
     if token = is_t then
-       err( "no parameters found but earlier specification had parameters" );
-       exit;
+       err( "no parameters found but earlier specification had parameters (at " &
+            to_string( identifiers( proc_id ).specFile) & ":" &
+            identifiers( proc_id ).specAt'img & ")");
+       exit  ;
     elsif is_function and then token = return_t then
-       err( "no parameters found but earlier specification had parameters" );
+       err( "no parameters found but earlier specification had parameters (at " &
+            to_string( identifiers( proc_id ).specFile) & ":" &
+            identifiers( proc_id ).specAt'img & ")");
        exit;
   -- TODO: verify length
     elsif token = symbol_t and identifiers( token ).value.all = ")" then
-       err( "missing parameter " & to_string(paramName) & " from earlier specification" );
+       err( "missing parameter " & optional_bold( to_string(paramName) ) &
+            " from earlier specification (at " &
+            to_string( identifiers( proc_id ).specFile) & ":" &
+            identifiers( proc_id ).specAt'img & ")");
        exit;
     else
        declare
@@ -2808,16 +2827,18 @@ begin
             err("parameter name " &
                 optional_bold( to_string( identifiers( actualId ).name )) &
                 " was " & optional_bold( to_string( paramName )) &
-                " in the earlier specification at line" &
-                identifiers( proc_id ).specAt'img);
+                " in the earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
          end if;
          -- check the type
          if identifiers( formalParamId ).kind /= actualParamKind then
             err("parameter type " &
                 optional_bold( to_string( identifiers( actualParamKind ).name ) ) &
                 " was " & optional_bold( to_string( identifiers( identifiers( formalParamId ).kind ).name )) &
-                " in the earlier specification at line" &
-                identifiers( proc_id ).specAt'img);
+                " in the earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
          end if;
          -- check the qualifier (currently not possible)
          -- check the passing mode
@@ -2825,8 +2846,9 @@ begin
             err("parameter mode " &
                 optional_bold( to_string( actualPassingMode ) ) &
                 " was " & optional_bold( to_string( identifiers( formalParamId ).passingMode ) ) &
-                " in the earlier specification at line" &
-                identifiers( proc_id ).specAt'img);
+                " in the earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
          end if;
 
          b := deleteIdent( actualId );
@@ -2864,8 +2886,9 @@ begin
      err("function return type " &
          optional_bold( to_string( identifiers( resultKind ).name ) ) &
          " was " & optional_bold( to_string( identifiers( identifiers( func_id ).kind ).name )) &
-                " in the earlier specification at line" &
-                identifiers( func_id ).specAt'img);
+                " in the earlier specification (at " &
+                to_string( identifiers( func_id ).specFile) & ":" &
+                identifiers( func_id ).specAt'img & ")");
   end if;
 end VerifyForwardReturnPart;
 
@@ -3352,9 +3375,11 @@ procedure ParseFunctionBlock is
   abstract_parameter : identifier := eof_t;
   abstract_return    : identifier := eof_t;
   --b : boolean;
+  declarationFile : unbounded_string;
   declarationLine : natural;
 begin
   funcStart := firstPos;
+  declarationFile := getSourceFileName;
   declarationLine := getLineNo;
 
   expect( function_t );
@@ -3375,9 +3400,14 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = "(" then
      -- has parameters
      expect( symbol_t, "(" );
-     if identifiers( func_id ).class = userFuncClass then
+     if identifiers( func_id ).specAt /= noSpec then
         -- has a forward specification
         VerifyForwardFormalParameters( func_id, is_function => true );
+        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+           err( "too many parameters compared to earlier specification (at " &
+                to_string( identifiers( func_id ).specFile) & ":" &
+                identifiers( func_id ).specAt'img & ")");
+        end if;
         expect( symbol_t, ")" );
         -- we won't be able to see the specification until we delete
         -- the new one.
@@ -3392,7 +3422,7 @@ begin
         expect( symbol_t, ")" );
         ParseFunctionReturnPart( func_id, abstract_return );
      end if;
-  elsif identifiers( func_id ).class = userFuncClass then
+  elsif identifiers( func_id ).specAt /= noSpec then
      -- no parameters but has a forward specification
      VerifyForwardFormalParameters( func_id, is_function => true );
      -- we won't be able to see the specification until we delete
@@ -3413,13 +3443,17 @@ begin
   -- FunctionReturnPart is not run.
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
-     if identifiers( func_id ).class = userFuncClass then
-        err( "already declared specification for " & optional_bold( to_string( identifiers( func_id ).name ) ) );
+     if identifiers( func_id ).specAt /= noSpec then
+        err( "already declared specification for " & optional_bold( to_string( identifiers( func_id ).name ) ) & " (at " &
+                to_string( identifiers( func_id ).specFile) & ":" &
+                identifiers( func_id ).specAt'img & ")");
      end if;
      identifiers( func_id ).class := userFuncClass;
+     identifiers( func_id ).specFile := declarationFile;
      identifiers( func_id ).specAt := declarationLine;
   else
      identifiers( func_id ).class := userFuncClass;
+     identifiers( func_id ).specFile := null_unbounded_string;
      identifiers( func_id ).specAt := noSpec;
 
      pushBlock( newScope => true,
