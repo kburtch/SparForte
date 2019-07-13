@@ -3705,14 +3705,10 @@ begin
      restoreScript( scriptState );               -- restore original script
   elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
-     if length( s ) = 0 then
-        err( "(forward) procedure declaration not completed" );
-     else
-        -- because nothing executes during a syntax check, we still need
-        -- to parse the parameters to check for errors, but don't declare
-        -- anything because wasReferenced will be false.
-        ParseActualParameters( proc_id, declareParams => false );
-     end if;
+     -- because nothing executes during a syntax check, we still need
+     -- to parse the parameters to check for errors, but don't declare
+     -- anything because wasReferenced will be false.
+     ParseActualParameters( proc_id, declareParams => false );
   end if;
   pullBlock;
 
@@ -3798,14 +3794,10 @@ begin
      restoreScript( scriptState );            -- restore original script
   elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
-     if length( s ) = 0 then
-        err( "(forward) function declaration not completed" );
-     else
-        -- because nothing executes during a syntax check, we still need
-        -- to parse the parameters to check for errors, but don't declare
-        -- anything because wasReferenced will be false.
-        ParseActualParameters( func_id, declareParams => false );
-     end if;
+     -- because nothing executes during a syntax check, we still need
+     -- to parse the parameters to check for errors, but don't declare
+     -- anything because wasReferenced will be false.
+     ParseActualParameters( func_id, declareParams => false );
   end if;
   pullBlock;                                  -- discard locals
 end DoUserDefinedFunction;

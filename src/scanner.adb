@@ -1843,6 +1843,18 @@ begin
             end if;
          end if; -- constant
 
+         -- Unimplemented subprogram specifications
+         -- This need to occur before the unused identifier test.
+
+         if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
+            if identifiers( i ).specAt /= noSpec then
+               err( optional_bold( to_string( identifiers( i ).name ) ) &
+                    " has a specification but is not implemented (at " &
+                    to_string( identifiers( i ).specFile) & ":" &
+                    identifiers( i ).specAt'img & ");" );
+            end if;
+         end if;
+
          -- If something was used, apply any software model requirements (if
          -- any)
          if identifiers( i ).wasReferenced then
@@ -1877,8 +1889,8 @@ begin
                elsif identifiers( i ).class = varClass then
                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                end if;
-            end if;
---          end if;
+         end if;
+
           -- TODO declaration line would be helpful if two identifiers have the same
           -- name.
       end loop;
@@ -1973,6 +1985,18 @@ begin
          --      end if;
          --   end if;
          --end if; -- constant
+
+         -- Unimplemented subprogram specifications
+         -- This need to occur before the unused identifier test.
+
+         if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
+            if identifiers( i ).specAt /= noSpec then
+               err( optional_bold( to_string( identifiers( i ).name ) ) &
+                    " has a specification but is not implemented (at " &
+                    to_string( identifiers( i ).specFile) & ":" &
+                    identifiers( i ).specAt'img & ");" );
+            end if;
+         end if;
 
          if identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
