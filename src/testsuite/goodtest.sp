@@ -4861,6 +4861,62 @@ begin
    i := integer(c);
 end;
 
+-- Forward Declarations
+
+declare
+
+  procedure proc0;
+
+  procedure proc0 is
+  begin
+    put_line( "zero" );
+  end proc0;
+
+  procedure proc1( param1 : integer );
+
+  procedure proc1( param1 : integer ) is
+  begin
+    put_line( param1 );
+  end proc1;
+
+  procedure proc2( param21 : integer; param22 : integer );
+
+  procedure proc2( param21 : integer; param22 : integer ) is
+  begin
+    put_line( param21 );
+    put_line( param22 );
+  end proc2;
+
+  function forward_func0 return string;
+
+  function forward_func0 return string is
+  begin
+    return "ff0";
+  end forward_func0;
+
+  function forward_func1( param1 : integer ) return integer;
+
+  function forward_func1( param1 : integer ) return integer is
+  begin
+    return param1;
+  end forward_func1;
+
+  function forward_func2( param1 : integer; param2 : integer ) return integer;
+
+  function forward_func2( param1 : integer; param2 : integer ) return integer is
+  begin
+    return param1 + param2;
+  end forward_func2;
+
+begin
+  proc0;
+  proc1( 1 );
+  proc2( 21, 22 );
+  ? forward_func0;
+  ? forward_func1( 31 );
+  ? forward_func2( 31, 32 );
+end;
+
 -- Programming by Contract
 
 declare

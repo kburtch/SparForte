@@ -18,15 +18,21 @@ CHANGES SINCE 2.2
 
 8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
 
+CHANGES SINCE 2.2.1
+
 9. Fix: using a built-in procedure as a function shows an appropriate error message rather than raising an exception.
 
 10. Fix: using a built-in function as a shell command shows an appropriate error message rather than saying it's a field of a record type.
 
-11. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
+11. Fix: strings.perl_match() now works correctly.
 
-12. New: parameterized (generic) types can now be defined as types and subtypes.  These types and subtypes can be passed as parameters to user subprograms.  Types extending resource types must be limited.
+12. Fix: removed "sourceFiles:" debugging statement from breakout prompt.
 
-13. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
+13. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
 
-14. Fix: removed "sourceFiles:" debugging statement from breakout prompt.
+14. New: parameterized (generic) types can now be defined as types and subtypes.  These types and subtypes can be passed as parameters to user subprograms.  Types extending resource types must be limited.
+
+15. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
+
+16. New: function and procedure forward specifications. [docs needed].
 
