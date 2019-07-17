@@ -1988,15 +1988,17 @@ begin
 
          -- Unimplemented subprogram specifications
          -- This need to occur before the unused identifier test.
-
-         if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
-            if identifiers( i ).specAt /= noSpec then
-               err( optional_bold( to_string( identifiers( i ).name ) ) &
-                    " has a specification but is not implemented (at " &
-                    to_string( identifiers( i ).specFile) & ":" &
-                    identifiers( i ).specAt'img & ");" );
-            end if;
-         end if;
+         --
+         -- This may not even be possible: procedures and functions
+         -- cannot be declared without a declaration section.
+         --if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
+         --   if identifiers( i ).specAt /= noSpec then
+         --      err( optional_bold( to_string( identifiers( i ).name ) ) &
+         --           " has a specification but is not implemented (at " &
+         --           to_string( identifiers( i ).specFile) & ":" &
+         --           identifiers( i ).specAt'img & ");" );
+         --   end if;
+         --end if;
 
          if identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
