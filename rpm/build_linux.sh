@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -r VERSION=2.2
+declare -r VERSION=2.2.2
 declare -r RELEASE=1
 
 declare -r ROOTDIR=`pwd`
