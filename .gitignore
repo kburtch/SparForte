@@ -61,4 +61,4 @@ src/apq-2.1/libapq.a
 src/areadline/GNUmakefile
 src/areadline/rl
 src/testsuite/junit_result.xml
-
+src/testsuite/third_party/btree_test/
