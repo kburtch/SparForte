@@ -6168,6 +6168,11 @@ begin
 
      if token = eof_t then
         err( "there were no commands to run" );
+     elsif token = separate_t then
+        err( "this is a " &
+             optional_bold( "separate file" ) &
+             " not a runnable " &
+             optional_bold( "script" ) );
      end if;
 
      -- Prior to a main program (or a simple script), a script may have
