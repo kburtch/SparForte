@@ -42,3 +42,5 @@ CHANGES SINCE 2.2.2
 
 18. Fix: trying to run a "with separate" file now produces an appropriate error message.
 
+19. Fix: -p option now showing functions, procedures, blocks correctly. [Needs updating for forward specifications]
+

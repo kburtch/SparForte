@@ -63,6 +63,10 @@ use ada.text_io,
 
 package body compiler is
 
+  begin_char     : character;
+  function_char  : character;
+  procedure_char : character;
+
 -----------------------------------------------------------------------------
 -- getSourceFileName
 --
@@ -2533,9 +2537,6 @@ end copyByteCodeLines;
 procedure staticByteCodeAnalysis is
    pos : natural := firstScriptCommandOffset;
    -- TODO: these depend on the byte code
-   procedure_char : character := character'val( 169 );
-   function_char  : character := character'val( 151 );
-   begin_char     : character := character'val( 138 );
 begin
    while pos < script'last loop
       if script( pos ) = ASCII.NUL then
@@ -2618,6 +2619,7 @@ begin
   declareKeyword( array_t, "array" );
   declareKeyword( at_t, "at" );
   declareKeyword( begin_t, "begin" );
+  begin_char := character'val( identifiers_top + 126 );
   declareKeyword( body_t, "body" );
   declareKeyword( case_t, "case" );
   declareKeyword( constant_t, "constant" );
@@ -2634,6 +2636,7 @@ begin
   declareKeyword( exit_t, "exit" );
   declareKeyword( for_t, "for" );
   declareKeyword( function_t, "function" );
+  function_char := character'val( identifiers_top + 126 );
   -- generic
   declareKeyword( goto_t, "goto" );
   declareKeyword( if_t, "if" );
@@ -2655,6 +2658,7 @@ begin
   declareKeyword( pragma_t, "pragma" );
   declareKeyword( private_t, "private" );
   declareKeyword( procedure_t, "procedure" );
+  procedure_char := character'val( identifiers_top + 126 );
   -- protected
   declareKeyword( raise_t, "raise" );
   declareKeyword( range_t, "range" );
