@@ -210,10 +210,94 @@ mode parameters are not supported for user-defined subprograms.
 Named parameters are not supported.  Default values are not
 supported.</p>
 
-<h3>Forward Subprograms and Recursion</h3>
+<h3>Subprogram Specifications and Mutual Recurson</h3>
 
-<p>Forward declarations and recursion are planned but not yet
-implemented.</p>
+<p>Introduced in SparForte 2.3</p>
+
+<p>A subprogram <b>specification</b> is an incomplete description
+of a procedure or
+function that will be fully described later.  This is like entries in
+a table of contents in a book which shows upcoming chapters that
+will appear later in the book.  Each line in the table of contents
+is a specification for the chapter.  Later the chapter will be
+implemented and can be read.  (Different programming languages
+use different names for specifications, such as C header file
+declarations or Pascal forward declarations.)</p>
+
+<p>A specification is the start of a procedure (or function) up
+to the word "is", at which point you use a semi-colon to end the
+function prematurely.</p>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>procedure</b> show_report<b>;</b><br>
+<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: A Procedure Specification
+        </div>
+        </div>
+        </center>
+
+<p>SparForte will expect the full procedure to appear later in the
+same block of code.</p>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>procedure</b> show_report<b>is</b><br>
+<b>begin</b>
+&nbsp;&nbsp;put_line( "This is the report" );
+<b>end</b> show_report;<br>
+<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: The Earlier Specification Implemented
+        </div>
+        </div>
+        </center>
+
+<p>SparForte will expect the full procedure to appear later in the
+same block of code.  That is, the specification must be implemented.</p>
+
+<p>A specification must match the implementation: the parameter
+names, parameter modes, parameter types and any return value should
+be identical.  For example, you cannot change the parameter names or add extra
+parameters.</p>
+
+<p>Specifications have many uses.  One problem they help with is
+<b>mutual recursion</b>, where two subprograms use each other.  Without
+specifications, it is not possible to declare these subprograms.
+SparForte reads your script from the beginning to the end, and
+what you use must be declared before you use it.  With two
+subprograms that use each other, they both need to be declared
+before either can be used.  Specifications solve this.</p>
+
+        <center>
+        <div class="code">
+                <p class="code"><b>procedure</b> first<b>;</b><br>
+<b>procedure</b> second<b>;</b><br>
+&nbsp;<br>
+<b>procedure</b> first<b>is</b><br>
+<b>begin</b>
+&nbsp;&nbsp;second;
+&nbsp;&nbsp;...
+<b>end</b> first;<br>
+<b>procedure</b> second<b>is</b><br>
+<b>begin</b>
+&nbsp;&nbsp;first;
+&nbsp;&nbsp;...
+<b>end</b> second;<br>
+<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: Mutual Recursion
+        </div>
+        </div>
+        </center>
+
+<p>SparForte will expect the full procedure to appear later in the
+same block of code.  That is, the specification must be implemented.</p>
+
+<p>Another use is specifying a list of public subprograms in a
+file, like you would a table of contents from a book in the earlier
+example.</p>
 
 <h3>Separate Subprograms</h3>
 

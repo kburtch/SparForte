@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -2267,25 +2267,34 @@ begin
   pullBlock;
 end ParseBeginBlock;
 
-procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; abstract_parameter : in out identifier; is_function : boolean := false ) is
--- Syntax: (field = declaration [; declaration ... ] )
--- Fields are implemented using records
-   formal_param_id : identifier;
-   b : boolean;
-   paramName    : unbounded_string;
-   type_token   : identifier;
-   passingMode  : aParameterPassingMode;
+
+--  PARSE FORMAL PARAMETER PROPERTIES
+--
+-- Interpret a formal subprogram parameter but do not declare it.  Instead,
+-- return its properties.
+------------------------------------------------------------------------------
+-- TODO: this approach won't work if we do a list of parameters.
+
+procedure ParseFormalParameterProperties(
+  formalParamId : out identifier;
+  passingMode : out aParameterPassingMode;
+  paramKind : out identifier;
+  abstractKind : out identifier;
+  subId : identifier;
+  isFunction : boolean ) is
 begin
-  param_no := param_no + 1;
-  ParseNewIdentifier( formal_param_id );
+  abstractKind := eof_t;
+
+  -- Parse the new parameter name
+
+  ParseNewIdentifier( formalParamId );
   expect( symbol_t, ":" );
 
-  -- Check the parameter mode
+  -- Parse the access mode
 
   if token = out_t then
      expect( out_t );
      passingMode := out_mode;
-     -- err( "out parameters not yet supported" );
   elsif token = in_t then
      -- TODO: deny in (just use default)?  Or require in?
      passingMode := in_mode;
@@ -2308,42 +2317,46 @@ begin
      err( "anonymous array parameters not yet supported" );
   end if;
 
-  -- The name of the type
+  -- Parse the name of the type
   --
   -- If it's an abstract type, record it because the subproram must be
   -- abstract also.
 
-  ParseIdentifier( type_token );
-  if identifiers( type_token ).usage = abstractUsage then
-     if abstract_parameter = eof_t then
-        abstract_parameter := type_token;
+  ParseIdentifier( paramKind );
+  if identifiers( paramKind ).usage = abstractUsage then
+     if abstractKind = eof_t then
+        abstractKind := paramKind;
      end if;
   end if;
+
+  ----------------------------------------------------------------------------
+  -- Perform checks on the parameter
+  ----------------------------------------------------------------------------
 
   -- Check type
   --
   -- in mode for aggregates not yet written.
 
    if passingMode = out_mode then
-      if is_function then
+      if isFunction then
          err( "out mode parameters not allowed in functions" );
      end if;
    end if;
    if passingMode = in_out_mode then
-      if is_function and onlyAda95 then
+      if isFunction and onlyAda95 then
          err( "in out mode parameters not allowed in functions with " &
              optional_bold( "pragma ada_95" ) );
       end if;
    end if;
   if passingMode = in_mode then
-     if identifiers( getBaseType( type_token ) ).list then
+     if identifiers( getBaseType( paramKind ) ).list then
          err( "array parameters not yet supported" );
-     elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
+     elsif identifiers( getBaseType( paramKind ) ).kind = root_record_t then
         err( "records not yet supported" );
      end if;
   end if;
   --elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
-  if getBaseType( type_token ) = command_t then
+  if getBaseType( paramKind ) = command_t then
      err( "commands not yet supported" );
   end if;
 
@@ -2352,6 +2365,33 @@ begin
   if token = symbol_t and identifiers( token ).value.all = ":=" then
      err( "default values are not yet supported" );
   end if;
+
+end ParseFormalParameterProperties;
+
+
+procedure ParseFormalParameter(
+   formal_param_id : out identifier; -- the parameter's id
+   proc_id : identifier;             -- the procedure (or function) id
+   param_no : in out integer;        -- the parameter number
+   abstract_parameter : in out identifier; -- any abstract param (or eof)
+   is_function : boolean := false ) is   -- is this a function parameter?
+   -- TODO: declare it won't work
+-- Syntax: name : mode type
+-- Parameters are implemented using the same scheme as records
+   b : boolean;
+   paramName    : unbounded_string;
+   type_token   : identifier;
+   passingMode  : aParameterPassingMode;
+begin
+  param_no := param_no + 1;
+
+  ParseFormalParameterProperties(
+    formalParamId => formal_param_id,
+    passingMode => passingMode,
+    paramKind => type_token,
+    abstractKind => abstract_parameter,
+    subId => proc_id,
+    isFunction => is_function );
 
   -- Create the parameter, associating it to the procedure/function
 
@@ -2364,65 +2404,96 @@ begin
   updateFormalParameter( formal_param_id, type_token, proc_id, param_no,
     passingMode );
 
-  -- Check for further parameters
-
-  if not error_found and token /= eof_t and not (token = symbol_t and identifiers( token ).value.all = ")" ) then
-     expectSemicolon;
-     ParseFormalParameters( proc_id, param_no, abstract_parameter );
-     -- the symbol table will overflow before field_no does
-  end if;
-
   -- Blow away on error
 
   if error_found then
      b := deleteIdent( formal_param_id );
   end if;
-end ParseFormalParameters;
+end ParseFormalParameter;
 
-procedure ParseFunctionReturnPart( func_id : identifier; abstract_return : in out identifier ) is
--- Syntax: (field = declaration [; declaration ... ] )
+procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; abstract_parameter : in out identifier; is_function : boolean := false ) is
+-- Syntax: parameter-declaration [; parameter-declaration]
 -- Fields are implemented using records
    formal_param_id : identifier;
-   b : boolean;
-   paramName : unbounded_string;
-   type_token    : identifier;
 begin
+  loop
+    ParseFormalParameter( formal_param_id, proc_id, param_no, abstract_parameter, is_function );
+    if error_found or token = eof_t or (token = symbol_t and identifiers( token ).value.all = ")" ) then
+       exit;
+    end if;
+    expectSemicolon;
+    -- the symbol table will overflow before field_no does
+  end loop;
+end ParseFormalParameters;
+
+procedure ParseFunctionReturnPartProperties(
+  resultKind : out identifier;
+  abstractKind : out identifier;
+  funcId : identifier) is
+  -- Parse a function's return part but do not declare it.  This is necessary
+  -- for forward declarations.  Return the properties to the caller who can
+  -- then declare it.
+begin
+  abstractKind := eof_t;
+
+  -- Consume the return
+
   expect( return_t );
 
   -- The name of the type
 
-  ParseIdentifier( type_token );
-  identifiers( func_id ).kind := type_token;
+  ParseIdentifier( resultKind );
   if syntax_check then
-     identifiers( type_token ).wasApplied := true; -- type was used
-     if identifiers( type_token ).usage = abstractUsage then
-        abstract_return := type_token;
+     identifiers( resultKind ).wasApplied := true; -- type was used
+     if identifiers( resultKind ).usage = abstractUsage then
+        abstractKind := resultKind;
      end if;
   end if;
 
   -- Check type
 
-  if identifiers( getBaseType( type_token ) ).list then
+  if identifiers( getBaseType( resultKind ) ).list then
      err( "array parameters not yet supported" );
-  elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
+  elsif identifiers( getBaseType( resultKind ) ).kind = root_record_t then
      err( "records not yet supported" );
-  elsif getBaseType( type_token ) = command_t then
+  elsif getBaseType( resultKind ) = command_t then
      err( "commands not yet supported" );
   end if;
+end ParseFunctionReturnPartProperties;
 
-  -- Create the parameter
+procedure ParseFunctionReturnPart( funcId : identifier; abstractReturn : in out identifier ) is
+   -- Parse a function's return part.
+   -- Syntax: return type
+   resultId : identifier;
+   b : boolean;
+   paramName : unbounded_string;
+   resultKind    : identifier;
+begin
 
-  declareIdent( formal_param_id, return_value_str, type_token, varClass );
+  -- Parse the return part.  Get the properties.
+
+  ParseFunctionReturnPartProperties(
+    resultKind => resultKind,
+    abstractKind => abstractReturn,
+    funcId => funcId
+  );
+
+  identifiers( funcId ).kind := resultKind;
+
+  -- Create the return result.  This is a hidden variable with a
+  -- special name and parameter number zero.
+
+  declareIdent( resultId, return_value_str, resultKind, varClass );
   if syntax_check then
-     identifiers( formal_param_id ).wasReferenced := true;
+     identifiers( resultId ).wasReferenced := true;
      --identifiers( formal_param_id ).referencedByThread := getThreadName;
   end if;
-  updateFormalParameter( formal_param_id, type_token, func_id, 0, none );
+  updateFormalParameter( resultId, resultKind, funcId, 0, none );
 
-  -- Blow away on error
+  -- Blow away the result variable on an error
 
   if error_found then
-     b := deleteIdent( formal_param_id );
+     b := deleteIdent( resultId );
   end if;
 end ParseFunctionReturnPart;
 
@@ -2480,6 +2551,167 @@ begin
      end loop;
   end if;
 end DeclareActualParameters;
+
+
+--  VERIFY SUBPROGRAM PARAMETERS
+--
+-- Given an incomplete specification, confirm that the
+-- parameters given and the same as the earlier specification.
+
+procedure VerifySubprogramParameters( specId : identifier; is_function : boolean := false ) is
+  specParamId : identifier;
+  specParameterNumber : natural;
+  specParamName : unbounded_string;
+
+  bodyParamId : identifier;
+  bodyPassingMode :aParameterPassingMode;
+  bodyParamKind : identifier;
+  bodyAbstractKind : identifier;
+
+  b : boolean;
+begin
+  -- put_line( standard_error, "Verifying " & to_string( identifiers( proc_id ).name ) ); -- DEBUG
+  -- put_token;
+  specParamId := specId + 1;
+  specParameterNumber := 1;
+
+  -- if there are no parameters and this is a function, you will run into the function's return
+  -- value, which does not count as a parameter...abort the parameter search if it exists.
+  if identifiers( specParamId ).name = return_value_str then
+     specParamId := identifiers_top; -- abort search
+  end if;
+
+  -- TODO: probably less brute-force ways to do this.
+  loop
+     while specParamId < identifiers_top loop
+        if identifiers( specParamId ).field_of = specId then
+           if integer'value( to_string( identifiers( specParamId ).value.all )) = specParameterNumber then
+              exit;
+           end if;
+        end if;
+        specParamId := identifier( integer( specParamId ) + 1 );
+      end loop;
+
+    exit when specParamId = identifiers_top;
+
+    specParamName := identifiers( specParamId ).name;
+    specParamName := delete( specParamName, 1, index( specParamName, "." ) );
+
+    -- Now compare against what the new parameters
+    --
+    -- A procedure can have no parameters
+
+    if token = is_t then
+       err( "no parameters found but earlier specification had parameters (at " &
+            to_string( identifiers( specId ).specFile) & ":" &
+            identifiers( specId ).specAt'img & ")");
+       exit  ;
+
+    -- A function may have no parameters, just a return
+
+    elsif is_function and then token = return_t then
+       err( "no parameters found but earlier specification had parameters (at " &
+            to_string( identifiers( specId ).specFile) & ":" &
+            identifiers( specId ).specAt'img & ")");
+       exit;
+
+    -- Too few parameters, ran into closing parenthesis early
+
+    elsif token = symbol_t and identifiers( token ).value.all = ")" then
+       err( "missing parameter " & optional_bold( to_string(specParamName) ) &
+            " from earlier specification (at " &
+            to_string( identifiers( specId ).specFile) & ":" &
+            identifiers( specId ).specAt'img & ")");
+       exit;
+    else
+       -- Parse the next parameter and compare with specification
+       --
+       -- Get the properties of the next parameter
+
+       ParseFormalParameterProperties(
+          formalParamId => bodyParamId,
+          passingMode => bodyPassingMode,
+          paramKind => bodyParamKind,
+          abstractKind => bodyAbstractKind,
+          subId => specId,
+          isFunction => false
+          );
+
+       -- Parameter name: specification vs implementation
+
+       if specParamName /= identifiers( bodyParamId ).name then
+          err("parameter name " &
+              optional_bold( to_string( identifiers( bodyParamId ).name )) &
+              " was " & optional_bold( to_string( specParamName )) &
+              " in the earlier specification (at " &
+              to_string( identifiers( specId ).specFile) & ":" &
+              identifiers( specId ).specAt'img & ")");
+       end if;
+
+       -- Parameter type: specification vs implementation
+
+       if identifiers( specParamId ).kind /= bodyParamKind then
+          err("parameter type " &
+             optional_bold( to_string( identifiers( bodyParamKind ).name ) ) &
+             " was " & optional_bold( to_string( identifiers( identifiers( specParamId ).kind ).name )) &
+             " in the earlier specification (at " &
+             to_string( identifiers( specId ).specFile) & ":" &
+             identifiers( specId ).specAt'img & ")");
+       end if;
+
+       -- TODO: Check the qualifier (currently not possible)
+
+       -- Parameter passing mode: specification vs implementation
+
+       if identifiers( specParamId ).passingMode /= bodyPassingMode then
+          err("parameter mode " &
+              optional_bold( to_string( bodyPassingMode ) ) &
+              " was " & optional_bold( to_string( identifiers( specParamId ).passingMode ) ) &
+              " in the earlier specification (at " &
+              to_string( identifiers( specId ).specFile) & ":" &
+              identifiers( specId ).specAt'img & ")");
+       end if;
+
+       -- Discard the implementation parameter
+
+       b := deleteIdent( bodyParamId );
+     end if;
+
+     -- consume a trailing semi-colon
+
+     if token = symbol_t and identifiers( token ).value.all = ";" then
+        expectSemicolon;
+     end if;
+
+    specParamId := identifier( integer( specParamId ) + 1 );
+    specParameterNumber := specParameterNumber + 1;
+  end loop;
+end VerifySubprogramParameters;
+
+
+--  VERIFY SUBPROGRAM RETURN PART
+--
+-- Given an incomplete specification of a function, verify the
+-- return part of the implementation matches it.
+
+procedure VerifySubprogramReturnPart( func_id : identifier ) is
+  resultKind     : identifier;
+  abstractReturn : identifier;
+begin
+  ParseFunctionReturnPartProperties(
+      resultKind => resultKind,
+      abstractKind => abstractReturn,
+      funcId => func_id
+   );
+  if resultKind /= identifiers( func_id ).kind then
+     err("function return type " &
+         optional_bold( to_string( identifiers( resultKind ).name ) ) &
+         " was " & optional_bold( to_string( identifiers( identifiers( func_id ).kind ).name )) &
+                " in the earlier specification (at " &
+                to_string( identifiers( func_id ).specFile) & ":" &
+                identifiers( func_id ).specAt'img & ")");
+  end if;
+end VerifySubprogramReturnPart;
 
 procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural ) is
   -- Syntax: separate( parent ); procedure p [(param1...)] is
@@ -2550,33 +2782,59 @@ procedure ParseProcedureBlock is
   proc_id   : identifier;
   procStart : natural;
   procEnd   : natural;
-  no_params   : integer;
+  no_params   : integer := 0;  -- TODO: delete this
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
+  declarationFile : unbounded_string;
+  declarationLine : natural;
 begin
   procStart := firstPos;
+  declarationFile := getSourceFileName;
+  declarationLine := getLineNo;
+
   expect( procedure_t );
   ParseProcedureIdentifier( proc_id );
-  -- A forward declaration?
-  if token /= is_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
-     -- the following is only true for a forward declaration
-     -- (otherwise PPI will return varClass)
-     if identifiers( proc_id ).class = userProcClass then
-        err( "already forward declared " & optional_bold( to_string( identifiers( proc_id ).name ) ) );
+
+  -- Whether forward or not, handle the parameters.  If there's a
+  -- forward specification, verify the new parameters match the old
+  -- ones.  Otherwise, parse the parameters as normal.
+
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     if identifiers( proc_id ).specAt /= noSpec then
+        VerifySubprogramParameters( proc_id );
+        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+           err( "too many parameters compared to earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
+        end if;
+     else
+     --no_params := 0;
+        ParseFormalParameters( proc_id, no_params, abstract_parameter );
+        --identifiers( proc_id ).value := to_unbounded_string( no_params );
+     end if;
+     expect( symbol_t, ")" );
+  elsif identifiers( proc_id ).specAt /= noSpec then
+     VerifySubprogramParameters( proc_id );
+  end if;
+
+  -- Is it a forward declaration?
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     if identifiers( proc_id ).specAt /= noSpec then
+        err( "already declared specification for " & optional_bold( to_string( identifiers( proc_id ).name ) ) & " (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
      end if;
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
-     -- otherwise, nothing special for a forward declaration
+     identifiers( proc_id ).specFile := declarationFile;
+     identifiers( proc_id ).specAt := declarationLine;
   else
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
-     if token = symbol_t and identifiers( token ).value.all = "(" then
-        expect( symbol_t, "(" );
-        no_params := 0;
-        ParseFormalParameters( proc_id, no_params, abstract_parameter );
-        expect( symbol_t, ")" );
-        --identifiers( proc_id ).value := to_unbounded_string( no_params );
-     end if;
+     identifiers( proc_id ).specFile := null_unbounded_string;
+     identifiers( proc_id ).specAt := noSpec;
      pushBlock( newScope => true,
        newName => to_string (identifiers( proc_id ).name ) );
      DeclareActualParameters( proc_id );
@@ -3111,33 +3369,92 @@ procedure ParseFunctionBlock is
   func_id   : identifier;
   funcStart : natural;
   funcEnd   : natural;
-  no_params   : integer;
+  no_params   : integer := 0;
   errorOnEntry : boolean := error_found;
   abstract_parameter : identifier := eof_t;
   abstract_return    : identifier := eof_t;
+  --b : boolean;
+  declarationFile : unbounded_string;
+  declarationLine : natural;
 begin
   funcStart := firstPos;
+  declarationFile := getSourceFileName;
+  declarationLine := getLineNo;
+
   expect( function_t );
+
+  -- If this is a completion of a forwarded declaration, func_id will
+  -- bee a new id, not the original.
+
   ParseProcedureIdentifier( func_id );
-  identifiers( func_id ).class := userFuncClass;
-  identifiers( func_id ).kind := new_t;
-  if token = is_t then -- common error
+
+  -- Whether forward or not, handle the parameters.  If there's a
+  -- forward specification, verify the new parameters match the old
+  -- ones.  Otherwise, parse the parameters as normal.
+
+
+  if token = is_t then
+     -- force error for this common mistake
      expect( return_t );
-  elsif token /= return_t and not (token = symbol_t and identifiers( token ).value.all = "(" ) then
-     -- the following is only true for a forward declaration
-     -- (otherwise PPI will return varClass)
-     if identifiers( func_id ).class = userFuncClass then
-        err( "already forward declared " & optional_bold( to_string( identifiers( func_id ).name ) ) );
-     end if;
-     -- otherwise, nothing special for a forward declaration
-  else
-     if token = symbol_t and identifiers( token ).value.all = "(" then
-        expect( symbol_t, "(" );
-        no_params := 0;
-        ParseFormalParameters( func_id, no_params, abstract_parameter, is_function => true );
+  elsif token = symbol_t and identifiers( token ).value.all = "(" then
+     -- has parameters
+     expect( symbol_t, "(" );
+     if identifiers( func_id ).specAt /= noSpec then
+        -- has a forward specification
+        VerifySubprogramParameters( func_id, is_function => true );
+        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+           err( "too many parameters compared to earlier specification (at " &
+                to_string( identifiers( func_id ).specFile) & ":" &
+                identifiers( func_id ).specAt'img & ")");
+        end if;
         expect( symbol_t, ")" );
+        -- we won't be able to see the specification until we delete
+        -- the new one.
+        --b := deleteIdent( func_id );
+        --findIdent( identifiers( func_id ).name, func_id );
+        VerifySubprogramReturnPart( func_id );
+     else
+        identifiers( func_id ).kind := new_t;
+        -- normal function, no forward specification
+        ParseFormalParameters( func_id, no_params, abstract_parameter,
+          is_function => true );
+        expect( symbol_t, ")" );
+        ParseFunctionReturnPart( func_id, abstract_return );
      end if;
+  elsif identifiers( func_id ).specAt /= noSpec then
+     -- no parameters but has a forward specification
+     VerifySubprogramParameters( func_id, is_function => true );
+     -- we won't be able to see the specification until we delete
+     -- the new one.
+     --b := deleteIdent( func_id );
+     --findIdent( identifiers( func_id ).name, func_id );
+     VerifySubprogramReturnPart( func_id );
+  else
+     -- no parameters and no forward specification
+     identifiers( func_id ).kind := new_t;
      ParseFunctionReturnPart( func_id, abstract_return );
+  end if;
+
+
+  -- Is it a forward declaration?
+  --
+  -- The function type must be set on a forward declaration because
+  -- FunctionReturnPart is not run.
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     if identifiers( func_id ).specAt /= noSpec then
+        err( "already declared specification for " & optional_bold( to_string( identifiers( func_id ).name ) ) & " (at " &
+                to_string( identifiers( func_id ).specFile) & ":" &
+                identifiers( func_id ).specAt'img & ")");
+     end if;
+     identifiers( func_id ).class := userFuncClass;
+     identifiers( func_id ).specFile := declarationFile;
+     identifiers( func_id ).specAt := declarationLine;
+  else
+     identifiers( func_id ).class := userFuncClass;
+     identifiers( func_id ).specFile := null_unbounded_string;
+     identifiers( func_id ).specAt := noSpec;
+
      pushBlock( newScope => true,
        newName => to_string (identifiers( func_id ).name ) );
      DeclareActualParameters( func_id );
@@ -3387,14 +3704,10 @@ begin
      restoreScript( scriptState );               -- restore original script
   elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
-     if length( s ) = 0 then
-        err( "(forward) procedure declaration not completed" );
-     else
-        -- because nothing executes during a syntax check, we still need
-        -- to parse the parameters to check for errors, but don't declare
-        -- anything because wasReferenced will be false.
-        ParseActualParameters( proc_id, declareParams => false );
-     end if;
+     -- because nothing executes during a syntax check, we still need
+     -- to parse the parameters to check for errors, but don't declare
+     -- anything because wasReferenced will be false.
+     ParseActualParameters( proc_id, declareParams => false );
   end if;
   pullBlock;
 
@@ -3480,14 +3793,10 @@ begin
      restoreScript( scriptState );            -- restore original script
   elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
-     if length( s ) = 0 then
-        err( "(forward) function declaration not completed" );
-     else
-        -- because nothing executes during a syntax check, we still need
-        -- to parse the parameters to check for errors, but don't declare
-        -- anything because wasReferenced will be false.
-        ParseActualParameters( func_id, declareParams => false );
-     end if;
+     -- because nothing executes during a syntax check, we still need
+     -- to parse the parameters to check for errors, but don't declare
+     -- anything because wasReferenced will be false.
+     ParseActualParameters( func_id, declareParams => false );
   end if;
   pullBlock;                                  -- discard locals
 end DoUserDefinedFunction;
@@ -5857,6 +6166,11 @@ begin
 
      if token = eof_t then
         err( "there were no commands to run" );
+     elsif token = separate_t then
+        err( "this is a " &
+             optional_bold( "separate file" ) &
+             " not a runnable " &
+             optional_bold( "script" ) );
      end if;
 
      -- Prior to a main program (or a simple script), a script may have

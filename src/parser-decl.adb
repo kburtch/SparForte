@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -100,7 +100,7 @@ package body parser.decl is
 
 procedure ParseTypeUsageQualifiers( newtype_id : identifier ) is
   -- Handle the usage qualifiers that go before a types's parent type
-  -- Syntax: [abstract | limited]
+  -- Syntax: [abstract | limited | constant]
 begin
    -- abstract types
 
@@ -141,8 +141,35 @@ begin
       if token = abstract_t or token = limited_t or token = constant_t then
          err( "only one of abstract, limited or constant allowed" );
       end if;
+
+   -- default same as parent
+
    end if;
 end ParseTypeUsageQualifiers;
+
+--procedure checkTypeUsageAgainstParent( newtype_id, parent_id : identifier ) is
+--  -- Check for more restrictive usage qualifiers than a parent.  Also assigns
+--  -- the parent usage as a default.
+--begin
+--  if identifiers( newtype_id ).usage = fullUsage then
+--     identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
+--  elsif identifiers( parent_id ).usage = limitedUsage and identifiers( newtype_id ).usage = constantUsage then
+--     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
+--          " is less restrictive than its parent type " &
+--          optional_bold( to_string( identifiers( parent_id ).name ) ) &
+--          ", which is limited" );
+--  elsif identifiers( parent_id ).usage = abstractUsage and identifiers( newtype_id ).usage = constantUsage then
+--     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
+--          " is less restrictive than its parent type " &
+--          optional_bold( to_string( identifiers( parent_id ).name ) ) &
+--          ", which is abstract" );
+--  elsif identifiers( parent_id ).usage = abstractUsage and identifiers( newtype_id ).usage = limitedUsage then
+--     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
+--          " is less restrictive than its parent type " &
+--          optional_bold( to_string( identifiers( parent_id ).name ) ) &
+--          ", which is abstract" );
+--  end if;
+--end checkTypeUsageAgainstParent;
 
 procedure ParseVarUsageQualifiers( id : identifier; expr_expected : out boolean ) is
   -- Handle the usage qualifiers that go before a variable's type
@@ -300,6 +327,16 @@ begin
        when others =>
           err( "internal error: unexpected usage qualifier" );
        end case;
+
+       -- All of our resources are limited.  However, as a safety precaution:
+       -- If an identifier has an external reference, we cannot copy it because
+       -- we could inadvertantly deallocate it in one place while keeping it open
+       -- in another.
+
+       if identifiers( canonicalRef.id ).resource then
+          err( "internal error: resource identifiers cannot be copied" );
+       end if;
+
      end;
   end if;
 end ParseCopiesPart;
@@ -890,6 +927,130 @@ begin
 
 end ParseRecordDeclaration;
 
+procedure ParseExceptionDeclarationPart( id : in out identifier ) is
+  -- Handle exception declaration and declare the exception.
+  -- Run by ParseDeclarationPart
+  -- Syntax: exception [ with msg [use status] ]
+  var_name : unbounded_string;
+  default_message : unbounded_string;
+  exception_status : unbounded_string;
+  exception_status_code : anExceptionStatusCode := 1;
+  messageType : identifier;
+  statusType  : identifier;
+begin
+   expect( exception_t );
+   var_name := identifiers( id ).name;                 -- remember name
+   discardUnusedIdentifier( id );                      -- discard variable
+   if token = with_t then
+      if onlyAda95 then
+         err( "exception with not allowed with " &
+            optional_bold( "pragam ada_95" ) );
+      end if;
+      expect( with_t );
+      if token = use_t then
+         err( "with message missing" );
+      end if;
+      ParseExpression( default_message, messageType );
+      if type_checks_done or else uniTypesOK( messageType, uni_string_t ) then
+         expect( use_t );
+         ParseExpression( exception_status, statusType );
+         if type_checks_done or else baseTypesOK( statusType, natural_t ) then
+            null;
+         end if;
+      end if;
+      -- expression value has no meaning except as run-time
+      if isExecutingCommand then
+         begin
+           exception_status_code := anExceptionStatusCode'value( to_string( exception_status ) );
+         exception when others =>
+           err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
+         end;
+      end if;
+   elsif token = renames_t then
+      err( "exceptions cannot be renamed" );
+   elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
+      err( "with or ';' expected" );
+   end if;
+   --if not error_found then -- TODO: this doesn't look right. commenting out
+      findException( var_name, id );
+      if id = eof_t then
+         declareException( id, var_name, default_message, exception_status_code ); -- declare var
+      else
+         err( "exception " & optional_bold( to_string( var_name ) ) &
+              " already exists in a greater scope" );
+      end if;
+   --end if;
+end ParseExceptionDeclarationPart;
+
+procedure CheckGenericParameterType( id, type_token : identifier ) is
+   -- Type checks for the generic parameters
+   --
+   -- TODO: As a temporary situation, the generic type checks are hard-
+   -- coded here.  There is no field in an identifier to set the number
+   -- of expected parameters to a generic type.
+   --
+   -- TODO: I am permitting subtypes of generic types, but there's no
+   -- function currently in the scanner to track down type derived type of
+   -- generic type.  If I allowed new types from a generic type, the
+   -- hard-coded functionality will break.
+   uniType  : identifier := getUniType( type_token );
+begin
+   if uniType = doubly_list_t then
+      if identifiers( id ).genKind2 /= eof_t then
+         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+      else
+         declare
+            genKindId : identifier renames identifiers( id ).genKind;
+         begin
+            --genKindId := identifiers( id ).genKind;
+            if class_ok( genKindId, typeClass, subClass ) then
+               if identifiers( genKindId ).list then
+                  err( "element type should be a scalar type" );
+               elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                  err( "element type should be a scalar type" );
+               end if;
+            end if;
+         end;
+      end if;
+   elsif uniType = doubly_cursor_t then
+      if identifiers( id ).genKind2 /= eof_t then
+         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+      end if;
+   elsif uniType = btree_file_t then
+      if identifiers( id ).genKind2 /= eof_t then
+         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+      end if;
+   elsif uniType = btree_cursor_t then
+      if identifiers( id ).genKind2 /= eof_t then
+         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+      end if;
+   elsif uniType = hash_file_t then
+      if identifiers( id ).genKind2 /= eof_t then
+         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+      end if;
+   elsif uniType = hash_cursor_t then
+      if identifiers( id ).genKind2 /= eof_t then
+         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+      end if;
+   elsif uniType = dht_table_t then
+      declare
+         genKindId : identifier renames identifiers( id ).genKind;
+      begin
+         --genKindId := identifiers( id ).genKind;
+         if class_ok( genKindId, typeClass, subClass ) then
+            if identifiers( genKindId ).list then
+               err( "element type should be a scalar type" );
+            elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+               err( "element type should be a scalar type" );
+            end if;
+         end if;
+      end;
+   else
+     -- TODO: implement generic types
+      err( "expected a generic type" );
+   end if; -- base types
+end CheckGenericParameterType;
+
 procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean ) is
   -- Syntax: declaration = " : [aliased|constant] ident assign-part"
   -- Syntax: declaration = " : anonymous-array
@@ -897,104 +1058,40 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   -- Syntax: declaration = " : record-declaration
   -- Syntax: declaration = " : exception [with message use status]
   -- Syntax: declaration = " : renames x
+  -- Syntax: declaration = " : copies x
   -- assigns type of identifier and value (if assignment part)
   -- Note: in some cases, the variable id may change.
-  -- TODO: this procedure is too long and should be broken down
+  -- TODO: THIS PROCEDURE IS TOO LONG AND SHOULD BE BROKEN DOWN
 
   -- anon_arrays => actually, any nested structure allowed? for records
   -- exceptions => exceptions not allowed in records
 
-  procedure CheckGenericParameterType( id, type_token : identifier ) is
-     -- Type checks for the generic parameters
-     --
-     -- TODO: As a temporary situation, the generic type checks are hard-
-     -- coded here.  There is no field in an identifier to set the number
-     -- of expected parameters to a generic type.
-     --
-     -- TODO: I am permitting subtypes of generic types, but there's no
-     -- function currently in the scanner to track down type derived type of
-     -- generic type.  If I allowed new types from a generic type, the
-     -- hard-coded functionality will break.
-     baseType  : identifier := getBaseType( type_token );
-  begin
-     if baseType = doubly_list_t then
-        if identifiers( id ).genKind2 /= eof_t then
-           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-        else
-           declare
-              genKindId : identifier renames identifiers( id ).genKind;
-           begin
-              --genKindId := identifiers( id ).genKind;
-              if class_ok( genKindId, typeClass, subClass ) then
-                 if identifiers( genKindId ).list then
-                    err( "element type should be a scalar type" );
-                 elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                    err( "element type should be a scalar type" );
-                 end if;
-              end if;
-           end;
-        end if;
-     elsif baseType = doubly_cursor_t then
-        if identifiers( id ).genKind2 /= eof_t then
-           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-        end if;
-     elsif baseType = btree_file_t then
-        if identifiers( id ).genKind2 /= eof_t then
-           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-        end if;
-     elsif baseType = btree_cursor_t then
-        if identifiers( id ).genKind2 /= eof_t then
-           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-        end if;
-     elsif baseType = hash_file_t then
-        if identifiers( id ).genKind2 /= eof_t then
-           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-        end if;
-     elsif baseType = hash_cursor_t then
-        if identifiers( id ).genKind2 /= eof_t then
-           err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
-        end if;
-     elsif baseType = dht_table_t then
-        declare
-           genKindId : identifier renames identifiers( id ).genKind;
-        begin
-           --genKindId := identifiers( id ).genKind;
-           if class_ok( genKindId, typeClass, subClass ) then
-              if identifiers( genKindId ).list then
-                 err( "element type should be a scalar type" );
-              elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                 err( "element type should be a scalar type" );
-              end if;
-           end if;
-        end;
-     else
-       -- TODO: implement generic types
-        err( "expected a generic type" );
-     end if; -- base types
-  end CheckGenericParameterType;
-
   procedure AttachGenericParameterResource( id, type_token : identifier ) is
      -- create and attach a resource to the variable
-     baseType  : identifier := getBaseType( type_token );
+     -- TODO: getStorageType
+     uniType   : identifier := getUniType( type_token );
      resId     : resHandleId;
   begin
-     if baseType = doubly_list_t then
+     if uniType = doubly_list_t then
         declareResource( resId, doubly_linked_string_list, getIdentifierBlock( id ) );
-     elsif baseType = doubly_cursor_t then
+     elsif uniType = doubly_cursor_t then
         declareResource( resId, doubly_linked_string_list_cursor, getIdentifierBlock( id ) );
-     elsif baseType = btree_file_t then
+     elsif uniType = btree_file_t then
         declareResource( resId, btree_file, getIdentifierBlock( id ) );
-     elsif baseType = btree_cursor_t then
+     elsif uniType = btree_cursor_t then
         declareResource( resId, btree_cursor, getIdentifierBlock( id ) );
-     elsif baseType = hash_file_t then
+     elsif uniType = hash_file_t then
         declareResource( resId, hash_file, getIdentifierBlock( id ) );
-     elsif baseType = hash_cursor_t then
+     elsif uniType = hash_cursor_t then
         declareResource( resId, hash_cursor, getIdentifierBlock( id ) );
-     elsif baseType = dht_table_t then
+     elsif uniType = dht_table_t then
         declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
      else
         -- TODO: implement generic types
-        err( "expected a generic type" );
+        err( optional_bold( to_string( identifiers( type_token ).name ) ) &
+             " is derived from " &
+             optional_bold( to_string( identifiers( uniType ).name ) ) &
+             " which is not a generic type" );
      end if;
      if isExecutingCommand then
         identifiers( id ).svalue := to_unbounded_string( resId );
@@ -1038,62 +1135,12 @@ begin
   -- Exceptions
 
   if token = exception_t then                          -- handle exception
-     expect( exception_t );
      if not exceptions then                            --  not permitted?
         err( "exceptions are not allowed" );
      else
-       declare
-         var_name : unbounded_string;
-         default_message : unbounded_string;
-         exception_status : unbounded_string;
-         exception_status_code : anExceptionStatusCode := 1;
-         messageType : identifier;
-         statusType  : identifier;
-       begin
-          var_name := identifiers( id ).name;                 -- remember name
-          discardUnusedIdentifier( id );                      -- discard variable
-          if token = with_t then
-             if onlyAda95 then
-                err( "exception with not allowed with " &
-                   optional_bold( "pragam ada_95" ) );
-             end if;
-             expect( with_t );
-             if token = use_t then
-                err( "with message missing" );
-             end if;
-             ParseExpression( default_message, messageType );
-             if type_checks_done or else uniTypesOK( messageType, uni_string_t ) then
-                expect( use_t );
-                ParseExpression( exception_status, statusType );
-                if type_checks_done or else baseTypesOK( statusType, natural_t ) then
-                   null;
-                end if;
-             end if;
-             -- expression value has no meaning except as run-time
-             if isExecutingCommand then
-                begin
-                  exception_status_code := anExceptionStatusCode'value( to_string( exception_status ) );
-                exception when others =>
-                  err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
-                end;
-             end if;
-          elsif token = renames_t then
-             err( "exceptions cannot be renamed" );
-          elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
-             err( "with or ';' expected" );
-          end if;
-          --if not error_found then -- TODO: this doesn't look right. commenting out
-             findException( var_name, id );
-             if id = eof_t then
-                declareException( id, var_name, default_message, exception_status_code ); -- declare var
-             else
-                err( "exception " & optional_bold( to_string( var_name ) ) &
-                     " already exists in a greater scope" );
-             end if;
-          --end if;
-       end;
+        ParseExceptionDeclarationPart( id );
      end if;
-     return; -- done
+     return; -- nothing more to do
   end if;
 
   -- Check for constant, limited qualifiers
@@ -1119,6 +1166,12 @@ begin
   if syntax_check then                                 -- mark that type was
      identifiers( type_token ).wasApplied := true;     -- used
   end if;
+
+  --if identifiers( type_token ).genKind /= eof_t then
+  --  put_line( "DeclarationPart: 1 type " & to_string( identifiers( type_token ).name ) & " " & type_token'img & " has params" ); -- DEBUG
+  --else
+  --  put_line( "DeclarationPart: 1 type " & to_string( identifiers( type_token ).name ) & " " & type_token'img & " has NO params" ); -- DEBUG
+  --end if;
 
   -- Variable vs. Type Qualifiers
   --
@@ -1219,6 +1272,12 @@ begin
       expr_expected := true;
   end if;
 
+  --if identifiers( type_token ).genKind /= eof_t then
+  --  put_line( "DeclarationPart: 2 type " & to_string( identifiers( type_token ).name ) & " has params" ); -- DEBUG
+  --else
+  --  put_line( "DeclarationPart: 2 type " & to_string( identifiers( type_token ).name ) & " has NO params" ); -- DEBUG
+  --end if;
+
   -- Generic Parameters
   --
   -- These only apply to built-in types and they are not arrays or records.
@@ -1234,9 +1293,32 @@ begin
         AttachGenericParameterResource( id, type_token );
      end if;
      identifiers( id ).kind := type_token;
+     identifiers( id ).usage := identifiers( type_token ).usage;
 
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type but has parameters" );
+
+   -- We need to attach a resource for the generic-based type
+   -- (i.e. type x is generic(...), this will be x)
+
+  elsif identifiers( type_token ).genKind /= eof_t then
+      if isExecutingCommand then
+         AttachGenericParameterResource( id, type_token );
+         --put_line( " ... attaching resource" );
+      --else
+      end if;
+      identifiers( id ).genKind := identifiers( type_token ).genKind;
+      identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
+      identifiers( id ).kind := type_token;
+  --if identifiers( id ).genKind = eof_t then -- DEBUG
+  --   put_line( "DeclarationPart: var " & to_string( identifiers( id ).name ) & " has a genKind of EOF" ); -- DEBUG
+  --else
+  --   put_line( "DeclarationPart: var " & to_string( identifiers( id ).name ) & " is OK" ); -- DEBUG
+  --end if;
+      --put_line("Declare: genKind of var = " );
+      --put_identifier( identifiers( id ).genKind ); -- DEBUG
+      --put_line("Declare: genKind of type = " );
+      --put_identifier( identifiers( type_token ).genKind ); -- DEBUG
 
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.
@@ -1484,8 +1566,22 @@ begin
    ParseTypeUsageQualifiers( newtype_id );
    expect( record_t );
    ParseRecordFields( newtype_id, field_no );
+   -- end record (or end name)
    expect( end_t );
-   expect( record_t );
+   if token = record_t then
+      expect( record_t );
+   elsif token = newtype_id then
+      if not onlyAda95 then
+         expect( newtype_id );
+      else
+         err( "end record required with " & optional_bold( "pragma ada_95" ) );
+      end if;
+  else
+      err( optional_bold( "end record" ) &
+          " or " &
+              optional_bold( "end " & to_string( identifiers( newtype_id ).name ) ) &
+              " expected" );
+   end if;
    -- if isExecutingCommand then
    if not error_found then
       identifiers( newtype_id ).kind := root_record_t;      -- a record
@@ -1759,8 +1855,9 @@ begin
      end if;
 
      ParseIdentifier( parent_id );                         -- parent type name
+
      if not type_checks_done then
-        if class_ok( parent_id, typeClass, subClass ) then    -- not a type?
+        if class_ok( parent_id, typeClass, subClass, genericTypeClass ) then    -- not a type?
            if identifiers( getBaseType( parent_id ) ).kind = root_record_t then
               -- TODO: we would have to generate all the field identifiers
               -- for the record, renamed for the new type, which is not done
@@ -1769,11 +1866,47 @@ begin
             end if;
         end if;
      end if;
+
+     -- Types are generally allowed to change the type usage in any way they want.
+     -- As a special case, resources must always be limited.
+
+     if identifiers( parent_id ).resource then
+        if identifiers( newtype_id ).usage /= limitedUsage then
+           err("resource identifiers must always be limited" );
+        end if;
+        identifiers( newtype_id ).resource := true;
+     end if;
+
+     -- For a generic/parameterized type, if type checks need to be performed,
+     -- check the supplied parameters and ensure they are compatible with the
+     -- built-in generic type.  For example, assure a doubly_linked_list has
+     -- only one parameter.
+     --
+     -- If the parent type has a defined parameter, then it is an instantiated
+     -- generic.  It has no new parameters.  Copy the instantiated parameters
+     -- of the parent to the new type.
+
+--put_line( "*** ParseType: " & to_string( identifiers( newtype_id ).name )  ); -- DEBUG
+
+     if identifiers( parent_id ).class = genericTypeClass then
+        ParseGenericParametersPart( newtype_id );
+        if not type_checks_done then
+           CheckGenericParameterType( newtype_id, parent_id );
+--put_line( "ParseType: Generics done" ); -- DEBUG
+--put_identifier( identifiers( newtype_id ).genKind ); -- DEBUG
+        end if;
+        -- currently, it will always be limitedUsage
+        identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
+     elsif token = symbol_t and identifiers( token ).value.all = "(" then
+        err( "parameters were supplied but " &
+             optional_bold( to_string( identifiers( parent_id ).name ) ) &
+             " is not a generic type" );
+     end if;
+
      if isExecutingCommand then                         -- OK to do it?
         identifiers( newtype_id ).kind := parent_id;    -- define the type
         identifiers( newtype_id ).class := typeClass;
-        identifiers( newtype_id ).genKind :=            -- copy index type
-          identifiers( parent_id ).genKind;             -- / generic type
+
         if identifiers( parent_id ).list then           -- an array?
            identifiers( newtype_id ).list := true;      -- this also array
            identifiers( newtype_id ).firstBound :=      -- copy first bnd
@@ -1781,11 +1914,45 @@ begin
            identifiers( newtype_id ).lastBound :=       -- copy last bnd
               identifiers( parent_id ).lastBound;
         end if;
+
+        -- If the parent type has a defined parameter, then it is an instantiated
+        -- generic.  It has no new parameters.  Copy the instantiated parameters
+        -- of the parent to the new type.
+
+        if identifiers( parent_id ).genKind /= eof_t then
+           --put_line( "ParseType: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
+           identifiers( newtype_id ).genKind :=         -- copy index type
+           identifiers( parent_id ).genKind;          -- / generic type
+           identifiers( newtype_id ).genKind2 :=        -- copy index type
+           identifiers( parent_id ).genKind2;         -- / generic type
+           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
+           --   put_line( "  ... became eof" ); -- DEBUG
+           --else -- DEBUG
+           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
+           --end if; -- DEBUG
+        end if;
      elsif syntax_check then                            -- syntax check?
         identifiers( newtype_id ).kind := parent_id;    -- assign subtype
         identifiers( newtype_id ).class := typeClass;   -- subtype class
         if identifiers( parent_id ).list then           -- an array?
            identifiers( newtype_id ).list := true;      -- this also array
+        end if;
+
+        -- If the parent type has a defined parameter, then it is an instantiated
+        -- generic.  It has no new parameters.  Copy the instantiated parameters
+        -- of the parent to the new type.
+
+        if identifiers( parent_id ).genKind /= eof_t then
+           --put_line( "ParseType: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
+           identifiers( newtype_id ).genKind :=         -- copy index type
+           identifiers( parent_id ).genKind;          -- / generic type
+           identifiers( newtype_id ).genKind2 :=        -- copy index type
+           identifiers( parent_id ).genKind2;         -- / generic type
+           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
+           --   put_line( "  ... became eof" ); -- DEBUG
+           --else -- DEBUG
+           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
+           --end if; -- DEBUG
         end if;
      else                                               -- otherwise
        b := deleteIdent( newtype_id );                  -- discard new type
@@ -1799,6 +1966,11 @@ begin
         err( "affirm or ';' expected" );
      end if;
    end if;
+  --if identifiers( newtype_id ).genKind /= eof_t then
+  --  put_line( "ParseType: at exit, " & to_string( identifiers( newtype_id ).name ) & newtype_id'img & " has params" ); -- DEBUG
+  --else
+  --  put_line( "ParseType: at exit, " & to_string( identifiers( newtype_id ).name ) & newtype_id'img & " has NO params" ); -- DEBUG
+  --end if;
 end ParseType;
 
 procedure ParseSubtype is
@@ -1813,7 +1985,25 @@ begin
    ParseTypeUsageQualifiers( newtype_id );                 -- limited, etc.
    ParseIdentifier( parent_id );                           -- old type
 
-   if type_checks_done or else class_ok( parent_id, genericTypeClass, typeClass,
+   -- Types are generally allowed to change the type usage in any way they want.
+   -- As a special case, resources must always be limited.
+
+   if identifiers( parent_id ).resource then
+      if identifiers( newtype_id ).usage /= limitedUsage then
+         err("resource identifiers must always be limited" );
+      end if;
+      identifiers( newtype_id ).resource := true;
+   end if;
+
+   if identifiers( parent_id ).class = genericTypeClass then
+      err( "subtypes require an instantiated generic type but " &
+           optional_bold( to_string( identifiers( parent_id ).name ) ) &
+           " is not instantiated" );
+   elsif token = symbol_t and identifiers( token ).value.all = "(" then
+      err( "parameters were supplied but " &
+           optional_bold( to_string( identifiers( parent_id ).name ) ) &
+           " is not a generic type" );
+   elsif type_checks_done or else class_ok( parent_id, typeClass,
                subClass ) then                             -- not a type?
       if isExecutingCommand then                           -- OK to execute?
          identifiers( newtype_id ).kind := parent_id;      -- assign subtype
@@ -1827,12 +2017,46 @@ begin
             identifiers( newtype_id ).lastBound :=         -- copy last bnd
                identifiers( parent_id ).lastBound;
          end if;
+
+        -- If the parent type has a defined parameter, then it is an instantiated
+        -- generic.  It has no new parameters.  Copy the instantiated parameters
+        -- of the parent to the new type.
+
+        if identifiers( parent_id ).genKind /= eof_t then
+           --put_line( "ParseSubtype: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
+           identifiers( newtype_id ).genKind :=         -- copy index type
+           identifiers( parent_id ).genKind;          -- / generic type
+           identifiers( newtype_id ).genKind2 :=        -- copy index type
+           identifiers( parent_id ).genKind2;         -- / generic type
+           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
+           --   put_line( "  ... became eof" ); -- DEBUG
+           --else -- DEBUG
+           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
+           --end if; -- DEBUG
+        end if;
       elsif syntax_check then                              -- syntax check?
          identifiers( newtype_id ).kind := parent_id;      -- assign subtype
          identifiers( newtype_id ).class := subClass;      -- subtype class
          if identifiers( parent_id ).list then             -- an array?
             identifiers( newtype_id ).list := true;        -- this also array
          end if;
+
+        -- If the parent type has a defined parameter, then it is an instantiated
+        -- generic.  It has no new parameters.  Copy the instantiated parameters
+        -- of the parent to the new type.
+
+        if identifiers( parent_id ).genKind /= eof_t then
+           --put_line( "ParseSubtype: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
+           identifiers( newtype_id ).genKind :=         -- copy index type
+           identifiers( parent_id ).genKind;          -- / generic type
+           identifiers( newtype_id ).genKind2 :=        -- copy index type
+           identifiers( parent_id ).genKind2;         -- / generic type
+           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
+           --   put_line( "  ... became eof" ); -- DEBUG
+           --else -- DEBUG
+           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
+           --end if; -- DEBUG
+        end if;
       else                                                 -- otherwise
          b := deleteIdent( newtype_id );                   -- discard subtype
       end if;

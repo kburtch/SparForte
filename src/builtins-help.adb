@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -1931,10 +1931,55 @@ begin
      startHelp( e, "strings.perl_match" );
      summary( e, "strings.perl_match (strings package)" );
      categoryFunction( e );
-     description( e, "Pattern matching with PCRE regular expressions." );
+     description( e, "Pattern matching with PERL Compatible Regular Expressions (PCRE)." );
      section( e, "Syntax" );
      content( e, "bool := perl_match( expression, string )" );
-     seeAlso( e, "doc/pkg_strings.html" );
+     section( e, "Character Types" );
+     content( e, ".      any character except newline;" );
+     content( e, "\C     one data unit, even in UTF mode (best avoided)" );
+     content( e, "\d     a decimal digit" );
+     content( e, "\D     a character that is not a decimal digit" );
+     content( e, "\h     a horizontal white space character" );
+     content( e, "\H     a character that is not a horizontal white space character" );
+     content( e, "\N     a character that is not a newline" );
+     content( e, "\p{xx} a character with the xx property" );
+     content( e, "\P{xx} a character without the xx property" );
+     content( e, "\R     a newline sequence" );
+     content( e, "\s     a white space character" );
+     content( e, "\S     a character that is not a white space character" );
+     content( e, "\v     a vertical white space character" );
+     content( e, "\V     a character that is not a vertical white space character" );
+     content( e, "\w     a 'word' character" );
+     content( e, "\W     a 'non-word' character" );
+     content( e, "\X     a Unicode extended grapheme cluster" );
+     section( e, "Quantifiers" );
+     content( e, "?       0 or 1, greedy" );
+     content( e, "?+      0 or 1, possessive" );
+     content( e, "??      0 or 1, lazy" );
+     content( e, "*       0 or more, greedy" );
+     content( e, "*+      0 or more, possessive" );
+     content( e, "*?      0 or more, lazy" );
+     content( e, "+       1 or more, greedy" );
+     content( e, "++      1 or more, possessive" );
+     content( e, "+?      1 or more, lazy" );
+     content( e, "{n}     exactly n" );
+     content( e, "{n,m}   at least n, no more than m, greedy" );
+     content( e, "{n,m}+  at least n, no more than m, possessive" );
+     content( e, "{n,m}?  at least n, no more than m, lazy" );
+     content( e, "{n,}    n or more, greedy" );
+     content( e, "{n,}+   n or more, possessive" );
+     content( e, "{n,}?   n or more, lazy" );
+     section( e, "Anchors" );
+     content( e, "\b      word boundary" );
+     content( e, "\B      not a word boundary" );
+     content( e, "^       start of subject" );
+     content( e, "\A      start of subject" );
+     content( e, "$       end of subject" );
+     content( e, "\Z      end of subject" );
+     content( e, "\z      end of subject" );
+     content( e, "\G      first matching position in subject" );
+     footer( e, "This is not complete.  See the PCRE documentation for more." );
+     seeAlso( e, "doc/pkg_strings.html, https://pcre.org" );
      endHelp( e );
   elsif helpTopic = "mysql" then
      helpMySQL;
@@ -2260,7 +2305,7 @@ begin
                 "See also subtypes.");
      content( e, "type newtype is new [abstract|limited] oldtype [affirm...end affirm]" );
      content( e, "type newtype is ( enum1 [,enum2...] [affirm...end affirm] )" );
-     content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record" );
+     content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record|newtype" );
      content( e, "type newtype is [abstract|limited] array( low..high) of item_type [:= array( item,...)]" );
      seeAlso( e, "doc/ref_typedecl.html" );
      endHelp( e );
@@ -2413,6 +2458,7 @@ begin
      description( e, "How to declare variables:" );
      content( e, "var [,var2...] : [constant|limited] type [:= expression]" );
      content( e, "var : [constant] type renames var2[(element)]" );
+     content( e, "var : [constant] type copies var2[(element)]" );
      content( e, "array_var :  [limited] array( low..high) of item-type [ := array | (item,...) ]" );
      content( e, "array_var :  array_type [ := array | (item,...) ]" );
      seeAlso( e, "doc/ref_typedecl.html, doc/ref_enum.html, doc/ref_arrays.html and doc/ref_records.html" );

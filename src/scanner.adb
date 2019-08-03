@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -1843,6 +1843,18 @@ begin
             end if;
          end if; -- constant
 
+         -- Unimplemented subprogram specifications
+         -- This need to occur before the unused identifier test.
+
+         if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
+            if identifiers( i ).specAt /= noSpec then
+               err( optional_bold( to_string( identifiers( i ).name ) ) &
+                    " has a specification but is not implemented (at " &
+                    to_string( identifiers( i ).specFile) & ":" &
+                    identifiers( i ).specAt'img & ");" );
+            end if;
+         end if;
+
          -- If something was used, apply any software model requirements (if
          -- any)
          if identifiers( i ).wasReferenced then
@@ -1877,8 +1889,8 @@ begin
                elsif identifiers( i ).class = varClass then
                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                end if;
-            end if;
---          end if;
+         end if;
+
           -- TODO declaration line would be helpful if two identifiers have the same
           -- name.
       end loop;
@@ -1973,6 +1985,20 @@ begin
          --      end if;
          --   end if;
          --end if; -- constant
+
+         -- Unimplemented subprogram specifications
+         -- This need to occur before the unused identifier test.
+         --
+         -- This may not even be possible: procedures and functions
+         -- cannot be declared without a declaration section.
+         --if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
+         --   if identifiers( i ).specAt /= noSpec then
+         --      err( optional_bold( to_string( identifiers( i ).name ) ) &
+         --           " has a specification but is not implemented (at " &
+         --           to_string( identifiers( i ).specFile) & ":" &
+         --           identifiers( i ).specAt'img & ");" );
+         --   end if;
+         --end if;
 
          if identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
@@ -3414,6 +3440,11 @@ begin
   elsif original = exception_t then
         return exception_t;
 
+  -- generics are themselves
+
+  elsif identifiers( original ).class = genericTypeClass then
+        return original;
+
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
@@ -3502,7 +3533,7 @@ function class_ok( id : identifier; class : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
-        err( "internal error: eof given to class_ok(1)" );
+        err( "internal error: eof given as the identifier to class_ok(1)" );
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
@@ -3531,7 +3562,7 @@ function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
-        err( "internal error: eof given to class_ok(2)" );
+        err( "internal error: eof given as the identifier to class_ok(2)" );
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
@@ -3566,7 +3597,7 @@ function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolea
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
-        err( "internal error: eof given to class_ok(3)" );
+        err( "internal error: eof given as the identifier to class_ok(3)" );
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
@@ -5966,6 +5997,7 @@ procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out So
   sfr, temp_sfr : aSourceFile;
   workingPaths : unbounded_string;
   includeFileOpened : boolean;
+  includeFileGood   : boolean;
   temp_id : identifier;
   libraryPrefix :unbounded_string;
   libraryPrefixNumber : natural;
@@ -6003,41 +6035,40 @@ begin
              path : string := to_string( includeName );
              include_file : file_type;
            begin
+             open( include_file, in_file, path );
              if C_is_includable_file( path & ASCII.NUL ) then
-                open( include_file, in_file, path );
-                -- TODO: trace may not exist at this point
                 if trace or verboseOpt = true then
-                   put_trace( "Including " & path );
+                   put_trace( "Including " & to_string( toEscaped( to_unbounded_string( path ) ) ) );
                 end if;
                 while not end_of_file( include_file ) loop
                   includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
                 end loop;
-                close( include_file );
                 includeFileOpened := true;
              else
-                err( "include file " & optional_bold( to_string( includeName ) ) & " is not readable, is world writable, is not a file or is empty" );
+                includeFileGood := true;
              end if;
+             close( include_file );
            exception
                when STATUS_ERROR =>
-                 err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
+                 err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
                     " - file may be locked" );
                  return;
                when NAME_ERROR =>
                    if traceOpt then
-                      put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
+                      put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
                    end if;
                when MODE_ERROR =>
-                   err( "interal error: mode error on include file " & optional_bold( to_string( includeName ) ) );
+                   err( "interal error: mode error on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                     return;
                when END_ERROR =>
-                 err( "interal error: end of file reached on include file " & optional_bold( to_string( includeName ) ) );
+                 err( "interal error: end of file reached on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                return;
                when others =>
-                  err( "interal error: unexpected error reading " & optional_bold( to_string( includeName ) ) );
+                  err( "interal error: unexpected error reading " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                   return;
            end;
-
      else
+
      -- Relative Paths
 
         workingPaths := libraryPath;                          -- use -L paths
@@ -6051,6 +6082,7 @@ begin
            end if;
         end if;
 
+        includeFileGood := true;
         includeFileOpened := false;                           -- assume failure
         libraryPrefixNumber := 1;                             -- prefix one
         loop                                                  -- get next prefix
@@ -6064,46 +6096,50 @@ begin
              path : string := to_string( libraryPrefix & includeName );
              include_file : file_type;
            begin
+             open( include_file, in_file, path );
+             -- if the file can be opened, it may still be invalid.
              if C_is_includable_file( path & ASCII.NUL ) then
-                open( include_file, in_file, path );
-                -- TODO: trace may not exist at this point
                 if trace or verboseOpt = true then
-                   put_trace( "Including " & path );
+                   put_trace( "Including " & to_string( toEscaped( to_unbounded_string( path ) ) ) );
                 end if;
                 while not end_of_file( include_file ) loop
                   includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
                 end loop;
-                close( include_file );
                 includeFileOpened := true;
                 exit;
              else
-                err( "include file " & optional_bold( to_string( includeName ) ) & " is not readable, is world writable, is not a file or is empty" );
+                includeFileGood := false;
              end if;
+             close( include_file );
            exception
                when STATUS_ERROR =>
-                 err( "cannot open include file" & optional_bold( to_string( includeName ) ) &
+                 err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
                     " - file may be locked" );
                  return;
                when NAME_ERROR =>
                    if traceOpt then
-                      put_trace( to_string( "Cannot open " & libraryPrefix & includeName ) );
+                      put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
                    end if;
                when MODE_ERROR =>
-                   err( "interal error: mode error on include file " & optional_bold( to_string( includeName ) ) );
+                   err( "interal error: mode error on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                     return;
                when END_ERROR =>
-                 err( "interal error: end of file reached on include file " & optional_bold( to_string( includeName ) ) );
+                 err( "interal error: end of file reached on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                return;
                when others =>
-                  err( "interal error: unexpected error reading " & optional_bold( to_string( includeName ) ) );
+                  err( "interal error: unexpected error reading " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                   return;
            end;
            libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
         end loop;
      end if;
 
-     if not includeFileOpened then
-        err( "include file " & optional_bold( to_string( includeName ) ) &
+     -- Either the file was found but is not unacceptable or the file was not found
+
+     if not includeFileGood then
+        err( "include file " & optional_bold( to_string( toEscaped( includeName ) ) ) & " is not readable, is world writable, is not a file or is empty" );
+     elsif not includeFileOpened then
+        err( "include file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
              " doesn't exist or is not readable" );
         fileLocation := SourceFilesList.aListIndex'last;
      end if;

@@ -1038,6 +1038,94 @@ if [ $RESULT -eq 0 ] ; then
 fi
 echo "OK"
 end_junit_case
+start_junit_case "minus_h_switch" "switch_tests"
+setup
+../spar -h
+RESULT=$?
+teardown
+if [ $RESULT -ne 0 ] ; then
+     echo
+     echo "--- minus_h_switch TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+fi
+echo "OK"
+end_junit_case
+start_junit_case "minus_V_switch" "switch_tests"
+setup
+../spar -V
+RESULT=$?
+teardown
+if [ $RESULT -ne 0 ] ; then
+     echo
+     echo "--- minus_V_switch TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+fi
+echo "OK"
+end_junit_case
+start_junit_case "minus_L_switch" "switch_tests"
+setup
+../spar -L libtest libtest.sp
+RESULT=$?
+teardown
+if [ $RESULT -ne 0 ] ; then
+     echo
+     echo "--- minus_L_switch TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+fi
+echo "OK"
+end_junit_case
+start_junit_case "minus_L_switch" "switch_tests"
+setup
+../spar -L foobar -L libtest libtest.sp
+RESULT=$?
+teardown
+if [ $RESULT -ne 0 ] ; then
+     echo
+     echo "--- minus_L_switch TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+fi
+echo "OK"
+end_junit_case
+start_junit_case "minus_L_switch" "switch_tests"
+setup
+../spar -L libtest -L foobar libtest.sp
+RESULT=$?
+teardown
+if [ $RESULT -ne 0 ] ; then
+     echo
+     echo "--- minus_L_switch TEST FAILED - status code $RESULT ---"
+     echo "Test was:"
+     cat "$1"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+fi
 end_junit_suite
 
 # TODO: this must be done any any exit

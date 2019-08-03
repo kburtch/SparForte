@@ -106,9 +106,13 @@ put_line( sushi_express.name );</p>
 Assigning records to records is only supported in declarations.
 </p>
 
+<p>For long records, you can also chose to end the record with "end" and the
+record name instead of "end record".</p>
+
 <p><b>Ada</b>: Null records, variant records, records containing arrays or
 other records are not yet implemented.  Assignment with <tt>other</tt> not yet
-implemented.</p>
+implemented.  When pragma ada_95 is used, all record declarations must end
+with "end record".</p>
 
 <h2>Constant and Limited Record Fields</h2>
 

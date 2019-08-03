@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2018 Free Software Foundation            --
+--              Copyright (C) 2001-2019 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -198,6 +198,23 @@ begin
   end if;
   return sp;
 end findStorage;
+
+function to_string( mode : aParameterPassingMode ) return string is
+begin
+  case mode is
+     when none =>
+        return "none";
+     when in_mode =>
+        return "in";
+     when out_mode =>
+        return "out";
+     when in_out_mode =>
+        return "in out";
+     when others =>
+        raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
+          ": internal error: unexpected mode ";
+  end case;
+end to_string;
 
 -- Symbol Table Utilities
 --
@@ -531,6 +548,8 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -592,6 +611,8 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -817,6 +838,8 @@ begin
                  field_of => eof_t,
                  inspect  => false,
                  deleted  => false,
+                 specAt   => noSpec,
+                 specFile => null_unbounded_string,
                  wasReferenced => false,
                  --referencedByThread => noThread,
                  wasWritten => false,
@@ -896,6 +919,8 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -986,6 +1011,8 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -1052,6 +1079,8 @@ begin
        field_of => identifiers( canonicalRef.id ).field_of,
        inspect  => identifiers( canonicalRef.id ).inspect,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -1242,6 +1271,8 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -1375,6 +1406,8 @@ begin
        field_of => eof_t,
        inspect  => false,
        deleted  => false,
+       specAt   => noSpec,
+       specFile => null_unbounded_string,
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
@@ -1898,7 +1931,7 @@ begin
   when others => -- includes noTemplate
      --s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-       ": Internal error: internal error: unknown template type " &
+       ": internal error: unknown template type " &
        header.templateType'img;
   end case;
   s := s & ASCII.CR & ASCII.LF;

@@ -11,11 +11,19 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-* enum items override existing identifiers but shouldn't.  when they do
-  override a pre-existing procedure, a "shell word expected" error occurs.
+
+- generic/parameterized types
+  - test renaming and copying generic types
+  - is copying done for in mode parameters
+- testing validator project I noticed
+  - profile summary is showing zero procedures (in, at least, some cases)
+  - under some conditions, the breakout prompt my have end-of-file and be
+    interpreted as a return to resume execution.  I have not identified what
+    those conditions are.
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
+- strings.image should handle enumerated items
 - raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
@@ -63,6 +71,10 @@ Priority Issues (Fix These First)
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
+    - pragma risk_tolerance(amt) or pragma optimize( reliability )
+      - perhaps optimize is too simplistic: these need to be ranked/rated
+        (like pragma emphasize/deemphasize).
+      - forcing static side-effect checking
     - echo "foo"`bar` works but echo `bar` does not
       - `word` not allowed in BasicShellWord?
     - spell checking comments (as Windows does?)  must whitelist all
@@ -73,20 +85,10 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
-- declared but not used would benefit from the original file/line location
-- generic (parameterized) types
-  - currently, a generic type declaration is an instantiation.
-    - there's no way to create types from a generic type
-    - there's no way to create types from an instantiated generic type
-    - there's no way to pass parameters with generic types
-    - parameterized types cannot be renamed
-  - derived types of generic types not implemented (see ParseDeclaration)
-  - generics don't have meaning until constructed in a declaration, where
-    types are given.
-  - passing resources from parameterized types.  Also, what happens when the
-    parameters are destroyed...we don't want the resource to be destroyed also
 - add annotate/categories to example programs representing the example groupings
   they belong to
+- attaching comments to declarations so the comments can be parsed and displayed
+  by the language.  This is to make configuration and debugging easier.
 - problem extracting byte code for blocks (copying whole lines)
 - doubly linked lists ought to automatically JSON encode aggregates, like
   btree_io does.?

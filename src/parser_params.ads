@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -118,16 +118,32 @@ procedure ParseNumericParameter( expr_val : out unbounded_string;
 
 procedure ParseSingleInOutParameter( param_id : out identifier; expected_type : identifier  );
 
+
 procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : identifier  );
+
 
 procedure ParseNextInOutParameter( param_id : out identifier; expected_type : identifier  );
 
+
 procedure ParseLastInOutParameter( param_id : out identifier; expected_type : identifier  );
+
 
 procedure ParseInOutParameter( ref : out reference );
 -- TODO: should modify others to also use a reference
 
 procedure ParseLastInOutRecordParameter( param_id : out identifier );
+
+------------------------------------------------------------------------------
+-- Instantiated Generics Parameters
+------------------------------------------------------------------------------
+
+procedure ParseSingleInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
+
+procedure ParseFirstInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
+
+procedure ParseNextInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
+
+procedure ParseLastInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
 
 ------------------------------------------------------------------------------
 -- Out Parameters

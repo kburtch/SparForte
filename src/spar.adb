@@ -87,7 +87,7 @@ begin
         Put_Line( "  --help or -h        - show this help" );
         Put_Line( "  --import-all or -i  - import all environment variables" );
         Put_Line( "  -Ld or -L d         - add directory d to the separate files search list" );
-        Put_Line( "                       (may be repeated)" );
+        Put_Line( "                        (may be repeated)" );
         Put_Line( "  --login or -l       - simulate a login shell" );
         Put_Line( "  --maintenance or -m - maintenance phase mode" );
         Put_Line( "  --profile or -P     - run the profile script when not logging in" );

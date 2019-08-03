@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -86,45 +86,24 @@ vectors_delete_t        : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure CheckVectorIsInitialized( vectorId : identifier ) is
-begin
-  if identifiers( vectorId ).genKind = eof_t then
-     err( optional_bold( "new_vector" ) & "  has not been called to initialize " &
-       optional_bold( to_string( identifiers( vectorId ).name ) ) &
-       "; Note: a bug in this version of SparForte requires 'new' " &
-       "to be located just after the variable's declaration." );
-  elsif isExecutingCommand then
-     if identifiers( vectorId ).svalue = "" then
-        err( optional_bold( "new_vector" ) & "  has not been called to initialize " &
-          optional_bold( to_string( identifiers( vectorId ).name ) ) &
-          "; Note: a bug in this version of SparForte requires 'new' " &
-          "to be located just after the variable's declaration." );
-     end if;
-  end if;
-end CheckVectorIsInitialized;
-
 procedure ParseSingleVectorParameter( vectorId : out identifier ) is
 begin
-  ParseSingleInOutParameter( vectorId, vectors_vector_t );
-  CheckVectorIsInitialized( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
 end ParseSingleVectorParameter;
 
 procedure ParseFirstVectorParameter( vectorId : out identifier ) is
 begin
-  ParseFirstInOutParameter( vectorId, vectors_vector_t );
-  CheckVectorIsInitialized( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
 end ParseFirstVectorParameter;
 
 procedure ParseNextVectorParameter( vectorId : out identifier ) is
 begin
-  ParseNextInOutParameter( vectorId, vectors_vector_t );
-  CheckVectorIsInitialized( vectorId );
+  ParseNextInOutInstantiatedParameter( vectorId, vectors_vector_t );
 end ParseNextVectorParameter;
 
 procedure ParseLastVectorParameter( vectorId : out identifier ) is
 begin
-  ParseLastInOutParameter( vectorId, vectors_vector_t );
-  CheckVectorIsInitialized( vectorId );
+  ParseLastInOutInstantiatedParameter( vectorId, vectors_vector_t );
 end ParseLastVectorParameter;
 
 ------------------------------------------------------------------------------
@@ -194,35 +173,24 @@ end toUserVectorIndex;
 
 ------------------------------------------------------------------------------
 
-procedure CheckCursorIsInitialized( cursId : identifier ) is
-begin
-  if identifiers( cursId ).genKind = eof_t then
-     err( "new_cursor has not been called to initialize the cursor" );
-  end if;
-end CheckCursorIsInitialized;
-
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
-  ParseSingleInOutParameter( cursId, vectors_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  ParseSingleInOutInstantiatedParameter( cursId, vectors_cursor_t );
 end ParseSingleCursorParameter;
 
 procedure ParseFirstCursorParameter( cursId : out identifier ) is
 begin
-  ParseFirstInOutParameter( cursId, vectors_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  ParseFirstInOutInstantiatedParameter( cursId, vectors_cursor_t );
 end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
-  ParseNextInOutParameter( cursId, vectors_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  ParseNextInOutInstantiatedParameter( cursId, vectors_cursor_t );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
-  ParseLastInOutParameter( cursId, vectors_cursor_t );
-  CheckCursorIsInitialized( cursId );
+  ParseLastInOutInstantiatedParameter( cursId, vectors_cursor_t );
 end ParseLastCursorParameter;
 
 ------------------------------------------------------------------------------
@@ -692,10 +660,10 @@ begin
   if identifiers( token ).kind = vectors_cursor_t then
      hasCursor := true;
      ParseIdentifier( cursorId );
-     CheckCursorIsInitialized( cursorId );
+     --CheckCursorIsInitialized( cursorId );
   elsif identifiers( token ).kind = vectors_vector_t then
      ParseIdentifier( vectorId );
-     CheckVectorIsInitialized( vectorId );
+     --CheckVectorIsInitialized( vectorId );
      expect( symbol_t, "," );
      ParseExpression( idxExpr, idxType );
      res := baseTypesOK( idxType, identifiers( vectorId ).genKind2 );
@@ -1057,7 +1025,7 @@ begin
   expect( symbol_t, "," );
   if identifiers( token ).kind = vectors_cursor_t then
      ParseIdentifier( cursorId );
-     CheckCursorIsInitialized( cursorId );
+     --CheckCursorIsInitialized( cursorId );
   else
      ParseNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
      -- should be extended index

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2019 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -64,6 +64,7 @@ type performanceStats is record
   numProcs  : natural := 0;           -- number of procedures
   numFuncs  : natural := 0;           -- number of functions
   numBlocks : natural := 0;           -- number of begins
+  numComments : natural := 0;           -- number of comments
   -- code coverage (not done yet)
   lines     : dynamic_string_hash_tables.Instance;
 end record;

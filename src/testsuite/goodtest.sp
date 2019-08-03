@@ -4861,6 +4861,62 @@ begin
    i := integer(c);
 end;
 
+-- Forward Declarations
+
+declare
+
+  procedure proc0;
+
+  procedure proc0 is
+  begin
+    put_line( "zero" );
+  end proc0;
+
+  procedure proc1( param1 : integer );
+
+  procedure proc1( param1 : integer ) is
+  begin
+    put_line( param1 );
+  end proc1;
+
+  procedure proc2( param21 : integer; param22 : integer );
+
+  procedure proc2( param21 : integer; param22 : integer ) is
+  begin
+    put_line( param21 );
+    put_line( param22 );
+  end proc2;
+
+  function forward_func0 return string;
+
+  function forward_func0 return string is
+  begin
+    return "ff0";
+  end forward_func0;
+
+  function forward_func1( param1 : integer ) return integer;
+
+  function forward_func1( param1 : integer ) return integer is
+  begin
+    return param1;
+  end forward_func1;
+
+  function forward_func2( param1 : integer; param2 : integer ) return integer;
+
+  function forward_func2( param1 : integer; param2 : integer ) return integer is
+  begin
+    return param1 + param2;
+  end forward_func2;
+
+begin
+  proc0;
+  proc1( 1 );
+  proc2( 21, 22 );
+  ? forward_func0;
+  ? forward_func1( 31 );
+  ? forward_func2( 31, 32 );
+end;
+
 -- Programming by Contract
 
 declare
@@ -5143,6 +5199,99 @@ end;
 
 pragma assumption( used, i );
 pragma assumption( written, i );
+
+-- Types derived from parameterized types
+
+declare
+  -- the basic type
+  type list_type is new doubly_linked_lists.list( string );
+
+  -- Derrived types
+  type list_type2 is new list_type;
+  list : list_type;
+  list2 : list_type2;
+
+  subtype list_type3 is list_type;
+  list3 : list_type3;
+  subtype list_type4 is list_type3;
+  list4 : list_type4;
+  subtype list_type5 is list_type2;
+  list5 : list_type5;
+
+  -- User Functions for each type
+
+  function len( lst : in out list_type ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len;
+
+  procedure free( lst : in out list_type ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free;
+
+  function len2( lst : in out list_type2 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len2;
+
+  procedure free2( lst : in out list_type2 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free2;
+
+  function len3( lst : in out list_type3 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len3;
+
+  procedure free3( lst : in out list_type3 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free3;
+
+  function len4( lst : in out list_type4 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len4;
+
+  procedure free4( lst : in out list_type4 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free4;
+
+  function len5( lst : in out list_type5 ) return containers.count_type is
+  begin
+    return doubly_linked_lists.length( lst );
+  end len5;
+
+  procedure free5( lst : in out list_type5 ) is
+  begin
+    doubly_linked_lists.clear( lst );
+  end free5;
+
+begin
+  doubly_linked_lists.append( list, "foobar" );
+  pragma assert( doubly_linked_lists.length( list ) =  len( list ) );
+  free( list );
+  pragma assert( doubly_linked_lists.length( list ) =  0 );
+  doubly_linked_lists.append( list2, "foobar" );
+  pragma assert( doubly_linked_lists.length( list2 ) =  len2( list2 ) );
+  free2( list2 );
+  pragma assert( doubly_linked_lists.length( list2 ) =  0 );
+  doubly_linked_lists.append( list3, "foobar" );
+  pragma assert( doubly_linked_lists.length( list3 ) =  len3( list3 ) );
+  free3( list3 );
+  pragma assert( doubly_linked_lists.length( list3 ) =  0 );
+  doubly_linked_lists.append( list4, "foobar" );
+  pragma assert( doubly_linked_lists.length( list4 ) =  len4( list4 ) );
+  free4( list4 );
+  pragma assert( doubly_linked_lists.length( list4 ) =  0 );
+  doubly_linked_lists.append( list5, "foobar" );
+  pragma assert( doubly_linked_lists.length( list5 ) =  len5( list5 ) );
+  free5( list5 );
+  pragma assert( doubly_linked_lists.length( list5 ) =  0 );
+end;
 
 -- Pragma ada_95 tests
 
