@@ -63,9 +63,14 @@ use ada.text_io,
 
 package body compiler is
 
-  begin_char     : character;
-  function_char  : character;
-  procedure_char : character;
+-- encoded character codes for certain keywords
+
+begin_char     : character;
+function_char  : character;
+is_char        : character;
+procedure_char : character;
+subtype_char   : character;
+type_char      : character;
 
 -----------------------------------------------------------------------------
 -- getSourceFileName
@@ -2537,24 +2542,74 @@ end copyByteCodeLines;
 procedure staticByteCodeAnalysis is
    pos : natural := firstScriptCommandOffset;
    -- TODO: these depend on the byte code
+   saw_procedure : boolean := false;
+   saw_function  : boolean := false;
+   saw_one_minus : boolean := false;
 begin
    while pos < script'last loop
+      if saw_one_minus and script( pos ) /= '-' then
+         saw_one_minus := false;
+      end if;
       if script( pos ) = ASCII.NUL then
          perfStats.loc := perfStats.loc + 1;
          -- skip start of line bytes
          pos := pos + 4;
-         -- this assumes "procedure" tokens only occur in definitions
-         -- forward declarations, for example, will break this
+      elsif script( pos ) = '-' then
+         if saw_one_minus then
+            perfStats.numComments := perfStats.numComments + 1;
+            saw_one_minus := false;
+         else
+            saw_one_minus := true;
+         end if;
+         pos := pos + 1;
       elsif script( pos ) = procedure_char then
-         perfStats.numProcs := perfStats.numProcs + 1;
-         -- this assumes "function" tokens only occur in definitions
-         -- forward declarations, for example, will break this
+         saw_one_minus := false;
+         -- to deal with forward specifications, note that we saw
+         -- the keyword but don't take effect until an "is" is seen.
+         -- seeing a new procedure will cancel any previous procedure
+         -- or function.
+         if saw_procedure then
+            saw_procedure := true;
+            saw_function := false;
+         else
+            saw_procedure := true;
+         end if;
          pos := pos + 1;
       elsif script( pos ) = function_char then
-         perfStats.numFuncs := perfStats.numFuncs + 1;
+         -- to deal with forward specifications, note that we saw
+         -- the keyword but don't take effect until an "is" is seen.
+         -- seeing a new procedure will cancel any previous procedure
+         -- or function.
+         if saw_function then
+            saw_procedure := false;
+            saw_function := true;
+         else
+            saw_function := true;
+         end if;
          pos := pos + 1;
       elsif script( pos ) = begin_char then
          perfStats.numBlocks := perfStats.numBlocks + 1;
+         pos := pos + 1;
+      elsif script( pos ) = type_char then
+         -- an "is" occurs here so we cannot count it as a subprogram is
+         saw_procedure := false;
+         saw_function := false;
+         pos := pos + 1;
+      elsif script( pos ) = subtype_char then
+         -- an "is" occurs here so we cannot count it as a subprogram is
+         saw_procedure := false;
+         saw_function := false;
+         pos := pos + 1;
+      elsif script( pos ) = is_char then
+         if saw_procedure then
+            saw_procedure := false;
+            perfStats.numProcs := perfStats.numProcs + 1;
+            pos := pos + 1;
+         elsif saw_function then
+            saw_function := false;
+            perfStats.numFuncs := perfStats.numFuncs + 1;
+            pos := pos + 1;
+         end if;
          pos := pos + 1;
       else
          pos := pos + 1;
@@ -2643,6 +2698,7 @@ begin
   declareKeyword( in_t, "in" );
   -- interface
   declareKeyword( is_t, "is" );
+  is_char := character'val( identifiers_top + 126 );
   declareKeyword( limited_t, "limited" );
   declareKeyword( loop_t, "loop" );
   declareKeyword( mod_t, "mod" );
@@ -2672,12 +2728,14 @@ begin
   declareKeyword( separate_t, "separate" );
   -- some
   declareKeyword( subtype_t, "subtype" );
+  subtype_char := character'val( identifiers_top + 126 );
   -- synchronized
   -- tagged
   declareKeyword( task_t, "task" );
   -- terminate
   declareKeyword( then_t, "then" );
   declareKeyword( type_t, "type" );
+  type_char := character'val( identifiers_top + 126 );
   -- until
   declareKeyword( use_t, "use" );
   declareKeyword( when_t, "when" );

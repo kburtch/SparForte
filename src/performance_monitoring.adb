@@ -59,6 +59,7 @@ procedure put_perf_summary is
   realTime  : duration;
   rate      : natural;
   linesBlock: natural;
+  commentsBlock : natural;
 begin
 
   -- Summarize Results
@@ -70,6 +71,11 @@ begin
   exception when constraint_error =>
     linesBlock := 0;
   end;
+  begin
+    commentsBlock := natural( perfStats.numComments / perfStats.numBlocks );
+  exception when constraint_error =>
+    commentsBlock := 0;
+  end;
 
   -- Static Code Analysis Results
   --
@@ -77,6 +83,9 @@ begin
   -- executing it.  That is, SparForte is in syntax checking mode.  This
   -- includes lines of code, number of functions, etc.
 
+  new_line;
+  put_line( "Static Code Analysis" );
+  new_line;
   put( "LOC:        " );
   put_line( perfStats.loc'img );
   put( "Procedures: " );
@@ -88,6 +97,11 @@ begin
   put( "Structure:  " );
   put( linesBlock'img );
   put_line( " Lines/Block" );
+  put( "Comments:   " );
+  put_line( perfStats.numComments'img );
+  put( "Commenting: " );
+  put( commentsBlock'img );
+  put_line( " Lines/Block" );
 
   -- Performance Stats
   --
@@ -95,6 +109,8 @@ begin
   -- That is, SparForte is not in syntax check mode.
 
   if not syntaxOpt then
+     new_line;
+     put_line( "Performance Stats" );
      new_line;
      put( "Lines Read: " );
      put_line( perfStats.lineCnt'img );
