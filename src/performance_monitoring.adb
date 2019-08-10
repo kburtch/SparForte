@@ -52,7 +52,7 @@ end String_Hash;
 
 -- PUT PERF SUMMARY
 --
--- Display static code analysis results and performance stats
+-- Display static code metrics and performance stats
 -----------------------------------------------------------------------------
 
 procedure put_perf_summary is
@@ -60,6 +60,7 @@ procedure put_perf_summary is
   rate      : natural;
   linesBlock: natural;
   commentsBlock : natural;
+  branchesBlock : natural;
 begin
 
   -- Summarize Results
@@ -76,15 +77,20 @@ begin
   exception when constraint_error =>
     commentsBlock := 0;
   end;
+  begin
+    branchesBlock := natural( perfStats.numBranches / perfStats.numBlocks );
+  exception when constraint_error =>
+    branchesBlock := 0;
+  end;
 
-  -- Static Code Analysis Results
+  -- Static Metrics
   --
   -- These are metrics gathered from looking at the source code without
   -- executing it.  That is, SparForte is in syntax checking mode.  This
   -- includes lines of code, number of functions, etc.
 
   new_line;
-  put_line( "Static Code Analysis" );
+  put_line( "Static Metrics" );
   new_line;
   put( "LOC:        " );
   put_line( perfStats.loc'img );
@@ -102,6 +108,11 @@ begin
   put( "Commenting: " );
   put( commentsBlock'img );
   put_line( " Lines/Block" );
+  put( "Branches:   " );
+  put_line( perfStats.numBranches'img );
+  put( "Branching:  " );
+  put( branchesBlock'img );
+  put_line( " Branches/Block" );
 
   -- Performance Stats
   --

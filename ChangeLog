@@ -46,3 +46,5 @@ CHANGES SINCE 2.2.2
 
 20: New: -p option shows number of comments and comments/block statistics. (may be fooled by -- in strings).
 
+21. New: -p option shows number of branches and branches/block statistics.
+

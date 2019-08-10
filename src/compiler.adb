@@ -71,6 +71,12 @@ is_char        : character;
 procedure_char : character;
 subtype_char   : character;
 type_char      : character;
+-- Cyclomatic complexity
+else_char      : character;
+elsif_char     : character;
+if_char        : character;
+loop_char      : character;
+when_char      : character;
 
 -----------------------------------------------------------------------------
 -- getSourceFileName
@@ -2545,16 +2551,20 @@ procedure staticByteCodeAnalysis is
    saw_procedure : boolean := false;
    saw_function  : boolean := false;
    saw_one_minus : boolean := false;
+   edge_count    : natural := 0;
+   loop_count    : natural := 0;
+   ch : character;
 begin
    while pos < script'last loop
-      if saw_one_minus and script( pos ) /= '-' then
+      ch := script( pos );
+      if saw_one_minus and ch /= '-' then
          saw_one_minus := false;
       end if;
-      if script( pos ) = ASCII.NUL then
+      if ch = ASCII.NUL then
          perfStats.loc := perfStats.loc + 1;
          -- skip start of line bytes
          pos := pos + 4;
-      elsif script( pos ) = '-' then
+      elsif ch = '-' then
          if saw_one_minus then
             perfStats.numComments := perfStats.numComments + 1;
             saw_one_minus := false;
@@ -2562,7 +2572,7 @@ begin
             saw_one_minus := true;
          end if;
          pos := pos + 1;
-      elsif script( pos ) = procedure_char then
+      elsif ch = procedure_char then
          saw_one_minus := false;
          -- to deal with forward specifications, note that we saw
          -- the keyword but don't take effect until an "is" is seen.
@@ -2575,7 +2585,7 @@ begin
             saw_procedure := true;
          end if;
          pos := pos + 1;
-      elsif script( pos ) = function_char then
+      elsif ch = function_char then
          -- to deal with forward specifications, note that we saw
          -- the keyword but don't take effect until an "is" is seen.
          -- seeing a new procedure will cancel any previous procedure
@@ -2587,18 +2597,28 @@ begin
             saw_function := true;
          end if;
          pos := pos + 1;
-      elsif script( pos ) = begin_char then
+      elsif ch = begin_char then
          perfStats.numBlocks := perfStats.numBlocks + 1;
          pos := pos + 1;
-      elsif script( pos ) = type_char then
+      elsif ch = type_char then
          -- an "is" occurs here so we cannot count it as a subprogram is
          saw_procedure := false;
          saw_function := false;
          pos := pos + 1;
-      elsif script( pos ) = subtype_char then
+      elsif ch = subtype_char then
          -- an "is" occurs here so we cannot count it as a subprogram is
          saw_procedure := false;
          saw_function := false;
+         pos := pos + 1;
+      elsif ch = loop_char then
+         -- while and for will be counted here
+         loop_count := loop_count + 1;
+         pos := pos + 1;
+      elsif ch = else_char or
+            ch = elsif_char or
+            ch = if_char or
+            ch = when_char then
+         edge_count := edge_count + 1;
          pos := pos + 1;
       elsif script( pos ) = is_char then
          if saw_procedure then
@@ -2617,6 +2637,9 @@ begin
    end loop;
    -- Ignore ASCII.NUL in sentinal record of the byte code
    perfStats.loc := perfStats.loc + 1;
+   -- loop_count -> discount the end loop's.
+   edge_count := edge_count + loop_count/2;
+   perfStats.numBranches := 1 + edge_count;
 end staticByteCodeAnalysis;
 
 
@@ -2684,7 +2707,9 @@ begin
   -- digits
   declareKeyword( do_t, "do" );
   declareKeyword( else_t, "else" );
+  else_char := character'val( identifiers_top + 126 );
   declareKeyword( elsif_t, "elsif" );
+  elsif_char := character'val( identifiers_top + 126 );
   declareKeyword( end_t, "end" );
   -- entry
   declareKeyword( exception_t, "exception" );
@@ -2695,12 +2720,14 @@ begin
   -- generic
   declareKeyword( goto_t, "goto" );
   declareKeyword( if_t, "if" );
+  if_char := character'val( identifiers_top + 126 );
   declareKeyword( in_t, "in" );
   -- interface
   declareKeyword( is_t, "is" );
   is_char := character'val( identifiers_top + 126 );
   declareKeyword( limited_t, "limited" );
   declareKeyword( loop_t, "loop" );
+  loop_char := character'val( identifiers_top + 126 );
   declareKeyword( mod_t, "mod" );
   declareKeyword( new_t, "new" );
   declareKeyword( not_t, "not" );
@@ -2739,6 +2766,7 @@ begin
   -- until
   declareKeyword( use_t, "use" );
   declareKeyword( when_t, "when" );
+  when_char := character'val( identifiers_top + 126 );
   declareKeyword( while_t, "while" );
   declareKeyword( with_t, "with" );
   declareKeyword( xor_t, "xor" );

@@ -64,7 +64,8 @@ type performanceStats is record
   numProcs  : natural := 0;           -- number of procedures
   numFuncs  : natural := 0;           -- number of functions
   numBlocks : natural := 0;           -- number of begins
-  numComments : natural := 0;           -- number of comments
+  numComments : natural := 0;         -- number of comments
+  numBranches : natural := 0;         -- number of branches
   -- code coverage (not done yet)
   lines     : dynamic_string_hash_tables.Instance;
 end record;
