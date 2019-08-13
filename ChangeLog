@@ -48,3 +48,5 @@ CHANGES SINCE 2.2.2
 
 21. New: -p option shows number of branches and branches/block statistics.
 
+22. Change: As a security precaution, the trace command, and pragma inspect, inspection_peek and inspection_point are no longer allowed in testing or maintenance phases unless at the breakout prompt.  Tracing can be invoked by the command line options.
+

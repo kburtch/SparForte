@@ -1298,7 +1298,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        close( currentDir );
     end if;
   when DIRECTORY_ERROR =>
-    err( "directory error on directory " & dirPath );
+    err( "directory error on directory " & toSecureData(dirPath));
   end pathnameExpansion;
 
   -- Breakup barewords into subwords and do pathname expansion.
@@ -4869,7 +4869,8 @@ begin
 
      case identifiers( identifiers( var_id ).field_of ).usage is
      when abstractUsage =>
-        err( "internal error: variables should not have abstract types" );
+        err( gnat.source_info.source_location &
+             ": internal error: variables should not have abstract types" );
      when limitedUsage =>
         if isTesting then
            null;
@@ -4916,12 +4917,14 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( "internal error: unexpected usage qualifier" );
+           err( gnat.source_info.source_location &
+                ": internal error: unexpected usage qualifier" );
         end case;
 
      when others =>
-        err( "internal error: unexpected usage qualifier " &
-           identifiers( identifiers( var_id ).field_of ).usage'img );
+        err( gnat.source_info.source_location &
+             ": internal error: unexpected usage qualifier " &
+             identifiers( identifiers( var_id ).field_of ).usage'img );
      end case;
 
   end if;
@@ -4934,7 +4937,8 @@ begin
   case identifiers( var_id ).usage is
 
   when abstractUsage =>
-     err( "internal error: variables should not be abstract" );
+     err( gnat.source_info.source_location &
+          ": internal error: variables should not be abstract" );
 
   when limitedUsage =>
      if isTesting then
@@ -4958,7 +4962,9 @@ begin
      null;
 
   when others =>
-     err( "internal error: unexpected usage qualifier " & identifiers( var_id ).usage'img );
+     err( gnat.source_info.source_location &
+          ":  internal error: unexpected usage qualifier " &
+          identifiers( var_id ).usage'img );
   end case;
 end checkVarUsageQualifier;
 
@@ -5023,7 +5029,8 @@ begin
      if isExecutingCommand then
         arrayIndex := long_integer( to_numeric( index_value ) );
         if identifiers( var_id ).avalue = null then
-           err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
+           err( gnat.source_info.source_location &
+                ": internal error: target array storage unexpectedly null" );
         elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG
            err( "array index " & to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
         elsif identifiers( var_id ).avalue'last < arrayIndex then

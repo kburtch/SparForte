@@ -338,13 +338,17 @@ as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
   <li> <b>pragma inspect( var )</b> - show a variable's description
 (as if
 'env var' was used) whenever a user breaks to a command prompt. Has no
-effect if --break option isn't used.</li>
+effect if --break option isn't used.  It is not allowed in test or
+maintenance phase mode.</li>
   <li> <b>pragma inspection_peek</b> - like inspection_point, displaying
-inspect variables, except it doesn't break to a command prompt.</li>
+inspect variables, except it doesn't break to a command prompt.  It is
+not allowed in test or maintenance phase mode unless run in breakout
+mode.</li>
   <li> <b>pragma inspection_point</b> - break to a command prompt as if
 SIGINT (control-C) was received, displaying the call stack and any
 variables marked for inspection with pragma inspect. Has no effect if
---break option isn't used. A "break point".</li>
+--break option isn't used. A "break point".  It is not allowed in test
+or maintenance phase modes.</li>
 <li><b>pragma suppress( word_quoting )</b> - disable style errors when
 dollar variables expansions are not double-quoted.  Dollar expansions
 should almost always be quoted to prevent whitespace from creating

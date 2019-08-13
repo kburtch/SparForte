@@ -54,8 +54,10 @@ a for loop index, with a warning.</li>
 
   <li> <b>--check (or -c)</b> - check the syntax of a script but do
 not
-run the
-script</li>
+run the script</li>
+  <li> <b>--coding (or -C)</b> - specify that this project is in the
+development phase of the software development life cycle.  This will
+enable/disable languages features and errors suitable to this phase.</li>
   <li> <b>--debug (or -d)</b> -&nbsp; enable pragma debug's and
 assert's.&nbsp;
 Without this, pragma debug has no effect.</li>
@@ -80,6 +82,11 @@ environment variables when SparForte starts</li>
 maintenance phase of the software development life cycle.  That is, that the
 project has been installed in the production environment.  This will enable/
 disable language features and errors suitable to this phase.</li>
+  <li> <b>--pref (or -p)</b> - after the script runs, produce a report
+on the static metrics (such as number of blocks) and run-time performance
+information (such as how many lines were executed)</li>
+  <li> <b>--profile (or -P)</b> - run the profile script even though not
+logging in.</li>
   <li> <b>--restricted (or -r)</b> - run as a restricted shell, where
 a several features are disabled to create a more controlled environment.</li>
   <li> <b>--test (or -t)</b> -&nbsp; specify that this project is in the

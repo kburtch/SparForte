@@ -165,5 +165,13 @@ function dirname( s : unbounded_string ) return unbounded_string;
 function basename( s : unbounded_string ) return unbounded_string;
 -- return the file portion of a pathname string (OS dependant!)
 
+------------------------------------------------------------------------------
+-- Operating System String Handling
+------------------------------------------------------------------------------
+
+function toSecureData( s : string ) return string;
+-- return a string if not running in maintenance mode
+-- (used in securing data shown in error messages)
+
 end string_util;
 

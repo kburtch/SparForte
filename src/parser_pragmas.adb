@@ -861,7 +861,9 @@ begin
   when gcc_errors =>                         -- pragma gcc_errors
      null;
   when inspection =>                         -- pragma inspection point
-     null;
+     if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+         err( "inspection_point is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+     end if;
   when manual_test =>                        -- pragma manual_test
      ParseIdentifier( var_id );                -- test owner
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
@@ -901,7 +903,9 @@ begin
           end if;
       end if;
   when peek =>                               -- pragma inspection peek
-     null;
+     if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+         err( "inspection_peek is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+     end if;
   when noCommandHash =>                      -- pragma no_command_hash
      null;
   when promptChange =>                       -- pragma prompt_script
@@ -982,6 +986,9 @@ begin
         return;
      end if;
   when inspect_var =>                        -- pragma inspect
+     if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+         err( "inspect is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+     end if;
      ParseIdentifier( var_id );
   when license =>                            -- pragma license
      ParseLicenseKind( expr_val );

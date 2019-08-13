@@ -556,8 +556,18 @@ begin
      -- "true".  This is not ideal since it should really check types.
      tempStr := to_unbounded_string( ap( 1 ).all );
      if ( tempStr = "true" & ASCII.NUL ) or ( tempStr = "1" & ASCII.NUL ) then
-        trace := true;
-        put_line( "Trace is on" );
+        -- For security, don't trace in a production environment
+        -- unless running in breakout input mode.  This is because
+        -- tracing can reveal confidential information in variables.
+        -- (Tracing can still be invoked via the command options.)
+        -- It's also not allow in testing mode because it will catch
+        -- it in continuous integration before going to production.
+        if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+           err( "the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+        else
+           trace := true;
+           put_line( "Trace is on" );
+        end if;
      elsif ( tempStr = "false" & ASCII.NUL ) or ( tempStr = "0" & ASCII.NUL ) then
         trace := false;
         put_line( "Trace is off" );

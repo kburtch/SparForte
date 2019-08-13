@@ -936,9 +936,6 @@ begin
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = charlit_t then                          -- character literal
-        --if length( identifiers( charlit_t ).value ) > 1 then
-        --   err( "character literal more than 1 character" );
-        --end if;
         f := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
@@ -1064,7 +1061,8 @@ begin
   when others =>
       f := null_unbounded_string;                -- (always return something)
       kind := eof_t;
-      err( "internal error: unexpected uniary operation error" );
+      err( gnat.source_info.source_location &
+           "internal error: unexpected uniary operation error" );
   end case;
 end ParseFactor;
 
@@ -1123,7 +1121,8 @@ begin
                  term := null_unbounded_string;
               end;
           else
-              err( "interal error: unknown power operator" );
+              err( gnat.source_info.source_location &
+                   "interal error: unknown power operator" );
           end if;
         else
            err( "operation ** not defined for these types" );
@@ -1932,9 +1931,6 @@ begin
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = charlit_t then                          -- character literal
-        --if length( identifiers( charlit_t ).value ) > 1 then
-        --   err( "character literal more than 1 character" );
-        --end if;
         f := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
@@ -2046,13 +2042,6 @@ begin
            end if;                                   -- variables are not
            if isExecutingCommand then                -- declared in syntax chk
               arrayIndex := long_integer(to_numeric(f));  -- convert to number
-              --array_id2 := arrayID( to_numeric(      -- array_id2=reference
-              --   identifiers( array_id ).value ) );  -- to the array table
-              --if indexTypeOK( array_id2, kind ) then -- check and access array
-              --    if inBounds( array_id2, arrayIndex ) then
-              --       f := arrayElement( array_id2, arrayIndex );
-              --    end if;
-              --end if;
               -- TODO: make a utility function for doing all this.
               -- TODO: probably needs a better error message
               if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
@@ -2127,9 +2116,6 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
      err( "operator expected");
-  -- This is checked by parseTerm
-  --elsif identifiers( Token ).value.all /= "**" then
-  --   err( "** operator expected");
   else
      op := identifiers( token ).value.all;
   end if;
@@ -2176,7 +2162,8 @@ begin
                  term := null_unbounded_string;
               end;
           else
-              err( "interal error: unknown power operator" );
+              err( gnat.source_info.source_location &
+                   "interal error: unknown power operator" );
           end if;
         else
            err( "operation ** not defined for these types" );

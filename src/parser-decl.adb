@@ -111,7 +111,6 @@ begin
       end if;
       identifiers( newtype_id ).usage := abstractUsage; -- vars not allowed
       identifiers( newtype_id ).wasReferenced := true;  -- treat as used
-      --identifiers( newtype_id ).referencedByThread := getThreadName;
       identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       expect( abstract_t );
       if token = abstract_t or token = limited_t or token = constant_t then
@@ -146,30 +145,6 @@ begin
 
    end if;
 end ParseTypeUsageQualifiers;
-
---procedure checkTypeUsageAgainstParent( newtype_id, parent_id : identifier ) is
---  -- Check for more restrictive usage qualifiers than a parent.  Also assigns
---  -- the parent usage as a default.
---begin
---  if identifiers( newtype_id ).usage = fullUsage then
---     identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
---  elsif identifiers( parent_id ).usage = limitedUsage and identifiers( newtype_id ).usage = constantUsage then
---     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
---          " is less restrictive than its parent type " &
---          optional_bold( to_string( identifiers( parent_id ).name ) ) &
---          ", which is limited" );
---  elsif identifiers( parent_id ).usage = abstractUsage and identifiers( newtype_id ).usage = constantUsage then
---     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
---          " is less restrictive than its parent type " &
---          optional_bold( to_string( identifiers( parent_id ).name ) ) &
---          ", which is abstract" );
---  elsif identifiers( parent_id ).usage = abstractUsage and identifiers( newtype_id ).usage = limitedUsage then
---     err( optional_bold( to_string( identifiers( newtype_id ).name ) ) &
---          " is less restrictive than its parent type " &
---          optional_bold( to_string( identifiers( parent_id ).name ) ) &
---          ", which is abstract" );
---  end if;
---end checkTypeUsageAgainstParent;
 
 procedure ParseVarUsageQualifiers( id : identifier; expr_expected : out boolean ) is
   -- Handle the usage qualifiers that go before a variable's type
@@ -267,9 +242,11 @@ begin
              err( "constant is less restrictive than limited" );
           end if;
        when abstractUsage =>
-          err( "internal error: abstract usage qualifier not expected" );
+          err( gnat.source_info.source_location &
+               "internal error: abstract usage qualifier not expected" );
        when others =>
-          err( "internal error: unexpected usage qualifier" );
+          err( gnat.source_info.source_location &
+               "internal error: unexpected usage qualifier" );
        end case;
      end;
   end if;
@@ -323,9 +300,11 @@ begin
        when limitedUsage =>
           err( "limited identifiers cannot be copied" );
        when abstractUsage =>
-          err( "internal error: abstract usage qualifier not expected" );
+          err( gnat.source_info.source_location &
+               "internal error: abstract usage qualifier not expected" );
        when others =>
-          err( "internal error: unexpected usage qualifier" );
+          err( gnat.source_info.source_location &
+               "internal error: unexpected usage qualifier" );
        end case;
 
        -- All of our resources are limited.  However, as a safety precaution:
@@ -334,7 +313,8 @@ begin
        -- in another.
 
        if identifiers( canonicalRef.id ).resource then
-          err( "internal error: resource identifiers cannot be copied" );
+          err( gnat.source_info.source_location &
+               "internal error: resource identifiers cannot be copied" );
        end if;
 
      end;
@@ -359,8 +339,7 @@ procedure ParseArrayAssignPart( array_id : identifier ) is
   arrayIndex : long_integer;
   lastIndex  : long_integer;
   second_array_id  : identifier;
-  -- second_array_id2 : arrayID;
-  base_type  : identifier; -- NEWARRAY
+  base_type  : identifier;
 begin
 
   -- Note: Array ID will not be valid at syntax check time
@@ -372,19 +351,12 @@ begin
         base_type := getBaseType( identifiers( array_id ).kind );
         arrayIndex := identifiers( base_type ).firstBound;
         lastIndex := identifiers( base_type ).lastBound;
-        -- arrayIndex := firstBound( array_id2 );                 -- low bound
-        -- lastIndex  := lastBound( array_id2 );                  -- high bound
      end if;
      loop                                                      -- read values
        ParseExpression( expr_value, expr_type );               -- next element
        if isExecutingCommand then                              -- not on synchk
-          --if not inBounds( array_id2, arrayIndex ) then        -- in range? add
-          --   err( "the array can only hold" &
-          --        optional_bold( lastIndex'img ) & " elements" );
-          --else
-             -- assignElement( array_id2, arrayIndex, expr_value );
              begin
-               identifiers( array_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
+               identifiers( array_id ).avalue( arrayIndex ) := expr_value;
              exception when CONSTRAINT_ERROR =>
                err( "assigning " & optional_bold( arrayIndex'img ) &
                     " elements but the array is range " &
@@ -539,18 +511,10 @@ begin
            identifiers( elementType ).wasApplied := true;
         end if;
         if type_checks_done or else class_ok( elementType, typeClass, subClass ) then     -- item type OK?
-           --if isExecutingCommand then
            if isExecutingCommand and not syntax_check then
-              --declareArrayType( id => type_id,
-              --           name => to_unbounded_string( "an anonymous array" ),
-              --           first => long_integer( to_numeric( ab1 ) ),
-              --           last => long_integer( to_numeric( ab2 ) ),
-              --           ind => kind1,
-              --           blocklvl => blocks_top );
-              -- identifiers( anonType ).value := to_unbounded_string( type_id'img );
               identifiers( anonType ).value.all := null_unbounded_string;
-              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1 ) ); -- NEWARRAY
-              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2 ) ); -- NEWARRAY
+              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1 ) );
+              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2 ) );
               identifiers( anonType ).genKind    := kind1;
            end if;
         end if;
@@ -563,18 +527,9 @@ begin
   -- (Constant assignments, etc. occur only when actually running a script)
 
   if isExecutingCommand then
-     --declareArray( id => array_id,
-     --              name => identifiers( id ).name,
-     --              first => long_integer( to_numeric( ab1 ) ),
-     --              last => long_integer( to_numeric( ab2 ) ),
-     --              ind => kind1,
-     --              blocklvl => blocks_top );
-     -- identifiers( id ).value := to_unbounded_string( array_id'img );
      identifiers( id ).value.all := null_unbounded_string;
-     identifiers( id ).avalue := findStorage( long_integer( to_numeric( ab1 ) ), long_integer( to_numeric( ab2 ) ) );  -- NEWARRAY
-     --identifiers( id ).avalue := new storage( long_integer( to_numeric( ab1 ) ) .. long_integer( to_numeric( ab2 ) ) );  -- NEWARRAY
--- put_line( "parseAnonArray: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( kind1 ).firstBound'img & ".." & identifiers( kind1 ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'first'img );
-     identifiers( id ).genKind := kind1; -- NEWARRAY
+     identifiers( id ).avalue := findStorage( long_integer( to_numeric( ab1 ) ), long_integer( to_numeric( ab2 ) ) );
+     identifiers( id ).genKind := kind1;
   end if;
 
   -- Change variable into an array
@@ -582,7 +537,6 @@ begin
   if not error_found then     -- syntax OK, but if execution failed, no
      identifiers( id ).list := true;                           -- var is an array
      identifiers( id ).kind := anonType;
-     --identifiers( id ).class:= varClass;
   end if;
 
   -- Any initial assignment?  Then do it.
@@ -590,7 +544,6 @@ begin
   -- Note: Array ID will not be valid at syntax check time
 
   if token = symbol_t and identifiers( token ).value.all = ":=" then
-     --ParseArrayAssignPart( id, array_id );
      ParseArrayAssignPart( id );
   end if;
 
@@ -600,8 +553,6 @@ procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
   -- Syntax: array-declaration = " := array_assign" | renames oldarray
   -- ParseDeclarationPart was getting complicated so this procedure
   -- was declared separately.
-  -- array_id : arrayID;
-  -- type_id : arrayID;
   base_type_id : identifier;
   canonicalRef : renamingReference;
 begin
@@ -630,35 +581,21 @@ begin
         else
            base_type_id := arrayType;
         end if;
-        -- type id is the array id (e.g. in the old array package )
-        -- type_id := arrayID( to_numeric( identifiers( base_type_id ).value ) );
-        --declareArray( id => array_id,
-        --              name => identifiers( id ).value,
-        --              first => firstBound( type_id ),
-        --              last => lastBound( type_id ),
-        --              ind => indexType( type_id ),
-        --              blocklvl => blocks_top );
-        -- identifiers( id ).value := to_unbounded_string( array_id'img );
         identifiers( id ).value.all := null_unbounded_string;
-        identifiers( id ).avalue := findStorage( identifiers( base_type_id ).firstBound, identifiers( base_type_id ).lastBound );  -- NEWARRAY
-        --identifiers( id ).avalue := new storage( identifiers( base_type_id ).firstBound .. identifiers( base_type_id ).lastBound );  -- NEWARRAY
-   -- put_line( "parseArrayDecl: " & to_string( identifiers( id ).name ) & " is new array " & identifiers( base_type_id ).firstBound'img & ".." & identifiers( base_type_id ).lastBound'img & " => " & identifiers( id ).avalue'first'img & ".." & identifiers( id ).avalue'last'img ); -- NEWARRAY DEBUG
-        -- identifiers( id ).genKind := indexType( type_id ); -- NEWARRAY
-        identifiers( id ).genKind := identifiers( base_type_id ).genKind; -- NEWARRAY
+        identifiers( id ).avalue := findStorage( identifiers( base_type_id ).firstBound, identifiers( base_type_id ).lastBound );
+        identifiers( id ).genKind := identifiers( base_type_id ).genKind;
      end if;
 
      -- Change variable into an array
 
      identifiers( id ).list := true;                           -- var is an array
      identifiers( id ).kind := arrayType;
-     --identifiers( id ).class:= varClass;
 
      -- Any initial assignment?  Then do it.
      --
      -- Note: Array ID will not be valid at syntax check time
 
      if token = symbol_t and identifiers( token ).value.all = ":=" then
-        --ParseArrayAssignPart( id, array_id );
         ParseArrayAssignPart( id );
      elsif token = symbol_t and identifiers( token ).svalue = "(" then
          err( optional_bold( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
@@ -901,7 +838,6 @@ begin
                -- main record identifier.
                if syntax_check and then not error_found then
                   identifiers( dont_care_t ).wasReferenced := true;
-                  --identifiers( dont_care_t ).referencedByThread := getThreadName;
                   identifiers( dont_care_t ).wasWritten := true;
                   identifiers( dont_care_t ).wasFactor := true;
                end if;
@@ -1002,7 +938,6 @@ begin
          declare
             genKindId : identifier renames identifiers( id ).genKind;
          begin
-            --genKindId := identifiers( id ).genKind;
             if class_ok( genKindId, typeClass, subClass ) then
                if identifiers( genKindId ).list then
                   err( "element type should be a scalar type" );
@@ -1036,7 +971,6 @@ begin
       declare
          genKindId : identifier renames identifiers( id ).genKind;
       begin
-         --genKindId := identifiers( id ).genKind;
          if class_ok( genKindId, typeClass, subClass ) then
             if identifiers( genKindId ).list then
                err( "element type should be a scalar type" );
@@ -1167,12 +1101,6 @@ begin
      identifiers( type_token ).wasApplied := true;     -- used
   end if;
 
-  --if identifiers( type_token ).genKind /= eof_t then
-  --  put_line( "DeclarationPart: 1 type " & to_string( identifiers( type_token ).name ) & " " & type_token'img & " has params" ); -- DEBUG
-  --else
-  --  put_line( "DeclarationPart: 1 type " & to_string( identifiers( type_token ).name ) & " " & type_token'img & " has NO params" ); -- DEBUG
-  --end if;
-
   -- Variable vs. Type Qualifiers
   --
   -- If the variable has an explicit qualifier, it will have been applied
@@ -1190,9 +1118,11 @@ begin
         when limitedUsage =>
            identifiers( id ).usage := limitedUsage;
         when abstractUsage =>
-           err( "internal error: variables should not have abstract types" );
+           err( gnat.source_info.source_location &
+                "internal error: variables should not have abstract types" );
         when others =>
-           err( "internal error: unknown var qualifier" );
+           err( gnat.source_info.source_location &
+                "internal error: unknown var qualifier" );
         end case;
   when constantUsage =>
        if identifiers( type_token ).usage = limitedUsage then
@@ -1205,7 +1135,8 @@ begin
          optional_bold( to_string( identifiers( type_token ).name ) ) &
          " because it is " & optional_bold( "abstract" ) );
   when others =>
-      err( "internal error: unknown var qualifier" );
+      err( gnat.source_info.source_location &
+           "internal error: unknown var qualifier" );
   end case;
 
   if token = private_t then                             -- private access?
@@ -1217,10 +1148,6 @@ begin
   if identifiers( getBaseType( type_token ) ).list then       -- array type?
      if not anon_arrays then
         err( "nested arrays not yet supported" );
-     --elsif identifiers( type_token ).usage = abstractUsage then
-     --   err( "constants and variables cannot be declared as " &
-     --     optional_bold( to_string( identifiers( type_token ).name ) ) &
-     --     " because it is " & optional_bold( "abstract" ) );
      else
         ParseArrayDeclaration( id, type_token );                -- handle it
      end if;
@@ -1272,12 +1199,6 @@ begin
       expr_expected := true;
   end if;
 
-  --if identifiers( type_token ).genKind /= eof_t then
-  --  put_line( "DeclarationPart: 2 type " & to_string( identifiers( type_token ).name ) & " has params" ); -- DEBUG
-  --else
-  --  put_line( "DeclarationPart: 2 type " & to_string( identifiers( type_token ).name ) & " has NO params" ); -- DEBUG
-  --end if;
-
   -- Generic Parameters
   --
   -- These only apply to built-in types and they are not arrays or records.
@@ -1304,21 +1225,10 @@ begin
   elsif identifiers( type_token ).genKind /= eof_t then
       if isExecutingCommand then
          AttachGenericParameterResource( id, type_token );
-         --put_line( " ... attaching resource" );
-      --else
       end if;
       identifiers( id ).genKind := identifiers( type_token ).genKind;
       identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
       identifiers( id ).kind := type_token;
-  --if identifiers( id ).genKind = eof_t then -- DEBUG
-  --   put_line( "DeclarationPart: var " & to_string( identifiers( id ).name ) & " has a genKind of EOF" ); -- DEBUG
-  --else
-  --   put_line( "DeclarationPart: var " & to_string( identifiers( id ).name ) & " is OK" ); -- DEBUG
-  --end if;
-      --put_line("Declare: genKind of var = " );
-      --put_identifier( identifiers( id ).genKind ); -- DEBUG
-      --put_line("Declare: genKind of type = " );
-      --put_identifier( identifiers( type_token ).genKind ); -- DEBUG
 
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.
@@ -1326,8 +1236,6 @@ begin
   elsif token = renames_t then
 
      declare
-        -- the class will change when parsing the rename
-        --originalClass : anIdentifierClass := identifiers( id ).class;
         originalFieldOf : identifier := identifiers( id ).field_of;
         -- TODO: refactor these booleans
         wasLimited : boolean := identifiers( id ).usage = limitedUsage;
@@ -1382,8 +1290,6 @@ begin
   elsif token = copies_t then
 
      declare
-        -- the class will change when parsing the rename
-        --originalClass : anIdentifierClass := identifiers( id ).class;
         originalFieldOf : identifier := identifiers( id ).field_of;
         -- TODO: refactor these booleans
         wasLimited : boolean := identifiers( id ).usage = limitedUsage;
@@ -1440,10 +1346,6 @@ begin
 
   elsif (token = symbol_t and identifiers( token ).value.all = ":=") or -- assign part?
      expr_expected then
-
-     --if identifiers( type_token ).limit then
-     --   err( "limited type variables cannot be assigned a value" );
-     --end if;
 
      -- Tricky bit: what about "i : integer := i"?
      --   Dropping the top of the stack temporarily isn't good enough: if
@@ -1655,15 +1557,8 @@ begin
       b := deleteIdent( newtype_id );                       -- discard bad type
    elsif type_checks_done or else class_ok( elementType, typeClass, subClass ) then  -- item type OK?
       if isExecutingCommand and not syntax_check then       -- not on synchk
-         --declareArrayType( id => type_id,
-         --           name => identifiers( newtype_id ).name,
-         --           first => long_integer( to_numeric( ab1 ) ),
-         --           last => long_integer( to_numeric( ab2 ) ),
-         --           ind => kind1,
-         --           blocklvl => blocks_top );
-         -- identifiers( newtype_id ).value := to_unbounded_string( type_id'img );
-         identifiers( newtype_id ).firstBound := long_integer( to_numeric( ab1 ) ); -- NEWARRAY
-         identifiers( newtype_id ).lastBound := long_integer( to_numeric( ab2 ) ); -- NEWARRAY
+         identifiers( newtype_id ).firstBound := long_integer( to_numeric( ab1 ) );
+         identifiers( newtype_id ).lastBound := long_integer( to_numeric( ab2 ) );
       end if;
       identifiers( newtype_id ).kind := elementType;        -- element type
       identifiers( newtype_id ).genKind := kind1;           -- index type
@@ -1809,12 +1704,8 @@ begin
       ParseTypeUsageQualifiers( newtype_id );
       if token = array_t then
          ParseArrayTypePart( newtype_id );
-         --identifiers( newtype_id ).wasReferenced := true;  -- treat as used
-         --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = record_t then
          ParseRecordTypePart( newtype_id );
-         --identifiers( newtype_id ).wasReferenced := true;  -- treat as used
-         --identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       elsif token = new_t then
         err( optional_bold( "abstract" ) & " or " &
              optional_bold( "constant" ) & " or " &
@@ -1920,16 +1811,10 @@ begin
         -- of the parent to the new type.
 
         if identifiers( parent_id ).genKind /= eof_t then
-           --put_line( "ParseType: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
            identifiers( newtype_id ).genKind :=         -- copy index type
            identifiers( parent_id ).genKind;          -- / generic type
            identifiers( newtype_id ).genKind2 :=        -- copy index type
            identifiers( parent_id ).genKind2;         -- / generic type
-           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
-           --   put_line( "  ... became eof" ); -- DEBUG
-           --else -- DEBUG
-           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
-           --end if; -- DEBUG
         end if;
      elsif syntax_check then                            -- syntax check?
         identifiers( newtype_id ).kind := parent_id;    -- assign subtype
@@ -1943,16 +1828,10 @@ begin
         -- of the parent to the new type.
 
         if identifiers( parent_id ).genKind /= eof_t then
-           --put_line( "ParseType: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
            identifiers( newtype_id ).genKind :=         -- copy index type
            identifiers( parent_id ).genKind;          -- / generic type
            identifiers( newtype_id ).genKind2 :=        -- copy index type
            identifiers( parent_id ).genKind2;         -- / generic type
-           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
-           --   put_line( "  ... became eof" ); -- DEBUG
-           --else -- DEBUG
-           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
-           --end if; -- DEBUG
         end if;
      else                                               -- otherwise
        b := deleteIdent( newtype_id );                  -- discard new type
@@ -1966,11 +1845,6 @@ begin
         err( "affirm or ';' expected" );
      end if;
    end if;
-  --if identifiers( newtype_id ).genKind /= eof_t then
-  --  put_line( "ParseType: at exit, " & to_string( identifiers( newtype_id ).name ) & newtype_id'img & " has params" ); -- DEBUG
-  --else
-  --  put_line( "ParseType: at exit, " & to_string( identifiers( newtype_id ).name ) & newtype_id'img & " has NO params" ); -- DEBUG
-  --end if;
 end ParseType;
 
 procedure ParseSubtype is
@@ -2023,16 +1897,10 @@ begin
         -- of the parent to the new type.
 
         if identifiers( parent_id ).genKind /= eof_t then
-           --put_line( "ParseSubtype: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
            identifiers( newtype_id ).genKind :=         -- copy index type
            identifiers( parent_id ).genKind;          -- / generic type
            identifiers( newtype_id ).genKind2 :=        -- copy index type
            identifiers( parent_id ).genKind2;         -- / generic type
-           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
-           --   put_line( "  ... became eof" ); -- DEBUG
-           --else -- DEBUG
-           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
-           --end if; -- DEBUG
         end if;
       elsif syntax_check then                              -- syntax check?
          identifiers( newtype_id ).kind := parent_id;      -- assign subtype
@@ -2046,16 +1914,10 @@ begin
         -- of the parent to the new type.
 
         if identifiers( parent_id ).genKind /= eof_t then
-           --put_line( "ParseSubtype: Copying genKind to " & to_string( identifiers( newtype_id ).name ) & " " & newtype_id'img ); -- DEBUG
            identifiers( newtype_id ).genKind :=         -- copy index type
            identifiers( parent_id ).genKind;          -- / generic type
            identifiers( newtype_id ).genKind2 :=        -- copy index type
            identifiers( parent_id ).genKind2;         -- / generic type
-           --if identifiers( newtype_id ).genKind = eof_t then -- DEBUG
-           --   put_line( "  ... became eof" ); -- DEBUG
-           --else -- DEBUG
-           --   put_line( "  ... is " & to_string( identifiers( identifiers( newtype_id ).genKind ).name ) ); -- DEBUG
-           --end if; -- DEBUG
         end if;
       else                                                 -- otherwise
          b := deleteIdent( newtype_id );                   -- discard subtype
