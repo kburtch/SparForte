@@ -27,6 +27,7 @@ pragma ada_2005;
 with
     Interfaces.C,
     gnat.directory_operations,
+    gnat.source_info,
     ada.exceptions,
     ada.strings.unbounded,
     spar_os,
@@ -861,7 +862,7 @@ begin
            exception when msg: berkeley_error =>
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
-              err( "internal error: unable to reference BDB session" );
+              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
            when CONSTRAINT_ERROR =>
               err( "constraint_error: value too big" );
            end;
@@ -953,7 +954,7 @@ begin
                   err( exception_message( msg ) );
               end if;
            when STORAGE_ERROR =>
-              err( "internal error: unable to reference BDB session" );
+              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
            end;
         end if;
      elsif isArray then
@@ -971,7 +972,7 @@ begin
                   err( exception_message( msg ) );
               end if;
            when STORAGE_ERROR =>
-              err( "internal error: unable to reference BDB session" );
+              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
            end;
         end if;
      else
@@ -989,7 +990,7 @@ begin
                   err( exception_message( msg ) );
               end if;
            when STORAGE_ERROR =>
-              err( "internal error: unable to reference BDB session" );
+              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
            end;
         end if;
      end if;
@@ -1024,7 +1025,7 @@ begin
         exception when berkeley_error =>
            result := to_bush_boolean( false );
         when STORAGE_ERROR =>
-           err( "internal error: unable to reference BDB session" );
+           err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
         end;
      end if;
   end if;
@@ -1081,7 +1082,7 @@ begin
                  err( exception_message( msg ) );
               end if;
            when STORAGE_ERROR =>
-              err( "internal error: unable to reference BDB session" );
+              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
            end;
         end if;
      end if;

@@ -351,7 +351,7 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( "internal error: unexpected usage qualifier " & ident.usage'img );
+           err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
         end case;
      when typeClass =>
         if not ident.list then
@@ -368,7 +368,7 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( "internal error: unexpected usage qualifier " & ident.usage'img );
+           err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
         end case;
      when funcClass =>
         put( "built-in " );
@@ -417,7 +417,7 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( "internal error: unexpected usage qualifier " & ident.usage'img );
+           err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
         end case;
         put( "identifier of the type " );
      end case;
@@ -433,7 +433,7 @@ begin
         null;
      when others =>
         -- bastract should not occur
-        err( "internal error: unexpected usage qualifier " & ident.usage'img );
+        err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
      end case;
 
      -- Show the type
@@ -1529,7 +1529,7 @@ begin
      getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
   else
      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-         "internal error: script unexpectly empty";
+         ": internal error: script unexpectly empty";
   end if;
 
   if inputMode /= interactive and inputMode /= breakout then
@@ -2149,7 +2149,7 @@ procedure topOfBlock is
   cmdLine  : unbounded_string;
 begin
    if blocks_top = blocks'first then                            -- in a block?
-      err( "internal error: topOfBlock: not in a block" );
+      err( gnat.source_info.source_location & ": internal error: topOfBlock: not in a block" );
    else
       resumeScanning( blocks( blocks_top-1 ).state );           -- move to top
       if inputMode /= interactive and inputMode /= breakout then -- in a script?
@@ -2415,7 +2415,7 @@ begin
         b := b - 1;                                       -- keep looking
      end loop;
   else
-     err( "internal error: getting exception but not in an exception block" );
+     err( gnat.source_info.source_location & ": internal error: getting exception but not in an exception block" );
   end if;
 end getBlockException;
 
@@ -3533,7 +3533,7 @@ function class_ok( id : identifier; class : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
-        err( "internal error: eof given as the identifier to class_ok(1)" );
+        err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(1)" );
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
@@ -3562,7 +3562,7 @@ function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
-        err( "internal error: eof given as the identifier to class_ok(2)" );
+        err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(2)" );
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
@@ -3597,7 +3597,7 @@ function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolea
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
-        err( "internal error: eof given as the identifier to class_ok(3)" );
+        err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(3)" );
      elsif id = exception_t then
         err_previous( "an " & bold( "exception" ) &
            " is not a " &
@@ -4092,7 +4092,7 @@ function deleteIdent( id : identifier ) return boolean is
     when http_cgi =>
         null; -- does not save on variable destruction
     when others =>
-        err( "internal error: unexpected export mapping in ExportValue" );
+        err( gnat.source_info.source_location & ": internal error: unexpected export mapping in ExportValue" );
     end case;
   end ExportValue;
 
@@ -4118,7 +4118,7 @@ begin
              identifiers( derefed_id ).renamed_count :=
               identifiers( derefed_id ).renamed_count - 1;
           else
-              err( "internal error: dereferenced identifier's renamed_count " &
+              err( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
                  "unexpectedly zero  for "  & optional_bold( to_string( identifiers( derefed_id ).name ) ) );
           end if;
         end;
@@ -4168,7 +4168,7 @@ begin
           identifiers( derefed_id ).renamed_count :=
              identifiers( derefed_id ).renamed_count - 1;
        else
-           err( "internal error: dereferenced identifier's renamed_count " &
+           err( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
                 "unexpectedly zero  for "  & optional_bold( to_string( identifiers( derefed_id ).name ) ) );
        end if;
      end;
@@ -4441,7 +4441,7 @@ begin
      end if;
   end if;
   if not ok then
-     err( optional_bold( "JSON string value" ) & " expected in string """ & to_string( toEscaped( expr_val ) ) & """" );
+     err( optional_bold( "JSON string value" ) & " expected in string """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" );
      return;
   end if;
   i := i + 1;
@@ -4523,7 +4523,7 @@ begin
                elsif enum_val = 1 then
                   item := to_unbounded_string( "true" );
                else
-                  err( "internal error: unexpect boolean position" & enum_val'img );
+                  err( gnat.source_info.source_location & ": internal error: unexpect boolean position" & enum_val'img );
                end if;
                if arrayElementPos /= source_last then
                   result := result & item & to_unbounded_string( "," );
@@ -4569,9 +4569,9 @@ begin
         err( "private type elements cannot be encoded as JSON" );
      end if;
 exception when CONSTRAINT_ERROR =>
-  err( "internal error: constraint_error" );
+  err( gnat.source_info.source_location & ": internal error: constraint_error" );
 when STORAGE_ERROR =>
-  err( "internal error : storage error raised in ParseFactor" );
+  err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
 end DoArrayToJson;
 
 
@@ -4618,7 +4618,7 @@ begin
           if ch = '{' then
             err( "JSON array expected but found object" );
           elsif ch /= '[' then
-             err( optional_bold( "JSON array expected" ) & " but found string """ & to_string( toEscaped( source_val ) ) & '"' );
+             err( optional_bold( "JSON array expected" ) & " but found string """ & toSecureData( to_string( toEscaped( source_val ) ) ) & '"' );
           elsif element( source_val, length( source_val ) ) /= ']' then
              err( "expected trailing ]" );
           end if;
@@ -4705,7 +4705,7 @@ begin
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   else
-                     err( optional_bold( to_string( item ) ) & " is neither JSON true nor false" );
+                     err( optional_bold( toSecureData( to_string( item ) ) ) & " is neither JSON true nor false" );
                   end if;
                else
                   item := item & ch;
@@ -4880,7 +4880,7 @@ begin
                exception when others => null;
                end;
                if not ok then
-                  err( optional_bold( "JSON number value" ) & " expected in string """ & to_string( toEscaped( item ) ) & """" );
+                  err( optional_bold( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( item ) ) ) & """" );
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).avalue( arrayElement ) := item;
@@ -4907,9 +4907,9 @@ begin
         err( "private type elements cannot be used to store JSON data" );
      end if;
 exception when CONSTRAINT_ERROR =>
-  err( "internal error: constraint_error" );
+  err( gnat.source_info.source_location & ": internal error: constraint_error" );
 when STORAGE_ERROR =>
-  err( "internal error : storage error raised in ParseFactor" );
+  err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
 end DoJsonToArray;
 
 
@@ -4965,7 +4965,7 @@ begin
                             exception when others =>
                                err( "unable to parse boolean value " &
                                   ASCII.Quotation &
-                                  to_string( identifiers( field_t ).value.all ) &
+                                  toSecureData( to_string( identifiers( field_t ).value.all ) ) &
                                   ASCII.Quotation );
                             end;
                          elsif uniFieldType = uni_numeric_t then
@@ -5033,7 +5033,7 @@ begin
           if ch = '[' then
             err( "JSON object expected but found array" );
           elsif ch /= '{' then
-             err( optional_bold( "JSON object expected" ) & " but found string """ & to_string( toEscaped( item ) ) & '"' );
+             err( optional_bold( "JSON object expected" ) & " but found string """ & toSecureData( to_string( toEscaped( item ) ) ) & '"' );
           elsif element( item, length( item ) ) /= '}' then
              err( "expected trailing }" );
           end if;
@@ -5133,7 +5133,7 @@ begin
                        elsif decodedItemValue = "false" then
                           identifiers( j ).value.all :=  to_unbounded_string( "0" );
                        else
-                          err( optional_bold( to_string( toEscaped( decodedItemName ) ) ) & " has a value of " & optional_bold( to_string( toEscaped( decodedItemValue ) ) ) & " but expected JSON true or false" );
+                          err( optional_bold( to_string( toEscaped( decodedItemName ) ) ) & " has a value of " & optional_bold( toSecureData( to_string( toEscaped( decodedItemValue ) ) ) ) & " but expected JSON true or false" );
                        end if;
 
 -- range check the valuse for enumerateds
@@ -5174,7 +5174,7 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( optional_bold( "JSON string value" ) & " expected for " & to_string( ToEscaped( searchName ) ) );
+                            err( optional_bold( "JSON string value" ) & " expected for " & toSecureData( to_string( ToEscaped( searchName ) ) ) );
                          end if;
                          -- strip of quotes and un-escape any characters.
                          if length( decodedItemValue ) > 0 then
@@ -5193,7 +5193,7 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( optional_bold( "JSON number value" ) & " expected in """ & to_string( toescaped( searchName ) ) & """" );
+                         err( optional_bold( "JSON number value" ) & " expected in """ & toSecureData( to_string( toEscaped( searchName ) ) ) & """" );
                       end if;
                       identifiers( j ).value.all := castToType( decodedItemValue,
                          identifiers( j ).kind );
@@ -5286,7 +5286,7 @@ begin
   if ok then
      expr_val := jsonString;
   else
-     err( optional_bold( "JSON number value" ) & " expected in string """ & to_string( toEscaped( jsonString ) ) & """" );
+     err( optional_bold( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( jsonString ) ) ) & """" );
   end if;
 end DoJsonToNumber;
 
@@ -5845,7 +5845,7 @@ procedure saveScript( scriptState : out aScriptState ) is
 -- etc. are not saved.
 begin
   if script = null then
-     err( "Internal error: saveScript has no script to save" );
+     err( gnat.source_info.source_location & ": Internal error: saveScript has no script to save" );
   end if;
   markScanner( scriptState.scannerState );
   scriptState.script := script;
@@ -5860,7 +5860,7 @@ procedure restoreScript( scriptState : in out aScriptState ) is
 -- off.
 begin
   if scriptState.script = null then
-     err( "Internal error: restoreScript has no script to restore" );
+     err( gnat.source_info.source_location & ": Internal error: restoreScript has no script to restore" );
   end if;
   if script /= null then
      free( script );

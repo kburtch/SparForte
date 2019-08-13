@@ -943,9 +943,11 @@ begin
            err( "template " & optional_bold( to_string( templatePath ) ) &
                " doesn't exist or is not readable" );
         when MODE_ERROR =>
-           err( "interal error: mode error on template " & optional_bold( to_string( templatePath ) ) );
+           err( gnat.source_info.source_location &
+                ": internal error: mode error on template " & optional_bold( to_string( templatePath ) ) );
         when END_ERROR =>
-           err( "interal error: end of file reached on template " & optional_bold( to_string( templatePath ) ) );
+           err( gnat.source_info.source_location &
+                ": internal error: end of file reached on template " & optional_bold( to_string( templatePath ) ) );
         -- when others =>
        --  err( "unable to open template " & optional_bold( to_string( templatePath ) ) );
         end;

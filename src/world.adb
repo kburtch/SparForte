@@ -1123,7 +1123,7 @@ begin
            cnt := cnt + 1;
            if cnt > 1000 then
               raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-                 "internal error: infinite renaming loop";
+                 ": internal error: infinite renaming loop";
            end if;
         end loop;
         identifiers( new_id ).value := identifiers( deref_id ).svalue'access;
@@ -1191,7 +1191,7 @@ begin
      -- no more identifiers means we didn't find it.
      if j = identifiers_top then
         raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-          "internal error: record field not found";
+          ": internal error: record field not found";
      end if;
 
      declare
@@ -1500,7 +1500,7 @@ begin
 --        end if;
         identifiers( id ).openNamespace := p;
      else
-        put_line( "internal error: open namespace tag not found" );
+        put_line( gnat.source_info.source_location & ": internal error: open namespace tag not found" );
      end if;
      identifiers( id ).parentNamespace := identifiers( identifiers( id ).openNamespace ).parentNamespace;
 --     put_line( "   open tag " & to_string( identifiers( id ).openNamespace.name ) ); -- DEBUG

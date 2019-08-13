@@ -32,6 +32,7 @@ with system,
     ada.calendar,
     gnat.regexp,
     gnat.directory_operations,
+    gnat.source_info,
     cgi,
     spar_os.exec,
     pegasock.memcache,
@@ -664,7 +665,7 @@ begin
         var_id = teams_work_measure_sloc_t then
     expect( number_t );
   else
-     err( "internal error: don't know how to handle this type of work measure value" );
+     err( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work measure value" );
   end if;
   expect( symbol_t, "," );
 end ParseWorkEstimate;
@@ -756,7 +757,7 @@ begin
      end;
      expect( number_t );
   else
-     err( "internal error: don't know how to handle this type of work priority value" );
+     err( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work priority value" );
   end if;
 end ParseWorkPriority;
 
@@ -1162,7 +1163,7 @@ begin
      end if;
      ParseIdentifier( var_id );
   when others =>
-     err( "Internal error: can't handle pragma" );
+     err( gnat.source_info.source_location & ": Internal error: can't handle pragma" );
   end case;
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
@@ -1410,7 +1411,7 @@ begin
                            DoJsonToNumber( newValue, identifiers( var_id ).value.all );
                            -- identifiers( var_id ).value := newValue;
                         else
-                           err( "internal error: unexpected import translation type" );
+                           err( gnat.source_info.source_location & ": internal error: unexpected import translation type" );
                         end if;
                      else                                                           -- no mapping
                         identifiers( var_id ).value.all := newValue;
@@ -1462,12 +1463,12 @@ begin
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
                             DoJsonToNumber( importValue, identifiers( var_id ).value.all );
                          else
-                            err( "internal error: unexpected import translation type" );
+                            err( gnat.source_info.source_location & ": internal error: unexpected import translation type" );
                          end if;
                       when none =>
                          identifiers( var_id ).value.all := importValue;
                       when others =>
-                         err( "internal error: unexpected mapping type" );
+                         err( gnat.source_info.source_location & ": internal error: unexpected mapping type" );
                       end case;
                    --end if;
                  end;
@@ -1694,7 +1695,7 @@ begin
         elsif expr_val = "xml" then
            usingTextTestReport := false;
         else
-           err( "internal error: unexpected test report type '" & to_string( expr_val ) & "'" );
+           err( gnat.source_info.source_location & ": internal error: unexpected test report type '" & to_string( expr_val ) & "'" );
         end if;
      when test_result =>
         if testOpt then
@@ -1820,7 +1821,7 @@ begin
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
                            DoJsonToNumber( newValue, identifiers(var_id ).value.all );
                         else
-                           err( "internal error: unexpected import translation type" );
+                           err( gnat.source_info.source_location & ": internal error: unexpected import translation type" );
                         end if;
                      else                                                           -- no mapping
                         identifiers( var_id ).value.all := newValue;
@@ -1862,7 +1863,7 @@ begin
      when unchecked_volatile =>
         identifiers( var_id ).volatile := unchecked;
      when others =>
-        err( "Internal error: unable to execute pragma" );
+        err( gnat.source_info.source_location & ": Internal error: unable to execute pragma" );
      end case;
   end if;
 end ParsePragmaStatement;

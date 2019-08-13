@@ -1062,7 +1062,7 @@ begin
       f := null_unbounded_string;                -- (always return something)
       kind := eof_t;
       err( gnat.source_info.source_location &
-           "internal error: unexpected uniary operation error" );
+           ": internal error: unexpected uniary operation error" );
   end case;
 end ParseFactor;
 

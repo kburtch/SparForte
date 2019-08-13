@@ -23,6 +23,7 @@
 
 with gnat.bubble_sort_a,
      gnat.heap_sort_a,
+     gnat.source_info,
      ada.numerics.float_random,
      world,
      string_util,
@@ -94,9 +95,9 @@ begin
         begin
            f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'first ) );
         exception when CONSTRAINT_ERROR =>
-           err( "internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           err( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
         when STORAGE_ERROR =>
-           err( "internal error : storage error raised in ParseFactor" );
+           err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
         end;
      end if;
      kind := identifiers( var_id ).genKind;
@@ -139,9 +140,9 @@ begin
         begin
            f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'last ) );
         exception when CONSTRAINT_ERROR =>
-           err( "internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           err( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
         when STORAGE_ERROR =>
-           err( "internal error : storage error raised in ParseFactor" );
+           err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
         end;
      end if;
      kind := identifiers( var_id ).genKind;
@@ -518,9 +519,9 @@ begin
             -- moveElement( 0, integer(newpos) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( "internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( gnat.source_info.source_location & ": internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when shuffling array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when shuffling array" );
      end;
   end if;
 end ParseArraysShuffle;
@@ -570,9 +571,9 @@ begin
            end loop;
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "internal error : index out of range when copying" & oldpos'img & " and" & newpos'img & " in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( gnat.source_info.source_location & ": internal error : index out of range when copying" & oldpos'img & " and" & newpos'img & " in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when flipping arrays" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when flipping arrays" );
      end;
   end if;
 end ParseArraysFlip;
@@ -609,9 +610,9 @@ begin
             --moveElement( integer(i), integer(i+1) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( "internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when shifting array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" );
      end;
   end if;
 end ParseArraysShiftRight;
@@ -648,9 +649,9 @@ begin
             --moveElement( integer(i+1), integer(i) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( "internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when shifting array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" );
      end;
   end if;
 end ParseArraysShiftLeft;
@@ -694,9 +695,9 @@ begin
         end if;
         --moveElement( 0, 1 );
      exception when CONSTRAINT_ERROR =>
-        err( "internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when rotating array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" );
      end;
   end if;
 end ParseArraysRotateRight;
@@ -743,9 +744,9 @@ begin
            identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when rotating array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" );
      end;
   end if;
 end ParseArraysRotateLeft;

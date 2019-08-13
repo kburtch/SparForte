@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io, user_io, scanner;
+with ada.text_io, gnat.source_info, user_io, scanner;
 use  ada.text_io, user_io, scanner;
 
 #if BDB
@@ -204,7 +204,7 @@ begin
   when none =>
        put_line( "undefined resource" );
   when others =>
-       put_line( "internal error: unexpected resource" );
+       put_line( standard_error, gnat.source_info.source_location & ": internal error: unexpected resource" );
   end case;
 end putResource;
 
@@ -363,7 +363,7 @@ begin
   --   put_trace( "Resource handle" & id'img & " memory freed" );
   --end if;
   exception when STORAGE_ERROR =>
-    err( "internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img );
+    err( gnat.source_info.source_location & ": internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img );
 end clearResource;
 
 procedure pullResourceBlock( blocklvl : block ) is

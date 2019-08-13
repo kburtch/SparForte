@@ -26,6 +26,7 @@ with interfaces.c,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
+     gnat.source_info,
 #if POSTGRES
      APQ,
 #else
@@ -230,7 +231,7 @@ begin
         err( "mysql support not configured" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end alter;
@@ -285,7 +286,7 @@ begin
         err( "mysql support not configured" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end delete;
@@ -405,7 +406,7 @@ begin
         err( "mysql support not configured" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end insert;
@@ -503,7 +504,7 @@ begin
         err( "mysql support not supported" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end SQLselect;
@@ -667,7 +668,7 @@ begin
      else
         tempStr := to_unbounded_string( ap( 1 ).all );
         if length( tempStr ) <= 1 then
-           err( "internal error: name of identifier to find is empty" );
+           err( gnat.source_info.source_location & ": internal error: name of identifier to find is empty" );
         else
            -- remove ASCII.NUL from C string
            delete( tempStr, length( tempStr ), length( tempStr ) );
@@ -729,7 +730,7 @@ begin
         err( "mysql support not supported" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end update;
