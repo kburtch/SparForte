@@ -2674,7 +2674,9 @@ begin
   declareKeyword( eof_t, "End of File" );
   toByteCode( eof_t, eof_character, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: eof_t is declared too late" );
+     put_line( standard_error,
+       gnat.source_info.source_location &
+        ": internal error: eof_t is declared too late" );
   end if;
 
   -- Global Namespace
@@ -2811,19 +2813,19 @@ begin
   declareIdent( imm_delim_t, "", symbol_t );
   toByteCode( imm_delim_t, immediate_word_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: imm_delim_t is declared too late" );
+     put_line( standard_error, gnat.source_info.source_location & ": internal error: imm_delim_t is declared too late" );
   end if;
 
   declareIdent( imm_sql_delim_t, "", symbol_t );
   toByteCode( imm_sql_delim_t, immediate_sql_word_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: imm_sql_delim_t is declared too late" );
+     put_line( standard_error, gnat.source_info.source_location &": internal error: imm_sql_delim_t is declared too late" );
   end if;
 
   declareIdent( char_escape_t, "", symbol_t );
   toByteCode( char_escape_t, high_ascii_escape, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, "internal error: high_ascii_escape is declared too late" );
+     put_line( standard_error, gnat.source_info.source_location & ": internal error: high_ascii_escape is declared too late" );
   end if;
 
   declareIdent( word_t, "Word", uni_string_t );

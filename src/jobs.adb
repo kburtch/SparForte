@@ -25,6 +25,7 @@ with system,
     interfaces.c,
     ada.text_io,
     ada.strings.unbounded.text_io,
+    gnat.source_info,
     signal_flags,
     world,
     compiler,
@@ -192,7 +193,7 @@ procedure addCommandHash( cmd, full : unbounded_string; builtin : boolean ) is
 begin
   bin := hashOf( cmd );
   if builtin and length( cmdHash( bin ).fullPath ) /= 0 then
-    put_line( standard_error, "internal error: builtin command hash clash for builtin "
+    put_line( standard_error, gnat.source_info.source_location & ": internal error: builtin command hash clash for builtin "
         & toEscaped( cmd ) );
   else
     cmdHash( bin ).cmd := cmd;
@@ -287,16 +288,22 @@ begin
   when EISDIR  => err( "The script interpreter was a directory" );
   when ELIBBAD => err( "The script interpreter could not be run" );
 
-  when EACCES  => err( "Internal error: run() family thought that the" &
-                        " program was not accessible" );
-  when EPERM   => err( "Internal error: run() family thought that it" &
+  when EACCES  => err( gnat.source_info.source_location &
+                       ": Internal error: run() family thought that the" &
+                       " program was not accessible" );
+  when EPERM   => err( gnat.source_info.source_location &
+                       ": Internal error: run() family thought that it" &
                        "had permission to run the program" );
-  when ENOTDIR => err( "Internal error: run() family thought that the " &
+  when ENOTDIR => err( gnat.source_info.source_location &
+                       ": Internal error: run() family thought that the " &
                        "patname was good when a directory in it was " &
                        "wrong" );
-  when ECHILD  => err( "Internal error: spawn() failed to catch ECHILD" );
-  when ENOENT  => err( "Internal error: spawn() failed to find file or file disappeared unexpectedly" );
-  when 0       => err( "Internal error: run() family thinks there was an" &
+  when ECHILD  => err( gnat.source_info.source_location &
+                       ": Internal error: spawn() failed to catch ECHILD" );
+  when ENOENT  => err( gnat.source_info.source_location &
+                       ": Internal error: spawn() failed to find file or file disappeared unexpectedly" );
+  when 0       => err( gnat.source_info.source_location &
+                       "Internal error: run() family thinks there was an" &
                        " error but the error code indicates no error" );
 
   when others  => -- out of memory, IO error
@@ -565,7 +572,7 @@ begin
             Success := true;
          end if;
       else
-         err( "internal error: pipelines must be run in background" );
+         err( gnat.source_info.source_location & ": internal error: pipelines must be run in background" );
       end if;
    end if;
 end run_inpipe;
@@ -613,7 +620,7 @@ begin
       closePipeline;
    else
       if background then                    -- should never be
-         err( "internal error: final pipeline command must be run in foreground" );
+         err( gnat.source_info.source_location & ": internal error: final pipeline command must be run in foreground" );
          Success := false;
          closePipeline;
          return;
@@ -664,7 +671,7 @@ begin
          if C_errno = EINTR then
             goto retry5;
          end if;
-         err( "internal error: unable to restore old stdin: " &
+         err( gnat.source_info.source_location & ": internal error: unable to restore old stdin: " &
             " unable to dup2(" & oldStdin'img & "," &
             stdin'img & "): errno " & C_errno'img );
       end if;
@@ -818,7 +825,7 @@ begin
             Success := true;
          end if;
       else
-         err( "internal error: pipelines must be run in background" );
+         err( gnat.source_info.source_location & ": internal error: pipelines must be run in background" );
       end if;
    end if;
 end run_bothpipe;

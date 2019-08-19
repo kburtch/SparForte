@@ -35,7 +35,9 @@ pragma suppress( range_check );
 
 with text_io; use text_io;
 with spar_os, Ada.Characters.Handling;
-use  Ada.Characters.Handling;
+with world;
+use  Ada.Characters.Handling,
+     world;
 
 package body string_util is
 
@@ -883,6 +885,16 @@ begin
   -- no directory
   return s;
 end basename;
+
+function toSecureData( s : string ) return string is
+-- return a string if not running in maintenance mode
+-- (used in securing data shown in error messages)
+begin
+  if not maintenanceOpt then
+     return s;
+  end if;
+  return "<secured data>";
+end toSecureData;
 
 end string_util;
 

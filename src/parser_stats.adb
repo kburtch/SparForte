@@ -24,6 +24,7 @@ with ada.text_io; use ada.text_io; -- DEBUG
 
 with gnat.bubble_sort_a,
      gnat.heap_sort_a,
+     gnat.source_info,
      ada.numerics.float_random,
      ada.numerics.long_elementary_functions,
      spar_os,
@@ -95,7 +96,7 @@ begin
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when maxing array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when maxing array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -141,7 +142,7 @@ begin
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when minning array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when minning array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -182,7 +183,7 @@ begin
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when minning array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when minning array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -225,7 +226,7 @@ begin
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when summing array" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when summing array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   elsif syntax_check then
@@ -277,7 +278,7 @@ begin
      exception when CONSTRAINT_ERROR =>
         err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
      when STORAGE_ERROR =>
-        err( "internal error : storage error raised when calculating variance" );
+        err( gnat.source_info.source_location & ": internal error : storage error raised when calculating variance" );
      end;
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;

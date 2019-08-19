@@ -23,6 +23,7 @@
 
 with text_io;use text_io;
 with gnat.lock_files,
+     gnat.source_info,
     ada.strings.unbounded,
     spar_os.sound,
     world,
@@ -103,7 +104,7 @@ begin
        when STATUS_ERROR =>
          err( "file " & optional_bold( path ) & " may be locked" );
        when MODE_ERROR =>
-         err( "internal error: mode error on file open" );
+         err( gnat.source_info.source_location & ": internal error: mode error on file open" );
        when others =>
          err( "exception when opening sound file " & optional_bold( path ) );
      end;

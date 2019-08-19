@@ -26,6 +26,7 @@ with interfaces.c,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
      ada.calendar,
+     gnat.source_info,
 #if POSTGRES
      APQ,
 #else
@@ -230,7 +231,7 @@ begin
         err( "mysql support not configured" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end alter;
@@ -285,7 +286,7 @@ begin
         err( "mysql support not configured" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end delete;
@@ -405,7 +406,7 @@ begin
         err( "mysql support not configured" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end insert;
@@ -503,7 +504,7 @@ begin
         err( "mysql support not supported" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end SQLselect;
@@ -556,8 +557,18 @@ begin
      -- "true".  This is not ideal since it should really check types.
      tempStr := to_unbounded_string( ap( 1 ).all );
      if ( tempStr = "true" & ASCII.NUL ) or ( tempStr = "1" & ASCII.NUL ) then
-        trace := true;
-        put_line( "Trace is on" );
+        -- For security, don't trace in a production environment
+        -- unless running in breakout input mode.  This is because
+        -- tracing can reveal confidential information in variables.
+        -- (Tracing can still be invoked via the command options.)
+        -- It's also not allow in testing mode because it will catch
+        -- it in continuous integration before going to production.
+        if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+           err( "the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+        else
+           trace := true;
+           put_line( "Trace is on" );
+        end if;
      elsif ( tempStr = "false" & ASCII.NUL ) or ( tempStr = "0" & ASCII.NUL ) then
         trace := false;
         put_line( "Trace is off" );
@@ -657,7 +668,7 @@ begin
      else
         tempStr := to_unbounded_string( ap( 1 ).all );
         if length( tempStr ) <= 1 then
-           err( "internal error: name of identifier to find is empty" );
+           err( gnat.source_info.source_location & ": internal error: name of identifier to find is empty" );
         else
            -- remove ASCII.NUL from C string
            delete( tempStr, length( tempStr ), length( tempStr ) );
@@ -719,7 +730,7 @@ begin
         err( "mysql support not supported" );
 #end if;
      else
-        err( "internal error: unrecognized database engine" );
+        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
      end if;
   end if;
 end update;
