@@ -243,9 +243,9 @@ same block of code.</p>
 
         <center>
         <div class="code">
-                <p class="code"><b>procedure</b> show_report<b>is</b><br>
-<b>begin</b>
-&nbsp;&nbsp;put_line( "This is the report" );
+                <p class="code"><b>procedure</b> show_report <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;put_line( "This is the report" );<br>
 <b>end</b> show_report;<br>
 <br>&nbsp;<br></p>
         <div class="code_caption">
@@ -262,6 +262,22 @@ names, parameter modes, parameter types and any return value should
 be identical.  For example, you cannot change the parameter names or add extra
 parameters.</p>
 
+        <center>
+        <div class="code">
+                <p class="code"><b>procedure</b> show_report( title : string )<b>;</b><br>
+...<br>
+<b>procedure</b> show_report( title : string ) <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;put_line( "This is the report" );<br>
+<b>end</b> show_report;<br>
+<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: A Specification with a Parameter
+        </div>
+        </div>
+        </center>
+
+
 <p>Specifications have many uses.  One problem they help with is
 <b>mutual recursion</b>, where two subprograms use each other.  Without
 specifications, it is not possible to declare these subprograms.
@@ -275,15 +291,15 @@ before either can be used.  Specifications solve this.</p>
                 <p class="code"><b>procedure</b> first<b>;</b><br>
 <b>procedure</b> second<b>;</b><br>
 &nbsp;<br>
-<b>procedure</b> first<b>is</b><br>
-<b>begin</b>
-&nbsp;&nbsp;second;
-&nbsp;&nbsp;...
+<b>procedure</b> first <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;second;<br>
+&nbsp;&nbsp;...<br>
 <b>end</b> first;<br>
-<b>procedure</b> second<b>is</b><br>
-<b>begin</b>
-&nbsp;&nbsp;first;
-&nbsp;&nbsp;...
+<b>procedure</b> second <b>is</b><br>
+<b>begin</b><br>
+&nbsp;&nbsp;first;<br>
+&nbsp;&nbsp;...<br>
 <b>end</b> second;<br>
 <br>&nbsp;<br></p>
         <div class="code_caption">
