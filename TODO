@@ -16,7 +16,6 @@ Priority Issues (Fix These First)
   - test renaming and copying generic types
   - is copying done for in mode parameters
 - testing validator project I noticed
-  - profile summary is showing zero procedures (in, at least, some cases)
   - under some conditions, the breakout prompt my have end-of-file and be
     interpreted as a return to resume execution.  I have not identified what
     those conditions are.
