@@ -38,6 +38,7 @@ parser_mysql.adb
 parser_mysqlm.adb
 parser_pen.adb
 parser_sound.adb
+parser_strings_pcre.adb
 pegasock/tester
 scanner_res.adb
 scanner_res.ads

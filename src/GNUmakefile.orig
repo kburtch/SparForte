@@ -27,7 +27,7 @@ APQMAKE=APQMAKESUB
 #ADAVOXMAKE=ADAVOXMAKESUB
 GSTREAMERLIBS=GSTREAMERLIBSSUB
 GSTREAMERFLAG=GSTREAMERFLAGSUB
-GSTREAMEROUT=GSTREAMEROUTSUB
+GSTREAMEROBJ=GSTREAMEROBJSUB
 # -D copies files to a new directory but doesn't delete them
 # from where they were originally created.
 # Make Max not updated
@@ -39,23 +39,26 @@ BDBINCL=BDBINCLSUB
 BDBLIBS=BDBSUB
 RLINCL=RLINCLSUB
 RLLIBS=RLLIBSSUB
+#PCREINCL=PCREINCLSUB
+PCRELIBS=PCRELIBSSUB
+PCREOBJ=PCREOBJSUB
 
 # Libraries and Paths
 
 #INCLUDE=-I./adacgi-1.6/ -I./apq-2.1/ -I./ADAVOX-0.51/bc -I./ADAVOX-0.51/wc -I./ADAVOX-0.51/main -I/usr/include/SDL
 # Compiling options for including files
-INCLUDE=-I./adacgi-1.6/ ${APQINCL} -I./pegasock/ ${MESAINCL} ${SDLINCL} ${BDBINCL} ${RLINCL}
+INCLUDE=-I./adacgi-1.6/ ${APQINCL} -I./pegasock/ ${MESAINCL} ${SDLINCL} ${BDBINCL} ${RLINCL} ${PCRELIBS}
 # When binding, don't need to include the SDL files.  In particular, the -D
 # option created by the SDL config program will break gnatbind.
 INCLUDE_BIND=-I./adacgi-1.6/ ${APQINCL} -I./pegasock/ ${BDBINCL} ${RLINCL} #${MESAINCL}
 #LIBS=-L`pg_config --libdir` -L./apq-1.92/ -lpq -lSDL ${PTHREAD_LIBS}
 #LIBS=-L`pg_config --libdir` -L./apq-2.1/ ./apq-2.1/c_mysql.o -l SDL -l SDL_image ${PTHREAD_LIBS}
-LIBS=-L ${PGLIBS} ${MYSQLLIBS} ${APQLIBS} -L./pegasock/ ./pegasock/c_tinyserve.o ./pegasock/c_errno.o ${SDLLIBS} ${MESALIBS} ${BDBLIBS} ${RLLIBS} -lpcre
+LIBS=-L ${PGLIBS} ${MYSQLLIBS} ${APQLIBS} -L./pegasock/ ./pegasock/c_tinyserve.o ./pegasock/c_errno.o ${SDLLIBS} ${MESALIBS} ${BDBLIBS} ${RLLIBS} ${PCRELIBS}
 # c_mysql.o missing in APQ 2.1 library
 
 # Make Rules Start
 
-all: c_os.o c_scanner.o c_gstreamer.o
+all: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	@echo
 	@echo "==============================================================="
 	@echo "  SparForte - Business Shell"
@@ -116,7 +119,7 @@ endif
 	@echo
 	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  Thanks for choosing SparForte"
@@ -135,11 +138,22 @@ c_os.o:	c_os.c
 c_scanner.o: c_scanner.c
 	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-check -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_scanner.c
 
+# GStreamer binding is optional
+
 c_gstreamer.o: c_gstreamer.c
 ifneq ($(strip $(GSTREAMERFLAG)),)
 	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -Werror -fstack-check -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_gstreamer.c
 else
 	@echo "GStreamer disabled"
+endif
+
+# PCRE binding is optional
+
+c_pcre.o: c_pcre.c
+ifneq ($(strip $(PCRELIBS)),)
+	$(CC) $(CFLAGS) $(PCRELIBS) -Wall -Werror -fstack-check -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_pcre.c
+else
+	@echo "PCRE disabled"
 endif
 
 #apq-2.1/Makeincl:
@@ -189,7 +203,7 @@ max: clean c_os.o c_scanner.o c_gstreamer.o
 	@echo
 	$(GNATMAKE) -j2 -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
+	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 
 clean:
 	-$(MAKE) -C areadline clean
@@ -210,7 +224,7 @@ distclean:
 	-rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	-rm -f *.gcda *.gcno *.gcov coverage.info
 	-rm -rf coverage/ testsuite/junit_result.xml
-	-rm -f spar_os.ads spar_os.adb spar_os-sdl.ads parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb
+	-rm -f spar_os.ads spar_os.adb spar_os-sdl.ads parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb parser_hash_io.adb parser_strings_pcre.adb
 
 
 test: all
@@ -285,7 +299,7 @@ endif
 	# -pg required for gprof performance profiling
 	$(GNATMAKE) -j2 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatybdh -fstack-check -fstack-protector -fprofile-arcs -ftest-coverage -pg -g -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS) -lgcov -pg
+	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS) -lgcov -pg
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "  RUNNING REGRESSION TEST SUITE"
@@ -379,8 +393,7 @@ rpm:	all
 
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
-	gnatlink spar.ali ${GSTREAMERLIBS} ${GSTREAMEROUT} c_os.o c_scanner.o $(LIBS)
-	(cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL ChangeLog provision.sh examples doc GNUmakefile sparforte_f_icon.xpm  sparforte_sail_icon.xpm; rm -f spar )
+	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS) (cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL ChangeLog provision.sh examples doc GNUmakefile sparforte_f_icon.xpm  sparforte_sail_icon.xpm; rm -f spar )
 	@echo "Don't forget to unpack and repack under a descriptive directory"
 
 install:

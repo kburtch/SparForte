@@ -1126,6 +1126,7 @@ if [ $RESULT -ne 0 ] ; then
         exit 1
      fi
 fi
+end_junit_case
 end_junit_suite
 
 # TODO: this must be done any any exit

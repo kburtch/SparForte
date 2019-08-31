@@ -51,7 +51,7 @@ The following software packages are required for SparForte:
     including Red Hat,  have GCC with Ada and C support active or available
     from an online repository.
 
-  * PCRE (Perl Compatible Regular Expressions) library
+  * Optional PCRE (Perl Compatible Regular Expressions) library
 
   * gzip is needed to unpack the source code in the first place.  If you are
     reading this, you know this already.
@@ -182,6 +182,8 @@ By default, SparForte will install under /usr/local.
     --without-mysql (NO_MYSQL variable): disable MySQL database support
 
     --without-opengl (NO_OPENGL variable): disable OpenGL support
+
+    --without-pcre (NO_PCRE variable): disable PCRE library support
 
     --without-postgres (NO_POSTGRES variable): disable PostgreSQL database
             support

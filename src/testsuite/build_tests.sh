@@ -132,7 +132,18 @@ make all
 if [ $? -ne 0 ] ; then
    echo "without-opengl failed"
 fi
-# TODO: sound not checked by running spar.
+# TODO: opengl not checked by running spar.
+
+# Make without PCRE
+# ---------------------------------------------------------------------------
+
+make distclean
+./configure --without-pcre
+make all
+if [ $? -ne 0 ] ; then
+   echo "without-pcre failed"
+fi
+# TODO: pcre not checked by running spar.
 
 # Cleanup
 

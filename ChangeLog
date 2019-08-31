@@ -52,3 +52,6 @@ CHANGES SINCE 2.2.2
 
 23. Change: As a security precaution, JSON error message have values do not appear when in maintenance mode.
 
+24. New: --without-pcre configuration option will disable PCRE library
+support.
+

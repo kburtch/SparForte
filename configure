@@ -37,6 +37,7 @@ LDCONFIG_SUDO=
 # NO_BDB      - request to disable Berkeley DB
 # NO_MYSQL    - request to disable MySQL
 # NO_OPENGL   - request to disable OpenGL
+# NO_PCRE     - request to disable PCRE library
 # NO_POSTGRES - request to disable PostgreSQL
 # NO_READLINE - request to use old Ada input routines not readline
 # NO_SOUND    - request to disable sound support
@@ -74,6 +75,7 @@ while [ $# -gt 0 ] ; do
       echo "  --without-bdb         disable Berkeley DB support"
       echo "  --without-mysql       disable MySQL support"
       echo "  --without-opengl      disable OpenGL support"
+      echo "  --without-pcre        disable PCRE library support"
       echo "  --without-postgres    disable PostgreSQL support"
       echo "  --without-readline    disable GNU readline support"
 #      echo "  --without-sdl"
@@ -108,6 +110,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --without-opengl)
       NO_OPENGL=1
+      ;;
+  --without-pcre)
+      NO_PCRE=1
       ;;
   --without-postgres)
       NO_POSTGRES=1
@@ -1241,6 +1246,39 @@ else
   GSTREAMERFLAG=
 fi
 
+# Regular Expressions - PCRE library
+#
+# PCREFLAG is the C pre-processor flag to enable PCRE support.
+# It will be non-blank if PCRE is detected.
+
+HAS_PCRE=
+if [ -z "$NO_PCRE" ] ; then
+   echo -n "checking for libpcre (ldconfig -p, Linux)... "
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libpcre`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      echo -n "checking for libpcre (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libpcre`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+         echo -n "checking for libpcre (locate, Darwin)... "
+         TMP=`"$LOCATE" libpcre`
+         if [ ! -z "$TMP" ] ; then
+             HAS_PCRE=1
+             echo "yes"
+         else
+             echo "no"
+         fi
+     else
+         HAS_PCRE=1
+         echo "yes"
+     fi
+  else
+     HAS_PCRE=1
+     echo "yes"
+  fi
+fi
+
 echo "SparForte is configured"
 
 # Configure APQ library
@@ -1351,6 +1389,11 @@ if [ -z "$NO_BDB" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DBDB=false"
 fi
+if [ -n "$HAS_PCRE" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DPCRE=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DPCRE=false"
+fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ -n "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
@@ -1459,6 +1502,12 @@ cp parser_hash_io.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_hash_io.adb
 chmod 444 parser_hash_io.adb
 
+echo "Updating...parser_strings_pcre.adb"
+test -f parser_strings_pcre.adb && chmod 666 parser_strings_pcre.adb
+cp parser_strings_pcre.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_strings_pcre.adb
+chmod 444 parser_strings_pcre.adb
+
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb
 
@@ -1519,7 +1568,7 @@ if [ -z "$NO_SOUND" ] ; then
          exit 192
       fi
    fi
-   GSTREAMEROUT="c_gstreamer.o"
+   GSTREAMEROBJ="c_gstreamer.o"
 fi
 
 if [ -z "$NO_BDB" ] ; then
@@ -1542,6 +1591,12 @@ else
    RLINCL=
    RLLIBS=
 fi
+if [ -n "$HAS_PCRE" ] ; then
+   PCRELIBS=-"lpcre"
+   PCREOBJ="c_pcre.o"
+else
+   PCRELIBS=
+fi
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 MANPREFIX=`echo "$MANPREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
@@ -1557,7 +1612,7 @@ touch c_gstreamer.c
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROUTSUB/$GSTREAMEROUT/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROBJSUB/$GSTREAMEROBJ/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g;s/PCRELIBSSUB/$PCRELIBS/g;s/PCREOBJSUB/$PCREOBJ/g;s/PCREFLAGSUB/$PCREFLAG/g" < GNUmakefile.orig > GNUmakefile
 
 cd areadline
 

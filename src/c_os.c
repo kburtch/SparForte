@@ -12,9 +12,7 @@
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
-//#include <regex.h>
 #include <string.h>
-#include <pcre.h>
 #include <stdio.h>
 
 /* C ERRNO                                                  */
@@ -368,29 +366,6 @@ int C_install_sigpipe_handler( int *flag_address ) {
 }
 
 /*
-void C_regex( const char *regex, const char* str, char *errmsg, size_t errmax,
-   int *result ) {
-
-   regex_t preg;
-   int regex_errno = 0;
-
-   errmsg[0] = '\0';
-   regex_errno = regcomp( &preg, regex, REG_EXTENDED|REG_NOSUB );
-   if (regex_errno == 0) {
-      regex_errno = regexec( &preg, str, 0, 0, 0 );
-   }
-
-   if (regex_errno == 0 ) {
-      *result = 1;
-   } else if (regex_errno == REG_NOMATCH) {
-      *result = 0;
-   } else {
-      regerror( regex_errno, &preg, errmsg, errmax );
-   }
-   regfree( &preg );
-}
-*/
-
 void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
    int *result ) {
    pcre *regex_ptr;
@@ -399,11 +374,11 @@ void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
    int erroffset = 0;            // location of error in pattern
    int res = 0;
 
-   /* For Perl-compatible Regular Expressions, there are UTF-8, 16
-    * and 32 variants and this may also affect the parameters.
-    * for here, this is UTF-8 (even though, at this time,
-    * SparForte is Latin-1 only).
-    */
+   // For Perl-compatible Regular Expressions, there are UTF-8, 16
+   // and 32 variants and this may also affect the parameters.
+   // for here, this is UTF-8 (even though, at this time,
+   // SparForte is Latin-1 only).
+   //
 
   *result = 0;
   *errmsg = no_error;
@@ -436,7 +411,7 @@ void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
    // Safety precaution to prevent buffer overruns.
    errmsg[255] = '\0';
 }
-
+*/
 
 // SDL TESTING
 // FREEBSD possibly should be __FreeBSD__
