@@ -496,13 +496,21 @@ begin
     -- doesn't need to be opened a second time.
     scriptFile := open( scriptPath & ASCII.NUL, 0, 660 ); -- open script
     if scriptFile < 1 then                           -- error?
-       scriptFilePath := scriptFilePath & ".sp";   -- try name with ".sp"
+       scriptFilePath := to_unbounded_string( scriptPath ) & ".sp";   -- try name with ".sp"
        scriptFile := open( scriptPath & ".sp" & ASCII.NUL, 0, 660 );
        if scriptFile < 1 then                           -- error?
-          scriptFilePath := scriptFilePath & ".bush";   -- try name with ".bush"
+          scriptFilePath := to_unbounded_string( scriptPath ) & ".bush";   -- try name with ".bush"
           scriptFile := open( scriptPath & ".bush" & ASCII.NUL, 0, 660 );
        end if;
     end if;
+    -- Only run an acceptable file
+    if scriptFile > 0 then
+       if not C_is_includable_file( to_string( scriptFilePath ) & ASCII.NUL ) then
+         err( "the script file " & optional_bold( to_string( scriptFilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+         goto error;
+       end if;
+    end if;
+
     -- This procedure is called twice during a regular script run: once
     -- for the syntax check and once to execute.  If the script name
     -- is the same, don't compile it a second time: assume that the

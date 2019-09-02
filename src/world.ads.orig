@@ -162,6 +162,9 @@ BAD_PROFILE : exception;
 -- internal errors
 SPARFORTE_ERROR : exception;
 
+-- errors reading a script
+BAD_SCRIPT : exception;
+
 ------------------------------------------------------------------------------
 -- Pragma Flags
 ------------------------------------------------------------------------------
