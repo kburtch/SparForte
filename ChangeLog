@@ -55,3 +55,8 @@ CHANGES SINCE 2.2.2
 24. New: --without-pcre configuration option will disable PCRE library
 support.
 
+25. Change: a script will not run for the same permission issues as an include file.
+
+26. Fix: script file name fix if the error messages where it was appending file suffixes.
+
+
