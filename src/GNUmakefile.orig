@@ -233,7 +233,7 @@ test: all
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh runtests.sh -f)
 
-coverage: c_os.o c_scanner.o c_gstreamer.o
+coverage: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	@echo
 	@echo "Coverage will require:"
 	@echo
