@@ -59,4 +59,5 @@ support.
 
 26. Fix: script file name fix if the error messages where it was appending file suffixes.
 
+27: New: constant specifications (i.e. forward constants). [docs needed] [tests needed]
 

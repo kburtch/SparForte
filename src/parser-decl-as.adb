@@ -1884,7 +1884,7 @@ begin
         ParseFunctionBlock;
         syntax_check := save_syntax_check;
      else
-        ParseNewIdentifier( var_id );
+        ParseVariableIdentifier( var_id );
         ParseDeclarationPart( var_id, anon_arrays => true, exceptions => true ); -- var id may change...
         expectSemicolon;
      end if;
@@ -5211,7 +5211,7 @@ procedure ParseVarDeclaration is
   multi   : boolean := false;
   b       : boolean;
 begin
-   ParseNewIdentifier( var_id );
+   ParseVariableIdentifier( var_id );
    if token = symbol_t and identifiers( token ).value.all = "," then
       expect( symbol_t, "," );
       var2_id := token;

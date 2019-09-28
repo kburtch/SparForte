@@ -1034,6 +1034,73 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
      end if;
   end AttachGenericParameterResource;
 
+  procedure VerifyConstantSpec( const_id : identifier ) is
+    -- : constant type assign-part
+    -- DEBUG: CONST SPECS
+    type_token    : identifier;
+    var_name      : unbounded_string;
+    right_type    : identifier;
+    expr_value    : unbounded_string;
+    new_const_id  : identifier;
+  begin
+    expect( symbol_t, ":" );
+
+    --  Get the type.
+
+    -- it must be a constant
+
+    expect( constant_t );
+
+    ParseIdentifier( type_token );                       -- identify type
+    if syntax_check then                                 -- mark that type was
+       identifiers( type_token ).wasApplied := true;     -- used
+    end if;
+
+    -- Verify that the type is the same as the previous declaration.
+    -- TODO: test anonymous types
+
+    if identifiers( const_id ).kind /= type_token then
+       err( "constant type " &
+           optional_bold( to_string( identifiers( type_token ).name ) ) &
+           " was " & optional_bold( to_string( identifiers( identifiers( const_id ).kind ).name )) &
+           " in the earlier specification (at " &
+            to_string( identifiers( const_id ).specFile) & ":" &
+       identifiers( const_id ).specAt'img & ")" );
+    end if;
+
+    -- The Tricky Part
+
+    -- Temporarily destroy identifer so that i : constant integer := i
+    -- isn't circular
+
+    var_name := identifiers( const_id ).name;           -- remember name
+    discardUnusedIdentifier( const_id );                -- discard variable
+
+    -- Calculate the assignment (ie. using any previous variable i)
+
+    ParseAssignPart( expr_value, right_type );          -- do := part
+
+    -- Redeclare temporarily destroyed identifier (ie. declare new i)
+    -- and assign its usage and type.  The spec is now fulfilled.
+
+    declareIdent( new_const_id, var_name, type_token, varClass ); -- declare var
+    identifiers( new_const_id ).usage := constantUsage;
+    identifiers( new_const_id ).specAt := noSpec;
+
+    if isExecutingCommand then
+       expr_value := castToType( expr_value, type_token );
+       if type_token /= right_type then
+          DoContracts( identifiers( new_const_id ).kind, expr_value );
+       end if;
+       identifiers( new_const_id ).value.all := expr_value;
+       if trace then
+           put_trace(
+              to_string( identifiers( new_const_id ).name ) & " := """ &
+              to_string( ToEscaped( expr_value ) ) & """" );
+       end if;
+    end if;
+  end VerifyConstantSpec;
+
   type_token    : identifier;
   expr_value    : unbounded_string;
   expr_type     : identifier := eof_t;
@@ -1041,6 +1108,11 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   expr_expected : boolean := false;
   canonicalRef : renamingReference;
 begin
+   -- CONST SPECS
+  if identifiers( id ).specAt /= noSpec then
+     VerifyConstantSpec( id );
+     return;
+  end if;
   expect( symbol_t, ":" );
 
   -- Overriding
@@ -1342,10 +1414,37 @@ begin
         end if;
      end if;
 
+  -- DEBUG: CONST SPECS
+  -- TODO: refactor
+  -- TODO: limits on this
+  -- constant specification?  Record the location of the specification
+  -- and assign the data type to the identifier.
+
+  elsif (token = symbol_t and identifiers( token ).value.all = ";") and
+     expr_expected then
+     identifiers( id ).kind := type_token;
+     identifiers( id ).specFile := getSourceFileName;
+     identifiers( id ).specAt := getLineNo;
+
   -- Check for optional assignment
 
-  elsif (token = symbol_t and identifiers( token ).value.all = ":=") or -- assign part?
+  elsif (token = symbol_t and identifiers( token ).value.all = ":=") or
      expr_expected then
+
+     -- DEBUG: CONST SPECS
+     -- TODO: probably not right
+
+     -- if identifiers( id ).specAt /= noSpec then
+     --    if identifiers( id ).kind /= type_token then
+     --      err("identifier type " &
+     --         optional_bold( to_string( identifiers( id ).name ) ) &
+     --         " was " & optional_bold( to_string( identifiers( identifiers( id ).kind ).name )) &
+     --         " in the earlier specification (at " &
+     --         to_string( identifiers( id ).specFile) & ":" &
+     --         identifiers( id ).specAt'img & ")");
+
+     --    end if;
+     -- end if;
 
      -- Tricky bit: what about "i : integer := i"?
      --   Dropping the top of the stack temporarily isn't good enough: if

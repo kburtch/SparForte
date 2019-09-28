@@ -11,7 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -84,6 +83,13 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- handling confidential/PII data
+  - pragma secure_mode
+    - all data types assumed to have secure data
+    - pragma public( var ) or similar to whitelist it
+  - output channels must be whitelisted to use confidential data types
+  - should this be generalized so there can be different sets of data
+    and related channels?
 - add annotate/categories to example programs representing the example groupings
   they belong to
 - attaching comments to declarations so the comments can be parsed and displayed
@@ -189,7 +195,7 @@ Annoyances / Bugs with Workarounds / Updates
       error message
     - function f(p), p should not be 'already exists' if there is a p in scope
     - change pegasock to use bdb format exceptions with filename in message?
-    - check pragma block with @ 
+    - check pragma block with @
     - ParseGeneralStatement allows declarations.  For body and user role blocks,
       we need more restrictive variations of PGS.
     - @ for a(x) gives an unexpected exception
@@ -207,6 +213,8 @@ Annoyances / Bugs with Workarounds / Updates
 Nice to Haves / Missing Functionality
 -------------------------------------
 
+- foreach
+  - in PHP, foreach returns a pointer to the items, not a copy.
 - Java-style monitor
   - a restricted shell should prohibit certain Linux command names like "nc"
     (netcat) due to security, reading /etc/passwd, etc.

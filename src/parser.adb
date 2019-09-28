@@ -361,6 +361,84 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseProcedureIdentifier;
 
+procedure ParseVariableIdentifier( id : out identifier ) is
+  -- A variable is either an existing earlier specification, or it is a new
+  -- not previously declared identifier or one previously declared in a
+  -- different scope that must be re-declared in this scope
+begin
+  id := eof_t; -- dummy
+  -- forward constant specification
+  if identifiers( token ).specAt /= noSpec then
+     if identifiers( token ).usage /= constantUsage or
+        identifiers( token ).class /= varClass then
+        err( optional_bold( "constant" ) & " expected for a " &
+             "earlier specification" );
+     end if;
+     id := token;
+     getNextToken;
+  -- error messages if not new
+  elsif identifiers( token ).kind /= new_t then
+     if token = number_t then
+        err( optional_bold( "identifier") & " expected, not a " &
+             optional_bold( "number" ) );
+     elsif token = strlit_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "string literal" ) );
+     elsif token = backlit_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "backquoted literal" ) );
+     elsif token = charlit_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "character literal" ) );
+     elsif token = word_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "(shell immediate) word" ) );
+     elsif token = eof_t then
+        err( optional_bold( "identifier" ) & " expected" );
+     elsif is_keyword( token ) and token /= eof_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "keyword" ) );
+     elsif token = symbol_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "symbol" ) );
+     elsif isLocal( token ) then
+        err( "already declared " &
+             optional_bold( to_string( identifiers( token ).name ) ) );
+     elsif element( identifiers( token ).name,
+         length( identifiers( token ).name ) ) = '_' then
+            err( "trailing underscores not allowed in identifiers" );
+     else
+        -- create a new one in this scope
+        declareIdent( id, identifiers( token ).name, new_t, varClass );
+     end if;
+     getNextToken;
+  else
+     id := token;
+     declare
+        nameAsLower : unbounded_string := " " & toLower( identifiers(id).name ) & " ";
+     begin
+        -- if in a script, prohibit "l" and "O" as identifier names
+        if inputMode /= interactive and inputMode /= breakout then
+           if identifiers( id ).name = lowercase_l then
+              err( "style issue: name lowercase " & optional_bold( "l" ) & " can be confused with the number one" );
+           elsif identifiers( id ).name = uppercase_o then
+              err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
+           end if;
+        end if;
+        if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
+           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+        elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
+            err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+        end if;
+     end;
+     getNextToken;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseVariableIdentifier;
+
 procedure ParseNewIdentifier( id : out identifier ) is
   -- expect a token that is a new, not previously declared identifier
   -- or one previously declared in a different scope that must be re-declared

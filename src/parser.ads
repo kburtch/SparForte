@@ -40,6 +40,7 @@ package parser is
 procedure ParseBasicShellWord( shell_word : out unbounded_string );
 procedure ParseFieldIdentifier( record_id : identifier; id : out identifier );
 procedure ParseProcedureIdentifier( id : out identifier );
+procedure ParseVariableIdentifier( id : out identifier );
 procedure ParseNewIdentifier( id : out identifier );
 procedure ParseIdentifier( id : out identifier );
 procedure ParseStaticIdentifier( id : out identifier );
