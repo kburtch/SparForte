@@ -1773,99 +1773,101 @@ begin
 
   if not hasTemplate then
      for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
-        -- put( " id:" ); put( i'img ); -- DEBUG
-        -- put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
-         -- types that are not applied out to be abstract in design or
-         -- test phase
-         if identifiers( i ).class = typeClass or
-            identifiers( i ).class = subClass then
-            if boolean( designOpt ) or boolean( testOpt ) then
-               if not identifiers( i ).wasApplied then
-                  if identifiers( i ).field_of = eof_t then -- not a field of a record
-                     err( optional_bold( to_string( identifiers( i ).name ) ) &
-                        " is a " & optional_bold( "concrete type" ) &
-                        " but expected an " & optional_bold( "abstract type" ) &
-                        ".  It is not used in declarations." );
+         if not identifiers( i ).deleted then
+            -- put( " id:" ); put( i'img ); -- DEBUG
+            -- put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
+            -- types that are not applied out to be abstract in design or
+            -- test phase
+            if identifiers( i ).class = typeClass or
+               identifiers( i ).class = subClass then
+               if boolean( designOpt ) or boolean( testOpt ) then
+                  if not identifiers( i ).wasApplied then
+                     if identifiers( i ).field_of = eof_t then -- not a field of a record
+                        err( optional_bold( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_bold( "concrete type" ) &
+                           " but expected an " & optional_bold( "abstract type" ) &
+                           ".  It is not used in declarations." );
+                     end if;
                   end if;
                end if;
-            end if;
-            -- Often subprogram are defined and not used (in libraries)
-            --elsif identifiers( i ).class = userProcClass or
-            --   identifiers( i ).class = userFuncClass then
-            --   if boolean( designOpt ) or boolean( testOpt ) then
-            --      if not identifiers( i ).wasReferenced then
-            --         if not identifiers( i ).noVar then
-            --            err( optional_bold( to_string( identifiers( i ).name ) ) &
-            --               " is a " & optional_bold( "concrete subprogram" ) &
-            --               " but expected an " & optional_bold( "abstract subprogram" ) &
-            --               ".  It is never run." );
-            --         end if;
-            --      end if;
-            --   end if;
-         end if; -- abstract test
+               -- Often subprogram are defined and not used (in libraries)
+               --elsif identifiers( i ).class = userProcClass or
+               --   identifiers( i ).class = userFuncClass then
+               --   if boolean( designOpt ) or boolean( testOpt ) then
+               --      if not identifiers( i ).wasReferenced then
+               --         if not identifiers( i ).noVar then
+               --            err( optional_bold( to_string( identifiers( i ).name ) ) &
+               --               " is a " & optional_bold( "concrete subprogram" ) &
+               --               " but expected an " & optional_bold( "abstract subprogram" ) &
+               --               ".  It is never run." );
+               --         end if;
+               --      end if;
+               --   end if;
+            end if; -- abstract test
 
-         -- Do not apply to record fields as some record fields may not be
-         -- accessed.
-         if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
-            if testOpt then
-               if not onlyAda95 then -- limited not available with pragma ada_95
-                  if identifiers( i ).class = varClass then
-                     if identifiers( i ).field_of /= eof_t then
-                        if identifiers( i ).usage /= limitedUsage then
-                           if identifiers( i ).name /= "return value" then
-                              err( optional_bold( to_string( identifiers( i ).name ) ) &
-                                 " is a " & optional_bold( "not-limited variable" ) &
-                                 " but expected a " & optional_bold( "limited" ) &
-                                 ".  It (or its elements) are not used in expressions nor is assigned to." );
+            -- Do not apply to record fields as some record fields may not be
+            -- accessed.
+            if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
+               if testOpt then
+                  if not onlyAda95 then -- limited not available with pragma ada_95
+                     if identifiers( i ).class = varClass then
+                        if identifiers( i ).field_of /= eof_t then
+                           if identifiers( i ).usage /= limitedUsage then
+                              if identifiers( i ).name /= "return value" then
+                                 err( optional_bold( to_string( identifiers( i ).name ) ) &
+                                    " is a " & optional_bold( "not-limited variable" ) &
+                                    " but expected a " & optional_bold( "limited" ) &
+                                    ".  It (or its elements) are not used in expressions nor is assigned to." );
+                              end if;
                            end if;
                         end if;
                      end if;
                   end if;
                end if;
-            end if;
-         end if; -- limited test
+            end if; -- limited test
 
-         -- Test for variables that are never written to.  This is only done
-         -- in testing phase mode as code under development may indeed have
-         -- variables like this, and many things are unwritten in design phase.
-         -- Don't apply to record fields.
+            -- Test for variables that are never written to.  This is only done
+            -- in testing phase mode as code under development may indeed have
+            -- variables like this, and many things are unwritten in design phase.
+            -- Don't apply to record fields.
 
-         if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
-            if testOpt then
-               if identifiers( i ).class = varClass then
-                  if identifiers( i ).field_of /= eof_t then
-                     err( optional_bold( to_string( identifiers( i ).name ) ) &
-                        " is a " & optional_bold( "variable" ) &
-                        " but expected a " & optional_bold( "constant" ) &
-                        " (or in mode parameter).  It (or its elements) are never written to." );
+            if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
+               if testOpt then
+                  if identifiers( i ).class = varClass then
+                     if identifiers( i ).field_of /= eof_t then
+                        err( optional_bold( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_bold( "variable" ) &
+                           " but expected a " & optional_bold( "constant" ) &
+                           " (or in mode parameter).  It (or its elements) are never written to." );
+                     end if;
                   end if;
                end if;
-            end if;
-         end if; -- constant
+            end if; -- constant
 
-         -- Unimplemented subprogram specifications
-         -- This need to occur before the unused identifier test.
+            -- Unimplemented subprogram or constant specifications
+            -- This need to occur before the unused identifier test.
 
-         if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
-            if identifiers( i ).specAt /= noSpec then
-               err( optional_bold( to_string( identifiers( i ).name ) ) &
-                    " has a specification but is not implemented (at " &
-                    to_string( identifiers( i ).specFile) & ":" &
-                    identifiers( i ).specAt'img & ");" );
+            if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
+               identifiers( i ).class = varClass then
+               if identifiers( i ).specAt /= noSpec then
+                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                       " has a specification but is not implemented (at " &
+                       to_string( identifiers( i ).specFile) & ":" &
+                       identifiers( i ).specAt'img & ");" );
+               end if;
             end if;
-         end if;
 
-         -- If something was used, apply any software model requirements (if
-         -- any)
-         if identifiers( i ).wasReferenced then
-            --put( " REF'D: " ); put_identifier( i ); -- DEBUG
-            -- TODO: Refactor out
-            if softwareModelSet then
-               recordSoftwareModelRequirements( i );
-            end if;
-         -- Unused variables are always checked.  Skip record fields since there
-         -- is no guarantee that all fields will be accessed.
-         else
+            -- If something was used, apply any software model requirements (if
+            -- any)
+            if identifiers( i ).wasReferenced then
+               --put( " REF'D: " ); put_identifier( i ); -- DEBUG
+               -- TODO: Refactor out
+               if softwareModelSet then
+                  recordSoftwareModelRequirements( i );
+               end if;
+            -- Unused variables are always checked.  Skip record fields since there
+            -- is no guarantee that all fields will be accessed.
+            else
 --put_line( standard_error, "HERE 1" ); -- DEBUG
 --put( standard_error, " id:" ); put( identifier'image(i-2) ); -- DEBUG
 --put_line( standard_error, " " & to_string( identifiers( i-2 ).name ) ); -- DEBUG
@@ -1875,21 +1877,22 @@ begin
 --put_line( standard_error, " " & to_string( identifiers( i ).name ) ); -- DEBUG
 --           if identifiers( i ).field_of = eof_t then
               -- in design mode, only check types
-              if designOpt then
-                 if identifiers( i ).class = typeClass or
-                    identifiers( i ).class = subClass or
-                    identifiers( i ).class = genericTypeClass then
-                    err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
-                 end if;
-                 -- when testing or maintenance, check all identifiers, even
-                 -- variables
+               if designOpt then
+                  if identifiers( i ).class = typeClass or
+                     identifiers( i ).class = subClass or
+                     identifiers( i ).class = genericTypeClass then
+                     err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  end if;
+                  -- when testing or maintenance, check all identifiers, even
+                  -- variables
                elsif testOpt or maintenanceOpt then
-                 err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
-                 -- in development, only check variables
+                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  -- in development, only check variables
                elsif identifiers( i ).class = varClass then
-                 err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                end if;
-         end if;
+            end if;
+         end if; -- not deleted
 
           -- TODO declaration line would be helpful if two identifiers have the same
           -- name.
@@ -1917,105 +1920,107 @@ begin
    --put_line( "checkSoftwareModelRequirementsForSimpleScripts: no block" ); -- DEBUG
   if not hasTemplate then
      for i in reverse predefined_top..identifiers_top-1 loop
+         if not identifiers( i ).deleted then
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
-         if identifiers( i ).class = typeClass or
-            identifiers( i ).class = subClass then
-            if boolean( designOpt ) or boolean( testOpt ) then
-               if not identifiers( i ).wasApplied then
-                  if identifiers( i ).field_of = eof_t then -- not a field of a record
-                     err( optional_bold( to_string( identifiers( i ).name ) ) &
-                        " is a " & optional_bold( "concrete type" ) &
-                        " but expected an " & optional_bold( "abstract type" ) &
-                        ".  It is not used in declarations." );
+            if identifiers( i ).class = typeClass or
+               identifiers( i ).class = subClass then
+               if boolean( designOpt ) or boolean( testOpt ) then
+                  if not identifiers( i ).wasApplied then
+                     if identifiers( i ).field_of = eof_t then -- not a field of a record
+                        err( optional_bold( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_bold( "concrete type" ) &
+                           " but expected an " & optional_bold( "abstract type" ) &
+                           ".  It is not used in declarations." );
+                     end if;
                   end if;
                end if;
+            -- Often subprogram are defined and not used (in libraries)
+            --elsif identifiers( i ).class = userProcClass or
+            --   identifiers( i ).class = userFuncClass then
+            --   if boolean( designOpt ) or boolean( testOpt ) then
+            --      if not identifiers( i ).wasReferenced then
+            --         if not identifiers( i ).noVar then
+            --            err( optional_bold( to_string( identifiers( i ).name ) ) &
+            --               " is a " & optional_bold( "concrete subprogram" ) &
+            --               " but expected an " & optional_bold( "abstract subprogram" ) &
+            --               ".  It is never run." );
+            --         end if;
+            --      end if;
+            --   end if;
             end if;
-         -- Often subprogram are defined and not used (in libraries)
-         --elsif identifiers( i ).class = userProcClass or
-         --   identifiers( i ).class = userFuncClass then
-         --   if boolean( designOpt ) or boolean( testOpt ) then
-         --      if not identifiers( i ).wasReferenced then
-         --         if not identifiers( i ).noVar then
-         --            err( optional_bold( to_string( identifiers( i ).name ) ) &
-         --               " is a " & optional_bold( "concrete subprogram" ) &
-         --               " but expected an " & optional_bold( "abstract subprogram" ) &
-         --               ".  It is never run." );
-         --         end if;
-         --      end if;
-         --   end if;
-         end if;
 --put_line( to_string( identifiers( i ).name ) & "being tested" ); -- DEBUGME
 --put_line( identifiers( i ).wasFactor'img ); -- DEBUGME
-         if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
+            if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
 --put_line( to_string( identifiers( i ).name ) & " is not a factor" ); -- DEBUGME
-            if testOpt then
+               if testOpt then
 --put_line( "test opt" ); -- DEBUGME
-               if identifiers( i ).class = varClass then
+                  if identifiers( i ).class = varClass then
 --put_line( "variable" ); -- DEBUGME
-                  if not onlyAda95 then -- limited not available with pragma ada_95
+                     if not onlyAda95 then -- limited not available with pragma ada_95
 --put_line( "not ada_95" ); -- DEBUGME
-                     if identifiers( i ).usage /= limitedUsage then
-                        if identifiers( i ).name /= "return value" then
-                           err( optional_bold( to_string( identifiers( i ).name ) ) &
-                              " is a " & optional_bold( "not-limited variable" ) &
-                              " but expected a " & optional_bold( "limited" ) &
-                              ".  It (or its elements) are not used in expressions nor is assigned to." );
+                        if identifiers( i ).usage /= limitedUsage then
+                           if identifiers( i ).name /= "return value" then
+                              err( optional_bold( to_string( identifiers( i ).name ) ) &
+                                 " is a " & optional_bold( "not-limited variable" ) &
+                                 " but expected a " & optional_bold( "limited" ) &
+                                 ".  It (or its elements) are not used in expressions nor is assigned to." );
+                           end if;
                         end if;
                      end if;
                   end if;
                end if;
             end if;
-         end if;
 
-         -- Test for variables that are never written to.  This is only done
-         -- in testing phase mode as code under development may indeed have
-         -- variables like this, and many things are unwritten in design phase.
-         -- Don't apply to record fields.
+            -- Test for variables that are never written to.  This is only done
+            -- in testing phase mode as code under development may indeed have
+            -- variables like this, and many things are unwritten in design phase.
+            -- Don't apply to record fields.
 
-         --if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
-         --   if testOpt then
-         --      if identifiers( i ).class = varClass then
-         --         if identifiers( i ).field_of /= eof_t then
-         --            err( optional_bold( to_string( identifiers( i ).name ) ) &
-         --               " is a " & optional_bold( "variable" ) &
-         --               " but expected a " & optional_bold( "constant" ) &
-         --               " (or in mode parameter).  It (or its elements) are never written to." );
-         --         end if;
-         --      end if;
-         --   end if;
-         --end if; -- constant
+            --if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
+            --   if testOpt then
+            --      if identifiers( i ).class = varClass then
+            --         if identifiers( i ).field_of /= eof_t then
+            --            err( optional_bold( to_string( identifiers( i ).name ) ) &
+            --               " is a " & optional_bold( "variable" ) &
+            --               " but expected a " & optional_bold( "constant" ) &
+            --               " (or in mode parameter).  It (or its elements) are never written to." );
+            --         end if;
+            --      end if;
+            --   end if;
+            --end if; -- constant
 
-         -- Unimplemented subprogram specifications
-         -- This need to occur before the unused identifier test.
-         --
-         -- This may not even be possible: procedures and functions
-         -- cannot be declared without a declaration section.
-         --if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass then
-         --   if identifiers( i ).specAt /= noSpec then
-         --      err( optional_bold( to_string( identifiers( i ).name ) ) &
-         --           " has a specification but is not implemented (at " &
-         --           to_string( identifiers( i ).specFile) & ":" &
-         --           identifiers( i ).specAt'img & ");" );
-         --   end if;
-         --end if;
+            -- Unimplemented subprogram and constant specifications
+            -- This need to occur before the unused identifier test.
+            -- In simple scripts, these would be in a declare block.
 
-         if identifiers( i ).wasReferenced then
+            if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
+               identifiers( i ).class = varClass then
+               if identifiers( i ).specAt /= noSpec then
+                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                       " has a specification but is not implemented (at " &
+                       to_string( identifiers( i ).specFile) & ":" &
+                       identifiers( i ).specAt'img & ");" );
+               end if;
+            end if;
+
+            if identifiers( i ).wasReferenced then
 --put( " REF'D: " ); put_identifier( i ); -- DEBUG
          -- TODO: Refactor out
-            if softwareModelSet then
-               recordSoftwareModelRequirements( i );
-            end if;
+               if softwareModelSet then
+                  recordSoftwareModelRequirements( i );
+               end if;
 -- TODO: should this be dropped altogether?
-         elsif boolean( testOpt ) or identifiers( i ).class = varClass then
+            elsif boolean( testOpt ) or identifiers( i ).class = varClass then
 --put_line( standard_error, "HERE 2" ); -- DEBUG
 --           if identifiers( i ).field_of = eof_t then
 --put_line( standard_error, "HERE 2 - not a field" ); -- DEBUG
 --put( standard_error, " id:" ); put( i'img ); -- DEBUG
 --put_line( standard_error, " " & to_string( identifiers( i ).name ) ); -- DEBUG
-              err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                 err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
 --           end if;
-         end if;
+            end if;
+         end if; -- not deleted
      end loop;
   end if;
 end checkIdentifiersForSimpleScripts;

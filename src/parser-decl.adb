@@ -1043,6 +1043,11 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     expr_value    : unbounded_string;
     new_const_id  : identifier;
   begin
+    -- TODO: this should not happen.
+    if not isLocal( const_id ) then
+       err( "internal error: constant specification was in a different scope " );
+    end if;
+
     expect( symbol_t, ":" );
 
     --  Get the type.
@@ -1074,6 +1079,9 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- isn't circular
 
     var_name := identifiers( const_id ).name;           -- remember name
+    -- unlike a regular declaration, the constant specification id exists
+    -- and has a type (not new_t )
+    identifiers( const_id ).kind := new_t;              -- make it discardable
     discardUnusedIdentifier( const_id );                -- discard variable
 
     -- Calculate the assignment (ie. using any previous variable i)

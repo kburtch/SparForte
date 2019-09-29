@@ -226,6 +226,28 @@ a new value.</p>
 constant variable can be made for a type without a qualifier because
 constant is more constrained than normal usage.</p>
 
+<h3>Constant Specifications</h3>
+
+<p>A constant varible can be created without giving it a value.
+This is called a constant specification (or a forward declaration
+in some languages.)</p>
+
+<p>This constant must be fully declared later and given a value.
+When the constant is fully declared, the data type must be the
+same.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+pi : <b>constant</b> float;<br/>
+...<br/>
+pi : <b>constant</b> float := 3.14159;<br/>
+        </div>
+	</center>
+
+<p>The constant can be referred before it has a value, but when
+the script runs, the value must be defined or an error will occur.</p>
+
 <h3>Limited Variables and Types</h3>
 
 <p>A <b>limited variable</b> is a variable that cannot be copied
