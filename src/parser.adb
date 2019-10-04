@@ -368,7 +368,7 @@ procedure ParseVariableIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- dummy
   -- forward constant specification
-  if identifiers( token ).specAt /= noSpec then
+  if identifiers( token ).specAt /= noSpec and isLocal( token ) then
      if identifiers( token ).usage /= constantUsage or
         identifiers( token ).class /= varClass then
         err( optional_bold( "constant" ) & " expected for a " &
@@ -797,6 +797,14 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        --f := identifiers( t ).value.all;
        --kind := identifiers( t ).kind;
     end if;
+    -- check to see if it's an incomplete spec
+    if isExecutingCommand then
+       if identifiers( t ).specAt /= noSpec then
+          err( "earlier specification has not been completed (at " &
+               to_string( identifiers( t ).specFile) & ":" &
+               identifiers( t ).specAt'img & ")");
+       end if;
+    end if;
     if identifiers( t ).class = subClass or             -- type cast
        identifiers( t ).class = typeClass then
        -- this will change when arrays can have derived types.
@@ -827,24 +835,24 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           err( "array index must be a scalar type" );
        end if;                                   -- variables are not
        if isExecutingCommand then                -- declared in syntax chk
-          -- parse factor identifier: arrays
-          -- expression side-effect prevention
-          checkExpressionFactorVolatility( t );
-          arrayIndex := long_integer(to_numeric(f));  -- convert to number
-          --array_id2 := arrayID( to_numeric(      -- array_id2=reference
-          --   identifiers( array_id ).value ) );  -- to the array table
-          --if indexTypeOK( array_id2, kind ) then -- check and access array
-          --    if inBounds( array_id2, arrayIndex ) then
-          --       f := arrayElement( array_id2, arrayIndex );
-          --    end if;
-          --end if;
-          -- TODO: make a utility function for doing all this.
-          -- TODO: probably needs a better error message
-          if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
-             if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
-                err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
-             end if;
-          end if;
+              -- parse factor identifier: arrays
+              -- expression side-effect prevention
+              checkExpressionFactorVolatility( t );
+              arrayIndex := long_integer(to_numeric(f));  -- convert to number
+              --array_id2 := arrayID( to_numeric(      -- array_id2=reference
+              --   identifiers( array_id ).value ) );  -- to the array table
+              --if indexTypeOK( array_id2, kind ) then -- check and access array
+              --    if inBounds( array_id2, arrayIndex ) then
+              --       f := arrayElement( array_id2, arrayIndex );
+              --    end if;
+              --end if;
+              -- TODO: make a utility function for doing all this.
+              -- TODO: probably needs a better error message
+              if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
+                 if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
+                    err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers(     array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+                 end if;
+              end if;
           if not error_found then
              begin
                f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
@@ -2088,6 +2096,13 @@ begin
         err( "variable, value or expression expected" );
      else                                                  -- some kind of user ident?
         ParseStaticIdentifier( t );
+        --if isExecutingCommand then
+        if identifiers( t ).specAt /= noSpec then
+            err( "earlier specification has not been completed (at " &
+                 to_string( identifiers( t ).specFile) & ":" &
+                 identifiers( t ).specAt'img & ")");
+        end if;
+        -- end if;
         if identifiers( t ).volatile /= none then  -- volatile user identifier
            refreshVolatile( t );
            f := identifiers( t ).value.all;

@@ -1042,6 +1042,11 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     right_type    : identifier;
     expr_value    : unbounded_string;
     new_const_id  : identifier;
+    specWasReferenced : boolean;
+    specWasWritten : boolean;
+    specWrittenByThread : aThreadName;
+    specWrittenOn : line_count;
+    specWasFactor : boolean;
   begin
     -- TODO: this should not happen.
     if not isLocal( const_id ) then
@@ -1079,6 +1084,12 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- isn't circular
 
     var_name := identifiers( const_id ).name;           -- remember name
+    specWasReferenced := identifiers( const_id ).wasReferenced;
+    specWasWritten := identifiers( const_id ).wasWritten;
+    specWrittenByThread := identifiers( const_id ).writtenByThread;
+    specWrittenOn := identifiers( const_id ).writtenOn;
+    specWasFactor := identifiers( const_id ).wasFactor;
+
     -- unlike a regular declaration, the constant specification id exists
     -- and has a type (not new_t )
     identifiers( const_id ).kind := new_t;              -- make it discardable
@@ -1094,8 +1105,16 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     declareIdent( new_const_id, var_name, type_token, varClass ); -- declare var
     identifiers( new_const_id ).usage := constantUsage;
     identifiers( new_const_id ).specAt := noSpec;
+    identifiers( new_const_id ).wasReferenced := specWasReferenced;
+    identifiers( new_const_id ).wasWritten := specWasWritten;
+    identifiers( new_const_id ).writtenByThread := specWrittenByThread;
+    identifiers( new_const_id ).writtenOn := specWrittenOn;
+    identifiers( new_const_id ).wasFactor := specWasFactor;
 
     if isExecutingCommand then
+       if trace then
+          put_trace( "Completing constant specification for " & to_string( var_name ) );
+       end if;
        expr_value := castToType( expr_value, type_token );
        if type_token /= right_type then
           DoContracts( identifiers( new_const_id ).kind, expr_value );
@@ -1117,10 +1136,13 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   canonicalRef : renamingReference;
 begin
    -- CONST SPECS
+  -- If the constant specification is at a different nesting
+  -- level, it's the declaration of a new constant.A
   if identifiers( id ).specAt /= noSpec then
-     VerifyConstantSpec( id );
-     return;
+        VerifyConstantSpec( id );
+        return;
   end if;
+
   expect( symbol_t, ":" );
 
   -- Overriding
