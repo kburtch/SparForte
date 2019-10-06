@@ -1530,6 +1530,8 @@ else
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lxslt//g;s/\ \-lxml2//g;s/\ \-lkrb5//g;s/\ \-lgssapi_krb5//g;s/\ \-lcom_err//g;s/\ \-lcrypto//g;s/\ \-lcrypt//g'`
    # On Raspberry Pi, I confirmed pam and edit weren't necessary to link
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g;s/\ \-lpgport//g;s/\ \-lreadline//g'`
+   # On Raspberry Pi 4, libpgcommon isn't in the path
+   PGLIBSSUB="/usr/lib/postgresql/11/lib -L""$PGLIBSSUB"
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 fi
 if [ -z "$HAS_MYSQL" ] ; then

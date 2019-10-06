@@ -138,6 +138,7 @@ debian )
    sudo -u root apt-get -q -y install git
    sudo -u root apt-get -q -y install libdb-dev
    sudo -u root apt-get -q -y install libmariadbclient-dev
+   sudo -u root apt-get -q -y install libmariadb-dev-compat # R Pi 4
    sudo -u root apt-get -q -y install mariadb-server
    sudo -u root apt-get -q -y install locate
    sudo -u root apt-get -q -y install postgresql-client
