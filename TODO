@@ -52,6 +52,8 @@ Priority Issues (Fix These First)
     whenever a BDB file is opened.  See
     https://apps.state.or.us/tech/berkeleyDB/api_c/txn_recover.html
 - unsorted/misc
+    - check that x : arraytype := (x) works correctly, both with specs
+      and normal declaration.
     - do exceptions set an error code, even if handled?  if so, handling
       them should clear the error code. (request by CY)
     - strings functions could be improved. (request by CY)

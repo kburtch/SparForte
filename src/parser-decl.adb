@@ -591,11 +591,21 @@ begin
      identifiers( id ).list := true;                           -- var is an array
      identifiers( id ).kind := arrayType;
 
+     -- CONST SPECS
+     -- Constant Array Specification
+
+     if token = symbol_t and identifiers( token ).value.all = ";" then
+        identifiers( id ).specFile := getSourceFileName;
+        identifiers( id ).specAt := getLineNo;
+     end if;
+
      -- Any initial assignment?  Then do it.
      --
      -- Note: Array ID will not be valid at syntax check time
 
      if token = symbol_t and identifiers( token ).value.all = ":=" then
+       -- TODO: the recursion problem may exist here, where defining x but x may be
+       -- in the assignment list.
         ParseArrayAssignPart( id );
      elsif token = symbol_t and identifiers( token ).svalue = "(" then
          err( optional_bold( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
@@ -1042,12 +1052,9 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     right_type    : identifier;
     expr_value    : unbounded_string;
     new_const_id  : identifier;
-    specWasReferenced : boolean;
-    specWasWritten : boolean;
-    specWrittenByThread : aThreadName;
-    specWrittenOn : line_count;
-    specWasFactor : boolean;
+    oldSpec       : declaration;
   begin
+    --put_line("VERIFY FOR " & to_string( identifiers( const_id ).name ) ); --DEBUG
     -- TODO: this should not happen.
     if not isLocal( const_id ) then
        err( "internal error: constant specification was in a different scope " );
@@ -1081,14 +1088,11 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- The Tricky Part
 
     -- Temporarily destroy identifer so that i : constant integer := i
-    -- isn't circular
+    -- isn't circular.  Set avalue to null to prevent releasing storage
+    -- pointed to by oldSpec.
 
-    var_name := identifiers( const_id ).name;           -- remember name
-    specWasReferenced := identifiers( const_id ).wasReferenced;
-    specWasWritten := identifiers( const_id ).wasWritten;
-    specWrittenByThread := identifiers( const_id ).writtenByThread;
-    specWrittenOn := identifiers( const_id ).writtenOn;
-    specWasFactor := identifiers( const_id ).wasFactor;
+    oldSpec := identifiers( const_id );
+    identifiers( const_id ).avalue := null;
 
     -- unlike a regular declaration, the constant specification id exists
     -- and has a type (not new_t )
@@ -1097,19 +1101,24 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
 
     -- Calculate the assignment (ie. using any previous variable i)
 
-    ParseAssignPart( expr_value, right_type );          -- do := part
+    if not oldSpec.list then
+       ParseAssignPart( expr_value, right_type );          -- do := part
+    end if;
 
     -- Redeclare temporarily destroyed identifier (ie. declare new i)
-    -- and assign its usage and type.  The spec is now fulfilled.
+    -- and recover old properties.  Clear the spec and fix the avalue
+    -- (if necessary).  The spec is now fulfilled.
 
-    declareIdent( new_const_id, var_name, type_token, varClass ); -- declare var
-    identifiers( new_const_id ).usage := constantUsage;
+    declareIdent( new_const_id, oldSpec.name, type_token, varClass );
+    identifiers( new_const_id ) := oldSpec;
     identifiers( new_const_id ).specAt := noSpec;
-    identifiers( new_const_id ).wasReferenced := specWasReferenced;
-    identifiers( new_const_id ).wasWritten := specWasWritten;
-    identifiers( new_const_id ).writtenByThread := specWrittenByThread;
-    identifiers( new_const_id ).writtenOn := specWrittenOn;
-    identifiers( new_const_id ).wasFactor := specWasFactor;
+
+    -- TODO: the recursion problem exists here, where defining x but x may be
+    -- in the assignment list.
+
+    if identifiers( new_const_id ).list then
+       ParseArrayAssignPart( new_const_id );
+    end if;
 
     if isExecutingCommand then
        if trace then
