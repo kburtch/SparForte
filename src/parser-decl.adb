@@ -462,11 +462,16 @@ begin
   elsif identifiers( getBaseType( kind1 ) ).list then
      err( "array indexes cannot be an array type like " &
           optional_bold( to_string( identifiers( kind1 ).name ) ) );
+  elsif ab1 = null_unbounded_string then
+     err( "array index has no value" );
+
   else
      expect( symbol_t, ".." );
      ParseExpression( ab2, kind2 );                            -- high bound
      if token = symbol_t and identifiers( token ).value.all = "," then
         err( "array of arrays not yet supported" );
+     elsif ab2 = null_unbounded_string then
+        err( "array index has no value" );
      elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
         if isExecutingCommand then                             -- not on synchk
            if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
