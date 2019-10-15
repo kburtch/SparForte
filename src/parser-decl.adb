@@ -1669,6 +1669,10 @@ begin
    ParseExpression( ab2, kind2 );
    if token = symbol_t and identifiers( token ).value.all = "," then
       err( "array of arrays not yet supported" );
+   elsif ab1 = null_unbounded_string then
+      err( "array index has no value" );
+   elsif ab2 = null_unbounded_string then
+      err( "array index has no value" );
    elsif type_checks_done or else baseTypesOK(kind1, kind2 ) then
       if isExecutingCommand and not syntax_check then  -- ab1/2 undef on synchk
          if to_numeric( ab1 ) > to_numeric( ab2 ) then
