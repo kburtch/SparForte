@@ -1367,8 +1367,8 @@ nularr : nullarray;
 
 type constantarray is constant array(1..2) of integer;
 
-constarrayvar : constant nullarray; -- a little pointless...
-pragma assumption( used, constarrayvar );
+--constarrayvar : constant nullarray; -- a little pointless...
+--pragma assumption( used, constarrayvar );
 
 type limitedarray is limited array(1..2) of integer;
 

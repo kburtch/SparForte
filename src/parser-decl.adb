@@ -600,8 +600,10 @@ begin
      -- Constant Array Specification
 
      if token = symbol_t and identifiers( token ).value.all = ";" then
-        identifiers( id ).specFile := getSourceFileName;
-        identifiers( id ).specAt := getLineNo;
+        if identifiers( id ).usage = constantUsage then
+           identifiers( id ).specFile := getSourceFileName;
+           identifiers( id ).specAt := getLineNo;
+        end if;
      end if;
 
      -- Any initial assignment?  Then do it.

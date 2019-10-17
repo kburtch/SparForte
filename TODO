@@ -52,6 +52,7 @@ Priority Issues (Fix These First)
     whenever a BDB file is opened.  See
     https://apps.state.or.us/tech/berkeleyDB/api_c/txn_recover.html
 - unsorted/misc
+    - assigning values to a constant null array
     - check that x : arraytype := (x) works correctly, both with specs
       and normal declaration.
     - do exceptions set an error code, even if handled?  if so, handling
