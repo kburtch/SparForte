@@ -873,6 +873,10 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ":=" then
      if canAssign then
         ParseRecordAssignPart( id, recType );
+     elsif identifiers( id ).usage = constantUsage then
+        -- if it is a constant record and there was no assignment, the record is a specification
+        identifiers( id ).specFile := getSourceFileName;
+        identifiers( id ).specAt := getLineNo;
      end if;
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( optional_bold( to_string( identifiers( recType ).name ) ) & " is not a generic type but has parameters" );
