@@ -11,6 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- ssds wash is failing...jumping to washing names
+- sieve.sp failing
+  - constants must have a value at compile-time
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
