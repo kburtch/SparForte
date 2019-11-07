@@ -1519,7 +1519,6 @@ begin
        -- Calculate the assignment (ie. using any previous variable i)
 
        ParseAssignPart( expr_value, right_type );          -- do := part
-       put_trace( "expression value " & to_string( expr_value ) ); -- CONST SPECS DEBUG
 
        -- Redeclare temporarily destroyed identifier (ie. declare new i)
        -- and assign its type
@@ -1573,8 +1572,8 @@ begin
         -- However, we do not have static expression support (yet).
         -- A variable assigned to a constant may not be defined
         -- until run-time.
-        -- KLUDGE: For constants, we may not be running.  Contracts
-        -- cannot be run.
+        -- KLUDGE: For constants, we may at compile-time and the
+        -- variables are not defined.  Contracts cannot be run.
         if identifiers( id ).usage = constantUsage then
            if expr_value /= null_unbounded_string then
               expr_value := castToType( expr_value, type_token );
