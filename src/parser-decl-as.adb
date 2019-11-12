@@ -5540,6 +5540,7 @@ begin
            end if;
            if syntax_check and then not error_found then
               identifiers( startToken ).wasWritten := true;
+              identifiers( startToken ).wasReferenced := true;
            end if;
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
@@ -5934,6 +5935,7 @@ begin
            end if;
            if syntax_check and then not error_found then
               identifiers( startToken ).wasWritten := true;
+              identifiers( startToken ).wasReferenced := true;
            end if;
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
