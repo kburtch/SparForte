@@ -596,10 +596,11 @@ padded using character p</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Convert numeric value n to a string representation of the same value (inverse of numerics.value)</p></td>
+<td><p>Convert numeric or enumerated value n to a string representation of the same value.  For numeric types, it's the inverse of numerics.value.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">r := strings.image( 35 ); -- returns "35"</span></td>
+<td><span class="code">r := strings.image( 35 ); -- returns "35"</span><br>
+<span class="code">r := strings.image( true ); -- returns "true"</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -612,9 +613,9 @@ padded using character p</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>universal_string</span></td>
+<td><span>numeric or enumerated type</span></td>
 <td><span>required</span></td>
-<td><span>the number to convert</span></td>
+<td><span>the value to convert</span></td>
 </tr>
 <tr>
 <td><span>r</span></td>

@@ -63,4 +63,5 @@ support.
 
 28. Fix: tests for now ignore deleted identifiers within the symbol table.  Before, only deleted identifiers on the top of the symbol table were ignored.
 
+29. Change: strings.image handles enumerated items.
 

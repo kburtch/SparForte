@@ -11,6 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- record constant specifications
+- question mark and a record prints a blank but probably should report
+  an error
+- check that x : arraytype := (x) works correctly, both with specs
+  and normal declaration.
+
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -21,7 +27,6 @@ Priority Issues (Fix These First)
 * improve first word parsing on the command
     - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
-- strings.image should handle enumerated items
 - raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
