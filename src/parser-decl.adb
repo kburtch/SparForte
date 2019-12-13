@@ -445,6 +445,7 @@ procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
   elementType : identifier;        -- array elements type
   elementBaseType : identifier;        -- base type of array elements type
   anonType    : identifier;        -- identifier for anonymous array type
+  b : boolean;
 begin
   -- To create an anonymous array, we have to add a fake array type
   -- called "an anonymous array" to the symbol table and array table.
@@ -552,6 +553,14 @@ begin
      ParseArrayAssignPart( id );
   end if;
 
+  -- If the anonymous array declaration failed, delete the array variable
+  -- and the hidden anonymous type.
+
+  if error_found then
+     b := deleteIdent( id );
+     b := deleteIdent( anonType );
+  end if;
+
 end ParseAnonymousArray;
 
 procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
@@ -560,6 +569,7 @@ procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
   -- was declared separately.
   base_type_id : identifier;
   canonicalRef : renamingReference;
+  b : boolean;
 begin
 
   -- Renames clause
@@ -617,6 +627,13 @@ begin
      elsif token = symbol_t and identifiers( token ).svalue = "(" then
          err( optional_bold( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
      end if;
+
+     -- If the array declaration failed, delete the array variable.
+
+     if error_found then
+        b := deleteIdent( id );
+     end if;
+
   end if;
 end ParseArrayDeclaration;
 

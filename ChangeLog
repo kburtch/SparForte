@@ -65,3 +65,5 @@ support.
 
 29. Change: strings.image handles enumerated items.
 
+30. Fix: failed assignments to array variables or anonymous array variables during declaration will delete the half-declared variable.
+
