@@ -182,16 +182,19 @@ Annoyances / Bugs with Workarounds / Updates
     - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
     - s := `set_error( current_output ); date -d "foo" '+%s'; set_error( standard_error );` does not work as expected (error output shoud be captured)
     - improve bareword IFS processing
-      - pathnameExpansionWithIFS always runs for every shell word because the shell
-        word could be multiple words from a dollar expansion.  However, in other
-        cases, we've already split the words.  This means the function does not
-        know if a IFS character (space or tab) in a shell word needs to be escaped
-        or not.  As a result, the command "pwd\ ;" should fail but actually runs:
-        while the space is escaped in ParseShellWord, it is treated as an IFS
-        character in pathnameExpansionWithIFS, discarded, and "pwd" is returned.
-        This issue only affects spaces and tabs: other characters are fine.
-        This issue probably requires a major review/refactor for handling the
-        shell words and the process is quite complicated.
+      - the second round of IFS processing should only apply to a bareword
+        dollar expansion.  However, barewords can occur in situations
+        like "x"$y"z". A patch is in place for simple cases like $y.
+        - pathnameExpansionWithIFS always runs for every shell word because the shell
+          word could be multiple words from a dollar expansion.  However, in other
+          cases, we've already split the words.  This means the function does not
+          know if a IFS character (space or tab) in a shell word needs to be escaped
+          or not.  As a result, the command "pwd\ ;" should fail but actually runs:
+          while the space is escaped in ParseShellWord, it is treated as an IFS
+          character in pathnameExpansionWithIFS, discarded, and "pwd" is returned.
+          This issue only affects spaces and tabs: other characters are fine.
+          This issue probably requires a major review/refactor for handling the
+          shell words and the process is quite complicated.
 
 - unsorted/misc
 

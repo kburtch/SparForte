@@ -1740,12 +1740,25 @@ begin
 
   --end loop;
 
-  -- Perform pathname expansion.  This also queues the words in the word
-  -- list.  If a syntax check, we don't want to actually scan the disk
-  -- and expand paths--instead, a dummy word will be queued and no other
-  -- action is taken.
+  -- Perform pathname expansion (file globbing).  Since the expansion can create
+  -- multiple words, this also queues the words in the word list.  If a syntax
+  -- check, we don't want to actually scan the disk and expand paths--instead,
+  -- a dummy word will be queued and no other action is taken.
+  --
+  -- If this is a bareword dollar substitution, a second round of IFS (space/
+  -- tab processing) must be performed.  Otherwise, the IFS processing in this
+  -- procedure is sufficient (doing it twice will lose the escaping of IFS
+  -- characters).
+  --
+  -- Here, I am assuming if the first element is a bareword dollar substitution.
+  -- However, they could occur anywhere and this needs to be refactored.  The
+  -- issue is noted in the Todo file.
 
-  pathnameExpansionWithIFS( word, pattern, wordList );
+  if Element( shell_word, 1 ) = '$' then
+     pathnameExpansionWithIFS( word, pattern, wordList );
+  else
+     pathnameExpansion( word, pattern, wordList );
+  end if;
 
   if isExecutingCommand then
 
