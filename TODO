@@ -14,8 +14,6 @@ Priority Issues (Fix These First)
 - record constant specifications
 - question mark and a record prints a blank but probably should report
   an error
-- check that x : arraytype := (x) works correctly, both with specs
-  and normal declaration.
 
 - generic/parameterized types
   - test renaming and copying generic types
@@ -24,8 +22,6 @@ Priority Issues (Fix These First)
   - under some conditions, the breakout prompt my have end-of-file and be
     interpreted as a return to resume execution.  I have not identified what
     those conditions are.
-* improve first word parsing on the command
-    - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
 - raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.
@@ -68,7 +64,8 @@ Priority Issues (Fix These First)
     - update distance example html
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
-    - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
+    - btree_io.cursor should have the key type assigned when declared.  Why did
+      I choose not to?  What's the reason?
     - pragma risk_tolerance(amt) or pragma optimize( reliability )
       - perhaps optimize is too simplistic: these need to be ranked/rated
         (like pragma emphasize/deemphasize).
@@ -184,6 +181,17 @@ Annoyances / Bugs with Workarounds / Updates
     - escaping unprintable characters not working with readline prompt
     - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
     - s := `set_error( current_output ); date -d "foo" '+%s'; set_error( standard_error );` does not work as expected (error output shoud be captured)
+    - improve bareword IFS processing
+      - pathnameExpansionWithIFS always runs for every shell word because the shell
+        word could be multiple words from a dollar expansion.  However, in other
+        cases, we've already split the words.  This means the function does not
+        know if a IFS character (space or tab) in a shell word needs to be escaped
+        or not.  As a result, the command "pwd\ ;" should fail but actually runs:
+        while the space is escaped in ParseShellWord, it is treated as an IFS
+        character in pathnameExpansionWithIFS, discarded, and "pwd" is returned.
+        This issue only affects spaces and tabs: other characters are fine.
+        This issue probably requires a major review/refactor for handling the
+        shell words and the process is quite complicated.
 
 - unsorted/misc
 

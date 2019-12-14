@@ -1211,9 +1211,9 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     noDir        : boolean;
     isOpen       : boolean := false;
   begin
-    --put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
-    --put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
-    --put_line( "wasDQuote: " & wasDQuote'img ); -- DEBUG
+    -- put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
+    -- put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
+    -- put_line( "wasDQuote: " & wasDQuote'img ); -- DEBUG
     -- In the case of a syntax check, return the word as-is as a place holder.
     -- Don't try to glob it.
     if syntax_check then
@@ -1302,7 +1302,8 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     err( "directory error on directory " & toSecureData(dirPath));
   end pathnameExpansion;
 
-  -- Breakup barewords into subwords and do pathname expansion.
+  -- Breakup barewords into subwords and do pathname expansion (that is, apply
+  -- globbing pattern and get applicable files).
   -- Quoted words pathname expanded as-is
   -- TODO: is this too high?  Probably goes lower in the logic. What about the pattern?
 
@@ -1312,10 +1313,11 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     ch         : character;
     word_pos   : natural := 1;
     pattern_pos: natural := 1;
+    isBackslash: boolean;
   begin
-    --put_line( "pathnameExpansionWithIFS for original pattern """ & pattern & """" ); -- DEBUG
-    --put_line( "pathnameExpansionWithIFS for expanded word """ & word & """" ); -- DEBUG
-    --put_line( "wasBQuote: " & wasBQuote'img ); -- DEBUG
+    -- put_line( "pathnameExpansionWithIFS for original pattern """ & pattern & """" ); -- DEBUG
+    -- put_line( "pathnameExpansionWithIFS for expanded word """ & word & """" ); -- DEBUG
+    -- put_line( "wasBQuote: " & wasBQuote'img ); -- DEBUG
     -- if in double quotes, then no IFS handling
     if wasDQuote then
        pathnameExpansion( word, pattern, list );
@@ -1329,28 +1331,36 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        -- If this is a bareword, break up each piece separated by whitespace
        -- into separate worders to be handled individually.
        while word_pos <= length( word ) loop
-          -- break up the word
+          -- skip leading whitespace
           while word_pos <= length( word ) loop
              ch := element( word, word_pos );
              exit when ch /= ASCII.HT and ch /= ' ';
              word_pos := word_pos + 1;
           end loop;
+          -- handle word and backslash characters
           while word_pos <= length( word ) loop
              ch := element( word, word_pos );
              exit when ch = ASCII.HT or ch = ' ';
              subword := subword & ch;
              word_pos := word_pos + 1;
           end loop;
-          -- break up the pattern
+          -- skip leading whitespace in pattern
           while pattern_pos <= length( pattern ) loop
              ch := element( pattern, pattern_pos );
              exit when ch /= ASCII.HT and ch /= ' ';
              pattern_pos := pattern_pos + 1;
           end loop;
+          -- break up the pattern but honour backslashes
+          isBackslash := false;
           while pattern_pos <= length( pattern ) loop
              ch := element( pattern, pattern_pos );
-             --exit when not is_graphic( ch );
-             exit when ch = ASCII.HT or ch = ' ';
+             if ch = '\' then
+                isBackslash := true;
+             elsif isBackslash then
+               isBackslash := false;
+             else
+               exit when ch = ASCII.HT or ch = ' ';
+             end if;
              subpattern := subpattern & ch;
              pattern_pos := pattern_pos + 1;
           end loop;
@@ -1665,8 +1675,15 @@ begin
        end if;
 
        -- Terminating characters (whitespace or semi-colon)
-       exit when (ch = ' ' or ch = ASCII.HT or ch = ';' or ch = '|' )
-          and not inDQuote and not inSQuote and not inBQuote and not inBackslash and not ignoreTerminatingWhitespace;
+
+       -- exit when (ch = ' ' or ch = ASCII.HT or ch = ';' or ch = '|' )
+       --   and not inDQuote and not inSQuote and not inBQuote and not inBackslash and not ignoreTerminatingWhitespace;
+       if (ch = ' ' or ch = ASCII.HT or ch = ';' or ch = '|' )
+          and not inDQuote and not inSQuote and not inBQuote and not inBackslash
+          and not ignoreTerminatingWhitespace then
+          exit;
+       end if;
+
        -- Looking at a $ expansion?  Then collect the letters of the variable
        -- to substitute but don't add them to the shell word.  Apply dollar
        -- expansions to both word and pattern.
