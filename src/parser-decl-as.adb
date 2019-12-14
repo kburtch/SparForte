@@ -1057,6 +1057,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   inDollar    : boolean := false;                      -- $ expansion
   wasSQuote   : boolean := false;                      -- is $ expan in sin qu
   wasDQuote   : boolean := false;                      -- is $ expan in dbl qu
+  wasBQuote   : boolean := false;                      -- is $ expan in bck qu
   expansionVar: unbounded_string;                      -- the $ name
   escapeGlobs : boolean := false;                      -- escaping glob chars
   ignoreTerminatingWhitespace : boolean := false;                 -- SQL word has whitespace in it (do not use whitespace as a word terminator)
@@ -1314,11 +1315,13 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   begin
     --put_line( "pathnameExpansionWithIFS for original pattern """ & pattern & """" ); -- DEBUG
     --put_line( "pathnameExpansionWithIFS for expanded word """ & word & """" ); -- DEBUG
-    --put_line( "wasDQuote: " & wasDQuote'img ); -- DEBUG
+    --put_line( "wasBQuote: " & wasBQuote'img ); -- DEBUG
     -- if in double quotes, then no IFS handling
     if wasDQuote then
        pathnameExpansion( word, pattern, list );
     elsif wasSQuote then
+       shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
+    elsif wasBQuote then
        shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
     elsif length( pattern ) = 0 or length( word ) = 0 then
        pathnameExpansion( word, pattern, list );
@@ -1570,6 +1573,7 @@ begin
        -- perform the expansion before executing the back quote.
 
     elsif ch = '`' and not inSQuote and not inBackslash then -- unescaped `?
+       wasBQuote := inBQuote;                                -- remember
        inBQuote := not inBQuote;                             -- toggle ` flag
        if inBQuote and inDollar then                         -- doing $ ere `?
           dollarExpansion;                                   -- complete it
@@ -1580,27 +1584,35 @@ begin
           if inDollar then                                   -- in a $?
              dollarExpansion;                                -- finish it
           end if;
---put_line( "PSW: " & word );
---put_line( "PSW: " & startOfBQuote'img );
---put_line( "PSW: " & length( word )'img );
---put_line( "PSW: " & slice( word, startOfBQuote+1, length( word ) ) );
+--put_line( "PSW: word = '" & word & "'" );
+--put_line( "PSW: `    = " & startOfBQuote'img );
+--put_line( "PSW: len  = " & length( word )'img );
+--put_line( "PSW: slic = " & slice( word, startOfBQuote+1, length( word ) ) );
          declare
             -- to run this backquoted shell word, we need to save the current
             -- script, compile the command into byte code, and run the commands
             -- while capturing the output.  Substitute the results into the
             -- shell word and restore the original script.
+            -- tempStr is the command to run in the back quotes.
             tempStr : unbounded_string := to_unbounded_string( slice( word, startOfBQuote+1, length( word ) ) );
             result : unbounded_string;
          begin
-            delete( word, startOfBQuote+1, length( tempStr ) - 1 );
+--put_line( "PSW: tempStr ='" & to_string(tempStr)&"'" );
+            -- remove the command from the end of the word assembled so far
+            delete( word, startOfBQuote+1, length( word ) );
+--put_line( "PSW: word (2) = '" & word & "'" );
             -- If the backquoted commands don't end with a semi-colon, add one.
             -- There is a chance that the semi-colon could be hidden by a
             -- comment symbol (--).
             if tail( tempStr, 1 ) /= ";" then
                tempStr := tempStr & ";";
             end if;
+            -- Run the command and attach the output to the word we are
+            -- assembling.
             CompileRunAndCaptureOutput( tempStr, result );
+--put_line( "PSW: res  = " & to_string(result) );
             word := word & result;
+--put_line( "PSW: word (3) = '" & word & "'" );
          end;
        end if;
        escapeGlobs := inBQuote;                            -- inside? do esc
