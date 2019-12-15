@@ -15,6 +15,9 @@ Priority Issues (Fix These First)
 - question mark and a record prints a blank but probably should report
   an error
 
+- ssds wash is failing...jumping to washing names
+- sieve.sp failing
+  - constants must have a value at compile-time
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters

@@ -1550,14 +1550,14 @@ begin
        end if;
      end;
 
-    -- exceptions are a special case because they are a keyword
+     -- exceptions are a special case because they are a keyword
 
-    if right_type = exception_t then
-       err( "exceptions cannot be assigned" );
+     if right_type = exception_t then
+        err( "exceptions cannot be assigned" );
 
-    -- command types have special limitations
+     -- command types have special limitations
 
-    elsif getBaseType( type_token ) = command_t then
+     elsif getBaseType( type_token ) = command_t then
        if baseTypesOK( uni_string_t, right_type ) then
           type_token := uni_string_t; -- pretend it's a string
           if not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
@@ -1572,6 +1572,7 @@ begin
 
      -- perform assignment
 
+     --if isExecutingCommand then
      if isExecutingCommand then
         expr_value := castToType( expr_value, type_token );
         if type_token /= right_type then
@@ -1582,6 +1583,19 @@ begin
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
                to_string( ToEscaped( expr_value ) ) & """" );
+        end if;
+     else
+        -- At compile time, constants may have assigned values.
+        -- However, we do not have static expression support (yet).
+        -- A variable assigned to a constant may not be defined
+        -- until run-time.
+        -- KLUDGE: For constants, we may at compile-time and the
+        -- variables are not defined.  Contracts cannot be run.
+        if identifiers( id ).usage = constantUsage then
+           if expr_value /= null_unbounded_string then
+              expr_value := castToType( expr_value, type_token );
+              identifiers( id ).value.all := expr_value;
+           end if;
         end if;
      end if;
   elsif (token = symbol_t and identifiers( token ).value.all = ";") then
