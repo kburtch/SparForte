@@ -558,7 +558,8 @@ begin
 
   if error_found then
      b := deleteIdent( id );
-     b := deleteIdent( anonType );
+     -- above, the type is not created on an error
+     -- b := deleteIdent( anonType );
   end if;
 
 end ParseAnonymousArray;
