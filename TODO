@@ -11,6 +11,10 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- record constant specifications
+- question mark and a record prints a blank but probably should report
+  an error
+
 - ssds wash is failing...jumping to washing names
 - sieve.sp failing
   - constants must have a value at compile-time
@@ -21,10 +25,7 @@ Priority Issues (Fix These First)
   - under some conditions, the breakout prompt my have end-of-file and be
     interpreted as a return to resume execution.  I have not identified what
     those conditions are.
-* improve first word parsing on the command
-    - pwd\ ; runs but should not: trailing spaces of the word are being stripped
 * waitToReveal sometimes throws an unexpected exception
-- strings.image should handle enumerated items
 - raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
@@ -55,16 +56,8 @@ Priority Issues (Fix These First)
     whenever a BDB file is opened.  See
     https://apps.state.or.us/tech/berkeleyDB/api_c/txn_recover.html
 - unsorted/misc
-    - assigning values to a constant null array
     - check that x : arraytype := (x) works correctly, both with specs
       and normal declaration.
-    - do exceptions set an error code, even if handled?  if so, handling
-      them should clear the error code. (request by CY)
-    - strings functions could be improved. (request by CY)
-    - in some edge cases, you can invoke procedures before they are declared.
-      As Spar reads the code, it treats the procedure call as a shell
-      command (unless no_external_commands is specified).  This is caught in
-      test mode, but should be caught in development mode as well (CY).
     - finish manual test pragmas
     - generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
@@ -74,13 +67,12 @@ Priority Issues (Fix These First)
     - update distance example html
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
-    - btree_io.cursor should have the key type assigned when declared.  Why did I choose not to?  What's the reason?
+    - btree_io.cursor should have the key type assigned when declared.  Why did
+      I choose not to?  What's the reason?
     - pragma risk_tolerance(amt) or pragma optimize( reliability )
       - perhaps optimize is too simplistic: these need to be ranked/rated
         (like pragma emphasize/deemphasize).
       - forcing static side-effect checking
-    - echo "foo"`bar` works but echo `bar` does not
-      - `word` not allowed in BasicShellWord?
     - spell checking comments (as Windows does?)  must whitelist all
       identifiers.  See /usr/include/aspell.h for interface to spell checker.
     - a variable not declared is said to be declared but not used (this_run_on in
@@ -155,6 +147,7 @@ Annoyances / Bugs with Workarounds / Updates
     types.
   - strings.index is pretty useless without a position paramter.  Can we enhance
     it?
+  - strings functions could be improved. (request by CY)
 - dir ops
   - can we add a parameter to disable returning "." and "..", which require
     special handling in the majority of cases (because they are not needed)?
@@ -191,6 +184,20 @@ Annoyances / Bugs with Workarounds / Updates
     - escaping unprintable characters not working with readline prompt
     - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
     - s := `set_error( current_output ); date -d "foo" '+%s'; set_error( standard_error );` does not work as expected (error output shoud be captured)
+    - improve bareword IFS processing
+      - the second round of IFS processing should only apply to a bareword
+        dollar expansion.  However, barewords can occur in situations
+        like "x"$y"z". A patch is in place for simple cases like $y.
+        - pathnameExpansionWithIFS always runs for every shell word because the shell
+          word could be multiple words from a dollar expansion.  However, in other
+          cases, we've already split the words.  This means the function does not
+          know if a IFS character (space or tab) in a shell word needs to be escaped
+          or not.  As a result, the command "pwd\ ;" should fail but actually runs:
+          while the space is escaped in ParseShellWord, it is treated as an IFS
+          character in pathnameExpansionWithIFS, discarded, and "pwd" is returned.
+          This issue only affects spaces and tabs: other characters are fine.
+          This issue probably requires a major review/refactor for handling the
+          shell words and the process is quite complicated.
 
 - unsorted/misc
 
@@ -215,6 +222,12 @@ Annoyances / Bugs with Workarounds / Updates
     - after running one of my scripts, the less command doesn't work
       properly, suggesting that some characteristic of the terminal
       was not restored properly
+    - in some edge cases, you can invoke procedures before they are declared.
+      As Spar reads the code, it treats the procedure call as a shell
+      command (unless no_external_commands is specified).  This is caught in
+      test mode, but should be caught in development mode but how do you
+      do that?  Perhaps a list of all simple shell commands executed and
+      compare new procedures against those names (CY).
 
 Nice to Haves / Missing Functionality
 -------------------------------------

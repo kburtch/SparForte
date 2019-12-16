@@ -779,12 +779,35 @@ procedure ParseStringsImage( result : out unbounded_string; kind : out identifie
   -- Source: Ada 'image attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
+  isEnum    : boolean := false;
 begin
   kind := uni_string_t;
   expect( image_t );
-  ParseSingleNumericParameter( expr_val, expr_type );
+
+  -- Parse the Expression
+
+  expect( symbol_t, "(" );
+  ParseExpression( expr_val, expr_type );
+  expect( symbol_t, ")" );
+
+  -- Determine if it's an enumerated, numeric or neither
+
+  if identifiers( expr_type ).kind = root_enumerated_t then
+     isEnum := true;
+  elsif identifiers( getBaseType( expr_type ) ).kind = root_enumerated_t then
+     isEnum := true;
+  elsif getUniType( expr_type ) /= uni_numeric_t then
+     err( optional_bold( to_string( identifiers(expr_type).name ) ) &
+          " is not an enumerated or numeric type" );
+  end if;
+
+  -- If it's an enumerated, return the name, not the value.
+
   begin
     if isExecutingCommand then
+       if isEnum then
+          findEnumImage( expr_val, expr_type, expr_val );
+       end if;
        result := expr_val;
     end if;
   exception when others =>

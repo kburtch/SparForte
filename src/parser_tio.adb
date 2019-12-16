@@ -1206,7 +1206,7 @@ end ParsePutLine;
 
 procedure ParseQuestion is
   -- Syntax: "?" expression
-  -- Source: BUSH built-in
+  -- Source: SparForte built-in
   expr_val  : unbounded_string;
   expr_type : identifier;
   retry     : boolean;

@@ -63,4 +63,9 @@ support.
 
 28. Fix: tests for now ignore deleted identifiers within the symbol table.  Before, only deleted identifiers on the top of the symbol table were ignored.
 
+29. Change: strings.image handles enumerated items.
+
+30. Fix: failed assignments to array variables or anonymous array variables during declaration will delete the half-declared variable.
+
+31. Fix: backquotes handled correctly in a shell word when the backquotes are not the first item in the word.
 
