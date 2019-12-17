@@ -444,7 +444,7 @@ procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
   kind2       : identifier;        -- type of last array bound
   elementType : identifier;        -- array elements type
   elementBaseType : identifier;        -- base type of array elements type
-  anonType    : identifier;        -- identifier for anonymous array type
+  anonType    : identifier := eof_t;   -- identifier for anonymous array type
   b : boolean;
 begin
   -- To create an anonymous array, we have to add a fake array type
@@ -558,8 +558,12 @@ begin
 
   if error_found then
      b := deleteIdent( id );
-     -- above, the type is not created on an error
-     -- b := deleteIdent( anonType );
+     -- If there's an error during assignment, anonType may exist.
+     -- Otherwise, it should not exist.  If it was declared,
+     -- delete it on an error.
+     if anonType /= eof_t then
+        b := deleteIdent( anonType );
+     end if;
   end if;
 
 end ParseAnonymousArray;
