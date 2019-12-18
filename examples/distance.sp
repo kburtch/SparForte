@@ -1,6 +1,6 @@
 #!/usr/local/bin/spar
 
-pragma annotate( summary, "Distance" )
+pragma annotate( summary, "distance" )
        @( description, "Calculate the distance between two points on the Earth's surface" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
