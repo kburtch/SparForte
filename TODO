@@ -64,7 +64,6 @@ Priority Issues (Fix These First)
       base type is.  That is, the difference from a standard package type.
     - an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
-    - update distance example html
     - control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
     - btree_io.cursor should have the key type assigned when declared.  Why did
