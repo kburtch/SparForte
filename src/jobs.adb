@@ -84,12 +84,16 @@ end ">=";
 package jobList is new gen_list( aJob, "=", ">=" );
 jobs : jobList.List;            -- our list of jobs
 
------------------------------------
+
+-----------------------------------------------------------------------------
+--  FIND CMD PATH
+--
+-- Determine the location of the command "cmd".  If a path
+-- was specified in cmd, check for and expand a leading tilda.
+-- If no path, then we need to do a search of the PATH variable.
+-----------------------------------------------------------------------------
 
 procedure findCmdPath( cmd : unbounded_string; fullpath : out unbounded_string ) is
-   -- Determine the location of the command "cmd".  If a path
-   -- was specified in cmd, check for and expand a leading tilda.
-   -- If no path, then we need to do a search of the PATH variable.
 
    slashPos : integer;          -- slashes in the command path
    colonPos : integer;          -- colons in the PATH variable
@@ -270,7 +274,7 @@ end clearCommandHash;
 
 
 -----------------------------------------------------------------------------
---  SPAWN COMMAND OR RUN BUILTIN
+--  SHOW RUN ERROR
 --
 -- user-friendly error replies.  Probably could be even better with
 -- stat() and special messages.
@@ -360,11 +364,11 @@ begin
 
    -- Got here?  Must be an external command
 
-   if restriction_no_external_commands then
-      err( "typing mistake or external command (not allowed with " &
-           optional_bold( "restriction( no_external_commands )" ) );
-      return;
-   end if;
+     if restriction_no_external_commands then
+       err( "typing mistake or external command (not allowed with " &
+            optional_bold( "restriction( no_external_commands )" ) );
+       return;
+     end if;
 
      C_reset_errno;                                             -- assume OK
      spawn( fullPath, ap, status, noreturn => noReturn );

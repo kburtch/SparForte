@@ -69,3 +69,5 @@ support.
 
 31. Fix: backquotes handled correctly in a shell word when the backquotes are not the first item in the word.
 
+32. [Fedja B] If Git exists, configure will use Git to create the build version string attached to the development command prompt.  Otherwise, the current date is used as before.
+
