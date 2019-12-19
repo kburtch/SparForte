@@ -98,9 +98,19 @@ package body parser.decl is
 -- Declarations
 -----------------------------------------------------------------------------
 
+
+-----------------------------------------------------------------------------
+--  PARSE TYPE USAGE QUALIFIERS
+--
+-- In a type declaration, parent types may have a usage qualifier.  Check
+-- for a usage qualifier and apply it to the type declaration.
+-- e.g. With "type const_int is constant integer", handle "constant".
+-- Syntax: type-usage-qualifiers = [abstract | limited | constant]
+-- Type usage qualifiers and variable usage qualifiers are not identical:
+-- variables cannot be abstract.
+-----------------------------------------------------------------------------
+
 procedure ParseTypeUsageQualifiers( newtype_id : identifier ) is
-  -- Handle the usage qualifiers that go before a types's parent type
-  -- Syntax: [abstract | limited | constant]
 begin
    -- abstract types
 
@@ -146,11 +156,21 @@ begin
    end if;
 end ParseTypeUsageQualifiers;
 
+
+-----------------------------------------------------------------------------
+--  PARSE VAR USAGE QUALIFIERS
+--
+-- In a variable declaration, data types may have a usage qualifier.  Check
+-- for a usage qualifier and apply it to the variable declaration.
+-- e.g. With "x : constant integer", handle "constant".
+-- If a constant, expr_expected is set to true to alert the caller
+-- that a constant declaration may need a value asigned.
+-- Syntax: var-usage-qualifiers = [limited | constant]
+-- Type usage qualifiers and variable usage qualifiers are not identical:
+-- variables cannot be abstract.
+-----------------------------------------------------------------------------
+
 procedure ParseVarUsageQualifiers( id : identifier; expr_expected : out boolean ) is
-  -- Handle the usage qualifiers that go before a variable's type
-  -- If a constant, expr_expected is set to true to alert the caller
-  -- that a constant declaration may need a value asigned.
-  -- Syntax: [constant | limited]
 begin
   expr_expected := false;                              -- usually false
 
@@ -178,10 +198,19 @@ begin
   end if;
 end ParseVarUsageQualifiers;
 
+
+-----------------------------------------------------------------------------
+--  PARSE GENERIC PARAMETERS PART
+--
+-- Generic types require one or two parameters to complete them.  Parse these
+-- type parameters, saving them in the variable created from the type.
+-- Example: "x : doubly_linked_list.list( string )", "( string )" is the
+-- parameter and it is saved in variable x.
+-- Syntax: generic-parameters = ( gen1 [,gen2] )
+-- Currently, there are no user generic types, only built-in ones.
+-----------------------------------------------------------------------------
+
 procedure ParseGenericParametersPart( varId : identifier ) is
--- Syntax: ...( gen1 [,gen2] )
--- SparForte is currently limited to two generic parameters for a built-in
--- type which takes them.
   genKind : identifier;
 begin
   if token /= symbol_t or identifiers( token ).svalue /= "(" then
@@ -204,11 +233,21 @@ begin
   expect( symbol_t, ")" );
 end ParseGenericParametersPart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RENAMES PART
+--
+-- Handle a renames clause in a variable declaration.  canonicalRef is the
+-- source of the renaming.  new_id and new_type_id is the alias that is
+-- created.  This also validates the usage qualifiers, ensuring that the
+-- renaming has equal or more restrictive usage than the source, or duplicating
+-- the usage if none is specified for the alias.
+-- Syntax: renames-part = renames ident ...
+-- The caller must setup the value pointer for the renaming
+-----------------------------------------------------------------------------
+
 procedure ParseRenamesPart( canonicalRef : out renamingReference;
   new_id, new_type_id : identifier ) is
-  -- Syntax: ... renames ident ...
-  -- the caller must setup the value pointer for the renaming
-  -- new id / type refers to the renaming variable.
 begin
   expect( renames_t );
   canonicalRef.id := token;
@@ -252,11 +291,21 @@ begin
   end if;
 end ParseRenamesPart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE COPIES PART
+--
+-- Handle a copies clause in a variable declaration.  canonicalRef is the
+-- source of the copy.  new_id and new_type_id is the copy that is
+-- created.  This also validates the usage qualifiers, ensuring that the
+-- copy has equal or more restrictive usage than the source, or duplicating
+-- the usage if none is specified for the copy.
+-- Syntax: copies-part = copies ident ...
+-- The caller must setup the value pointer for the copy
+-----------------------------------------------------------------------------
+
 procedure ParseCopiesPart( canonicalRef : out renamingReference;
   new_id, new_type_id : identifier ) is
-  -- Syntax: ... copies ident ...
-  -- the caller must setup the value pointer for the renaming
-  -- new id / type refers to the renaming variable.
 begin
   expect( copies_t );
   canonicalRef.id := token;
@@ -321,19 +370,37 @@ begin
   end if;
 end ParseCopiesPart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ASSIGN PART
+--
+-- Handle an expression used to assign a value.  The value and its type are
+-- returned.
+-- Example: "x : integer := 5", ":= 5" is the assign part.
+-- Syntax: assign-part = " := default_value_expression"
+-----------------------------------------------------------------------------
+
 procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier ) is
-  -- Syntax: assign-part = " := default_value_expression"
-  -- return value and type for expression
 begin
   expect( symbol_t, ":=" );
   ParseExpression( expr_value, expr_type );
 end ParseAssignPart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAY ASSIGN PART
+--
+-- Handle a list of expressions to be assigned to an array as initial values.
+-- Syntax: array-assign-part = " := ( expr, expr, ... )|second-array"
+-- Note that ":= (5)" is ambiguous, since Ada syntax uses round brackets for
+-- both subexpressions and lists of values.  SparForte treats any outer
+-- round brackets as a list of values.  More recent versions of Gnat require
+-- (1 => 5) positional syntax which is not currently supported in SparForte.
+-- Also note that others is not yet supported
+-----------------------------------------------------------------------------
+
 procedure ParseArrayAssignPart( array_id : identifier ) is
 -- procedure ParseArrayAssignPart( array_id : identifier; array_id2: arrayID ) is
-  -- Syntax: array-assign-part = " := ( expr, expr, ... )|second-array"
-  -- others => and positional assignment not (yet) supported
-  -- return value and type for expression
   expr_value : unbounded_string;
   expr_type  : identifier;
   arrayIndex : long_integer;
@@ -432,10 +499,20 @@ begin
   end if;
 end ParseArrayAssignPart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ANONYMOUS ARRAY
+--
+-- Handle an anonymous array declaration.  An anonymous array is an array
+-- that is not pre-defined as it's own type.  A type declaration will be
+-- created to represent the array type.  If limit is true, the type
+-- will be limited.
+-- Syntax: anon-array = " array(expr..expr) of ident [array-assn]
+-- ParseDeclarationPart was getting complicated so this procedure
+-- was declared separately.
+-----------------------------------------------------------------------------
+
 procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
-  -- Syntax: anon-array = " array(expr..expr) of ident [array-assn]
-  -- ParseDeclarationPart was getting complicated so this procedure
-  -- was declared separatly.
   -- array_id    : arrayID;           -- array table index for array variable
   -- type_id     : arrayID;           -- array table index for anon array type
   ab1         : unbounded_string;  -- first array bound
@@ -568,10 +645,19 @@ begin
 
 end ParseAnonymousArray;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAY DECLARATION
+--
+-- Handle the creation of an array and any renaming or default value
+-- assignment.
+-- Syntax: array-declaration = " := array_assign" | renames oldarray
+-- ParseDeclarationPart was getting complicated so this procedure
+-- was declared separately.
+-- This should be renamed to make its function clearer.
+-----------------------------------------------------------------------------
+
 procedure ParseArrayDeclaration( id : identifier; arrayType : identifier ) is
-  -- Syntax: array-declaration = " := array_assign" | renames oldarray
-  -- ParseDeclarationPart was getting complicated so this procedure
-  -- was declared separately.
   base_type_id : identifier;
   canonicalRef : renamingReference;
   b : boolean;
@@ -641,6 +727,15 @@ begin
 
   end if;
 end ParseArrayDeclaration;
+
+
+-----------------------------------------------------------------------------
+--  PARSE RECORD ASSIGN PART
+--
+-- Handle assigning default values to a record variable, or copying default
+-- values from another record.
+-- Syntax ... := (expr[,expr])|record_var
+-----------------------------------------------------------------------------
 
 procedure ParseRecordAssignPart( id : identifier; recType : identifier ) is
   field_no : integer;
@@ -781,6 +876,15 @@ begin
   end if;
 end ParseRecordAssignPart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RECORD DECLARATION
+--
+-- Handle a record variable declaration, including default values or renaming.
+-- Syntax: rec-declaration = " := record_assign"
+-- Syntax: rec-declaration renames canonical-rec
+-----------------------------------------------------------------------------
+
 procedure ParseRecordDeclaration( id : identifier; recType : identifier; canAssign : boolean := true ) is
   -- Syntax: rec-declaration = " := record_assign"
   -- Syntax: rec-declaration renames canonical-rec
@@ -906,10 +1010,16 @@ begin
 
 end ParseRecordDeclaration;
 
+
+-----------------------------------------------------------------------------
+--  PARSE EXCEPTION DECLARATION PART
+--
+-- Handle exception declaration and declare the exception.
+-- Syntax: exception-declaration-part := exception [ with msg [use status] ]
+-- Run by ParseDeclarationPart
+-----------------------------------------------------------------------------
+
 procedure ParseExceptionDeclarationPart( id : in out identifier ) is
-  -- Handle exception declaration and declare the exception.
-  -- Run by ParseDeclarationPart
-  -- Syntax: exception [ with msg [use status] ]
   var_name : unbounded_string;
   default_message : unbounded_string;
   exception_status : unbounded_string;
@@ -961,17 +1071,25 @@ begin
    --end if;
 end ParseExceptionDeclarationPart;
 
+
+-----------------------------------------------------------------------------
+--  CHECK GENERIC PARAMETER TYPE
+--
+-- Type checks for the generic parameters
+-- Currently there are no user-defined generic types: they are all built-in
+-- types which are hard-coded here.
+--
+-- TODO: As a temporary situation, the generic type checks are hard-
+-- coded here.  There is no field in an identifier to set the number
+-- of expected parameters to a generic type.
+--
+-- TODO: I am permitting subtypes of generic types, but there's no
+-- function currently in the scanner to track down type derived type of
+-- generic type.  If I allowed new types from a generic type, the
+-- hard-coded functionality will break.
+-----------------------------------------------------------------------------
+
 procedure CheckGenericParameterType( id, type_token : identifier ) is
-   -- Type checks for the generic parameters
-   --
-   -- TODO: As a temporary situation, the generic type checks are hard-
-   -- coded here.  There is no field in an identifier to set the number
-   -- of expected parameters to a generic type.
-   --
-   -- TODO: I am permitting subtypes of generic types, but there's no
-   -- function currently in the scanner to track down type derived type of
-   -- generic type.  If I allowed new types from a generic type, the
-   -- hard-coded functionality will break.
    uniType  : identifier := getUniType( type_token );
 begin
    if uniType = doubly_list_t then
@@ -1028,24 +1146,37 @@ begin
    end if; -- base types
 end CheckGenericParameterType;
 
-procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean ) is
-  -- Syntax: declaration = " : [aliased|constant] ident assign-part"
-  -- Syntax: declaration = " : anonymous-array
-  -- Syntax: declaration = " : array-declaration
-  -- Syntax: declaration = " : record-declaration
-  -- Syntax: declaration = " : exception [with message use status]
-  -- Syntax: declaration = " : renames x
-  -- Syntax: declaration = " : copies x
-  -- assigns type of identifier and value (if assignment part)
-  -- Note: in some cases, the variable id may change.
-  -- TODO: THIS PROCEDURE IS TOO LONG AND SHOULD BE BROKEN DOWN
 
-  -- anon_arrays => actually, any nested structure allowed? for records
-  -- exceptions => exceptions not allowed in records
+-----------------------------------------------------------------------------
+--  PARSE DECLARATION PART
+--
+-- This is the umbrella function to handle finish almost any kind of
+-- declaration.  Parse the colon and the rest of the declaration.  The
+-- more complex declarations such as arrays and records are handled in
+-- other "part" functions.
+-- Assigns type of identifier and value (if assignment part)
+-- Syntax: declaration-part = " : [aliased|constant] ident assign-part"
+-- Syntax: declaration-part = " : anonymous-array
+-- Syntax: declaration-part = " : array-declaration
+-- Syntax: declaration-part = " : record-declaration
+-- Syntax: declaration-part = " : exception [with message use status]
+-- Syntax: declaration-part = " : renames x
+-- Syntax: declaration-part = " : copies x
+-- Note: in some cases, the variable id may change.
+-- TODO: THIS PROCEDURE IS STILL TOO LONG AND SHOULD BE BROKEN DOWN EVEN MORE
+-----------------------------------------------------------------------------
+
+procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; exceptions : boolean ) is
+
+
+  --  ATTACH GENERIC PARAMETER RESOURCE
+  --
+  -- This sub-procedure declares resources for storing generic types.  Currently
+  -- there are no user-defined generic types: they are built-in and hard-coded.
+  -- TODO: getStorageType
+  ---------------------------------------------------------------------------
 
   procedure AttachGenericParameterResource( id, type_token : identifier ) is
-     -- create and attach a resource to the variable
-     -- TODO: getStorageType
      uniType   : identifier := getUniType( type_token );
      resId     : resHandleId;
   begin
@@ -1076,6 +1207,14 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
         identifiers( id ).resource := true;
      end if;
   end AttachGenericParameterResource;
+
+
+  --  VERIFY CONSTANT SPEC
+  --
+  -- When completing a constant specification (i.e. a forward constant),
+  -- this function confirms parses the complete constant and checks that it
+  -- conforms to the earlier specification.
+  ---------------------------------------------------------------------------
 
   procedure VerifyConstantSpec( const_id : identifier ) is
     -- : constant type assign-part
@@ -1619,8 +1758,16 @@ begin
   end if;
 end ParseDeclarationPart;
 
-procedure ParseRecordFields( record_id : identifier; field_no : in out integer ) is
+
+-----------------------------------------------------------------------------
+--  PARSE RECORD FIELDS
+--
+-- Handle the declaration of record type's fields.
 -- Syntax: field = declaration [; declaration ... ]
+-- Used by ParseRecordTypePart.
+-----------------------------------------------------------------------------
+
+procedure ParseRecordFields( record_id : identifier; field_no : in out integer ) is
    field_id : identifier;
    b : boolean;
 begin
@@ -1645,8 +1792,16 @@ begin
   end if;
 end ParseRecordFields;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RECORD TYPE PART
+--
+-- Parse a new record type.  The fields are parsed in ParseRecordFields.
+-- It also creates the record.
+-- Syntax: record-type-part = "[type-usage] record record-fields end record"
+-----------------------------------------------------------------------------
+
 procedure ParseRecordTypePart( newtype_id : identifier ) is
-   -- Syntax: type = "record f1 : t1; ... end record"
    field_no : integer := 1;
    b : boolean;
 begin
@@ -1684,8 +1839,15 @@ begin
    end if;
 end ParseRecordTypePart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAY TYPE PART
+--
+-- Parse the declaration of a new array type, starting from "array".
+-- Syntax: array-type = "[type-usage] array(exp1..exp2) of element-type"
+-----------------------------------------------------------------------------
+
 procedure ParseArrayTypePart( newtype_id : identifier ) is
-   -- Syntax: type = "array(exp1..exp2) of element-type"
    --type_id     : arrayID;
    ab1         : unbounded_string; -- low array bound
    kind1       : identifier;
@@ -1761,15 +1923,25 @@ begin
 
 end ParseArrayTypePart;
 
+
+-----------------------------------------------------------------------------
+--  PARSE AFFIRM BLOCK
+--
+-- Handle an contract affirm block.  Parse Affirm Clause handles the
+-- setup for this procedure.
+-- Syntax: affirm ... begin ... end affirm;
+-- I decided not to have an exception handler since the purpose of the
+-- accept block is to raise exceptions.  However, they could be added later.
+-- I've included commented out statements for this.
+-----------------------------------------------------------------------------
+
 procedure ParseAffirmBlock is
-   -- Syntax: affirm ... begin ... end affirm;
+
   --errorOnEntry : boolean := error_found;
 begin
    -- Verify context
    expect( affirm_t );
    ParseBlock;
-   -- I decided not to have an exception handler since the purpose of the
-   -- accept block is to raise exceptions.
    --if token = exception_t then
    --   ParseExceptionHandler( errorOnEntry );
    --end if;
@@ -1777,17 +1949,24 @@ begin
    expect( affirm_t );
 end ParseAffirmBlock;
 
+
+-----------------------------------------------------------------------------
+--  PARSE AFFIRM CLAUSE
+--
+-- Setup an affirm block.  This happens at compile-time.  Create a new block
+-- scope, declare the identifier representing the value, parse the affirm,
+-- save the byte code into the data type's contract field.
+-- To execute a contract, we cannot use a function since we cannot
+-- define one without knowing the data type of type_value.
+-- TODO: handle backquoted affirm clause
+-----------------------------------------------------------------------------
+
 procedure ParseAffirmClause( newtype_id : identifier ) is
-   -- Setup an affirm block.  This happens at compile-time.
    type_value_id : identifier;
    blockStart    : natural;
    blockEnd      : natural;
    save_syntax_check : boolean := syntax_check;
 begin
-   -- To execute a contract, we cannot use a function since we cannot
-   -- define one without knowing the data type of type_value.
-   -- TODO: handle backquoted affirm clause
-
    -- declare type_value
    if onlyAda95 then
       err( "affirm clauses are not allowed with " & optional_bold( "pragma ada_95" ) );
@@ -1813,17 +1992,24 @@ begin
    end if;
 end ParseAffirmClause;
 
+
+-----------------------------------------------------------------------------
+--  PARSE TYPE
+--
+-- Handle a user-defined type declaration.
+-- Syntax: type = "type newtype is new [type-usage] oldtype [affirm clause]"
+--         type = "type arraytype is array-type-part"
+--         type = "type rectype is record-type-part"
+-- NOTE: enumerateds aren't overloadable (yet)
+-----------------------------------------------------------------------------
+
 procedure ParseType is
-   -- Syntax: type = "type newtype is new [qualifier] oldtype [affirm clause]"
-   --         type = "type arraytype is array-type-part"
-   -- NOTE: enumerateds aren't overloadable (yet)
    newtype_id  : identifier;
    parent_id   : identifier;
    enum_index  : integer := 0;
    contract_id : identifier := eof_t;
    b : boolean;
 begin
-
    expect( type_t );                                       -- "type"
    ParseNewIdentifier( newtype_id );                       -- typename
    expect( is_t );                                         -- is
@@ -2036,8 +2222,16 @@ begin
    end if;
 end ParseType;
 
+
+-----------------------------------------------------------------------------
+--  PARSE SUBTYPE
+--
+-- Handle a user-defined subtype declaration.
+-- Syntax: subtype = "subtype newtype is [type-usage] oldtype [affirm clause]"
+-- NOTE: enumerateds aren't overloadable (yet)
+-----------------------------------------------------------------------------
+
 procedure ParseSubtype is
-   -- Syntax: type = "subtype newtype is [abstract|limited] oldtype [affirm clause]"
    newtype_id : identifier;
    parent_id : identifier;
    b : boolean;
