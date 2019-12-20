@@ -14,10 +14,14 @@ Priority Issues (Fix These First)
 - record constant specifications
 - question mark and a record prints a blank but probably should report
   an error
-
 - ssds wash is failing...jumping to washing names
-- sieve.sp failing
-  - constants must have a value at compile-time
+  - horizontal tab in comments sometimes locks up SparForte.
+  - the line "host -W 5 "$sip";" occasionally hangs indefintely,
+    but if converted to AdaScript parameters seems OK.  however, this
+    is not certain as the problem is intermittent.
+    - is this an interrupted system call issue?
+  - the file names for line locations when tracing are sometimes wrong
+  - spar temp files may not always be cleaned up
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -199,10 +203,11 @@ Annoyances / Bugs with Workarounds / Updates
           shell words and the process is quite complicated.
 
 - unsorted/misc
-
     - the first word needs command completion.  This includes a command,
       exported variable, or statement.  It should not be a filename.  requested
       by user
+    - spitbol support
+      - http://www.dmitry-kazakov.de/match/match.htm 
     - text_io's get requires a file but shouldn't, or docs should be updated
     - case..is doesn't accept an array element like a(i)
     - control-z handling - fork, send a sleep signal and reset scanner

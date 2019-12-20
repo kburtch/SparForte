@@ -662,7 +662,17 @@ begin
 
   if Element( command, cmdpos ) = '-' and cmdpos < length( command ) then
      if Element( command, cmdpos+1 ) = '-' then
-        ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        --ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- Characters in comments must be high ASCII escaped or else zero bytes in
+        -- foreign characters could randomly break the script.
+        for i in firstpos..length(command) loop
+            if Element( command, i ) = ASCII.NUL or Element( command, i ) = immediate_word_delimiter then
+               err_tokenize( "ASCII character not allowed", to_string( command ) );
+            elsif Element( command, i ) > ASCII.DEL then
+               ci.compressedScript := ci.compressedScript & toByteCode( char_escape_t );
+            end if;
+            ci.compressedScript := ci.compressedScript & Element( command, i );
+        end loop;
         cmdpos := length( command ) + 1;
         return;
      end if;
@@ -1233,7 +1243,17 @@ begin
 
   if Element( command, cmdpos ) = '-' and cmdpos < length( command ) then
      if Element( command, cmdpos+1 ) = '-' then
-        ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        --ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- Characters in comments must be high ASCII escaped or else zero bytes in
+        -- foreign characters could randomly break the script.
+        for i in firstpos..length(command) loop
+            if Element( command, i ) = ASCII.NUL or Element( command, i ) = immediate_word_delimiter then
+               err_tokenize( "ASCII character not allowed", to_string( command ) );
+            elsif Element( command, i ) > ASCII.DEL then
+               ci.compressedScript := ci.compressedScript & toByteCode( char_escape_t );
+            end if;
+            ci.compressedScript := ci.compressedScript & Element( command, i );
+        end loop;
         cmdpos := length( command ) + 1;
         goto next;
      end if;
@@ -1439,7 +1459,17 @@ begin
 
   if Element( command, cmdpos ) = '-' and cmdpos < length( command ) then
      if Element( command, cmdpos+1 ) = '-' then
-        ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- Characters in comments must be high ASCII escaped or else zero bytes in
+        -- foreign characters could randomly break the script.
+        for i in firstpos..length(command) loop
+            if Element( command, i ) = ASCII.NUL or Element( command, i ) = immediate_word_delimiter then
+               err_tokenize( "ASCII character not allowed", to_string( command ) );
+            elsif Element( command, i ) > ASCII.DEL then
+               ci.compressedScript := ci.compressedScript & toByteCode( char_escape_t );
+            end if;
+            ci.compressedScript := ci.compressedScript & Element( command, i );
+        end loop;
         cmdpos := length( command ) + 1;
         goto next;
      end if;
@@ -1598,7 +1628,16 @@ begin
 
   if Element( command, cmdpos ) = '-' and cmdpos < length( command ) then
      if Element( command, cmdpos+1 ) = '-' then
-        ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- Characters in comments must be high ASCII escaped or else zero bytes in
+        -- foreign characters could randomly break the script.
+        for i in firstpos..length(command) loop
+            if Element( command, i ) = ASCII.NUL or Element( command, i ) = immediate_word_delimiter then
+               err_tokenize( "ASCII character not allowed", to_string( command ) );
+            elsif Element( command, i ) > ASCII.DEL then
+               ci.compressedScript := ci.compressedScript & toByteCode( char_escape_t );
+            end if;
+            ci.compressedScript := ci.compressedScript & Element( command, i );
+        end loop;
         cmdpos := length( command ) + 1;
         return;
      end if;
@@ -1660,7 +1699,16 @@ begin
 
   if Element( command, cmdpos ) = '-' and cmdpos < length( command ) then
      if Element( command, cmdpos+1 ) = '-' then
-        ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- Characters in comments must be high ASCII escaped or else zero bytes in
+        -- foreign characters could randomly break the script.
+        for i in firstpos..length(command) loop
+            if Element( command, i ) = ASCII.NUL or Element( command, i ) = immediate_word_delimiter then
+               err_tokenize( "ASCII character not allowed", to_string( command ) );
+            elsif Element( command, i ) > ASCII.DEL then
+               ci.compressedScript := ci.compressedScript & toByteCode( char_escape_t );
+            end if;
+            ci.compressedScript := ci.compressedScript & Element( command, i );
+        end loop;
         cmdpos := length( command ) + 1;
         return;
      end if;
@@ -1764,7 +1812,17 @@ begin
 
   if Element( command, cmdpos ) = '-' and cmdpos < length( command ) then
      if Element( command, cmdpos+1 ) = '-' then
-        ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- ci.compressedScript := ci.compressedScript & slice( command, firstpos, length( command ) );
+        -- Characters in comments must be high ASCII escaped or else zero bytes in
+        -- foreign characters could randomly break the script.
+        for i in firstpos..length(command) loop
+            if Element( command, i ) = ASCII.NUL or Element( command, i ) = immediate_word_delimiter then
+               err_tokenize( "ASCII character not allowed", to_string( command ) );
+            elsif Element( command, i ) > ASCII.DEL then
+               ci.compressedScript := ci.compressedScript & toByteCode( char_escape_t );
+            end if;
+            ci.compressedScript := ci.compressedScript & Element( command, i );
+        end loop;
         cmdpos := length( command ) + 1;
         return;
      end if;

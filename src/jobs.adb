@@ -291,7 +291,6 @@ begin
   when EINVAL  => err( "The program file is corrupt" );
   when EISDIR  => err( "The script interpreter was a directory" );
   when ELIBBAD => err( "The script interpreter could not be run" );
-
   when EACCES  => err( gnat.source_info.source_location &
                        ": Internal error: run() family thought that the" &
                        " program was not accessible" );
@@ -309,6 +308,16 @@ begin
   when 0       => err( gnat.source_info.source_location &
                        "Internal error: run() family thinks there was an" &
                        " error but the error code indicates no error" );
+
+ -- New to more recent Linux
+  when EIO     => err( "An I/O error occurred" );
+  --when ETXTBSY => err( "The file is open for writing" );
+  --when ELOOP   => err( "Too many symbolic link dereferences" );
+  when ENAMETOOLONG => err( "The filename is too long" );
+  when EAGAIN  => err( "The process may be above its resource limit" );
+  when EFAULT  => err( gnat.source_info.source_location &
+                       ": Internal error: arguments or environment" &
+                       " pointers point outside address space" );
 
   when others  => -- out of memory, IO error
        err( "Serious error occurred: " & OSError( code ) & "(" & code'img & ")" );
@@ -364,12 +373,11 @@ begin
 
    -- Got here?  Must be an external command
 
-     if restriction_no_external_commands then
-       err( "typing mistake or external command (not allowed with " &
-            optional_bold( "restriction( no_external_commands )" ) );
-       return;
-     end if;
-
+   if restriction_no_external_commands then
+      err( "typing mistake or external command (not allowed with " &
+           optional_bold( "restriction( no_external_commands )" ) );
+      return;
+   end if;
      C_reset_errno;                                             -- assume OK
      spawn( fullPath, ap, status, noreturn => noReturn );
      last_status := aStatusCode( C_WEXITSTATUS( status ) );
