@@ -121,14 +121,16 @@ nonmeaningful_words : constant unbounded_string := to_unbounded_string( " blah a
 
 confusingprogram_words : constant unbounded_string := to_unbounded_string( " eval exec read test " );
 
----------------------------------------------------------
--- START OF ADASCRIPT PARSER
----------------------------------------------------------
+
+-----------------------------------------------------------------------------
+--  PARSE BASIC SHELL WORD
+--
+-- Check token for a shell word.  Even though this is called "parse",
+-- don't to getNextToken as the shell word hasn't been expanded yet
+-- and errors have yet to be reported against the token.
+-----------------------------------------------------------------------------
 
 procedure ParseBasicShellWord( shell_word : out unbounded_string ) is
-  -- Check token for a shell word.  Even though this is called "parse",
-  -- don't to getNextToken as the shell word hasn't been expanded yet
-  -- and errors have yet to be reported against the token.
 begin
   shell_word := null_unbounded_string;
   if identifiers( token ).kind = command_t then   -- handle a command type
@@ -214,14 +216,20 @@ begin
     --end if;
 end ParseBasicShellWord;
 
+
+-----------------------------------------------------------------------------
+--  PARSE FIELD IDENTIFIER
+--
+-- Expect a new identifier, or one declared in this scope, but
+-- if one from another scope it will need to be redeclared in
+-- this scope.  Use this for record fields that might possibly
+-- be already declared in a different scope.
+--   The problem is that a field variable has a name of "r.f" not "f" as it
+-- appears in the source code.  When testing for existence, we need to
+-- use the full name of the field variable.
+-----------------------------------------------------------------------------
+
 procedure ParseFieldIdentifier( record_id : identifier; id : out identifier ) is
-  -- Expect a new identifier, or one declared in this scope, but
-  -- if one from another scope it will need to be redeclared in
-  -- this scope.  Use this for record fields that might possibly
-  -- be already declared in a different scope.
-  --   The problem is that a field variable has a name of "r.f" not "f" as it
-  -- appears in the source code.  When testing for existence, we need to
-  -- use the full name of the field variable.
   fieldName : unbounded_string;
   temp_id   : identifier;
 begin
@@ -284,13 +292,19 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseFieldIdentifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE FIELD IDENTIFIER
+--
+-- Expect a new identifier, or one declared in this scope, but
+-- if one from another scope it will need to be redeclared in
+-- this scope.  Use this for procedure names that might possibly
+-- be declared "forward".
+-- Also used for record field variables where the variables may
+-- be declared in a different scope.
+-----------------------------------------------------------------------------
+
 procedure ParseProcedureIdentifier( id : out identifier ) is
-  -- Expect a new identifier, or one declared in this scope, but
-  -- if one from another scope it will need to be redeclared in
-  -- this scope.  Use this for procedure names that might possibly
-  -- be declared "forward".
-  -- Also used for record field variables where the variables may
-  -- be declared in a different scope.
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
@@ -361,10 +375,16 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseProcedureIdentifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE VARIABLE IDENTIFIER
+--
+-- A variable is either an existing earlier specification, or it is a new
+-- not previously declared identifier or one previously declared in a
+-- different scope that must be re-declared in this scope
+-----------------------------------------------------------------------------
+
 procedure ParseVariableIdentifier( id : out identifier ) is
-  -- A variable is either an existing earlier specification, or it is a new
-  -- not previously declared identifier or one previously declared in a
-  -- different scope that must be re-declared in this scope
 begin
   id := eof_t; -- dummy
   -- forward constant specification
@@ -439,10 +459,16 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseVariableIdentifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE NEW IDENTIFIER
+--
+-- expect a token that is a new, not previously declared identifier
+-- or one previously declared in a different scope that must be re-declared
+-- in this scope
+-----------------------------------------------------------------------------
+
 procedure ParseNewIdentifier( id : out identifier ) is
-  -- expect a token that is a new, not previously declared identifier
-  -- or one previously declared in a different scope that must be re-declared
-  -- in this scope
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
@@ -507,8 +533,14 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseNewIdentifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE IDENTIFIER
+--
+-- expect a  previously declared identifier
+-----------------------------------------------------------------------------
+
 procedure ParseIdentifier( id : out identifier ) is
-  -- expect a  previously declared identifier
   recId : identifier;
 begin
   id := eof_t; -- assume failure
@@ -589,8 +621,14 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseIdentifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC IDENTIFIER
+--
+-- expect a previously declared static identifier
+-----------------------------------------------------------------------------
+
 procedure ParseStaticIdentifier( id : out identifier ) is
-  -- expect a previously declared static identifier
 begin
   id := eof_t; -- assume failure
   if token = number_t then
@@ -656,6 +694,13 @@ exception when symbol_table_overflow =>
   done := true;   -- abort
 end ParseStaticIdentifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE PROGRAM NAME
+--
+-- Handle the identifier that names the program.  Check for proper style.
+-----------------------------------------------------------------------------
+
 procedure ParseProgramName( program_id : out identifier ) is
 begin
   ParseNewIdentifier( program_id );
@@ -674,7 +719,8 @@ begin
 end ParseProgramName;
 
 
--- DO CONTRACTS
+-----------------------------------------------------------------------------
+--  DO CONTRACTS
 --
 -- Check for and execute a type's affirm clauses.  Use recursion to move to
 -- the distant ancenstor type, then return, applying the clauses, ending
@@ -682,6 +728,7 @@ end ParseProgramName;
 --
 -- kind_id is the data type.
 -- expr_val is the value to be tested for that type
+-----------------------------------------------------------------------------
 
 procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string ) is
    type_value_id : identifier;
@@ -689,6 +736,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
    -- DO CONTRACT1
    --
    -- The inner recursive procedure.
+   --------------------------------------------------------------------------
 
    procedure DoContract1( kind_id : identifier; expr_val : in out unbounded_string ) is
       scriptState : aScriptState;
@@ -775,9 +823,15 @@ end DoContracts;
 --pragma inline( ParseRelationalOperator );
 --pragma inline( ParseExpressionOperator );
 
+
+-----------------------------------------------------------------------------
+--  PARSE FACTOR
+--
+-- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
+-- if the identifier is volatile, reload the value from the environment
+-----------------------------------------------------------------------------
+
 procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
-  -- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
-  -- if the identifier is volatile, reload the value from the environment
   castType  : identifier;
   array_id  : identifier;
   -- array_id2 : arrayID;
@@ -1152,8 +1206,14 @@ begin
   end case;
 end ParseFactor;
 
-procedure ParsePowerTermOperator( op : out unbounded_string ) is
+
+-----------------------------------------------------------------------------
+--  PARSE POWER TERM OPERATOR
+--
 -- Syntax: termop = "**"
+-----------------------------------------------------------------------------
+
+procedure ParsePowerTermOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
@@ -1167,8 +1227,14 @@ begin
   getNextToken;
 end ParsePowerTermOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE POWER TERM
+--
+-- Syntax: term = "factor powerterm-op factor"
+-----------------------------------------------------------------------------
+
 procedure ParsePowerTerm( term : out unbounded_string; term_type : out identifier ) is
-  -- Syntax: term = "factor powerterm-op factor"
   factor1  : unbounded_string;
   factor2  : unbounded_string;
   kind1    : identifier;
@@ -1217,8 +1283,14 @@ begin
   end loop;
 end ParsePowerTerm;
 
+
+-----------------------------------------------------------------------------
+--  PARSE TERM OPERATOR
+--
+-- Syntax: termop = '*' | '/' | '&'
+-----------------------------------------------------------------------------
+
 procedure ParseTermOperator( op : out unbounded_string ) is
-  -- Syntax: termop = '*' | '/' | '&'
 begin
   -- token value is checked by parseTerm, but not token name
   if Token = mod_t or Token = rem_t then
@@ -1233,8 +1305,14 @@ begin
   getNextToken;
 end ParseTermOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE TERM
+--
+-- Syntax: term = "powerterm term-op powerterm"
+-----------------------------------------------------------------------------
+
 procedure ParseTerm( term : out unbounded_string; term_type : out identifier ) is
-  -- Syntax: term = "powerterm term-op powerterm"
   pterm1   : unbounded_string;
   pterm2   : unbounded_string;
   kind1    : identifier;
@@ -1400,8 +1478,15 @@ begin
   end loop;
 end ParseTerm;
 
+
+-----------------------------------------------------------------------------
+--  PARSE SIMPLE EXPRESSION OPERATOR
+--
+--
+-- Syntax: simple-expr-op = '+' | '-'
+-----------------------------------------------------------------------------
+
 procedure ParseSimpleExpressionOperator( op : out unbounded_string ) is
-  -- Syntax: simple-expr-op = '+' | '-'
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
@@ -1413,8 +1498,14 @@ begin
   getNextToken;
 end ParseSimpleExpressionOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE SIMPLE EXPRESSION
+--
+-- Syntax: term = "term expr-op term"
+-----------------------------------------------------------------------------
+
 procedure ParseSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
-  -- Syntax: term = "term expr-op term"
   term1    : unbounded_string;
   term2    : unbounded_string;
   kind1    : identifier;
@@ -1556,8 +1647,14 @@ begin
   --put_line( "Simple Expression value = " & to_string( se ) );
 end ParseSimpleExpression;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RELATIONAL OPERATOR
+--
+-- Syntax: rel-op = >, >=, etc.
+-----------------------------------------------------------------------------
+
 procedure ParseRelationalOperator( op : out unbounded_string ) is
-  -- Syntax: rel-op = >, >=, etc.
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
@@ -1585,8 +1682,14 @@ begin
   getNextToken;
 end ParseRelationalOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RELATION
+--
+-- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
+-----------------------------------------------------------------------------
+
 procedure ParseRelation( re : out unbounded_string; rel_type : out identifier ) is
-  -- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
   se1      : unbounded_string;
   se2      : unbounded_string;
   se3      : unbounded_string;
@@ -1752,8 +1855,14 @@ begin
   end if;
 end ParseRelation;
 
+
+-----------------------------------------------------------------------------
+--  PARSE EXPRESSION OPERATOR
+--
+-- Syntax: expr-op = "and" | "or" | "xor"
+-----------------------------------------------------------------------------
+
 procedure ParseExpressionOperator( op : out identifier ) is
-  -- Syntax: expr-op = "and" | "or" | "xor"
 begin
   if Token /= and_t and
      Token /= or_t and
@@ -1764,8 +1873,14 @@ begin
   getNextToken;
 end ParseExpressionOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE EXPRESSION
+--
+-- Syntax: expr = "relation" and|or|xor "relation"
+-----------------------------------------------------------------------------
+
 procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier ) is
-  -- Syntax: expr = "relation" and|or|xor "relation"
   re1      : unbounded_string;
   re2      : unbounded_string;
   kind1    : identifier;
@@ -1893,13 +2008,20 @@ begin
   --put_line( "Expression value = " & to_string( ex ) );
 end ParseExpression;
 
+
 -----------------------------------------------------------------------------
 -- Static Expressions
 -----------------------------------------------------------------------------
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC FACTOR
+--
+-- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
+-- if the identifier is volatile, reload the value from the environment
+-----------------------------------------------------------------------------
+
 procedure ParseStaticFactor( f : out unbounded_string; kind : out identifier ) is
-  -- Syntax: factor = (expr) | "strlit" | numeric-lit | identifier | built-in fn
-  -- if the identifier is volatile, reload the value from the environment
   castType  : identifier;
   array_id  : identifier;
   -- array_id2 : arrayID;
@@ -2203,8 +2325,14 @@ begin
   end case;
 end ParseStaticFactor;
 
-procedure ParseStaticPowerTermOperator( op : out unbounded_string ) is
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC POWER TERM OPERATOR
+--
 -- Syntax: termop = "**"
+-----------------------------------------------------------------------------
+
+procedure ParseStaticPowerTermOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
@@ -2215,8 +2343,14 @@ begin
   getNextToken;
 end ParseStaticPowerTermOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC POWER TERM
+--
+-- Syntax: term = "factor powerterm-op factor"
+-----------------------------------------------------------------------------
+
 procedure ParseStaticPowerTerm( term : out unbounded_string; term_type : out identifier ) is
-  -- Syntax: term = "factor powerterm-op factor"
   factor1  : unbounded_string;
   factor2  : unbounded_string;
   kind1    : identifier;
@@ -2265,8 +2399,14 @@ begin
   end loop;
 end ParseStaticPowerTerm;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC TERM OPERATOR
+--
+-- Syntax: termop = '*' | '/' | '&'
+-----------------------------------------------------------------------------
+
 procedure ParseStaticTermOperator( op : out unbounded_string ) is
-  -- Syntax: termop = '*' | '/' | '&'
 begin
   -- token value is checked by parseTerm, but not token name
   if Token = mod_t or Token = rem_t then
@@ -2281,8 +2421,14 @@ begin
   getNextToken;
 end ParseStaticTermOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC TERM
+--
+-- Syntax: term = "powerterm term-op powerterm"
+-----------------------------------------------------------------------------
+
 procedure ParseStaticTerm( term : out unbounded_string; term_type : out identifier ) is
-  -- Syntax: term = "powerterm term-op powerterm"
   pterm1   : unbounded_string;
   pterm2   : unbounded_string;
   kind1    : identifier;
@@ -2448,8 +2594,14 @@ begin
   end loop;
 end ParseStaticTerm;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC SIMPLE EXPRESSION OPERATOR
+--
+-- Syntax: simple-expr-op = '+' | '-'
+-----------------------------------------------------------------------------
+
 procedure ParseStaticSimpleExpressionOperator( op : out unbounded_string ) is
-  -- Syntax: simple-expr-op = '+' | '-'
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
@@ -2461,8 +2613,14 @@ begin
   getNextToken;
 end ParseStaticSimpleExpressionOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC SIMPLE EXPRESSION
+--
+-- Syntax: term = "term expr-op term"
+-----------------------------------------------------------------------------
+
 procedure ParseStaticSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
-  -- Syntax: term = "term expr-op term"
   term1    : unbounded_string;
   term2    : unbounded_string;
   kind1    : identifier;
@@ -2604,8 +2762,14 @@ begin
   --put_line( "Simple Expression value = " & to_string( se ) );
 end ParseStaticSimpleExpression;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC RELATIONAL OPERATOR
+--
+-- Syntax: rel-op = >, >=, etc.
+-----------------------------------------------------------------------------
+
 procedure ParseStaticRelationalOperator( op : out unbounded_string ) is
-  -- Syntax: rel-op = >, >=, etc.
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
@@ -2633,8 +2797,14 @@ begin
   getNextToken;
 end ParseStaticRelationalOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC RELATION
+--
+-- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
+-----------------------------------------------------------------------------
+
 procedure ParseStaticRelation( re : out unbounded_string; rel_type : out identifier ) is
-  -- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
   se1      : unbounded_string;
   se2      : unbounded_string;
   se3      : unbounded_string;
@@ -2800,8 +2970,14 @@ begin
   end if;
 end ParseStaticRelation;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC EXPRESSION OPERATOR
+--
+-- Syntax: expr-op = "and" | "or" | "xor"
+-----------------------------------------------------------------------------
+
 procedure ParseStaticExpressionOperator( op : out identifier ) is
-  -- Syntax: expr-op = "and" | "or" | "xor"
 begin
   if Token /= and_t and
      Token /= or_t and
@@ -2812,8 +2988,14 @@ begin
   getNextToken;
 end ParseStaticExpressionOperator;
 
+
+-----------------------------------------------------------------------------
+--  PARSE STATIC EXPRESSION
+--
+-- Syntax: expr = "relation" and|or|xor "relation"
+-----------------------------------------------------------------------------
+
 procedure ParseStaticExpression( ex : out unbounded_string; expr_type : out identifier ) is
-  -- Syntax: expr = "relation" and|or|xor "relation"
   re1      : unbounded_string;
   re2      : unbounded_string;
   kind1    : identifier;
@@ -2926,6 +3108,7 @@ end ParseStaticExpression;
 
 
 
+------------------------------------------------------------------------------
 --  START PARSER
 --
 -- Startup this package, performing any set up tasks.  In this case, none.
@@ -2939,6 +3122,7 @@ begin
 end startParser;
 
 
+------------------------------------------------------------------------------
 --  SHUTDOWN PARSER
 --
 -- Shut down this package, performing any cleanup tasks.  In this case, none.

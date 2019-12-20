@@ -96,21 +96,27 @@ package body parser.decl.as is
 
 procedure SkipBlock( termid1, termid2 : identifier := keyword_t );
 
-procedure ParseIfBlock is
+
+-----------------------------------------------------------------------------
+--  PARSE IF BLOCK
+--
+-- Handle an if statement.
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
+-- The handling of an if block is very tricky because the blocks
+-- do not only include what is between the parts of the if, but
+-- the expressions themselves.  Plus there's the problem of exiting
+-- gracefully if an exit statement is encountered.  All of this
+-- makes handling this statement more complicated than you might
+-- think.
+-----------------------------------------------------------------------------
+
+procedure ParseIfBlock is
   expr_val  : unbounded_string;
   expr_type : identifier;
   b : boolean := false;
   handled : boolean := false;
   backup_sc : boolean;
 begin
-
-  -- The handling of an if block is very tricky because the blocks
-  -- do not only include what is between the parts of the if, but
-  -- the expressions themselves.  Plus there's the problem of exiting
-  -- gracefully if an exit statement is encountered.  All of this
-  -- makes handling this statement more complicated than you might
-  -- think.
 
   -- if expr then statements
 
@@ -383,9 +389,15 @@ begin
 end ParseStaticIfBlock;
 
 
-procedure ParseCaseBlock is
+-----------------------------------------------------------------------------
+--  PARSE CASE BLOCK
+--
+-- Handle a case statement.
 -- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
 -- "when others =>" ..."end case"
+-----------------------------------------------------------------------------
+
+procedure ParseCaseBlock is
   test_id : identifier;
   case_id : identifier;
   handled : boolean := false;
@@ -474,8 +486,9 @@ begin
 
 end ParseCaseBlock;
 
+
 -----------------------------------------------------------------------------
--- STATIC CASE BLOCK
+--  STATIC CASE BLOCK
 --
 -- Conditionally execute code based on a static expression value.  This is
 -- tied to parsePolicy: only policy block statements allowed in the code.
@@ -580,12 +593,15 @@ end ParseStaticCaseBlock;
 -- LOOPS
 -----------------------------------------------------------------------------
 
+
 -----------------------------------------------------------------------------
--- LOOP
+--  PARSE LOOP BLOCK
+--
+-- Handle a loop statement.
+-- Syntax: loop-block = "loop" ... "end loop"
 -----------------------------------------------------------------------------
 
 procedure ParseLoopBlock is
-  -- Syntax: loop-block = "loop" ... "end loop"
   exit_on_entry : boolean := exit_block;
 begin
 
@@ -621,11 +637,13 @@ end ParseLoopBlock;
 
 
 -----------------------------------------------------------------------------
--- WHILE
+--  PARSE WHILE BLOCK
+--
+-- Handle a while loop statement.
+-- Syntax: while-block = "while" bool-expr "loop" ... "end loop"
 -----------------------------------------------------------------------------
 
 procedure ParseWhileBlock is
-  -- Syntax: while-block = "while" bool-expr "loop" ... "end loop"
   expr_val  : unbounded_string;
   expr_type : identifier;
   b : boolean := false;
@@ -685,11 +703,13 @@ end ParseWhileBlock;
 
 
 -----------------------------------------------------------------------------
--- FOR
+--  PARSE FOR BLOCK
+--
+-- Handle a for loop statement.
+-- Syntax: for-block = "for" local-var "in" expr ".." expr "loop" ... "end loop"
 -----------------------------------------------------------------------------
 
 procedure ParseForBlock is
-  -- Syntax: for-block = "for" local-var "in" expr ".." expr "loop" ... "end loop"
   expr1_val  : unbounded_string;
   expr1_type : identifier;
   expr2_val  : unbounded_string;
@@ -890,17 +910,21 @@ begin
 
 end ParseForBlock;
 
+
 -----------------------------------------------------------------------------
 -- Other statements
 -----------------------------------------------------------------------------
 
+
 -----------------------------------------------------------------------------
--- DELAY
+--  PARSE DELAY
+--
+-- Handle a delay statement.
+-- Syntax: delay expression
+-- Source: Ada built-in
 -----------------------------------------------------------------------------
 
 procedure ParseDelay is
-  -- Syntax: delay expression
-  -- Source: Ada built-in
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -922,13 +946,14 @@ end ParseDelay;
 
 
 -----------------------------------------------------------------------------
--- TYPESET
+--  PARSE TYPESET
+--
+-- Handle the typeset statement.
+-- Syntax: typeset identifier is type
+-- TODO: this should be converted to a build-in shell command
 -----------------------------------------------------------------------------
 
 procedure ParseTypeset is
-  -- Syntax: typeset identifier is type
-  -- Source: BUSH built-in
-  -- TODO: this should be converted to a build-in shell command
   id     : identifier;
   typeid : identifier := eof_t;
   b      : boolean;
@@ -1004,11 +1029,11 @@ end ParseTypeset;
 --   Word splitting        a\ word        "a word"         OK
 --   Pathname expansion    *.txt          a.txt b.txt      OK
 --
--- Since BUSH has to interpret the shell words as part of the byte code
+-- Since Spar has to interpret the shell words as part of the byte code
 -- compilation, word splitting before pathname expansion.  This means that
--- certain rare expansions will have different results in BUSH than in a
+-- certain rare expansions will have different results in Spar than in a
 -- standard Bourne shell.  (Some might call this an improvement over the
--- standard.)  Otherwise, BUSH conforms to the Bourne shell standard.
+-- standard.)  Otherwise, Spar conforms to the Bourne shell standard.
 --
 -- UsedEscape is true if the shell word was escaped
 --
@@ -1075,11 +1100,15 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   pattern     : unbounded_string;
   wordType    : aShellWordType;
 
+  --  DOLLAR EXPANSION (parseShellWord)
+  --
+  -- perform a dollar expansion by appending a variable's value to the
+  -- shell word.
+  -- NOTE: what about $?, $#, $1, etc?  These need to be handed specially here?
+  -- NOTE: special $ expansion, including ${...} should be handled here
+  ---------------------------------------------------------------------------
+
   procedure dollarExpansion is
-     -- perform a dollar expansion by appending a variable's value to the
-     -- shell word.
--- NOTE: what about $?, $#, $1, etc?  These need to be handed specially here?
--- NOTE: special $ expansion, including ${...} should be handled here
      id      : identifier;
      subword : unbounded_string;
      ch      : character;
@@ -1191,13 +1220,14 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     end if;
   end dollarExpansion;
 
-  -- parseShellWord: pathnameExpansion
+  --  PATHNAME EXPANSION (parseShellWord)
   --
   -- Perform shell pathname expansion by using the shell word as a glob
   -- pattern and searching the current directory.  Return a list of shell
   -- words created by the expansion.
   --
   -- Note: file name length is limited to 256 characters.
+  ---------------------------------------------------------------------------
 
   procedure pathnameExpansion( word, pattern : unbounded_string; list : in out shellWordList.List ) is
     globCriteria : regexp;
@@ -1302,10 +1332,13 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     err( "directory error on directory " & toSecureData(dirPath));
   end pathnameExpansion;
 
+  --  PATHNAME EXPANSION WITH IFS (parseShellWord)
+  --
   -- Breakup barewords into subwords and do pathname expansion (that is, apply
   -- globbing pattern and get applicable files).
   -- Quoted words pathname expanded as-is
   -- TODO: is this too high?  Probably goes lower in the logic. What about the pattern?
+  ---------------------------------------------------------------------------
 
   procedure pathnameExpansionWithIFS( word, pattern : unbounded_string; list : in out shellWordList.List ) is
     subword    : unbounded_string;
@@ -1838,9 +1871,16 @@ begin
    end loop;
 end ParseShellWords;
 
+
+-----------------------------------------------------------------------------
+--  PARSE VM
+--
+-- Parse virtual machine (vm) statement.
+-- This command is not implemented.
+-- Syntax: vm regtype, regnum
+-----------------------------------------------------------------------------
+
 procedure ParseVm is
--- THIS IS NOT USED AT THIS TIME.
--- vm regtype, regnum
   regtype_val  : unbounded_string;
   regtype_kind : identifier;
   regnum_val   : unbounded_string;
@@ -1860,8 +1900,15 @@ end ParseVm;
 procedure ParseProcedureBlock;
 procedure ParseFunctionBlock;
 
+
+-----------------------------------------------------------------------------
+--  PARSE WITH
+--
+-- Handle an include file.
+-- Syntax: with separate "file";
+-----------------------------------------------------------------------------
+
 procedure ParseWith is
-  -- Syntax: with separate "file";
   include_file : unbounded_string;
 begin
   -- is this true?
@@ -1892,8 +1939,15 @@ begin
   expectSemicolon;
 end ParseWith;
 
+
+-----------------------------------------------------------------------------
+--  PARSE DECLARATIONS
+--
+-- Handle a set of declaration statements.
+-- Syntax: declaration = "new-ident decl-part"
+-----------------------------------------------------------------------------
+
 procedure ParseDeclarations is
-  -- Syntax: declaration = "new-ident decl-part"
   var_id : identifier;
   save_syntax_check : boolean;
 begin
@@ -1933,9 +1987,16 @@ begin
   end loop;
 end ParseDeclarations;
 
+
+-----------------------------------------------------------------------------
+--  PARSE WHEN CLAUSE
+--
+-- Handle a when clause, such as is attached to the end of another statement.
+-- True is returned if the when clause is true
+-- Syntax: ... when condition
+-----------------------------------------------------------------------------
+
 procedure ParseWhenClause( when_true : out boolean ) is
-  -- Syntax: ... when condition
-  -- True is returned if the when clause is true
   expr_val    : unbounded_string;
   expr_type   : identifier;
 begin
@@ -1955,11 +2016,16 @@ begin
   end if;
 end ParseWhenClause;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RAISE
+--
 -- Raise an exception outside of an exception block
+-- Syntax: raise [when...] | raise e [with s] [when...]
 -- TODO: inside a block
+-----------------------------------------------------------------------------
 
 procedure ParseRaise( has_when : out boolean ) is
--- Syntax: raise [when...] | raise e [with s] [when...]
   id : identifier;
   with_text : unbounded_string;
   withTextType : identifier;
@@ -2060,6 +2126,8 @@ begin
   end if;
 end ParseRaise;
 
+
+-----------------------------------------------------------------------------
 --  SKIP BLOCK
 --
 -- Read to the end of a block of code, executing nothing.
@@ -2093,10 +2161,15 @@ begin
   skipping_block := old_skipping;
 end SkipBlock;
 
+
+-----------------------------------------------------------------------------
+--  PARSE BLOCK
+--
 -- execute a block of code
+-- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
+-----------------------------------------------------------------------------
 
 procedure ParseBlock( termid1, termid2 : identifier := keyword_t ) is
-  -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
 begin
   if token = end_t or token = eof_t or token = exception_t or token = termid1 or token = termid2 then
      err( "missing statement or command" );
@@ -2106,7 +2179,12 @@ begin
   end loop;
 end ParseBlock;
 
--- parse an exception block
+
+-----------------------------------------------------------------------------
+--  PARSE EXCEPTION BLOCK
+--
+-- Handle an exception block
+-----------------------------------------------------------------------------
 
 --procedure ParseExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
 procedure ParseExceptionBlock( occurrence_exception : declaration;
@@ -2126,8 +2204,14 @@ begin
   end if;
 end ParseExceptionBlock;
 
+
+-----------------------------------------------------------------------------
+--  SKIP EXCEPTION BLOCK
+--
+-- Same as SkipBlock except raise is permitted
+-----------------------------------------------------------------------------
+
 procedure SkipExceptionBlock is
-  -- Same as SkipBlock except raise is permitted
   pragma warnings( off );
   null_declaration : declaration;
   pragma warnings( on );
@@ -2153,11 +2237,17 @@ begin
   skipping_block := old_skipping;
 end SkipExceptionBlock;
 
+
+-----------------------------------------------------------------------------
+--  PARSE EXCEPTION HANDLER
+--
+-- syntax: exception when others => (block)
+-- errorOnEntry - true if there was already an error when the block
+-- this handler was attached to was started (thus, this handler does
+-- not apply)
+-----------------------------------------------------------------------------
+
 procedure ParseExceptionHandler( errorOnEntry : boolean ) is
-  -- syntax: exception when others => (block)
-  -- errorOnEntry - true if there was already an error when the block
-  -- this handler was attached to was started (thus, this handler does
-  -- not apply)
   found_exception     : boolean := false;
   formal_exception_id : identifier;
   handling_exceptions : boolean;
@@ -2281,6 +2371,13 @@ begin
   end if;
 end ParseExceptionHandler;
 
+
+-----------------------------------------------------------------------------
+--  PARSE EXCEPTION BLOCK
+--
+-- Handle a declare...begin..end block.
+-----------------------------------------------------------------------------
+
 procedure ParseDeclareBlock is
   errorOnEntry : boolean := error_found;
 begin
@@ -2296,6 +2393,13 @@ begin
   pullBlock;
 end ParseDeclareBlock;
 
+
+-----------------------------------------------------------------------------
+--  PARSE BEGIN BLOCK
+--
+-- Handle a begin..end block.
+-----------------------------------------------------------------------------
+
 procedure ParseBeginBlock is
   errorOnEntry : boolean := error_found;
 begin
@@ -2310,12 +2414,13 @@ begin
 end ParseBeginBlock;
 
 
+------------------------------------------------------------------------------
 --  PARSE FORMAL PARAMETER PROPERTIES
 --
 -- Interpret a formal subprogram parameter but do not declare it.  Instead,
 -- return its properties.
-------------------------------------------------------------------------------
 -- TODO: this approach won't work if we do a list of parameters.
+------------------------------------------------------------------------------
 
 procedure ParseFormalParameterProperties(
   formalParamId : out identifier;
@@ -2411,6 +2516,11 @@ begin
 end ParseFormalParameterProperties;
 
 
+-----------------------------------------------------------------------------
+--  PARSE FORMAL PARAMETER
+--
+-----------------------------------------------------------------------------
+
 procedure ParseFormalParameter(
    formal_param_id : out identifier; -- the parameter's id
    proc_id : identifier;             -- the procedure (or function) id
@@ -2453,6 +2563,12 @@ begin
   end if;
 end ParseFormalParameter;
 
+
+-----------------------------------------------------------------------------
+--  PARSE FORMAL PARAMETERS
+--
+-----------------------------------------------------------------------------
+
 procedure ParseFormalParameters( proc_id : identifier; param_no : in out integer; abstract_parameter : in out identifier; is_function : boolean := false ) is
 -- Syntax: parameter-declaration [; parameter-declaration]
 -- Fields are implemented using records
@@ -2467,6 +2583,12 @@ begin
     -- the symbol table will overflow before field_no does
   end loop;
 end ParseFormalParameters;
+
+
+-----------------------------------------------------------------------------
+--  PARSE FUNCTION RETURN PART PROPERTIES
+--
+-----------------------------------------------------------------------------
 
 procedure ParseFunctionReturnPartProperties(
   resultKind : out identifier;
@@ -2539,10 +2661,16 @@ begin
   end if;
 end ParseFunctionReturnPart;
 
-procedure DeclareActualParameters( proc_id : identifier ) is
+
+-----------------------------------------------------------------------------
+--  DECLARE ACTUAL PARAMETERS
+--
 -- This function declare fake actual parameters for parsing the formal
 -- definition of a procedure or function.  It doesn't create the parameters
 -- used when a procedure or function is called (that's ParseActualParameters).
+-----------------------------------------------------------------------------
+
+procedure DeclareActualParameters( proc_id : identifier ) is
   actual_param_t : identifier;
   param_no : natural;
   startAt : identifier;
@@ -2595,10 +2723,12 @@ begin
 end DeclareActualParameters;
 
 
+-----------------------------------------------------------------------------
 --  VERIFY SUBPROGRAM PARAMETERS
 --
 -- Given an incomplete specification, confirm that the
 -- parameters given and the same as the earlier specification.
+-----------------------------------------------------------------------------
 
 procedure VerifySubprogramParameters( specId : identifier; is_function : boolean := false ) is
   specParamId : identifier;
@@ -2731,10 +2861,12 @@ begin
 end VerifySubprogramParameters;
 
 
+-----------------------------------------------------------------------------
 --  VERIFY SUBPROGRAM RETURN PART
 --
 -- Given an incomplete specification of a function, verify the
 -- return part of the implementation matches it.
+-----------------------------------------------------------------------------
 
 procedure VerifySubprogramReturnPart( func_id : identifier ) is
   resultKind     : identifier;
@@ -2755,10 +2887,16 @@ begin
   end if;
 end VerifySubprogramReturnPart;
 
+
+-----------------------------------------------------------------------------
+--  DECLARE ACTUAL PARAMETERS
+--
+-- Syntax: separate( parent ); procedure p [(param1...)] is
+-- Note: forward declaration handling not yet written so minimal parameter
+-- checking in the header.
+-----------------------------------------------------------------------------
+
 procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural ) is
-  -- Syntax: separate( parent ); procedure p [(param1...)] is
-  -- Note: forward declaration handling not yet written so minimal parameter
-  -- checking in the header.
   separate_proc_id : identifier;
   parent_id        : identifier;
   b : boolean;
@@ -2815,12 +2953,18 @@ begin
    expect( is_t );
 end ParseSeparateProcHeader;
 
+
+-----------------------------------------------------------------------------
+--  DECLARE ACTUAL PARAMETERS
+--
+-- Syntax: procedure [abstract] p [(param1...)] OR procedure [abstract] p [(param1...)] is block
+-- end p;
+-- Handle procedure declarations, including forward declarations.
+-- Note: DoUserDefinedProcedure executes a user-defined procedure created by
+-- this routine.
+-----------------------------------------------------------------------------
+
 procedure ParseProcedureBlock is
-  -- Syntax: procedure [abstract] p [(param1...)] OR procedure [abstract] p [(param1...)] is block
-  -- end p;
-  -- Handle procedure declarations, including forward declarations.
-  -- Note: DoUserDefinedProcedure executes a user-defined procedure created by
-  -- this routine.
   proc_id   : identifier;
   procStart : natural;
   procEnd   : natural;
@@ -2933,8 +3077,10 @@ begin
   expectSemicolon;
 end ParseProcedureBlock;
 
-procedure ParseActualParameters( proc_id : identifier;
-  declareParams : boolean := true ) is
+
+-----------------------------------------------------------------------------
+--  PARSE ACTUAL PARAMETERS
+--
 -- Syntax: (param : declaration [; declaration ... ] )
 --
 -- declareparams is true, then the parameters will be created (e.g. this is
@@ -2951,41 +3097,55 @@ procedure ParseActualParameters( proc_id : identifier;
 -- * p1 is the usuable identifier created from the template of proc.p1.
 --   p1's value is filled in (on in-mode) or p1 renames x (in an out or
 --   in out mode)
+-----------------------------------------------------------------------------
 
-------------------------------------------------------------------------------
--- Usable Parameter Helper Functions
---
--- Handles arrays, array elements and records.
--- TODO: refactor to make this more general, place in world.adb?
-------------------------------------------------------------------------------
+procedure ParseActualParameters( proc_id : identifier;
+  declareParams : boolean := true ) is
 
-procedure UpdateRenamedArrayElementParameter( actualParamRef : renamingReference;
-  usableParamId : identifier ) is
-begin
-  if isExecutingCommand then                      -- no value change
-     identifiers( usableParamId ).value :=
-        identifiers( actualParamRef.id ).avalue(
-        actualParamRef.index )'access;
-  end if;
-  exception when storage_error =>              -- prob freed mem
-       err( gnat.source_info.source_location &
-         ": internal error: storage_error exception raised" );
-     when others =>
-       err( gnat.source_info.source_location &
-          ": internal error: exception raised" );
-end UpdateRenamedArrayElementParameter;
+  ----------------------------------------------------------------------------
+  -- Usable Parameter Helper Functions
+  --
+  -- Handles arrays, array elements and records.
+  -- TODO: refactor to make this more general, place in world.adb?
+  ----------------------------------------------------------------------------
 
--- For a full array, mark it as an array and fix the value pointer
+  --  UPDATE RENAMED ARRAY ELEMENT PARAMETER
+  --
+  ----------------------------------------------------------------------------
 
-procedure UpdateRenamedFullArrayParameter( actualParamRef : renamingReference;
-  usableParamId : identifier ) is
-begin
-  identifiers( usableParamId ).list := true;
-  FixRenamedArray( actualParamRef, usableParamId );
-end UpdateRenamedFullArrayParameter;
+  procedure UpdateRenamedArrayElementParameter( actualParamRef : renamingReference;
+    usableParamId : identifier ) is
+  begin
+    if isExecutingCommand then                      -- no value change
+       identifiers( usableParamId ).value :=
+          identifiers( actualParamRef.id ).avalue(
+          actualParamRef.index )'access;
+    end if;
+    exception when storage_error =>              -- prob freed mem
+         err( gnat.source_info.source_location &
+           ": internal error: storage_error exception raised" );
+       when others =>
+         err( gnat.source_info.source_location &
+            ": internal error: exception raised" );
+  end UpdateRenamedArrayElementParameter;
 
--- Records are a complex case.  They must match the formal parmaeters but
--- the values rename the actual parameters.
+  --  UPDATE RENAMED FULL ARRAY PARAMETER
+  --
+  -- For a full array, mark it as an array and fix the value pointer
+  ----------------------------------------------------------------------------
+
+  procedure UpdateRenamedFullArrayParameter( actualParamRef : renamingReference;
+    usableParamId : identifier ) is
+  begin
+    identifiers( usableParamId ).list := true;
+    FixRenamedArray( actualParamRef, usableParamId );
+  end UpdateRenamedFullArrayParameter;
+
+  --  UPDATE RENAMED RECORD PARAMETER
+  --
+  -- Records are a complex case.  They must match the formal parmaeters but
+  -- the values rename the actual parameters.
+  ----------------------------------------------------------------------------
 
 procedure UpdateRenamedRecordParameter( actualRecordRef : renamingReference;
    formalRecordParamId, usableRecordParamId : identifier ) is
@@ -3079,8 +3239,11 @@ end updateRenamedRecordParameter;
 -- Create usable parameters based on the parameter mode
 ------------------------------------------------------------------------------
 
--- For an in mode parameter, expect an expression
--- Create a constant containing the value.
+  --  PARSE USABLE IN MODE PARAMETER
+  --
+  -- For an in mode parameter, expect an expression
+  -- Create a constant containing the value.
+  ----------------------------------------------------------------------------
 
 procedure parseUsableInModeParameter( formalParamId : identifier; paramName : unbounded_string ) is
    expr_value : unbounded_string;
@@ -3123,6 +3286,10 @@ begin
      end if;
   end if;
 end parseUsableInModeParameter;
+
+  --  PARSE USABLE IN OUT MODE PARAMETER
+  --
+  ----------------------------------------------------------------------------
 
 procedure parseUsableInoutModeParameter( formalParamId : identifier; paramName : unbounded_string ) is
    actual_param_ref : renamingReference;
@@ -3199,12 +3366,16 @@ begin
   end if; -- declareParams
 end parseUsableInoutModeParameter;
 
--- For an out mode parameter, expect an identifier.
--- declare a variable as a renaming for the
--- identifier.  Technically the value is
--- undefined.
---
--- For now, it's treated the same as an in out mode parameter
+
+  --  PARSE USABLE OUT MODE PARAMETER
+  --
+  -- For an out mode parameter, expect an identifier.
+  -- declare a variable as a renaming for the
+  -- identifier.  Technically the value is
+  -- undefined.
+  --
+  -- For now, it's treated the same as an in out mode parameter
+  ----------------------------------------------------------------------------
 
 procedure parseUsableOutModeParameter( formalParamId : identifier; paramName : unbounded_string ) is
 begin

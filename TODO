@@ -200,6 +200,9 @@ Annoyances / Bugs with Workarounds / Updates
 
 - unsorted/misc
 
+    - the first word needs command completion.  This includes a command,
+      exported variable, or statement.  It should not be a filename.  requested
+      by user
     - text_io's get requires a file but shouldn't, or docs should be updated
     - case..is doesn't accept an array element like a(i)
     - control-z handling - fork, send a sleep signal and reset scanner
@@ -345,6 +348,8 @@ Nice to Haves / Missing Functionality
   - new vector or game math package (quads, etc).
   - how can we enhance packages?  Should a "service" be a collection of packages?
 - unsorted/misc
+    - The GPS IDE needs a .gpr project file to build SparForte, but I am using
+      standard C Makefiles.
     - should using too many built-in types in a formal script produce a style error?
     - support for literals in different bases
     - syntax check on templates, -e commands, policies, profiles
