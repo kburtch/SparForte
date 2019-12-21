@@ -5295,6 +5295,39 @@ begin
   pragma assert( doubly_linked_lists.length( list5 ) =  0 );
 end;
 
+-- constant specifications
+
+declare
+  c1 : constant integer;
+
+  c1 : constant integer := 1;
+
+  -- Array type declared but never used
+  type atype is array(1..1) of integer;
+  c7 : constant atype;
+  c7 : constant atype := (1);
+
+  -- Constant enumerated specification
+
+  c8 : constant boolean;
+  c8 : constant boolean := true;
+
+  -- Constant record specification
+
+  --type rtype is record
+  --   i : integer;
+  --end rtype;
+
+  --c9 : constant rtype;
+  --c9 : constant rtype := (9);
+
+begin
+  pragma assert( c1 = 1 );
+  pragma assert( c7(1) = 1 );
+  pragma assert( c8 = true );
+  --? c9.i;
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;
