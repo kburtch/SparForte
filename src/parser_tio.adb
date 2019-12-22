@@ -1209,6 +1209,7 @@ procedure ParseQuestion is
   -- Source: SparForte built-in
   expr_val  : unbounded_string;
   expr_type : identifier;
+  uni_type : identifier;
   retry     : boolean;
 begin
   expect( symbol_t );
@@ -1291,9 +1292,10 @@ begin
   end if;
   if isExecutingCommand then -- fix this for no output on error!
      -- this sould be moved to an image function
-     if getUniType( expr_type ) = root_enumerated_t then
+     uni_type := getUniType( expr_type );
+     if uni_type = root_enumerated_t then
         findEnumImage( expr_val, expr_type, expr_val );
-     elsif getUniType( expr_type ) = uni_numeric_t then
+     elsif uni_type = uni_numeric_t then
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.
         declare
@@ -1319,22 +1321,27 @@ begin
         when others =>
            err_exception_raised;
         end;
+     elsif uni_type = root_record_t then
+        err( "full records cannot be printed with ?.  Try env");
      end if;
-     -- Ada doesn't handle interrupted system calls properly.
-     -- maybe a more elegant way to do this...
-     loop
-        retry := false;
-        begin
-          Put_Line( expr_val );
-        exception when msg: device_error =>
-          if exception_message( msg ) = "interrupted system call" then
-             retry := true;
-          else
-             err( exception_message( msg ) );
-          end if;
-        end;
-     exit when not retry;
-     end loop;
+     -- If an just error occurred, don't print anything further.
+     if not error_found then
+        -- Ada doesn't handle interrupted system calls properly.
+        -- maybe a more elegant way to do this...
+        loop
+           retry := false;
+           begin
+             Put_Line( expr_val );
+           exception when msg: device_error =>
+             if exception_message( msg ) = "interrupted system call" then
+                retry := true;
+             else
+                err( exception_message( msg ) );
+             end if;
+           end;
+        exit when not retry;
+        end loop;
+     end if;
      last_output := expr_val;
      last_output_type := expr_type;
      replaceField( standard_output_t, line_field,

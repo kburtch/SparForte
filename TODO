@@ -12,8 +12,6 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - record constant specifications
-- question mark and a record prints a blank but probably should report
-  an error
 - ssds wash is failing...jumping to washing names
   - horizontal tab in comments sometimes locks up SparForte.
   - the line "host -W 5 "$sip";" occasionally hangs indefintely,
