@@ -12,14 +12,6 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - record constant specifications
-- ssds wash is failing...jumping to washing names
-  - horizontal tab in comments sometimes locks up SparForte.
-  - the line "host -W 5 "$sip";" occasionally hangs indefintely,
-    but if converted to AdaScript parameters seems OK.  however, this
-    is not certain as the problem is intermittent.
-    - is this an interrupted system call issue?
-  - the file names for line locations when tracing are sometimes wrong
-  - spar temp files may not always be cleaned up
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
