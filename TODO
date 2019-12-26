@@ -11,7 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- record constant specifications
+- constant spec negative tests
+- array constant specifications
+  - array foo referencing another foo during initialization (confirm)
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -312,6 +314,9 @@ Nice to Haves / Missing Functionality
   - blocks should probably be inside isExecutingCommand if's
 - os package
   - process id
+- record constant specifications
+  - case of record specifcation for foo referencing an older foo variable
+    during assignment of initial values
 - types and expressions
   - type is new (record type) not yet implemented.
   - private qualifier means copy-only on assignment...but aggregates

@@ -40,7 +40,12 @@ packages from their distributor, if they are available.
 
 The following software packages are required for SparForte:
 
-  * A Bourne-compatible shell such as bash or ksh.  dash does not work.
+  * A Bourne-compatible shell such as bash or ksh.  dash does not work.  On
+    newer Ubuntu distributions using dash, to run "make tests" you will have
+    to replace the shell symlink with bash.
+
+    # rm /bin/sh
+    # ln -s /bin/bash /bin/sh
 
   * GNU make is required; other make programs may not work.  GNU make is often
     installed under the name "gmake" and the SparForte makefile assumes this is the

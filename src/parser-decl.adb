@@ -649,7 +649,7 @@ end ParseAnonymousArray;
 -----------------------------------------------------------------------------
 --  PARSE ARRAY DECLARATION
 --
--- Handle the creation of an array and any renaming or default value
+-- Handle the creation of an array varaible and any renaming or default value
 -- assignment.
 -- Syntax: array-declaration = " := array_assign" | renames oldarray
 -- ParseDeclarationPart was getting complicated so this procedure
@@ -745,6 +745,7 @@ procedure ParseRecordAssignPart( id : identifier; recType : identifier ) is
   expected_fields : integer;
   second_record_id : identifier;
 begin
+--put_line( "REC ASSIGN PART " & to_string( identifiers( id ).name ) ); -- DEBUG
   expect( symbol_t, ":=" );
   if token = symbol_t then                                     -- assign (..)?
      expect( symbol_t, "(" );                                  -- read constant
@@ -954,6 +955,9 @@ begin
                exit;
             end if;
 
+            -- Given the fields in the record type, create fields for the
+            -- record variable by copying the properties of the type.
+
             declare
                fieldName   : unbounded_string;
                dont_care_t : identifier;
@@ -976,6 +980,14 @@ begin
                identifiers( dont_care_t ).field_of := id;
                -- apply abtract and limited
                identifiers( dont_care_t ).usage := identifiers( j ).usage;
+               -- CONST SPECS
+               -- By default, constant record fields are specifications:
+               -- They have not been assigned a value yet and cannot be
+               -- used.
+               if identifiers( dont_care_t ).usage = constantUsage then
+                  identifiers( dont_care_t ).specFile := getSourceFileName;
+                  identifiers( dont_care_t ).specAt := getLineNo;
+               end if;
                -- at least, for now, don't worry if record fields are
                -- declared but not accessed.  We'll just check the
                -- main record identifier.
@@ -996,16 +1008,34 @@ begin
      -- Full Record Renaming
      ParseRenamesPart( canonicalRef, id, recType );
      FixRenamedRecordFields( canonicalRef, id );
+
+  -- Assignment?
+  -- if it appears, one can only rename...cannot assign.
+
   elsif token = symbol_t and identifiers( token ).value.all = ":=" then
      if canAssign then
         ParseRecordAssignPart( id, recType );
      elsif identifiers( id ).usage = constantUsage then
-        -- if it is a constant record and there was no assignment, the record is a specification
+        -- CONST SPECS
+        -- if it is a constant record and there was no assignment, the full
+        -- record variable is a specification.
         identifiers( id ).specFile := getSourceFileName;
         identifiers( id ).specAt := getLineNo;
      end if;
+
+  -- Generic type?  Check for parameters.
+
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( optional_bold( to_string( identifiers( recType ).name ) ) & " is not a generic type but has parameters" );
+
+  -- No Assignment?  If it's a constant, than it's a constant specification.
+
+  elsif identifiers( id ).usage = constantUsage then
+        -- CONST SPECS
+        -- if it is a constant record and there was no assignment, the full
+        -- record variable is a specification.
+        identifiers( id ).specFile := getSourceFileName;
+        identifiers( id ).specAt := getLineNo;
   end if;
 
 end ParseRecordDeclaration;
@@ -1226,7 +1256,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     new_const_id  : identifier;
     oldSpec       : declaration;
   begin
-    --put_line("VERIFY FOR " & to_string( identifiers( const_id ).name ) ); --DEBUG
+    --put_line("VERIFY CONST SPEC: " & to_string( identifiers( const_id ).name ) ); --DEBUG
     -- TODO: this should not happen.
     if not isLocal( const_id ) then
        err( "internal error: constant specification was in a different scope " );
@@ -1261,35 +1291,64 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
 
     -- Temporarily destroy identifer so that i : constant integer := i
     -- isn't circular.  Set avalue to null to prevent releasing storage
-    -- pointed to by oldSpec.
+    -- pointed to by oldSpec.  Backup the entire entry.
+    --  For records, which are currently a collection of variables,
+    -- it is not possible to destroy the parent record variable.  If we
+    -- did, recreating it may change its position in the symbol table,
+    -- breaking the linkage to its fields.  Also, the value is the number
+    -- of fields and we don't want to clear and lose that.
 
     oldSpec := identifiers( const_id );
-    identifiers( const_id ).avalue := null;
 
     -- unlike a regular declaration, the constant specification id exists
     -- and has a type (not new_t )
-    identifiers( const_id ).kind := new_t;              -- make it discardable
-    discardUnusedIdentifier( const_id );                -- discard variable
+
+    if getUniType( oldSpec.kind ) /= root_record_t then
+       identifiers( const_id ).avalue := null;
+       identifiers( const_id ).kind := new_t;           -- make it discardable
+       discardUnusedIdentifier( const_id );             -- discard variable
+    end if;
 
     -- Calculate the assignment (ie. using any previous variable i)
+    -- if not an aggregate.  The assign part is done here while the variable
+    -- does not exist.
+    --   For a record, this will erase the number of fields in the record's
+    -- parent variable.
 
-    if not oldSpec.list then
+    if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
+--put_line( "verify: AssignPart should not run for aggregates"); -- DEBUG
        ParseAssignPart( expr_value, right_type );          -- do := part
     end if;
 
     -- Redeclare temporarily destroyed identifier (ie. declare new i)
     -- and recover old properties.  Clear the spec and fix the avalue
     -- (if necessary).  The spec is now fulfilled.
+    --  For records, we didn't destroy the original.
 
-    declareIdent( new_const_id, oldSpec.name, type_token, varClass );
+    if getUniType( oldSpec.kind ) /= root_record_t then
+--put_line( "verify: New ident" ); -- DEBUG
+       declareIdent( new_const_id, oldSpec.name, type_token, varClass );
+    else
+--put_line( "verify: No new ident" ); -- DEBUG
+       new_const_id := const_id;
+    end if;
     identifiers( new_const_id ) := oldSpec;
     identifiers( new_const_id ).specAt := noSpec;
 
+    -- For a record, mark it as used if it's a constant
+    identifiers( new_const_id ).wasReferenced := true;
+
+    -- Aggregate assignments
+    --
     -- TODO: the recursion problem exists here, where defining x but x may be
     -- in the assignment list.
 
     if identifiers( new_const_id ).list then
+--put_line( "verify: array assign part" ); -- DEBUG
        ParseArrayAssignPart( new_const_id );
+    elsif getUniType( identifiers( new_const_id ).kind ) = root_record_t then
+--put_line( "verify: record assign part" ); -- DEBUG
+       ParseRecordAssignPart( new_const_id, type_token );
     end if;
 
     if isExecutingCommand then

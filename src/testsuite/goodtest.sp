@@ -1538,8 +1538,9 @@ rec4 : arec2 := (6,7,'8');
 rec5 : arec2 := rec4;
 rec6, rec7 : arec1 := (1);
 
-rec8 : constant arec1;
-pragma assumption( used, rec8 );
+-- This will be an error: specification not complete
+--rec8 : constant arec1;
+--pragma assumption( used, rec8 );
 rec9 : limited arec3;
 pragma assumption( used, rec9 );
 
@@ -5314,18 +5315,18 @@ declare
 
   -- Constant record specification
 
-  --type rtype is record
-  --   i : integer;
-  --end rtype;
+  type rtype is record
+     i : integer;
+  end rtype;
 
-  --c9 : constant rtype;
-  --c9 : constant rtype := (9);
+  c9 : constant rtype;
+  c9 : constant rtype := (9);
 
 begin
   pragma assert( c1 = 1 );
   pragma assert( c7(1) = 1 );
   pragma assert( c8 = true );
-  --? c9.i;
+  pragma assert( c9.i= 9 );
 end;
 
 -- Pragma ada_95 tests
