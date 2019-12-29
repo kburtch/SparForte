@@ -24,6 +24,7 @@
 with text_io;use text_io;
 
 with gnat.directory_operations,
+    Ada.Directories,
     ada.strings.unbounded,
     world,
     scanner,
@@ -31,6 +32,7 @@ with gnat.directory_operations,
     parser_params,
     parser;
 use gnat.directory_operations,
+    Ada.Directories,
     ada.strings.unbounded,
     world,
     scanner,
@@ -45,14 +47,17 @@ package body parser_dirops is
 ------------------------------------------------------------------------------
 
 dirops_dir_type_t       : identifier;
+dirops_absolute_dir_name_str_t   : identifier;
 dirops_dir_name_str_t   : identifier;
 dirops_dir_separator_t  : identifier;
 dirops_change_dir_t     : identifier;
 dirops_make_dir_t       : identifier;
 dirops_remove_dir_t     : identifier;
 dirops_get_current_dir_t : identifier;
+dirops_absolute_path_name_t      : identifier;
 dirops_path_name_t      : identifier;
 dirops_dir_name_t       : identifier;
+dirops_absolute_dir_name_t      : identifier;
 dirops_base_name_t      : identifier;
 dirops_file_extension_t : identifier;
 dirops_file_name_t      : identifier;
@@ -191,6 +196,24 @@ begin
     err_exception_raised;
   end;
 end ParseDirOpsGetCurrentDir;
+
+procedure ParseDirOpsAbsoluteDirName( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax:
+  -- Source:
+  expr_val : unbounded_string;
+  expr_type: identifier;
+begin
+  kind := dirops_absolute_dir_name_str_t;
+  expect( dirops_absolute_dir_name_t );
+  ParseSingleStringParameter( expr_val, expr_type, dirops_path_name_t );
+  begin
+    if isExecutingCommand then
+       result := to_unbounded_string( Containing_Directory (Full_Name( path_name( to_string( expr_val)))));
+    end if;
+  exception when others =>
+    err_exception_raised;
+  end;
+end ParseDirOpsAbsoluteDirName;
 
 procedure ParseDirOpsDirName( result : out unbounded_string; kind : out identifier ) is
   -- Syntax:
@@ -483,6 +506,8 @@ begin
   declareNamespace( "directory_operations" );
   declareIdent( dirops_dir_name_str_t, "directory_operations.dir_name_dir",
      string_t, subClass );
+  declareIdent( dirops_absolute_dir_name_str_t, "directory_operations.absoute_dir_name_dir",
+     string_t, subClass );
   declareIdent( dirops_dir_type_t, "directory_operations.dir_type_id",
      positive_t, typeClass );
 
@@ -493,6 +518,7 @@ begin
   declareFunction( dirops_get_current_dir_t, "directory_operations.get_current_dir", ParseDirOpsGetCurrentDir'access );
   declareIdent( dirops_path_name_t, "directory_operations.path_name",
      string_t, subClass );
+  declareFunction( dirops_absolute_dir_name_t, "directory_operations.absolute_dir_name", ParseDirOpsAbsoluteDirName'access );
   declareFunction( dirops_dir_name_t, "directory_operations.dir_name", ParseDirOpsDirName'access );
   declareFunction( dirops_base_name_t, "directory_operations.base_name", ParseDirOpsBaseName'access );
   declareFunction( dirops_file_extension_t, "directory_operations.file_extension", ParseDirOpsFileExtension'access );
