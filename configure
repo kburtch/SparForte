@@ -1112,6 +1112,17 @@ if [ -z "$NO_READLINE" ] ; then
       echo "yes"
    fi
    if [ -z "$READLINE_VERSION" ] ; then
+      echo -n "checking for readline 8 (ldconfig -p, Linux)... "
+      TMP=`$LDCONFIG_SUDO sudo /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.8`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+      else
+         HAS_READLINE=1
+         READLINE_VERSION=8
+         echo "yes"
+      fi
+   fi
+   if [ -z "$READLINE_VERSION" ] ; then
       echo -n "checking for readline 7 (ldconfig -p, Linux)... "
       TMP=`$LDCONFIG_SUDO sudo /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.7`
       if [ -z "$TMP" ] ; then
