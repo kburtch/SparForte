@@ -18,7 +18,9 @@ Priority Issues (Fix These First)
   c7 : constant atype := (1);
   - declare before use
   - anonymous arrays
-?a(1) - storage error when a does not exist
+testsuite004_types/badtest182_accept_clause_working.sp
+  - says the type is not used.  the type should be used even if the
+    contract failed.
 
 - array constant specifications
   - array foo referencing another foo during initialization (confirm)

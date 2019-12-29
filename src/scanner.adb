@@ -222,7 +222,11 @@ begin
       put_line( standard_error, "put_token: constraint_error raised on token type" );
      end;
   end if;
-  Put_Line( "    Token value = '" & ToEscaped( identifiers( token ).value.all ) & "'" );
+  if identifiers( token ).value = null then
+     Put_Line( "    Token value = null" );
+  else
+     Put_Line( "    Token value = '" & ToEscaped( identifiers( token ).value.all ) & "'" );
+  end if;
   Put( "    Token properties = " );
   if identifiers( token ).import then
      Put( "import " );

@@ -859,6 +859,10 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
                identifiers( t ).specAt'img & ")");
        end if;
     end if;
+    -- something failed earlier and we don't have an actual variable to
+    -- test (e.g. could be be a name that is not declared).
+    --if error_found then
+    --   null;
     if identifiers( t ).class = subClass or             -- type cast
        identifiers( t ).class = typeClass then
        -- this will change when arrays can have derived types.
@@ -926,21 +930,22 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        end if;
        expect( symbol_t, ")" );                  -- element type is k's k
        kind := identifiers( identifiers( array_id ).kind ).kind;
-    -- something failed earlier and we don't have an actual expression
-    elsif t = eof_t or t = new_t then
-        err( "identifier not declared" );
     else
-    -- regular variable with an array index?
-       if identifiers( t ).field_of /= eof_t then
-         if identifiers( identifiers( t ).field_of ).usage = limitedUsage then
-            err( "limited record variables cannot be used in an expression" );
-         end if;
-         if identifiers( identifiers( t ).field_of ).specAt /= noSpec then
-            err( "earlier specification has not been completed (at " &
-                 to_string( identifiers( identifiers( t ).field_of ).specFile) & ":" &
-                 identifiers( identifiers( t ).field_of ).specAt'img & ")");
-         end if;
+       -- does it look like a record?
+       if t /= eof_t then
+          if identifiers( t ).field_of /= eof_t then
+             if identifiers( identifiers( t ).field_of ).usage = limitedUsage then
+                err( "limited record variables cannot be used in an expression" );
+             end if;
+             if identifiers( identifiers( t ).field_of ).specAt /= noSpec then
+                err( "earlier specification has not been completed (at " &
+                     to_string( identifiers( identifiers( t ).field_of ).specFile) & ":" &
+                     identifiers( identifiers( t ).field_of ).specAt'img & ")");
+             end if;
+          end if;
+
        end if;
+    -- regular variable with an array index?
        if token = symbol_t and then identifiers( token ).value.all = "(" then
          err( optional_bold( to_string( identifiers( t ).name ) ) &
              " has an array index but is not an array" );
