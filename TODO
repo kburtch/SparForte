@@ -12,6 +12,14 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - constant spec negative tests
+  - in a simple script, this fails:
+  type atype is array(1..1) of integer;
+  c7 : constant atype;
+  c7 : constant atype := (1);
+  - declare before use
+  - anonymous arrays
+?a(1) - storage error when a does not exist
+
 - array constant specifications
   - array foo referencing another foo during initialization (confirm)
 - generic/parameterized types

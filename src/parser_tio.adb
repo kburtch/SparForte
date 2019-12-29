@@ -1218,7 +1218,11 @@ begin
       return;
   end if;
   ParseExpression( expr_val, expr_type );
-  if getUniType( expr_type ) = root_enumerated_t then
+  -- If an error occurred when parsing the expression, the expression and
+  -- type may not be valid.  There's nothing to print.
+  if error_found then
+     null;
+  elsif getUniType( expr_type ) = root_enumerated_t then
      -- this will work during the syntax check but we don't need it
      if isExecutingCommand then
         findEnumImage( expr_val, expr_type, expr_val );

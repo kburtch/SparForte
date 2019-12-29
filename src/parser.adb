@@ -926,11 +926,19 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        end if;
        expect( symbol_t, ")" );                  -- element type is k's k
        kind := identifiers( identifiers( array_id ).kind ).kind;
-    -- regular variable with an array index?
+    -- something failed earlier and we don't have an actual expression
+    elsif t = eof_t or t = new_t then
+        err( "identifier not declared" );
     else
+    -- regular variable with an array index?
        if identifiers( t ).field_of /= eof_t then
          if identifiers( identifiers( t ).field_of ).usage = limitedUsage then
             err( "limited record variables cannot be used in an expression" );
+         end if;
+         if identifiers( identifiers( t ).field_of ).specAt /= noSpec then
+            err( "earlier specification has not been completed (at " &
+                 to_string( identifiers( identifiers( t ).field_of ).specFile) & ":" &
+                 identifiers( identifiers( t ).field_of ).specAt'img & ")");
          end if;
        end if;
        if token = symbol_t and then identifiers( token ).value.all = "(" then
