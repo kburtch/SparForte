@@ -1556,7 +1556,7 @@ begin
      startHelp( e, "directory_operations" );
      summary( e, "directory_operations package" );
      authorKen( e );
-     modifiedKen( e );
+     modified( e, "Marek Kuziel" );
      categoryPackage( e );
      description( e, "A collection of common routines using directories and file paths." );
      content( e, "c := dir_separator","change_dir( p )","remove_dir( p [, r] )" );
@@ -1564,6 +1564,7 @@ begin
      content( e, "s := file_extension( p )","s := file_name( p )","s := format_pathname( p [,t] )" );
      content( e, "s := expand_path( p [,t] )","make_dir( p )","close( d )" );
      content( e, "b := is_open( d )","open( d, p )","read( d, s )" );
+     content( e, "s := absolute_dir_name( d )" );
      seeAlso( e, "doc/pkg_dirops.html" );
      endHelp( e );
   elsif helpTopic = "end_of_file" then

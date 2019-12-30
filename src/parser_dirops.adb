@@ -54,7 +54,7 @@ dirops_change_dir_t     : identifier;
 dirops_make_dir_t       : identifier;
 dirops_remove_dir_t     : identifier;
 dirops_get_current_dir_t : identifier;
-dirops_absolute_path_name_t      : identifier;
+--dirops_absolute_path_name_t      : identifier;
 dirops_path_name_t      : identifier;
 dirops_dir_name_t       : identifier;
 dirops_absolute_dir_name_t      : identifier;

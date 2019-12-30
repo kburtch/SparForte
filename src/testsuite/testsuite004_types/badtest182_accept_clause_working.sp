@@ -4,6 +4,7 @@ validate_error : exception;
 
 type t is new integer
   affirm
+    t := t;
     raise validate_error;
   end affirm;
 

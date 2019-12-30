@@ -49,6 +49,7 @@ directories.</p>
         <center>
         <div class="code">
 <pre>
+  <a href="#directory_operations.absolute_dir_name">s := absolute_dir_name( d )</a>
   <a href="#directory_operations.dir_separator">c := dir_separator</a>             <a href="#directory_operations.change_dir">change_dir( p )</a>               <a href="#directory_operations.remove_dir">remove_dir( p [, r] )</a>
   <a href="#directory_operations.get_current_dir">p := get_current_dir</a>           <a href="#directory_operations.dir_name">s := dir_name( p )</a>            <a href="#directory_operations.base_name">s := base_name( p [, f] )</a>
   <a href="#directory_operations.file_extension">s := file_extension( p )</a>       <a href="#directory_operations.file_name">s := file_name( p )</a>           <a href="#directory_operations.format_pathname">s := format_pathname( p [,t] )</a>
@@ -73,7 +74,8 @@ include drive letters if the operating system provides for this. The final '/'
 or '\' in a Dir_Name_Str is optional when passed as a procedure or function in
 parameter.  On OpenVMS, only Unix style path names are supported, not VMS
 style, but the directory and file names are not case sensitive.</li>
-
+<li><b>directory_operations.absoute_dir_name_dir</b>: the same as the previous
+item except that it is for absolute directories.</li>
 <li><b>directory_operations.path_name</b>: a pathname. All routines using
 Path_Name handle both styles (UNIX and DOS) of directory separators (either
 slash or back slash).</li>
@@ -81,6 +83,50 @@ slash or back slash).</li>
 <li><b>directory_operations.environment_style</b>: the format for environment variable substitution - environment_style.unix, environment_style.dos, environment_style.both, environment_style.system_default</li>
 <li><b>directory_operations.dir_type_id</b>: the id number of a dir_type resource, allocated by directory_operations.open</li>
 </ul>
+
+<a name="directory_operations.absolute_dir_name"></a><h3>s := directory_operations.absolute_dir_name( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the absolute path of the directory portion of the pathname p. Everything after the last directory separator is removed. If there is no directory separator the current working directory is returned. Note that the contents of path is case-sensitive on systems that have case-sensitive file names (like Unix), and non-case-sensitive on systems where the file system is also non-case-sensitive (such as Windows, and OpenVMS).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := directory_operations.absolute_dir_name( "../myfile.txt" ); -- returns "/tmp/" if myfile is in /tmp</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the pathname</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>directory_operations.absoute_dir_name_dir</span></td>
+<td><span>required</span></td>
+<td><span>the directory portion of the pathname</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: GNAT.Directory_Operations.Dir_Name<br>PHP: dirname</p></td>
+</tr>
+</table>
 
 <a name="directory_operations.base_name"></a><h3>s := directory_operations.base_name( p [, f] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -204,50 +250,6 @@ slash or back slash).</li>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: GNAT.Directory_Operations.Open</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.dir_name"></a><h3>s := directory_operations.dir_name( p )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the directory portion of the pathname p.  This is similar to the UNIX dirname command. Everything after the last directory separator is removed. If there is no directory separator the current working directory is returned. Note that the contents of path is case-sensitive on systems that have case-sensitive file names (like Unix), and non-case-sensitive on systems where the file system is also non-case-sensitive (such as Windows, and OpenVMS).</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.dir_name( "/tmp/myfile.txt" ); -- returns "/tmp/"</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname</span></td>
-</tr>
-<tr>
-<td><span>s</span></td>
-<td><span>return value</span></td>
-<td><span>directory_operations. dir_name_str</span></td>
-<td><span>required</span></td>
-<td><span>the directory portion of the pathname</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Dir_Name<br>PHP: dirname</p></td>
 </tr>
 </table>
 

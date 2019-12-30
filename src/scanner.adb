@@ -2016,6 +2016,7 @@ begin
                end if;
 -- TODO: should this be dropped altogether?
             elsif boolean( testOpt ) or identifiers( i ).class = varClass then
+              -- in design mode, only check types
 --put_line( standard_error, "HERE 2" ); -- DEBUG
 --           if identifiers( i ).field_of = eof_t then
 --put_line( standard_error, "HERE 2 - not a field" ); -- DEBUG
