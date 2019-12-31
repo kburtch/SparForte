@@ -5162,12 +5162,14 @@ begin
         err( "limited variables cannot be assigned a value" );
      end if;
 
+  -- constants can only be assigned values if they are specs
+
   when constantUsage =>
      if isTesting then
         null;
      elsif inputMode = breakout then
         put_trace( "Warning: assigning a new value to a constant variable" );
-     else
+     elsif identifiers( var_id ).specAt = noSpec then
         err( "constant variables cannot be assigned a value" );
      end if;
 
