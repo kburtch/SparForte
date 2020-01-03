@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2019 Free Software Foundation              --
+--            Copyright (C) 2001-2020 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -199,7 +199,7 @@ begin
      if released then
         Put_Line( version );
      else
-        Put_Line( version & " (Build Date " & buildDate & ')' );
+        Put_Line( version & " (Build ID " & buildDate & ')' );
      end if;
      Put_Line( copyright );
      Put_Line( "This is free software; see the source for copying conditions." );

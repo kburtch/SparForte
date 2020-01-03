@@ -244,7 +244,8 @@ By default, SparForte will install under /usr/local.
    settings, such as "SDL_config", "pg_config" or "mysql_config".
 
 3. (Optional) "gmake test" to run the SparForte core language regression
-   tests.
+   tests.  The tests should by run as an unprivileged user (as some tests
+   check file access rights and will fail if run as root).
 
    Alternatively, "gmake coverage" to generate code coverage
    results with gcov and lcov, or "gmake releasetest" to perform more
