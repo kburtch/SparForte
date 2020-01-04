@@ -541,7 +541,7 @@ begin
      err( "array indexes cannot be an array type like " &
           optional_bold( to_string( identifiers( kind1 ).name ) ) );
   elsif ab1 = null_unbounded_string then
-     err( "array index has no value" );
+     err( "first array index expression has no value" );
 
   else
      expect( symbol_t, ".." );
@@ -549,7 +549,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = "," then
         err( "array of arrays not yet supported" );
      elsif ab2 = null_unbounded_string then
-        err( "array index has no value" );
+        err( "last array index expression has no value" );
      elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
         if isExecutingCommand then                             -- not on synchk
            if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
@@ -1248,16 +1248,37 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
 
   procedure VerifyConstantSpec( const_id : identifier ) is
     -- : constant type assign-part
-    -- DEBUG: CONST SPECS
+    -- CONST SPECS
     type_token    : identifier;
     var_name      : unbounded_string;
     right_type    : identifier;
     expr_value    : unbounded_string;
     new_const_id  : identifier;
     oldSpec       : declaration;
+
+    -- Verify that the type is the same as the previous declaration.
+    -- TODO: test anonymous types
+
+    procedure VerifyTypesAreSame is
+    begin
+       if identifiers( const_id ).kind /= type_token then
+          err( "constant type " &
+              optional_bold( to_string( identifiers( type_token ).name ) ) &
+              " was " & optional_bold( to_string( identifiers( identifiers( const_id ).kind ).name )) &
+              " in the earlier specification (at " &
+               to_string( identifiers( const_id ).specFile) & ":" &
+          identifiers( const_id ).specAt'img & ")" );
+       end if;
+   end VerifyTypesAreSame;
+
   begin
     --put_line("VERIFY CONST SPEC: " & to_string( identifiers( const_id ).name ) ); --DEBUG
-    -- TODO: this should not happen.
+
+    -- This should not happen.
+    --
+    -- If the constant specification is at a different nesting
+    -- level, it's the declaration of a new constant.A
+
     if not isLocal( const_id ) then
        err( "internal error: constant specification was in a different scope " );
     end if;
@@ -1265,26 +1286,34 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     expect( symbol_t, ":" );
 
     --  Get the type.
+    --
+    -- The variable must be a constant.  If it is not a constant, then the
+    -- type must be constant usage.  If the specification type and the
+    -- fulfillment type are not the same, there's no point in checking the
+    -- type for constant usage as it may be the wrong type anyway.
 
-    -- it must be a constant
-
-    expect( constant_t );
-
-    ParseIdentifier( type_token );                       -- identify type
-    if syntax_check then                                 -- mark that type was
-       identifiers( type_token ).wasApplied := true;     -- used
+    if token = constant_t then
+       expect( constant_t );
+       ParseIdentifier( type_token );                    -- identify type
+       VerifyTypesAreSame;
+    else
+       ParseIdentifier( type_token );                    -- identify type
+       VerifyTypesAreSame;
+       if identifiers( type_token ).usage /= constantUsage then
+          err( "fulfilling the constant specification " &
+               optional_bold( to_string( identifiers( const_id ).name ) ) &
+               " requires a variable of constant usage " &
+               "but type " &
+               optional_bold( to_string( identifiers( type_token ).name ) ) &
+               " is not constant usage nor is the variable " &
+               "declared as constant" );
+       end if;
     end if;
 
-    -- Verify that the type is the same as the previous declaration.
-    -- TODO: test anonymous types
+    -- The type has been applied to make a variable.  Mark it as used.
 
-    if identifiers( const_id ).kind /= type_token then
-       err( "constant type " &
-           optional_bold( to_string( identifiers( type_token ).name ) ) &
-           " was " & optional_bold( to_string( identifiers( identifiers( const_id ).kind ).name )) &
-           " in the earlier specification (at " &
-            to_string( identifiers( const_id ).specFile) & ":" &
-       identifiers( const_id ).specAt'img & ")" );
+    if syntax_check then                              -- mark that type was
+       identifiers( type_token ).wasApplied := true;  -- used
     end if;
 
     -- The Tricky Part
@@ -1375,9 +1404,10 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   expr_expected : boolean := false;
   canonicalRef : renamingReference;
 begin
-   -- CONST SPECS
-  -- If the constant specification is at a different nesting
-  -- level, it's the declaration of a new constant.A
+  -- CONST SPECS
+
+  -- If it's a specification, verify and fulfill it.
+
   if identifiers( id ).specAt /= noSpec then
         VerifyConstantSpec( id );
         return;
@@ -1684,9 +1714,7 @@ begin
         end if;
      end if;
 
-  -- DEBUG: CONST SPECS
-  -- TODO: refactor
-  -- TODO: limits on this
+  -- CONST SPECS
   -- constant specification?  Record the location of the specification
   -- and assign the data type to the identifier.
 
@@ -1700,21 +1728,6 @@ begin
 
   elsif (token = symbol_t and identifiers( token ).value.all = ":=") or
      expr_expected then
-
-     -- DEBUG: CONST SPECS
-     -- TODO: probably not right
-
-     -- if identifiers( id ).specAt /= noSpec then
-     --    if identifiers( id ).kind /= type_token then
-     --      err("identifier type " &
-     --         optional_bold( to_string( identifiers( id ).name ) ) &
-     --         " was " & optional_bold( to_string( identifiers( identifiers( id ).kind ).name )) &
-     --         " in the earlier specification (at " &
-     --         to_string( identifiers( id ).specFile) & ":" &
-     --         identifiers( id ).specAt'img & ")");
-
-     --    end if;
-     -- end if;
 
      -- Tricky bit: what about "i : integer := i"?
      --   Dropping the top of the stack temporarily isn't good enough: if

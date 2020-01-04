@@ -12,11 +12,10 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - constant spec negative tests
-  - anonymous arrays
-  - type atype is constant ... case
   - comment and cleanup
-- array constant specifications
-  - array foo referencing another foo during initialization (confirm)
+  - array constant specifications
+    - array foo referencing another foo during initialization (confirm)
+    - likewise records
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters

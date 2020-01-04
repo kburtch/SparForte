@@ -5322,11 +5322,16 @@ declare
   c9 : constant rtype;
   c9 : constant rtype := (9);
 
+  type t10 is constant array(1..1) of integer;
+  c10 : t10;
+  c10 : t10 := (10);
+
 begin
   pragma assert( c1 = 1 );
   pragma assert( c7(1) = 1 );
   pragma assert( c8 = true );
   pragma assert( c9.i= 9 );
+  pragma assert( c10(1) = 10 );
 end;
 
 -- Pragma ada_95 tests
