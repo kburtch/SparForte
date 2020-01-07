@@ -540,19 +540,18 @@ begin
   elsif identifiers( getBaseType( kind1 ) ).list then
      err( "array indexes cannot be an array type like " &
           optional_bold( to_string( identifiers( kind1 ).name ) ) );
-  elsif ab1 = null_unbounded_string then
-     err( "first array index expression has no value" );
-
   else
      expect( symbol_t, ".." );
      ParseExpression( ab2, kind2 );                            -- high bound
      if token = symbol_t and identifiers( token ).value.all = "," then
         err( "array of arrays not yet supported" );
-     elsif ab2 = null_unbounded_string then
-        err( "last array index expression has no value" );
      elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
         if isExecutingCommand then                             -- not on synchk
-           if to_numeric( ab1 ) > to_numeric( ab2 ) then       -- bound backwd?
+           if ab1 = null_unbounded_string then
+              err( "first array index expression has no value" );
+           elsif ab2 = null_unbounded_string then
+              err( "last array index expression has no value" );
+           elsif to_numeric( ab1 ) > to_numeric( ab2 ) then    -- bound backwd?
               if long_integer( to_numeric( ab1 ) ) /= 1 and    -- only 1..0
                  long_integer( to_numeric( ab2 ) ) /= 0 then   -- allowed
                  err( "first array bound is higher than last array bound" );

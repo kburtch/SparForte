@@ -53,6 +53,8 @@ Priority Issues (Fix These First)
   - these need to be recovered using txn_recover and txn_abort, possibly
     whenever a BDB file is opened.  See
     https://apps.state.or.us/tech/berkeleyDB/api_c/txn_recover.html
+- enforcing strong types and/or contracts
+  - should import require contracts rather than custom type?
 - unsorted/misc
     - check that x : arraytype := (x) works correctly, both with specs
       and normal declaration.
