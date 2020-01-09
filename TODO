@@ -12,7 +12,6 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - constant spec negative tests
-  - comment and cleanup
   - array constant specifications
     - array foo referencing another foo during initialization (confirm)
     - likewise records
