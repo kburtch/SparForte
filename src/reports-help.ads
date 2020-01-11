@@ -124,7 +124,7 @@ package reports.help is
 
   procedure todos( e : in out aHelpEntry; s : string );
 
-  procedure version( e : in out aHelpEntry; s : string );
+  procedure releaseVersion( e : in out aHelpEntry; s : string );
 
   ----------------------------------------------------------------------------
   --

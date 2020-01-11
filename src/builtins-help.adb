@@ -827,6 +827,7 @@ begin
    content( e, "delay" );
    content( e, "delete" );
    content( e, "directory_operations" );
+   content( e, "doc_format" );
    content( e, "doubly_linked_lists" );
    content( e, "dynamic_hash_tables" );
    content( e, "end_of_file" );
@@ -1709,6 +1710,24 @@ begin
      content( e, "b := is_open( d )","open( d, p )","read( d, s )" );
      content( e, "s := absolute_dir_name( d )" );
      seeAlso( e, "doc/pkg_dirops.html" );
+     endHelp( e );
+  elsif helpTopic = "doc_format" then
+     startHelp( e, "Description of the documentation format" );
+     summary( e, "Summary: A short description, often in Backus-Naur form" );
+     releaseVersion( e, "Any version number or release phase" );
+     author( e, "The person who wrote this and/or contact info" );
+     modified( e, "The person who last updated this" );
+     category( e, "Category: A grouping name or tag this is placed under" );
+     params( e, "The arguments, options or parameters" );
+     exceptions( e, "Any exceptions that may be raised, if any" );
+     returns( e, "Return values or status codes returned" );
+     description( e, "Description: A detailed description" );
+     content( e, "Content: What this contains, such as functions in packages.  May have subheadings" );
+     examples( e, "Examples of use" );
+     implementationNotes( e, "The reasons why is is designed as it is" );
+     bugs( e, "Any known bugs" );
+     todos( e, "Any known unfinished work" );
+     seeAlso( e, "Where to find more details or related documentation" );
      endHelp( e );
   elsif helpTopic = "end_of_file" then
      startHelp( e, "end_of_file" );

@@ -321,10 +321,10 @@ package body reports.help is
      end if;
   end todos;
 
-  procedure version( e : in out aHelpEntry; s : string ) is
+  procedure releaseVersion( e : in out aHelpEntry; s : string ) is
   begin
     e.version := to_unbounded_string( s );
-  end version;
+  end releaseVersion;
 
   ----------------------------------------------------------------------------
   --
