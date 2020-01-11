@@ -363,7 +363,9 @@ package body reports is
   procedure renderDescription( r : in out htmlReport'class; indent : positive; s : unbounded_string ) is
   begin
     -- TOOD: indent
-    put_line( r.outputfile, "<p>" & to_string( s ) & "</p>" );
+    put_line( r.outputfile, "<p style=" & ASCII.Quotation &
+       "padding: 0px 20px 0px 20px" &
+       ASCII.Quotation & ">" & to_string( s ) & "</p>" );
   end renderDescription;
 
   procedure renderTable( r : in out htmlReport'class; l : in out contentList.List; name : string; columnWidth : positive ) is
@@ -387,6 +389,91 @@ package body reports is
        end if;
     end if;
   end renderTable;
+
+
+  procedure renderPackageContent( r : in out htmlReport'class; l : in out contentList.List; name : string ) is
+    s : unbounded_string;
+    num_per_row : natural := 3;
+    row_count : positive := 1;
+    max_length : natural := 0;
+
+    new_subsection : boolean := false;
+    table_open : boolean := false;
+
+    procedure table_tag is
+    begin
+       if table_open then
+          put_line( r.outputfile, "</tr></table>" );
+       end if;
+       put_line( r.outputfile, "<table style=" & ASCII.Quotation &
+           "margin: 0px 10px 0px 20px" &
+           ASCII.Quotation & "><tr>" );
+       table_open := true;
+    end table_tag;
+
+    procedure td_tag( s : unbounded_string ) is
+    begin
+      put_line( r.outputfile, "<td style=" & ASCII.Quotation &
+                "padding: 10px" &
+                ASCII.Quotation & ">" & s & "</td>" );
+    end td_tag;
+
+    procedure h3_tag( s : unbounded_string ) is
+    begin
+       if table_open then
+          put_line( r.outputfile, "</tr></table>" );
+          table_open := false;
+       end if;
+      put_line( r.outputfile, "<h3>" & s & "</h3>" );
+    end h3_tag;
+
+  begin
+    if not contentList.isEmpty( l ) then
+
+       -- There's no way to really know how something will look in a web
+       -- browser window, as people can zoom in and out, etc.  We'll try
+       -- for reasonable defaults for my laptop.
+
+       for list_pos in 1..contentList.Length( l ) loop
+          contentList.Find( l, list_pos, s );
+          if length( s ) > max_length then
+             max_length := length( s );
+          end if;
+       end loop;
+       num_per_row := 120 / max_length;
+       if num_per_row < 0 then
+          num_per_row := 1;
+       end if;
+
+       while not contentList.isEmpty( l ) loop
+          contentList.Pull( l, s );
+          if new_subsection then
+             h3_tag( s );
+             new_subsection := false;
+             row_count := 1;
+          -- A blank line indicates the end of a section
+          elsif length( s ) = 0 then
+             new_subsection := true;
+          elsif row_count = 1 then
+             if not table_open then
+                table_tag;
+             end if;
+             td_tag( s );
+             row_count := row_count + 1;
+          elsif row_count > num_per_row then
+             row_count := 1;
+             put_line( r.outputfile, "</tr><tr>" );
+             td_tag( s );
+          else
+             td_tag( s );
+             row_count := row_count + 1;
+          end if;
+       end loop;
+       if table_open then
+          put_line( r.outputfile, "</tr></table>" );
+       end if;
+    end if;
+  end renderPackageContent;
 
 
   procedure renderBulletList( r : in out htmlReport'class; l : in out contentList.List; name : string ) is
@@ -461,6 +548,33 @@ package body reports is
        end loop;
     end if;
   end renderBulletList;
+
+
+  procedure renderPackageContent( r : in out manPageReport'class; l : in out contentList.List; name : string ) is
+    s : unbounded_string;
+    new_subsection : boolean := false;
+  begin
+    if not contentList.isEmpty( l ) then
+
+       while not contentList.isEmpty( l ) loop
+          contentList.Pull( l, s );
+          if new_subsection then
+             put_line( r.outputfile, s );
+             put_line( r.outputfile, ".PP" );
+             new_subsection := false;
+          -- A blank line indicates the end of a section
+          elsif length( s ) = 0 then
+             new_subsection := true;
+             put_line( r.outputfile, ".PP" );
+          else
+             put_line( r.outputfile, ".IP \[bu] 2" );
+             put_line( r.outputfile, s );
+          end if;
+       end loop;
+
+       put_line( r.outputfile, ".PP" );
+    end if;
+  end renderPackageContent;
 
 
   ----------------------------------------------------------------------------

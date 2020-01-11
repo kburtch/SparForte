@@ -372,7 +372,7 @@ package body reports.help is
      renderBulletList( r, e.todos, "To Do" );
      --end if;
      renderBulletList( r, e.implementationNotes, "Implementation Notes" );
-
+     renderBulletList( r, e.bugs, "Bugs" );
      renderText( r, "See Also", e.seeAlso );
 
      -- display footer
@@ -411,7 +411,9 @@ package body reports.help is
 
      renderText( r, "Returns", e.returns );
 
---     renderPackageContent( r, e.content, e.contentWidth, 2 );
+     -- TODO: renderPackageContent does not exist yet for HTML
+     --renderPackageContent( r, e.content, e.contentWidth, 2 );
+     renderPackageContent( r, e.content, "Content" );
 
      -- examples
      renderBulletList( r, e.examples, "Examples" );
@@ -426,6 +428,7 @@ package body reports.help is
      renderText( r, "Version", e.version );
      renderBulletList( r, e.todos, "To Do" );
      renderBulletList( r, e.implementationNotes, "Implementation Notes" );
+     renderBulletList( r, e.bugs, "Bugs" );
      renderText( r, "See Also", e.seeAlso );
 
      -- display footer
@@ -484,7 +487,9 @@ package body reports.help is
 
      renderText( r, "Returns", e.returns );
 
---     renderPackageContent( r, e.content, e.contentWidth, 2 );
+     renderPackageContent( r, e.content, "Content" );
+     -- renderBulletList( r, e.content,"Content" );
+--     renderPackageContent( r, e.content, "Content" );
 
      -- examples
      renderBulletList( r, e.examples, "Examples" );
@@ -502,6 +507,7 @@ package body reports.help is
      renderBulletList( r, e.todos, "To Do" );
      --end if;
      renderBulletList( r, e.implementationNotes, "Implementation Notes" );
+     renderBulletList( r, e.bugs, "Bugs" );
      renderText( r, "See Also", e.seeAlso );
 
      -- display footer

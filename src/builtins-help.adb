@@ -793,7 +793,15 @@ procedure helpMain is
   r : aRootReportPtr;
   l : helpList.List;
 begin
-   r := new longHelpReport;
+   --r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
+
    start( r.all );
    startHelp( e, "help" );
    summary( e, "SparForte command prompt help" );
@@ -895,7 +903,15 @@ begin
    footer( e, "For full details, see the SparForte documentation.  To leave " &
      "SparForte, enter 'return' (or 'logout' if this is your login session)." );
    endHelp( e );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpMain;
 
@@ -926,9 +942,22 @@ begin
      content( e, "b := will_raise( f )" );
      seeAlso( e, "doc/pkg_btree_io.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpBtreeIO;
 
@@ -968,9 +997,22 @@ begin
      content( e, "databases" );
      seeAlso( e, "doc/pkg_db.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpDb;
 
@@ -1012,9 +1054,22 @@ begin
      content( e, "append_for_insert( q, c, r )","append_for_update( q, c, r )" );
      seeAlso( e, "doc/pkg_dbm.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpDbm;
 
@@ -1045,9 +1100,22 @@ begin
      content( e, "b := will_raise( f )" );
      seeAlso( e, "doc/pkg_hash_io.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpHashIO;
 
@@ -1086,9 +1154,22 @@ begin
      content( e, "schema( t )","users" );
      seeAlso( e, "doc/pkg_mysql.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpMySQL;
 
@@ -1130,9 +1211,22 @@ begin
      content( e, "append_for_insert( q, c, r )","append_for_update( q, c, r )" );
      seeAlso( e, "doc/pkg_mysqlm.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpMySQLM;
 
@@ -1167,9 +1261,22 @@ begin
      content( e, "r := yards2m( f )" );
      seeAlso( e, "doc/pkg_units.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpUnits;
 
@@ -1214,12 +1321,25 @@ begin
      section( e, "Complex Numbers" );
      content( e, "re( complex )","im( complex )","modulus( complex )" );
 --      content( e, "set_re( complex, r )","set_im( complex, i )","argument( complex )" );
-     footer( e, "abs( x ) is not 'numerics.abs( x )' because it's a language feature" );
+     footer( e, "abs( x ) is not 'numerics.abs( x )' because it's a language construct" );
      seeAlso( e, "doc/pkg_numerics.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpNumerics;
 
@@ -1291,9 +1411,22 @@ begin
   content( e, "pragma volatile( var ) - load value from environment on every access" );
      seeAlso( e, "doc/ref_pragmas.html" );
      endHelp( e );
-   r := new longHelpReport;
+   if HTMLoutput then
+     r := new longHtmlHelpReport;
+   elsif ManOutput then
+     r := new longManPageHelpReport;
+   else
+     r := new longHelpReport;
+   end if;
    start( r.all );
-   render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
    finish( r.all );
 end helpPragma;
 
@@ -1302,16 +1435,16 @@ procedure help( ap : argumentListPtr ) is
   e : aHelpEntry;
   r : aRootReportPtr;
 begin
-  r := new longHelpReport;
+  --r := new longHelpReport;
+  -- TODO: an enum type
+  HTMLOutput    := false;
+  MANOutput     := false;
+  LicenseOutput := false;
+  TodoOutput    := false;
+  CollabOutput  := false;
   if ap'length = 0 then
      helpTopic := null_unbounded_string;
   else
-     -- TODO: an enum type
-     HTMLOutput    := false;
-     MANOutput     := false;
-     LicenseOutput := false;
-     TodoOutput    := false;
-     CollabOutput  := false;
      helpTopic := to_unbounded_string( ap( 1 ).all );
      delete( helpTopic, length( helpTopic ), length( helpTopic ) );
      if helpTopic = "-h" then      -- script help (html)
@@ -1355,6 +1488,16 @@ begin
            delete( helpTopic, length( helpTopic ), length( helpTopic ) );
         end if;
      end if;
+  end if;
+
+  -- The type of report depends on the switch chosen
+
+  if HTMLoutput then
+    r := new longHtmlHelpReport;
+  elsif ManOutput then
+    r := new longManPageHelpReport;
+  else
+    r := new longHelpReport;
   end if;
 
   if length( helpTopic ) = 0 then
@@ -1829,7 +1972,7 @@ begin
      endHelp( e );
   elsif helpTopic = "help" then
      startHelp( e, "help" );
-     summary( e, "help  [-c|-h|-m|-l|-t" );
+     summary( e, "help  [-c|-h|-m|-l|-t]" );
      authorKen( e );
      modifiedKen( e );
      categoryBuiltin( e );
@@ -2703,7 +2846,14 @@ begin
   end if;
   if not isEmpty( e ) then
      start( r.all );
-     render( longHelpReport( r.all ), e ); -- TODO: fix typecast
+  -- TODO: this need to be fixed with a class interface or something
+   if HTMLoutput then
+     render( longHtmlHelpReport( r.all ), e );
+   elsif ManOutput then
+     render( longManPageHelpReport( r.all ), e );
+   else
+     render( longHelpReport( r.all ), e );
+   end if;
      finish( r.all );
   end if;
   free( r );

@@ -124,12 +124,14 @@ private
   procedure renderDescription( r : in out htmlReport'class; indent : positive; s : unbounded_string );
   procedure renderTable( r : in out htmlReport'class; l : in out contentList.List;
     name : string; columnWidth : positive );
+  procedure renderPackageContent( r : in out htmlReport'class; l : in out contentList.List; name : string );
   procedure renderBulletList( r : in out htmlReport'class; l : in out contentList.List; name : string );
 
   procedure renderText( r : in out manPageReport'class; name : string; s : unbounded_string );
   procedure renderDescription( r : in out manPageReport'class; indent : positive; s : unbounded_string );
   procedure renderTable( r : in out manPageReport'class; l : in out contentList.List;
     name : string; columnWidth : positive );
+  procedure renderPackageContent( r : in out manPageReport'class; l : in out contentList.List; name : string );
   procedure renderBulletList( r : in out manPageReport'class; l : in out contentList.List; name : string );
 
   procedure renderText( r : in out markdownReport'class; name : string; s : unbounded_string );
