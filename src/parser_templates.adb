@@ -112,13 +112,17 @@ procedure ParseTemplatesPutTemplateHeader is
 begin
   expect( templates_put_template_header_t );
   if isExecutingCommand then
-     begin
-       putTemplateHeader( templateHeader );
-     exception when constraint_error =>
-       err( "constraint error - did you use pragma template?" );
-     when others =>
-       err_exception_raised;
-     end;
+     if templateHeader.templateHeaderSent then
+        err( "HTTP header already sent" );
+     else
+        begin
+          putTemplateHeader( templateHeader );
+        exception when constraint_error =>
+          err( "constraint error - did you use pragma template?" );
+        when others =>
+          err_exception_raised;
+        end;
+     end if;
   end if;
 end ParseTemplatesPutTemplateHeader;
 

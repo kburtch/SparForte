@@ -861,6 +861,14 @@ Content-type: text/html
 OK"
 
 test_template "template7" "$EXPECTED"
+
+EXPECTED="Status: 404 Not Found
+Content-type: text/html
+Location: redirect.html
+
+OK"
+
+test_template "template8" "$EXPECTED"
 end_junit_suite
 
 cd - 2>/dev/null

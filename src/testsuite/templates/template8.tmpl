@@ -1,0 +1,35 @@
+<?spar
+b : boolean;
+
+-- template already sent
+begin
+  templates.set_http_status( 404 );
+exception when others =>
+  b := true;
+end;
+pragma assert( b = true );
+
+-- template already sent
+begin
+  b := false;
+  templates.set_http_location( "redirect.html" );
+exception when others =>
+  b := true;
+end;
+pragma assert( b = true );
+
+-- template already sent
+b := templates.has_put_template_header;
+pragma assert( b = true );
+
+-- header already sent
+begin
+  b := false;
+  templates.put_template_header;
+exception when others =>
+  b := true;
+end;
+pragma assert( b = true );
+  
+? message;
+?>
