@@ -11,10 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- constant spec negative tests
-  - array constant specifications
-    - array foo referencing another foo during initialization (confirm)
-    - likewise records
+- is close_on_exec useful?
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -79,6 +76,10 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- constant spec negative tests
+  - array constant specifications
+    - array foo referencing another foo during initialization (confirm)
+    - likewise records
 - handling confidential/PII data
   - pragma secure_mode
     - all data types assumed to have secure data

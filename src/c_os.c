@@ -52,13 +52,21 @@ int C_WEXITSTATUS( int waitpid_status ) {
 
 int C_is_executable_file( char * path ) {
   struct stat info;
+  int euid = -1;   /* effective UID */
   int result = 0;
+  euid = geteuid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
-        if ( getuid() == info.st_uid ) {
+		/* Administrator runs if any execute bit */
+		if ( 0 == euid ) {
+		   result = ( info.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH) ) > 0;
+		/* Owner can run if the file has user execute */
+		} else if ( euid == info.st_uid ) {
            result = (info.st_mode & S_IXUSR ) > 0;
-        } else if ( getgid() == info.st_gid ) {
+		/* Group member can run if the file has group execute */
+        } else if ( group_member( info.st_gid ) ) {
            result = (info.st_mode & S_IXGRP ) > 0;
+		/* World can run if the file is other execute */
         } else {
            result = (info.st_mode & S_IXOTH ) > 0;
         }
@@ -73,15 +81,23 @@ int C_is_executable_file( char * path ) {
 
 int C_is_executable( char * path ) {
   struct stat info;
+  int euid = -1;   /* effective UID */
   int result = 0;
+  euid = geteuid();
   if ( stat( path, &info ) == 0 ) {
-     if ( getuid() == info.st_uid ) {
+	/* Administrator runs if any execute bit */
+	if ( 0 == euid ) {
+		result = ( info.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH) ) > 0;
+	/* Owner can run if the file has user execute */
+	} else if ( euid == info.st_uid ) {
         result = (info.st_mode & S_IXUSR ) > 0;
-     } else if ( getgid() == info.st_gid ) {
+		/* Group member can run if the file has group execute */
+    } else if ( group_member( info.st_gid ) ) {
         result = (info.st_mode & S_IXGRP ) > 0;
-     } else {
+		/* World can run if the file is other execute */
+    } else {
         result = (info.st_mode & S_IXOTH ) > 0;
-     }
+    }
   }
   return result;
 }
@@ -92,13 +108,21 @@ int C_is_executable( char * path ) {
 
 int C_is_readable_file( char * path ) {
   struct stat info;
+  int euid = -1;   /* effective UID */
   int result = 0;
+  euid = geteuid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
-        if ( getuid() == info.st_uid ) {
+		/* Administrator runs if any execute bit */
+		if ( 0 == euid ) {
+		   result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
+		/* Owner can run if the file has user execute */
+		} else if ( euid == info.st_uid ) {
            result = (info.st_mode & S_IRUSR ) > 0;
-        } else if ( getgid() == info.st_gid ) {
+		/* Group member can run if the file has group execute */
+        } else if ( group_member( info.st_gid ) ) {
            result = (info.st_mode & S_IRGRP ) > 0;
+		/* World can run if the file is other execute */
         } else {
            result = (info.st_mode & S_IROTH ) > 0;
         }
@@ -113,15 +137,23 @@ int C_is_readable_file( char * path ) {
 
 int C_is_readable( char * path ) {
   struct stat info;
+  int euid = -1;   /* effective UID */
   int result = 0;
+  euid = geteuid();
   if ( stat( path, &info ) == 0 ) {
-     if ( getuid() == info.st_uid ) {
+	/* Administrator runs if any execute bit */
+	if ( 0 == euid ) {
+		result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
+	/* Owner can run if the file has user execute */
+	} else if ( euid == info.st_uid ) {
         result = (info.st_mode & S_IRUSR ) > 0;
-     } else if ( getgid() == info.st_gid ) {
+		/* Group member can run if the file has group execute */
+    } else if ( group_member( info.st_gid ) ) {
         result = (info.st_mode & S_IRGRP ) > 0;
-     } else {
+		/* World can run if the file is other execute */
+    } else {
         result = (info.st_mode & S_IROTH ) > 0;
-     }
+    }
   }
   return result;
 }
@@ -132,14 +164,22 @@ int C_is_readable( char * path ) {
 
 int C_is_waiting_file( char * path ) {
   struct stat info;
+  int euid = -1;   /* effective UID */
   int result = 0;
+  euid = geteuid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
         if ( info.st_size > 0 ) {
-           if ( getuid() == info.st_uid ) {
+	       /* Administrator runs if any execute bit */
+	       if ( 0 == euid ) {
+		      result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
+	       /* Owner can run if the file has user execute */
+	       } else if ( euid == info.st_uid ) {
               result = (info.st_mode & S_IRUSR ) > 0;
-           } else if ( getgid() == info.st_gid ) {
+		   /* Group member can run if the file has group execute */
+           } else if ( group_member( info.st_gid ) ) {
               result = (info.st_mode & S_IRGRP ) > 0;
+		   /* World can run if the file is other execute */
            } else {
               result = (info.st_mode & S_IROTH ) > 0;
            }
@@ -156,14 +196,22 @@ int C_is_waiting_file( char * path ) {
 
 int C_is_includable_file( char * path ) {
   struct stat info;
+  int euid = -1;   /* effective UID */
   int result = 0;
+  euid = geteuid();
   if ( stat( path, &info ) == 0 ) {
      if ( info.st_mode & S_IFREG ) {
         if ( info.st_size > 0 ) {
-           if ( getuid() == info.st_uid ) {
+	       /* Administrator runs if any execute bit */
+	       if ( 0 == euid ) {
+		      result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
+	       /* Owner can run if the file has user execute */
+	       } else if ( euid == info.st_uid ) {
               result = (info.st_mode & S_IRUSR ) > 0;
-           } else if ( getgid() == info.st_gid ) {
+		   /* Group member can run if the file has group execute */
+           } else if ( group_member( info.st_gid ) ) {
               result = (info.st_mode & S_IRGRP ) > 0;
+		   /* World can run if the file is other execute */
            } else {
               result = (info.st_mode & S_IROTH ) > 0;
            }

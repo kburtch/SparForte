@@ -76,3 +76,5 @@ CHANGES SINCE 2.2.2
 
 35. New: help command now supports -h and -m to produce HTML and Groff (man page) output for internal help topics.
 
+36. Change: certain checks for readable and executable files now handle root and gid groups better.
+
