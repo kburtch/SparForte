@@ -861,6 +861,7 @@ echo "Testing unit testing..."
 cd testtests
 
 test_test "goodtest200_unittest.sp"
+test_test "goodtest201_unittest_junit.sp"
 
 echo
 echo "Testing web templates..."
