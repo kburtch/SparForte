@@ -700,6 +700,51 @@ good_test_in_dir() {
   end_junit_case
 }
 
+#  TEST TEST
+#
+# Run the test script with no parameters.  Declare FOOBAR.  If there's a
+# non-success code is returned, abort with the error.  Do it with syntax-only
+# and normally.  Unlike regular good_test, this runs in testing mode.
+# ---------------------------------------------------------------------------
+
+test_test() {
+  echo "Running $1..."
+  # We don't really have assertions for the good tests, so treat all
+  # lines as assertions.
+  start_junit_case "$1_check" "test_test"
+  JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
+  #setup
+  ../../spar --testing --debug --check "$1" a b c
+  RESULT=$?
+  #teardown
+  test -f ./test.txt && rm ./test.txt
+  if [ $RESULT -ne 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $? ---"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  end_junit_case
+  start_junit_case "$1" "good_test_in_dir"
+  JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
+  #setup
+  ../../spar --testing --debug "$1" a b c
+  RESULT=$?
+  #teardown
+  test -f ./test.txt && rm ./test.txt
+  if [ $RESULT -ne 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $? ---"
+     junit_fail_bad_status $RESULT
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  end_junit_case
+}
+
 #  HELP TEST IN DIR
 #
 # Run the test script with no parameters.  Declare FOOBAR.  If there's a
@@ -811,9 +856,16 @@ if [ "$1" != "-b" ] ; then
 fi
 
 echo
+echo "Testing unit testing..."
+
+cd testtests
+
+test_test "goodtest200_unittest"
+
+echo
 echo "Testing web templates..."
 
-cd templates
+cd ../templates
 
 start_junit_suite "test_template"  "goodtest.sp"
 
