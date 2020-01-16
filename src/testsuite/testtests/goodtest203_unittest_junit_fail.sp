@@ -5,6 +5,6 @@ begin
   s := s;
   pragma test_report( xml );
   pragma test( `t := s;` );
-  pragma test_result( t = "foobar" );
+  pragma test_result( t /= "foobar" );
 end t;
 
