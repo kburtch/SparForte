@@ -1724,10 +1724,12 @@ begin
      description( e, "Description: A detailed description" );
      content( e, "Content: What this contains, such as functions in packages.  May have subheadings" );
      examples( e, "Examples of use" );
-     implementationNotes( e, "The reasons why is is designed as it is" );
+     rationale( e, "Implementation Notes. The reasons for the design and its limits");
      bugs( e, "Any known bugs" );
      todos( e, "Any known unfinished work" );
      seeAlso( e, "Where to find more details or related documentation" );
+     icon( e, "A pictogram for this item" );
+     screenshot( e, "An image of a window or computer screen for this item" );
      endHelp( e );
   elsif helpTopic = "end_of_file" then
      startHelp( e, "end_of_file" );
@@ -1882,7 +1884,6 @@ begin
      content( e, "function f...return type is separate" );
      content( e, "function f...return type;" );
      seeAlso( e, "doc/ref_subprograms.html" );
-     bugs( e, "For known bugs, see the HTML manual" );
      endHelp( e );
   elsif helpTopic = "get" then
      startHelp( e, "get" );

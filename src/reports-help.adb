@@ -55,7 +55,7 @@ package body reports.help is
     contentList.Clear( e.examples );
     contentList.Clear( e.exceptions );
     e.footer := null_unbounded_string;
-    contentList.Clear( e.implementationNotes );
+    contentList.Clear( e.rationale );
     e.modified := null_unbounded_string;
     contentList.Clear( e.params );
     e.returns := null_unbounded_string;
@@ -68,7 +68,7 @@ package body reports.help is
     e.bugsWidth    := 1;
     e.errorsWidth  := 1;
     e.examplesWidth  := 1;
-    e.implementationWidth := 1;
+    e.rationaleWidth := 1;
     e.paramsWidth   := 1;
     e.exceptionsWidth := 1;
     e.todosWidth    := 1;
@@ -256,15 +256,15 @@ package body reports.help is
      end if;
   end examples;
 
-  procedure implementationNotes( e : in out aHelpEntry; s : string ) is
+  procedure rationale( e : in out aHelpEntry; s : string ) is
   begin
      if s'length > 0 then
-        contentList.Queue( e.implementationNotes, to_unbounded_string( s ) );
-        if s'length > e.implementationWidth then
-           e.implementationWidth := positive( s'length );
+        contentList.Queue( e.rationale, to_unbounded_string( s ) );
+        if s'length > e.rationaleWidth then
+           e.rationaleWidth := positive( s'length );
         end if;
      end if;
-  end implementationNotes;
+  end rationale;
 
   procedure params( e : in out aHelpEntry; s : string ) is
   begin
@@ -326,6 +326,16 @@ package body reports.help is
     e.version := to_unbounded_string( s );
   end releaseVersion;
 
+  procedure icon( e : in out aHelpEntry; s : string ) is
+  begin
+    e.iconPath := to_unbounded_string( s );
+  end icon;
+
+  procedure screenshot( e : in out aHelpEntry; s : string ) is
+  begin
+    e.screenshotPath := to_unbounded_string( s );
+  end screenshot;
+
   ----------------------------------------------------------------------------
   --
   -- LONG HELP REPORT
@@ -347,6 +357,13 @@ package body reports.help is
         put( r.outputfile, " - " & to_string( e.category ) );
      end if;
      new_line( r.outputfile );
+
+     if length( e.iconPath ) > 0 then
+        renderText( r, "Icon", e.iconPath );
+     end if;
+     if length( e.screenshotPath ) > 0 then
+        renderText( r, "Screenshot", e.screenshotPath );
+     end if;
 
      renderDescription( r, 2, e.description );
 
@@ -371,7 +388,7 @@ package body reports.help is
      --if contentList.length( e.todos ) > 0 then -- TODO: needed?
      renderBulletList( r, e.todos, "To Do" );
      --end if;
-     renderBulletList( r, e.implementationNotes, "Implementation Notes" );
+     renderBulletList( r, e.rationale, "Rationale" );
      renderBulletList( r, e.bugs, "Bugs" );
      renderText( r, "See Also", e.seeAlso );
 
@@ -403,6 +420,12 @@ package body reports.help is
         put( r.outputfile, "<p>" & e.summary & "</p>" );
      end if;
      new_line( r.outputfile );
+     if length( e.iconPath ) > 0 then
+        renderText( r, "Icon", e.iconPath );
+     end if;
+     if length( e.screenshotPath ) > 0 then
+        renderText( r, "Screenshot", e.screenshotPath );
+     end if;
 
      renderDescription( r, 2, e.description );
 
@@ -427,7 +450,7 @@ package body reports.help is
      renderText( r, "Modified", e.modified );
      renderText( r, "Version", e.version );
      renderBulletList( r, e.todos, "To Do" );
-     renderBulletList( r, e.implementationNotes, "Implementation Notes" );
+     renderBulletList( r, e.rationale, "Rationale" );
      renderBulletList( r, e.bugs, "Bugs" );
      renderText( r, "See Also", e.seeAlso );
 
@@ -480,6 +503,13 @@ package body reports.help is
         put_line( r.outputfile,  e.category );
      end if;
 
+     if length( e.iconPath ) > 0 then
+        renderText( r, "Icon", e.iconPath );
+     end if;
+     if length( e.screenshotPath ) > 0 then
+        renderText( r, "Screenshot", e.screenshotPath );
+     end if;
+
      renderDescription( r, 2, e.description );
 
      -- parameters
@@ -506,7 +536,7 @@ package body reports.help is
      --   new_line( r.outputfile );
      renderBulletList( r, e.todos, "To Do" );
      --end if;
-     renderBulletList( r, e.implementationNotes, "Implementation Notes" );
+     renderBulletList( r, e.rationale, "Rationale" );
      renderBulletList( r, e.bugs, "Bugs" );
      renderText( r, "See Also", e.seeAlso );
 

@@ -714,7 +714,7 @@ test_test() {
   start_junit_case "$1_check" "test_test"
   JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
   #setup
-  ../../spar --testing --debug --check "$1" a b c
+  ../../spar --test --debug --check "$1" a b c
   RESULT=$?
   #teardown
   test -f ./test.txt && rm ./test.txt
@@ -727,10 +727,10 @@ test_test() {
      fi
   fi
   end_junit_case
-  start_junit_case "$1" "good_test_in_dir"
+  start_junit_case "$1" "test_test"
   JUNIT_CASE_ASSERTION_CNT=`wc -l < "$1"`
   #setup
-  ../../spar --testing --debug "$1" a b c
+  ../../spar --test --debug "$1" a b c
   RESULT=$?
   #teardown
   test -f ./test.txt && rm ./test.txt
@@ -860,12 +860,13 @@ echo "Testing unit testing..."
 
 cd testtests
 
-test_test "goodtest200_unittest"
+test_test "goodtest200_unittest.sp"
 
 echo
 echo "Testing web templates..."
 
-cd ../templates
+cd ..
+cd templates
 
 start_junit_suite "test_template"  "goodtest.sp"
 

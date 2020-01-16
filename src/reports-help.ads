@@ -51,8 +51,8 @@ package reports.help is
        contentWidth  : positive := 1;
        exceptions    : contentList.List;
        exceptionsWidth : positive := 1;
-       implementationNotes : contentList.List;
-       implementationWidth : positive := 1;
+       rationale      : contentList.List;
+       rationaleWidth : positive := 1;
        -- TODO: see also should be a list.
        seeAlso       : unbounded_string;
        author        : unbounded_string;
@@ -67,6 +67,8 @@ package reports.help is
        todos         : contentList.List;
        todosWidth    : positive := 1;
        version       : unbounded_string;
+       iconPath      : unbounded_string;
+       screenshotPath: unbounded_string;
        empty         : boolean := true;
        -- TODO: nesting
   end record;
@@ -105,7 +107,7 @@ package reports.help is
 
   procedure footer( e : in out aHelpEntry; s : string );
 
-  procedure implementationNotes( e : in out aHelpEntry; s : string );
+  procedure rationale( e : in out aHelpEntry; s : string );
 
   procedure modified( e : in out aHelpEntry; s : string );
   procedure modifiedKen( e : in out aHelpEntry );
@@ -125,6 +127,12 @@ package reports.help is
   procedure todos( e : in out aHelpEntry; s : string );
 
   procedure releaseVersion( e : in out aHelpEntry; s : string );
+  -- releaseVersion is for version.  Version already exists as
+  -- a global in world package.
+
+  procedure icon( e : in out aHelpEntry; s : string );
+
+  procedure screenshot( e : in out aHelpEntry; s : string );
 
   ----------------------------------------------------------------------------
   --
