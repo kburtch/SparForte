@@ -49,6 +49,7 @@ package reports.help is
        inSection     : boolean := false;
        sectionContent: contentList.List;
        contentWidth  : positive := 1;
+       createdOn     : unbounded_string;
        exceptions    : contentList.List;
        exceptionsWidth : positive := 1;
        rationale      : contentList.List;
@@ -96,6 +97,8 @@ package reports.help is
   procedure categoryPackage( e : in out aHelpEntry );
   procedure categoryProcedure( e : in out aHelpEntry );
   procedure categoryKeyword( e : in out aHelpEntry );
+
+  procedure createdOn( e : in out aHelpEntry; s : string );
 
   procedure description( e : in out aHelpEntry; s : string );
 

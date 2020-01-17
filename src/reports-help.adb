@@ -54,6 +54,7 @@ package body reports.help is
     contentList.Clear( e.errors );
     contentList.Clear( e.examples );
     contentList.Clear( e.exceptions );
+    e.createdOn := null_unbounded_string;
     e.footer := null_unbounded_string;
     contentList.Clear( e.rationale );
     e.modified := null_unbounded_string;
@@ -126,7 +127,10 @@ package body reports.help is
 
   procedure description( e : in out aHelpEntry; s : string ) is
   begin
-    e.description := to_unbounded_string( s );
+    if length( e.description ) > 0 then
+       e.description := e.description & " ";
+    end if;
+    e.description := e.description & to_unbounded_string( s );
   end description;
 
   procedure footer( e : in out aHelpEntry; s : string ) is
@@ -225,6 +229,11 @@ package body reports.help is
        end if;
     end if;
   end content;
+
+  procedure createdOn( e : in out aHelpEntry; s : string ) is
+  begin
+    e.createdOn := to_unbounded_string( s );
+  end createdOn;
 
   procedure section( e : in out aHelpEntry; s : string ) is
   begin
@@ -383,6 +392,7 @@ package body reports.help is
      renderBulletList( r, e.errors, "Errors" );
 
      renderText( r, "Author", e.author );
+     renderText( r, "Created", e.createdOn );
      renderText( r, "Modified", e.modified );
      renderText( r, "Version", e.version );
      --if contentList.length( e.todos ) > 0 then -- TODO: needed?
@@ -447,6 +457,7 @@ package body reports.help is
      renderBulletList( r, e.errors, "Errors" );
 
      renderText( r, "Author", e.author );
+     renderText( r, "Created", e.createdOn );
      renderText( r, "Modified", e.modified );
      renderText( r, "Version", e.version );
      renderBulletList( r, e.todos, "To Do" );
@@ -530,6 +541,7 @@ package body reports.help is
      renderBulletList( r, e.errors, "Errors" );
 
      renderText( r, "Author", e.author );
+     renderText( r, "Created", e.createdOn );
      renderText( r, "Modified", e.modified );
      renderText( r, "Version", e.version );
      --if contentList.length( e.todos ) > 0 then
