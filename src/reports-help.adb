@@ -120,11 +120,6 @@ package body reports.help is
     e.modified := to_unbounded_string( s );
   end modified;
 
-  procedure modifiedKen( e : in out aHelpEntry ) is
-  begin
-    modified( e, "ken@pegasoft.ca" );
-  end modifiedKen;
-
   procedure description( e : in out aHelpEntry; s : string ) is
   begin
     if length( e.description ) > 0 then

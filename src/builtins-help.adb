@@ -524,6 +524,7 @@ package body builtins.help is
          end if;
         start( r.all );
         startHelp( e, to_string( scriptFilePath ) );
+        category( e, "SparForte script" );
 
           -- search the script for pragmas, interpreting the results
           -- as necessary for the help command
@@ -792,8 +793,8 @@ begin
      startHelp( e, "btree_io" );
      summary( e, "btree_io package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
+     createdOn( e, "v2.0");
      authorKen( e );
      description( e, "A collection of common routines using Berkeley DB B-tree files." );
      content( e, "add( f, k, v )","get_previous( f, c, k, v )" );
@@ -838,7 +839,6 @@ begin
      startHelp( e, "db" );
      summary( e, "db (PostgreSQL) package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of common routines using a PostgreSQL database.  " &
@@ -893,7 +893,7 @@ begin
      startHelp( e, "dbm" );
      summary( e, "dbm (PostgreSQL) package" );
      authorKen( e );
-     modifiedKen( e );
+     createdOn( e, "v2.0");
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of common routines using PostgreSQL databases.  " &
@@ -950,8 +950,8 @@ begin
      startHelp( e, "hash_io" );
      summary( e, "hash_io package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
+     createdOn( e, "v2.0");
      authorKen( e );
      description( e, "A collection of common routines using Berkeley DB Hash files." );
      content( e, "add( f, k, v )","get_previous( f, c, k, v )" );
@@ -996,7 +996,6 @@ begin
      startHelp( e, "mysql" );
      summary( e, "mysql package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of common routines using a MySQL database.  " &
@@ -1050,7 +1049,7 @@ begin
      startHelp( e, "mysqlm" );
      summary( e, "mysqlm package" );
      authorKen( e );
-     modifiedKen( e );
+     createdOn( e, "v2.0");
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of common routines using MySQL databases.  " &
@@ -1107,7 +1106,6 @@ begin
      startHelp( e, "units" );
      summary( e, "units package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of common routines for conversion of units of measurement." );
@@ -1157,7 +1155,6 @@ begin
      startHelp( e, "numerics" );
      summary( e, "numerics package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of constants and common routines using numbers and mathematics." );
@@ -1220,7 +1217,6 @@ begin
      startHelp( e, "pragma" );
      summary( e, "pragma name [( params...)]" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "Pragmas (or interpreter directives) provide SparForte with advice " &
                   "for running programs.  They can also " &
@@ -1378,7 +1374,6 @@ begin
      startHelp( e, "arrays" );
      summary( e, "arrays package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      authorKen( e );
      description( e, "A collection of common routines using arrays." );
@@ -1398,7 +1393,6 @@ begin
      startHelp( e, "calendar" );
      summary( e, "calendar package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using dates and times." );
      content( e, "t := clock","y := year( t )","m := month( t )" );
@@ -1410,7 +1404,6 @@ begin
      startHelp( e, "case" );
      summary( e, "case var is...end case" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e,
         "Test multiple conditions, executing the commands for the condition " &
@@ -1422,7 +1415,6 @@ begin
      startHelp( e, "cd" );
      summary( e, "change directory" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
       "Change the working directory.  Supports AdaScript parameters. " &
@@ -1437,7 +1429,6 @@ begin
      startHelp( e, "cgi" );
      summary( e, "cgi package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines for web programming and cookies.  " &
          "Based on the ADACGI project.  See also gnat.cgi.");
@@ -1458,7 +1449,7 @@ begin
      startHelp( e, "chains" );
      summary( e, "chain package" );
      authorKen( e );
-     modifiedKen( e );
+     createdOn( e, "v1.5");
      categoryPackage( e );
      description( e, "A collection of common routines using @ chains.  " &
                   "A chain is a command, pragma or procedure run multiple times " &
@@ -1472,7 +1463,6 @@ begin
      startHelp( e, "clear" );
      summary( e, "clear" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
       "Clear the screen. " &
@@ -1484,7 +1474,6 @@ begin
      startHelp( e, "close" );
      summary( e, "close (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Closes an open file." );
      params( e, "file - a text_io file" );
@@ -1499,7 +1488,6 @@ begin
      startHelp( e, "command_line" );
      summary( e, "command_line package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using command line arguments, " &
        "environment variables, and the exit status.  " &
@@ -1518,7 +1506,6 @@ begin
      startHelp( e, "create" );
      summary( e, "create (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Open a new file, or overwrite an existing one." );
      params( e, "file - a text_io file" );
@@ -1535,7 +1522,6 @@ begin
      startHelp( e, "declare" );
      summary( e, "declare/begin block" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "Begin a new unnamed block of source code within a procedure or function." );
      Put_Line( "declare - begin a new block" );
@@ -1546,7 +1532,6 @@ begin
      startHelp( e, "delay" );
      summary( e, "delay statement" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "Wait (or sleep) for the specified time." );
      params( e, "secs - the number of seconds" );
@@ -1557,7 +1542,6 @@ begin
      startHelp( e, "delete" );
      summary( e, "delete (text_io package/SQL)" );
      authorKen( e );
-     modifiedKen( e );
      category( e, "keyword and built-in procedure" );
      description( e, "As a text.io procedure, delete closes and removes a file.  " &
        "As an SQL command, delete removes rows from a database table." );
@@ -1586,7 +1570,7 @@ begin
      releaseVersion( e, "Any version number or release phase" );
      author( e, "The person who wrote this and/or contact info" );
      createdOn( e, "When it was first created" );
-     modified( e, "The person who last updated this" );
+     modified( e, "When it was last modified" );
      category( e, "Category: A grouping name or tag this is placed under" );
      params( e, "The arguments, options or parameters" );
      exceptions( e, "Any exceptions that may be raised, if any" );
@@ -1605,7 +1589,6 @@ begin
      startHelp( e, "end_of_file" );
      summary( e, "end_of_file (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryFunction( e );
      description( e, "True if a file has no more data in a file." );
      params( e, "file - a text_io file" );
@@ -1616,7 +1599,6 @@ begin
      startHelp( e, "end_of_line" );
      summary( e, "end_of_line (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryFunction( e );
      description( e, "True if an in_file file has reached the end of a line with get" );
      params( e, "file - a text_io file" );
@@ -1627,7 +1609,7 @@ begin
      startHelp( e, "doubly_linked_lists" );
      summary( e, "doubly_linked_lists package" );
      authorKen( e );
-     modifiedKen( e );
+     createdOn( e, "v1.5");
      categoryPackage( e );
      description( e, "A collection of common routines using bi-directional lists." );
      content( e, "append( l, e )","s := assemble( l [,d [,f]] )" );
@@ -1654,7 +1636,7 @@ begin
      startHelp( e, "dynamic_hash_tables" );
      summary( e, "dynamic_hash_tables package" );
      authorKen( e );
-     modifiedKen( e );
+     createdOn( e, "v1.5");
      categoryPackage( e );
      description( e, "A collection of common routines using in-memory, dynamically growing hash tables." );
      content( e, "add( t, k, v )","append( t, k, v )" );
@@ -1670,7 +1652,6 @@ begin
      startHelp( e, "enums" );
      summary( e, "enums package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using enumerated types." );
      content( e, "enums.first(t)","enums.last(t)","enums.pred(e2)");
@@ -1681,7 +1662,6 @@ begin
      startHelp( e, "env" );
      summary( e, "env [var]" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
        "Display a list of all declared identifiers, their values and their " &
@@ -1694,7 +1674,6 @@ begin
      startHelp( e, "exceptions" );
      summary( e, "exceptions package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using exceptions." );
      content( e, "s := exceptions.exception_name","s := exceptions.exception_info" );
@@ -1705,7 +1684,6 @@ begin
      startHelp( e, "exit" );
      summary( e, "exit statement" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "Break out of a loop.  There is an optional exit condition." );
      content( e, "exit [when condition]" );
@@ -1715,7 +1693,6 @@ begin
      startHelp( e, "files" );
      summary( e, "files package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using files." );
      content( e, "b := basename( p )","b := dirname( p )","b := exists( p )" );
@@ -1730,7 +1707,6 @@ begin
      startHelp( e, "for statement" );
      summary( e, "for" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "The for loop increments its index variable by 1 until it iterates through " &
                   "the specified range. The range can either be numeric or enumerated." );
@@ -1741,7 +1717,6 @@ begin
      startHelp( e, "function" );
      summary( e, "function statement" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "A user-defined function is a subprogram that returns " &
                   "a value so that it can be used in an expression.  Parameter " &
@@ -1759,7 +1734,6 @@ begin
      startHelp( e, "get" );
      summary( e, "get (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Read a character from a file." );
      params( e, "file - the text_io file.  The default is standard_input." );
@@ -1771,7 +1745,6 @@ begin
      startHelp( e, "get_immediate" );
      summary( e, "get_immediate (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Read a character from a current_input without displaying on current_output." );
      params( e, "ch - the character read" );
@@ -1783,7 +1756,6 @@ begin
      startHelp( e, "get_line" );
      summary( e, "get_line (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      params( e, "file - the text_io file (default standard_input)" );
      description( e, "Read a line of text from a file." );
@@ -1794,7 +1766,6 @@ begin
      startHelp( e, "glossary" );
      summary( e, "glossary" );
      authorKen( e );
-     modifiedKen( e );
      category( e, "reference" );
      content( e, "Access type - a 'handle' or extended pointer to a storage location." );
      content( e, "Actual Parameter - the name of the parameter to a subprogram when it is being called. That is, 'put_line( foo );' foo is the actual parameter." );
@@ -1823,7 +1794,6 @@ begin
      startHelp( e, "gnat.crc32" );
      summary( e, "gnat.crc32 package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines for cyclic redundancy checks." );
      content( e, "gnat.crc32.initialize( c )" );
@@ -1835,7 +1805,6 @@ begin
      startHelp( e, "gnat.crc32" );
      summary( e, "gnat.crc32 package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines for web programming and cookies.  " &
                   "See also cgi.");
@@ -1864,7 +1833,6 @@ begin
      startHelp( e, "help" );
      summary( e, "help  [-c|-h|-m|-l|-t]" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
       "Show short advice on various topics.  Help can also " &
@@ -1889,7 +1857,6 @@ begin
      startHelp( e, "history command" );
      summary( e, "history [amount|-c]" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
        "show the command history (up to n lines). If the number of lines is " &
@@ -1903,7 +1870,6 @@ begin
      summary( e, "keyboard keys" );
      category( e, "reference" );
      authorKen( e );
-     modifiedKen( e );
      description( e, "A summary of the keyboard editing keys." );
      section( e, "Emacs Mode" );
      content( e, "control-b - move backwards" );
@@ -1932,7 +1898,6 @@ begin
      summary( e, "if statement" );
      description( e, "if statements are used for conditional branching." );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      content( e, "if expression then ... [elsif expression then...] [else ...] end if" );
      seeAlso( e, "doc/ref_flow.html" );
@@ -1941,19 +1906,16 @@ begin
      startHelp( e, "inkey" );
      summary( e, "inkey (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryFunction( e );
      description( e, "Read a character from current_input without echoing to current_output." );
      content( e, "c := inkey" );
      authorKen( e );
-     modifiedKen( e );
      seeAlso( e, "doc/pkg_text_io.html" );
      endHelp( e );
   elsif helpTopic = "is_open" then
      startHelp( e, "is_open" );
      summary( e, "is_open (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryFunction( e );
      description( e, "Return true if file is open." );
      params( e, "file - a text_io file" );
@@ -1965,7 +1927,6 @@ begin
      summary( e, "jobs" );
      categoryBuiltin( e );
      authorKen( e );
-     modifiedKen( e );
      description( e,
        "Give the status of commands currently running in the background" );
      seeAlsoShellCmds( e );
@@ -1975,7 +1936,6 @@ begin
      summary( e, "line (text_io package)" );
      categoryFunction( e );
      authorKen( e );
-     modifiedKen( e );
      description( e, "Return the number of read/written lines." );
      params( e, "file - a text_io file" );
      content( e, "line( file )" );
@@ -1985,7 +1945,6 @@ begin
      startHelp( e, "logout" );
      summary( e, "logout" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
         "Stop an interactive, login session and leave the SparForte shell. " &
@@ -2002,7 +1961,6 @@ begin
      startHelp( e, "lock_files" );
      summary( e, "lock_files package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using lock files." );
      content( e, "lock_files.lock_file( dir, file [,wait [,retries] )" );
@@ -2016,8 +1974,8 @@ begin
      startHelp( e, "logs" );
      summary( e, "logs package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
+     createdOn( e, "v2.2");
      description( e, "A collection of common routines for writing error logs.  " &
                   "Log messages are in increasing in severity: info, " &
                   "warning and error.  The ok message indicates a successful " &
@@ -2044,7 +2002,6 @@ begin
      summary( e, "loop statement" );
      description( e, "A 'loop' loop is a general purpose loop. It can only be exited with 'exit'. " );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      content( e, "loop ...end loop" );
      seeAlso( e, "doc/ref_flow.html" );
@@ -2053,7 +2010,6 @@ begin
      startHelp( e, "new_line" );
      summary( e, "new_line (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Begin a new line of text." );
      params( e, "file - a text_io file.  The default is current_output" );
@@ -2064,7 +2020,6 @@ begin
      startHelp( e, "strings.match" );
      summary( e, "strings.match (strings package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryFunction( e );
      description( e, "Pattern matching with UNIX V7 regular expressions and PERL extensions." );
      section( e, "Syntax" );
@@ -2088,7 +2043,6 @@ begin
      startHelp( e, "strings.perl_match" );
      summary( e, "strings.perl_match (strings package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryFunction( e );
      description( e, "Pattern matching with PERL Compatible Regular Expressions (PCRE)." );
      section( e, "Syntax" );
@@ -2148,7 +2102,6 @@ begin
      startHelp( e, "memcache" );
      summary( e, "memcache and memcache.highread packages" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using memcached, " &
                   "a distributed in-memory cache." );
@@ -2177,7 +2130,6 @@ begin
      summary( e, "mode (text_io package)" );
      categoryFunction( e );
      authorKen( e );
-     modifiedKen( e );
      description( e, "Return the file mode (in_file, out_file, append_file)" );
      params( e, "file - a text_io file" );
      content( e, "mode( file )" );
@@ -2188,7 +2140,6 @@ begin
      summary( e, "name (text_io package)" );
      categoryFunction( e );
      authorKen( e );
-     modifiedKen( e );
      description( e, "Return the path of an open file" );
      params( e, "file - a text_io file" );
      content( e, "name( file )" );
@@ -2202,7 +2153,6 @@ begin
         "are required. There are no arguments." );
      categoryKeyword( e );
      authorKen( e );
-     modifiedKen( e );
      content( e, "null;" );
      seeAlso( e, "doc/ref_other.html" );
      endHelp( e );
@@ -2210,7 +2160,6 @@ begin
      startHelp( e, "os" );
      summary( e, "os package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common bindings for the operating system." );
      content( e, "s := error_string( i )" );
@@ -2225,7 +2174,6 @@ begin
      startHelp( e, "open" );
      summary( e, "open (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Open an existing file." );
      params( e, "file - a text_io file" );
@@ -2238,7 +2186,6 @@ begin
      startHelp( e, "procedure" );
      summary( e, "procedure statement" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "A user-defined procedure is a subprogram that does not return " &
                   "a value for use in an expression.  Parameter " &
@@ -2259,7 +2206,6 @@ begin
      startHelp( e, "put" );
      summary( e, "put (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Write a value to a file and do not start a new line.  If the value is " &
         "numeric, use the optional picture string to format the number." );
@@ -2288,7 +2234,6 @@ begin
      startHelp( e, "put_line" );
      summary( e, "put_line (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Write a value to a file and start a new line" );
      content( e, "put_line ( [file,] expression )" );
@@ -2298,7 +2243,6 @@ begin
      startHelp( e, "pwd" );
      summary( e, "pwd" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
         "Show the path of the present (current) working directory" );
@@ -2308,7 +2252,6 @@ begin
      startHelp( e, "records" );
      summary( e, "records package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using records" );
      content( e, "to_record( r, s )","to_json( s, r )" );
@@ -2319,7 +2262,6 @@ begin
      summary( e, "raise statement" );
      categoryKeyword( e );
      authorKen( e );
-     modifiedKen( e );
      description( e, "Raise (throw) an exception.  There is an optional raise " &
        "condition which will raise if the condition is true." );
      content( e, "raise [when condition]  - re-raise an exception in an exception handler" );
@@ -2331,7 +2273,6 @@ begin
      startHelp( e, "reset" );
      summary( e, "reset (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Reopen an open file, possibly changing the file mode." );
      params( e, "file - a text_io file" );
@@ -2343,7 +2284,6 @@ begin
      startHelp( e, "return" );
      summary( e, "return statement" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "Leave a procedure, function or main program.  If a " &
         "function, return a value that can be used in an expression.  There " &
@@ -2359,7 +2299,6 @@ begin
      summary( e, "typeset var is type" );
      categoryBuiltin( e );
      authorKen( e );
-     modifiedKen( e );
      description( e,
         "Change the type of a variable, declaring it if necssary. It will " &
         "attempt to typecast the value of the variable if the variable " &
@@ -2373,7 +2312,6 @@ begin
      startHelp( e, "set_input" );
      summary( e, "set_input (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "set_input redirects the current_input to a file.  "  &
                   "set_output redirects the current_output to a file.  " &
@@ -2389,7 +2327,6 @@ begin
      startHelp( e, "skip_line" );
      summary( e, "skip_line (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryProcedure( e );
      description( e, "Read a line from a file and discard it." );
      params( e, "file - a text_io file.  The default is current_input" );
@@ -2400,7 +2337,6 @@ begin
      startHelp( e, "sound" );
      summary( e, "sound package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using sound." );
      content( e, "play( ""path"" [,pri] )" );
@@ -2413,7 +2349,6 @@ begin
      startHelp( e, "source_info" );
      summary( e, "source_info package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines for the script execution state." );
      Put_Line( "source_info (package) - information on the current script" );
@@ -2430,7 +2365,6 @@ begin
      startHelp( e, "stats" );
      summary( e, "stats package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using statistics." );
      content( e, "r := average( a )","r := max( a )","r := min( a )" );
@@ -2441,7 +2375,6 @@ begin
      startHelp( e, "subtype" );
      summary( e, "subtype statement" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "The subtype statement will create a type that is " &
                   "compatible with the original, as if it was a renaming of the original type. " );
@@ -2453,7 +2386,6 @@ begin
      startHelp( e, "System" );
      summary( e, "System package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common constants describing the " &
                   "computer hardware and execution environment." );
@@ -2472,7 +2404,6 @@ begin
      startHelp( e, "teams" );
      summary( e, "teams package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common types describing development teams." );
      content( e, "teams.member" );
@@ -2484,7 +2415,6 @@ begin
      startHelp( e, "templates" );
      summary( e, "templates package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using templates." );
      content( e, "b := has_put_template_header" );
@@ -2497,7 +2427,6 @@ begin
      startHelp( e, "trace" );
      summary( e, "trace [true|false]" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e,
         "Show which lines are read as the script runs. The lines are " &
@@ -2513,7 +2442,6 @@ begin
      summary( e, "type statement" );
      categoryKeyword( e );
      authorKen( e );
-     modifiedKen( e );
      description( e, "The type statement will create a new type that is " &
                   "incompatible with the original type.  It is also " &
                   "used to create array, record and enumerated types. " &
@@ -2529,7 +2457,6 @@ begin
      summary( e, "standard types" );
      category( e, "reference" );
      authorKen( e );
-     modifiedKen( e );
      description( e, "These are the fundamental (and text_io package) types:" );
      content( e, "boolean","integer","natural","short_short_integer     " );
      content( e, "character","long_float","positive","socket_type" );
@@ -2547,7 +2474,6 @@ begin
      summary( e, "unset ident" );
      categoryBuiltin( e );
      authorKen( e );
-     modifiedKen( e );
      description( e,
          "Delete a variable, data type or other identifier.  Keywords " &
          "cannot be unset.  Supports AdaScript parameters." );
@@ -2560,7 +2486,6 @@ begin
      summary( e, "wait" );
      categoryBuiltin( e );
      authorKen( e );
-     modifiedKen( e );
      description( e,
         "Stop execution and wait for all background commands to finish and " &
         "return the exit status of the last command." );
@@ -2572,7 +2497,6 @@ begin
      description( e, "Loop as long as an expression remains true." );
      categoryKeyword( e );
      authorKen( e );
-     modifiedKen( e );
      content( e, "while expression loop ...end loop" );
      seeAlso( e, "doc/ref_flow.html" );
      endHelp( e );
@@ -2581,7 +2505,6 @@ begin
      startHelp( e, "expressions" );
      summary( e, "expressions operators and operands" );
      authorKen( e );
-     modifiedKen( e );
      category( e, "reference" );
      description( e, "These are the expression operators and operands:" );
      section( e, "Uniary Operators" );
@@ -2613,7 +2536,6 @@ begin
      startHelp( e, "pen" );
      summary( e, "pen package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using 2-D drawing." );
      content( e, "set_rect(r, l, t, r, b)","b := is_empty_rect( r )","offset_rect( r, dx, dy )" );
@@ -2640,7 +2562,6 @@ begin
      startHelp( e, "pen" );
      summary( e, "pen package (OpenGL Functions)" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using 3-D drawing.  See also pen." );
      content( e, "This section is under construction." );
@@ -2652,7 +2573,6 @@ begin
      summary( e, "step" );
      categoryBuiltin( e );
      authorKen( e );
-     modifiedKen( e );
      description( e, "On --break breakout mode, run one instruction and stop." );
      seeAlso( e, "doc/tutorial_9.html" );
      endHelp( e );
@@ -2660,7 +2580,6 @@ begin
      startHelp( e, "strings" );
      summary( e, "strings package" );
      authorKen( e );
-     modifiedKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using strings." );
      content( e, "n := count( s, p )","r := csv_field( s, c [, d [, q]] )","r := csv_replace( s, f, t, [, d] )" );
@@ -2688,7 +2607,6 @@ begin
      startHelp( e, "variables" );
      summary( e, "variables declarations" );
      authorKen( e );
-     modifiedKen( e );
      category( e, "reference" );
      description( e, "Variables are declared with a data type and an " &
        "optional usage qualifier (such as constant).  A constant " &
@@ -2706,7 +2624,6 @@ begin
      startHelp( e, "with" );
      summary( e, "with separate" );
      authorKen( e );
-     modifiedKen( e );
      categoryKeyword( e );
      description( e, "A separate declaration file is the SparForte " &
         "equivalent of an include file. It is an set of declaration " &
@@ -2723,7 +2640,6 @@ begin
      startHelp( e, "?" );
      summary( e, "question mark (text_io package)" );
      authorKen( e );
-     modifiedKen( e );
      categoryBuiltin( e );
      description( e, "Write a value to current output in human-readable " &
         "format and start a new line." );

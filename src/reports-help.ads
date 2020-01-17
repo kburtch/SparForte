@@ -113,7 +113,6 @@ package reports.help is
   procedure rationale( e : in out aHelpEntry; s : string );
 
   procedure modified( e : in out aHelpEntry; s : string );
-  procedure modifiedKen( e : in out aHelpEntry );
 
   procedure params( e : in out aHelpEntry; s : string );
 
