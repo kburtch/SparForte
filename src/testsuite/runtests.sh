@@ -909,6 +909,10 @@ good_test_test "goodtest200_unittest.sp"
 good_test_test "goodtest201_unittest_junit.sp"
 bad_test_test "badtest202_unittest.sp"
 bad_test_test "badtest203_unittest_junit.sp"
+good_test_test "goodtest204_unittest.bush"
+good_test_test "goodtest205_unittest_desc.sp"
+good_test_test "goodtest206_unittest_fname.sp"
+good_test_test "goodtest207_unittest_two.sp"
 
 echo
 echo "Testing web templates..."
