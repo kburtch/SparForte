@@ -1,0 +1,2 @@
+pragma gcc_errors;
+

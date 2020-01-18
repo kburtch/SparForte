@@ -763,8 +763,8 @@ bad_test_test() {
   RESULT=$?
   #teardown
   test -f ./sparforte_test.xml && rm ./sparforte_test.xml
-  if [ $RESULT -ne 0 ] ; then
-     echo "--- $1 TEST FAILED - status code $? ---"
+  if [ $RESULT -eq 0 ] ; then
+     echo "--- $1 TEST FAILED - status code $RESULT ---"
      junit_fail_bad_status $RESULT
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
@@ -901,7 +901,7 @@ if [ "$1" != "-b" ] ; then
 fi
 
 echo
-echo "Testing unit testing..."
+echo "Testing unit testing and debugging..."
 
 cd testtests
 
@@ -913,6 +913,11 @@ good_test_test "goodtest204_unittest.bush"
 good_test_test "goodtest205_unittest_desc.sp"
 good_test_test "goodtest206_unittest_fname.sp"
 good_test_test "goodtest207_unittest_two.sp"
+good_test_test "goodtest300_debug.sp"
+bad_test_test "badtest302_pragma_error.sp"
+good_test_test "goodtest300_debug.sp"
+good_test_test "goodtest301_gcc_errors.sp"
+
 # This was failing under "make tests" but running fine otherwise.
 # bad_test_test "badtest208_unittest_fname_empty.sp"
 

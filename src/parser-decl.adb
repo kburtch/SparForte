@@ -1379,6 +1379,10 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        ParseRecordAssignPart( new_const_id, type_token );
     end if;
 
+    -- mark the type that was targetted by the cast
+    if syntax_check then
+       identifiers( type_token ).wasCastTo := true;
+    end if;
     if isExecutingCommand then
        if trace then
           put_trace( "Completing constant specification for " & to_string( var_name ) );
@@ -1785,9 +1789,13 @@ begin
         null;
      end if;
 
+     -- mark the type that was targetted by the cast
+     if syntax_check then
+        identifiers( type_token ).wasCastTo := true;
+     end if;
+
      -- perform assignment
 
-     --if isExecutingCommand then
      if isExecutingCommand then
         expr_value := castToType( expr_value, type_token );
         if type_token /= right_type then
