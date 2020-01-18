@@ -412,6 +412,7 @@ type declaration is record
                                                 --   when last written to
      wasApplied      : boolean := false;        -- true if type was used
      wasFactor       : boolean := false;        -- true if used in expression
+     wasCastTo       : boolean := false;        -- true if used in typecast
      renaming_of     : identifier := identifier'first; -- renaming or dereference
      -- TODO: renaming should be a reference
      -- TODO: renaming should be about storage, not dereference whole ident
