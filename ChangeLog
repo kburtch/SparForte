@@ -80,3 +80,4 @@ CHANGES SINCE 2.2.2
 
 37. Change: help for scripts now rendered with the same report class as the built-in topics.
 
+38. New: New annotations: content, examples, exceptions, footer.

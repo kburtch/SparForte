@@ -282,11 +282,18 @@ begin
   annotationsFound := true;
   if token /= strlit_t and token /= charlit_t and not identifiers( token ).static then
      annotationTodoFound := name = "todo";
+     -- param and return are singular but they are plural in the report class.
+     -- they probably should be plural the the annotation but it wasn't
+     -- important enough to fix.
      if name /= "author" and
         name /= "created" and
         name /= "category" and
+        name /= "contents" and
         name /= "description" and
         name /= "errors" and
+        name /= "examples" and
+        name /= "exceptions" and
+        name /= "footer" and
         name /= "icon" and
         name /= "modified" and
         name /= "param" and

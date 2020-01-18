@@ -23,11 +23,13 @@
 with ada.strings.unbounded.text_io,
      ada.calendar,
      spar_os.tty,
+     cgi,
      string_util,
      user_io;
 use  ada.strings.unbounded.text_io,
      ada.calendar,
      spar_os.tty,
+     cgi,
      string_util,
      user_io;
 
@@ -354,8 +356,8 @@ package body reports is
   procedure renderText( r : in out htmlReport'class; name : string; s : unbounded_string ) is
   begin
     if length( s ) > 0 then
-       put_line( r.outputfile, "<h3>" & name & "</h3>" );
-       put_line( r.outputfile, "<p>" & to_string( s ) & "</p>" );
+       put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
+       put_line( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
     end if;
   end renderText;
 
@@ -365,24 +367,24 @@ package body reports is
     -- TOOD: indent
     put_line( r.outputfile, "<p style=" & ASCII.Quotation &
        "padding: 0px 20px 0px 20px" &
-       ASCII.Quotation & ">" & to_string( s ) & "</p>" );
+       ASCII.Quotation & ">" & html_encode( to_string( s ) ) & "</p>" );
   end renderDescription;
 
   procedure renderTable( r : in out htmlReport'class; l : in out contentList.List; name : string; columnWidth : positive ) is
     s : unbounded_string;
   begin
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, "<h3>" & name & "</h3>" );
+       put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
        if contentList.length( l ) = 1 then
           contentList.Pull( l, s );
-          put_line( r.outputfile, "<p>" & s & "</p>" );
+          put_line( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
        else
           put_line( r.outputfile, "<table>" );
           -- TODO: handle columns in table
           while not contentList.isEmpty( l ) loop
              contentList.Pull( l, s );
              put_line( r.outputfile, "<tr>" );
-             put_line( r.outputfile, "<td>" & s & "</td>" );
+             put_line( r.outputfile, "<td>" & html_encode( to_string( s ) ) & "</td>" );
              put_line( r.outputfile, "</tr>" );
           end loop;
           put_line( r.outputfile, "</table>" );
@@ -415,7 +417,7 @@ package body reports is
     begin
       put_line( r.outputfile, "<td style=" & ASCII.Quotation &
                 "padding: 10px" &
-                ASCII.Quotation & ">" & s & "</td>" );
+                ASCII.Quotation & ">" & html_encode( to_string( s ) ) & "</td>" );
     end td_tag;
 
     procedure h3_tag( s : unbounded_string ) is
@@ -424,7 +426,7 @@ package body reports is
           put_line( r.outputfile, "</tr></table>" );
           table_open := false;
        end if;
-      put_line( r.outputfile, "<h3>" & s & "</h3>" );
+      put_line( r.outputfile, "<h3>" & html_encode( to_string( s ) ) & "</h3>" );
     end h3_tag;
 
   begin
@@ -480,15 +482,15 @@ package body reports is
     s : unbounded_string;
   begin
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, "<h3>" & name & "</h3>" );
+       put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
        if contentList.length( l ) = 1 then
           contentList.Pull( l, s );
-          put_line( r.outputfile, "<p>" & s & "</p>" );
+          put_line( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
        else
           put_line( r.outputfile, "<ul>" );
           while not contentList.isEmpty( l ) loop
              contentList.Pull( l, s );
-             put_line( r.outputfile, "<li>" & s & "</li>" );
+             put_line( r.outputfile, "<li>" & html_encode( to_string( s ) ) & "</li>" );
           end loop;
           put_line( r.outputfile, "</ul>" );
        end if;

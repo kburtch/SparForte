@@ -126,6 +126,27 @@ package body builtins.help is
        annotate_str : constant unbounded_string := to_unbounded_string( "annotate" );
        refactor_str : constant unbounded_string := to_unbounded_string( "refactor" );
 
+       author_str      : constant unbounded_string := to_unbounded_string( "author" );
+       bugs_str        : constant unbounded_string := to_unbounded_string( "bugs" );
+       created_str     : constant unbounded_string := to_unbounded_string( "created" );
+       category_str    : constant unbounded_string := to_unbounded_string( "category" );
+       content_str     : constant unbounded_string := to_unbounded_string( "content" );
+       description_str : constant unbounded_string := to_unbounded_string( "description" );
+       errors_str      : constant unbounded_string := to_unbounded_string( "errors" );
+       examples_str    : constant unbounded_string := to_unbounded_string( "examples" );
+       exceptions_str  : constant unbounded_string := to_unbounded_string( "exceptions" );
+       footer_str      : constant unbounded_string := to_unbounded_string( "footer" );
+       icon_str        : constant unbounded_string := to_unbounded_string( "icon" );
+       modified_str    : constant unbounded_string := to_unbounded_string( "modified" );
+       param_str       : constant unbounded_string := to_unbounded_string( "param" );
+       return_str      : constant unbounded_string := to_unbounded_string( "return" );
+       rationale_str   : constant unbounded_string := to_unbounded_string( "rationale" );
+       screenshot_str  : constant unbounded_string := to_unbounded_string( "screenshot" );
+       see_also_str    : constant unbounded_string := to_unbounded_string( "see_also" );
+       summary_str     : constant unbounded_string := to_unbounded_string( "summary" );
+       todos_str       : constant unbounded_string := to_unbounded_string( "todo" );
+       version_str     : constant unbounded_string := to_unbounded_string( "version" );
+
   l : helpList.List;
        --authorId     : identifier := eof_t;
 
@@ -141,6 +162,7 @@ package body builtins.help is
        procedure ParsePragmaStatementAsHelp( pragmaKind : unbounded_string ) is
          exprVal  : unbounded_string;
          exprType : identifier;
+         annotationKind : unbounded_string;
        begin
          if pragmaKind = license_str then
             if token = symbol_t and identifiers( token ).value.all = "(" then
@@ -278,11 +300,12 @@ package body builtins.help is
          elsif pragmaKind = annotate_str then
             if token = symbol_t and identifiers( token ).value.all = "(" then
                getNextToken;
-               if identifiers( token ).name = to_unbounded_string( "author" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               annotationKind := identifiers( token ).name;
+               discardUnusedIdentifier( token );
+               getNextToken;
+               expect( symbol_t, "," );
+               ParseStaticExpression( exprVal, exprType );
+               if annotationKind = author_str then
                   author( e, to_string(exprVal)  );
                   -- handle a teams.member variable for an author
                   -- declarations don't happen so this doesn't work.
@@ -293,94 +316,43 @@ package body builtins.help is
                   --      end if;
                   --   end if;
                   --end if;
-               elsif identifiers( token ).name = to_unbounded_string( "bugs" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = bugs_str then
                   bugs( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "created" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = created_str then
                   createdOn( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "category" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = category_str then
                   category( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "description" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = content_str then
+                  content( e, to_string(exprVal)  );
+               elsif annotationKind = description_str then
                   description( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "errors" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = errors_str then
                   errors( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "icon" ) then
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = examples_str then
+                  examples( e, to_string(exprVal)  );
+               elsif annotationKind = exceptions_str then
+                  exceptions( e, to_string(exprVal)  );
+               elsif annotationKind = footer_str then
+                  footer( e, to_string(exprVal)  );
+               elsif annotationKind = icon_str then
                   icon( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "modified" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = modified_str then
                   modified( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "param" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = param_str then
                   params( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "return" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = return_str then
                   returns( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "rationale" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = rationale_str then
                   rationale( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "screenshot" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = screenshot_str then
                   screenshot( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "see_also" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = see_also_str then
                   seeAlso( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "summary" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = summary_str then
                   summary( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "todo" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = todos_str then
                   todos( e, to_string(exprVal)  );
-               elsif identifiers( token ).name = to_unbounded_string( "version" ) then
-                  discardUnusedIdentifier( token );
-                  getNextToken;
-                  expect( symbol_t, "," );
-                  ParseStaticExpression( exprVal, exprType );
+               elsif annotationKind = version_str then
                   releaseVersion( e, to_string(exprVal)  );
                else
                   info := null_unbounded_string;
@@ -1566,24 +1538,48 @@ begin
      endHelp( e );
   elsif helpTopic = "doc_format" then
      startHelp( e, "Description of the documentation format" );
-     summary( e, "Summary: A short description, often in Backus-Naur form" );
-     releaseVersion( e, "Any version number or release phase" );
-     author( e, "The person who wrote this and/or contact info" );
-     createdOn( e, "When it was first created" );
-     modified( e, "When it was last modified" );
-     category( e, "Category: A grouping name or tag this is placed under" );
-     params( e, "The arguments, options or parameters" );
-     exceptions( e, "Any exceptions that may be raised, if any" );
-     returns( e, "Return values or status codes returned" );
-     description( e, "Description: A detailed description" );
-     content( e, "Content: What this contains, such as functions in packages.  May have subheadings" );
-     examples( e, "Examples of use" );
-     rationale( e, "Implementation Notes. The reasons for the design and its limits");
-     bugs( e, "Any known bugs" );
-     todos( e, "Any known unfinished work" );
-     seeAlso( e, "Where to find more details or related documentation" );
-     icon( e, "A pictogram for this item" );
-     screenshot( e, "An image of a window or computer screen for this item" );
+     -- summary( e, "Summary: A short description, often in Backus-Naur form" );
+     -- releaseVersion( e, "Any version number or release phase" );
+     -- author( e, "The person who wrote this and/or contact info" );
+     -- createdOn( e, "When it was first created" );
+     -- modified( e, "When it was last modified" );
+     -- category( e, "Category: A grouping name or tag this is placed under" );
+     -- params( e, "The arguments, options or parameters" );
+     -- exceptions( e, "Any exceptions that may be raised, if any" );
+     -- returns( e, "Return values or status codes returned" );
+     -- description( e, "Description: A detailed description" );
+     -- content( e, "Content: What this contains, such as functions in packages.  May have subheadings" );
+     -- examples( e, "Examples of use" );
+     -- rationale( e, "Implementation Notes. The reasons for the design and its limits");
+     -- bugs( e, "Any known bugs" );
+     -- todos( e, "Any known unfinished work" );
+     -- seeAlso( e, "Where to find more details or related documentation" );
+     -- icon( e, "A pictogram for this item" );
+     -- screenshot( e, "An image of a window or computer screen for this item" );
+
+     author( e, "author - who wrote the script. (This cannot be a team.member variable" );
+     bugs( e, "bugs - known bugs.  It may be used multiple times." );
+     createdOn( e, "created - when the script was first released" );
+     category( e, "category - a user string to organize scripts into groups" );
+     content( e, "content - listing of subprograms or other item contained inside.  " &
+                 "Use once for each item.  Use an empty string followed by a second annotation " &
+                 "with a subheading to show a subheading."  );
+     description( e, "description - a detailed description of what the script does.  " &
+                  "It may be used multiple times to build a longer description." );
+     errors( e, "errors - errors returned from the script.  It may be used multiple times." );
+     examples( e, "examples - examples of use.  It may be used multiple times." );
+     exceptions( e, "exceptions - exceptions used in the script.  It may be used multiple times." );
+     footer( e, "footer - a footer for the annotations." );
+     icon( e, "icon - the location of an icon for the script" );
+     modified( e, "modified - when the script was last modified" );
+     params( e, "param - description of a parameter to the script.  It may be used multiple times." );
+     rationale( e, "rationale - the reasons behind a design decision.  It may be used multiple times." );
+     returns( e, "return - return value" );
+     screenshot( e, "screenshot - the location of a screenshot for the script" );
+     seeAlso( e, "see_also - a reference to another document or script" );
+     summary( e, "summary - a short description of what the script does" );
+     todos( e, "todo - unfinished work.  It may be used multiple times." );
+     releaseVersion( e, "version - the version of the script" );
      endHelp( e );
   elsif helpTopic = "end_of_file" then
      startHelp( e, "end_of_file" );
