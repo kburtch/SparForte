@@ -257,6 +257,9 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -523,6 +526,9 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -541,6 +547,9 @@ begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -559,6 +568,9 @@ begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -644,6 +656,9 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -661,6 +676,9 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -677,6 +695,9 @@ begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -693,6 +714,9 @@ begin
   expect( symbol_t, "," );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;
@@ -710,6 +734,9 @@ procedure ParseNumericParameter( expr_val : out unbounded_string;
 begin
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
   if isExecutingCommand then
      expr_val := castToType( expr_val, expected_type );
   end if;

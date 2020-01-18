@@ -488,21 +488,28 @@ command on a script.  The text is a static string expression.  Type type of
 annotation field can be:
 <ul>
 <li><b>author</b> - who wrote the script. (This cannot be a team.member
-variable</li>
-<li><b>bugs</b> - known bugs</li>
+variable.)</li>
+<li><b>bugs</b> - known bugs.  It may be used multiple times.</li>
 <li><b>created</b> - when the script was first released</li>
 <li><b>category</b> - a user string to organize scripts into groups</li>
-<li><b>description</b> - a detailed description of what the script does</li>
-<li><b>errors</b> - errors returned from the script</li>
+<li><b>content</b> - listing of subprograms or other item contained inside.
+Use once for each item.  Use an empty string followed by a second annotation
+with a subheading to show a subheading.</li>
+<li><b>description</b> - a detailed description of what the script does.
+It may be used multiple times to build a longer description.</li>
+<li><b>errors</b> - errors returned from the script.  It may be used multiple times.</li>
+<li><b>examples</b> - examples of use.  It may be used multiple times.</li>
+<li><b>exceptions</b> - exceptions used in the script.  It may be used multiple times.</li>
+<li><b>footer</b> - a footer for the annotations.</li>
 <li><b>icon</b> - the location of an icon for the script</li>
 <li><b>modified</b> - when the script was last modified</li>
-<li><b>param</b> - description of a parameter to the script</li>
-<li><b>rationale</b> - the reasons behind a design decision</li>
+<li><b>param</b> - description of a parameter to the script.  It may be used multiple times.</li>
+<li><b>rationale</b> - the reasons behind a design decision.  It may be used multiple times.</li>
 <li><b>return</b> - return value</li>
 <li><b>screenshot</b> - the location of a screenshot for the script</li>
 <li><b>see_also</b> - a reference to another document or script</li>
 <li><b>summary</b> - a short description of what the script does</li>
-<li><b>todo</b> - unfinished work</li>
+<li><b>todo</b> - unfinished work.  It may be used multiple times.</li>
 <li><b>version</b> - the version of the script</li>
 </ul></li>
 </ul>

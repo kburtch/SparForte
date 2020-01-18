@@ -874,7 +874,12 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        ParseExpression( f, kind );
        expect( symbol_t, ")" );
        if type_checks_done or else uniTypesOk( castType, kind ) then
+
           kind := castType;
+          -- mark the type that was targetted by the cast
+          if syntax_check then
+             identifiers( kind ).wasCastTo := true;
+          end if;
           if isExecutingCommand then
              f := castToType( f, kind );
              DoContracts( kind, f );
@@ -1354,6 +1359,10 @@ begin
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then
              if operator = "*" then
                 begin
+                   -- mark the type that was targetted by the cast
+                   if syntax_check then
+                      identifiers( term_type ).wasCastTo := true;
+                   end if;
                   if isExecutingCommand then
                      term := castToType(
                         to_numeric( term ) *
@@ -1373,6 +1382,10 @@ begin
                   p : long_float;
                   z : long_float := 0.0;
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      -- GCC Ada 4.7.1 doesn't catch divide by zero (returns
                      -- infinity for the following division:
@@ -1401,6 +1414,10 @@ begin
                 end;
              elsif operator = "mod" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      term := castToType(
                         --long_long_integer'image(
@@ -1418,6 +1435,10 @@ begin
                 end;
              elsif operator = "rem" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      term := castToType(
                         --long_long_integer'image(
@@ -1568,6 +1589,10 @@ begin
         if operation = uni_numeric_t then
              if operator = "+" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( expr_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      se := castToType(
                         to_numeric( se ) +
@@ -1583,6 +1608,10 @@ begin
                 end;
              elsif operator = "-" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( expr_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      se := castToType(
                         to_numeric( se ) -
@@ -2255,6 +2284,10 @@ begin
            expect( symbol_t, ")" );
            if type_checks_done or else uniTypesOk( castType, kind ) then
               kind := castType;
+              -- mark the type that was targetted by the cast
+              if syntax_check then
+                 identifiers( kind ).wasCastTo := true;
+              end if;
               if isExecutingCommand then
                  --f := castToType( to_numeric( f ), kind );
                  f := castToType( f, kind );
@@ -2470,6 +2503,10 @@ begin
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then
              if operator = "*" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      term := castToType(
                         to_numeric( term ) *
@@ -2489,6 +2526,10 @@ begin
                   p : long_float;
                   z : long_float := 0.0;
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      -- GCC Ada 4.7.1 doesn't catch divide by zero (returns
                      -- infinity for the following division:
@@ -2517,6 +2558,10 @@ begin
                 end;
              elsif operator = "mod" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      term := castToType(
                         --long_long_integer'image(
@@ -2534,6 +2579,10 @@ begin
                 end;
              elsif operator = "rem" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( term_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      term := castToType(
                         --long_long_integer'image(
@@ -2683,6 +2732,10 @@ begin
         if operation = uni_numeric_t then
              if operator = "+" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( expr_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      se := castToType(
                         to_numeric( se ) +
@@ -2698,6 +2751,10 @@ begin
                 end;
              elsif operator = "-" then
                 begin
+                  -- mark the type that was targetted by the cast
+                  if syntax_check then
+                     identifiers( expr_type ).wasCastTo := true;
+                  end if;
                   if isExecutingCommand then
                      se := castToType(
                         to_numeric( se ) -

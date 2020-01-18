@@ -22,11 +22,13 @@
 ------------------------------------------------------------------------------
 with ada.strings.unbounded.text_io,
      ada.calendar,
+     cgi,
      string_util,
      user_io;
 use  ada.strings,
      ada.strings.unbounded.text_io,
      ada.calendar,
+     cgi,
      string_util,
      user_io;
 
@@ -416,13 +418,13 @@ package body reports.help is
     s : unbounded_string;
   begin
      -- display the help topic and the header if there is one
-     put( r.outputfile, "<h2>" & e.topic  );
+     put( r.outputfile, "<h2>" & html_encode( to_string( e.topic ) )  );
      if length( e.category ) > 0 then
-        put( r.outputfile, " (" & e.category & ")" );
+        put( r.outputfile, " (" & html_encode( to_string( e.category ) ) & ")" );
      end if;
      put_line( r.outputfile, "</h2>" );
      if length( e.summary ) > 0 then
-        put( r.outputfile, "<p>" & e.summary & "</p>" );
+        put( r.outputfile, "<p>" & html_encode( to_string( e.summary ) ) & "</p>" );
      end if;
      new_line( r.outputfile );
      if length( e.iconPath ) > 0 then

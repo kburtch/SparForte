@@ -5298,6 +5298,9 @@ begin
   if right_type = exception_t then
      err( "exceptions cannot be assigned" );
   elsif type_checks_done or else baseTypesOK( var_kind, right_type ) then
+     if syntax_check then
+        identifiers( var_kind ).wasCastTo := true;
+     end if;
      if isExecutingCommand then
         expr_value := castToType( expr_value, var_kind );
      end if;

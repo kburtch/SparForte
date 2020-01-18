@@ -557,6 +557,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -620,6 +621,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -847,6 +849,7 @@ begin
                  writtenOn => 0,
                  wasApplied => false,
                  wasFactor => false,
+                 wasCastTo => false,
                  procCB => null,
                  funcCB => null,
                  genKind => eof_t,
@@ -928,6 +931,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB => null,
        funcCB => null,
        genKind => eof_t,
@@ -1020,6 +1024,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1088,6 +1093,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB => identifiers( canonicalRef.id ).procCB,  -- don't apply for variables
        funcCB => identifiers( canonicalRef.id ).funcCB,
        genKind => identifiers( canonicalRef.id ).genKind,
@@ -1223,6 +1229,7 @@ begin
            identifiers( field_id ).writtenByThread := noThread;
            identifiers( field_id ).wasApplied := false;
            identifiers( field_id ).wasFactor := false;
+           identifiers( field_id ).wasCastTo := false;
            identifiers( field_id ).writtenOn := 0;
         end if;
      end;
@@ -1280,6 +1287,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,
@@ -1415,6 +1423,7 @@ begin
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
+       wasCastTo => false,
        procCB   => null,
        funcCB   => null,
        genKind  => eof_t,

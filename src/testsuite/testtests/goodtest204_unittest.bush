@@ -3,7 +3,9 @@ procedure t is
   t : string;
 begin
   s := s;
-  pragma test_report( text );
+  -- in JUnit format reports, ".bush" should be stripped out.
+  -- This is for code coverage, though we are doing minimal testing.
+  pragma test_report( xml );
   pragma test( `t := s;` );
   pragma test_result( t = "foobar" );
 end t;

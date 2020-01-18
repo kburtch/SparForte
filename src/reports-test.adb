@@ -502,10 +502,9 @@ package body reports.test is
     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
     if length( name ) = 0 then
-      jts.name := sfr.name & "_" & trim( to_unbounded_string( lineno'img ), both );
-    else
-      jts.name := name;
+      raise SPARFORTE_ERROR;
     end if;
+    jts.name := name;
     jts.path := sfr.name; -- TODO: path, but this is a name
     jts.startTime := ada.calendar.clock;
     create( test_case_file, out_file );
