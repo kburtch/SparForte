@@ -802,7 +802,7 @@ bad_test_test() {
   RESULT=$?
   #teardown
   test -f ./sparforte_test.xml && rm ./sparforte_test.xml
-  if [ $RESULT -ne 0 ] ; then
+  if [ $RESULT -eq 0 ] ; then
      echo "--- $1 TEST FAILED - status code $RESULT ---"
      junit_fail_bad_status $RESULT
      if [ ! -z "$OPT_FAIL" ] ; then
