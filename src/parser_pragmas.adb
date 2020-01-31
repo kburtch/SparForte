@@ -683,9 +683,10 @@ end ParseWorkEstimate;
 -- Syntax: measure, value
 -- Where measure can be unknown, completed, level, severity, risk, cvss
 -- Used by pragma todo and pragma manual_test
+-- is_todo is true if this is pragma todo, which triggers addition checks.
 -----------------------------------------------------------------------------
 
-procedure ParseWorkPriority( work_estimate_unknown : boolean ) is
+procedure ParseWorkPriority( work_estimate_unknown : boolean; is_todo : boolean := true ) is
    unused_bool : boolean;
    var_id : identifier;
 begin
@@ -707,12 +708,14 @@ begin
         identifiers( token ).value.all /= "h" then
         err( "expected 'l', 'm' or 'h'" );
      end if;
-     if not work_estimate_unknown and not allowAllTodosForRelease then
-        if boolean( testOpt ) or boolean( maintenanceOpt ) then
-           if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
-              null;
-           else
-              err( "priority todo task not yet completed" );
+     if is_todo then
+        if not work_estimate_unknown and not allowAllTodosForRelease then
+           if boolean( testOpt ) or boolean( maintenanceOpt ) then
+              if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
+                 null;
+              else
+                 err( "priority todo task not yet completed" );
+              end if;
            end if;
         end if;
      end if;
@@ -722,22 +725,26 @@ begin
         identifiers( token ).value.all > " 5" then
         err( "expected 1..5" );
      end if;
-     if not work_estimate_unknown and not allowAllTodosForRelease then
-        if boolean( testOpt ) or boolean( maintenanceOpt ) then
-           if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
-              null;
-           else
-              err( "priority todo task not yet completed" );
+     if is_todo then
+        if not work_estimate_unknown and not allowAllTodosForRelease then
+           if boolean( testOpt ) or boolean( maintenanceOpt ) then
+              if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
+                 null;
+              else
+                 err( "priority todo task not yet completed" );
+              end if;
            end if;
         end if;
      end if;
      expect( number_t );
   elsif var_id = teams_work_priority_risk_t then
-     if not work_estimate_unknown and not allowAllTodosForRelease then
-        if boolean( testOpt ) or boolean( maintenanceOpt ) then
-           -- any financial risk
-           if identifiers( token ).value.all /= " 0" then
-              err( "priority todo task not yet completed" );
+     if is_todo then
+        if not work_estimate_unknown and not allowAllTodosForRelease then
+           if boolean( testOpt ) or boolean( maintenanceOpt ) then
+              -- any financial risk
+              if identifiers( token ).value.all /= " 0" then
+                 err( "priority todo task not yet completed" );
+              end if;
            end if;
         end if;
      end if;
@@ -750,13 +757,15 @@ begin
         if v1 < 0.0 or v1 > 10.0 then
            err( "expected 1..10" );
         end if;
-        -- CVSS 2 says a score of 3.9 or lower is low risk
-        if not work_estimate_unknown and not allowAllTodosForRelease then
-           if boolean( testOpt ) or boolean( maintenanceOpt ) then
-              if allowLowPriorityTodosForRelease and v1 < 4.0 then
-                 null;
-              elsif v1 > 0.0 then
-                 err( "priority todo task not yet completed" );
+        if is_todo then
+           -- CVSS 2 says a score of 3.9 or lower is low risk
+           if not work_estimate_unknown and not allowAllTodosForRelease then
+              if boolean( testOpt ) or boolean( maintenanceOpt ) then
+                 if allowLowPriorityTodosForRelease and v1 < 4.0 then
+                    null;
+                 elsif v1 > 0.0 then
+                    err( "priority todo task not yet completed" );
+                 end if;
               end if;
            end if;
         end if;
@@ -767,6 +776,125 @@ begin
      err( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work priority value" );
   end if;
 end ParseWorkPriority;
+
+
+--  RUN TEST CASE
+--
+-- Run a test case and report the result.
+-----------------------------------------------------------------------------
+
+procedure run_test_case( testScript, testCaseName : unbounded_string; manual_test : boolean := false ) is
+   savershOpt : commandLineOption := rshOpt;
+   save_error_found : boolean := error_found;
+   isTesting_old : boolean := isTesting;
+   results     : unbounded_string;
+begin
+
+   -- If this is the first test, we need to initialize JUnit support
+
+   if not isJunitStarted then
+      begin
+        if usingTextTestReport then
+           startJunit( myTextTestReport );
+        else
+           startJunit( myXmlTestReport, reportPath );
+        end if;
+      exception when others =>
+        err( "exception while creating test result file" );
+      end;
+   end if;
+
+   -- If this is a new test case, close off the previous test case.
+
+   begin
+     if isJunitTestCaseStarted then
+        if usingTextTestReport then
+           endJunitTestCase( myTextTestReport );
+        else
+           endJunitTestCase( myXmlTestReport );
+        end if;
+     end if;
+     if usingTextTestReport then
+        checkForNewTestSuite( myTextTestReport );
+     else
+        checkForNewTestSuite( myXmlTestReport );
+     end if;
+     if usingTextTestReport then
+        startJunitTestCase( myTextTestReport,  null_unbounded_string, testCaseName );
+     else
+        startJunitTestCase( myXmlTestReport,  null_unbounded_string, testCaseName );
+     end if;
+   exception when others =>
+      err( "exception while writing to test result file" );
+   end;
+
+   -- Evaluate the test result by evaluating the expression.
+   -- Output the result of the test.  If an error occurred,
+   -- log it as such for the test case.  Then recover the
+   -- original error flag as an error during a test should
+   -- not abort the test.
+   --
+   -- A manual test case is a description of what the testing person
+   -- would do and has no automated test to run.
+   --
+   -- While running a test in a restricted shell would help protect
+   -- against state change during testing, it turns out to be too
+   -- restrictive.
+
+   if not manual_test then
+      begin
+        isTesting := true;
+        CompileRunAndCaptureOutput( testScript, results );
+        isTesting := isTesting_old;
+        put( results );
+        if error_found then
+           if usingTextTestReport then
+              testCaseError( myTextTestReport );
+           else
+              testCaseError( myXmlTestReport );
+           end if;
+        end if;
+        -- Script must continue to run even if an error occurred in the
+        -- test subscript.
+        error_found := save_error_found;
+      exception when others =>
+        if usingTextTestReport then
+           testCaseError( myTextTestReport );
+        else
+           testCaseError( myXmlTestReport );
+        end if;
+        error_found := save_error_found;
+      end;
+   end if; -- automated test
+end run_test_case;
+
+
+--  RECORD TEST RESULT
+--
+-- Record the test result
+-----------------------------------------------------------------------------
+
+procedure record_test_result( result_status : boolean ) is
+begin
+
+
+           if not isJunitStarted then
+              err( optional_bold( "pragma test" ) & " must be used before pragma test_result" );
+           elsif result_status then
+              if usingTextTestReport then
+                 testCaseFailure( myTextTestReport );
+              else
+                 testCaseFailure( myXmlTestReport );
+              end if;
+           else
+              if usingTextTestReport then
+                 testCaseSuccess( myTextTestReport );
+              else
+                 testCaseSuccess( myXmlTestReport );
+              end if;
+           end if;
+end record_test_result;
+
 
 --  PARSE PRAGMA STATEMENT
 --
@@ -783,6 +911,7 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   exportType  : unbounded_string;
   importType  : unbounded_string;
   newValue    : unbounded_string;
+  test_result_status : boolean := false;
 begin
 
   -- Parse the pragma parameters (if any)
@@ -875,41 +1004,70 @@ begin
   when manual_test =>                        -- pragma manual_test
      ParseIdentifier( var_id );                -- test owner
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
-           ParseStaticExpression( expr_val, var_id );  -- test name
-           baseTypesOK( var_id, uni_string_t );
-           ParseStaticExpression( expr_val, var_id );  -- test objective
-           baseTypesOK( var_id, uni_string_t );
-           ParseStaticExpression( expr_val, var_id );  -- test description
-           baseTypesOK( var_id, uni_string_t );
-           ParseStaticExpression( expr_val, var_id );  -- preconditions
-           baseTypesOK( var_id, uni_string_t );
-           ParseStaticExpression( expr_val, var_id );  -- steps/expected results
-           baseTypesOK( var_id, uni_string_t );
-           ParseStaticExpression( expr_val, var_id );  -- postconditions/cleanup
-           baseTypesOK( var_id, uni_string_t );
-           ParseWorkEstimate( work_estimate_unknown ); -- work estimate
-           ParseWorkPriority( work_estimate_unknown ); -- work priority
-        end if;
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- test name/subject
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- test objective
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- test description
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- test environment
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- test category
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- preconditions
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- steps/expected results
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- postconditions/cleanup
+        baseTypesOK( var_id, uni_string_t );
+        expect( symbol_t, "," );
+        ParseWorkEstimate( work_estimate_unknown ); -- work estimate
+        ParseWorkPriority( work_estimate_unknown, is_todo => false ); -- work priority
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, var_id );  -- work ticket / user story
+        baseTypesOK( var_id, uni_string_t );
+     else
+        err( "team.member expected" );
      end if;
   when manual_test_result =>                 -- pragma manual_test_result
       ParseIdentifier( var_id );                -- tester
       if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
            expect( symbol_t, "," );
+           ParseStaticExpression( expr_val, var_id );  -- date
+           baseTypesOK( var_id, uni_string_t );
+           expect( symbol_t, "," );
+           ParseStaticExpression( expr_val, var_id );  -- notes
+           baseTypesOK( var_id, uni_string_t );
+           expect( symbol_t, "," );
+           ParseStaticExpression( expr_val, var_id );  -- screenshots
+           baseTypesOK( var_id, uni_string_t );
+           expect( symbol_t, "," );                    -- test result
+           -- TODO: status is false when test succeeded.
            if token = true_t then
+              test_result_status := false;
               expect( true_t );
            elsif token = false_t then
+              test_result_status := true;
               expect( false_t );
            else
-              err( "true or false expected" );
+              err( "true or false expected for the test status" );
            end if;
           if token = symbol_t and identifiers( token ).value.all = "," then
              expect( symbol_t, "," );
-             ParseStaticExpression( expr_val, var_id );  -- actual result
+             ParseStaticExpression( expr_val, var_id );  -- defect id
              baseTypesOK( var_id, uni_string_t );
           end if;
-      end if;
+     else
+        err( "team.member expected" );
+     end if;
   when peek =>                               -- pragma inspection peek
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
          err( "inspection_peek is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
@@ -1121,6 +1279,7 @@ begin
            syntax_check := save_syntax;
         else
            ParseExpression( expr_val, var_id );
+           test_result_status := expr_val = "0";
         end if;
         -- Optional description string
         --if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1513,6 +1672,29 @@ begin
             err_exception_raised;
           end;
         end if;
+     when manual_test =>
+        if testOpt then
+           -- not clear what doing a test in an interactive session means,
+           -- and the parser isn't designed to produce a test report in
+           -- this situation.
+           if inputMode = interactive or inputMode = breakout then
+              err( "manual_test is not allowed in an interactive session" );
+           elsif not syntax_check then
+              -- for a manual test case, there's nothing to run
+              run_test_case( null_unbounded_string, expr_val2, manual_test => true );
+           end if;
+        end if;
+     when manual_test_result =>
+        if testOpt then
+           -- not clear what doing a test in an interactive session means,
+           -- and the parser isn't designed to produce a test report in
+           -- this situation.
+           if inputMode = interactive or inputMode = breakout then
+              err( "manual_test_result is not allowed in an interactive session" );
+           elsif not syntax_check then
+              record_test_result( test_result_status );
+           end if;
+        end if;
      when noCommandHash =>
         clearCommandHash;
         no_command_hash := true;
@@ -1630,67 +1812,7 @@ begin
            if inputMode = interactive or inputMode = breakout then
               err( "test is not allowed in an interactive session" );
            elsif not syntax_check then
-              if not isJunitStarted then
-                 begin
-                   if usingTextTestReport then
-                      startJunit( myTextTestReport );
-                   else
-                      startJunit( myXmlTestReport, reportPath );
-                   end if;
-                 exception when others =>
-                   err( "exception while creating test result file" );
-                 end;
-              end if;
-              begin
-                 if isJunitTestCaseStarted then
-                    if usingTextTestReport then
-                       endJunitTestCase( myTextTestReport );
-                    else
-                       endJunitTestCase( myXmlTestReport );
-                    end if;
-                 end if;
-                 if usingTextTestReport then
-                    checkForNewTestSuite( myTextTestReport );
-                 else
-                    checkForNewTestSuite( myXmlTestReport );
-                 end if;
-                 if usingTextTestReport then
-                    startJunitTestCase( myTextTestReport,  null_unbounded_string, expr_val2 );
-                 else
-                    startJunitTestCase( myXmlTestReport,  null_unbounded_string, expr_val2 );
-                 end if;
-              exception when others =>
-                 err( "exception while writing to test result file" );
-              end;
-              declare
-                savershOpt : commandLineOption := rshOpt;
-                save_error_found : boolean := error_found;
-                isTesting_old : boolean := isTesting;
-              begin
-                 --rshOpt := true;            -- force restricted shell mode
-                 isTesting := true;
-                 CompileRunAndCaptureOutput( expr_val, results );
-                 isTesting := isTesting_old;
-                 --rshOpt := savershOpt;
-                 put( results );
-                 if error_found then
-                    if usingTextTestReport then
-                       testCaseError( myTextTestReport );
-                    else
-                       testCaseError( myXmlTestReport );
-                    end if;
-                 end if;
-                 -- Script must continue to run even if an error occurred in the
-                 -- test subscript.
-                 error_found := save_error_found;
-              exception when others =>
-                 if usingTextTestReport then
-                    testCaseError( myTextTestReport );
-                 else
-                    testCaseError( myXmlTestReport );
-                 end if;
-                 error_found := save_error_found;
-              end;
+               run_test_case( expr_val, expr_val2, manual_test => false );
            end if;
         end if;
      when test_report =>
@@ -1713,22 +1835,7 @@ begin
               err( "test_result is not allowed in an interactive session" );
            elsif not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
-                 if not isJunitStarted then
-                    err( optional_bold( "pragma test" ) & " must be used before pragma test_result" );
-                 elsif expr_val = "0" then
-                    if usingTextTestReport then
-                       testCaseFailure( myTextTestReport );
-                    else
-                       testCaseFailure( myXmlTestReport );
-                    end if;
-                    --err_test_result;
-                 else
-                    if usingTextTestReport then
-                       testCaseSuccess( myTextTestReport );
-                    else
-                       testCaseSuccess( myXmlTestReport );
-                    end if;
-                 end if;
+                 record_test_result( test_result_status );
               end if;
            end if;
         end if;

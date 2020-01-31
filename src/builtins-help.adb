@@ -1218,6 +1218,8 @@ begin
   content( e, "pragma inspection_peek - like a inspection_point but no breakout" );
   content( e, "pragma inspection_point - break to command prompt if --break is used" );
   content( e, "pragma license( license_name [, extra] ) - specify a software license" );
+  content( e, "pragma manual_test( owner, name, objective, description, category, preconditions, steps, postconditions, units, work estimate, units, work priority, ticket) - manual test case" );
+  content( e, "pragma manual_test_result( tester, date, notes, screenshots, status [, ticket] - manual test result" );
   content( e, "pragma no_command_hash - do not store command pathnames in the hash table" );
   content( e, "pragma prompt_script( `commands` ) - commands to draw command prompt" );
   content( e, "pragma propose( from, to, message ) - suggest a change to a program" );

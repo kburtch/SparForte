@@ -476,6 +476,75 @@ the results in automated tests.
 Requires --test option or asserts will have no effect.</li>
 </ul>
 
+<p><b>pragma manual_test( owner, name, objective, description, category, preconditions, steps, postconditions, unit of work, work estimate, work priority type, work priority, ticket)</b>
+describes a test case which is not automated.  A quality testing person must
+perform this test.  This pragma documents what the testing person should do.</p>
+
+<ul>
+<li> <b>owner</b> - (teams.member) a person who manages this test</li>
+<li> <b>name</b> - (string) the name of the test</li>
+<li> <b>objective</b> - (string) the purpose of the test</li>
+<li> <b>description</b> - (string) an overall description of the test</li>
+<li> <b>category</b> - (string) a category name for the test (e.g. regression, functional, etc.)</li>
+<li> <b>environment</b> - (string) where this test may be performed (e.g. Dev, QA, UAT, Prod, etc.)</li>
+<li> <b>preconditions</b> - (string) what is required to perform the test</li>
+<li> <b>steps</b> - (string) the actions to perform and the expected results</li>
+<li> <b>postconditions</b> - (string) what to do to clean up the environment</li>
+<li> <b>unit of work</b> - (teams.work_measure) what the effort is measured by.  This is the same format as pragma todo's work estimate.</li>
+<li> <b>work estimate</b> - (work estimate) the amount of effort.  This is the same format as pragma todo's work estiamte.</li>
+<li> <b>work priority type </b> - (teams.work_priority) what the priority is measured by.  This is the same format as pragma todo's work priority.</li>
+<li> <b>work priority</b> - (work priority) the priority of the test.  This is the same format as pragma todo's work priority.</li>
+<li> <b>ticket</b> - the ID of the work ticket or user story being tested</li>
+</ul>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> manual_test(<br />
+&nbsp;&nbsp;testing_team,                       -- owner<br />
+&nbsp;&nbsp;"Login Test",                       -- name<br />
+&nbsp;&nbsp;"Ensure that users can login",      -- objective<br />
+&nbsp;&nbsp;"Attempt to log into the website",  -- description<br />
+&nbsp;&nbsp;"QA",                               -- environment<br />
+&nbsp;&nbsp;"Functional",                       -- category<br />
+&nbsp;&nbsp;"The user should not be logged in", -- preconditions<br />
+&nbsp;&nbsp;&nbsp;&nbsp;"1) Enter the user name.  " &amp; -- steps<br />
+&nbsp;&nbsp;&nbsp;&nbsp;"2) Enter the password" &amp;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;"3) User home page should appear",<br />
+&nbsp;&nbsp;"Log out of the website",           -- postconditions<br />
+&nbsp;&nbsp;work_measure.size,                  -- unit of work<br />
+&nbsp;&nbsp;"s",                                -- work estimate (small size)<br />
+&nbsp;&nbsp;work_priority.level,                -- unit of priority<br />
+&nbsp;&nbsp;'h',                                -- priority (high level)<br />
+&nbsp;&nbsp;"ID1234"                            -- ticket reference<br />
+);<br />
+        <div class="code_caption">
+                <b>Example</b>: An example of manual test case</span>
+        </div>
+        </div>
+        </center>
+
+<p><b>pragma manual_test_result( tester, date, screenshots, notes, status [,defect_id])</b> is the
+manual equivalent of pragma test_result.  This pragma is filled in by a
+testing person, recording the result of a manual test.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> manual_test_result(<br />
+&nbsp;&nbsp;ken,                                -- the tester (type teams.member)<br />
+&nbsp;&nbsp;"Sept 12/20xx",                     -- the date this was recorded<br />
+&nbsp;&nbsp;"/screenshots/test_example",        -- path to any screenshots<br />
+&nbsp;&nbsp;"No notes",                         -- any notes<br />
+&nbsp;&nbsp;false,                              -- test result (pass = true, fail = false)<br />
+&nbsp;&nbsp;ID1234                              -- related ticket id (optional)<br />
+);<br />
+        <div class="code_caption">
+                <b>Example</b>: An example of manual test result</span>
+        </div>
+        </div>
+        </center>
+
 <h4>Documentation Pragmas</h4>
 
 <p>Interpreter directives used to describe a project, particularly real

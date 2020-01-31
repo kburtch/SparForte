@@ -12,6 +12,8 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - is close_on_exec useful?
+- for web to be secure, you can output raw strings to the console.
+  Can this be enforced in templates?
 - generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
