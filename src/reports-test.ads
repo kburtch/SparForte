@@ -102,7 +102,8 @@ package reports.test is
   type textTestReport is new textReport with null record;
 
   procedure startJUnitTestCase( report: in out textTestReport ;
-     name, description : unbounded_string := null_unbounded_string );
+    name, description : unbounded_string := null_unbounded_string );
+
   procedure endJunitTestCase( report : in out textTestReport );
 
   -- TEST CASE ERROR
@@ -115,7 +116,7 @@ package reports.test is
   --
   -- Record a test case failure.
 
-  procedure testCaseFailure( report : in out textTestReport );
+  procedure testCaseFailure( report : in out textTestReport; test_message : unbounded_string := null_unbounded_string );
 
   -- TEST CASE SUCCESS
   --
@@ -126,9 +127,11 @@ package reports.test is
   -- more here
 
   procedure startJUnitTestSuite( report: in out textTestReport;
-     name : unbounded_string := null_unbounded_string );
+     name : unbounded_string := null_unbounded_string;
+     test_name : unbounded_string := null_unbounded_string );
   procedure endJunitTestSuite( report : in out textTestReport );
-  procedure checkForNewTestSuite( report : in out textTestReport );
+  procedure checkForNewTestSuite( report : in out textTestReport;
+     test_name : unbounded_string := null_unbounded_string );
 
   procedure startJunit( report : in out textTestReport );
   procedure endJunit( report : in out textTestReport );
@@ -157,7 +160,7 @@ package reports.test is
   --
   -- Record a test case failure.
 
-  procedure testCaseFailure( report : in out xmlTestReport );
+  procedure testCaseFailure( report : in out xmlTestReport; test_message : unbounded_string := null_unbounded_string );
 
   -- TEST CASE SUCCESS
   --

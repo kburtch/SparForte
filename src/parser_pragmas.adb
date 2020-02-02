@@ -820,9 +820,9 @@ begin
         checkForNewTestSuite( myXmlTestReport );
      end if;
      if usingTextTestReport then
-        startJunitTestCase( myTextTestReport,  null_unbounded_string, testCaseName );
+        startJunitTestCase( myTextTestReport, testCaseName, testCaseName );
      else
-        startJunitTestCase( myXmlTestReport,  null_unbounded_string, testCaseName );
+        startJunitTestCase( myXmlTestReport,  testCaseName, testCaseName );
      end if;
    exception when others =>
       err( "exception while writing to test result file" );
@@ -874,25 +874,23 @@ end run_test_case;
 -- Record the test result
 -----------------------------------------------------------------------------
 
-procedure record_test_result( result_status : boolean ) is
+procedure record_test_result( result_status : boolean; test_message : unbounded_string ) is
 begin
-
-
-           if not isJunitStarted then
-              err( optional_bold( "pragma test" ) & " must be used before pragma test_result" );
-           elsif result_status then
-              if usingTextTestReport then
-                 testCaseFailure( myTextTestReport );
-              else
-                 testCaseFailure( myXmlTestReport );
-              end if;
-           else
-              if usingTextTestReport then
-                 testCaseSuccess( myTextTestReport );
-              else
-                 testCaseSuccess( myXmlTestReport );
-              end if;
-           end if;
+  if not isJunitStarted then
+     err( optional_bold( "pragma test" ) & " must be used before pragma test_result" );
+  elsif result_status then
+     if usingTextTestReport then
+        testCaseFailure( myTextTestReport, test_message );
+    else
+        testCaseFailure( myXmlTestReport, test_message );
+    end if;
+  else
+    if usingTextTestReport then
+       testCaseSuccess( myTextTestReport );
+    else
+       testCaseSuccess( myXmlTestReport );
+    end if;
+  end if;
 end record_test_result;
 
 
@@ -912,6 +910,8 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   importType  : unbounded_string;
   newValue    : unbounded_string;
   test_result_status : boolean := false;
+  test_message : unbounded_string;
+  testCaseName : unbounded_string;
 begin
 
   -- Parse the pragma parameters (if any)
@@ -1005,7 +1005,7 @@ begin
      ParseIdentifier( var_id );                -- test owner
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
         expect( symbol_t, "," );
-        ParseStaticExpression( expr_val, var_id );  -- test name/subject
+        ParseStaticExpression( testCaseName, var_id );  -- test name/subject
         baseTypesOK( var_id, uni_string_t );
         expect( symbol_t, "," );
         ParseStaticExpression( expr_val, var_id );  -- test objective
@@ -1043,12 +1043,15 @@ begin
            expect( symbol_t, "," );
            ParseStaticExpression( expr_val, var_id );  -- date
            baseTypesOK( var_id, uni_string_t );
+           test_message := "Date: " & expr_val;
            expect( symbol_t, "," );
            ParseStaticExpression( expr_val, var_id );  -- notes
            baseTypesOK( var_id, uni_string_t );
+           test_message := test_message & "; Notes: " & expr_val;
            expect( symbol_t, "," );
            ParseStaticExpression( expr_val, var_id );  -- screenshots
            baseTypesOK( var_id, uni_string_t );
+           test_message := test_message & "; Screenshots: " & expr_val;
            expect( symbol_t, "," );                    -- test result
            -- TODO: status is false when test succeeded.
            if token = true_t then
@@ -1064,6 +1067,7 @@ begin
              expect( symbol_t, "," );
              ParseStaticExpression( expr_val, var_id );  -- defect id
              baseTypesOK( var_id, uni_string_t );
+             test_message := test_message & "; Ticket: " & expr_val;
           end if;
      else
         err( "team.member expected" );
@@ -1681,7 +1685,7 @@ begin
               err( "manual_test is not allowed in an interactive session" );
            elsif not syntax_check then
               -- for a manual test case, there's nothing to run
-              run_test_case( null_unbounded_string, expr_val2, manual_test => true );
+              run_test_case( null_unbounded_string, testCaseName, manual_test => true );
            end if;
         end if;
      when manual_test_result =>
@@ -1692,7 +1696,7 @@ begin
            if inputMode = interactive or inputMode = breakout then
               err( "manual_test_result is not allowed in an interactive session" );
            elsif not syntax_check then
-              record_test_result( test_result_status );
+              record_test_result( test_result_status, test_message );
            end if;
         end if;
      when noCommandHash =>
@@ -1835,7 +1839,7 @@ begin
               err( "test_result is not allowed in an interactive session" );
            elsif not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
-                 record_test_result( test_result_status );
+                 record_test_result( test_result_status, null_unbounded_string );
               end if;
            end if;
         end if;

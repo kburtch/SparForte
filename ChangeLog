@@ -82,5 +82,5 @@ CHANGES SINCE 2.2.2
 
 38. New: New annotations: content, examples, exceptions, footer.
 
-39. New: pragma manual_test, pragma manual_test_result.
+39. New: pragma manual_test, pragma manual_test_result for manual testing.
 

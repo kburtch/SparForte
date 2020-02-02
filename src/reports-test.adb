@@ -141,8 +141,14 @@ package body reports.test is
     if length( name ) = 0 then
       jtc.name := sfr.name & "_" & trim( to_unbounded_string( jtc.testno'img ), both );
     else
-      jtc.name := name;
+      jtc.name := sfr.name & "_" & name;
     end if;
+    -- lazy assurance that no spaces are in the test name
+    for i in 1..length( jtc.name ) loop
+      if Element( jtc.name, i ) = ' ' then
+         Replace_Element( jtc.name, i, '_' );
+      end if;
+    end loop;
     jtc.file := sfr.name;
     jtc.description := description;
     jtc.line := to_unbounded_string( lineno'img );
@@ -214,7 +220,7 @@ package body reports.test is
   --
   -- Record a test case failure.
 
-  procedure testCaseFailure( report : in out textTestReport ) is
+  procedure testCaseFailure( report : in out textTestReport; test_message : unbounded_string := null_unbounded_string ) is
     cmdline    : unbounded_string;
     firstpos   : natural;
     lastpos    : natural;
@@ -229,7 +235,13 @@ package body reports.test is
        jtc.failureCnt := jtc.failureCnt + 1;
        getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
        -- sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-       failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine ) );
+       if test_message /= null_unbounded_string then
+          failureList.Queue( jtc.failureMsgs, toEscaped( test_message ) );
+       else
+          -- TODO: if the test was multi-line, this will only show
+          -- the final line.
+          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine ) );
+       end if;
     elsif jtc.errorCnt = 1 then
        failureList.Clear( jtc.failureMsgs );
     end if;
@@ -250,8 +262,15 @@ package body reports.test is
 
   -- more here
 
+
+  --  START JUNIT TEST SUITE
+  --
+  --
+  ----------------------------------------------------------------------------
+
   procedure startJUnitTestSuite( report: in out textTestReport;
-    name : unbounded_string := null_unbounded_string ) is
+    name : unbounded_string := null_unbounded_string;
+    test_name : unbounded_string := null_unbounded_string ) is
     cmdline    : unbounded_string;
     firstpos   : natural;
     lastpos    : natural;
@@ -260,20 +279,29 @@ package body reports.test is
     sfr        : aSourceFile;
   begin
     jts.isOpen := true;
-    --jts.path := path;
     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+
+    -- if no name is provided, the test name prefix is the source file.
     if length( name ) = 0 then
-      jts.name := sfr.name & "_" & trim( to_unbounded_string( lineno'img ), both );
+      jts.name := jts.name & "_" & trim( to_unbounded_string( lineno'img ), both );
     else
       jts.name := name;
     end if;
-    jts.path := sfr.name; -- TODO: path, but this is a name
+
+    -- TODO: path, but this is a name
+    jts.path := sfr.name;
     jts.startTime := ada.calendar.clock;
     create( test_case_file, out_file );
     lastSourceFile := fileNo;
     isTestSuiteStarted := true;
   end startJUnitTestSuite;
+
+
+  --  END JUNIT TEST SUITE
+  --
+  --
+  ----------------------------------------------------------------------------
 
   procedure endJunitTestSuite( report : in out textTestReport ) is
     cl : contentList.List;
@@ -289,29 +317,19 @@ package body reports.test is
     contentList.Queue( cl, "Failures: " & to_unbounded_string( jts.failureCnt'img ) );
     contentList.Queue( cl, "Errors: " & to_unbounded_string( jts.errorCnt'img ) );
     contentList.Queue( cl, "Time: " & to_unbounded_string( elapsedSeconds'img ) );
-    -- put( test_result_file, "<testsuite name=" & Quotation & to_string( jts.name ) & Quotation & " " );
-    -- put( test_result_file, "file=" & Quotation & to_string( jts.path ) & Quotation & " " );
-    -- put( test_result_file, "tests=" & Quotation & trim( jts.testCnt'img, both ) & Quotation & " " ); -- TODO: trim
-    -- put( test_result_file, "assertions=" & Quotation & trim( jts.assertionCnt'img, both ) & Quotation & " " );
-    -- put( test_result_file, "failures=" & Quotation & trim( jts.failureCnt'img, both ) & Quotation & " " );
-    -- put( test_result_file, "errors=" & Quotation & trim( jts.errorCnt'img, both ) & Quotation & " " );
-    -- put( test_result_file, "time=" & Quotation & trim( elapsedSeconds'img, both ) & Quotation & ">" );
-    -- new_line( test_result_file );
-    -- insert test cases
-    -- if is_open( test_case_file ) then
-    --    reset( test_case_file, in_file );
-    --    while not end_of_file( test_case_file ) loop
-    --      s := get_line( test_case_file );
-    --      put_line( test_result_file, s );
-    --    end loop;
-    --    delete( test_case_file );
-    -- end if;
     renderBulletList( report, cl, "Suite Summary for " & to_string( jts.name ) );
     jts.isOpen := false;
     isTestCaseStarted := false;
   end endJunitTestSuite;
 
-  procedure checkForNewTestSuite( report : in out textTestReport ) is
+
+  --  CHECK FOR NEW TEST SUITE
+  --
+  --
+  ----------------------------------------------------------------------------
+
+  procedure checkForNewTestSuite( report : in out textTestReport;
+    test_name : unbounded_string := null_unbounded_string ) is
     cmdline    : unbounded_string;
     firstpos   : natural;
     lastpos    : natural;
@@ -325,7 +343,7 @@ package body reports.test is
           endJunitTestSuite( report );
        end if;
        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-       startJUnitTestSuite( report, sfr.name );
+       startJUnitTestSuite( report, sfr.name, test_name );
     end if;
   end checkForNewTestSuite;
 
@@ -386,8 +404,14 @@ package body reports.test is
     if length( name ) = 0 then
       jtc.name := sfr.name & "_" & trim( to_unbounded_string( jtc.testno'img ), both );
     else
-      jtc.name := name;
+      jtc.name := sfr.name & "_" & name;
     end if;
+    -- lazy assurance that no spaces are in the test name
+    for i in 1..length( jtc.name ) loop
+      if Element( jtc.name, i ) = ' ' then
+         Replace_Element( jtc.name, i, '_' );
+      end if;
+    end loop;
     jtc.description := description;
     jtc.file := sfr.name;
     jtc.line := to_unbounded_string( lineno'img );
@@ -459,7 +483,7 @@ package body reports.test is
     errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage ) );
   end testCaseError;
 
-  procedure testCaseFailure( report: in out xmlTestReport ) is
+  procedure testCaseFailure( report: in out xmlTestReport; test_message : unbounded_string := null_unbounded_string ) is
     cmdline    : unbounded_string;
     firstpos   : natural;
     lastpos    : natural;
@@ -474,7 +498,13 @@ package body reports.test is
        jtc.failureCnt := jtc.failureCnt + 1;
        getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
        -- sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-       failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine ) );
+       if test_message /= null_unbounded_string then
+          failureList.Queue( jtc.failureMsgs, test_message );
+       else
+          -- TODO: if the test was multi-line, this will only show
+          -- the final line.
+          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine ) );
+       end if;
     elsif jtc.errorCnt = 1 then
        failureList.Clear( jtc.failureMsgs );
     end if;
