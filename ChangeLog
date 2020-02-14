@@ -84,3 +84,5 @@ CHANGES SINCE 2.2.2
 
 39. New: pragma manual_test, pragma manual_test_result for manual testing.
 
+40. Change: For security, the directory containing the current script, local profile, global profile, global policy or global config file must be readable and not world writable.  This follows Perl and Ruby (taint mode). [TODO: include files]
+

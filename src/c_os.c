@@ -224,6 +224,39 @@ int C_is_includable_file( char * path ) {
   return result;
 }
 
+/* IS SECURE DIR                                            */
+/*                                                          */
+/* True if directory exists, is readable and is not world   */
+/* writable.                                                */
+
+int C_is_secure_dir( char * path ) {
+  struct stat info;
+  int euid = -1;   /* effective UID */
+  int result = 0;
+  euid = geteuid();
+  if ( stat( path, &info ) == 0 ) {
+     if ( info.st_mode & S_IFDIR ) {
+	    /* Administrator runs if any execute bit */
+	    if ( 0 == euid ) {
+		   result = ( info.st_mode & (S_IRUSR|S_IRGRP|S_IROTH) ) > 0;
+	    /* Owner can run if the file has user execute */
+	    } else if ( euid == info.st_uid ) {
+           result = (info.st_mode & S_IRUSR ) > 0;
+		/* Group member can run if the file has group execute */
+        } else if ( group_member( info.st_gid ) ) {
+           result = (info.st_mode & S_IRGRP ) > 0;
+		/* World can run if the file is other execute */
+        } else {
+           result = (info.st_mode & S_IROTH ) > 0;
+        }
+        if ( result ) {
+           result = (info.st_mode & S_IWOTH ) == 0;
+        }
+     }
+  }
+  return result;
+}
+
 /* FILE LENGTH                                              */
 /*                                                          */
 /* Return file length as reported by stat().                */
