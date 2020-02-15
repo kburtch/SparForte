@@ -6004,82 +6004,116 @@ end replaceScript;
 -----------------------------------------------------------------------------
 
 procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out SourceFilesList.aListIndex; includeText : out unbounded_string ) is
-  sfr, temp_sfr : aSourceFile;
   workingPaths : unbounded_string;
   includeFileOpened : boolean;
   includeFileGood   : boolean;
+  includeDirGood    : boolean;
   temp_id : identifier;
   libraryPrefix :unbounded_string;
   libraryPrefixNumber : natural;
-begin
-
-  sfr.pos  := lastPos;                                     -- pos of include
-  sfr.name := includeName;                                 -- name of file
 
   -- Find not working
   -- sourceFilesList.Find( sourceFiles, sfr, foundAt =>fileLocation );
   -- doesn't seem to be using equal()??
+  -- TODO: investigate this
+
+  function find_include_file( includeName : unbounded_string ) return SourceFilesList.aListIndex is
+     sfr, temp_sfr : aSourceFile;
+  begin
+     sfr.pos  := lastPos;                                  -- pos of include
+     sfr.name := includeName;                              -- name of file
+     fileLocation := 0;                                     -- assume failure
+     for i in 1..sourceFilesList.Length( sourceFiles ) loop -- in incl. files
+         sourceFilesList.Find( sourceFiles, i, temp_sfr );  -- get one
+         if equal( temp_sfr, sfr )  then                    -- already incl.?
+            fileLocation := i;                              -- get the number
+         end if;
+     end loop;
+     return fileLocation;
+  end find_include_file;
+
+  function load_include_file( include_file : file_type; path : string ) return unbounded_string is
+  begin
+    if trace or verboseOpt = true then
+       put_trace( "Including " & to_string( toEscaped( to_unbounded_string( path ) ) ) );
+    end if;
+    while not end_of_file( include_file ) loop
+       includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
+    end loop;
+    return includeText;
+  end load_include_file;
+
+begin
 
   includeText := null_unbounded_string;                    -- clear text
-  fileLocation := 0;                                       -- assume failure
-  for i in 1..sourceFilesList.Length( sourceFiles ) loop   -- in incl. files
-      sourceFilesList.Find( sourceFiles, i, temp_sfr );    -- get one
-      if equal( temp_sfr, sfr )  then                      -- already incl.?
-         fileLocation := i;                                -- get the number
-      end if;
-  end loop;
+  fileLocation := find_include_file( includeName );
 
   if fileLocation /= 0 then                                -- already incl.?
      if trace or verboseOpt = true then
-        put_trace( "file already included" );                 -- note it
+        put_trace( "file already included" );              -- note it
      end if;
   elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
      -- 255 is one byte minus 0, which is reserved
      err( optional_inverse( "too many include files and subunits" ) );
   else                                                     -- new file
-     -- Absolute Paths
+
+     includeFileGood := true;
+     includeDirGood := true;
+
+     -- Include Files by Absolute Paths
 
      if element( includeName, 1 ) = '/' then
 
-           declare
-             path : string := to_string( includeName );
-             include_file : file_type;
-           begin
-             open( include_file, in_file, path );
+        declare
+          path : string := to_string( includeName );
+          include_file : file_type;
+          includeParentDir : unbounded_string;
+        begin
+          includeParentDir := dirname( to_unbounded_string( path ) );
+          open( include_file, in_file, path );
+          if C_is_secure_dir( to_string( includeParentDir ) & ASCII.NUL ) then
              if C_is_includable_file( path & ASCII.NUL ) then
-                if trace or verboseOpt = true then
-                   put_trace( "Including " & to_string( toEscaped( to_unbounded_string( path ) ) ) );
-                end if;
-                while not end_of_file( include_file ) loop
-                  includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
-                end loop;
+
+                -- If the security checks pass, the file can be included.
+                -- Read in the text.
+
+                includeText :=  load_include_file( include_file, path );
                 includeFileOpened := true;
              else
                 includeFileGood := true;
              end if;
-             close( include_file );
-           exception
-               when STATUS_ERROR =>
-                 err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
-                    " - file may be locked" );
+          else
+             includeDirGood := false;
+          end if;
+          close( include_file );
+        exception
+            when STATUS_ERROR =>
+              err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
+                 " - file may be locked" );
+              return;
+            when NAME_ERROR =>
+                if traceOpt then
+                   put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
+                end if;
+            when MODE_ERROR =>
+                err( "interal error: mode error on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                  return;
-               when NAME_ERROR =>
-                   if traceOpt then
-                      put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
-                   end if;
-               when MODE_ERROR =>
-                   err( "interal error: mode error on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
-                    return;
-               when END_ERROR =>
-                 err( "interal error: end of file reached on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+            when END_ERROR =>
+              err( "interal error: end of file reached on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+            return;
+            when others =>
+               err( "interal error: unexpected error reading " & optional_bold( to_string( toEscaped( includeName ) ) ) );
                return;
-               when others =>
-                  err( "interal error: unexpected error reading " & optional_bold( to_string( toEscaped( includeName ) ) ) );
-                  return;
-           end;
+        end;
+
      else
 
-     -- Relative Paths
+        -- Include Files by Relative Paths
+        --
+        -- The working paths, or the paths to search, include any command line
+        -- paths provided with -L, and any paths in the SPAR_LIBRARY_PATH
+        -- environment variable.  If there are no working paths, then we still
+        -- want to search the current directory.
 
         workingPaths := libraryPath;                          -- use -L paths
         if length( workingPaths ) = 0 then                    -- none?
@@ -6092,7 +6126,6 @@ begin
            end if;
         end if;
 
-        includeFileGood := true;
         includeFileOpened := false;                           -- assume failure
         libraryPrefixNumber := 1;                             -- prefix one
         loop                                                  -- get next prefix
@@ -6103,24 +6136,34 @@ begin
            end if;
 
            declare
-             path : string := to_string( libraryPrefix & includeName );
+             path         : string     := to_string( libraryPrefix & includeName );
              include_file : file_type;
+             includeParentDir : unbounded_string;
            begin
              open( include_file, in_file, path );
-             -- if the file can be opened, it may still be invalid.
-             if C_is_includable_file( path & ASCII.NUL ) then
-                if trace or verboseOpt = true then
-                   put_trace( "Including " & to_string( toEscaped( to_unbounded_string( path ) ) ) );
+
+             -- If we get here, then the file was able to be opened.  If the
+             -- file can be opened, it may still be insecure.  Or the parent
+             -- directory may be insecure.
+
+             includeParentDir := dirname( to_unbounded_string( path ) );
+             if C_is_secure_dir( to_string( includeParentDir ) & ASCII.NUL ) then
+                if C_is_includable_file( path & ASCII.NUL ) then
+
+                   -- If the security checks pass, the file can be included.
+                   -- Read in the text.  Remember we found it and stop the
+                   -- search.
+
+                   includeText :=  load_include_file( include_file, path );
+                   includeFileOpened := true;
+                   exit;
+                else
+                   includeFileGood := false;
                 end if;
-                while not end_of_file( include_file ) loop
-                  includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
-                end loop;
-                includeFileOpened := true;
-                exit;
+                close( include_file );
              else
-                includeFileGood := false;
+                includeDirGood := false;
              end if;
-             close( include_file );
            exception
                when STATUS_ERROR =>
                  err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
@@ -6145,11 +6188,17 @@ begin
      end if;
 
      -- Either the file was found but is not unacceptable or the file was not found
+     -- The security flags are only false if the security tests failed on an
+     -- existing file.
 
      if not includeFileGood then
-        err( "include file " & optional_bold( to_string( toEscaped( includeName ) ) ) & " is not readable, is world writable, is not a file or is empty" );
+        err( "with separate file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
+             " is not readable, is world writable, is not a file or is empty" );
+     elsif not includeDirGood then
+        err( "with separate file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
+             " is in a directory that not readable, is world writable, or is not a directory" );
      elsif not includeFileOpened then
-        err( "include file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
+        err( "with separate file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
              " doesn't exist or is not readable" );
         fileLocation := SourceFilesList.aListIndex'last;
      end if;
