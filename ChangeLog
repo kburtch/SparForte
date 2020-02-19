@@ -86,3 +86,5 @@ CHANGES SINCE 2.2.2
 
 40. Change: For security, the directory containing the current script, with separate files, local profile, global profile, global policy or global config file must be readable and not world writable.  This follows Perl and Ruby (taint mode).
 
+41. [Pascal B] Fix: use before defined issue fixed with namespaces.
+

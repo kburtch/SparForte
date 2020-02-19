@@ -3074,6 +3074,8 @@ begin
 
   currentNamespace    := to_unbounded_string( "UNDEFINED" );
   currentNamespaceId  := identifiers'first;
+  -- The following is defined in the compiler when it starts.
+  -- Return to the global namespace
   lastNamespaceId     := identifiers'first;
 
   -- Tiny Hash Cache
