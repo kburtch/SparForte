@@ -27,8 +27,10 @@ int group_member(gid_t gid) {
   }
   ret = 0;
   for (i = 0; i < ngroups; i++) {
-    if (gid == groups[i])
-      ret = i;
+    if (gid == groups[i]) {
+      ret = 1;
+      break;
+      }
   }
   return ret;
 }
