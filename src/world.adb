@@ -238,6 +238,9 @@ begin
        kw.kind := identifier'first;
        kw.value := kw.svalue'access;
        kw.svalue := Null_Unbounded_String;
+       -- field_of is used while searching for fields.  It must always be
+       -- set to a known value. eof_t may not not defined yet.
+       kw.field_of := identifiers'first;
        kw.class := otherClass;
        -- since keywords are only declared at startup,
        -- the defaults should be OK for remaining fields.
@@ -255,21 +258,24 @@ begin
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top + 1;                    -- push stack
      declare
-       kw : declaration renames identifiers( id );
+       func : declaration renames identifiers( id );
      begin
-       if kw.avalue /= null then
-          free( kw.avalue );
+       if func.avalue /= null then
+          free( func.avalue );
        end if;
-       kw.name := To_Unbounded_String( s );
-       kw.kind := identifier'first;
-       kw.svalue := Null_Unbounded_String;
-       kw.value := kw.svalue'access;
-       kw.class := funcClass;
-       kw.procCB := null;
-       kw.funcCB := cb;
-       kw.avalue := null;
-       kw.renaming_of := identifier'first;
-       kw.renamed_count := 0;
+       func.name := To_Unbounded_String( s );
+       func.kind := identifier'first;
+       func.svalue := Null_Unbounded_String;
+       func.value := func.svalue'access;
+       func.class := funcClass;
+       func.procCB := null;
+       func.funcCB := cb;
+       func.avalue := null;
+       -- field_of is used while searching for fields.  It must always be
+       -- set to a known value. eof_t may not not defined yet.
+       func.field_of := identifier'first;
+       func.renaming_of := identifier'first;
+       func.renamed_count := 0;
      end;
   end if;
 end declareFunction;
@@ -284,21 +290,24 @@ begin
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top + 1;                    -- push stack
      declare
-       kw : declaration renames identifiers( id );
+       proc : declaration renames identifiers( id );
      begin
-       if kw.avalue /= null then
-          free( kw.avalue );
+       if proc.avalue /= null then
+          free( proc.avalue );
        end if;
-       kw.name := To_Unbounded_String( s );
-       kw.kind := identifier'first;
-       kw.svalue := Null_Unbounded_String;
-       kw.value := kw.svalue'access;
-       kw.class := procClass;
-       kw.procCB := cb;
-       kw.funcCB := null;
-       kw.avalue := null;
-       kw.renaming_of := identifier'first;
-       kw.renamed_count := 0;
+       proc.name := To_Unbounded_String( s );
+       proc.kind := identifier'first;
+       proc.svalue := Null_Unbounded_String;
+       proc.value := proc.svalue'access;
+       proc.class := procClass;
+       proc.procCB := cb;
+       proc.funcCB := null;
+       proc.avalue := null;
+       -- field_of is used while searching for fields.  It must always be
+       -- set to a known value. eof_t may not not defined yet.
+       proc.field_of := identifier'first;
+       proc.renaming_of := identifier'first;
+       proc.renamed_count := 0;
      end;
   end if;
 end declareProcedure;
@@ -730,9 +739,9 @@ proc_id : identifier; parameterNumber : integer; passingMode : aParameterPassing
 -- Update a formal parameter (ie. proc.param).  The id is not
 -- returned since we don't change the formal parameters once they are set.
 begin
-    if parameterNumber = 0 then -- function result? no name suffix
-       identifiers(id).name     := identifiers( id ).name;
-    else
+    if parameterNumber /= 0 then -- function result? no name suffix
+       --identifiers(id).name     := identifiers( id ).name;
+    --else
        identifiers(id).name     := identifiers( proc_id ).name & "." & identifiers( id ).name;
     end if;
     identifiers(id).svalue   := to_unbounded_string( parameterNumber'img );

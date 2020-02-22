@@ -325,7 +325,11 @@ procedure ParseDoublyAppend is
 begin
   expect( doubly_append_t );
   ParseFirstListParameter( listId );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -366,7 +370,11 @@ procedure ParseDoublyPrepend is
 begin
   expect( doubly_prepend_t );
   ParseFirstListParameter( listId );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -400,7 +408,13 @@ procedure ParseDoublyFirstElement( result : out unbounded_string; kind : out ide
 begin
   expect( doubly_first_element_t );
   ParseSingleListParameter( listId );
-  kind := identifiers( listId ).genKind;
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     kind := identifiers( listId ).genKind;
+  else
+     kind := eof_t;
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -417,7 +431,13 @@ procedure ParseDoublyLastElement( result : out unbounded_string; kind : out iden
 begin
   expect( doubly_last_element_t );
   ParseSingleListParameter( listId );
-  kind := identifiers( listId ).genKind;
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     kind := identifiers( listId ).genKind;
+  else
+     kind := eof_t;
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -533,7 +553,11 @@ begin
   expect( doubly_first_t );
   ParseFirstListParameter( listId );
   ParseLastCursorParameter( cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -554,7 +578,11 @@ begin
   expect( doubly_last_t );
   ParseFirstListParameter( listId );
   ParseLastCursorParameter( cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -608,7 +636,13 @@ procedure ParseDoublyElement( result : out unbounded_string; kind : out identifi
 begin
   expect( doubly_element_t );
   ParseSingleCursorParameter( cursId );
-  kind := identifiers( cursId ).genKind;
+  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     kind := identifiers( cursId ).genKind;
+  else
+     kind := eof_t;
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
@@ -634,8 +668,14 @@ begin
   expect( doubly_replace_element_t );
   ParseFirstListParameter( listId );
   ParseNextCursorParameter( cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  end if;
+  if not error_found then
+     ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -838,7 +878,11 @@ begin
   expect( doubly_delete_t );
   ParseFirstListParameter( listId );
   ParseNextCursorParameter( cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -878,7 +922,11 @@ begin
   kind := boolean_t;
   expect( doubly_contains_t );
   ParseFirstListParameter( listId );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -899,9 +947,17 @@ procedure ParseDoublyFind is
 begin
   expect( doubly_find_t );
   ParseFirstListParameter( listId );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  end if;
   ParseLastCursorParameter( cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -923,9 +979,17 @@ procedure ParseDoublyReverseFind is
 begin
   expect( doubly_reverse_find_t );
   ParseFirstListParameter( listId );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  end if;
   ParseLastCursorParameter( cursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -980,7 +1044,9 @@ begin
   expect( doubly_assign_t );
   ParseFirstListParameter( targetListId );
   ParseLastListParameter( sourceListId );
-  genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
+  if not error_found then
+     genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
+  end if;
   if isExecutingCommand then
      declare
        sourceCursor : doubly_linked_string_lists.Cursor;
@@ -1016,7 +1082,11 @@ begin
   expect( doubly_move_t );
   ParseFirstListParameter( targetListId );
   ParseLastListParameter( sourceListId );
-  genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( targetListId ).value.all ), theTargetList );
@@ -1040,9 +1110,17 @@ begin
   expect( doubly_swap_t );
   ParseFirstListParameter( listId );
   ParseNextCursorParameter( firstCursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+  end if;
   ParseLastCursorParameter( secondCursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+  -- if an error occurred, the listId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -1073,9 +1151,17 @@ begin
   expect( doubly_swap_links_t );
   ParseFirstListParameter( listId );
   ParseNextCursorParameter( firstCursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
+  end if;
   ParseLastCursorParameter( secondCursId );
-  genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+  -- if an error occurred, the cursId may be invalid and won't have a genKind
+  -- defined
+  if not error_found then
+     genTypesOk( identifiers( listId ).genKind, identifiers( secondCursId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );

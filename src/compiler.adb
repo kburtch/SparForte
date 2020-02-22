@@ -2740,6 +2740,7 @@ begin
   -- Global Namespace
 
   lastNamespaceId     := identifiers'first;
+  currentNamespaceId  := lastNamespaceId;
   declareGlobalNamespace;
 
   -- KEYWORDS

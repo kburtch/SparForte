@@ -1369,6 +1369,7 @@ procedure ParsePut is
   pic_val   : unbounded_string;
   pic_type  : identifier;
   retry     : boolean;
+  temp      : unbounded_string;
 begin
   expect( put_t );
   expect( symbol_t, "(" );
@@ -1393,7 +1394,9 @@ begin
   end if;
   ParseExpression( expr_val, expr_type );
   if getUniType( expr_type ) = root_enumerated_t then
-     findEnumImage( expr_val, expr_type, expr_val );
+     -- newer versions of GCC Ada do not like two expr_val params
+     findEnumImage( expr_val, expr_type, temp );
+     expr_val := temp;
   end if;
   -- apply optional numeric formatting
   if token = symbol_t and identifiers( token ).value.all = "," then

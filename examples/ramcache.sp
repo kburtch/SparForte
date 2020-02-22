@@ -168,6 +168,7 @@ procedure ramcache is
   function get_cache( key : string; expires : duration ) return universal_typeless is
     key_value  : universal_typeless;
     saved_time : calendar.time;
+    pragma assumption( used, expires ); -- unfinished
   begin
     if key /= "" then
        read_cache( key, key_value, saved_time );

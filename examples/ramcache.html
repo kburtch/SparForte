@@ -191,6 +191,7 @@ Deleting foo and cnt
   <b>function</b> get_cache( key : string; expires : duration ) <b>return</b> universal_typeless <b>is</b>
     key_value  : universal_typeless;
     saved_time : calendar.time;
+    pragma assumption( used, expires ); <FONT COLOR=green><EM>-- unfinished</EM></FONT>
   <b>begin</b>
     <b>if</b> key /= "" <b>then</b>
        read_cache( key, key_value, saved_time );

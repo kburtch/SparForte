@@ -89,7 +89,7 @@ begin
   for n in arrays.first( node_name )..arrays.last( node_name ) loop
       if node_type( n ) = kind then
          ssh( "-oPreferredAuthentications=publickey",
-              LOGNAME & "@" & node_name( n ),
+              string(LOGNAME) & "@" & node_name( n ),
               "exit" );
          if $? /= 0 then
             put( standard_error, source_info.file )
@@ -109,7 +109,7 @@ begin
       if node_type( n ) = kind then
          ? "Running command on " & node_name( n );
          ssh( "-oPreferredAuthentications=publickey",
-              LOGNAME & "@" & node_name( n ),
+              string(LOGNAME) & "@" & node_name( n ),
               command_line.argument(2) );
          if $? /= 0 then
             put( standard_error, source_info.file )

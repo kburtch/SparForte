@@ -63,12 +63,14 @@ gen_env_data
     body_RCSid                  : <b>constant</b> string :=
         "$Id: gen_env_data,v 0.0 2003/12/22 12:34:52 buzCo_as_toolmakr Exp $"
         ;
+    pragma assumption( used, body_RCSid );
 
     body_Copyright              : <b>constant</b> string
         := "Gazelle .gen_env_data " &amp;  New_Line
          &amp; "body Copyright © 2003, BuzCo Systems" &amp; New_Line
          &amp; "Licensed under the GNU General Progam License (GPL)." &amp; New_Line
         ;
+    pragma assumption( used, body_Copyright );
     <FONT COLOR=green><EM>-- pragma Unreferenced( body_RCSid, body_Copyright ) ;</EM></FONT>
     <FONT COLOR=green><EM>--  ================================================================</EM></FONT>
 
@@ -90,7 +92,6 @@ gen_env_data
             <b>procedure</b>
         fix_time
         <b>is</b>
-            Hours                       : <b>constant</b> integer      := 24 ;
             Mins_Hr                     : <b>constant</b> integer      := 60 ;
             Secs_Min            : <b>constant</b> integer      := 60 ;
             Secs_Hr                     : <b>constant</b> integer      := Mins_Hr * Secs_Min ;

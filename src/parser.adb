@@ -843,6 +843,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
 
   procedure ParseFactorIdentifier is
   begin
+    kind := eof_t;
     ParseIdentifier( t );
     if identifiers( t ).volatile = checked then    -- volatile user identifier
        err( to_string( identifiers( t ).name ) & " is " & optional_bold( "volatile" ) &
@@ -984,6 +985,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
   pragma inline( parseFactorIdentifier );
 
 begin
+--put_line("ParseFactor"); -- DEBUG
   if Token = symbol_t and identifiers( Token ).value.all = "+" then
      uniOp := doPlus;
      getNextToken;
@@ -1067,6 +1069,7 @@ begin
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
            err( "@ is not a variable" );
+           kind := eof_t;
         else
            f := itself;
            kind := itself_type;
@@ -1126,6 +1129,7 @@ begin
      -- Another board category, is the token a pre-defined idenifier?
   elsif token < predefined_top then
      if identifiers( token ).funcCB /= null then         -- a built-in function?
+--put_line("C1 - " & identifiers( token ).name ); -- DEBUG
         identifiers( token ).funcCB.all( f, kind );        -- run it
      elsif token = is_open_t then                         -- is_open function
         ParseIsOpen( t );
@@ -1168,6 +1172,7 @@ begin
      elsif identifiers( token ).procCB /= null then         -- a built-in procedure?
         err( optional_bold( to_string( identifiers( token ).name ) ) &
            " is a built-in procedure not a function" );
+        kind := eof_t;
      else
         -- System package constants, etc.
         ParseFactorIdentifier;
@@ -1222,6 +1227,7 @@ begin
       err( gnat.source_info.source_location &
            ": internal error: unexpected uniary operation error" );
   end case;
+--put_line("ParseFactor end"); -- DEBUG
 end ParseFactor;
 
 
@@ -1260,6 +1266,7 @@ procedure ParsePowerTerm( term : out unbounded_string; term_type : out identifie
   operator : unbounded_string;
   operation: identifier;
 begin
+--put_line("ParsePowerTerm"); -- DEBUG
   ParseFactor( factor1, kind1 );
   term := factor1;
   term_type := kind1;
@@ -1299,6 +1306,7 @@ begin
         end if;
      end if;
   end loop;
+--put_line("ParsePowerTerm end"); -- DEBUG
 end ParsePowerTerm;
 
 
@@ -1338,6 +1346,7 @@ procedure ParseTerm( term : out unbounded_string; term_type : out identifier ) i
   operator : unbounded_string;
   operation: identifier;
 begin
+--put_line("ParseTerm"); -- DEBUG
   ParsePowerTerm( pterm1, kind1 );
   term := pterm1;
   term_type := kind1;
@@ -1510,6 +1519,7 @@ begin
            end if;
         end if;
   end loop;
+--put_line("ParseTerm end"); -- DEBUG
 end ParseTerm;
 
 
@@ -1548,6 +1558,7 @@ procedure ParseSimpleExpression( se : out unbounded_string; expr_type : out iden
   operation: identifier;
   typesOK  : boolean := false;
 begin
+--put_line("ParseSimpleExpression"); -- DEBUG
   ParseTerm( term1, kind1 );
   se := term1;
   expr_type := kind1;
@@ -1686,6 +1697,7 @@ begin
         end if;
      end if;
   end loop;
+--put_line("ParseSimpleExpression end"); -- DEBUG
   --put_line( "Simple Expression value = " & to_string( se ) );
 end ParseSimpleExpression;
 
@@ -1740,8 +1752,10 @@ procedure ParseRelation( re : out unbounded_string; rel_type : out identifier ) 
   kind3    : identifier;
   operator : unbounded_string;
   operation: identifier;
-  b        : boolean;
+  -- for a syntax check, b should be defined
+  b        : boolean := false;
 begin
+--put_line("ParseRelation"); -- DEBUG
   ParseSimpleExpression( se1, kind1 );
   re := se1;
   rel_type := kind1;
@@ -1766,7 +1780,7 @@ begin
      else
         ParseSimpleExpression( se2, kind2 );
      end if;
-     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
+    if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         operation := getUniType( kind1 );
         if operation = universal_t then
            operation := getUniType( kind2 );
@@ -1895,6 +1909,7 @@ begin
         end if;
      end if;
   end if;
+-- put_line("ParseRelation end"); -- DEBUG
 end ParseRelation;
 
 
@@ -1934,6 +1949,7 @@ procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier
   oldExpressionInstruction : line_count := lastExpressionInstruction;
   oldFirstExpressionInstruction : line_count := firstExpressionInstruction;
 begin
+-- put_line("ParseExpression"); -- DEBUG
   -- expression side-effects.  Remember how many lines have run prior to this
   -- expression to determine if variables in the expression were altered
   -- later than this line.  Remember that expressions can be nested.
@@ -2048,6 +2064,7 @@ begin
   lastExpressionInstruction := oldExpressionInstruction;
   firstExpressionInstruction := oldFirstExpressionInstruction;
   --put_line( "Expression value = " & to_string( ex ) );
+--put_line("ParseExpression end"); -- DEBUG
 end ParseExpression;
 
 

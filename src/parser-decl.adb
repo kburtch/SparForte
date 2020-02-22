@@ -718,6 +718,13 @@ begin
          err( optional_bold( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
      end if;
 
+     -- The element type of the array has been used.  Check for an error
+     -- to ensure the arrayType is valid before setting was applied.
+
+     if not error_found then
+       identifiers( identifiers( arrayType ).kind ).wasApplied := true;
+     end if;
+
      -- If the array declaration failed, delete the array variable.
 
      if error_found then
@@ -1596,8 +1603,9 @@ begin
 
    -- We need to attach a resource for the generic-based type
    -- (i.e. type x is generic(...), this will be x)
+   -- on an error, the token may not be something with a gen type
 
-  elsif identifiers( type_token ).genKind /= eof_t then
+  elsif (type_token /= eof_t and not error_found ) and then identifiers( type_token ).genKind /= eof_t then
       if isExecutingCommand then
          AttachGenericParameterResource( id, type_token );
       end if;

@@ -117,6 +117,7 @@ procedure ParseIfBlock is
   handled : boolean := false;
   backup_sc : boolean;
 begin
+--put_line("ParseIfBlock"); -- DEBUG
 
   -- if expr then statements
 
@@ -208,6 +209,7 @@ begin
   expect( end_t );                                         -- "end if"
   expect( if_t );
 
+--put_line("ParseIfBlock end"); -- DEBUG
 end ParseIfBlock;
 
 
@@ -1831,10 +1833,14 @@ procedure ParseOneShellWord( wordType : out aShellWordType;
    pattern, word : in out unbounded_string; First : boolean := false ) is
    wordList : shellWordList.List;
    theWord  : aShellWord;
+   listLen  : shellWordList.aListIndex;
 begin
    ParseShellWord( wordList, First );
-   if shellWordList.Length( wordList ) > 1 then
+   listLen := shellWordList.Length( wordList );
+   if listLen > 1 then
       err( "one shell word expected but it expanded to multiple words.  (SparForte requires commands that expand to one shell word.)" );
+   elsif listLen = 0 then
+      err( "internal error: one shell word expected but it expanded to none" );
    else
       shellWordList.Find( wordList, 1, theWord );
       wordType := theWord.wordType;
@@ -1859,15 +1865,21 @@ end ParseOneShellWord;
 procedure ParseShellWords( wordList : in out shellWordList.List; First : boolean := false ) is
    theWord  : aShellWord;
    theFirst : boolean := First;
+   listLen  : shellWordList.aListIndex;
 begin
    loop
      exit when token = symbol_t and identifiers( token ).value.all = ";";
      ParseShellWord( wordList, theFirst );
-     theFirst := false;
-     shellWordList.Find( wordList, shellWordList.Length( wordList ), theWord );
-     exit when theWord.wordType = pipeWord;       -- pipe always ends a command
-     exit when theWord.wordType = itselfWord;     -- itself always ends a command
-     exit when error_found;
+     listLen := shellWordList.Length( wordList ); -- DEBUG
+     if listLen = 0 then
+        err( "internal error: one shell word expected but it expanded to none" );
+     else
+        theFirst := false;
+        shellWordList.Find( wordList, shellWordList.Length( wordList ), theWord );
+        exit when theWord.wordType = pipeWord;       -- pipe always ends a command
+        exit when theWord.wordType = itselfWord;     -- itself always ends a command
+        exit when error_found;
+     end if;
    end loop;
 end ParseShellWords;
 
@@ -2012,7 +2024,11 @@ begin
               put_trace( "when condition is false" );
            end if;
         end if;
+     else
+        when_true := false;
      end if;
+  else
+     when_true := false;
   end if;
 end ParseWhenClause;
 
@@ -5556,8 +5572,8 @@ begin
   itself_type := token;
   itself_question := false;
 
--- put( "PES: " ); -- DEBUG
--- put_token; -- DEBUG
+--put( "PES: " ); -- DEBUG
+--put_token; -- DEBUG
 
   if Token = command_t then
      err( "Bourne shell command command not implemented" );
@@ -5946,8 +5962,8 @@ begin
   itself_type := token;
   itself_question := false;
 
- -- put( "PGS: " ); -- DEBUG
- -- put_token; -- DEBUG
+ --put( "PGS: " ); -- DEBUG
+ --put_token; -- DEBUG
 
   if Token = command_t then
      err( "Bourne shell command command not implemented" );

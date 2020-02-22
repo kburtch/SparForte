@@ -427,7 +427,7 @@ procedure ParseFirstInOutInstantiatedParameter( param_id : out identifier; expec
 begin
   expect( symbol_t, "(" );
   ParseIdentifier( param_id ); -- in out
-  if identifiers( param_id ).genKind = eof_t then -- DEBUG
+  if param_id /= eof_t and then identifiers( param_id ).genKind = eof_t then -- DEBUG
      put_line( "parser_params: " & to_string( identifiers( param_id ).name ) & " has a genKind of EOF" ); -- DEBUG
   end if;
   discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );

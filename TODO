@@ -12,6 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - is close_on_exec useful?
+- test cases: can HTML be embedded as CDATA in junit xml?
 - for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
 - generic/parameterized types
@@ -21,6 +22,10 @@ Priority Issues (Fix These First)
   - under some conditions, the breakout prompt my have end-of-file and be
     interpreted as a return to resume execution.  I have not identified what
     those conditions are.
+- recent Ada checks which might be useful
+  - run time: failure to assign to an out parameter.  e.g. define
+    the initial value as eof_t and check for it on subprogram end
+- review and fix of shell features
 * waitToReveal sometimes throws an unexpected exception
 - raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.

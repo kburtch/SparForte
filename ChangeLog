@@ -86,5 +86,9 @@ CHANGES SINCE 2.2.2
 
 40. Change: For security, the directory containing the current script, with separate files, local profile, global profile, global policy or global config file must be readable and not world writable.  This follows Perl and Ruby (taint mode).
 
-41. [Pascal B] Fix: use before defined issue fixed with namespaces.
+41. Fix: concrete vs abstract error on a type of array elements but is never otherwise used is fixed.
+
+42. [Pascal B] Fix: Additional error checking enabled on Ada compiler.  Several new errors, mostly harmless and related to static code analysis, have been fixed.
+
+43. Fix: Fixed various static code analysis errors on sample programs as a part of testing item 42.
 

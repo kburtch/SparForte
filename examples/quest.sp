@@ -52,6 +52,7 @@ procedure get_input is
 -- a = string containing list of characters
 -- a2 = length of a
    q2 : string;
+   pragma assumption( used, q2 ); -- unfinished
    q : character; -- Q$
 begin
    loop
@@ -275,6 +276,7 @@ begin
      moves_to_find_treasure := moves;
   end if;
 end check_for_treasure;
+pragma assumption( used, check_for_treasure ); -- unfinished
 
 procedure show_options is
  -- 7500 REM

@@ -3086,6 +3086,14 @@ begin
 
   declareStandardTypes;
 
+  -- The user should never see this but we need to set these to known
+  -- values for the scanner.
+
+  itself := null_unbounded_string;
+  itself_type := eof_t;
+  last_output := null_unbounded_string;
+  last_output_type := eof_t;
+
   -- Boolean enumerated
 
   declareStandardEnum( false_t, "false", boolean_t, "0" );
