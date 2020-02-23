@@ -163,6 +163,9 @@ pragma inline( resumeScanning );
 
 type aScriptState is private;
 
+function isValid( scriptState : aScriptState ) return boolean;
+-- True if the script state contains a saved script state.
+
 procedure saveScript( scriptState : out aScriptState );
 -- Save scanner state plus the current script so that a new
 -- script can be executed.  The error flag, syntax check flag,

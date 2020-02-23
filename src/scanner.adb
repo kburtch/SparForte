@@ -5859,6 +5859,12 @@ begin
   end if;
 end resumeScanning;
 
+function isValid( scriptState : aScriptState ) return boolean is
+-- True if the script state contains a saved script state.
+begin
+  return scriptState.script /= null;
+end isValid;
+
 procedure saveScript( scriptState : out aScriptState ) is
 -- Save scanner state plus the current script so that a new
 -- script can be executed.  The error flag, syntax check flag,
@@ -6268,7 +6274,6 @@ begin
      replaceScript( new_script );
      identifiers( source_info_script_size_t ).value.all := delete( to_unbounded_string( script.all'length'img), 1, 1 );
      resumeScanning( includeSemicolonPosition );
-
   end if;
 end insertInclude;
 

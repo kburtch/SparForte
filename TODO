@@ -11,8 +11,14 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- pack - script is not exiting on a return, but was working before
+  the recent changes for enhanced Ada checking
 - is close_on_exec useful?
-- test cases: can HTML be embedded as CDATA in junit xml?
+- test cases
+  can HTML be embedded as CDATA in junit xml?
+- improving test coverage
+- improving shell features
+
 - for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
 - generic/parameterized types

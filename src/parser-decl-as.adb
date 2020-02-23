@@ -4799,7 +4799,9 @@ begin
   saveScript( scriptState );                            -- save current script
   compileCommand( commands, firstLineNo );              -- compile subscript
   byteCode := to_unbounded_string( script.all );        -- grab the byte code
+put_line("RESTORE 1"); -- DEBUG
   restoreScript( scriptState );                         -- restore original script
+put_line("RESTORE 1 END"); -- DEBUG
   if not error_found then                               -- no errors?
      if isExecutingCommand or Syntax_Check then            -- for real or check
         parseNewCommands( scriptState, byteCode, fragment ); -- setup byte code
@@ -4810,7 +4812,9 @@ begin
         if not done then                                   -- not done?
            expect( eof_t );                                -- should be eof
        end if;
+put_line("RESTORE 2"); -- DEBUG
        restoreScript( scriptState );                 -- restore original script
+put_line("RESTORE 2 END"); -- DEBUG
      end if;
   end if;
 end CompileAndRun;
@@ -4932,7 +4936,10 @@ begin
   -- elsif not syntax_check then                              --
   --    close( resultFile );
   end if;                                                  -- still executing
-  restoreScript( scriptState );                            -- original script
+  -- If we saved the script state, restore it.
+  if isValid( scriptState ) then
+     restoreScript( scriptState );                            -- original script
+  end if;
 end RunAndCaptureOutput;
 
 -----------------------------------------------------------------------------

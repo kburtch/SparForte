@@ -43,6 +43,8 @@ use
      parser,
      parser_params;
 
+--with ada.text_io; use ada.text_io;
+
 package body parser_arrays is
 
 ------------------------------------------------------------------------------
@@ -496,9 +498,6 @@ begin
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- first := firstBound( array_id );
-     -- last  := lastBound( array_id );
      len   := identifiers( var_id ).avalue'length;
      begin
         for i in identifiers( var_id ).avalue'range loop
@@ -512,11 +511,12 @@ begin
             exit when newpos <= identifiers( var_id ).avalue'last;
             end loop;
             tmp := identifiers( var_id ).avalue( i );
-            identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
+            -- Newer version of Ada will raise an exception on a no-op
+            -- assignment from something to itself.
+            if i /= newpos then
+               identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( newpos );
+            end if;
             identifiers( var_id ).avalue( newpos ) := tmp;
-            -- moveElement( integer(i), 0 );
-            -- moveElement( integer(newpos), integer(i) );
-            -- moveElement( 0, integer(newpos) );
         end loop;
      exception when CONSTRAINT_ERROR =>
         err( gnat.source_info.source_location & ": internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
