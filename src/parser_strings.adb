@@ -779,7 +779,8 @@ procedure ParseStringsImage( result : out unbounded_string; kind : out identifie
   -- Source: Ada 'image attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
-  isEnum    : boolean := false;
+  temp       : unbounded_string;
+  isEnum     : boolean := false;
 begin
   kind := uni_string_t;
   expect( image_t );
@@ -806,7 +807,10 @@ begin
   begin
     if isExecutingCommand then
        if isEnum then
-          findEnumImage( expr_val, expr_type, expr_val );
+          -- In newer versions of GCC Ada, can't use expr_val for both
+          -- parameters.
+          findEnumImage( expr_val, expr_type, temp );
+          expr_val := temp;
        end if;
        result := expr_val;
     end if;

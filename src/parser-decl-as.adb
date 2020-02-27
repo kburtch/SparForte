@@ -1870,7 +1870,7 @@ begin
    loop
      exit when token = symbol_t and identifiers( token ).value.all = ";";
      ParseShellWord( wordList, theFirst );
-     listLen := shellWordList.Length( wordList ); -- DEBUG
+     listLen := shellWordList.Length( wordList );
      if listLen = 0 then
         err( "internal error: one shell word expected but it expanded to none" );
      else
@@ -4632,7 +4632,7 @@ begin
   -- The input/output redirection are in place.  Declare the parameters and
   -- execute the command.
 
-  if isExecutingCommand then                                -- no problems?
+  if isExecutingCommand and not done then                   -- no problems?
      exportVariables;                                       -- make environment
 
      -- Create a list of C-strings for the parameters
@@ -4799,9 +4799,7 @@ begin
   saveScript( scriptState );                            -- save current script
   compileCommand( commands, firstLineNo );              -- compile subscript
   byteCode := to_unbounded_string( script.all );        -- grab the byte code
-put_line("RESTORE 1"); -- DEBUG
   restoreScript( scriptState );                         -- restore original script
-put_line("RESTORE 1 END"); -- DEBUG
   if not error_found then                               -- no errors?
      if isExecutingCommand or Syntax_Check then            -- for real or check
         parseNewCommands( scriptState, byteCode, fragment ); -- setup byte code
@@ -4812,9 +4810,7 @@ put_line("RESTORE 1 END"); -- DEBUG
         if not done then                                   -- not done?
            expect( eof_t );                                -- should be eof
        end if;
-put_line("RESTORE 2"); -- DEBUG
        restoreScript( scriptState );                 -- restore original script
-put_line("RESTORE 2 END"); -- DEBUG
      end if;
   end if;
 end CompileAndRun;
@@ -5269,7 +5265,7 @@ begin
         if identifiers( var_id ).avalue = null then
            err( gnat.source_info.source_location &
                 ": internal error: target array storage unexpectedly null" );
-        elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG
+        elsif identifiers( var_id ).avalue'first > arrayIndex then
            err( "array index " & to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
         elsif identifiers( var_id ).avalue'last < arrayIndex then
            err( "array index " &  to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );

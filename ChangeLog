@@ -90,5 +90,5 @@ CHANGES SINCE 2.2.2
 
 42. [Pascal B] Fix: Additional error checking enabled on Ada compiler.  Several new errors, mostly harmless and related to static code analysis, have been fixed.
 
-43. Fix: Fixed various static code analysis errors on sample programs as a part of testing item 42.
+43. [Pascal B] Fix: Fixed various static code analysis errors on sample programs as a part of testing item 42.
 

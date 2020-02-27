@@ -445,8 +445,8 @@ begin
      arrayIndex := arrayIndex - 1;                             -- last added
      if trace then
         put_trace(
-            to_string( identifiers( array_id ).name ) & " := " &
-            arrayIndex'img & "elements" );
+            to_string( identifiers( array_id ).name ) & " :=" &
+            arrayIndex'img & " elements" );
      end if;
      if isExecutingCommand then                                -- not on synchk
         if arrayIndex < lastIndex then                         -- check sizes
@@ -1096,7 +1096,9 @@ begin
    elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
       err( "with or ';' expected" );
    end if;
-   --if not error_found then -- TODO: this doesn't look right. commenting out
+   -- Do not declare the exception if an error occurred while defining it or
+   -- the details may be incorrect.
+   if not error_found then
       findException( var_name, id );
       if id = eof_t then
          declareException( id, var_name, default_message, exception_status_code ); -- declare var
@@ -1104,7 +1106,7 @@ begin
          err( "exception " & optional_bold( to_string( var_name ) ) &
               " already exists in a greater scope" );
       end if;
-   --end if;
+   end if;
 end ParseExceptionDeclarationPart;
 
 
@@ -1256,7 +1258,6 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- : constant type assign-part
     -- CONST SPECS
     type_token    : identifier;
-    var_name      : unbounded_string;
     right_type    : identifier;
     expr_value    : unbounded_string;
     new_const_id  : identifier;
@@ -1392,11 +1393,14 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     end if;
     if isExecutingCommand then
        if trace then
-          put_trace( "Completing constant specification for " & to_string( var_name ) );
+          put_trace( "Completing constant specification for " & to_string( oldSpec.name ) );
        end if;
        expr_value := castToType( expr_value, type_token );
-       if type_token /= right_type then
-          DoContracts( identifiers( new_const_id ).kind, expr_value );
+       -- Contracts only run on scalars currently
+       if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
+          if type_token /= right_type then
+             DoContracts( identifiers( new_const_id ).kind, expr_value );
+          end if;
        end if;
        identifiers( new_const_id ).value.all := expr_value;
        if trace then

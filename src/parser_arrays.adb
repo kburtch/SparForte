@@ -550,10 +550,6 @@ begin
      checkDoubleThreadWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --first := firstBound( array_id );
-     --last  := lastBound( array_id );
-     --len   := last-first+1;
      first   := identifiers( var_id ).avalue'first;
      last    := identifiers( var_id ).avalue'last;
      len     := identifiers( var_id ).avalue'length;
@@ -562,12 +558,12 @@ begin
            for i in 0..len/2 loop
                oldpos := long_integer( first + i );
                newpos := long_integer( last - i );
-               tmp := identifiers( var_id ).avalue( oldpos );
-               identifiers( var_id ).avalue( oldpos ) := identifiers( var_id ).avalue( newpos );
-               identifiers( var_id ).avalue( newpos ) := tmp;
-               -- moveElement( integer(i), 0 );
-               -- moveElement( integer(newpos), integer(i) );
-               -- moveElement( 0, integer(newpos) );
+               -- in newer versions of GCC Ada, assignment to oneself is an error
+               if newpos /= oldpos then
+                  tmp := identifiers( var_id ).avalue( oldpos );
+                  identifiers( var_id ).avalue( oldpos ) := identifiers( var_id ).avalue( newpos );
+                  identifiers( var_id ).avalue( newpos ) := tmp;
+               end if;
            end loop;
         end if;
      exception when CONSTRAINT_ERROR =>

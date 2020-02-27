@@ -5373,6 +5373,7 @@ begin
             cmdpos := cmdpos - 2;
          end if;
       end if;
+
       -- The counting of line was original when "--perf" was used but is now
       -- used for the side-effect detection so it is always done.
       if not syntax_check and (not exit_block or not error_found) then

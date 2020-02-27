@@ -1106,6 +1106,7 @@ procedure ParsePutLine is
   stderr    : boolean := false;
   expr_val  : unbounded_string;
   expr_type : identifier;
+  temp      : unbounded_string;
   result    : size_t;
   ch        : character;
   fd        : aFileDescriptor;
@@ -1136,7 +1137,9 @@ begin
   ParseExpression( expr_val, expr_type );
   -- this sould be moved to an image function
   if getUniType( expr_type ) = root_enumerated_t then
-     findEnumImage( expr_val, expr_type, expr_val );
+     -- In newer versions of GCC Ada, expr_val cannot be used twice
+     findEnumImage( expr_val, expr_type, temp );
+     expr_val := temp;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -1209,6 +1212,7 @@ procedure ParseQuestion is
   -- Source: SparForte built-in
   expr_val  : unbounded_string;
   expr_type : identifier;
+  temp      : unbounded_string;
   uni_type : identifier;
   retry     : boolean;
 begin
@@ -1225,7 +1229,9 @@ begin
   elsif getUniType( expr_type ) = root_enumerated_t then
      -- this will work during the syntax check but we don't need it
      if isExecutingCommand then
-        findEnumImage( expr_val, expr_type, expr_val );
+        -- In newer versions of GCC Ada, expr_val cannot be used twice
+        findEnumImage( expr_val, expr_type, temp );
+        expr_val := temp;
      end if;
   -- pretty formating for ? and time values
   elsif getBaseType( expr_type ) = cal_time_t then
@@ -1298,7 +1304,9 @@ begin
      -- this sould be moved to an image function
      uni_type := getUniType( expr_type );
      if uni_type = root_enumerated_t then
-        findEnumImage( expr_val, expr_type, expr_val );
+        -- In newer versions of GCC Ada, expr_val cannot be used twice.
+        findEnumImage( expr_val, expr_type, temp );
+        expr_val := temp;
      elsif uni_type = uni_numeric_t then
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.

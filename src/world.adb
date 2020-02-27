@@ -242,6 +242,8 @@ begin
        -- set to a known value. eof_t may not not defined yet.
        kw.field_of := identifiers'first;
        kw.class := otherClass;
+       kw.genKind := identifiers'first;
+       kw.genKind2 := identifiers'first;
        -- since keywords are only declared at startup,
        -- the defaults should be OK for remaining fields.
      end;
@@ -268,6 +270,8 @@ begin
        func.svalue := Null_Unbounded_String;
        func.value := func.svalue'access;
        func.class := funcClass;
+       func.genKind := identifiers'first;
+       func.genKind2 := identifiers'first;
        func.procCB := null;
        func.funcCB := cb;
        func.avalue := null;
@@ -300,6 +304,8 @@ begin
        proc.svalue := Null_Unbounded_String;
        proc.value := proc.svalue'access;
        proc.class := procClass;
+       proc.genKind := identifiers'first;
+       proc.genKind2 := identifiers'first;
        proc.procCB := cb;
        proc.funcCB := null;
        proc.avalue := null;
@@ -678,6 +684,8 @@ begin
        sc.kind  := kind;                                        -- identifier
        sc.svalue := to_unbounded_string( value );
        sc.class := varClass;
+       sc.genKind := identifiers'first;
+       sc.genKind2 := identifiers'first;
        sc.static := true;                                       -- identifier
        sc.usage := constantUsage;
        sc.field_of := eof_t;
@@ -720,6 +728,8 @@ begin
        sc.kind  := kind;                                        -- identifier
        sc.svalue := to_unbounded_string( value );
        sc.class := enumClass;
+       sc.genKind := identifiers'first;
+       sc.genKind2 := identifiers'first;
        sc.static := true;                                       -- identifier
        sc.usage := fullUsage;
        sc.field_of := eof_t;
