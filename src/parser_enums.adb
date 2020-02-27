@@ -101,7 +101,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      best := -1;
-     for id in reverse keywords_top..identifiers_top loop
+     for id in reverse keywords_top..identifiers_top-1 loop
         if identifiers( id ).kind = var_id then
            if identifiers( id ).class = enumClass then
               candidate := integer( to_numeric( identifiers( id ).value.all ) );
@@ -187,7 +187,7 @@ begin
         candidate : natural;
      begin
         item := item + 1;
-        for id in reverse keywords_top..identifiers_top loop
+        for id in reverse keywords_top..identifiers_top-1 loop
            if identifiers( id ).kind = kind then
               if identifiers( id ).class = enumClass then
                  candidate := integer( to_numeric( identifiers( id ).value.all ) );
