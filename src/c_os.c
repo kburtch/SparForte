@@ -14,6 +14,27 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
+
+#ifdef __APPLE__
+int group_member(gid_t gid) {
+  int ngroups, i, ret;
+  int groups[NGROUPS_MAX];
+
+  ngroups = NGROUPS_MAX;
+  if (getgrouplist(getlogin(), -1, groups, &ngroups) == -1) {
+    printf ("Groups array is too small: %d\n", ngroups);
+  }
+  ret = 0;
+  for (i = 0; i < ngroups; i++) {
+    if (gid == groups[i]) {
+      ret = 1;
+      break;
+      }
+  }
+  return ret;
+}
+#endif
 
 /* C ERRNO                                                  */
 /*                                                          */
