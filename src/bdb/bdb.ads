@@ -7,12 +7,9 @@
 with system.address_to_access_conversions,
      unchecked_deallocation,
      interfaces.c,
-     gnat.source_info,
-     ada.text_io,
      ada.strings.unbounded,
      bdb_constants;
 use  interfaces.c,
-     ada.text_io,
      ada.strings.unbounded,
      bdb_constants;
 
@@ -73,6 +70,7 @@ function will_raise( session : berkeley_session ) return boolean;
 
 function last_error( session : berkeley_session ) return db_error;
 
+procedure show_err( err : db_error );
 
 -- INIT
 --
@@ -263,7 +261,7 @@ procedure dbrename( env : in out berkeley_environment;
 function version return unbounded_string;
 
 procedure set_data_dir( env : in out berkeley_environment;
-  dir : string; flags : e_dbrename_flags := 0 );
+  dir : string );
 
 procedure set_encrypt( env : in out berkeley_environment;
   passwd : string; flags : e_encrypt_flags := 0 );

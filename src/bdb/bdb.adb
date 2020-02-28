@@ -1,12 +1,6 @@
-with system.address_to_access_conversions,
-     unchecked_deallocation,
-     interfaces.c,
-     gnat.source_info,
-     ada.text_io,
-     ada.strings.unbounded;
-use  interfaces.c,
-     ada.text_io,
-     ada.strings.unbounded;
+with gnat.source_info,
+     ada.text_io;
+use  ada.text_io;
 
 package body bdb is
 
@@ -1143,7 +1137,7 @@ end version;
 -- must be called before the environment is opened.
 
 procedure set_data_dir( env : in out berkeley_environment;
-  dir : string; flags : e_dbrename_flags := 0 ) is
+  dir : string ) is
 begin
   if env.env = no_environment then
      raise berkeley_error with gnat.source_info.source_location &

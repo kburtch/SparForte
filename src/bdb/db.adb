@@ -1,15 +1,10 @@
 -- Test program to test bdb library
 
-with system.address_to_access_conversions,
-     unchecked_deallocation,
-     interfaces.c,
-     gnat.source_info,
-     ada.text_io,
+with ada.text_io,
      ada.strings.unbounded,
      bdb,
      bdb_constants;
-use  interfaces.c,
-     ada.text_io,
+use  ada.text_io,
      ada.strings.unbounded,
      bdb,
      bdb_constants;
