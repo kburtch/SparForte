@@ -12,18 +12,18 @@ with ada.text_io,
      ada.strings.unbounded,
      Ada.IO_Exceptions,
      pegasock.http,
-     pegasock.smtp,
-     pegasock.memcache.highread,
-     pegasock.tinyserve;
+     --pegasock.smtp,
+     pegasock.memcache;
+     --pegasock.tinyserve;
 
 use  ada.text_io,
      ada.strings.unbounded,
      pegasock,
      pegasock.http,
-     pegasock.smtp,
-     pegasock.memcache,
-     pegasock.memcache.highread,
-     pegasock.tinyserve;
+     --pegasock.smtp,
+     pegasock.memcache;
+     --pegasock.memcache.highread,
+     --pegasock.tinyserve;
 
 procedure tester is
   myfile : aBufferedFile;
@@ -122,7 +122,7 @@ begin
     exit when length( s ) = 0;
     if slice( s, 1, 15 ) = "Content-Length:" then
        declare
-         temp : unbounded_string := tail( s, length( s ) - 15 );
+         temp : constant unbounded_string := tail( s, length( s ) - 15 );
        begin
          contentLength := integer'value( to_string( temp ) );
        end;

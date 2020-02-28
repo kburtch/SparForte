@@ -3,8 +3,8 @@ with Ada.Characters,
 use  Ada.Strings.Maps,
      Ada.Strings.Maps.Constants;
 
-with ada.text_io;
-use  ada.text_io;
+--with ada.text_io;
+--use  ada.text_io;
 
 package body pegasock.http is
 
@@ -124,7 +124,7 @@ begin
     exit when length( s ) = 0;
     if slice( s, 1, 15 ) = "Content-Length:" then
        declare
-         temp : unbounded_string := tail( s, length( s ) - 15 );
+         temp : constant unbounded_string := tail( s, length( s ) - 15 );
        begin
          contentLength := integer'value( to_string( temp ) );
        end;
@@ -185,7 +185,7 @@ begin
     exit when length( s ) = 0;
     if slice( s, 1, 15 ) = "Content-Length:" then
        declare
-         temp : unbounded_string := tail( s, length( s ) - 15 );
+         temp : constant unbounded_string := tail( s, length( s ) - 15 );
        begin
          contentLength := integer'value( to_string( temp ) );
        end;

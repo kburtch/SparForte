@@ -6,12 +6,10 @@ pragma ada_2005;
 with Gnat.Source_Info,
      Ada.Text_IO,
      Ada.Characters.Handling,
-     Ada.Strings.Unbounded,
      Ada.Calendar;
 use  Ada.Text_IO,
      Ada.Characters,
      Ada.Characters.Handling,
-     Ada.Strings.Unbounded,
      Ada.Calendar;
 
 package body pegasock.memcache is

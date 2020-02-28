@@ -11,7 +11,7 @@ pragma ada_2005;
 
 with ada.unchecked_deallocation,
      ada.characters.latin_1,
-     gnat.utf_32,
+     --gnat.utf_32,
      ada.IO_Exceptions,
      ada.strings.unbounded,
      interfaces.c,
