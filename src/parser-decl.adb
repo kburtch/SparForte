@@ -25,72 +25,35 @@ pragma ada_2005;
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
-with system,
-    ada.text_io,
-    ada.command_line,
-    ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    ada.numerics.float_random,
-    ada.calendar,
-    gnat.regexp,
-    gnat.directory_operations,
-    gnat.source_info,
-    cgi,
-    spar_os.exec,
-    string_util,
-    user_io,
-    user_io.getline,
-    script_io,
-    performance_monitoring,
-    reports.test,
-    builtins,
-    jobs,
-    signal_flags,
-    compiler,
-    scanner,
-    scanner.calendar,
-    scanner_res,
-    scanner_restypes,
-    parser.decl.as, -- circular relationship for ParseBlock
-    parser_aux,
-    parser_params,
-    parser_pragmas,
-    parser_tio,
-    parser_numerics,
-    parser_cal,
-    parser_pen,
-    interpreter; -- circular relationship for breakout prompt
-use ada.text_io,
-    ada.command_line,
-    ada.strings.unbounded,
-    ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    gnat.regexp,
-    gnat.directory_operations,
+
+with gnat.source_info,
     spar_os,
-    spar_os.exec,
-    user_io,
-    script_io,
     string_util,
+    user_io,
     performance_monitoring,
-    reports.test,
-    builtins,
-    jobs,
-    signal_flags,
     compiler,
     scanner,
-    scanner.calendar,
     scanner_res,
     scanner_restypes,
     parser.decl.as, -- circular relationship for ParseBlock
     parser_aux,
     parser_params,
-    parser_pragmas,
-    parser_tio,
-    parser_numerics,
-    parser_cal,
-    parser_pen,
     interpreter; -- circular relationship for breakout prompt
+use spar_os,
+    user_io,
+    string_util,
+    performance_monitoring,
+    compiler,
+    scanner,
+    scanner_res,
+    scanner_restypes,
+    parser.decl.as, -- circular relationship for ParseBlock
+    parser_aux,
+    parser_params,
+    interpreter; -- circular relationship for breakout prompt
+
+--with ada.text_io;
+--use ada.text_io;
 
 package body parser.decl is
 
@@ -259,8 +222,6 @@ begin
   -- declare the identifier as a side-effect
   -- if isExecutingCommand then
   if not error_found then
-     declare
-       oldUsage : aUsageQualifier := identifiers( new_id ).usage;
      begin
        declareRenaming( new_id, canonicalRef );
 
@@ -317,8 +278,6 @@ begin
   -- only copy attributes if no error because copying attributes will
   -- declare the identifier as a side-effect
   if not error_found then
-     declare
-       oldUsage : aUsageQualifier := identifiers( new_id ).usage;
      begin
        identifiers( new_id ).usage := identifiers( canonicalRef.id ).usage;
        identifiers( new_id ).value := identifiers( new_id ).svalue'access;
@@ -1128,7 +1087,7 @@ end ParseExceptionDeclarationPart;
 -----------------------------------------------------------------------------
 
 procedure CheckGenericParameterType( id, type_token : identifier ) is
-   uniType  : identifier := getUniType( type_token );
+   uniType  : constant identifier := getUniType( type_token );
 begin
    if uniType = doubly_list_t then
       if identifiers( id ).genKind2 /= eof_t then
@@ -1215,7 +1174,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
   ---------------------------------------------------------------------------
 
   procedure AttachGenericParameterResource( id, type_token : identifier ) is
-     uniType   : identifier := getUniType( type_token );
+     uniType   : constant identifier := getUniType( type_token );
      resId     : resHandleId;
   begin
      if uniType = doubly_list_t then
@@ -1413,7 +1372,6 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
 
   type_token    : identifier;
   expr_value    : unbounded_string;
-  expr_type     : identifier := eof_t;
   right_type    : identifier;
   expr_expected : boolean := false;
   canonicalRef : renamingReference;
@@ -1623,10 +1581,10 @@ begin
   elsif token = renames_t then
 
      declare
-        originalFieldOf : identifier := identifiers( id ).field_of;
+        originalFieldOf : constant identifier := identifiers( id ).field_of;
         -- TODO: refactor these booleans
-        wasLimited : boolean := identifiers( id ).usage = limitedUsage;
-        wasConstant : boolean := identifiers( id ).usage = constantUsage;
+        wasLimited : constant boolean := identifiers( id ).usage = limitedUsage;
+        wasConstant : constant boolean := identifiers( id ).usage = constantUsage;
      begin
         -- Variable or Constant renaming
         ParseRenamesPart( canonicalRef, id, type_token );
@@ -1677,10 +1635,10 @@ begin
   elsif token = copies_t then
 
      declare
-        originalFieldOf : identifier := identifiers( id ).field_of;
+        originalFieldOf : constant identifier := identifiers( id ).field_of;
         -- TODO: refactor these booleans
-        wasLimited : boolean := identifiers( id ).usage = limitedUsage;
-        wasConstant : boolean := identifiers( id ).usage = constantUsage;
+        wasLimited : constant boolean := identifiers( id ).usage = limitedUsage;
+        wasConstant : constant boolean := identifiers( id ).usage = constantUsage;
      begin
         -- Variable or Constant renaming
         ParseCopiesPart( canonicalRef, id, type_token );
@@ -1753,7 +1711,7 @@ begin
      declare
         is_constant : boolean := false;
         var_name    : unbounded_string;
-        wasLimited  : boolean := identifiers( id ).usage = limitedUsage;
+        wasLimited  : constant boolean := identifiers( id ).usage = limitedUsage;
      begin
 
        -- Temporarily destroy identifer so that i : integer := i isn't circular
@@ -2056,7 +2014,7 @@ procedure ParseAffirmClause( newtype_id : identifier ) is
    type_value_id : identifier;
    blockStart    : natural;
    blockEnd      : natural;
-   save_syntax_check : boolean := syntax_check;
+   old_syntax_check : constant boolean := syntax_check;
 begin
    -- declare type_value
    if onlyAda95 then
@@ -2073,7 +2031,7 @@ begin
 
       ParseAffirmBlock;
 
-      syntax_check := save_syntax_check;
+      syntax_check := old_syntax_check;
       blockEnd := lastPos+1; -- include EOL ASCII.NUL
       if not syntax_check then
          -- TODO: copyByteCodeLines to be fixed
@@ -2098,7 +2056,6 @@ procedure ParseType is
    newtype_id  : identifier;
    parent_id   : identifier;
    enum_index  : integer := 0;
-   contract_id : identifier := eof_t;
    b : boolean;
 begin
    expect( type_t );                                       -- "type"
@@ -2141,7 +2098,7 @@ begin
                identifiers( newtype_id ).wasReferenced := true;
             end if;
             declare
-              s : string := enum_index'img;
+              s : constant string := enum_index'img;
             begin
               -- drop leading space
               --identifiers( newtype_id ).value := to_unbounded_string( s(2..s'last) );

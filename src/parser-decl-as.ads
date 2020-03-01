@@ -21,11 +21,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Interfaces.C,
-     ada.strings.unbounded,
+with ada.strings.unbounded,
      world, scanner;
-use Interfaces.C,
-    ada.strings.unbounded,
+use ada.strings.unbounded,
     world, scanner;
 
 package parser.decl.as is

@@ -62,7 +62,7 @@ begin
   if fd.amountRead = 0 then
      fd.EOF := true;
      fd.readPos := integer'last;
-  elsif fd.amountRead = size_t'last then  -- ada's def'n of
+  elsif fd.amountRead < 0 or fd.amountRead = size_t'last then  -- ada's def'n of
      if C_pegasock_errno = EINTR then                                   -- size_t is
         goto retry;                                            -- unsigned so
      elsif C_pegasock_errno = EAGAIN or C_pegasock_errno = EWOULDBLOCK then      -- -1 = 'last
@@ -85,7 +85,7 @@ begin
   if fd.amountRead = 0 then
      fd.EOF := true;
      fd.readPos := integer'last;
-  elsif fd.amountRead = size_t'last then  -- ada's def'n of
+  elsif fd.amountRead < 0 or fd.amountRead = size_t'last then  -- ada's def'n of
      if C_pegasock_errno = EINTR then                                   -- size_t is
         goto retry;                                            -- unsigned so
      elsif C_pegasock_errno = EAGAIN or C_pegasock_errno = EWOULDBLOCK then      -- -1 = 'last
@@ -97,8 +97,6 @@ begin
    fd.readPos := fd.readBuffer'first;
    pragma debug( Put_Line( Gnat.Source_Info.Source_Location & ": read" & fd.amountRead'img & " bytes from file descriptor" & fd.fd'img ) );
 end fillReadBuffer;
-
-pragma inline( fillReadBuffer );
 
 
 --  TRIM EOL
@@ -180,8 +178,6 @@ begin
     return s & Ada.Characters.Latin_1.LF;
   end case;
 end appendEOL;
-
-pragma inline( appendEOL );
 
 
 -----------------------------------------------------------------------------

@@ -21,32 +21,28 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system,
-    interfaces.c,
+with interfaces.c,
     ada.text_io,
     ada.strings.unbounded.text_io,
     gnat.source_info,
-    signal_flags,
-    world,
     compiler,
     scanner,
     builtins.help,
     string_util,
     user_io,
     parser_aux, -- for OSError
-    gen_list;
+    gen_list,
+    world;
 use interfaces.c,
     ada.text_io,
-    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
-    signal_flags,
-    world,
     user_io,
     string_util,
     builtins,
     compiler,
     scanner,
-    parser_aux;
+    parser_aux,
+    world;
 
 package body jobs is
 
@@ -334,7 +330,6 @@ end showRunError;
 
 procedure spawnCommandOrRunBuiltin(
    cmd        : unbounded_string;
-   paramToken : identifier;
    fullPath   : unbounded_string;
    ap         : argumentListPtr;                            -- C string args
    noReturn   : boolean;
@@ -398,16 +393,13 @@ end spawnCommandOrRunBuiltin;
 --  RUN
 --
 -- Run an external command or a Spar built-in without any pipeline.  If
--- background is true, run the program in the background.  If cache is true,
--- save the pathname in the command hash table.
+-- background is true, run the program in the background.
 -----------------------------------------------------------------------------
 
 procedure run( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
-   background : boolean := false;
-   cache : boolean := true ) is
+   background : boolean := false ) is
    fullpath : unbounded_string;
    che  : cmdHashEntry;
 
@@ -441,15 +433,15 @@ begin
             Success := false;
          elsif myPID = 0 then -- child
             spawnCommandOrRunBuiltin(
-              cmd, paramToken, fullPath, ap, noReturn => true,
-              success => success );
+              cmd, fullPath, ap, noReturn => true, success => success );
          else -- parent
             lastChild := myPID;
             newJob.pid := myPID;
             newJob.cmd := cmd;
             newJob.status := running;
             -- if not input mode, always quiet
-            newJob.quiet := not ( boolean( inputMode = interactive ) or boolean( inputMode = breakout ) );
+            -- GCC 7.4 reports a conversion warning but this is not true
+            newJob.quiet := not boolean( inputMode = interactive ) or boolean( inputMode = breakout );
             jobList.Insert( jobs, newJob );
             if not newJob.quiet then
                put_line( cmd & " (" & myPID'img & ") has started" );
@@ -458,8 +450,7 @@ begin
          end if;
       else
          spawnCommandOrRunBuiltin(
-            cmd, paramToken, fullPath, ap, noReturn => false,
-            success => success );
+            cmd, fullPath, ap, noReturn => false, success => success );
       end if;
    end if;
 end run;
@@ -469,16 +460,13 @@ end run;
 --  RUN IN-PIPE
 --
 -- Run an external command or a SparForte built-in at the start of a pipeline.
--- If background is true, run the program in the background.  If cache is
--- true, save the pathname in the command hash table.
+-- If background is true, run the program in the background.
 -----------------------------------------------------------------------------
 
 procedure run_inpipe( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true;
    pipeStderr : boolean := false ) is
 
    fullpath : unbounded_string;
@@ -566,8 +554,7 @@ begin
             end if;
 
             spawnCommandOrRunBuiltin(
-              cmd, paramToken, fullPath, ap, noReturn => true,
-              success => success );
+              cmd, fullPath, ap, noReturn => true, success => success );
             -- This normally never returns.  However, it can return in the
             -- of a broken pipe signal (such as "| head").  In this case,
             -- we treat the command as finished and abort processing in the
@@ -594,17 +581,13 @@ end run_inpipe;
 --  RUN FROM-PIPE
 --
 -- Run an external command or a BUSH built-in at the end of a pipeline.  If
--- background is true, run the program in the background.  If cache is true,
--- save the pathname in the command hash table.
+-- background is true, run the program in the background.
 -----------------------------------------------------------------------------
 
 procedure run_frompipe( cmd : unbounded_string;
-   paramToken : identifier;
    ap      : argumentListPtr;
    success : out boolean;
-   background : boolean := false;
-   cache   : boolean := true ) is
-
+   background : boolean := false ) is
    fullpath : unbounded_string;
    che      : cmdHashEntry;
    oldStdin : aFileDescriptor;
@@ -672,8 +655,7 @@ begin
                pipeStack( pipeStackTop )( outOfPipe )'img );
          end if;
          spawnCommandOrRunBuiltin(
-            cmd, paramToken, fullPath, ap, noReturn => false,
-            success => success );
+            cmd, fullPath, ap, noReturn => false, success => success );
          closeResult := close( stdin );          -- closing pipe
          -- close EINTR is a diagnostic message.  Do not handle.
       end if;
@@ -698,16 +680,13 @@ end run_frompipe;
 --  RUN BOTH-PIPE
 --
 -- Run an external command or a BUSH built-in at the middle of a pipeline.  If
--- background is true, run the program in the background.  If cache is true,
--- save the pathname in the command hash table.
+-- background is true, run the program in the background.
 -----------------------------------------------------------------------------
 
 procedure run_bothpipe( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true;
    pipeStderr : boolean := false ) is
    fullpath : unbounded_string;
    che  : cmdHashEntry;
@@ -818,8 +797,7 @@ begin
             end if;
 
             spawnCommandOrRunBuiltin(
-               cmd, paramToken, fullPath, ap, noReturn => true,
-               success => success );
+               cmd, fullPath, ap, noReturn => true, success => success );
             -- should never return, but...bail out of shell child process
             -- This normally never returns.  However, it can return in the
             -- of a signal.  In this case, we treat the command as finished
@@ -941,7 +919,7 @@ begin
             end if;
          end if;
          job.status := running;                   -- still running
-      elsif result /= 0 then                      -- able to get status?
+      else                                        -- able to get status?
          if job.status /= stopped then            -- show status on a change
             if not job.quiet then
               put_line( job.cmd &" (" & job.pid'img & ") has stopped" );

@@ -29,21 +29,12 @@ pragma warnings( on );
 
 with system,
     ada.text_io,
-    ada.strings.fixed,
     ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    gnat.source_info,
-    spar_os;
-    -- scanner_arrays;
+    gnat.source_info;
 use ada.text_io,
     ada.command_line,
     ada.command_line.environment,
-    ada.strings.fixed,
-    ada.strings.unbounded,
-    ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    spar_os;
-    -- scanner_arrays;
+    ada.strings.unbounded.text_io;
 
 package body world is
 
@@ -1601,7 +1592,7 @@ function to_unbounded_string( f : long_float ) return unbounded_string is
 -- Convert a long_float (BUSH's numeric representation) to an
 -- unbounded string.  If the value is representable as an integer,
 -- it is returned without a decimal part.
-  f_trunc : long_float := long_float'truncation( f );
+  f_trunc : constant long_float := long_float'truncation( f );
 begin
 
   -- integer value?  Try to return without a decimal part
@@ -1730,7 +1721,7 @@ end toByteCode;
 -----------------------------------------------------------------------------
 
 procedure toIdentifier( ch1, ch2 : character; id : out reservedWordRange; advance : out integer ) is
-  i1 : reservedWordRange := character'pos( ch1 );
+  i1 : constant reservedWordRange := character'pos( ch1 );
   i2 : reservedWordRange;
 begin
   if i1 < 128 then
@@ -1740,7 +1731,7 @@ begin
      advance := 1;
   else
      i2 := character'pos( ch2 );
-     id := reservedWordRange( i1 - 223 ) + 32 * reservedWordRange( i2 );
+     id := reservedWordRange( i1 - 223 ) + 32 * i2;
      advance := 2;
   end if;
 end toIdentifier;

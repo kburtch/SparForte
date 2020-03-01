@@ -25,7 +25,8 @@
 pragma suppress( index_check );
 pragma suppress( range_check );
 
-with text_io; use text_io;
+--with text_io; use text_io;
+
 with spar_os, Ada.Characters.Handling;
 with world;
 use  Ada.Characters.Handling,
@@ -484,7 +485,7 @@ begin
 end ToJSONUnescaped;
 
 function AorAN( s : unbounded_string ) return unbounded_string is
-  ch : character := Element( s, 1 );
+  ch : constant character := Element( s, 1 );
 begin
   if ch='a' or ch='e' or ch='i' or ch='o' or ch='u' or
      ch='A' or ch='E' or ch='I' or ch='O' or ch='U' then
@@ -553,7 +554,6 @@ function stringField( s : unbounded_string; delimiter : character; f : natural )
 return unbounded_string is
 -- return the fth field delimited by delimiter
   firstPos    : natural := 1;
-  currentPos  : natural := 1;
   delimCnt    : natural := 0;
   returnStr   : unbounded_string;
 begin
@@ -588,7 +588,6 @@ f : natural; allowSingleQuotes : boolean := false ) return unbounded_string is
 -- if allowSingleQuotes is true, allow the field to be enclosed by single
 -- quotes as well as double quotes.
   firstPos    : natural := 1;
-  currentPos  : natural := 1;
   delimCnt    : natural := 0;
   inQuotes    : boolean := false;
   returnStr   : unbounded_string;
@@ -613,7 +612,7 @@ f : natural; allowSingleQuotes : boolean := false ) return unbounded_string is
 
   function stripEOL( s : unbounded_string ) return unbounded_string is
     -- strip ending CRLF, if it exists (RFC 4180)
-    len : natural := length( s );
+    len : constant natural := length( s );
   begin
     if length( s ) > 2 then
       if Element(s, len-1) = ASCII.CR and Element(s,len) = ASCII.LF then
@@ -657,9 +656,7 @@ procedure replaceField( s : in out unbounded_string; delimiter : character;
 f : natural; field : string ) is
   firstPos    : natural := 1;
   lastPos     : natural := 1;
-  currentPos  : natural := 1;
   delimCnt    : natural := 0;
-  returnStr   : unbounded_string;
 begin
   if f = 0 or length( s ) = 0 then
      return;
@@ -691,9 +688,7 @@ procedure replaceCSVField( s : in out unbounded_string; delimiter : character;
 f : natural; field : string ) is
   firstPos    : natural := 1;
   lastPos     : natural := 1;
-  currentPos  : natural := 1;
   delimCnt    : natural := 0;
-  returnStr   : unbounded_string;
   inQuotes    : boolean := false;
 
   function attachQuotes( s : unbounded_string ) return string is
@@ -743,7 +738,6 @@ function stringLookup( s, t : unbounded_string; delimiter : character )
   returnStr : unbounded_string;
   firstPos  : natural;
   i         : integer := 1;
-  result    : unbounded_string := null_unbounded_string;
 begin
   if length( s ) = 0 or length( t ) = 0 then             -- null string(s)?
      return null_unbounded_string;                       -- user error

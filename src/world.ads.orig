@@ -355,7 +355,7 @@ type aBuiltinFunctionCallback is access procedure( value : out unbounded_string;
 
 type storage is array( long_integer range <>) of aliased unbounded_string;
 type storagePtr is access all storage;
-procedure free is new unchecked_deallocation( storage, storagePtr );
+procedure free is new ada.unchecked_deallocation( storage, storagePtr );
 type valuePtr is access all unbounded_string;
 
 function findStorage( lbound, ubound : long_integer ) return storagePtr;

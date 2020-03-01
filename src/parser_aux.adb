@@ -28,6 +28,8 @@ with ada.text_io,
      script_io,
      user_io,
      compiler,
+     scanner,
+     parser_params,
      parser.decl.as;
 use  ada.text_io,
      Interfaces.C,
@@ -36,6 +38,8 @@ use  ada.text_io,
      user_io,
      compiler,
      parser,
+     scanner,
+     parser_params,
      parser.decl.as;
 
 
@@ -206,38 +210,6 @@ begin
 
 end openSocket;
 
--- Parsing short-cuts
-
---procedure ParseSingleUniStringExpression( expr_val : out unbounded_string;
-  --expr_type : out identifier ) is
---begin
-  --expect( symbol_t, "(" );
-  --ParseExpression( expr_val, expr_type );
-  --if uniTypesOk( expr_type, string_t ) then
-     --expect( symbol_t, ")" );
-  --end if;
---end ParseSingleUniStringExpression;
---
---procedure ParseSingleStringExpression( expr_val : out unbounded_string;
-  --expr_type : out identifier ) is
---begin
-  --expect( symbol_t, "(" );
-  --ParseExpression( expr_val, expr_type );
-  --if baseTypesOk( expr_type, string_t ) then
-     --expect( symbol_t, ")" );
-  --end if;
---end ParseSingleStringExpression;
---
---procedure ParseSingleNumericExpression( expr_val : out unbounded_string;
-  --expr_type : out identifier ) is
---begin
-  --expect( symbol_t, "(" );
-  --ParseExpression( expr_val, expr_type );
-  --if uniTypesOk( expr_type, uni_numeric_t ) then
-     --expect( symbol_t, ")" );
-  --end if;
---end ParseSingleNumericExpression;
-
 
 ------------------------------------------------------------------------------
 -- PROCESS TEMPLATE
@@ -257,8 +229,8 @@ procedure processTemplate is
                    outputTemplate                   -- writing out template
                   );
    mode : aMode := outputTemplate;                  -- what are we doing now
-   bushStartTag   : string := "<?spar";             -- the start tag
-   bushEndTag     : string := "?>";                 -- the end tag
+   bushStartTag   : constant string := "<?spar";    -- the start tag
+   bushEndTag     : constant string := "?>";        -- the end tag
    tag            : unbounded_string;               -- possible tag text
    tagCount       : natural := 0;                   -- characters in p. tag
    uncompressedScript : unbounded_string;           -- script being gathered

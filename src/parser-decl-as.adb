@@ -25,72 +25,53 @@ pragma ada_2005;
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
-with system,
-    ada.text_io,
+with Interfaces.C,
     ada.command_line,
     ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    ada.numerics.float_random,
-    ada.calendar,
     gnat.regexp,
     gnat.directory_operations,
     gnat.source_info,
-    cgi,
     spar_os.exec,
     string_util,
     user_io,
-    user_io.getline,
-    script_io,
     performance_monitoring,
-    reports.test,
     builtins,
     jobs,
     signal_flags,
     compiler,
-    scanner,
-    scanner.calendar,
     scanner_res,
-    scanner_restypes,
     parser_aux,
     parser_sidefx,
     parser_params,
     parser_pragmas,
     parser_tio,
-    parser_numerics,
-    parser_cal,
     parser_pen,
     interpreter; -- circular relationship for breakout prompt
-use ada.text_io,
+use Interfaces.C,
     ada.command_line,
-    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
-    ada.characters.handling,
     gnat.regexp,
     gnat.directory_operations,
     spar_os,
     spar_os.exec,
     user_io,
-    script_io,
     string_util,
     performance_monitoring,
-    reports.test,
     builtins,
     jobs,
     signal_flags,
     compiler,
-    scanner,
-    scanner.calendar,
     scanner_res,
-    scanner_restypes,
     parser_aux,
     parser_sidefx,
     parser_params,
     parser_pragmas,
     parser_tio,
-    parser_numerics,
-    parser_cal,
     parser_pen,
     interpreter; -- circular relationship for breakout prompt
+
+with ada.text_io;
+use  ada.text_io;
 
 package body parser.decl.as is
 
@@ -604,7 +585,7 @@ end ParseStaticCaseBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseLoopBlock is
-  exit_on_entry : boolean := exit_block;
+  old_exit_block : constant boolean := exit_block;
 begin
 
   pushBlock( newScope => false, newName => "loop loop" );  -- start new scope
@@ -624,7 +605,7 @@ begin
 
 <<loop_done>>
   pullBlock;                                               -- end of while scope
-  if not syntax_check and not exit_on_entry then           -- ignore exit when checking
+  if not syntax_check and not old_exit_block then          -- ignore exit when checking
      if exit_block and not done then                       -- exiting and not returning?
         if trace then
            Put_trace( "exited loop" );
@@ -648,9 +629,7 @@ end ParseLoopBlock;
 procedure ParseWhileBlock is
   expr_val  : unbounded_string;
   expr_type : identifier;
-  b : boolean := false;
-  exiting : boolean := false;
-  exit_on_entry : boolean := exit_block;
+  old_exit_block : constant boolean := exit_block;
 begin
   pushBlock( newScope => false, newName => "while loop" ); -- start new scope
 
@@ -690,7 +669,7 @@ begin
 
 <<loop_done>>
   pullBlock;                                               -- end of while scope
-  if not syntax_check and not exit_on_entry then           -- ignore exit when checking
+  if not syntax_check and not old_exit_block then          -- ignore exit when checking
      if exit_block and not done then                          -- exiting and not returning?
         if trace then
            Put_trace( "exited while loop" );
@@ -717,15 +696,11 @@ procedure ParseForBlock is
   expr2_val  : unbounded_string;
   expr2_type : identifier;
   expr2_num  : long_float;
-  b : boolean := false;
-  test1 : boolean := false;
-  test2 : boolean := false;
-  exiting : boolean := false;
-  for_var   : identifier;
-  firstTime : boolean := true;
-  isReverse   : boolean := false;
-  exit_on_entry : boolean := exit_block;
-  for_name : unbounded_string;
+  for_var    : identifier;
+  firstTime  : boolean := true;
+  isReverse  : boolean := false;
+  old_exit_block : constant boolean := exit_block;
+  for_name   : unbounded_string;
 begin
 
   pushBlock( newScope => true, newName => "for loop" );  -- start new scope
@@ -864,11 +839,13 @@ begin
         expect( loop_t );
         if isReverse then
            if isExecutingCommand then
+              -- GCC Ada 7.4 says a conversion warning but it is wrong
               identifiers( for_var ).value.all := to_unbounded_string(
                   long_float( to_numeric( identifiers( for_var ).value.all ) - 1.0 ) );
            end if;
         else
            if isExecutingCommand then
+              -- GCC Ada 7.4 says a conversion warning but it is wrong
               identifiers( for_var ).value.all := to_unbounded_string(
                   long_float( to_numeric( identifiers( for_var ).value.all ) + 1.0 ) );
            end if;
@@ -898,7 +875,7 @@ begin
 
 <<abort_loop>>
   pullBlock;                                               -- end of while scope
-  if not syntax_check and not exit_on_entry then           -- ignore exit when checking
+  if not syntax_check and not old_exit_block then          -- ignore exit when checking
      if exit_block and not done then                          -- exiting and not returning?
         if trace then
            Put_trace( "exited for loop" );
@@ -1044,6 +1021,7 @@ end ParseTypeset;
 -----------------------------------------------------------------------------
 
 procedure ParseShellWord( wordList : in out shellWordList.List; First : boolean := false ) is
+-- TODO: first is not implemented
 
 -- these should be global
 semicolon_string : constant unbounded_string := to_unbounded_string( ";" );
@@ -1239,7 +1217,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     found        : boolean := false;
     noPWD        : boolean := false;
     dirpath      : string := to_string( dirname( word ) );
-    globexpr     : string := to_string( basename( pattern ) );
+    globexpr     : constant string := to_string( basename( pattern ) );
     noDir        : boolean;
     isOpen       : boolean := false;
   begin
@@ -1921,7 +1899,6 @@ procedure ParseFunctionBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseWith is
-  include_file : unbounded_string;
 begin
   -- is this true?
   --if inputMode = interactive or inputMode = breakout then
@@ -2203,9 +2180,7 @@ end ParseBlock;
 -----------------------------------------------------------------------------
 
 --procedure ParseExceptionBlock( termid1, termid2 : identifier := keyword_t ) is
-procedure ParseExceptionBlock( occurrence_exception : declaration;
-  occurrence_message      : unbounded_string;
-  occurrence_status       : aStatusCode ) is
+procedure ParseExceptionBlock is
   -- Same as ParseBlock except raise is permitted
 begin
   if token = end_t or token = eof_t or token = when_t then
@@ -2238,7 +2213,7 @@ begin
      err( "missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
-     ParseExceptionBlock( null_declaration, null_unbounded_string, 1 ); -- must process the block to look
+     ParseExceptionBlock;
      return;                         -- for syntax errors
   end if;
   old_error := syntax_check;
@@ -2293,8 +2268,7 @@ begin
      occurrence_message := err_message;
      occurrence_status := last_status;
      occurrence_full := fullErrorMessage;
-     startExceptionHandler( occurrence_exception, occurrence_message,
-        occurrence_status, occurrence_full );
+     startExceptionHandler;
   end if;
 
   -- parse the exception block and see if there's a matching case for this
@@ -2337,7 +2311,7 @@ begin
     -- otherwise, skip the exception handler block
     if handling_exceptions and not error_found then
        if found_exception then
-          ParseExceptionBlock( occurrence_exception, occurrence_message, occurrence_status );
+          ParseExceptionBlock;
           found_exception := false;                          -- clear found flag
           handled_exception := true;                 -- we handled the exception
           if error_found and err_exception.deleted then     -- non-except error?
@@ -2395,7 +2369,7 @@ end ParseExceptionHandler;
 -----------------------------------------------------------------------------
 
 procedure ParseDeclareBlock is
-  errorOnEntry : boolean := error_found;
+  old_error_found : constant boolean := error_found;
 begin
   pushBlock( newScope => true, newName => "declare block" );
   expect( declare_t );
@@ -2403,7 +2377,7 @@ begin
   expect( begin_t );
   ParseBlock;
   if token = exception_t then
-     ParseExceptionHandler( errorOnEntry );
+     ParseExceptionHandler( old_error_found );
   end if;
   expect( end_t );
   pullBlock;
@@ -2417,13 +2391,13 @@ end ParseDeclareBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseBeginBlock is
-  errorOnEntry : boolean := error_found;
+  old_error_found : constant boolean := error_found;
 begin
   pushBlock( newScope => true, newName => "begin block" );
   expect( begin_t );
   ParseBlock;
   if token = exception_t then
-     ParseExceptionHandler( errorOnEntry );
+     ParseExceptionHandler( old_error_found );
   end if;
   expect( end_t );
   pullBlock;
@@ -2547,7 +2521,6 @@ procedure ParseFormalParameter(
 -- Syntax: name : mode type
 -- Parameters are implemented using the same scheme as records
    b : boolean;
-   paramName    : unbounded_string;
    type_token   : identifier;
    passingMode  : aParameterPassingMode;
 begin
@@ -2646,7 +2619,6 @@ procedure ParseFunctionReturnPart( funcId : identifier; abstractReturn : in out 
    -- Syntax: return type
    resultId : identifier;
    b : boolean;
-   paramName : unbounded_string;
    resultKind    : identifier;
 begin
 
@@ -2985,7 +2957,7 @@ procedure ParseProcedureBlock is
   procStart : natural;
   procEnd   : natural;
   no_params   : integer := 0;  -- TODO: delete this
-  errorOnEntry : boolean := error_found;
+  old_error_found : constant boolean := error_found;
   abstract_parameter : identifier := eof_t;
   declarationFile : unbounded_string;
   declarationLine : natural;
@@ -3078,7 +3050,7 @@ begin
         expect( begin_t );
         skipBlock;                                       -- never execute now
         if token = exception_t then
-           ParseExceptionHandler( errorOnEntry );
+           ParseExceptionHandler( old_error_found );
         end if;
         pullBlock;
         expect( end_t );
@@ -3599,7 +3571,7 @@ procedure ParseFunctionBlock is
   funcStart : natural;
   funcEnd   : natural;
   no_params   : integer := 0;
-  errorOnEntry : boolean := error_found;
+  old_error_found : constant boolean := error_found;
   abstract_parameter : identifier := eof_t;
   abstract_return    : identifier := eof_t;
   --b : boolean;
@@ -3735,7 +3707,7 @@ begin
            end if;
         end if;
         if token = exception_t then
-           ParseExceptionHandler( errorOnEntry );
+           ParseExceptionHandler( old_error_found );
         end if;
         pullBlock;
         expect( end_t );
@@ -3756,8 +3728,6 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
   -- Note: ParseProcedureBlock compiles / creates the user-defined procedure.
   -- This routines runs the previously compiled procedure.
   scriptState : aScriptState;
-  command     : unbounded_string := s;
-  resultName  : unbounded_string;
   results     : unbounded_string;
   proc_id     : identifier;
 
@@ -3768,8 +3738,8 @@ procedure DoUserDefinedProcedure( s : unbounded_string ) is
   has_context  : boolean := false;
   last_in_chain: boolean := false;
   contextName  : unbounded_string;
-  errorOnEntry : boolean := error_found;
-  exitBlockOnEntry : boolean := exit_block;
+  old_error_found : constant boolean := error_found;
+  old_exit_block : constant boolean := exit_block;
 begin
   proc_id := token;
   if syntax_check then
@@ -3793,7 +3763,7 @@ begin
   -- the parameters and create a chain context block _prior_ to creating
   -- the procedure block.
   declare
-    old_syntax_check : boolean := syntax_check;
+    old_syntax_check : constant boolean := syntax_check;
     paramStart   : aScannerState;
   begin
     -- do we have a chain context?  Then we must be in a chain.
@@ -3915,13 +3885,13 @@ begin
      expect( begin_t );
      ParseBlock;
      if token = exception_t then
-        ParseExceptionHandler( errorOnEntry );
+        ParseExceptionHandler( old_error_found );
      end if;
      -- Check to see if we're return-ing early
      -- TODO: Not pretty, but will work.  This should be improved.
      if exit_block and done_sub and not error_found and not syntax_check then
         done_sub := false;
-        exit_block := exitBlockOnEntry;  -- is this right?
+        exit_block := old_exit_block;  -- TODO: is this right?
         done := false;
      end if;
      expect( end_t );
@@ -3955,13 +3925,11 @@ procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_st
   -- Note: ParseFunctionBlock compiles / creates the user-defined function.
   -- This routines runs the previously compiled function.
   scriptState : aScriptState;
-  command     : unbounded_string := s;
   func_id     : identifier;
   return_id   : identifier;
-  resultName  : unbounded_string;
   results     : unbounded_string;
-  errorOnEntry : boolean := error_found;
-  exitBlockOnEntry : boolean := exit_block;
+  errorOnEntry : constant boolean := error_found;
+  exitBlockOnEntry : constant boolean := exit_block;
 begin
   -- Get the name of the function being called
   func_id := token;
@@ -4643,14 +4611,12 @@ begin
         err( "absolute paths to commands not allowed in " &
              optional_bold( "restricted shells" ) );
      elsif not pipeFromLast and pipe2next then              -- first in pipeln?
-        run_inpipe( cmdName, cmdNameToken, ap, Success,     -- pipe output
+        run_inpipe( cmdName, ap, Success,                   -- pipe output
            background => true,
-           cache => inputMode /= interactive,
            pipeStderr => pipeStderr );
      elsif pipeFromLast and not pipe2next then              -- last in pipeln?
-        run_frompipe( cmdName, cmdNameToken, ap, Success,   -- pipe input
-           background => false,
-           cache => inputMode /= interactive );
+        run_frompipe( cmdName, ap, Success,                 -- pipe input
+           background => false );
         closePipeline;
         -- certain cmds (like "less") need to be cleaned up
         -- with wait4children.  Others are OK.  Why?
@@ -4660,14 +4626,12 @@ begin
         -- by the commands of the pipeline.
          wait4children;                                     -- (child cleanup)
      elsif pipeFromLast and pipe2next then                  -- inside pipeline?
-        run_bothpipe( cmdName, cmdNameToken, ap, Success,   -- pipe in & out
+        run_bothpipe( cmdName, ap, Success,                 -- pipe in & out
            background => true,
-           cache => inputMode /= interactive,
            pipeStderr => pipeStderr );
      else                                                   -- no pipeline?
-        run( cmdName, cmdNameToken, ap, Success,            -- just run it
-           background => inBackground,
-           cache => inputMode /= interactive );             -- run the command
+        run( cmdName, ap, Success,                          -- just run it
+           background => inBackground );                    -- run the command
      end if;
      clearExportedVariables;                                -- clear environ
      discardUnusedIdentifier( cmdNameToken );               -- drop if not ident
@@ -4792,7 +4756,6 @@ end ParseShellCommand;
 procedure CompileAndRun( commands : unbounded_string; firstLineNo : natural := 1; fragment : boolean := true ) is
   scriptState : aScriptState;
   --command     : unbounded_string := s;
-  resultName  : unbounded_string;
   byteCode    : unbounded_string;
 begin
 -- TODO: set the line number from the enclosing script
@@ -5520,7 +5483,6 @@ end ParseVarDeclaration;
 
 procedure ParseExecutableStatement is
   -- Syntax: env-cmd | clear-cmd | ...
-  expr_value : unbounded_string;
   cmdStart   : aScannerState;
   must_exit  : boolean;
   eof_flag   : boolean := false;
@@ -5851,7 +5813,7 @@ begin
   if error_found and then boolean(breakoutOpt) then
      if not syntax_check and inputMode /= breakout then
      declare                                          -- we need to save
-        saveMode    : anInputMode := inputMode;       -- BUSH's state
+        saveMode    : constant anInputMode := inputMode; -- Spar's state
         scriptState : aScriptState;                   -- current script
      begin
         --BREAKDBG: 2
@@ -5908,8 +5870,6 @@ end ParseExecutableStatement;
 
 procedure ParseGeneralStatement is
   -- Syntax: env-cmd | clear-cmd | ...
-  expr_value : unbounded_string;
-  --expr_type  : identifier;
   cmdStart   : aScannerState;
   must_exit  : boolean;
   eof_flag   : boolean := false;
@@ -6245,7 +6205,7 @@ begin
   if error_found and then boolean(breakoutOpt) then
      if not syntax_check and inputMode /= breakout then
      declare                                          -- we need to save
-        saveMode    : anInputMode := inputMode;       -- BUSH's state
+        saveMode    : constant anInputMode := inputMode; -- Spar's state
         scriptState : aScriptState;                   -- current script
      begin
         --BREAKDBG: 2

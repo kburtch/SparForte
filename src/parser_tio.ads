@@ -27,7 +27,6 @@ with ada.text_io.editing,
     world;
 use ada.text_io.editing,
     ada.strings.unbounded,
-    ada.strings.unbounded,
     spar_os,
     world;
 
@@ -84,11 +83,11 @@ procedure DoInitFileVariableFields( file : identifier; fd : aFileDescriptor;
   name : string; mode : identifier  );
 -- Create the fields in a new file_type limited record variable
 
-procedure DoFileOpen( ref : in out reference;  mode : identifier; create : boolean; name : string );
+procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean; name : string );
 -- Open a file with the given name, mode and create flag and update the
 -- file_type variable referenced by ref to reflect the open file.
 
-procedure DoSocketOpen( file_ref : in out reference; name : unbounded_string );
+procedure DoSocketOpen( file_ref : reference; name : unbounded_string );
 -- Open a network socket with the name and port specified in name (port in :n
 -- format).  The default port is port 80 (usually HTTP).  Update the socket_type
 -- variable referenced by ref to reflect the open file.

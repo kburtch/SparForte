@@ -23,14 +23,10 @@
 
 with ada.strings.unbounded,
      spar_os,
-     world,
-     scanner,
-     parser_params;
+     world;
 use  ada.strings.unbounded,
      spar_os,
-     world,
-     scanner,
-     parser_params;
+     world;
 
 package parser_aux is
 

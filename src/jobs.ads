@@ -22,13 +22,10 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-    spar_os.exec,
-    world;
+    spar_os.exec;
 use ada.strings.unbounded,
     spar_os,
-    spar_os.exec,
-    world;
-
+    spar_os.exec;
 
 package jobs is
 
@@ -46,45 +43,36 @@ procedure clearCommandHash;
 --   Cmd is the pathname to run (it doesn't have to be a full path)
 --   ap is the list of arguments for the program
 --   background is true if the program should run in the background
---   cache is true if the program path should be cached (not implemented)
 -----------------------------------------------------------------------------
 
 -- Basic run (no pipeline)
 
 procedure run( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
-   background : boolean := false;
-   cache : boolean := true );
+   background : boolean := false );
 
 -- Run with pipelines
 
 procedure run_inpipe( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true;
    pipeStderr : boolean := false );
 -- Run this program, attaching it to the the previous program executed
 -- with run_frompipe or run_bothpipe, terminating the pipeline.
 
 procedure run_frompipe( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
-   background : boolean := false;
-   cache : boolean := true );
+   background : boolean := false );
 -- Run this program, starting a new pipeline, with an outgoing pipe to
 -- be attached to the another program using run_inpipe or run_bothpipe.
 
 procedure run_bothpipe( cmd : unbounded_string;
-   paramToken : identifier;
    ap : argumentListPtr;
    success : out boolean;
    background : boolean := false;
-   cache : boolean := true;
    pipeStderr : boolean := false );
 -- Run this program which exists in in the middle of a pipeline, neither
 -- the first program nor the last.

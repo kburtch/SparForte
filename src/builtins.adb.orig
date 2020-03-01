@@ -21,11 +21,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with interfaces.c,
-     ada.text_io,
+with ada.text_io,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
-     ada.calendar,
      gnat.source_info,
 #if POSTGRES
      APQ,
@@ -34,23 +32,16 @@ with interfaces.c,
      APQ,
 #end if;
 #end if;
-     spar_os,
      string_util,
-     world,
      user_io,
-     script_io,
-     reports.help,
+     world,
+     scanner,
      jobs,
-     compiler,
      parser_db,
-     parser_mysql,
-     parser_teams,
-     parser;  -- for pragma annotate
-use  interfaces.c,
-     ada.text_io,
+     parser_mysql;
+use  ada.text_io,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
-     ada.calendar,
 #if POSTGRES
      APQ,
 #else
@@ -58,19 +49,13 @@ use  interfaces.c,
      APQ,
 #end if;
 #end if;
-     spar_os,
      string_util,
-     world,
      jobs,
      user_io,
-     script_io,
-     reports,
-     reports.help,
-     compiler,
+     world,
+     scanner,
      parser_db,
-     parser_mysql,
-     parser_teams,
-     parser;  -- for pragma annotate
+     parser_mysql;
 
 package body builtins is
 
@@ -303,9 +288,6 @@ procedure do_history( ap : argumentListPtr ) is
   i            : integer;
   historyMax   : natural := 0;
   historyFirst : natural := 0;
-  word         : unbounded_string;
-  pattern      : unbounded_string;
-  mustClearHistory : boolean := false;
   showHistory  : boolean := false;
   tempStr      : unbounded_string;
 begin
@@ -563,6 +545,7 @@ begin
         -- (Tracing can still be invoked via the command options.)
         -- It's also not allow in testing mode because it will catch
         -- it in continuous integration before going to production.
+        -- GCC Ada 7.4 gives a conversion warning but is incorrect.
         if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
            err( "the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
         else

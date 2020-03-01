@@ -25,76 +25,42 @@ pragma ada_2005;
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
-with system,
-    ada.text_io,
-    ada.command_line,
-    ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    ada.numerics.float_random,
-    ada.calendar,
-    gnat.regexp,
-    gnat.directory_operations,
+
+with ada.command_line,
     gnat.source_info,
-    cgi,
-    spar_os.exec,
-    string_util,
-    user_io,
-    user_io.getline,
-    script_io,
-    performance_monitoring,
-    reports.test,
-    builtins,
-    jobs,
-    signal_flags,
-    compiler,
-    scanner,
-    scanner.calendar,
-    scanner_res,
-    scanner_restypes,
-    parser_aux,
-    parser.decl,
-    parser.decl.as, -- circular dependency for parse general statement, etc.
-    parser_params,
-    parser_sidefx,
-    parser_pragmas,
-    parser_tio,
-    parser_numerics,
-    parser_cal,
-    parser_pen,
-    interpreter; -- circular relationship for breakout prompt
-use ada.text_io,
-    ada.command_line,
-    ada.strings.unbounded,
-    ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    gnat.regexp,
-    gnat.directory_operations,
     spar_os,
-    spar_os.exec,
-    user_io,
-    script_io,
     string_util,
+    user_io,
     performance_monitoring,
-    reports.test,
-    builtins,
-    jobs,
-    signal_flags,
     compiler,
     scanner,
     scanner.calendar,
     scanner_res,
-    scanner_restypes,
-    parser_aux,
-    parser.decl,
     parser.decl.as, -- circular dependency for parse general statement, etc.
-    parser_params,
     parser_sidefx,
-    parser_pragmas,
     parser_tio,
     parser_numerics,
     parser_cal,
-    parser_pen,
     interpreter; -- circular relationship for breakout prompt
+use ada.command_line,
+    spar_os,
+    user_io,
+    string_util,
+    performance_monitoring,
+    compiler,
+    scanner,
+    scanner.calendar,
+    scanner_res,
+    parser.decl,
+    parser.decl.as, -- circular dependency for parse general statement, etc.
+    parser_sidefx,
+    parser_tio,
+    parser_numerics,
+    parser_cal,
+    interpreter; -- circular relationship for breakout prompt
+
+--with ada.text_io;
+--use ada.text_io;
 
 package body parser is
 
@@ -435,7 +401,7 @@ begin
   else
      id := token;
      declare
-        nameAsLower : unbounded_string := " " & toLower( identifiers(id).name ) & " ";
+        nameAsLower : constant unbounded_string := " " & toLower( identifiers(id).name ) & " ";
      begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
@@ -509,7 +475,7 @@ begin
   else
      id := token;
      declare
-        nameAsLower : unbounded_string := " " & toLower( identifiers(id).name ) & " ";
+        nameAsLower : constant unbounded_string := " " & toLower( identifiers(id).name ) & " ";
      begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
@@ -603,6 +569,8 @@ begin
            -- rather than eof, precaution against unexpected values
            recId := identifiers( token ).field_of;
            -- TODO: this could be more efficient
+           -- GCC Ada 7.4 was giving an 'always true' warning for the next
+           -- line but that is not correct.
            if recId in reserved_top..identifiers'last then
               identifiers( recId ).wasReferenced := true;
               --identifiers( recId ).referencedByThread := getThreadName;
@@ -762,7 +730,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
       end if;
    end DoContract1;
 
-   oldRshOpt : commandLineOption := rshOpt;
+   oldRshOpt : constant commandLineOption := rshOpt;
 begin
 
    -- Create a new block, declaring the data type variable
@@ -982,7 +950,8 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        end if;
     end if;
   end parseFactorIdentifier;
-  pragma inline( parseFactorIdentifier );
+  -- Note: not inline because contains an exception handler
+  -- pragma inline( parseFactorIdentifier );
 
 begin
 --put_line("ParseFactor"); -- DEBUG
@@ -1179,7 +1148,7 @@ begin
      end if;
   elsif identifiers( token ).class = userFuncClass then  -- a user function?
      declare
-       funcToken : identifier := token;
+       funcToken : constant identifier := token;
      begin
        DoUserDefinedFunction( identifiers( funcToken ).value.all, f );
        kind := identifiers( funcToken ).kind;
@@ -1470,10 +1439,10 @@ begin
            end if;
         elsif operation = uni_string_t then
            declare
-             base1 : identifier := getBaseType( kind1 );
-             base2 : identifier := getBaseType( kind2 );
-             uni1  : identifier := getUniType( kind1 );
-             uni2  : identifier := getUniType( kind2 );
+             base1 : constant identifier := getBaseType( kind1 );
+             base2 : constant identifier := getBaseType( kind2 );
+             uni1  : constant identifier := getUniType( kind1 );
+             uni2  : constant identifier := getUniType( kind2 );
            begin
               if operator = "&" then
                  if base1 = character_t and base2 = character_t then
@@ -1676,7 +1645,7 @@ begin
            else
               if isExecutingCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                     c2: duration;
                  begin
                     c2 := c - scanner.calendar.time( to_numeric( term2 ) );
@@ -1867,9 +1836,9 @@ begin
                       err( "scalar type required for range" );
                    else
                       declare
-                        c1 : character := element( se1, 1 );
-                        c2 : character := element( se2, 1 );
-                        c3 : character := element( se3, 1 );
+                        c1 : constant character := element( se1, 1 );
+                        c2 : constant character := element( se2, 1 );
+                        c3 : constant character := element( se3, 1 );
                       begin
                         b := c1 in c2..c3;
                       exception when others =>
@@ -1885,9 +1854,9 @@ begin
                       err( "scalar type required for range" );
                    else
                       declare
-                        c1 : character := element( se1, 1 );
-                        c2 : character := element( se2, 1 );
-                        c3 : character := element( se3, 1 );
+                        c1 : constant character := element( se1, 1 );
+                        c2 : constant character := element( se2, 1 );
+                        c3 : constant character := element( se3, 1 );
                       begin
                         b := c1 not in c2..c3;
                       exception when others =>
@@ -1946,8 +1915,8 @@ procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier
   last_op  : identifier := eof_t;
   b        : boolean;
   type bitwise_number is mod 2**64;
-  oldExpressionInstruction : line_count := lastExpressionInstruction;
-  oldFirstExpressionInstruction : line_count := firstExpressionInstruction;
+  oldExpressionInstruction : constant line_count := lastExpressionInstruction;
+  oldFirstExpressionInstruction : constant line_count := firstExpressionInstruction;
 begin
 -- put_line("ParseExpression"); -- DEBUG
   -- expression side-effects.  Remember how many lines have run prior to this
@@ -2622,10 +2591,10 @@ begin
            end if;
         elsif operation = uni_string_t then
            declare
-             base1 : identifier := getBaseType( kind1 );
-             base2 : identifier := getBaseType( kind2 );
-             uni1  : identifier := getUniType( kind1 );
-             uni2  : identifier := getUniType( kind2 );
+             base1 : constant identifier := getBaseType( kind1 );
+             base2 : constant identifier := getBaseType( kind2 );
+             uni1  : constant identifier := getUniType( kind1 );
+             uni2  : constant identifier := getUniType( kind2 );
            begin
               if operator = "&" then
                  if base1 = character_t and base2 = character_t then
@@ -2825,7 +2794,7 @@ begin
            else
               if isExecutingCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                     c2: duration;
                  begin
                     c2 := c - scanner.calendar.time( to_numeric( term2 ) );
@@ -3013,9 +2982,9 @@ begin
                       err( "scalar type required for range" );
                    else
                       declare
-                        c1 : character := element( se1, 1 );
-                        c2 : character := element( se2, 1 );
-                        c3 : character := element( se3, 1 );
+                        c1 : constant character := element( se1, 1 );
+                        c2 : constant character := element( se2, 1 );
+                        c3 : constant character := element( se3, 1 );
                       begin
                         b := c1 in c2..c3;
                       exception when others =>
@@ -3031,9 +3000,9 @@ begin
                       err( "scalar type required for range" );
                    else
                       declare
-                        c1 : character := element( se1, 1 );
-                        c2 : character := element( se2, 1 );
-                        c3 : character := element( se3, 1 );
+                        c1 : constant character := element( se1, 1 );
+                        c2 : constant character := element( se2, 1 );
+                        c3 : constant character := element( se3, 1 );
                       begin
                         b := c1 not in c2..c3;
                       exception when others =>

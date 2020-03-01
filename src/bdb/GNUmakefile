@@ -11,7 +11,7 @@ bdb_constants.ads: gen_constants
 	./gen_constants > bdb_constants.ads
 
 db: db.adb
-	gnatmake -c -gnatVaep -gnatw.eDH -gnateEeAeEeF db.adb
+	gnatmake -c -gnatVaep -gnatw.eDH.Y -gnateEeAeEeF db.adb
 	gnatbind -x db.ali
 	gnatlink db.ali -ldb c_bdb.o
 

@@ -117,7 +117,8 @@ endif
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeAeEeF -gnatybdh -fstack-protector -c $(INCLUDE) spar
+	# $(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnatw.eDHM.Y -gnateEeAeEeF -gnatybdh -fstack-protector -c $(INCLUDE) spar
+	$(GNATMAKE) -j2 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeAeEeF -fstack-protector -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 	@echo

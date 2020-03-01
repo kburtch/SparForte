@@ -28,21 +28,19 @@ with ada.command_line.environment;
 pragma warnings( on );
 
 with system,
-    ada.calendar,
     ada.text_io,
-    ada.integer_text_io,
     ada.strings.fixed,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
     spar_os.tty,
-    signal_flags,
     pegasock.memcache,
-    script_io,
     user_io,
+    script_io,
     string_util,
     software_models,
     performance_monitoring,
+    scanner_res,
     --TODO: I need to fix this circular dependency between the scanner and
     -- parser.  That is, move start/shutdown to separate packages.
     parser.decl.as,
@@ -86,22 +84,20 @@ with system,
     parser_tinyserve,
     parser_logs;
 use ada.text_io,
-    ada.integer_text_io,
     ada.command_line,
     ada.command_line.environment,
     ada.strings.fixed,
-    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     spar_os,
     spar_os.tty,
-    signal_flags,
     pegasock.memcache,
-    script_io,
     user_io,
+    script_io,
     string_util,
     software_models,
     performance_monitoring,
+    scanner_res,
     parser,
     parser.decl.as,
     parser_pragmas,
@@ -145,41 +141,6 @@ use ada.text_io,
     parser_logs;
 
 package body scanner is
-
------------------------------------------------------------------------------
--- Common constants
------------------------------------------------------------------------------
-
-semicolon_string : constant unbounded_string := to_unbounded_string( ";" );
---   semi-colon, as an unbounded string
-
-verticalbar_string : constant unbounded_string := to_unbounded_string( "|" );
---   vertical bar, as an unbounded string
-
-ampersand_string : constant unbounded_string := to_unbounded_string( "&" );
---   ampersand, as an unbounded string
-
-redirectIn_string : constant unbounded_string := to_unbounded_string( "<" );
---   less than, as an unbounded string
-
-redirectOut_string : constant unbounded_string := to_unbounded_string( ">" );
---   greater than, as an unbounded string
-
-redirectAppend_string : constant unbounded_string := to_unbounded_string( ">>" );
---   double greater than, as an unbounded string
-
-redirectErrOut_string : constant unbounded_string := to_unbounded_string( "2>" );
---   '2' + greater than, as an unbounded string
-
-redirectErrAppend_string : constant unbounded_string := to_unbounded_string( "2>>" );
---   '2' + double greater than, as an unbounded string
-
-redirectErr2Out_string : constant unbounded_string := to_unbounded_string( "2>&1" );
---   '2' + greater than + ampersand and '1', as an unbounded string
-
-itself_string : constant unbounded_string := to_unbounded_string( "@" );
---   itself, as an unbounded string
-
 
 -----------------------------------------------------------------------------
 -- PUT TOKEN
@@ -576,7 +537,6 @@ end put_identifier_attributes;
 
 procedure Put_Identifier( id : identifier ) is
   ident : declaration renames identifiers( id );              -- the identifier
-  kind  : declaration renames identifiers( ident.kind );      -- and its type
 begin
   if ident.deleted then
      put_line( "This identifier has been deleted" );
@@ -673,11 +633,7 @@ begin
      -- if a renaming, use recusion
 
      if ident.renaming_of /= identifier'first then
-        declare
-           id : identifier := ident.renaming_of;
-        begin
-           put_identifier( ident.renaming_of );
-        end;
+        put_identifier( ident.renaming_of );
      end if;
   end if;
 end Put_Identifier;
@@ -690,8 +646,8 @@ end Put_Identifier;
 -----------------------------------------------------------------------------
 
 procedure put_all_identifiers is
-   maxNameWidth  : natural := 20;
-   maxValueWidth : natural := natural( displayInfo.col ) / 3;
+   maxNameWidth  : constant natural := 20;
+   maxValueWidth : constant natural := natural( displayInfo.col ) / 3;
    escapedValue  : unbounded_string;
    round         : natural;
    firstChar     : natural;
@@ -1033,7 +989,7 @@ begin
   -- mode, create an error message to display.  If we're in maintenance
   -- mode, create an error message only if debug is enabled.
 
-  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         fullErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
@@ -1229,7 +1185,7 @@ begin
   -- mode, create an error message to display.  If we're in maintenance
   -- mode, create an error message only if debug is enabled.
 
-  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
@@ -1521,7 +1477,7 @@ procedure err_test_result is
   gccOutLine : unbounded_string;
   sfr        : aSourceFile;
   needGccVersion : boolean := false;
-  msg        : unbounded_string := to_unbounded_string( "test failed" );
+  msg        : constant unbounded_string := to_unbounded_string( "test failed" );
   ourFullErrorMessage : unbounded_string;
   ourFullTemplateErrorMessage : unbounded_string;
 begin
@@ -1614,7 +1570,7 @@ begin
   -- mode, create an error message to display.  If we're in maintenance
   -- mode, create an error message only if debug is enabled.
 
-  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         ourFullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
@@ -1692,7 +1648,7 @@ begin
 
   put_line( standard_error, fullMsg );
 
-  if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
+  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
         put( "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
@@ -1753,7 +1709,7 @@ begin
   end if;
   if model = shell_script_model_name then
      if id = standard_error_t then
-        null; -- record that standard_error was used (not yet written)
+        null; -- TODO: record that standard_error was used (not yet written)
      end if;
   end if;
 end recordSoftwareModelRequirements;
@@ -2139,12 +2095,6 @@ begin
   end if;
 end pullBlock;
 
--- DEBUG
-procedure showBlock is
-begin
-  put_line( blocks_top'img );
-end showBlock;
-
 -----------------------------------------------------------------------------
 -- TOP OF BLOCK
 --
@@ -2191,7 +2141,6 @@ end topOfBlock;
 -----------------------------------------------------------------------------
 
 procedure GetFullParentUnitName( fullUnitName : out unbounded_string; unique : out boolean ) is
-  b : block := blocks'first;
 begin
   unique := true;
   if blocks_top = blocks'first then
@@ -2355,12 +2304,7 @@ end blockHasReturn;
 -- Mark exception handler block as running (if there is one)
 -----------------------------------------------------------------------------
 
-procedure startExceptionHandler(
-  occurrence_exception : declaration;
-  occurrence_message   : unbounded_string;
-  occurrence_status    : aStatusCode;
-  occurrence_full      : unbounded_string
-) is
+procedure startExceptionHandler is
 begin
   if blocks_top > block'first then
      -- TODO: could be optimized with eof_t...
@@ -2388,11 +2332,12 @@ function inExceptionHandler return boolean is
 begin
   if blocks_top > block'first then                        -- if have a block
      b := b - 1;                                          -- current block
-     while b >= block'first loop                          -- while blocks
+     loop                                                 -- while blocks
         if blocks( b ).newScope then                      -- a scoping block?
            res := blocks( b ).inHandler;                  -- whatever it is
            exit;
         end if;                                           -- else
+     exit when b = blocks'first;
         b := b - 1;                                       -- keep looking
      end loop;
   end if;
@@ -2415,13 +2360,14 @@ procedure getBlockException(
 begin
   if blocks_top > block'first then                        -- if have a block
      b := b - 1;                                          -- current block
-     while b >= block'first loop                          -- while blocks
+     loop                                                 -- while blocks
         if blocks( b ).newScope then                      -- a scoping block?
            occurrence_exception := blocks( b ).occurrence_exception;
            occurrence_message   := blocks( b ).occurrence_message;
            occurrence_status    := blocks( b ).occurrence_status;
            exit;
         end if;                                           -- else
+     exit when b = block'first;
         b := b - 1;                                       -- keep looking
      end loop;
   else
@@ -3009,14 +2955,14 @@ procedure resetScanner is
   procedure importEnvironment is
     -- Declare all Environment Variables.  If --import_all is not used,
     -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
-    path_key   : unbounded_string := to_unbounded_string( "PATH=" );
-    pwd_key    : unbounded_string := to_unbounded_string( "PWD=" );
-    oldpwd_key : unbounded_string := to_unbounded_string( "OLDPWD=" );
-    home_key   : unbounded_string := to_unbounded_string( "HOME=" );
-    term_key   : unbounded_string := to_unbounded_string( "TERM=" );
-    shell_key  : unbounded_string := to_unbounded_string( "SHELL=" );
-    library_key: unbounded_string := to_unbounded_string( "SPAR_LIBRARY_PATH=" );
-    tab_key    : unbounded_string := to_unbounded_string( "TABSIZE=" );
+    path_key   : constant unbounded_string := to_unbounded_string( "PATH=" );
+    pwd_key    : constant unbounded_string := to_unbounded_string( "PWD=" );
+    oldpwd_key : constant unbounded_string := to_unbounded_string( "OLDPWD=" );
+    home_key   : constant unbounded_string := to_unbounded_string( "HOME=" );
+    term_key   : constant unbounded_string := to_unbounded_string( "TERM=" );
+    shell_key  : constant unbounded_string := to_unbounded_string( "SHELL=" );
+    library_key: constant unbounded_string := to_unbounded_string( "SPAR_LIBRARY_PATH=" );
+    tab_key    : constant unbounded_string := to_unbounded_string( "TABSIZE=" );
     ev  : unbounded_string;                                     -- an env var
   begin
      for i in 1..environmentList.Length( initialEnvironment ) loop
@@ -4069,7 +4015,7 @@ function deleteIdent( id : identifier ) return boolean is
            err( "session export script not defined" );
         else
            declare
-             old_rshOpt : commandLineOption := rshOpt;
+             old_rshOpt : constant commandLineOption := rshOpt;
              temp1_t : identifier;
              temp2_t : identifier;
              -- b : boolean;
@@ -4132,7 +4078,7 @@ begin
         -- remove it so declareIdent won't be confused and try to free it.
         identifiers( id ).avalue := null;
         declare
-          derefed_id : identifier := identifiers( id ).renaming_of;
+          derefed_id : constant identifier := identifiers( id ).renaming_of;
         begin
           if identifiers( derefed_id ).renamed_count > 0 then
              identifiers( derefed_id ).renamed_count :=
@@ -4182,7 +4128,7 @@ begin
      -- remove it so declareIdent won't be confused and try to free it.
      identifiers( id ).avalue := null;
      declare
-       derefed_id : identifier := identifiers( id ).renaming_of;
+       derefed_id : constant identifier := identifiers( id ).renaming_of;
      begin
        if identifiers( derefed_id ).renamed_count > 0 then
           identifiers( derefed_id ).renamed_count :=
@@ -4269,7 +4215,7 @@ pragma inline( isJSONWhitespace );
 -- --------------------------------------------------------------------------
 
 procedure SkipJSONWhitespace( jsonString : unbounded_string; start : in out positive ) is
-  stringEnd : natural := length( jsonString );
+  stringEnd : constant natural := length( jsonString );
   ch        : character;
 begin
    while start <= stringEnd loop
@@ -4320,7 +4266,7 @@ procedure ParseJSONItem( jsonString : unbounded_string;
   j           : positive;
   inBackslash : boolean := false;
   item        : unbounded_string;
-  stringEnd   : natural := length( jsonString );
+  stringEnd   : constant natural := length( jsonString );
 begin
   -- Beyond end of string?  Just abort.
   if start > stringEnd then
@@ -4510,7 +4456,6 @@ procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifi
   source_last   : long_integer;
   source_len    : long_integer;
   item          : unbounded_string;
-  encoded_item  : unbounded_string;
   -- sourceArrayId : arrayID;
   kind          : identifier;
   elementKind   : identifier;
@@ -4653,7 +4598,6 @@ begin
      declare
        i : integer := 1;
        discard : unbounded_string;
-       ok : boolean := false;
      begin
        while i <= length( source_val ) loop
          ch := element( source_val, i );
@@ -5024,11 +4968,8 @@ end DoRecordToJson;
 -----------------------------------------------------------------------------
 
 procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_string ) is
-  jsonString    : unbounded_string;
-  firstField    : boolean := true;
   k             : natural;
   item          : unbounded_string;
-  decodedItem  : unbounded_string;
   decodedItemName  : unbounded_string;
   decodedItemValue  : unbounded_string;
   elementKind   : identifier;
@@ -5064,7 +5005,7 @@ begin
      declare
        i : integer := 1;
        discard : unbounded_string;
-       stringEnd : natural := length( sourceVal );
+       stringEnd : constant natural := length( sourceVal );
      begin
        JSONexpect( sourceVal, i, '{' );
        if i <= length( sourceVal ) then
@@ -5781,12 +5722,23 @@ procedure expect( expected_token : identifier; value : string ) is
   -- Check for the specified identifier and value.  If the current token
   -- and its value matches, get the next token, otherwise show an error.
 begin
+  if token /= expected_token then
+     if expected_token = keyword_t then
+        err( "keyword expected" );
+     elsif expected_token = number_t then
+        err( "number expected" );
+     elsif expected_token = strlit_t then
+        err( "string literal expected" );
+     elsif expected_token = symbol_t then
+        err( "symbol expected" );
+     else
+        err( to_string( identifiers( expected_token ).name ) & " expected" );
+     end if;
+  end if;
   if value /= to_string( identifiers( token ).value.all ) then
       err( "'" & value & "' expected" );
-      getNextToken;
-  else
-      getNextToken;
   end if;
+  getNextToken;
 end expect;
 
 procedure expectSemicolon is
@@ -5963,9 +5915,9 @@ end restoreScript;
 -- beyond a statement terminator.
 ------------------------------------------------------
 
-type compressionContext is ( startOfStatement, startOfParameters,
-  startOfDeleteParameters, isPart,
-  adaScriptStatement, shellStatement, SQLStatement );
+--type compressionContext is ( startOfStatement, startOfParameters,
+--  startOfDeleteParameters, isPart,
+--  adaScriptStatement, shellStatement, SQLStatement );
 
 -----------------------------------------------------------------------------
 -- REPLACE SCRIPT WITH FRAGMENT

@@ -52,47 +52,71 @@ begin
   pragma assert( not isOpen( myfile ) );
 
   put_line( "put string / overwrite test:" );
-  overwrite( myfile, "test.txt" );
-  pragma assert( isOpen( myfile ) );
-  put( myfile, "test line" );
-  close( myfile );
+  declare
+    myfile : aBufferedFile;
+  begin
+    overwrite( myfile, "test.txt" );
+    pragma assert( isOpen( myfile ) );
+    put( myfile, "test line" );
+    close( myfile );
+  end;
 
   put_line( "put character / append test:" );
-  append( myfile, "test.txt" );
-  pragma assert( isOpen( myfile ) );
-  put( myfile, ASCII.LF );
-  flush( myfile );
-  close( myfile );
+  declare
+    myfile : aBufferedFile;
+  begin
+    append( myfile, "test.txt" );
+    pragma assert( isOpen( myfile ) );
+    put( myfile, ASCII.LF );
+    flush( myfile );
+    close( myfile );
+  end;
 
   put_line( "get string test:" );
-  open( myfile, "test.txt" );
-  pragma assert( isOpen( myfile ) );
-  get( myfile, s );
-  put_line( to_string( s ) );
-  close( myfile );
-
-  put_line( "EOF test:" );
-  open( myfile, "test.txt" );
-  pragma assert( isOpen( myfile ) );
-  while not is_eof( myfile ) loop
+  declare
+    myfile : aBufferedFile;
+  begin
+    open( myfile, "test.txt" );
+    pragma assert( isOpen( myfile ) );
     get( myfile, s );
     put_line( to_string( s ) );
-  end loop;
-  close( myfile );
+    close( myfile );
+  end;
+
+  put_line( "EOF test:" );
+  declare
+    myfile : aBufferedFile;
+  begin
+    open( myfile, "test.txt" );
+    pragma assert( isOpen( myfile ) );
+    while not is_eof( myfile ) loop
+      get( myfile, s );
+      put_line( to_string( s ) );
+    end loop;
+    close( myfile );
+  end;
 
   put_line( "read character test:" );
-  open( myfile, "test.txt" );
-  get( myfile, c );
-  put_line( "read '" & c & "'" );
-  pragma assert( c = 't', "get did not return first character of 't'" );
-  close( myfile );
+  declare
+    myfile : aBufferedFile;
+  begin
+    open( myfile, "test.txt" );
+    get( myfile, c );
+    put_line( "read '" & c & "'" );
+    pragma assert( c = 't', "get did not return first character of 't'" );
+    close( myfile );
+  end;
 
   put_line( "read bytes test:" );
-  open( myfile, "test.txt" );
-  get( myfile, 10, s );
-  put_line( '"' & to_string( s ) & '"' );
-  pragma assert( to_string(s) = "test line" & ASCII.LF, "get did not return expected first line" );
-  close( myfile );
+  declare
+    myfile : aBufferedFile;
+  begin
+    open( myfile, "test.txt" );
+    get( myfile, 10, s );
+    put_line( '"' & to_string( s ) & '"' );
+    pragma assert( to_string(s) = "test line" & ASCII.LF, "get did not return expected first line" );
+    close( myfile );
+  end;
 
   put_line( "The following tests assume Apache is running on port 80 on local host" );
   put_line( "If Apache is not running, they will fail with an exception" );
@@ -139,16 +163,20 @@ begin
 
   put_line( "Non-blocking socket test:" );
 
-  establish( mysock, to_unbounded_string( "localhost" ), 80, mode => nonblocking );
-  flag := false;
+  declare
+    mysock : aBufferedSocket;
   begin
-    get( mysock, c );
-  exception when fileutils_wouldblock =>
-    put_line( "reading would block...good" );
-    flag := true;
+    establish( mysock, to_unbounded_string( "localhost" ), 80, mode => nonblocking );
+    flag := false;
+    begin
+      get( mysock, c );
+    exception when fileutils_wouldblock =>
+      put_line( "reading would block...good" );
+      flag := true;
+    end;
+    pragma assert( flag, "didn't block on reading from apache connection" );
+    close(mysock);
   end;
-  pragma assert( flag, "didn't block on reading from apache connection" );
-  close(mysock);
 
   put_line( "HttpGet test" );
 

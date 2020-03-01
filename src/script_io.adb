@@ -21,10 +21,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with interfaces.c, ada.text_io, ada.strings.unbounded.text_io,
+with interfaces.c,
+     ada.text_io,
      Gnat.Source_Info;
-use  interfaces.c, ada.text_io, ada.strings.unbounded.text_io;
-
+use  interfaces.c,
+     ada.text_io;
 
 package body script_io is
 
@@ -38,7 +39,7 @@ function LineRead( lineptr : access unbounded_string ) return boolean is
   ch         : character := ASCII.NUL;
 begin
    buffer(1) := ' '; -- suppress GNAT warning about buffer having no value
-<<next>> lineptr.all := null_unbounded_string;
+   lineptr.all := null_unbounded_string;
   scriptLineStart := lseek( scriptFile, 0, 1 );
 -- strictly speaking, the start of the current block should not reference
 -- an entire line, but this will do for now.  It should really be the
@@ -65,7 +66,7 @@ begin
   if bufpos > 1 then
      lineptr.all := lineptr.all & string( buffer(1..bufpos-1 ) );
   end if;
-  if amountRead < 0 then
+  if amountRead < 0 or amountRead = size_t'last then
      put_line( standard_error, Gnat.Source_Info.Source_Location & ": error reading script file: errno " & C_errno'img );
      return false;
   elsif amountRead = 0 and length( lineptr.all ) = 0 then

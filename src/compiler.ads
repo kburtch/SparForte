@@ -21,16 +21,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system,
-  ada.unchecked_deallocation,
+with ada.unchecked_deallocation,
   ada.strings.unbounded,
-  script_io,
-  world,
-  scanner_res;
+  world;
 use ada.strings.unbounded,
-  script_io,
-  world,
-  scanner_res;
+  world;
 
 package compiler is
 

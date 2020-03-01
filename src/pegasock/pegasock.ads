@@ -218,8 +218,6 @@ function is_open( fd : aBufferedSocket ) return boolean renames isOpen;
 function is_eof( fd : aBufferedSocket ) return boolean renames isEOF;
 procedure set_read_buffer_size( fd : in out aBufferedSocket; size : short_integer ) renames setReadBufferSize;
 
-pragma inline( new_line );
-
 function C_pegasock_errno return integer;
 pragma import( C, C_pegasock_errno, "C_pegasock_errno" );
 procedure C_pegasock_reset_errno;

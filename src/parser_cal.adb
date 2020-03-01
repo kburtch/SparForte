@@ -24,18 +24,12 @@
 --with text_io;use text_io;
 
 with ada.strings.unbounded,
-    world,
     scanner.calendar,
-    string_util,
-    parser,
     parser_params,
     spar_os;
 use ada.strings.unbounded,
-    world,
     scanner,
     scanner.calendar,
-    string_util,
-    parser,
     parser_params,
     spar_os;
 

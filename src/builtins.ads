@@ -22,12 +22,8 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     world,
-     scanner,
      spar_os.exec;
 use  ada.strings.unbounded,
-     world,
-     scanner,
      spar_os,
      spar_os.exec;
 

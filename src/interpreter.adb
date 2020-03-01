@@ -25,16 +25,14 @@ pragma ada_2005;
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
-with system,
-    ada.text_io,
+with ada.text_io,
     ada.command_line,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     ada.numerics.float_random,
     ada.calendar,
     gnat.source_info,
-    cgi,
-    spar_os.exec,
+    spar_os,
     string_util,
     user_io,
     user_io.getline,
@@ -52,11 +50,9 @@ with system,
     parser_tio;
 use ada.text_io,
     ada.command_line,
-    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     spar_os,
-    spar_os.exec,
     user_io,
     script_io,
     world,
@@ -344,7 +340,7 @@ procedure interpretConfig( configPath : string ) is
   oldScriptFilePath : unbounded_string;
   firstLine : aliased unbounded_string;
   res : int;
-  old_identifiers_top : identifier := identifiers_top;
+  old_identifiers_top : constant identifier := identifiers_top;
 begin
   if verboseOpt then
      Put_Trace( "Executing Global Config" );
@@ -708,7 +704,7 @@ procedure doGlobalPolicy is
   save_rshOpt  : commandLineOption;              -- for executing policy
   save_execOpt : commandLineOption;              -- for executing policy
   res  : int;
-  path : string := "/etc/sparforte_policy";
+  path : constant string := "/etc/sparforte_policy";
   scriptDir : unbounded_string;
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell
@@ -757,7 +753,7 @@ procedure doGlobalConfig is
   save_rshOpt  : commandLineOption;              -- for executing config
   save_execOpt : commandLineOption;              -- for executing config
   res  : int;
-  path : string := "/etc/sparforte_config";
+  path : constant string := "/etc/sparforte_config";
   scriptDir : unbounded_string;
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell
@@ -801,7 +797,7 @@ procedure doGlobalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
   res : int;
-  path : string := "/etc/sparforte_profile";
+  path : constant string := "/etc/sparforte_profile";
   scriptDir : unbounded_string;
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell

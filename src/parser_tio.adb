@@ -23,27 +23,23 @@
 
 with interfaces.c,
     ada.exceptions,
-    ada.text_io.editing,
+    ada.text_io,
     ada.strings.unbounded.text_io,
     gnat.source_info,
     string_util,
     user_io,
     user_io.getline,
-    script_io,
     signal_flags,
     scanner.calendar,
     parser_aux,
     parser_cal,
-    parser.decl.as,
+    parser,
     parser_params;
 use interfaces.c,
     ada.exceptions,
     ada.text_io,
-    ada.text_io.editing,
-    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     user_io,
-    script_io,
     string_util,
     signal_flags,
     scanner,
@@ -51,7 +47,6 @@ use interfaces.c,
     parser_aux,
     parser_cal,
     parser,
-    parser.decl.as,
     parser_params;
 
 package body parser_tio is
@@ -599,7 +594,7 @@ begin
   -- 7. eof
 end DoInitFileVariableFields;
 
-procedure DoFileOpen( ref : in out reference;  mode : identifier; create : boolean;
+procedure DoFileOpen( ref : reference;  mode : identifier; create : boolean;
   name : string ) is
   result : aFileDescriptor;
   flags  : anOpenFlag;
@@ -654,7 +649,7 @@ begin
   end if;
 end DoFileOpen;
 
-procedure DoSocketOpen( file_ref : in out reference; name : unbounded_string ) is
+procedure DoSocketOpen( file_ref : reference; name : unbounded_string ) is
   result : aSocketFD;
   --flags  : anOpenFlag;
   host   : unbounded_string;
@@ -1103,7 +1098,6 @@ procedure ParsePutLine is
   -- Source: Ada.Text_IO.Put_Line
   target_ref: reference;
   kind      : identifier := file_type_t;
-  stderr    : boolean := false;
   expr_val  : unbounded_string;
   expr_type : identifier;
   temp      : unbounded_string;
@@ -1182,7 +1176,7 @@ begin
         for i in 1..length( expr_val ) loop
             ch := Element( expr_val, i );
 <<rewrite>> writechar( result, fd, ch, 1 );
-            if result < 0 then
+            if result < 0 or result = size_t'last then
                if C_errno = EAGAIN or C_errno = EINTR then
                   goto rewrite;
                end if;
@@ -1193,7 +1187,7 @@ begin
         ch := ASCII.LF;
 <<rewrite2>>
         writechar( result, fd, ch, 1 ); -- add a line feed
-        if result < 0 then
+        if result < 0 or result = size_t'last then
            if C_errno = EAGAIN or C_errno = EINTR then
               goto rewrite2;
            end if;
@@ -1316,8 +1310,8 @@ begin
            val := to_numeric( expr_val );
            -- Within the range of a SparForte integer and no decimal (e.g.
            -- casting results in the same value?
-           if long_float( val ) >= long_float( integerOutputType'first+0.9 ) and
-              long_float( val ) <= maxInteger then
+           if val >= long_float( integerOutputType'first+0.9 ) and
+              val <= maxInteger then
               if val = long_float'floor( val ) then
                  expr_val := to_unbounded_string( val );
               end if;
@@ -1367,7 +1361,6 @@ procedure ParsePut is
   -- Source: Ada.Text_IO.Editing.Put
   target_ref: reference;
   kind      : identifier;
-  stderr    : boolean := false;
   expr_val  : unbounded_string;
   expr_type : identifier;
   result    : size_t;
@@ -1470,7 +1463,7 @@ begin
         for i in 1..length( expr_val ) loop
             ch := Element( expr_val, i );
             writechar( result, fd, ch, 1 );
-<<rewrite>> if result < 0 then
+<<rewrite>> if result < 0 or result = size_t'last then
                if C_errno = EAGAIN or C_errno = EINTR then
                   goto rewrite;
                end if;
@@ -1508,7 +1501,7 @@ begin
         fd := aFileDescriptor'value( to_string( stringField( target_ref, fd_field ) ) );
         ch := ASCII.LF;
 <<rewrite>> writechar( result, fd, ch, 1 );
-        if result < 0 then
+        if result < 0 or result = size_t'last then
            if C_errno = EAGAIN or C_errno = EINTR then
               goto rewrite;
            end if;
@@ -1638,8 +1631,6 @@ procedure ParseGetImmediate is
   ch        : character;
   id_ref    : reference;
   avail_ref : reference;
-  --result    : size_t;
-  fileInfo  : unbounded_string;
   hasAvail  : boolean := false;
   baseType  : identifier;
 begin
@@ -1812,7 +1803,7 @@ begin
   declareProcedure( set_error_t, "set_error", ParseSetError'access );
   declareProcedure( reset_t, "reset", ParseReset'access );
   declareProcedure( get_immediate_t, "get_immediate", ParseGetImmediate'access );
-  -- Look ahead doesn't work yet
+  -- TODO: Look ahead doesn't work yet
   -- declareProcedure( look_ahead_t, "look_ahead", ParseLookAhead'access );
 
   -- declareProcedure( delete_t, "delete" );

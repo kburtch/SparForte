@@ -21,8 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system, ada.strings.unbounded, spar_os;
-use ada.strings.unbounded, spar_os;
+with ada.strings.unbounded,
+     spar_os;
+use ada.strings.unbounded,
+    spar_os;
 
 package script_io is
 

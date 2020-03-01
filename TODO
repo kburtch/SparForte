@@ -18,6 +18,7 @@ Priority Issues (Fix These First)
   can HTML be embedded as CDATA in junit xml?
 - improving test coverage
 - improving shell features
+- incompelte casting tests
 
 - for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?

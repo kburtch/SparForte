@@ -23,18 +23,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system,
-  ada.unchecked_deallocation,
+with
   ada.strings.unbounded,
-  script_io,
   world,
-  compiler,
-  scanner_res;
+  compiler;
 use ada.strings.unbounded,
-  script_io,
   world,
-  compiler,
-  scanner_res;
+  compiler;
 
 package scanner is
 
@@ -232,12 +227,7 @@ procedure sawReturn;
 function blockHasReturn return boolean;
 -- true if a block has been flagged as having a return
 
-procedure startExceptionHandler(
-  occurrence_exception : declaration;
-  occurrence_message   : unbounded_string;
-  occurrence_status    : aStatusCode;
-  occurrence_full      : unbounded_string
-);
+procedure startExceptionHandler;
 -- mark exception handler block as running (if there is one)
 
 function inExceptionHandler return boolean;

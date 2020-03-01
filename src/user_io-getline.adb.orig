@@ -25,21 +25,29 @@ with ada.text_io,
     ada.strings.unbounded.text_io,
     ada.calendar,
     spar_os.tty,
+#if not READLINE
     gnat.regexp,
     gnat.os_lib,
+#end if;
     gnat.directory_operations,
     world,
+#if not READLINE
     signal_flags,
+#end if;
     string_util;
 use ada.text_io,
     ada.strings.unbounded.text_io,
-    spar_os,
     ada.calendar,
+    spar_os,
     spar_os.tty,
+#if not READLINE
     gnat.regexp,
     gnat.os_lib,
+#end if;
     gnat.directory_operations,
+#if not READLINE
     signal_flags,
+#end if;
     world,
     string_util;
 

@@ -27,38 +27,31 @@ pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
 
-with system,
-    ada.calendar,
-    ada.text_io,
+with ada.text_io,
     ada.integer_text_io,
-    ada.strings.fixed,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
     spar_os.tty,
     signal_flags,
-    pegasock.memcache,
-    script_io,
     user_io,
+    script_io,
     string_util,
-    world,
+    scanner_res,
     performance_monitoring;
 use ada.text_io,
     ada.integer_text_io,
     ada.command_line,
     ada.command_line.environment,
-    ada.strings.fixed,
-    ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     spar_os,
     spar_os.tty,
     signal_flags,
-    pegasock.memcache,
-    script_io,
     user_io,
+    script_io,
     string_util,
-    world,
+    scanner_res,
     performance_monitoring;
 
 package body compiler is
@@ -786,12 +779,9 @@ procedure adaScriptStatementByteCode( ci : in out compressionInfo;
   word : unbounded_string;
   decimalCount : natural;
   octathorneCount : natural;
-  uncompressed_script : unbounded_string;
-  newstr : unbounded_string;
   -- nr : aVMNRNumber;
   -- sr : aVMSRNumber;
   -- ir : aVMIRNumber;
-  tabAdjust : natural := 0;
 
 begin
   -- Tokenize keywords in the line.  This is very similar to getNextToken
@@ -1179,13 +1169,9 @@ procedure shellStatementByteCode( ci : in out compressionInfo;
   command : unbounded_string ) is
 
   word : unbounded_string;
-  uncompressed_script : unbounded_string;
-  newstr : unbounded_string;
   -- nr : aVMNRNumber;
   -- sr : aVMSRNumber;
   -- ir : aVMIRNumber;
-  tabAdjust : natural := 0;
-  escapingNext : boolean := false;
   ch : character;
   inDoubleQuotes : boolean;
   inSingleQuotes : boolean;
@@ -1412,11 +1398,6 @@ end shellStatementByteCode;
 procedure SQLStatementByteCode( ci : in out compressionInfo;
   command : unbounded_string ) is
 
-  word : unbounded_string;
-  uncompressed_script : unbounded_string;
-  newstr : unbounded_string;
-  tabAdjust : natural := 0;
-  escapingNext : boolean := false;
   ch : character;
   inDoubleQuotes : boolean;
   inSingleQuotes : boolean;
@@ -1752,13 +1733,9 @@ procedure startOfStatementByteCode( ci : in out compressionInfo;
   command : unbounded_string ) is
 
   word : unbounded_string;
-  uncompressed_script : unbounded_string;
-  newstr : unbounded_string;
   -- nr : aVMNRNumber;
   -- sr : aVMSRNumber;
   -- ir : aVMIRNumber;
-  tabAdjust : natural := 0;
-  escapingNext : boolean := false;
   ch : character;
   id             : identifier;
   -- backupPos      : natural;
@@ -2461,7 +2438,6 @@ end compileCommand;
 
 procedure compileScript( firstLine : unbounded_string ) is
   ci : compressionInfo;
-  newstr : unbounded_string;
   command : aliased unbounded_string := firstLine;
   compileDone : boolean := false;
   lastLineNumber : natural := 0;

@@ -22,9 +22,8 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
-     ada.strings.unbounded.text_io,
+     ada.strings.unbounded,
      ada.command_line,
-     spar_os,
      world,
      compiler,
      scanner,
@@ -35,9 +34,7 @@ with ada.text_io,
 
 use ada.text_io,
     ada.strings.unbounded,
-    ada.strings.unbounded.text_io,
     ada.command_line,
-    spar_os,
     world,
     compiler,
     scanner,
@@ -189,7 +186,7 @@ begin
             -- Interpret 1 or More Individual Characters
 
             declare
-               Args : string := Argument(i);
+               Args : constant string := Argument(i);
             begin
                if Args'length < 2 then
                   Put_Line( standard_error, Command_Name & ": missing options: " & Argument(i) );

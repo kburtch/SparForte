@@ -71,8 +71,8 @@ tcap_cols   : aliased string := "co"    & ASCII.NUL;
 lastTerm    : unbounded_string := to_unbounded_string( "<undefined>" );
 -- type of terminal as of last attribute update
 
-tput_path1  : unbounded_string := to_unbounded_string( "/bin/tput" );
-tput_path2  : unbounded_string := to_unbounded_string( "/usr/bin/tput" );
+tput_path1  : constant unbounded_string := to_unbounded_string( "/bin/tput" );
+tput_path2  : constant unbounded_string := to_unbounded_string( "/usr/bin/tput" );
 
 procedure free_list is new unchecked_deallocation( argumentList,
    argumentListPtr );
@@ -193,7 +193,7 @@ begin
 
   findIdent( to_unbounded_string( "TERM" ), term_id );
   declare
-     termString : string := "TERM=" & to_string( identifiers( term_id ).value.all ) & ASCII.NUL;
+     termString : constant string := "TERM=" & to_string( identifiers( term_id ).value.all ) & ASCII.NUL;
      status : integer;
   begin
      findIdent( to_unbounded_string( "TERM" ), term_id );
