@@ -1913,7 +1913,7 @@ procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier
   kind2    : identifier;
   operator : identifier;
   last_op  : identifier := eof_t;
-  b        : boolean;
+  b        : boolean := false;
   type bitwise_number is mod 2**64;
   oldExpressionInstruction : constant line_count := lastExpressionInstruction;
   oldFirstExpressionInstruction : constant line_count := firstExpressionInstruction;
@@ -2014,10 +2014,12 @@ begin
               err( gnat.source_info.source_location &
                 ": Internal error: unable to handle boolean operator" );
            end if;
-           if b then
-              re1 := to_unbounded_string( "1" );
-           else
-              re1 := to_unbounded_string( "0" );
+           if isExecutingCommand then
+              if b then
+                 re1 := to_unbounded_string( "1" );
+              else
+                 re1 := to_unbounded_string( "0" );
+              end if;
            end if;
         else
            err( "boolean or number expected" );
