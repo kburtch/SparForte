@@ -21,9 +21,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-use  ada.strings.unbounded;
-
 package body software_models is
 
 -- NONSTANDARD

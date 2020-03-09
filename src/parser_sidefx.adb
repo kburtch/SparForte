@@ -21,13 +21,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io,
-     scanner,
+with scanner,
      user_io;
-use  ada.text_io,
-     scanner,
+use  scanner,
      user_io;
 
+--with ada.text_io;
+--use  ada.text_io;
 
 package body parser_sidefx is
 

@@ -43,7 +43,7 @@
 package body gen_list is
   pragma suppress( all_checks );
 
-NullList : List := (null,null,0,null,0,null);
+NullList : constant List := (null,null,0,null,0,null);
 
 RecordsAllocated : AListIndex := 0;
 

@@ -24,7 +24,6 @@
 ------------------------------------------------------------------------------
 
 with system,
-  unchecked_deallocation,
   ada.numerics.float_random,
   ada.unchecked_deallocation,
   ada.strings.unbounded,

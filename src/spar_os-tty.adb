@@ -24,7 +24,6 @@
 pragma ada_2005;
 
 with unchecked_deallocation,
-     interfaces.c,
      ada.text_io,
      gnat.source_info,
      spar_os.exec,

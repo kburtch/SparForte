@@ -26,8 +26,7 @@
 with ada.numerics.long_elementary_functions,
     ada.numerics.float_random,
     ada.numerics.long_complex_types,
-    ada.numerics.long_complex_elementary_functions,
-    ada.strings.unbounded,
+    ada.strings,
     interfaces,
     gnat.sha1,
     gnat.sha224,
@@ -40,9 +39,7 @@ with ada.numerics.long_elementary_functions,
     md5;
 use ada.numerics.long_elementary_functions,
     ada.numerics.long_complex_types,
-    ada.numerics.long_complex_elementary_functions,
     ada.strings,
-    ada.strings.unbounded,
     interfaces,
     world,
     scanner,
@@ -932,7 +929,7 @@ end ParseNumericsCopySign;
 
 procedure ParseNumericsSturges( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.sturges( low, high, total );
-  -- Source: BUSH builtin, Sturge's method
+  -- Source: SparForte builtin, Sturge's method
   lo_val : unbounded_string;
   lo_type : identifier;
   hi_val : unbounded_string;
@@ -946,25 +943,12 @@ begin
   ParseFirstNumericParameter( lo_val, lo_type );
   ParseNextNumericParameter( hi_val, hi_type );
   ParseLastNumericParameter( total_val, total_type );
-  expect( symbol_t, "(" );
-  ParseExpression( lo_val, lo_type );
-  if uniTypesOk( lo_type, uni_numeric_t ) then
-     expect( symbol_t, "," );
-     ParseExpression( hi_val, hi_type );
-     if uniTypesOk( hi_type, uni_numeric_t ) then
-        expect( symbol_t, "," );
-        ParseExpression( total_val, total_type );
-        if uniTypesOk( total_type, uni_numeric_t ) then
-           expect( symbol_t, ")" );
-        end if;
-     end if;
-  end if;
   begin
      if isExecutingCommand then
         lo := to_numeric( lo_val );
         hi := to_numeric( hi_val );
         total := to_numeric( total_val );
-        result := to_unbounded_string( long_float'rounding( (hi-lo) / (1.0+log( total ) ) ) ); -- this is wrong
+        result := to_unbounded_string( long_float'rounding( (hi-lo) / (1.0+log( total ) ) ) ); -- TODO: this is wrong
      end if;
   exception when others =>
      err_exception_raised;
@@ -1593,7 +1577,7 @@ begin
     data : integer := 1;
     k    : hash_integer;
     limit : hash_integer;
-    s    : string := to_string( expr1_val );
+    s    : constant string := to_string( expr1_val );
     len  : integer := s'length;
   begin
     limit := hash_integer( to_numeric( expr2_val ) );

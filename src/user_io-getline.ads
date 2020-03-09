@@ -22,9 +22,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-use ada.strings.unbounded;
-
 package user_io.getline is
 
 procedure getLine( line : out unbounded_string; prompt : unbounded_string := null_unbounded_string; keepHistory : boolean := false );

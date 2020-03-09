@@ -26,7 +26,6 @@
 -- eg. package AnIntegerList is new list_manager(integer, "=", ">=");
 --     MyIntegerList : AnIntegerList.List;
 
-with Ada; use Ada;
 with Unchecked_Deallocation;
 
 generic
