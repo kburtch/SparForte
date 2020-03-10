@@ -143,7 +143,7 @@ use ada.text_io,
 package body scanner is
 
 -----------------------------------------------------------------------------
--- PUT TOKEN
+--  PUT TOKEN
 --
 -- For debugging, show the current token, its value, type and properities.
 -----------------------------------------------------------------------------
@@ -236,7 +236,7 @@ end Put_Token;
 
 
 -----------------------------------------------------------------------------
--- PUT IDENTIFIER ATTRIBUTES
+--  PUT IDENTIFIER ATTRIBUTES
 --
 -- Show an identifier's attributes (that is, it's type).  Shared by
 -- put_identifier and put_all_identifiers.
@@ -529,7 +529,7 @@ end put_identifier_attributes;
 
 
 -----------------------------------------------------------------------------
--- PUT IDENTIFIER
+--  PUT IDENTIFIER
 --
 -- Show an identifier's name, value, attributes and type on standard output.
 -- Used by env command and for debugging.
@@ -640,7 +640,7 @@ end Put_Identifier;
 
 
 -----------------------------------------------------------------------------
--- PUT ALL IDENTIFIERS
+--  PUT ALL IDENTIFIERS
 --
 -- Show all the identifiers in the symbol table.  Use a tabular layout.
 -----------------------------------------------------------------------------
@@ -715,6 +715,7 @@ end put_all_identifiers;
 templateErrorHeader : constant unbounded_string := to_unbounded_string( "SparForte says" );
 
 
+-----------------------------------------------------------------------------
 --  CONVERT TO HTML
 --
 -- Change an error message so that it is formatted as HTML
@@ -778,6 +779,7 @@ begin
 end convertToHTML;
 
 
+-----------------------------------------------------------------------------
 --  CONVERT TO PLAIN TEXT
 --
 -- Change an error message so that it is formatted as plain text
@@ -839,6 +841,7 @@ begin
  end convertToPlainText;
 
 
+-----------------------------------------------------------------------------
 --  GET SCRIPT POSITION MESSAGE
 --
 -----------------------------------------------------------------------------
@@ -1023,6 +1026,7 @@ begin
 end get_script_execution_position;
 
 
+-----------------------------------------------------------------------------
 --  ERR
 --
 -- Stop execution and record an compile-time or run-time error.  Format the
@@ -1231,6 +1235,7 @@ begin
   end if;
 end err;
 
+-----------------------------------------------------------------------------
 --  ERR EXCEPTION RAISED
 --
 -- General message when raising on when others =>
@@ -1241,6 +1246,7 @@ begin
   err( "an unexpected exception was raised" );
 end err_exception_raised;
 
+-----------------------------------------------------------------------------
 --  ERR RENAMING
 --
 -- Show an error message for something disallowed for renaming
@@ -1270,6 +1276,7 @@ begin
   end if;
 end err_renaming;
 
+-----------------------------------------------------------------------------
 --  RAISE EXCEPTION
 --
 -- Like err, but for exceptions.  Stop execution and report a run-time
@@ -1460,6 +1467,7 @@ begin
 end raise_exception;
 
 
+-----------------------------------------------------------------------------
 --  ERR TEST RESULT
 --
 -- Show a failed result from pragma test_result
@@ -1633,6 +1641,7 @@ begin
 end err_test_result;
 
 
+-----------------------------------------------------------------------------
 --  WARN
 --
 -- Issue a warning.  This is done immediately, is not formatted by gcc-style
@@ -1671,7 +1680,7 @@ end warn;
 
 
 -----------------------------------------------------------------------------
--- ERR PREVIOUS
+--  ERR PREVIOUS
 --
 -- Same as err below, but don't hilight the current token because the error
 -- actually happened before it.  Just mark start of current token.
@@ -1691,7 +1700,8 @@ end err_previous;
 -- Scope
 -----------------------------------------------------------------------------
 
--- RECORD SOFTWARE MODEL REQUIREMENTS
+-----------------------------------------------------------------------------
+--  RECORD SOFTWARE MODEL REQUIREMENTS
 --
 -- Checked the referenced identifier and update the requirements for the
 -- selected software model.
@@ -1715,7 +1725,8 @@ begin
 end recordSoftwareModelRequirements;
 
 
--- CHECK IDENTIFIERS IN CURRENT BLOCK
+-----------------------------------------------------------------------------
+--  CHECK IDENTIFIERS IN CURRENT BLOCK
 --
 -- check for unused variables and tally presence of software model req's
 -- this is normally called automatically by pullBlock but is exposed
@@ -1861,6 +1872,7 @@ begin
 end checkIdentifiersInCurrentBlock;
 
 
+-----------------------------------------------------------------------------
 --  CHECK IDENTIFIERS FOR SIMPLE SCRIPTS
 --
 -- Check the identifiers in a simple script to see if they were used.  It
@@ -1987,6 +1999,7 @@ begin
 end checkIdentifiersForSimpleScripts;
 
 
+-----------------------------------------------------------------------------
 --  COMPLETE SOFTWARE MODEL REQUIREMENTS
 --
 -- Check pre-defined identifiers for software requirements.  Then evaluate
@@ -2007,7 +2020,7 @@ begin
 end completeSoftwareModelRequirements;
 
 -----------------------------------------------------------------------------
--- PUSH BLOCK
+--  PUSH BLOCK
 --
 -- Start a block statement or scope by pushing the current symbol table stack
 -- information on the blocks stack.  It also records the current
@@ -2054,7 +2067,7 @@ begin
 end pushBlock;
 
 -----------------------------------------------------------------------------
--- PULL BLOCK
+--  PULL BLOCK
 --
 -- Discards a block statement from the blocks stack, discarding all
 -- declared identifiers.  (pullBlock treats all declarations in the
@@ -2096,7 +2109,7 @@ begin
 end pullBlock;
 
 -----------------------------------------------------------------------------
--- TOP OF BLOCK
+--  TOP OF BLOCK
 --
 -- Return to the top of the current block statement as marked by pushBlock.
 -----------------------------------------------------------------------------
@@ -2127,7 +2140,7 @@ begin
 end topOfBlock;
 
 -----------------------------------------------------------------------------
--- GET FULL PARENT UNIT NAME
+--  GET FULL PARENT UNIT NAME
 --
 -- Return the full (dotted) name of the scope (i.e. what you would prefix
 -- to identify a variable).  Be aware that some blocks like declare have a
@@ -2161,7 +2174,7 @@ begin
 end GetFullParentUnitName;
 
 -----------------------------------------------------------------------------
--- IS LOCAL
+--  IS LOCAL
 --
 -- True if the identifier is local to the current block's scope
 -----------------------------------------------------------------------------
@@ -2196,7 +2209,7 @@ end isLocal;
 
 
 -----------------------------------------------------------------------------
--- GET IDENTIFIER BLOCK
+--  GET IDENTIFIER BLOCK
 --
 -- Return the block number for an identifier
 -----------------------------------------------------------------------------
@@ -2220,9 +2233,9 @@ end getIdentifierBlock;
 
 
 -----------------------------------------------------------------------------
--- GET THREAD NAME
+--  GET THREAD NAME
 --
--- return the name of the given thread.  If in doubt, presume the main
+-- Return the name of the given thread.  If in doubt, presume the main
 -- program is the thread.
 -----------------------------------------------------------------------------
 
@@ -2244,7 +2257,7 @@ end getThreadName;
 
 
 -----------------------------------------------------------------------------
--- GET BLOCK NAME
+--  GET BLOCK NAME
 --
 -- return the name of the given block
 -----------------------------------------------------------------------------
@@ -2260,7 +2273,7 @@ end getBlockName;
 
 
 -----------------------------------------------------------------------------
--- SAW RETURN
+--  SAW RETURN
 --
 -- Mark return statement has having been seen in the most recent non-declare
 -- scope block.  If no such block, does nothing.
@@ -2283,7 +2296,7 @@ end sawReturn;
 
 
 -----------------------------------------------------------------------------
--- BLOCK HAS RETURN
+--  BLOCK HAS RETURN
 --
 -- True if a block has been flagged as having a return
 -----------------------------------------------------------------------------
@@ -2299,7 +2312,7 @@ end blockHasReturn;
 
 
 -----------------------------------------------------------------------------
--- START EXCEPTION HANDLER
+--  START EXCEPTION HANDLER
 --
 -- Mark exception handler block as running (if there is one)
 -----------------------------------------------------------------------------
@@ -2320,7 +2333,7 @@ end startExceptionHandler;
 
 
 -----------------------------------------------------------------------------
--- IN EXCEPTION HANDLER
+--  IN EXCEPTION HANDLER
 --
 -- True if in exception handler (i.e. re-raise is valid).  If no block, then
 -- no handler.
@@ -2346,7 +2359,7 @@ end inExceptionHandler;
 
 
 -----------------------------------------------------------------------------
--- GET BLOCK EXCEPTION
+--  GET BLOCK EXCEPTION
 --
 -- Return the exception defined by startExceptionHandler
 -----------------------------------------------------------------------------
@@ -2377,7 +2390,7 @@ end getBlockException;
 
 
 -----------------------------------------------------------------------------
--- DUMP SYMBOL TABLE
+--  DUMP SYMBOL TABLE
 --
 -- Debugging routine to display the top of the symbol table.
 -----------------------------------------------------------------------------
@@ -2401,7 +2414,7 @@ end dumpSymbolTable;
 
 
 -----------------------------------------------------------------------------
--- SHUTDOWN SCANNER
+--  SHUTDOWN SCANNER
 --
 -- Shutdown the scanner.  Run shutdown for the various SparForte packages.
 -- Clear the symbol table and block (scope) table.
@@ -2462,21 +2475,13 @@ begin
   blocks_top := block'first;                                  -- no blocks
 end shutdownScanner;
 
------------------------------------------------------------------------------
--- RESET SCANNER
---
--- A less harsh version of shutdownScanner / startScanner.
--- Restart the scanner by resetting scanner variables to their startup
--- values and reload the standard identifiers.  (Although keywords
--- can't be unset by the user, standard identifiers can.  The user
--- can unset "false", for example.  We'll initialize all standard
--- identifiers here to make sure they exist.  However, this raises
--- issues for nested scripts if resetScanner is used for that
--- in the future purpose.)
------------------------------------------------------------------------------
 
+-----------------------------------------------------------------------------
+--  DECLARE ASCII CHARACTERS
+--
 -- these are pulled out of reset scanner to avoid large function warnings
--- on red hat 6
+-- on Red Hat 6
+-----------------------------------------------------------------------------
 
   procedure declareASCIICharacters is
   begin
@@ -2588,6 +2593,14 @@ end shutdownScanner;
      declareStandardConstant( "ASCII.UC_Z",      character_t, "Z" );
      declareNamespaceClosed( "ASCII" );
   end declareASCIICharacters;
+
+
+-----------------------------------------------------------------------------
+--  DECLARE LATIN1 CHARACTERS
+--
+-- these are pulled out of reset scanner to avoid large function warnings
+-- on Red Hat 6
+-----------------------------------------------------------------------------
 
   procedure declareLatin1Characters is
   begin
@@ -2871,9 +2884,16 @@ end shutdownScanner;
      declareNamespaceClosed( "Latin_1" );
   end declareLatin1Characters;
 
-  procedure declareStandardTypes is
-  begin
 
+-----------------------------------------------------------------------------
+--  DECLARE STANDARD TYPES
+--
+-- these are pulled out of reset scanner to avoid large function warnings
+-- on Red Hat 6
+-----------------------------------------------------------------------------
+
+procedure declareStandardTypes is
+begin
   declareIdent( root_enumerated_t, "root enumerated", variable_t, typeClass );
   declareIdent( root_record_t, "root record", variable_t, typeClass );
   declareIdent( command_t, "command", variable_t, typeClass );
@@ -2909,11 +2929,18 @@ end shutdownScanner;
   declareIdent( complex_imaginary_t, "complex.im", long_float_t, subClass );
   identifiers( complex_imaginary_t ).field_of := complex_t;
   identifiers( complex_imaginary_t ).value.all := to_unbounded_string( "2" );
+end declareStandardTypes;
 
-  end declareStandardTypes;
 
-  procedure declareStandardPackage is
-  begin
+-----------------------------------------------------------------------------
+--  DECLARE STANDARD PACKAGE
+--
+-- these are pulled out of reset scanner to avoid large function warnings
+-- on Red Hat 6
+-----------------------------------------------------------------------------
+
+procedure declareStandardPackage is
+begin
   declareNamespace( "System" );
   declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_SPARFORTE" );
   declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( long_float( integerOutputType'first+0.9 ) ) ) );
@@ -2948,13 +2975,32 @@ end shutdownScanner;
   declareStandardConstant( "System.Testing_Phase", boolean_t, integer'image( commandLineOption'pos(testOpt))(2) & "" );
   declareStandardConstant( "System.Development_Phase", boolean_t, integer'image( commandLineOption'pos( not testOpt and not maintenanceOpt and not designOpt ) )(2) & "" );
   declareNamespaceClosed( "System" );
-  end declareStandardPackage;
+end declareStandardPackage;
+
+
+-----------------------------------------------------------------------------
+--  RESET SCANNER
+--
+-- A less harsh version of shutdownScanner / startScanner.
+-- Restart the scanner by resetting scanner variables to their startup
+-- values and reload the standard identifiers.  (Although keywords
+-- can't be unset by the user, standard identifiers can.  The user
+-- can unset "false", for example.  We'll initialize all standard
+-- identifiers here to make sure they exist.  However, this raises
+-- issues for nested scripts if resetScanner is used for that
+-- in the future purpose.)
+-----------------------------------------------------------------------------
 
 procedure resetScanner is
 
+  ---------------------------------------------------------------------------
+  --  IMPORT ENVIRONMENT (RESET SCANNER)
+  --
+  -- Declare all Environment Variables.  If --import_all is not used,
+  -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
+  ---------------------------------------------------------------------------
+
   procedure importEnvironment is
-    -- Declare all Environment Variables.  If --import_all is not used,
-    -- still declare PATH, PWD, OLDPWD, HOME, TERM if they exist.
     path_key   : constant unbounded_string := to_unbounded_string( "PATH=" );
     pwd_key    : constant unbounded_string := to_unbounded_string( "PWD=" );
     oldpwd_key : constant unbounded_string := to_unbounded_string( "OLDPWD=" );
@@ -3220,8 +3266,9 @@ begin
 
 end resetScanner;
 
+
 -----------------------------------------------------------------------------
--- START SCANNER
+--  START SCANNER
 --
 -- Set up symbol table, declaring all keywords, constants, and environment
 -- variables.  This should be executed once when SparForte is started, or to
@@ -3230,8 +3277,13 @@ end resetScanner;
 
 procedure startScanner is
 
+  ---------------------------------------------------------------------------
+  --  SAVE INITIAL ENVIRONMENT (START SCANNER)
+  --
+  -- Save a copy of the environment at startup.
+  ---------------------------------------------------------------------------
+
   procedure saveInitialEnvironment is
-    -- Save a copy of the environment at startup.
     ev  : unbounded_string;                                     -- an env var
   begin
      for i in 1..Environment_Count loop
@@ -3266,8 +3318,18 @@ begin
 end startScanner;
 
 
+-----------------------------------------------------------------------------
+--
 -- Types
+--
+-----------------------------------------------------------------------------
 
+
+-----------------------------------------------------------------------------
+--  INIT ENVIRONMENT
+--
+-- Return true if variable is in O/S environment
+-----------------------------------------------------------------------------
 
 function inEnvironment( id : identifier ) return boolean is
   -- Return true if variable is in O/S environment
@@ -3286,9 +3348,15 @@ begin
   return exists;
 end inEnvironment;
 
-procedure refreshVolatile( id : identifier ) is
+
+-----------------------------------------------------------------------------
+--  REFRESH VOLATILE
+--
 -- Look up a volatile variable and refresh it
 -- (Volatile variables are only environment variables.)
+-----------------------------------------------------------------------------
+
+procedure refreshVolatile( id : identifier ) is
   key : unbounded_string;                                     -- "var="
   ev  : unbounded_string;                                     -- an env var
   refreshed : boolean := false;
@@ -3381,11 +3449,17 @@ begin
   end if;
 end refreshVolatile;
 
+
+-----------------------------------------------------------------------------
+--  GET UNI TYPE
+--
+-- Dereference identifier until we find the universal type that this type
+-- is based on.  quit if a circular relationship is suspected.  An
+-- error will be reported to the user and universal_typeless is
+-- returned.
+-----------------------------------------------------------------------------
+
 function getUniType( original : identifier ) return identifier is
-  -- Dereference identifier until we find the universal type that this type
-  -- is based on.  quit if a circular relationship is suspected.  An
-  -- error will be reported to the user and universal_typeless is
-  -- returned.
   temp_id : identifier;
   count   : natural := 0;
 begin
@@ -3439,12 +3513,18 @@ begin
 
 end getUniType;
 
+
+-----------------------------------------------------------------------------
+--  GET BASE TYPE
+--
+-- Dereference original type until we find the original, parent root type
+-- (i.e. for types declared with "subtype", move up the type
+-- hierarchy to the first parent that is not a subtype).  Quit
+-- if a circular relationship is suspected.  On an error, an error
+-- message is displayed and universal_typeless is returned.
+-----------------------------------------------------------------------------
+
 function getBaseType( original : identifier ) return identifier is
-  -- Dereference original type until we find the original, parent root type
-  -- (i.e. for types declared with "subtype", move up the type
-  -- hierarchy to the first parent that is not a subtype).  Quit
-  -- if a circular relationship is suspected.  On an error, an error
-  -- message is displayed and universal_typeless is returned.
   temp_id : identifier;
   count   : natural := 0;
 begin
@@ -3492,10 +3572,16 @@ begin
 
 end getBaseType;
 
+
+-----------------------------------------------------------------------------
+--  CLASS OK
+--
+-- Check if identifier matches a certain class.  If the identifier is
+-- of another class, display an error message and return false.
+-- Exception is a special case because it is a keyword.
+-----------------------------------------------------------------------------
+
 function class_ok( id : identifier; class : anIdentifierClass ) return boolean is
-  -- Check if identifier matches a certain class.  If the identifier is
-  -- of another class, display an error message and return false.
-  -- Exception is a special case because it is a keyword.
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
@@ -3521,10 +3607,16 @@ begin
 
 end class_ok;
 
+
+-----------------------------------------------------------------------------
+--  CLASS OK
+--
+-- Check if identifier matches one of two classes.  If the identifier is of
+-- another class, display an error message and return false.
+-- Exception is a special case because it is a keyword.
+-----------------------------------------------------------------------------
+
 function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean is
-  -- Check if identifier matches one of two classes.  If the identifier is of
-  -- another class, display an error message and return false.
-  -- Exception is a special case because it is a keyword.
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
@@ -3556,10 +3648,16 @@ begin
 
 end class_ok;
 
+
+-----------------------------------------------------------------------------
+--  CLASS OK
+--
+-- Check if identifier matches one of two classes.  If the identifier is of
+-- another class, display an error message and return false.
+-- Exception is a special case because it is a keyword.
+-----------------------------------------------------------------------------
+
 function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolean is
-  -- Check if identifier matches one of two classes.  If the identifier is of
-  -- another class, display an error message and return false.
-  -- Exception is a special case because it is a keyword.
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
@@ -3597,9 +3695,15 @@ begin
 
 end class_ok;
 
+
+-----------------------------------------------------------------------------
+--  UNI TYPES OK
+--
+-- Check that the two types are extended from a common universal type.
+-- If the types differ, report an error message and return false.
+-----------------------------------------------------------------------------
+
 function uniTypesOk( leftType, rightType : identifier ) return boolean is
-  -- Check that the two types are extended from a common universal type.
-  -- If the types differ, report an error message and return false.
   effectiveLeftType : identifier;
   effectiveRightType : identifier;
   msg : unbounded_string;
@@ -3667,9 +3771,15 @@ begin
 
 end uniTypesOk;
 
+
+-----------------------------------------------------------------------------
+--  BASE TYPES OK
+--
+-- Check that the two types are extended from a common base type.
+-- If the types differ, report an error message and return false.
+-----------------------------------------------------------------------------
+
 function baseTypesOk( leftType, rightType : identifier ) return boolean is
-  -- Check that the two types are extended from a common base type.
-  -- If the types differ, report an error message and return false.
   effectiveLeftType : identifier;
   effectiveRightType : identifier;
 begin
@@ -3724,7 +3834,8 @@ begin
 end baseTypesOk;
 
 
----> GEN TYPES OK
+-----------------------------------------------------------------------------
+--  GEN TYPES OK
 --
 -- same as base types OK, but clearer error message for generic items
 -- Check that the two types are extended from a common base type.
@@ -3794,7 +3905,8 @@ begin
 end genTypesOk;
 
 
----> RENAMING TYPES OK
+-----------------------------------------------------------------------------
+--  RENAMING TYPES OK
 --
 -- Basically the same as gen types OK, but different error message.
 -----------------------------------------------------------------------------
@@ -3835,7 +3947,8 @@ begin
 end renamingTypesOk;
 
 
----> CAST TO TYPE
+-----------------------------------------------------------------------------
+--   CAST TO TYPE
 --
 -- If a value is an integer type (i.e. positive, natural or integer),
 -- round the value.  Otherwise do not round the value.  Return the
@@ -3954,16 +4067,26 @@ begin
   return str;
 end castToType;
 
--- this was originally in world but moved here because deleting now has a lot of
--- side effects that must be performed.
+
+-----------------------------------------------------------------------------
+--   DELETE IDENT
+--
+-- Delete a keyword / identifier from the symbol table
+-- This was originally in world but moved here because deleting now has a lot of
+-- triggered actions that may be performed.
+-----------------------------------------------------------------------------
+-- TODO: Exporting should be refactored so it is not duplicated
 
 function deleteIdent( id : identifier ) return boolean is
--- Delete a keyword / identifier from the symbol table
--- TODO: Exporting should be refactored so it is not duplicated
    tempStr : unbounded_string;
 
+  ---------------------------------------------------------------------------
+  --  CONVERT VALUE TO JSON (DELETE IDENT)
+  --
+  -- convert the value to json.  assumes you checked that it needs to be
+  ---------------------------------------------------------------------------
+
   function ConvertValueToJson( id : identifier ) return unbounded_string is
-    -- convert the value to json.  assumes you checked that it needs to be
   begin
     tempStr := identifiers( id ).value.all;
     if getUniType( identifiers( id ).kind ) = uni_string_t then
@@ -3980,8 +4103,13 @@ function deleteIdent( id : identifier ) return boolean is
     return tempStr;
   end ConvertValueToJson;
 
+  ---------------------------------------------------------------------------
+  --  EXPORT VALUE (DELETE IDENT)
+  --
+  -- export a value before deleting.
+  ---------------------------------------------------------------------------
+
   procedure ExportValue( id : identifier ) is
-    -- export a value before deleting.
   begin
     case identifiers( id ).method is
     when local_memcache =>
@@ -4171,9 +4299,10 @@ begin
 end deleteIdent;
 
 
----> DISCARD UNUSED IDENTIFIER
+-----------------------------------------------------------------------------
+--  DISCARD UNUSED IDENTIFIER
 --
--- if an identifier has been not been assigned a type,
+-- If an identifier has been not been assigned a type,
 -- assume it's unused and discard it.
 -----------------------------------------------------------------------------
 
@@ -4187,16 +4316,20 @@ begin
   end if;
 end discardUnusedIdentifier;
 
+
 -----------------------------------------------------------------------------
--- JSON
+--
+--  JSON
 --
 -- This was originally in parser_aux but was moved here to make it more
 -- accessible to the language.  I couldn't break it out into its own file
 -- due to its dependencies.
+--
 -----------------------------------------------------------------------------
 
 
----> IS JSON WHITESPACE
+-----------------------------------------------------------------------------
+--  IS JSON WHITESPACE
 --
 -- True if character is a JSON whitespace character.
 -----------------------------------------------------------------------------
@@ -4208,7 +4341,8 @@ end isJSONWhitespace;
 pragma inline( isJSONWhitespace );
 
 
----> SKIP JSON WHITESPACE
+-----------------------------------------------------------------------------
+--  SKIP JSON WHITESPACE
 --
 -- Move the start index ahread until it is a position in the string that has
 -- a non-whitespace character.
@@ -4226,7 +4360,8 @@ begin
 end SkipJSONWhitespace;
 
 
----> JSON EXPECT
+-----------------------------------------------------------------------------
+-- JSON EXPECT
 --
 -- Expect a character.  Report an error if it's not there.
 -----------------------------------------------------------------------------
@@ -4249,7 +4384,8 @@ begin
 end JSONexpect;
 
 
---->  PARSER JSON ITEM
+-----------------------------------------------------------------------------
+--  PARSER JSON ITEM
 --
 -- Parse a JSON item and return the text.  Start at the character start
 -- and if the item has nested elements, recurse and include them in
@@ -4385,7 +4521,8 @@ begin
 end ParseJSONItem;
 
 
----> DO JSON TO STRING
+-----------------------------------------------------------------------------
+--  DO JSON TO STRING
 --
 -- Convert a JSON string and return the string  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -4443,7 +4580,8 @@ begin
 end DoJsonToString;
 
 
----> DO ARRAY TO JSON
+-----------------------------------------------------------------------------
+--  DO ARRAY TO JSON
 --
 -- Convert an array to a JSON string.  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -4540,7 +4678,8 @@ when STORAGE_ERROR =>
 end DoArrayToJson;
 
 
----> DO JSON TO ARRAY
+-----------------------------------------------------------------------------
+--  DO JSON TO ARRAY
 --
 -- Convert a JSON string and store in an array.  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -4877,7 +5016,8 @@ when STORAGE_ERROR =>
 end DoJsonToArray;
 
 
----> DO RECORD TO JSON
+-----------------------------------------------------------------------------
+--  DO RECORD TO JSON
 --
 -- Convert a record to a JSON string.  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -4960,7 +5100,8 @@ begin
 end DoRecordToJson;
 
 
----> DO JSON TO RECORD
+-----------------------------------------------------------------------------
+--  DO JSON TO RECORD
 --
 -- Convert a JSON string and store in a record.  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -5192,7 +5333,8 @@ begin
 end DoJsonToRecord;
 
 
----> DO STRING TO JSON
+-----------------------------------------------------------------------------
+--  DO STRING TO JSON
 --
 -- Convert a string to JSON and return the string  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
@@ -5209,7 +5351,8 @@ begin
 end DoStringToJson;
 
 
----> DO NUMBER TO JSON
+-----------------------------------------------------------------------------
+--  DO NUMBER TO JSON
 --
 -- Numbers are "as is" but we still need to check for a valid JSON string.
 -----------------------------------------------------------------------------
@@ -5253,12 +5396,14 @@ end DoJsonToNumber;
 
 
 -----------------------------------------------------------------------------
+--
 -- Scanning
+--
 -----------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------
--- GET NEXT TOKEN
+--  GET NEXT TOKEN
 --
 -- The main scanner procedure.  Interpret the input text and return a token
 -- representing the next item on the line.  Declare new, unknown identifiers
@@ -5698,9 +5843,15 @@ begin
   end if;
 end getNextToken;
 
+
+-----------------------------------------------------------------------------
+--  EXPECT
+--
+-- Check for the specified identifier.  If the current token matches,
+-- get the next token, otherwise show an error.
+-----------------------------------------------------------------------------
+
 procedure expect( expected_token : identifier ) is
-  -- Check for the specified identifier.  If the current token matches,
-  -- get the next token, otherwise show an error.
 begin
   if token /= expected_token then
      if expected_token = keyword_t then
@@ -5718,9 +5869,15 @@ begin
   getNextToken;
 end expect;
 
+
+-----------------------------------------------------------------------------
+--  EXPECT
+--
+-- Check for the specified identifier and value.  If the current token
+-- and its value matches, get the next token, otherwise show an error.
+-----------------------------------------------------------------------------
+
 procedure expect( expected_token : identifier; value : string ) is
-  -- Check for the specified identifier and value.  If the current token
-  -- and its value matches, get the next token, otherwise show an error.
 begin
   if token /= expected_token then
      if expected_token = keyword_t then
@@ -5741,6 +5898,13 @@ begin
   getNextToken;
 end expect;
 
+
+-----------------------------------------------------------------------------
+--  EXPECT SEMICOLON
+--
+-- Because it happens a lot.
+-----------------------------------------------------------------------------
+
 procedure expectSemicolon is
 begin
   if token = symbol_t and identifiers( token ).value.all = ":" then
@@ -5750,9 +5914,15 @@ begin
   end if;
 end expectSemicolon;
 
+
+-----------------------------------------------------------------------------
+--  SKIP WHITESPACE
+--
+-- Move scanner position to the first non-white space character
+-- (that is, spaces or tabs in the tokenized script).
+-----------------------------------------------------------------------------
+
 procedure skipWhiteSpace is
-  -- Move scanner position to the first non-white space character
-  -- (that is, spaces or tabs in the tokenized script).
 begin
   firstPos := cmdpos;
   while script( firstPos ) /= ASCII.NUL loop
@@ -5764,13 +5934,20 @@ end skipWhiteSpace;
 
 
 ------------------------------------------------------
+--
 -- Saving/Restoring Position
 --
 ------------------------------------------------------
 
-procedure markScanner( scannerState : out aScannerState ) is
+
+-----------------------------------------------------------------------------
+--  MARK SCANNER
+--
 -- Record the current state of the scanner, including the token
 -- and the position in the current line.
+-----------------------------------------------------------------------------
+
+procedure markScanner( scannerState : out aScannerState ) is
 begin
   scannerState.token   := token;
   scannerState.first   := firstpos;
@@ -5788,9 +5965,15 @@ begin
   end if;
 end markScanner;
 
-procedure resumeScanning( scannerState : aScannerState ) is
+
+-----------------------------------------------------------------------------
+--  RESUME SCANNING
+--
 -- Restore the scanner to a previously recorded position, to continue
 -- execution at that place.
+-----------------------------------------------------------------------------
+
+procedure resumeScanning( scannerState : aScannerState ) is
 begin
   token    := scannerState.token;
   firstpos := scannerState.first;
@@ -5812,16 +5995,28 @@ begin
   end if;
 end resumeScanning;
 
-function isValid( scriptState : aScriptState ) return boolean is
+
+-----------------------------------------------------------------------------
+--  IS VALID
+--
 -- True if the script state contains a saved script state.
+-----------------------------------------------------------------------------
+
+function isValid( scriptState : aScriptState ) return boolean is
 begin
   return scriptState.script /= null;
 end isValid;
 
-procedure saveScript( scriptState : out aScriptState ) is
+
+-----------------------------------------------------------------------------
+--  SAVE SCRIPT
+--
 -- Save scanner state plus the current script so that a new
 -- script can be executed.  The error flag, syntax check flag,
 -- etc. are not saved.
+-----------------------------------------------------------------------------
+
+procedure saveScript( scriptState : out aScriptState ) is
 begin
   if script = null then
      err( gnat.source_info.source_location & ": Internal error: saveScript has no script to save" );
@@ -5833,10 +6028,16 @@ begin
   script := null;
 end saveScript;
 
-procedure restoreScript( scriptState : in out aScriptState ) is
+
+-----------------------------------------------------------------------------
+--  RESTORE SCRIPT
+--
 -- Restore a previously saved script, destroying the current one
 -- (if any).  Execution will continue where it previously left
 -- off.
+-----------------------------------------------------------------------------
+
+procedure restoreScript( scriptState : in out aScriptState ) is
 begin
   if scriptState.script = null then
      err( gnat.source_info.source_location & ": Internal error: restoreScript has no script to restore" );
@@ -5852,75 +6053,15 @@ begin
 end restoreScript;
 
 
-------------------------------------------------------
--- "BYTE CODE" GENERATION
+-----------------------------------------------------------------------------
 --
--- SparForte only runs compressed scripts.  The compression
--- process checks for certain syntax errors and makes
--- the following changes:
+-- SCRIPT MANIPULATION / INCLUDE FILES
 --
--- * EOL characters are replaced by ASCII nul's.
--- * leading indentation is a single byte at the start
---   of a line, allowing SparForte to ignore indentation
---   unless the line is being printed to the screen.
---   The actual value is +1 (so that 1 is no
---   indentation, 2 is one space, ...) so that the
---   only zero bytes are the EOL characters.
--- * keywords are tokenized as a single byte with the
---   position in the symbol table with the high bit
---   set, avoiding a slow symbol search on keywords
--- * EOF tokens are added as the beginning and ending
---   "lines" of the script to act as sentinels.
---
--- Each line begins with the 16-bit line number and the- 8-bit file number.
---
--- There could be other features in the future.
---
--- For example:
---    if x > y then
--- becomes
--- file/line/indent/stuff/EOL
--- [ASCII 1][ASCII 1][ACSII 1][ASCII 3][if code] x > y [then code][ASCII 0]
---
--- reducing 17 bytes to 12 bytes, about 2/3rds the
--- number of characters to read through when running
--- a script.
-------------------------------------------------------
+-----------------------------------------------------------------------------
 
--- Assuming everything is AdaScript works in most
--- cases except for commands like "cd bush-0.9.1"
--- which report an error since the byte code compiler
--- assumes 0.9.1 is a malformed numeric literal.  In
--- order to deal with this kind of error, the compiler
--- needs to have some minimal context info to determine
--- if it's looking Bourne shell parameters or not.  To
--- avoid writing a recursive version of line2ByteCode,
--- we'll use an enumerated variable to represent the
--- the parsing history that we need.  The history must
--- be carried between lines.
---
---   startOfStatement  - at start of script or after last command
---   startOfParameters - a command and we're looking for parameters
---   shellParameters   - no '(' so it's Bourne shell parameters
---   normalParameters  - an AdaScript statement or parameters
---
--- Rules:
---   if 'is', 'then', 'loop', ';' -> startOfStatement
---   if startOfStatement and keyword -> normal
---   if startOfStatement and identifier -> startOfParameters
---   if startOfParameters and '(' -> normal else shellParameters
---
--- Note: adding user-defined procedure and functions
--- will break this logic since ';' now have a second context
--- beyond a statement terminator.
-------------------------------------------------------
-
---type compressionContext is ( startOfStatement, startOfParameters,
---  startOfDeleteParameters, isPart,
---  adaScriptStatement, shellStatement, SQLStatement );
 
 -----------------------------------------------------------------------------
--- REPLACE SCRIPT WITH FRAGMENT
+--  REPLACE SCRIPT WITH FRAGMENT
 --
 -- Switch the current byte code script with another byte code script string.
 -- The byte code is assumed to be a piece of byte code and requires the
@@ -5947,7 +6088,7 @@ end replaceScriptWithFragment;
 
 
 -----------------------------------------------------------------------------
--- REPLACE SCRIPT
+--  REPLACE SCRIPT
 --
 -- Switch the current byte code script with another byte code script string.
 -----------------------------------------------------------------------------
@@ -5967,7 +6108,7 @@ begin
 end replaceScript;
 
 -----------------------------------------------------------------------------
--- INSERT INCLUDE
+--  LOAD INCLUDE FILE
 --
 --
 -----------------------------------------------------------------------------
@@ -5981,9 +6122,13 @@ procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out So
   libraryPrefix :unbounded_string;
   libraryPrefixNumber : natural;
 
+  ---------------------------------------------------------------------------
+  --  FIND INCLUDE FILE (LOAD INCLUDE FILE)
+  --
   -- Find not working
   -- sourceFilesList.Find( sourceFiles, sfr, foundAt =>fileLocation );
   -- doesn't seem to be using equal()??
+  ---------------------------------------------------------------------------
   -- TODO: investigate this
 
   function find_include_file( includeName : unbounded_string ) return SourceFilesList.aListIndex is
@@ -6000,6 +6145,11 @@ procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out So
      end loop;
      return fileLocation;
   end find_include_file;
+
+  ---------------------------------------------------------------------------
+  --  LOAD INCLUDE FILE (LOAD INCLUDE FILE)
+  --
+  ---------------------------------------------------------------------------
 
   function load_include_file( include_file : file_type; path : string ) return unbounded_string is
   begin
@@ -6174,6 +6324,12 @@ begin
   end if;
 end loadIncludeFile;
 
+
+-----------------------------------------------------------------------------
+--  INSERT INCLUDE
+--
+-----------------------------------------------------------------------------
+
 procedure insertInclude( includeName : unbounded_string ) is
   sfr : aSourceFile;
   pre_script, post_script : unbounded_string;
@@ -6238,6 +6394,7 @@ end insertInclude;
 -- file so that error messages have the template file name.
 --
 -- This should probably be something more elegant.
+-----------------------------------------------------------------------------
 
 procedure setTemplateName is
   sfr        : aSourceFile;

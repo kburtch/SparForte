@@ -66,13 +66,22 @@ arrays_shift_right_t : identifier;
 arrays_to_array_t    : identifier;
 arrays_to_json_t     : identifier;
 
+
 ---------------------------------------------------------
+--
 -- PARSE THE ARRAYS PACKAGE
+--
 ---------------------------------------------------------
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS FIRST
+--
+-- Syntax: arrays.first( arraytypeorvar );
+-- Source: arraytypeorvar'first
+-----------------------------------------------------------------------------
+
 procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier ) is
-  -- Syntax: arrays.first( arraytypeorvar );
-  -- Source: arraytypeorvar'first
   var_id   : identifier;
   --array_id : arrayID;
 begin
@@ -115,9 +124,15 @@ begin
   end if;
 end ParseArraysFirst;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS LAST
+--
+-- Syntax: arrays.last( arraytypeorvar );
+-- Source: arraytypeorvar'last
+-----------------------------------------------------------------------------
+
 procedure ParseArraysLast( f : out unbounded_string; kind : out identifier ) is
-  -- Syntax: arrays.last( arraytypeorvar );
-  -- Source: arraytypeorvar'last
   var_id   : identifier;
   --array_id : arrayID;
 begin
@@ -160,9 +175,15 @@ begin
   end if;
 end ParseArraysLast;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS LENGTH
+--
+-- Syntax: arrays.length( arraytypeorvar );
+-- Source: arraytypeorvar'length
+-----------------------------------------------------------------------------
+
 procedure ParseArraysLength( f : out unbounded_string; kind : out identifier ) is
-  -- Syntax: arrays.length( arraytypeorvar );
-  -- Source: arraytypeorvar'length
   var_id   : identifier;
   -- array_id : arrayID;
 begin
@@ -190,19 +211,29 @@ begin
   end if;
 end ParseArraysLength;
 
--------------------------------------------------------------------------------
--- Array Sorts
--------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+--
+-- Array Sorts
+--
 -- Stuff for Sorting with GNAT packages
 -- I'm concerned that GNAT uses integers for indexes in sorts...may not
 -- work with long_integer arrays on some platforms...assuming peole would
 -- have such friggin' huge arrays in the first place.
+--
+-------------------------------------------------------------------------------
 
 --arrayIdBeingSorted     : arrayID;
 offsetArrayBeingSorted : long_integer;
 ZeroElement            : unbounded_string;
 arrayBeingSortedId     : identifier;
+
+
+-----------------------------------------------------------------------------
+--  MOVE ELEMENT
+--
+-- Move an element in a SparForte array.
+-----------------------------------------------------------------------------
 
 procedure moveElement( From, To : natural ) is
   data : unbounded_string;
@@ -220,6 +251,13 @@ begin
      identifiers( arrayBeingSortedId ).avalue( long_integer(To)+offsetArrayBeingSorted ) := data;
    end if;
 end moveElement;
+
+
+-----------------------------------------------------------------------------
+--  LT STRING
+--
+-- String less than, ascending.
+-----------------------------------------------------------------------------
 
 function Lt_string( Op1, Op2 : natural ) return boolean is
   data1, data2 : unbounded_string;
@@ -239,6 +277,13 @@ begin
   return data1 < data2;
 end Lt_string;
 
+
+-----------------------------------------------------------------------------
+--  LT STRING DESCENDING
+--
+-- String less than, descending.
+-----------------------------------------------------------------------------
+
 function Lt_string_descending( Op1, Op2 : natural ) return boolean is
   data1, data2 : unbounded_string;
 begin
@@ -256,6 +301,13 @@ begin
   end if;
   return data1 > data2;
 end Lt_string_descending;
+
+
+-----------------------------------------------------------------------------
+--  LT NUMERIC
+--
+-- Numeric less than, ascending.
+-----------------------------------------------------------------------------
 
 function Lt_numeric( Op1, Op2 : natural ) return boolean is
   data1, data2 : unbounded_string;
@@ -275,6 +327,13 @@ begin
   return to_numeric( data1 ) < to_numeric( data2 );
 end Lt_numeric;
 
+
+-----------------------------------------------------------------------------
+--  LT NUMERIC DESCENDING
+--
+-- Numeric less than, descending.
+-----------------------------------------------------------------------------
+
 function Lt_numeric_descending( Op1, Op2 : natural ) return boolean is
   data1, data2 : unbounded_string;
 begin
@@ -292,6 +351,18 @@ begin
   end if;
   return to_numeric( data1 ) > to_numeric( data2 );
 end Lt_numeric_descending;
+
+
+-----------------------------------------------------------------------------
+--
+-- The Sorts
+--
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS BUBBLE SORT
+--
+-----------------------------------------------------------------------------
 
 procedure ParseArraysBubbleSort is
   var_id : identifier;
@@ -338,6 +409,12 @@ begin
   end if;
 end ParseArraysBubbleSort;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS BUBBLE SORT DESCENDING
+--
+-----------------------------------------------------------------------------
+
 procedure ParseArraysBubbleSortDescending is
   var_id : identifier;
   first, last : long_integer;
@@ -382,6 +459,12 @@ begin
      end if;
   end if;
 end ParseArraysBubbleSortDescending;
+
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS HEAP SORT
+--
+-----------------------------------------------------------------------------
 
 procedure ParseArraysHeapSort is
   var_id : identifier;
@@ -428,6 +511,12 @@ begin
   end if;
 end ParseArraysHeapSort;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS HEAP SORT DESCENDING
+--
+-----------------------------------------------------------------------------
+
 procedure ParseArraysHeapSortDescending is
   var_id : identifier;
   first, last : long_integer;
@@ -472,6 +561,13 @@ begin
      end if;
   end if;
 end ParseArraysHeapSortDescending;
+
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS SHUFFLE
+--
+-- Fisher-Yates shuffle.
+-----------------------------------------------------------------------------
 
 procedure ParseArraysShuffle is
   var_id : identifier;
@@ -525,6 +621,12 @@ begin
   end if;
 end ParseArraysShuffle;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS FLIP
+--
+-----------------------------------------------------------------------------
+
 procedure ParseArraysFlip is
   var_id : identifier;
   first, last, len : long_integer;
@@ -573,6 +675,12 @@ begin
   end if;
 end ParseArraysFlip;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS SHIFT RIGHT
+--
+-----------------------------------------------------------------------------
+
 procedure ParseArraysShiftRight is
   var_id : identifier;
   --first, last : long_integer;
@@ -612,6 +720,12 @@ begin
   end if;
 end ParseArraysShiftRight;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS SHIFT LEFT
+--
+-----------------------------------------------------------------------------
+
 procedure ParseArraysShiftLeft is
   var_id : identifier;
   --first, last : long_integer;
@@ -650,6 +764,12 @@ begin
      end;
   end if;
 end ParseArraysShiftLeft;
+
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS ROTATE RIGHT
+--
+-----------------------------------------------------------------------------
 
 procedure ParseArraysRotateRight is
   var_id : identifier;
@@ -696,6 +816,12 @@ begin
      end;
   end if;
 end ParseArraysRotateRight;
+
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS ROTATE LEFT
+--
+-----------------------------------------------------------------------------
 
 procedure ParseArraysRotateLeft is
   var_id : identifier;
@@ -746,13 +872,20 @@ begin
   end if;
 end ParseArraysRotateLeft;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS TO ARRAY
+--
+-- JSON string to array.
+-- Syntax: to_array( str_array | num_array, string )
+-- Example: arrays.to_array( a, "[1,2]" )
+--          arrays.to_array( d, "[" & ASCII.Quotation & "foo" &
+--          ASCII.Quotation & "," & ASCII.Quotation & "bar" &
+--          ASCII.Quotation & "]" );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseArraysToArray is
-  -- Syntax: to_array( str_array | num_array, string )
-  -- Example: arrays.to_array( a, "[1,2]" )
-  --          arrays.to_array( d, "[" & ASCII.Quotation & "foo" &
-  --          ASCII.Quotation & "," & ASCII.Quotation & "bar" &
-  --          ASCII.Quotation & "]" );
-  -- Source: N/A
   target_var_id : identifier;
   --target_base_id: identifier;
   source_val    : unbounded_string;
@@ -796,10 +929,17 @@ begin
   end if;
 end ParseArraysToArray;
 
+
+-----------------------------------------------------------------------------
+--  PARSE ARRAYS TO JSON
+--
+-- Array to JSON string.
+-- Syntax: to_json( string, array )
+-- Example: arrays.to_json( s, a )
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseArraysToJSON is
-  -- Syntax: to_json( string, array )
-  -- Example: arrays.to_json( s, a )
-  -- Source: N/A
   source_var_id : identifier;
   target_ref    : reference;
   jsonString    : unbounded_string;
@@ -826,7 +966,9 @@ begin
 end ParseArraysToJSON;
 
 -------------------------------------------------------------------------------
+--
 -- Housekeeping
+--
 -------------------------------------------------------------------------------
 
 procedure StartupArrays is

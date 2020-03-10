@@ -20,6 +20,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
+-- TODO: break this up into more specific packages
 
 with ada.text_io,
      Interfaces.C,
@@ -47,8 +48,14 @@ package body parser_aux is
 
 use spar_os.HEptrs;
 
+
+-----------------------------------------------------------------------------
+--  MAKE TEMP FILE
+--
+-- Create a unique temporary filename
+-----------------------------------------------------------------------------
+
 procedure makeTempFile( s : out unbounded_string ) is
-  -- create a unique temporary filename
   LinuxPath : string := "/tmp/sparXXXXXX" & ASCII.NUL;
   result : aFileDescriptor;
   closeResult : int;
@@ -85,28 +92,52 @@ end makeTempFile;
 --  return result < 1;                         -- return if read reported EOF
 --end isEOF;
 
-function stringField( i : identifier; f : natural ) return unbounded_string is
+
+-----------------------------------------------------------------------------
+--  STRING FIELD
+--
 -- same as string_util.stringField except uses an identifier's value
+-----------------------------------------------------------------------------
+
+function stringField( i : identifier; f : natural ) return unbounded_string is
 begin
   return stringField( identifiers( i ).value.all, recSep, f );
 end stringField;
 
-procedure replaceField( i : identifier; f : natural; field : string ) is
+
+-----------------------------------------------------------------------------
+--  REPLACE FIELD
+--
 -- same as string_util.replaceField except users an identifier's value
+-----------------------------------------------------------------------------
+
+procedure replaceField( i : identifier; f : natural; field : string ) is
 begin
   replaceField( identifiers( i ).value.all, recSep, f, field );
 end replaceField;
 
-function stringField( r : reference; f : natural ) return unbounded_string is
+
+-----------------------------------------------------------------------------
+--  STRING FIELD
+--
 -- same as string_util.stringField except uses a reference
+-----------------------------------------------------------------------------
+
+function stringField( r : reference; f : natural ) return unbounded_string is
    tempStr : unbounded_string;
 begin
   getParameterValue( r, tempStr );
   return stringField( tempStr, recSep, f );
 end stringField;
 
-procedure replaceField( r : reference; f : natural; field : string ) is
+
+-----------------------------------------------------------------------------
+--  REPLACE FIELD
+--
 -- same as string_util.replaceField except users an identifier's value
+-----------------------------------------------------------------------------
+
+procedure replaceField( r : reference; f : natural; field : string ) is
    tempStr : unbounded_string;
 begin
   getParameterValue( r, tempStr );
@@ -114,8 +145,14 @@ begin
   assignParameter( r, tempStr );
 end replaceField;
 
-function OSerror( e : integer ) return string is
+
+-----------------------------------------------------------------------------
+--  OS ERROR
+--
 -- return an OS error message for error number e
+-----------------------------------------------------------------------------
+
+function OSerror( e : integer ) return string is
   lastchar : natural := 0;
   ep       : anErrorPtr;
 begin
@@ -129,6 +166,13 @@ begin
   return string( ep( 1..lastchar ) );
 end OSerror;
 
+
+-----------------------------------------------------------------------------
+--  OPEN SOCKET
+--
+-- Initialize a new TCP/IP socket
+-----------------------------------------------------------------------------
+
 function openSocket( serverName : unbounded_string; port : integer ) return aSocketFD is
 
 
@@ -140,9 +184,6 @@ function openSocket( serverName : unbounded_string; port : integer ) return aSoc
   Result      : int;
 
 begin
-
-  -- initialize a new TCP/IP socket
-  -- 0 for the third param lets the kernel decide
 
   --Put_Line( "Initializing a TCP/IP socket" );
   --Put_Line( "Socket( " & PF_INET'img & ',' & SOCK_STREAM'img & ", 0 );" );
@@ -212,7 +253,7 @@ end openSocket;
 
 
 ------------------------------------------------------------------------------
--- PROCESS TEMPLATE
+--  PROCESS TEMPLATE
 --
 -- Read a template and process embedded scripts.  This procedure is expected
 -- to be invoked after the main script has run.
@@ -435,12 +476,19 @@ end processTemplate;
 
 
 ---------------------------------------------------------
--- PARSER UTILITIES
+--
+-- MISC PARSER UTILITIES
+--
 ---------------------------------------------------------
 
 
+------------------------------------------------------------------------------
+--  DO QUIT
+--
+-- Quit a script
+------------------------------------------------------------------------------
+
 procedure DoQuit is
-  -- Quit a script
 begin
   done := true;                             -- stop parsing
   exit_block := true;                       -- exit any block
@@ -450,8 +498,14 @@ begin
   end if;
 end DoQuit;
 
+
+------------------------------------------------------------------------------
+--  DO RETURN
+--
+-- Quit a user-defined subprogram
+------------------------------------------------------------------------------
+
 procedure DoReturn is
-  -- Quit a user-defined subprogram
 begin
   done := true;                             -- stop parsing
   exit_block := true;                       -- exit any block
@@ -460,6 +514,13 @@ begin
      put_trace( "Returning" );
   end if;
 end DoReturn;
+
+
+------------------------------------------------------------------------------
+--  PARSE PROCEDURE CALL SEMICOLON
+--
+-- Expect a semi-colon but produced ore descriptive errors on other tokens.
+------------------------------------------------------------------------------
 
 procedure parseProcedureCallSemicolon is
 begin
@@ -488,6 +549,13 @@ begin
   end if;
 end parseProcedureCallSemicolon;
 
+
+------------------------------------------------------------------------------
+--  PARSE FUNCTION CALL SEMICOLON
+--
+-- Expect a semi-colon but produced ore descriptive errors on other tokens.
+------------------------------------------------------------------------------
+
 procedure parseFunctionCallSemicolon is
 begin
   if token = symbol_t then
@@ -515,15 +583,26 @@ begin
   end if;
 end parseFunctionCallSemicolon;
 
+
+------------------------------------------------------------------------------
+--
 -- Renaming Support
 --
 -- These will be refactored in the future to create cleaner renaming
 -- support.
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  FIX RENAMED RECORD FIELDS
+--
+-- Given a renamed record, search for and adjust the record fields to
+-- refer to the correct variables.
+------------------------------------------------------------------------------
 
 procedure FixRenamedRecordFields( canonicalRef : renamingReference;
   renamingRec : identifier ) is
--- Given a renamed record, search for and adjust the record fields to
--- refer to the correct variables.
   numFields : natural;
   canonicalField : identifier;
 begin
@@ -644,10 +723,16 @@ begin
    end loop;
 end FixRenamedRecordFields;
 
-procedure FixRenamedArray( canonicalRef : renamingReference;
-  renamingArray : identifier ) is
+
+------------------------------------------------------------------------------
+--  FIX RENAMED ARRAY
+--
 -- Given a renamed array set up by ParseRenamingPart, fix the attributes
 -- for field type.
+------------------------------------------------------------------------------
+
+procedure FixRenamedArray( canonicalRef : renamingReference;
+  renamingArray : identifier ) is
 begin
   -- For full arrays, the code uses avalue directly.  avalue is a pointer
   -- which is copied when the renaming is created in ParseRenamesPart.  So

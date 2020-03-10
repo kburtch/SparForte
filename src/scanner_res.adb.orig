@@ -78,6 +78,7 @@ end String_Hash;
 
 ------------------------------------------------------------------------------
 
+------------------------------------------------------------------------------
 --  DECLARE RESOURCE
 --
 -- Allocate a new resource record of the given type.  Record the block level
@@ -131,6 +132,8 @@ begin
       return;
 end declareResource;
 
+
+-----------------------------------------------------------------------------
 --  FIND RESOURCE
 --
 -- Search for a resource and return a pointer to it.  For a resource, it's
@@ -143,6 +146,7 @@ begin
 end findResource;
 
 
+-----------------------------------------------------------------------------
 --  PUT RESOURCE
 --
 -- Display information about a resource.  For debugging.
@@ -207,6 +211,13 @@ begin
        put_line( standard_error, gnat.source_info.source_location & ": internal error: unexpected resource" );
   end case;
 end putResource;
+
+
+-----------------------------------------------------------------------------
+--  CLEAR RESOURCE
+--
+-- Free the memory used by a resource.  Close/disconnect the resource first.
+-----------------------------------------------------------------------------
 
 procedure clearResource( id : resHandleID ) is
   rp : resPtr;
@@ -365,6 +376,14 @@ begin
   exception when STORAGE_ERROR =>
     err( gnat.source_info.source_location & ": internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img );
 end clearResource;
+
+
+-----------------------------------------------------------------------------
+--  PULL RESOURCE BLOCK
+--
+-- When a scanner block is destroyed, clear all resources associated with
+-- this block.
+-----------------------------------------------------------------------------
 
 procedure pullResourceBlock( blocklvl : block ) is
   rp : resPtr;
