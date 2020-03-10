@@ -30,7 +30,7 @@ with
     ada.strings.unbounded,
     gnat.directory_operations,
     gnat.source_info,
-    spar_os,
+    --spar_os,
     world,
     user_io,
     scanner,
@@ -123,27 +123,27 @@ begin
   ParseFirstInOutInstantiatedParameter( fileId, btree_file_t );
 end ParseFirstFileParameter;
 
-procedure ParseNextFileParameter( fileId : out identifier ) is
-begin
-  ParseNextInOutInstantiatedParameter( fileId, btree_file_t );
-end ParseNextFileParameter;
+--procedure ParseNextFileParameter( fileId : out identifier ) is
+--begin
+--  ParseNextInOutInstantiatedParameter( fileId, btree_file_t );
+--end ParseNextFileParameter;
 
-procedure ParseLastFileParameter( fileId : out identifier ) is
-begin
-  ParseLastInOutInstantiatedParameter( fileId, btree_file_t );
-end ParseLastFileParameter;
+--procedure ParseLastFileParameter( fileId : out identifier ) is
+--begin
+--  ParseLastInOutInstantiatedParameter( fileId, btree_file_t );
+--end ParseLastFileParameter;
 
 ------------------------------------------------------------------------------
 
-procedure ParseSingleCursorParameter( cursId : out identifier ) is
-begin
-  ParseSingleInOutInstantiatedParameter( cursId, btree_cursor_t );
-end ParseSingleCursorParameter;
+--procedure ParseSingleCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseSingleInOutInstantiatedParameter( cursId, btree_cursor_t );
+--end ParseSingleCursorParameter;
 
-procedure ParseFirstCursorParameter( cursId : out identifier ) is
-begin
-  ParseFirstInOutInstantiatedParameter( cursId, btree_cursor_t );
-end ParseFirstCursorParameter;
+--procedure ParseFirstCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseFirstInOutInstantiatedParameter( cursId, btree_cursor_t );
+--end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
@@ -305,8 +305,8 @@ begin
      end;
 
      declare
-        filename : string := base_name( to_string( fname_val ) );
-        dirname  : string := dir_name( to_string( fname_val ) );
+        filename : constant string := base_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fname_val ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -496,8 +496,8 @@ begin
      end;
 
      declare
-        filename : string := base_name( to_string( fname_val ) );
-        dirname  : string := dir_name( to_string( fname_val ) );
+        filename : constant string := base_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fname_val ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -681,8 +681,8 @@ begin
         -- Close closes the environment.  We need to reopen it.
 
         declare
-           filename : string := base_name( to_string( theFile.btree.name ) );
-           dirname  : string := dir_name( to_string( theFile.btree.name ) );
+           --filename : constant string := base_name( to_string( theFile.btree.name ) );
+           dirname  : constant string := dir_name( to_string( theFile.btree.name ) );
            pwdId : identifier;
         begin
            -- TODO: pathname handling
@@ -1289,8 +1289,6 @@ begin
                    put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
                 exception when CONSTRAINT_ERROR =>
                    err( "constraint_error: value too big" );
-                when others =>
-                   raise;
                 end;
              else
                 err( exception_message( msg ) );
@@ -1313,8 +1311,6 @@ begin
                    put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
                 exception when CONSTRAINT_ERROR =>
                    err( "constraint_error: value too big" );
-                when others =>
-                   raise;
                 end;
              else
                 err( exception_message( msg ) );
@@ -1335,8 +1331,6 @@ begin
                    put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
                 exception when CONSTRAINT_ERROR =>
                    err( "constraint_error: value too big" );
-                when others =>
-                   raise;
                 end;
              else
                 err( exception_message( msg ) );
@@ -1905,8 +1899,6 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "storage_error raised" );
-           when others =>
-              raise;
            end;
         end if;
      elsif isArray then
@@ -1936,8 +1928,6 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "storage_error raised" );
-           when others =>
-              raise;
            end;
         end if;
      else
@@ -1967,8 +1957,6 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "storage_error raised" );
-           when others =>
-              raise;
            end;
         end if;
      end if;
@@ -2063,8 +2051,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      elsif isArray then
         declare
@@ -2094,8 +2080,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      else
         declare
@@ -2125,8 +2109,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      end if;
   end if;
@@ -2220,8 +2202,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      elsif isArray then
         declare
@@ -2251,8 +2231,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      else
         declare
@@ -2282,8 +2260,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      end if;
   end if;
@@ -2377,8 +2353,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      elsif isArray then
         declare
@@ -2408,8 +2382,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      else
         declare
@@ -2439,8 +2411,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      end if;
   end if;
@@ -2522,7 +2492,7 @@ begin
   ParseLastEnumParameter( boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
-       raise_them : boolean := boolExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then

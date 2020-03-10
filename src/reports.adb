@@ -21,13 +21,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 with ada.strings.unbounded.text_io,
-     ada.calendar,
      spar_os.tty,
      cgi,
      string_util,
      user_io;
 use  ada.strings.unbounded.text_io,
-     ada.calendar,
      spar_os.tty,
      cgi,
      string_util,
@@ -247,7 +245,7 @@ package body reports is
             r.lineWidth := 0;
             new_line( r.outputfile );
          elsif r.lineWidth > 0 then
-            put( r.outputfile, to_string( integer( columnWidth-natural( length(s) ) + 1 ) * " " ) );
+            put( r.outputfile, to_string( integer( columnWidth-length(s) + 1 ) * " " ) );
          end if;
          put( r.outputfile, to_string( s ) );
          r.lineWidth := r.lineWidth + columnWidth + 1;
@@ -307,7 +305,7 @@ package body reports is
             end if;
             put( r.outputfile, to_string( s ) );
             r.lineWidth := r.lineWidth + columnWidth + 1;
-            nextTab := columnWidth-natural( length(s) ) + 1;
+            nextTab := columnWidth-length(s) + 1;
          end if;
       end loop;
       r.lineWidth := 0;
@@ -352,6 +350,9 @@ package body reports is
   --
   ----------------------------------------------------------------------------
 
+  --  RENDER TEXT (HTML)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderText( r : in out htmlReport'class; name : string; s : unbounded_string ) is
   begin
@@ -361,18 +362,34 @@ package body reports is
     end if;
   end renderText;
 
+  --  RENDER DESCRIPTION (HTML)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderDescription( r : in out htmlReport'class; indent : positive; s : unbounded_string ) is
   begin
-    -- TOOD: indent
+    -- TOOD: indent not tested
+    if indent > 0 then
+       put_line( r.outputfile, "<div style=" & ASCII.Quotation &
+          "margin-left:" & positive'image(indent) & "px" &
+          ASCII.Quotation & ">" );
+    end if;
     put_line( r.outputfile, "<p style=" & ASCII.Quotation &
        "padding: 0px 20px 0px 20px" &
        ASCII.Quotation & ">" & html_encode( to_string( s ) ) & "</p>" );
+    if indent > 0 then
+       put_line( r.outputfile, "</div>" );
+    end if;
   end renderDescription;
+
+  --  RENDER TABLE (HTML)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderTable( r : in out htmlReport'class; l : in out contentList.List; name : string; columnWidth : positive ) is
     s : unbounded_string;
   begin
+    -- columnWidth does not apply to an HTML report
     if not contentList.isEmpty( l ) then
        put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
        if contentList.length( l ) = 1 then
@@ -392,6 +409,9 @@ package body reports is
     end if;
   end renderTable;
 
+  --  RENDER PACKAGE CONTENT (HTML)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderPackageContent( r : in out htmlReport'class; l : in out contentList.List; name : string ) is
     s : unbounded_string;
@@ -430,6 +450,7 @@ package body reports is
     end h3_tag;
 
   begin
+    -- name is not used
     if not contentList.isEmpty( l ) then
 
        -- There's no way to really know how something will look in a web
@@ -477,6 +498,9 @@ package body reports is
     end if;
   end renderPackageContent;
 
+  --  RENDER BULLET LIST (HTML)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderBulletList( r : in out htmlReport'class; l : in out contentList.List; name : string ) is
     s : unbounded_string;
@@ -504,6 +528,10 @@ package body reports is
   --
   ----------------------------------------------------------------------------
 
+  --  RENDER TEXT (Man Page)
+  --
+  ----------------------------------------------------------------------------
+
   procedure renderText( r : in out manPageReport'class; name : string; s : unbounded_string ) is
   begin
     if length( s ) > 0 then
@@ -518,15 +546,24 @@ package body reports is
   end renderText;
   -- TODO: probably need a renderFooter
 
+  --  RENDER DESCRIPTION (Man Page)
+  --
+  ----------------------------------------------------------------------------
+
   procedure renderDescription( r : in out manPageReport'class; indent : positive; s : unbounded_string ) is
   begin
     put_line( r.outputfile, ".SH DESCRIPTION" );
     put_line( r.outputfile, s );
   end renderDescription;
 
+  --  RENDER TABLET (Man Page)
+  --
+  ----------------------------------------------------------------------------
+
   procedure renderTable( r : in out manPageReport'class; l : in out contentList.List; name : string; columnWidth : positive ) is
     s : unbounded_string;
   begin
+    -- columnwidth is not used
     if not contentList.isEmpty( l ) then
        put_line( r.outputfile, ".SH " &
           to_string(  ToUpper( to_unbounded_string( name ) ) ) );
@@ -537,6 +574,9 @@ package body reports is
     end if;
   end renderTable;
 
+  --  RENDER BULLET LIST (Man Page)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderBulletList( r : in out manPageReport'class; l : in out contentList.List; name : string ) is
     s : unbounded_string;
@@ -551,11 +591,15 @@ package body reports is
     end if;
   end renderBulletList;
 
+  --  RENDER PACKAGE CONTENT (Man Page)
+  --
+  ----------------------------------------------------------------------------
 
   procedure renderPackageContent( r : in out manPageReport'class; l : in out contentList.List; name : string ) is
     s : unbounded_string;
     new_subsection : boolean := false;
   begin
+    -- name is not used
     if not contentList.isEmpty( l ) then
 
        while not contentList.isEmpty( l ) loop

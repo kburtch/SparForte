@@ -21,11 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.calendar,
-     ada.text_io;
-
-use ada.calendar,
-    ada.text_io;
+with ada.text_io;
+use  ada.text_io;
 
 package body performance_monitoring is
 

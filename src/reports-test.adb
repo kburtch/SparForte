@@ -20,8 +20,7 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
-with Ada.Calendar.Arithmetic,
-     Ada.Characters.Latin_1,
+with Ada.Characters.Latin_1,
      Ada.Strings.Fixed,
      Ada.Strings.Unbounded.Text_IO,
      string_util,
@@ -29,9 +28,7 @@ with Ada.Calendar.Arithmetic,
      compiler; -- Circular dependency...
 use  Ada.Strings,
      Ada.Strings.Fixed,
-     Ada.Strings.Unbounded,
      Ada.Strings.Unbounded.Text_IO,
-     Ada.Calendar.Arithmetic,
      string_util,
      world,
      compiler;

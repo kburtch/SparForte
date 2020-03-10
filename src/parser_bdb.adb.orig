@@ -24,13 +24,11 @@ pragma ada_2005;
 
 #if BDB
 with
-    bdb,
     bdb_constants;
 #end if;
 
 #if BDB
 use
-    bdb,
     bdb_constants;
 #end if;
 
