@@ -21,14 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io,
-     ada.strings.unbounded,
-     Ada.Calendar.Arithmetic;
-use ada.text_io,
-    ada.strings.unbounded,
-    Ada.Calendar.Arithmetic;
-
-with gen_list;
+with ada.calendar,
+     gen_list;
 
 package reports.test is
 

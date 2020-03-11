@@ -305,7 +305,6 @@ package body reports.test is
     elapsedDays : Day_Count;
     elapsedSeconds : duration;
     elapsedLeapSeconds : Leap_Seconds_Count;
-    s : unbounded_string;
   begin
     Difference( ada.calendar.clock, jts.startTime, elapsedDays, elapsedSeconds, elapsedLeapSeconds );
     contentList.Queue( cl, "File: " & jts.path );
@@ -367,7 +366,6 @@ package body reports.test is
   ----------------------------------------------------------------------------
 
   procedure startJunit( report: in out xmlTestReport; path : unbounded_string ) is
-    out_path : unbounded_string;
   begin
     isStarted := true;
     lastSourceFile := 0;
