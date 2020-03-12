@@ -24,10 +24,7 @@ pragma ada_2005;
 
 --with ada.text_io; use ada.text_io;
 
-with gnat.bubble_sort_a,
-     gnat.heap_sort_a,
-     ada.numerics.float_random,
-     ada.strings.unbounded,
+with ada.strings.unbounded,
      world,
      scanner,
      parser;
@@ -113,7 +110,7 @@ begin
      end loop;
      -- convert to string and remove leading space
      declare
-        s : string := best'img;
+        s : constant string := best'img;
      begin
         --f := to_unbounded_string( s(2..s'last) );
         f := to_unbounded_string( s );
@@ -148,7 +145,7 @@ begin
         item := item - 1;
         -- convert to string and remove leading space
         declare
-           s : string := item'img;
+           s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
            f := to_unbounded_string( s );
@@ -204,7 +201,7 @@ begin
         end if;
         -- convert to string and remove leading space
         declare
-           s : string := item'img;
+           s : constant string := item'img;
         begin
            --f := to_unbounded_string( s(2..s'last) );
            f := to_unbounded_string( s );

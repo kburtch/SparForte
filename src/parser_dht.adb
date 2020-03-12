@@ -24,14 +24,12 @@
 --with text_io;use text_io;
 
 with
-    Gnat.Dynamic_HTables,
     ada.strings.unbounded,
     user_io,
     world,
     scanner,
     scanner_res,
     scanner_restypes,
-    parser,
     parser_params;
 use
     ada.strings.unbounded,
@@ -40,7 +38,6 @@ use
     scanner,
     scanner_res,
     scanner_restypes,
-    parser,
     parser_params;
 
 package body parser_dht is
@@ -84,15 +81,15 @@ begin
   ParseFirstInOutInstantiatedParameter( tableId, dht_table_t );
 end ParseFirstTableParameter;
 
-procedure ParseNextTableParameter( tableId : out identifier ) is
-begin
-  ParseNextInOutInstantiatedParameter( tableId, dht_table_t );
-end ParseNextTableParameter;
+--procedure ParseNextTableParameter( tableId : out identifier ) is
+--begin
+--  ParseNextInOutInstantiatedParameter( tableId, dht_table_t );
+--end ParseNextTableParameter;
 
-procedure ParseLastTableParameter( tableId : out identifier ) is
-begin
-  ParseLastInOutInstantiatedParameter( tableId, dht_table_t );
-end ParseLastTableParameter;
+--procedure ParseLastTableParameter( tableId : out identifier ) is
+--begin
+--  ParseLastInOutInstantiatedParameter( tableId, dht_table_t );
+--end ParseLastTableParameter;
 
 ------------------------------------------------------------------------------
 -- Parser subprograms

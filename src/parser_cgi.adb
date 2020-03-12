@@ -23,16 +23,12 @@
 
 --with ada.text_io;use ada.text_io;
 
-with
-    ada.command_line,
-    ada.strings.unbounded,
+with ada.strings.unbounded,
     cgi,
     world,
     scanner,
     parser;
-use
-    ada.command_line,
-    ada.strings.unbounded,
+use ada.strings.unbounded,
     world,
     scanner,
     parser;

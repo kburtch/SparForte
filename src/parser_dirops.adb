@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
 
 with gnat.directory_operations,
     Ada.Directories,
@@ -29,16 +29,14 @@ with gnat.directory_operations,
     world,
     scanner,
     scanner_res,
-    parser_params,
-    parser;
+    parser_params;
 use gnat.directory_operations,
     Ada.Directories,
     ada.strings.unbounded,
     world,
     scanner,
     scanner_res,
-    parser_params,
-    parser;
+    parser_params;
 
 package body parser_dirops is
 
@@ -168,7 +166,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   declare
-    recursive : boolean := expr_val2 = to_unbounded_string( "1" );
+    recursive : constant boolean := expr_val2 = to_unbounded_string( "1" );
   begin
     if isExecutingCommand then
        Remove_Dir( dir_name_str( to_string( expr_val ) ), recursive);
@@ -438,7 +436,7 @@ begin
         exception when DIRECTORY_ERROR =>
           err( "directory is not open" );
         when others =>
-          raise; -- err_exception_raised;
+          err_exception_raised;
         end;
      else
         err( "directory is not open" );

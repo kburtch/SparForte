@@ -23,15 +23,13 @@
 
 --with ada.text_io; use ada.text_io;
 
-with interfaces,
-    gnat.crc32,
+with gnat.crc32,
     ada.strings.unbounded,
     world,
     scanner,
     parser,
     parser_params;
-use interfaces,
-    ada.strings.unbounded,
+use ada.strings.unbounded,
     world,
     scanner,
     parser,
@@ -56,12 +54,11 @@ gnat_crc32_get_value_t : identifier;
 procedure ParseGnatCRC32Initialize is
   -- gnat.crc32.initialize( crc32 )
   record_ref : reference;
-  record_type : identifier := gnat_crc32_crc32_t;
 begin
   expect( gnat_crc32_initialize_t );
   expect( symbol_t, "(" );
-  ParseOutParameter( record_ref, record_type );
-  if baseTypesOk( record_type, gnat_crc32_crc32_t ) then
+  ParseOutParameter( record_ref, gnat_crc32_crc32_t );
+  if baseTypesOk( record_ref.kind, gnat_crc32_crc32_t ) then
      expect( symbol_t, ")" );
   end if;
 

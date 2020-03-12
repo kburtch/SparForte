@@ -35,7 +35,6 @@ with ada.io_exceptions,
      user_io,
      scanner,
      scanner_res,
-     parser,
      parser_params,
      parser_db;
 use  ada.io_exceptions,
@@ -54,7 +53,6 @@ use  ada.io_exceptions,
      user_io,
      scanner,
      scanner_res,
-     parser,
      parser_params,
      parser_db;
 
@@ -799,7 +797,7 @@ begin
   ParseLastEnumParameter( rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
-       rollback : boolean := rollExpr = to_unbounded_string( "1" );
+       rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
      begin
        findConnection( connectExpr, connection );
        Set_Rollback_On_Finalize( connection.PG_C, rollback );
@@ -932,7 +930,7 @@ begin
   ParseLastEnumParameter( traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
-       traceback : boolean := traceExpr = to_unbounded_string( "1" );
+       traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
      begin
        findConnection( connectExpr, connection );
        Set_Trace( connection.PG_C, traceback );
@@ -1023,7 +1021,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
-       raise_them : boolean := raiseExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := raiseExpr = to_unbounded_string( "1" );
      begin
        findQuery( queryExpr, query );
        Raise_Exceptions( query.PG_Q, raise_them );
@@ -1060,7 +1058,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
-       report_them : boolean := reportExpr = to_unbounded_string( "1" );
+       report_them : constant boolean := reportExpr = to_unbounded_string( "1" );
      begin
        findQuery( queryExpr, query );
        Report_Errors( query.PG_Q, report_them );
@@ -2142,10 +2140,10 @@ begin
             fetch( Q );
             put( "    " );
             declare
-               indexName   : string := Value( Q, 1 );
-               primaryKey  : string := Value( Q, 2 );
-               uniqueIndex : string := Value( Q, 3 );
-               colList     : string := Value( Q, 4 );
+               indexName   : constant string := Value( Q, 1 );
+               primaryKey  : constant string := Value( Q, 2 );
+               uniqueIndex : constant string := Value( Q, 3 );
+               colList     : constant string := Value( Q, 4 );
             begin
                put( bold( indexName ) );
                put( " " );

@@ -1890,8 +1890,6 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "storage_error raised" );
-           when others =>
-              raise;
            end;
         end if;
      elsif isArray then
@@ -1921,8 +1919,6 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "storage_error raised" );
-           when others =>
-              raise;
            end;
         end if;
      else
@@ -1952,8 +1948,6 @@ begin
               err( exception_message( msg ) );
            when STORAGE_ERROR =>
               err( "storage_error raised" );
-           when others =>
-              raise;
            end;
         end if;
      end if;
@@ -2048,8 +2042,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      elsif isArray then
         declare
@@ -2079,8 +2071,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      else
         declare
@@ -2110,8 +2100,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      end if;
   end if;
@@ -2205,8 +2193,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      elsif isArray then
         declare
@@ -2236,8 +2222,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      else
         declare
@@ -2267,8 +2251,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      end if;
   end if;
@@ -2362,8 +2344,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      elsif isArray then
         declare
@@ -2393,8 +2373,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      else
         declare
@@ -2424,8 +2402,6 @@ begin
            err( exception_message( msg ) );
         when STORAGE_ERROR =>
            err( "storage_error raised" );
-        when others =>
-           raise;
         end;
      end if;
   end if;
@@ -2507,7 +2483,7 @@ begin
   ParseLastEnumParameter( boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
-       raise_them : boolean := boolExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then

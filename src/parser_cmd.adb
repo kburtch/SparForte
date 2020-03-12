@@ -21,16 +21,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with gnat.regexp,
-    gnat.regpat,
-    ada.command_line,
+with ada.command_line,
     ada.strings.unbounded,
     world,
     scanner,
     parser;
-use gnat.regexp,
-    gnat.regpat,
-    ada.command_line,
+use ada.command_line,
     ada.strings.unbounded,
     world,
     scanner,

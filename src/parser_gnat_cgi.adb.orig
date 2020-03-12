@@ -104,17 +104,17 @@ gnat_cgi_cookie_set_t : identifier;
 gnat_cgi_debug_text_output_t : identifier;
 gnat_cgi_debug_html_output_t : identifier;
 
-right_bracket : unbounded_string := to_unbounded_string( ")" );
+right_bracket : constant unbounded_string := to_unbounded_string( ")" );
 
-procedure ParseSingleStringExpression( expr_val : out unbounded_string;
-  expr_type : out identifier ) is
-begin
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if baseTypesOk( expr_type, string_t ) then
-     expect( symbol_t, ")" );
-  end if;
-end ParseSingleStringExpression;
+--procedure ParseSingleStringExpression( expr_val : out unbounded_string;
+--  expr_type : out identifier ) is
+--begin
+--  expect( symbol_t, "(" );
+--  ParseExpression( expr_val, expr_type );
+--  if baseTypesOk( expr_type, string_t ) then
+--     expect( symbol_t, ")" );
+--  end if;
+--end ParseSingleStringExpression;
 
 ------------------------------------------------------------------------------
 -- PARSE THE GNAT CGI PACKAGE

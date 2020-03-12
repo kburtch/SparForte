@@ -26,9 +26,7 @@
 with
     Ada.Containers,
     ada.strings.unbounded,
-    spar_os.exec,
     world,
-    user_io,
     scanner,
     scanner_res,
     scanner_restypes,
@@ -37,10 +35,7 @@ with
     parser_containers;
 use
     ada.strings.unbounded,
-    spar_os,
-    spar_os.exec,
     world,
-    user_io,
     scanner,
     scanner_res,
     scanner_restypes,
@@ -160,11 +155,11 @@ begin
   --CheckCursorIsInitialized( cursId );
 end ParseSingleCursorParameter;
 
-procedure ParseFirstCursorParameter( cursId : out identifier ) is
-begin
-  ParseFirstInOutInstantiatedParameter( cursId, doubly_cursor_t );
-  --CheckCursorIsInitialized( cursId );
-end ParseFirstCursorParameter;
+--procedure ParseFirstCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseFirstInOutInstantiatedParameter( cursId, doubly_cursor_t );
+--  --CheckCursorIsInitialized( cursId );
+--end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
@@ -724,7 +719,6 @@ procedure ParseDoublyInsertBefore is
   itemType   : identifier;
   cntExpr    : unbounded_string;
   cntType    : identifier;
-  hasItem    : boolean := false;
   hasCnt     : boolean := false;
 begin
   expect( doubly_insert_before_t );
