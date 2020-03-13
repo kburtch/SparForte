@@ -30,7 +30,6 @@ with
     gnat.source_info,
     ada.exceptions,
     ada.strings.unbounded,
-    spar_os,
     user_io,
     world,
     scanner,
@@ -119,15 +118,15 @@ begin
   ParseFirstInOutInstantiatedParameter( fileId, hash_file_t );
 end ParseFirstFileParameter;
 
-procedure ParseNextFileParameter( fileId : out identifier ) is
-begin
-  ParseNextInOutInstantiatedParameter( fileId, hash_file_t );
-end ParseNextFileParameter;
-
-procedure ParseLastFileParameter( fileId : out identifier ) is
-begin
-  ParseLastInOutInstantiatedParameter( fileId, hash_file_t );
-end ParseLastFileParameter;
+--procedure ParseNextFileParameter( fileId : out identifier ) is
+--begin
+--  ParseNextInOutInstantiatedParameter( fileId, hash_file_t );
+--end ParseNextFileParameter;
+--
+--procedure ParseLastFileParameter( fileId : out identifier ) is
+--begin
+--  ParseLastInOutInstantiatedParameter( fileId, hash_file_t );
+--end ParseLastFileParameter;
 
 ------------------------------------------------------------------------------
 
@@ -136,10 +135,10 @@ begin
   ParseSingleInOutInstantiatedParameter( cursId, hash_cursor_t );
 end ParseSingleCursorParameter;
 
-procedure ParseFirstCursorParameter( cursId : out identifier ) is
-begin
-  ParseFirstInOutInstantiatedParameter( cursId, hash_cursor_t );
-end ParseFirstCursorParameter;
+--procedure ParseFirstCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseFirstInOutInstantiatedParameter( cursId, hash_cursor_t );
+--end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
@@ -301,8 +300,9 @@ begin
      end;
 
      declare
-        filename : string := base_name( to_string( fname_val ) );
-        dirname  : string := dir_name( to_string( fname_val ) );
+        -- GNAT 7.4 incorrectly states filename is not used
+        filename : constant string := base_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fname_val ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -492,8 +492,9 @@ begin
      end;
 
      declare
-        filename : string := base_name( to_string( fname_val ) );
-        dirname  : string := dir_name( to_string( fname_val ) );
+        -- GNAT 7.4 incorrectly states filename is not used
+        filename : constant string := base_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fname_val ) );
         dirname2 : unbounded_string;
         pwdId : identifier;
      begin
@@ -677,8 +678,7 @@ begin
         -- Close closes the environment.  We need to reopen it.
 
         declare
-           filename : string := base_name( to_string( theFile.hash.name ) );
-           dirname  : string := dir_name( to_string( theFile.hash.name ) );
+           dirname  : constant string := dir_name( to_string( theFile.hash.name ) );
            pwdId : identifier;
         begin
            -- TODO: pathname handling

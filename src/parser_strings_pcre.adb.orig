@@ -24,19 +24,15 @@
 --with text_io;
 
 with interfaces.c,
-    spar_os,
     scanner,
     string_util,
     user_io,
-    parser_params,
-    parser;
+    parser_params;
 use interfaces.c,
-    spar_os,
     scanner,
     string_util,
     user_io,
-    parser_params,
-    parser;
+    parser_params;
 
 package body parser_strings_pcre is
 
