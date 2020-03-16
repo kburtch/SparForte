@@ -156,7 +156,8 @@ begin
 end ParseLastCursorParameter;
 
 #if BDB
--- IS VERIFIED OPEN FILE
+-----------------------------------------------------------------------------
+--  IS VERIFIED OPEN FILE
 --
 -- True if the file is open, otherwise an error occurs and false is returned.
 ------------------------------------------------------------------------------
@@ -236,9 +237,14 @@ end not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE CLEAR
+--
+-- Syntax: btree.clear( f );
+-- Ada:    N/A;
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeClear is
-  -- Syntax: btree.clear( f );
-  -- Ada:    N/A;
   fileId   : identifier;
   theFile  : resPtr;
 begin
@@ -267,10 +273,15 @@ procedure ParseBTreeClear renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE CREATE
+--
+-- Syntax: btree.create( f, path, keyLen, valLen );
+-- Ada:    btree.create( f, path, keyLen, valLen );
+-- this is impacted by --verbse
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeCreate is
-  -- Syntax: btree.create( f, path, keyLen, valLen );
-  -- Ada:    btree.create( f, path, keyLen, valLen );
-  -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
   fname_val  : unbounded_string;
@@ -426,9 +437,14 @@ procedure ParseBTreeCreate renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE CLOSE
+--
+-- Syntax: btree.close( f );
+-- Ada:    btree.close( f );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeClose is
-  -- Syntax: btree.close( f );
-  -- Ada:    btree.close( f );
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -460,10 +476,15 @@ procedure ParseBTreeClose renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE OPEN
+--
+-- Syntax: btree.open( f, path, keyLen, valLen );
+-- Ada:    btree.open( f, path, keyLen, valLen );
+-- this is impacted by --verbse
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeOpen is
-  -- Syntax: btree.open( f, path, keyLen, valLen );
-  -- Ada:    btree.open( f, path, keyLen, valLen );
-  -- this is impacted by --verbse
   fileId     : identifier;
   theFile    : resPtr;
   fname_val  : unbounded_string;
@@ -604,9 +625,14 @@ procedure ParseBTreeOpen renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE IS OPEN
+--
+-- Syntax: b := btree.is_open( f );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := btree.is_open( f );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -630,9 +656,14 @@ procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE NAME
+--
+-- Syntax: b := btree.name( f );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := btree.name( f );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -654,10 +685,15 @@ procedure ParseBTreeName( result : out unbounded_string; kind : out identifier )
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE NAME
+--
+-- Syntax: btree.delete( f );
+-- Ada:    btree_io.delete( f );
+-----------------------------------------------------------------------------
+-- TODO:   option to the keep environment in case other files use it
+
 procedure ParseBTreeDelete is
-  -- Syntax: btree.delete( f );
-  -- Ada:    btree_io.delete( f );
-  -- TODO:   option to the keep environment in case other files use it
   fileId     : identifier;
   theFile    : resPtr;
   dirname2 : unbounded_string;
@@ -791,9 +827,14 @@ procedure ParseBTreeDelete renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE SET
+--
+-- Syntax: btree.set( f, key, value );
+-- Ada:    bdb.put( f, key, value );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeSet is
-  -- Syntax: btree.set( f, key, value );
-  -- Ada:    bdb.put( f, key, value );
   fileId     : identifier;
   theFile    : resPtr;
   keyExpr    : unbounded_string;
@@ -883,12 +924,17 @@ procedure ParseBTreeSet renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE GET
+--
+-- Syntax: btree.get( f, k, v );
+-- Ada:    v := bdb.get( f, k );
+-- This was originally a function but turned into a procedure because
+-- v can now be an aggregate (and we currently cannot return aggregates
+-- from a function)
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeGet is
-  -- Syntax: btree.get( f, k, v );
-  -- Ada:    v := bdb.get( f, k );
-  -- This was originally a function but turned into a procedure because
-  -- v can now be an aggregate (and we currently cannot return aggregates
-  -- from a function)
   fileId     : identifier;
   theFile    : resPtr;
   keyExpr    : unbounded_string;
@@ -1009,9 +1055,14 @@ procedure ParseBTreeGet renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE HAS ELEMENT
+--
+-- Syntax: v := btree.has_element( f, k );
+-- Ada:    bdb.exists( f, k );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: v := btree.has_element( f, k );
-  -- Ada:    bdb.exists( f, k );
   fileId     : identifier;
   theFile    : resPtr;
   keyExpr    : unbounded_string;
@@ -1043,9 +1094,14 @@ procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identi
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE REMOVE
+--
+-- Syntax: v := btree.remove( f, k | c );
+-- Ada:    bdb.remove( f, k | c );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeRemove is
-  -- Syntax: v := btree.remove( f, k | c );
-  -- Ada:    bdb.remove( f, k | c );
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier := eof_t;
@@ -1101,9 +1157,14 @@ procedure ParseBTreeRemove renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE INCREMENT
+--
+-- Syntax: btree.increment( f, s [,n] );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBtreeIncrement is
-  -- Syntax: btree.increment( f, s [,n] );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
   keyExpr  : unbounded_string;
@@ -1167,9 +1228,14 @@ procedure ParseBTreeIncrement renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE DECREMENT
+--
+-- Syntax: btree.decrement( f, s [,n] );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBtreeDecrement is
-  -- Syntax: btree.decrement( f, s [,n] );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
   keyExpr  : unbounded_string;
@@ -1233,9 +1299,14 @@ procedure ParseBTreeDecrement renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE ADD
+--
+-- Syntax: btree.add( f, s, e );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBtreeAdd is
-  -- Syntax: btree.add( f, s, e );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1348,10 +1419,15 @@ procedure ParseBTreeAdd renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE ADD
+--
+-- Syntax: btree.replace( f, c | k, v );
+-- Ada:    N/A
+-- Note: the key will not be overwritten if a cursor is used
+-----------------------------------------------------------------------------
+
 procedure ParseBtreeReplace is
-  -- Syntax: btree.replace( f, c | k, v );
-  -- Ada:    N/A
-  -- Note: the key will not be overwritten if a cursor is used
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1550,9 +1626,14 @@ procedure ParseBTreeReplace renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE APPEND
+--
+-- Syntax: btree.append( f, s, e );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBtreeAppend is
-  -- Syntax: btree.append( f, s, e );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1597,9 +1678,14 @@ procedure ParseBTreeAppend renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE PREPEND
+--
+-- Syntax: btree.prepend( f, s, e );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBtreePrepend is
-  -- Syntax: btree.prepend( f, s, e );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile  : resPtr;
   keyExpr  : unbounded_string;
@@ -1644,9 +1730,14 @@ procedure ParseBTreePrepend renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE FLUSH
+--
+-- Syntax: btree.flush( f, flags );
+-- Ada:    bdb.sync( f, flags );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeFlush is
-  -- Syntax: btree.flush( f, flags );
-  -- Ada:    bdb.sync( f, flags );
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -1671,9 +1762,14 @@ procedure ParseBTreeFlush renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE TRUNCATE
+--
+-- Syntax: btree.truncate( f );
+-- Ada:    bdb.sync( f, cnt );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeTruncate is
-  -- Syntax: btree.truncate( f );
-  -- Ada:    bdb.sync( f, cnt );
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -1746,9 +1842,14 @@ procedure ParseBTreeTruncate renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE OPEN CURSOR
+--
+-- Syntax: btree_io.open_cursor( f, c );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeOpenCursor is
-  -- Syntax: btree_io.open_cursor( f, c );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -1781,9 +1882,14 @@ procedure ParseBTreeOpenCursor renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE CLOSE CURSOR
+--
+-- Syntax: btree_io.close_cursor( f,c );
+-- Ada:    bdb.close_cursor( f,c );
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeCloseCursor is
-  -- Syntax: btree_io.close_cursor( f,c );
-  -- Ada:    bdb.close_cursor( f,c );
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -1819,11 +1925,16 @@ procedure ParseBTreeCloseCursor renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE GET FIRST
+--
+-- Syntax: btree_io.get_first( f, c, k, v );
+-- Ada:    bdb.get_first( f, ... );
+-- Note: Unlike Ada lists, Berkeley will also return the element when
+-- positioning the cursor.
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeGetFirst is
-  -- Syntax: btree_io.get_first( f, c, k, v );
-  -- Ada:    bdb.get_first( f, ... );
-  -- Note: Unlike Ada lists, Berkeley will also return the element when
-  -- positioning the cursor.
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -1970,11 +2081,16 @@ procedure ParseBTreeGetFirst renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE GET NEXT
+--
+-- Syntax: btree_io.get_next( f, c, k, v );
+-- Ada:    bdb.get( f );
+-- Note: Unlike Ada lists, Berkeley will also return the element when
+-- positioning the cursor.
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeGetNext is
-  -- Syntax: btree_io.get_next( f, c, k, v );
-  -- Ada:    bdb.get( f );
-  -- Note: Unlike Ada lists, Berkeley will also return the element when
-  -- positioning the cursor.
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -2121,11 +2237,16 @@ procedure ParseBTreeGetNext renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE GET LAST
+--
+-- Syntax: btree_io.get_last( f, c, k, v );
+-- Ada:    bdb.get( f );
+-- Note: Unlike Ada lists, Berkeley will also return the element when
+-- positioning the cursor.
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeGetLast is
-  -- Syntax: btree_io.get_last( f, c, k, v );
-  -- Ada:    bdb.get( f );
-  -- Note: Unlike Ada lists, Berkeley will also return the element when
-  -- positioning the cursor.
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -2272,11 +2393,16 @@ procedure ParseBTreeGetLast renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE GET PREVIOUS
+--
+-- Syntax: btree_io.get_previous( f, c, k, v );
+-- Ada:    bdb.get( f );
+-- Note: Unlike Ada lists, Berkeley will also return the element when
+-- positioning the cursor.
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeGetPrevious is
-  -- Syntax: btree_io.get_previous( f, c, k, v );
-  -- Ada:    bdb.get( f );
-  -- Note: Unlike Ada lists, Berkeley will also return the element when
-  -- positioning the cursor.
   fileId     : identifier;
   theFile    : resPtr;
   cursId     : identifier;
@@ -2422,9 +2548,14 @@ procedure ParseBTreeGetPrevious renames not_configured;
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE WILL RAISE
+--
+-- Syntax: b := btree.will_raise( f );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := btree.will_raise( f );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -2450,9 +2581,14 @@ procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identif
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE LAST ERROR
+--
+-- Syntax: n := btree_io.last_error( f );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := btree_io.last_error( f );
-  -- Ada:    N/A
   fileId     : identifier;
   theFile    : resPtr;
 begin
@@ -2478,10 +2614,15 @@ procedure ParseBTreeLastError( result : out unbounded_string; kind : out identif
 #end if;
 #if BDB
 
+-----------------------------------------------------------------------------
+--  PARSE BTREE RAISE EXCEPTIONS
+--
+-- Syntax: btree_io.raise_exceptions( f, b );
+-- Ada:    bdb.raise_exceptions
+-- this is impacted by --trace
+-----------------------------------------------------------------------------
+
 procedure ParseBTreeRaiseExceptions is
-  -- Syntax: btree_io.raise_exceptions( f, b );
-  -- Ada:    bdb.raise_exceptions
-  -- this is impacted by --trace
   fileId     : identifier;
   theFile    : resPtr;
   boolExpr   : unbounded_string;

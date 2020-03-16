@@ -57,12 +57,24 @@ cal_to_julian_t    : identifier;
 cal_to_time_t      : identifier;
 cal_day_of_week_t  : identifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE CAL CLOCK
+--
+-----------------------------------------------------------------------------
+
 procedure ParseCalClock( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := cal_time_t;
   expect( cal_clock_t );
   result := to_unbounded_string( clock'img );
 end ParseCalClock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CAL YEAR
+--
+-----------------------------------------------------------------------------
 
 procedure ParseCalYear( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
@@ -80,6 +92,12 @@ begin
   end if;
 end ParseCalYear;
 
+
+-----------------------------------------------------------------------------
+--  PARSE CAL MONTH
+--
+-----------------------------------------------------------------------------
+
 procedure ParseCalMonth( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
@@ -95,6 +113,12 @@ begin
      end;
   end if;
 end ParseCalMonth;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CAL DAY
+--
+-----------------------------------------------------------------------------
 
 procedure ParseCalDay( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
@@ -112,6 +136,12 @@ begin
   end if;
 end ParseCalDay;
 
+
+-----------------------------------------------------------------------------
+--  PARSE CAL SECONDS
+--
+-----------------------------------------------------------------------------
+
 procedure ParseCalSeconds( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
@@ -127,6 +157,12 @@ begin
      end;
   end if;
 end ParseCalSeconds;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CAL SPLIT
+--
+-----------------------------------------------------------------------------
 
 procedure ParseCalSplit is
    date_val  : unbounded_string;
@@ -158,6 +194,12 @@ begin
      end;
   end if;
 end ParseCalSplit;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CAL TIME OF
+--
+-----------------------------------------------------------------------------
 
 procedure ParseCalTimeOf( result : out unbounded_string; kind : out identifier ) is
   year_val   : unbounded_string;
@@ -191,6 +233,12 @@ begin
      end;
   end if;
 end ParseCalTimeOf;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CAL TO JULIAN
+--
+-----------------------------------------------------------------------------
 
 procedure ParseCalToJulian( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
@@ -237,6 +285,12 @@ begin
   end if;
 end ParseCalToJulian;
 
+
+-----------------------------------------------------------------------------
+--  PARSE CAL TO TIME
+--
+-----------------------------------------------------------------------------
+
 procedure ParseCalToTime( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
@@ -278,6 +332,12 @@ begin
   end if;
 end ParseCalToTime;
 
+
+-----------------------------------------------------------------------------
+--  PARSE CAL DAY OF WEEK
+--
+-----------------------------------------------------------------------------
+
 procedure ParseCalDayOfWeek( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
@@ -301,6 +361,8 @@ begin
      end;
   end if;
 end ParseCalDayOfWeek;
+
+-----------------------------------------------------------------------------
 
 procedure StartupCalendar is
 begin
