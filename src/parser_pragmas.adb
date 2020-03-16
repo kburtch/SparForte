@@ -24,17 +24,10 @@
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
-with system,
-    ada.text_io.editing,
+with  ada.text_io,
     ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    ada.numerics.float_random,
-    ada.calendar,
-    gnat.regexp,
-    gnat.directory_operations,
     gnat.source_info,
     cgi,
-    spar_os.exec,
     pegasock.memcache,
     world,
     reports.test,
@@ -43,23 +36,15 @@ with system,
     script_io,
     compiler,
     scanner,
-    builtins,
     signal_flags,
     jobs, -- for clearCommandHash
-    parser_aux,
     parser.decl.as,
     parser_teams;
 use ada.text_io,
-    ada.text_io.editing,
     ada.command_line,
     ada.command_line.environment,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
-    ada.characters.handling,
-    gnat.regexp,
-    gnat.directory_operations,
-    spar_os,
-    spar_os.exec,
     pegasock.memcache,
     user_io,
     script_io,
@@ -69,10 +54,8 @@ use ada.text_io,
     string_util,
     compiler,
     scanner,
-    builtins,
     signal_flags,
     jobs,
-    parser_aux,
     parser,
     parser.decl.as,
     parser_teams;
@@ -161,7 +144,7 @@ reportPath       : unbounded_string;
 -----------------------------------------------------------------------------
 
 function parsePragmaKind return aPragmaKind is
-  name : string := to_string( identifiers( token ).name );
+  name : constant string := to_string( identifiers( token ).name );
   pragmaKind : aPragmaKind := unknown_pragma;
 begin
    -- just an error message...if ( with no name
@@ -274,7 +257,7 @@ end parsePragmaKind;
 -----------------------------------------------------------------------------
 
 procedure ParseAnnotateKind is
-  name : string := to_string( identifiers( token ).name );
+  name : constant string := to_string( identifiers( token ).name );
   exprVal  : unbounded_string;
   exprType : identifier;
   --authorId : identifier := eof_t;
@@ -337,8 +320,8 @@ end ParseAnnotateKind;
 ----------------------------------------------------------------------------
 
 procedure ParseAssumptionKind( var_id : out identifier; assumeKind: out aPragmaKind ) is
-  name_unbounded : unbounded_string := identifiers( token ).name;
-  name : string := to_string( name_unbounded );
+  name_unbounded : constant unbounded_string := identifiers( token ).name;
+  name : constant string := to_string( name_unbounded );
 begin
   if name = "used" then
      assumeKind := assumption_used;
@@ -376,8 +359,8 @@ end ParseAssumptionKind;
 -----------------------------------------------------------------------------
 
 procedure ParseImportKind( var_id : out identifier; importKind: out unbounded_string ) is
-  name_unbounded : unbounded_string := identifiers( token ).name;
-  name : string := to_string( name_unbounded );
+  name_unbounded : constant unbounded_string := identifiers( token ).name;
+  name : constant string := to_string( name_unbounded );
 begin
   if name = "shell" then
      importKind := name_unbounded;
@@ -428,8 +411,8 @@ end ParseImportKind;
 -----------------------------------------------------------------------------
 
 procedure ParseExportKind( var_id : out identifier; exportKind: out unbounded_string ) is
-  name_unbounded : unbounded_string := identifiers( token ).name;
-  name : string := to_string( name_unbounded );
+  name_unbounded : constant unbounded_string := identifiers( token ).name;
+  name : constant string := to_string( name_unbounded );
 begin
   if name = "shell" then
      exportKind := name_unbounded;
@@ -468,8 +451,8 @@ end ParseExportKind;
 -----------------------------------------------------------------------------
 
 procedure ParseLicenseKind( expr_val : out unbounded_string ) is
-  name_unbounded : unbounded_string := identifiers( token ).name;
-  name : string := to_string( name_unbounded );
+  name_unbounded : constant unbounded_string := identifiers( token ).name;
+  name : constant string := to_string( name_unbounded );
 
   procedure ParseLicenseExtra is
   begin
@@ -572,8 +555,8 @@ end ParseLicenseKind;
 -----------------------------------------------------------------------------
 
 procedure ParseSoftwareModelName( expr_val : out unbounded_string ) is
-  name_unbounded : unbounded_string := identifiers( token ).name;
-  name : string := to_string( name_unbounded );
+  name_unbounded : constant unbounded_string := identifiers( token ).name;
+  name : constant string := to_string( name_unbounded );
 begin
   expr_val := null_unbounded_string;
   if name = "application_desktop" then
@@ -784,9 +767,9 @@ end ParseWorkPriority;
 -----------------------------------------------------------------------------
 
 procedure run_test_case( testScript, testCaseName : unbounded_string; manual_test : boolean := false ) is
-   savershOpt : commandLineOption := rshOpt;
-   save_error_found : boolean := error_found;
-   isTesting_old : boolean := isTesting;
+   --savershOpt : commandLineOption := rshOpt;
+   save_error_found : constant boolean := error_found;
+   isTesting_old : constant boolean := isTesting;
    results     : unbounded_string;
 begin
 
@@ -904,7 +887,7 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   expr_val    : unbounded_string;
   expr_val2   : unbounded_string;
   expr_type   : identifier;
-  results     : unbounded_string;
+  --results     : unbounded_string;
   var_id      : identifier;
   exportType  : unbounded_string;
   importType  : unbounded_string;
@@ -998,7 +981,10 @@ begin
   when gcc_errors =>                         -- pragma gcc_errors
      null;
   when inspection =>                         -- pragma inspection point
+     -- GCC Ada 7.4 falsely says conversion is not needed
+     pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+     pragma warnings( on );
          err( "inspection_point is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
      end if;
   when manual_test =>                        -- pragma manual_test
@@ -1073,7 +1059,10 @@ begin
         err( "team.member expected" );
      end if;
   when peek =>                               -- pragma inspection peek
+     -- GCC Ada 7.4 falsely says conversion is not needed
+     pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+     pragma warnings( on );
          err( "inspection_peek is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
@@ -1156,7 +1145,10 @@ begin
         return;
      end if;
   when inspect_var =>                        -- pragma inspect
+     -- GCC Ada 7.4 falsely says conversion is not needed
+     pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
+     pragma warnings( on );
          err( "inspect is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
      end if;
      ParseIdentifier( var_id );
@@ -1410,7 +1402,7 @@ begin
         if debugOpt then
            if not syntax_check then
               declare
-                 savershOpt : commandLineOption := rshOpt;
+                 savershOpt : constant commandLineOption := rshOpt;
                  lineNo      : natural;
               begin
                  lineNo := getLineNo;

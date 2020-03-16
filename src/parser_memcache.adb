@@ -29,7 +29,6 @@ with gen_list,
     user_io,
     world,
     scanner,
-    parser,
     parser_params,
     pegasock.memcache.highread;
 use ada.strings,
@@ -37,7 +36,6 @@ use ada.strings,
     user_io,
     world,
     scanner,
-    parser,
     parser_params,
     pegasock,
     pegasock.memcache,
@@ -123,7 +121,7 @@ memcacheClusterIdTop : aMemcacheClusterID := 1;                   -- id counter
 -- Lookup the cluster record.  If not found, set cluster_id to zero.
 -----------------------------------------------------------------------------
 
-procedure GetCluster( cluster_id : in out aMemcacheClusterID;
+procedure GetCluster( cluster_id : aMemcacheClusterID;
    theMemcacheClusterEntry : out aMemcacheClusterEntry;
    clusterIndex : out memcacheClusterList.aListIndex ) is
 begin
@@ -174,7 +172,7 @@ memcacheDualClusterIdTop : aMemcacheDualClusterID := 1;          -- id counter
 -- Lookup the cluster record.  If not found, set cluster_id to zero.
 -----------------------------------------------------------------------------
 
-procedure GetCluster( cluster_id : in out aMemcacheDualClusterID;
+procedure GetCluster( cluster_id : aMemcacheDualClusterID;
    theMemcacheClusterEntry : out aMemcacheDualClusterEntry;
    clusterIndex : out memcacheDualClusterList.aListIndex ) is
 begin
@@ -267,8 +265,8 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
-        port : natural := natural( to_numeric( expr_val2 ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        port : constant natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -294,7 +292,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -323,7 +321,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -361,7 +359,7 @@ begin
         err_exception_raised;
      end;
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -393,7 +391,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -427,7 +425,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -461,7 +459,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -493,7 +491,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -525,7 +523,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -555,7 +553,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -586,7 +584,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -615,7 +613,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -642,7 +640,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -670,7 +668,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheClusterID := aMemcacheClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -731,8 +729,8 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
-        port : natural := natural( to_numeric( expr_val2 ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        port : constant natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -764,8 +762,8 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
-        port : natural := natural( to_numeric( expr_val2 ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        port : constant natural := natural( to_numeric( expr_val2 ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -791,7 +789,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -820,7 +818,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -858,7 +856,7 @@ begin
         err_exception_raised;
      end;
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -890,7 +888,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -924,7 +922,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -958,7 +956,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -990,7 +988,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -1022,7 +1020,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -1052,7 +1050,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -1083,7 +1081,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -1112,7 +1110,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -1139,7 +1137,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );
@@ -1167,7 +1165,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
-        cluster : aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
+        cluster : constant aMemcacheDualClusterID := aMemcacheDualClusterID( to_numeric( identifiers( cluster_id ).value.all ) );
         clusterIndex : memcacheDualClusterList.aListIndex;
      begin
         GetCluster( cluster, cluster_entry, clusterIndex );

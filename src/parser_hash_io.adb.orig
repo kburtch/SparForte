@@ -130,10 +130,10 @@ end ParseFirstFileParameter;
 
 ------------------------------------------------------------------------------
 
-procedure ParseSingleCursorParameter( cursId : out identifier ) is
-begin
-  ParseSingleInOutInstantiatedParameter( cursId, hash_cursor_t );
-end ParseSingleCursorParameter;
+--procedure ParseSingleCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseSingleInOutInstantiatedParameter( cursId, hash_cursor_t );
+--end ParseSingleCursorParameter;
 
 --procedure ParseFirstCursorParameter( cursId : out identifier ) is
 --begin

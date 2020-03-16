@@ -3,11 +3,13 @@
 -- Protected under the GNU GPL License
 -- Modified by K Burtch
 
-with Ada.Text_IO, Ada.Command_Line, Ada.Characters.Handling, Ada.Characters.Latin_1;
-with Ada.IO_Exceptions;
-with Gnat.Command_Line;
+with Ada.Text_IO,
+Ada.Command_Line,
+GNAT.Command_Line;
+-- with Ada.IO_Exceptions;
+-- with Gnat.Command_Line;
 
-use Ada.Text_IO;
+-- use Ada.Text_IO;
 
 --with BC.Containers;
 --with BC.Containers.Lists;

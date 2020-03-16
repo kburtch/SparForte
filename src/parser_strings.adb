@@ -1118,7 +1118,6 @@ procedure ParseStringsSplit is
   right_ref: reference;
   field_val: unbounded_string;
   field_type : identifier;
-  delim    : character := defaultDelimiter;
   leftStr  : unbounded_string;
   rightStr : unbounded_string;
 begin
@@ -1376,7 +1375,7 @@ begin
        ada.streams.stream_io.create( rawFile );
        declare
           rawStream : ada.streams.stream_io.stream_access;
-          s : string := to_string( expr_val );
+          s : constant string := to_string( expr_val );
        begin
           rawStream := ada.streams.stream_io.Stream( rawFile );
           string'write( rawStream, s );

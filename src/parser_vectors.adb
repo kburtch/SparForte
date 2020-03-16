@@ -96,10 +96,10 @@ begin
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
 end ParseFirstVectorParameter;
 
-procedure ParseNextVectorParameter( vectorId : out identifier ) is
-begin
-  ParseNextInOutInstantiatedParameter( vectorId, vectors_vector_t );
-end ParseNextVectorParameter;
+--procedure ParseNextVectorParameter( vectorId : out identifier ) is
+--begin
+--  ParseNextInOutInstantiatedParameter( vectorId, vectors_vector_t );
+--end ParseNextVectorParameter;
 
 procedure ParseLastVectorParameter( vectorId : out identifier ) is
 begin
@@ -178,15 +178,15 @@ begin
   ParseSingleInOutInstantiatedParameter( cursId, vectors_cursor_t );
 end ParseSingleCursorParameter;
 
-procedure ParseFirstCursorParameter( cursId : out identifier ) is
-begin
-  ParseFirstInOutInstantiatedParameter( cursId, vectors_cursor_t );
-end ParseFirstCursorParameter;
+--procedure ParseFirstCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseFirstInOutInstantiatedParameter( cursId, vectors_cursor_t );
+--end ParseFirstCursorParameter;
 
-procedure ParseNextCursorParameter( cursId : out identifier ) is
-begin
-  ParseNextInOutInstantiatedParameter( cursId, vectors_cursor_t );
-end ParseNextCursorParameter;
+--procedure ParseNextCursorParameter( cursId : out identifier ) is
+--begin
+--  ParseNextInOutInstantiatedParameter( cursId, vectors_cursor_t );
+--end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin

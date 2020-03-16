@@ -24,18 +24,13 @@
 --with text_io;use text_io;
 
 with
-    interfaces.c,
     ada.strings.unbounded,
-    pegasock,
-    user_io,
     world,
     scanner,
     parser_params;
 use
-    pegasock,
     ada.strings.unbounded,
     world,
-    user_io,
     scanner,
     parser_params;
 

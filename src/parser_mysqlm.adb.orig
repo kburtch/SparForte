@@ -35,8 +35,6 @@ with ada.io_exceptions,
      user_io,
      scanner,
      scanner_res,
-     parser,
-     parser_aux,
      parser_params,
      parser_db;
 use  ada.io_exceptions,
@@ -55,8 +53,6 @@ use  ada.io_exceptions,
      user_io,
      scanner,
      scanner_res,
-     parser,
-     parser_aux,
      parser_params,
      parser_db;
 
@@ -788,7 +784,7 @@ begin
   ParseLastEnumParameter( rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
-       rollback : boolean := rollExpr = to_unbounded_string( "1" );
+       rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
      begin
        findConnection( connectExpr, connection );
        Set_Rollback_On_Finalize( connection.C, rollback );
@@ -921,7 +917,7 @@ begin
   ParseLastEnumParameter( traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
-       traceback : boolean := traceExpr = to_unbounded_string( "1" );
+       traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
      begin
        findConnection( connectExpr, connection );
        Set_Trace( connection.C, traceback );
@@ -1012,7 +1008,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
-       raise_them : boolean := raiseExpr = to_unbounded_string( "1" );
+       raise_them : constant boolean := raiseExpr = to_unbounded_string( "1" );
      begin
        findQuery( queryExpr, query );
        Raise_Exceptions( query.Q, raise_them );
@@ -1048,7 +1044,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      declare
-       report_them : boolean := reportExpr = to_unbounded_string( "1" );
+       report_them : constant boolean := reportExpr = to_unbounded_string( "1" );
      begin
        findQuery( queryExpr, query );
        Report_Errors( query.Q, report_them );
@@ -1759,11 +1755,7 @@ begin
            execute( Q, connection.C );
         exception when others =>
            prepare( Q, "show tables" );
-           begin
-              execute( Q, connection.C );
-           exception when others =>
-              raise;
-           end;
+           execute( Q, connection.C );
         end;
 
         -- Initially, the columns widths are the widths of the headings
@@ -1980,11 +1972,7 @@ begin
            execute( Q, connection.C );
         exception when others =>
            prepare( Q, "show columns from " & to_string( exprVal ) );
-           begin
-              execute( Q, connection.C );
-           exception when others =>
-              raise;
-           end;
+           execute( Q, connection.C );
         end;
 
         -- No result? Then table was not found.
@@ -2167,11 +2155,7 @@ begin
      -- List of indexes: not available yet through information_schema
 
      prepare( Q, "show index from " & to_string( exprVal ) );
-     begin
-        execute( Q, connection.C );
-     exception when others =>
-        raise;
-     end;
+     execute( Q, connection.C );
 
      if tuples( Q ) > 0 then
         put_line( "Indexes:" );
@@ -2179,10 +2163,10 @@ begin
             fetch( Q );
             put( "    " );
             declare
-               indexName   : string := Value( Q, 1 );
-               primaryKey  : string := Value( Q, 2 );
-               uniqueIndex : string := Value( Q, 3 );
-               colList     : string := Value( Q, 4 );
+               indexName   : constant string := Value( Q, 1 );
+               primaryKey  : constant string := Value( Q, 2 );
+               uniqueIndex : constant string := Value( Q, 3 );
+               colList     : constant string := Value( Q, 4 );
             begin
                put( bold( indexName ) );
                put( " " );
@@ -2464,11 +2448,7 @@ begin
            execute( Q, connection.C );
         exception when others =>
            prepare( Q, "show databases" );
-           begin
-              execute( Q, connection.C );
-           exception when others =>
-              raise;
-           end;
+           execute( Q, connection.C );
         end;
 
         -- Initially, the columns widths are the widths of the headings
