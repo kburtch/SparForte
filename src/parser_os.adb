@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- BUSH_OS Package Parser                                                   --
+-- OS Package Parser                                                        --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -23,15 +23,13 @@
 
 --with text_io;use text_io;
 
-with gnat.lock_files,
-    ada.strings.unbounded,
+with ada.strings.unbounded,
     world,
     scanner,
     parser_params,
     parser_aux,
     spar_os;
-use gnat.lock_files,
-    ada.strings.unbounded,
+use ada.strings.unbounded,
     world,
     scanner,
     parser_params,

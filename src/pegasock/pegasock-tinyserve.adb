@@ -4,9 +4,9 @@
 -----------------------------------------------------------------------------
 
 with ada.text_io,
-     spar_os;
+     ada.strings.unbounded;
 use  ada.text_io,
-     spar_os;
+     ada.strings.unbounded;
 
 package body pegasock.tinyserve is
 
@@ -77,7 +77,7 @@ pragma import( C, socket_buffer );
 
 
 --  MANAGE CONNECTIONS
--- 
+--
 -- Monitor all client connections and return the first one that needs to be
 -- serviced (that is, has data waiting to be read).  Performed using
 -- operating system select syscall.  0 is returned on a timeout.  Errors
@@ -95,7 +95,7 @@ end manageConnections;
 
 
 --  GET NEXT CLIENT
--- 
+--
 -- If there are multiple clients waiting for servicing (has data waiting
 -- to be read), get the next one waiting (or -1 for none).
 -----------------------------------------------------------------------------
@@ -132,7 +132,7 @@ end establish;
 
 
 --  CLOSE
--- 
+--
 -- Gracefully close a client connection, waiting for communication to finish
 -- before closing the socket.  This should be used instead of the standard
 -- pegasock socket close (perhaps strong typing could enforce this).
@@ -148,7 +148,7 @@ end close;
 
 
 --  DROP
--- 
+--
 -- Forcefully close a client connection even if communication isn't finished.
 -----------------------------------------------------------------------------
 --
@@ -186,7 +186,7 @@ end clientMightNotBlockOnWrite;
 
 
 --  IS OPEN
--- 
+--
 -- Technically, >= 0 but tinyserve uses 0 for a timeout or new connection
 -----------------------------------------------------------------------------
 
@@ -197,7 +197,7 @@ end clientMightNotBlockOnWrite;
 
 
 --  IS OPEN
--- 
+--
 -- Technically, 0 is stdin but tinyserve uses 0 for a timeout or new connection
 ------------------------------------------------------------------------------
 
@@ -226,7 +226,7 @@ procedure startupTinyServe( socket_data : out aSocketServer;
   socket_linger_seconds : integer;
   timeout_secs : integer;
   timeout_usecs : integer ) is
-  c_host : string := host & ASCII.NUL;
+  c_host : constant string := host & ASCII.NUL;
 begin
   for i in 1..host'length loop
       socket_buffer(i-1) := c_host(i);

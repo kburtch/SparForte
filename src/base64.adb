@@ -1,5 +1,4 @@
 
-with Ada.Streams;
 package body Base64 is
 
   subtype Six_Bits is Ada.Streams.Stream_Element range 0 .. 63;

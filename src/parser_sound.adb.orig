@@ -22,25 +22,21 @@
 ------------------------------------------------------------------------------
 
 with text_io;use text_io;
-with gnat.lock_files,
-     gnat.source_info,
+with gnat.source_info,
     ada.strings.unbounded,
     spar_os.sound,
     world,
     scanner,
     user_io,
     parser,
-    parser_params,
     builtins;
-use gnat.lock_files,
-    ada.strings.unbounded,
+use ada.strings.unbounded,
     spar_os,
     spar_os.sound,
     world,
     scanner,
     user_io,
     parser,
-    parser_params,
     builtins;
 
 package body parser_sound is

@@ -21,14 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded,
-     world,
-     scanner,
-     parser_params;
-use  ada.strings.unbounded,
-     world,
-     scanner,
-     parser_params;
+with ada.strings.unbounded;
+use  ada.strings.unbounded;
 
 package body parser_teams is
 

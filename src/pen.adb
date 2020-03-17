@@ -307,6 +307,7 @@ function getPenBrush( canvas_id : aCanvasID ) return aPenBrush is
   canvasIndex : canvasList.aListIndex := 0;
 begin
   theCanvas.id := canvas_id;
+  canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
      put_line( standard_error, "no such canvas id -" & canvas_id'img );
   else

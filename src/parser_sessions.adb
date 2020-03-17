@@ -22,15 +22,9 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     spar_os,
-     world,
-     scanner,
-     parser_params;
+     world;
 use  ada.strings.unbounded,
-     spar_os,
-     world,
-     scanner,
-     parser_params;
+     world;
 
 package body parser_sessions is
 
