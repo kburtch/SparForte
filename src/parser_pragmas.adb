@@ -1379,6 +1379,15 @@ begin
         allowLowPriorityTodosForRelease := true;
      elsif pragmaKind = suppress_all_todos then
         allowAllTodosForRelease := true;
+     elsif pragmaKind = suppress_all_todos then
+        allowAllTodosForRelease := true;
+     -- Pragma volatile is checked at syntax check time because voltailes
+     -- must be exempt from limited testing.  They will also be applied
+     -- at run-time.
+     elsif pragmaKind = volatile then
+        identifiers( var_id ).volatile := checked;
+     elsif pragmaKind = unchecked_volatile then
+        identifiers( var_id ).volatile := unchecked;
      end if;
   end if;
 

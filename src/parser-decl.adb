@@ -52,8 +52,8 @@ use spar_os,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
 
---with ada.text_io;
---use ada.text_io;
+with ada.text_io;  -- VOLATILE
+use ada.text_io;
 
 package body parser.decl is
 
@@ -1669,6 +1669,21 @@ begin
 
      -- Complete the declaration
      identifiers( id ).kind := type_token;
+
+     -- Volatiles hack
+     --
+     -- Volatiles are a special case:
+     -- they cannot be limited but must not be used an an expression because
+     -- they can cause side effects.  But copying a volatile requires
+     -- a non-limited.  We exempt volatiles here by pretending they were
+     -- used in an expression, and SparForte will not require them to be
+     -- limited.
+
+     if syntax_check then
+        if identifiers( canonicalRef.id ).volatile /= none then
+           identifiers( canonicalRef.id ).wasFactor := true;
+        end if;
+     end if;
 
      if identifiers( canonicalRef.id ).list then
         if canonicalRef.hasIndex then

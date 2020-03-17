@@ -4289,6 +4289,16 @@ begin
   end;
 end;
 
+declare
+  c1 : constant integer := 5;
+  pragma volatile( c1 );
+
+  c2 : constant integer copies c1;
+begin
+  null;
+  pragma assert( c2 = 5 );
+end;
+
 end; --copy tests
 
 
