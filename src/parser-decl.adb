@@ -228,26 +228,27 @@ begin
        -- check to see that the usage qualifier isn't less restrictive
        -- compared to the canonical identifier being renamed
 
-       case identifiers( canonicalRef.id ).usage is
-       when fullUsage =>
-          null; -- always good
-       when constantUsage =>
-          if identifiers( new_id ).usage = fullUsage then
-             err( "no qualifier is less restrictive than constant" );
-          end if;
-       when limitedUsage =>
-          if identifiers( new_id ).usage = fullUsage then
-             err( "no qualifier is less restrictive than limited" );
-          elsif identifiers( new_id ).usage = constantUsage then
-             err( "constant is less restrictive than limited" );
-          end if;
-       when abstractUsage =>
-          err( gnat.source_info.source_location &
-               "internal error: abstract usage qualifier not expected" );
-       when others =>
-          err( gnat.source_info.source_location &
-               "internal error: unexpected usage qualifier" );
-       end case;
+       -- KB: 20/03/18 - these are tested for elsewhere
+       --case identifiers( canonicalRef.id ).usage is
+       --when fullUsage =>
+       --   null; -- always good
+       --when constantUsage =>
+       --   if identifiers( new_id ).usage = fullUsage then
+       --      err( "no qualifier is less restrictive than constant" );
+       --   end if;
+       --when limitedUsage =>
+       --   if identifiers( new_id ).usage = fullUsage then
+       --      err( "no qualifier is less restrictive than limited" );
+       --   elsif identifiers( new_id ).usage = constantUsage then
+       --      err( "constant is less restrictive than limited" );
+       --   end if;
+       --when abstractUsage =>
+       --   err( gnat.source_info.source_location &
+       --        "internal error: abstract usage qualifier not expected" );
+       --when others =>
+       --   err( gnat.source_info.source_location &
+       --        "internal error: unexpected usage qualifier" );
+       --end case;
      end;
   end if;
 end ParseRenamesPart;
@@ -279,7 +280,7 @@ begin
   -- declare the identifier as a side-effect
   if not error_found then
      begin
-       identifiers( new_id ).usage := identifiers( canonicalRef.id ).usage;
+       --identifiers( new_id ).usage := identifiers( canonicalRef.id ).usage;
        identifiers( new_id ).value := identifiers( new_id ).svalue'access;
 
        -- For a volatile, update the value before copying
@@ -296,24 +297,25 @@ begin
        end if;
 
        -- check to see that the usage qualifier isn't less restrictive
-       -- compared to the canonical identifier being renamed
+       -- compared to the canonical identifier being copied
 
-       case identifiers( canonicalRef.id ).usage is
-       when fullUsage =>
-          null; -- always good
-       when constantUsage =>
-          if identifiers( new_id ).usage = fullUsage then
-             err( "no qualifier is less restrictive than constant" );
-          end if;
-       when limitedUsage =>
-          err( "limited identifiers cannot be copied" );
-       when abstractUsage =>
-          err( gnat.source_info.source_location &
-               "internal error: abstract usage qualifier not expected" );
-       when others =>
-          err( gnat.source_info.source_location &
-               "internal error: unexpected usage qualifier" );
-       end case;
+       -- KB: 20/03/18 - these are tested for elsewhere
+       -- case identifiers( canonicalRef.id ).usage is
+       -- when fullUsage =>
+       --    null; -- always good
+       -- when constantUsage =>
+       --    if identifiers( new_id ).usage = fullUsage then
+       --       err( "no qualifier is less restrictive than constant" );
+       --    end if;
+       -- when limitedUsage =>
+       --    err( "limited identifiers cannot be copied" );
+       -- when abstractUsage =>
+       --    err( gnat.source_info.source_location &
+       --         "internal error: abstract usage qualifier not expected" );
+       -- when others =>
+       --    err( gnat.source_info.source_location &
+       --         "internal error: unexpected usage qualifier" );
+       -- end case;
 
        -- All of our resources are limited.  However, as a safety precaution:
        -- If an identifier has an external reference, we cannot copy it because

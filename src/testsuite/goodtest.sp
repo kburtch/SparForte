@@ -4289,6 +4289,8 @@ begin
   end;
 end;
 
+-- Copy a checked volatile
+
 declare
   c1 : constant integer := 5;
   pragma volatile( c1 );
@@ -4297,6 +4299,16 @@ declare
 begin
   null;
   pragma assert( c2 = 5 );
+end;
+
+-- Copy an array element
+
+declare
+  a1 : array(1..1) of integer := (15);
+  c1 : constant integer copies a1(1);
+begin
+  null;
+  pragma assert( c1 = 15 );
 end;
 
 end; --copy tests
