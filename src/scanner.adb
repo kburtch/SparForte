@@ -3428,9 +3428,7 @@ begin
              optional_bold( to_string( identifiers( id ).name ) ) &
              "in the O/S environment" );
      end if;
-put_line( importedStringValue ); -- DEBUG
   else
-put_line( to_string( identifiers( id ).name ) & " import " & identifiers( id ).method'img  & " has no effect" ); -- DEBUG
      -- KB: 20/03/18 - hack have no effect
      return;
   end if;
@@ -3947,7 +3945,7 @@ begin
   -- not represent.
 
   if effectiveRenamingType /= effectiveCanonicalType then
-     err_previous( "renaming type " & bold( to_string( identifiers( renamingType ).name) ) &
+     err_previous( "renaming or copying type " & bold( to_string( identifiers( renamingType ).name) ) &
           " is not equivalent to canonical identifier's type " &
           bold( to_string( identifiers( canonicalType ).name ) ) );
      return false;

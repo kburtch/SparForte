@@ -92,5 +92,5 @@ CHANGES SINCE 2.2.2
 
 43. [Pascal B] Fix: Fixed various static code analysis errors on sample programs as a part of testing item 42.
 
-44. Copying volatiles no longer results in conflicting error messages.
+44. Fix: Copying volatiles no longer results in conflicting error messages.
 

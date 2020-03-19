@@ -46,6 +46,7 @@ Priority Issues (Fix These First)
     - should affirm blocks have storage specifications?
     - move DoContracts to parser_aux?
     - constant limited?
+  - copy
     - copying arrays
     - copying records
       - full copy of arrays and records

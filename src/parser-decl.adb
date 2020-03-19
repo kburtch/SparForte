@@ -52,8 +52,8 @@ use spar_os,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
 
-with ada.text_io;  -- VOLATILE
-use ada.text_io;
+-- with ada.text_io;
+-- use ada.text_io;
 
 package body parser.decl is
 
@@ -1054,6 +1054,9 @@ begin
       end if;
    elsif token = renames_t then
       err( "exceptions cannot be renamed" );
+   elsif token = copies_t then
+      -- TODO: we could make this happen
+      err( "exceptions cannot be copied" );
    elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
       err( "with or ';' expected" );
    end if;
@@ -1652,7 +1655,7 @@ begin
         elsif identifiers( canonicalRef.id ).class = enumClass then
            -- TODO: I could probably get this to work but it's a weird edge
            -- case.
-           err( "enumerated items cannot be renamed" );
+           err( "enumerated items cannot be copied" );
         elsif identifiers( canonicalRef.id ).usage = limitedUsage and not wasLimited then
            err( "a " & optional_bold( "limited" ) & " must be copied by a limited" );
         elsif identifiers( canonicalRef.id ).field_of /= eof_t then
@@ -1681,11 +1684,11 @@ begin
      -- used in an expression, and SparForte will not require them to be
      -- limited.
 
-     if syntax_check then
-        if identifiers( canonicalRef.id ).volatile /= none then
-           identifiers( canonicalRef.id ).wasFactor := true;
-        end if;
-     end if;
+     --if syntax_check then
+     --   if identifiers( canonicalRef.id ).volatile /= none then
+     --      identifiers( canonicalRef.id ).wasFactor := true;
+     --   end if;
+     --end if;
 
      if identifiers( canonicalRef.id ).list then
         if canonicalRef.hasIndex then
