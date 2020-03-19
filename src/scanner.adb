@@ -3400,7 +3400,7 @@ begin
            -- b := deleteIdent( temp1_t );
         end if;
      end;
-  else
+  elsif identifiers( id ).method = shell then
      key := identifiers( id ).name & "=";                        -- look for this
      for i in 1..Environment_Count loop                          -- all env vars
          ev := to_unbounded_string( Environment_Value( i ) );    -- get next one
@@ -3424,28 +3424,37 @@ begin
         end loop;
      end if;
      if not refreshed then
-        err( "unable to find variable " &
-             to_string( identifiers( id ).name ) &
-             " in O/S enviroment" );
+        err( "unable to find volatile " &
+             optional_bold( to_string( identifiers( id ).name ) ) &
+             "in the O/S environment" );
      end if;
+put_line( importedStringValue ); -- DEBUG
+  else
+put_line( to_string( identifiers( id ).name ) & " import " & identifiers( id ).method'img  & " has no effect" ); -- DEBUG
+     -- KB: 20/03/18 - hack have no effect
+     return;
   end if;
   -- apply mapping, if any.  assume these are all set correctly
-  if identifiers( id ).mapping = json then                       -- json
-     if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
-        DoJsonToString( identifiers( id ).value.all, importedStringValue );
-     elsif identifiers( id ).list then                           -- array
-        DoJsonToArray( id, importedStringValue );
-     elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
-        DoJsonToRecord( id, importedStringValue );
-     elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
-        DoJsonToNumber( importedStringValue, identifiers( id ).value.all );
-     elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_enumerated_t then -- enum
-        DoJsonToNumber( importedStringValue, identifiers( id ).value.all );
-     --else
-     --   err( "internal error: unexpected import translation type" );
+  -- do not apply mapping if an error occurred as the value may be
+  -- incorrect.
+  if not error_found then
+     if identifiers( id ).mapping = json then                       -- json
+        if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
+           DoJsonToString( identifiers( id ).value.all, importedStringValue );
+        elsif identifiers( id ).list then                           -- array
+           DoJsonToArray( id, importedStringValue );
+        elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
+           DoJsonToRecord( id, importedStringValue );
+        elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
+           DoJsonToNumber( importedStringValue, identifiers( id ).value.all );
+        elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_enumerated_t then -- enum
+           DoJsonToNumber( importedStringValue, identifiers( id ).value.all );
+        --else
+        --   err( "internal error: unexpected import translation type" );
+        end if;
+     else                                                           -- no mapping
+        identifiers( id ).value.all := importedStringValue;
      end if;
-  else                                                           -- no mapping
-     identifiers( id ).value.all := importedStringValue;
   end if;
 end refreshVolatile;
 

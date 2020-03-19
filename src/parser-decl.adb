@@ -285,8 +285,8 @@ begin
 
        -- For a volatile, update the value before copying
        if isExecutingCommand then
-          if identifiers( new_id ).volatile /= none then
-             refreshVolatile( new_id );
+          if identifiers( canonicalRef.id ).volatile /= none then
+             refreshVolatile( canonicalRef.id );
           end if;
        end if;
 

@@ -1644,17 +1644,19 @@ begin
                    --end if;
                  end;
               end if;
+           elsif importType = "shell" then
+              identifiers( var_id ).method := shell;
+              refreshVolatile( var_id );
+              -- show a trace of what's imported.  If JSON, show JSON as it
+              -- could be multiple values
+              if trace then
+                  put_trace(
+                     to_string( identifiers( var_id ).name ) & " := """ &
+                     to_string( ToEscaped( identifiers( var_id ).value.all ) ) &
+                     """" );
+              end if;
            else
---               identifiers( var_id ).method := shell;
-                refreshVolatile( var_id );
-           -- show a trace of what's imported.  If JSON, show JSON as it
-           -- could be multiple values
-           if trace then
-               put_trace(
-                  to_string( identifiers( var_id ).name ) & " := """ &
-                  to_string( ToEscaped( newValue ) ) &
-                  """" );
-           end if;
+              err( gnat.source_info.source_location & ": internal error: unexpected import method '" & to_string( importType ) & "'" );
            end if;
         end if;
      when inspection =>

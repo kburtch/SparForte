@@ -744,9 +744,10 @@ is described under pragma template.</li>
   <li> <b>pragma volatile( var )</b> - the variable is assumed to be
 an variable which may change unexpectedly during the script's execution.
 If the variable is imported, the variable's value will be updated each
-time it is referenced. Volatile variables must be limited so they are
-not used in an expression.  Otherwise, expressions may have "side-effects",
-values that change unexpectedly in the middle of a calculation.</li>
+time it is referenced. Volatile variables acts like a limited so they are
+not used in an expression.  However, volatiles can be used in a <b>copies</b>
+declaration where a limited cannot be used.  Otherwise, expressions may have
+"side-effects", values that change unexpectedly in the middle of a calculation.</li>
 </ul>
 
 <h4>Miscellaneous Pragmas</h4>
