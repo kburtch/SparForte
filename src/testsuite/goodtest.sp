@@ -5344,6 +5344,27 @@ declare
   c9 : constant rtype;
   c9 : constant rtype := (9);
 
+  -- Constant record fields (a strange case)
+
+  type const_int is new constant integer;
+
+  type rtype2 is record
+     i : const_int;
+  end record;
+
+  c11 : rtype2;
+  c11.i : const_int := 11;
+
+  -- A constant record type
+
+  type rtype3 is constant record
+    i : integer;
+  end record;
+
+  c12 : rtype3 := (12);
+
+  -- Constant array
+
   type t10 is constant array(1..1) of integer;
   c10 : t10;
   c10 : t10 := (10);
@@ -5354,6 +5375,8 @@ begin
   pragma assert( c8 = true );
   pragma assert( c9.i= 9 );
   pragma assert( c10(1) = 10 );
+  pragma assert( c11.i = 11 );
+  pragma assert( c12.i = 12 );
 end;
 
 -- Pragma ada_95 tests
