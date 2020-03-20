@@ -498,9 +498,11 @@ begin
   elsif getUniType( kind1 ) = root_record_t then                 -- must be scalar
      err( "array indexes cannot be a record type like " &
           optional_bold( to_string( identifiers( kind1 ).name ) ) );
-  elsif identifiers( getBaseType( kind1 ) ).list then
-     err( "array indexes cannot be an array type like " &
-          optional_bold( to_string( identifiers( kind1 ).name ) ) );
+  -- this is currently impossible: parseExpression will demand an
+  -- array element, not the whole array
+  -- elsif identifiers( getBaseType( kind1 ) ).list then
+  --    err( "array indexes cannot be an array type like " &
+  --         optional_bold( to_string( identifiers( kind1 ).name ) ) );
   else
      expect( symbol_t, ".." );
      ParseExpression( ab2, kind2 );                            -- high bound
