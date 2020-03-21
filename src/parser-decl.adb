@@ -1274,6 +1274,9 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     else
        ParseIdentifier( type_token );                    -- identify type
        VerifyTypesAreSame;
+       -- This may be impossible.  If it's not a constant, it will
+       -- be identifier not declared or a similar error before we
+       -- get here.
        if identifiers( type_token ).usage /= constantUsage then
           err( "fulfilling the constant specification " &
                optional_bold( to_string( identifiers( const_id ).name ) ) &
@@ -1471,8 +1474,9 @@ begin
         when limitedUsage =>
            identifiers( id ).usage := limitedUsage;
         when abstractUsage =>
-           err( gnat.source_info.source_location &
-                "internal error: variables should not have abstract types" );
+           err( "variables cannot be declared as type " &
+              optional_bold( to_string( identifiers( type_token ).name ) ) &
+              " because it is " & optional_bold( "abstract" ) );
         when others =>
            err( gnat.source_info.source_location &
                 "internal error: unknown var qualifier" );
@@ -1484,9 +1488,8 @@ begin
   when limitedUsage =>
        null; -- this is the most constrained
   when abstractUsage =>
-       err( "variables cannot be declared as type " &
-         optional_bold( to_string( identifiers( type_token ).name ) ) &
-         " because it is " & optional_bold( "abstract" ) );
+       err( gnat.source_info.source_location &
+          "internal error: variables should not have abstract types" );
   when others =>
       err( gnat.source_info.source_location &
            "internal error: unknown var qualifier" );
