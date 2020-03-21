@@ -904,9 +904,10 @@ begin
             -- brutal search was...
             -- for j in 1..identifiers_top-1 loop
             --
-            -- As an optimization, the fields are likely located immediately after
-            -- the record itself is defined.  Also assumes they are stored
-            -- sequentially.  In the future, records will be stored differently.
+            -- As an optimization, the fields are likely located immediately
+            -- after the record itself is defined.  Also assumes they are
+            -- stored sequentially.  In the future, records will be stored
+            -- differently: as a precaution a while loop was used.
 
             while j < identifiers_top loop
               if identifiers( j ).field_of = baseRecType then
@@ -914,6 +915,7 @@ begin
                     exit;
                  end if;
               end if;
+              -- should not run: this is a precaution
               j := identifier( integer( j ) + 1 );
             end loop;
 
@@ -978,26 +980,26 @@ begin
      ParseRenamesPart( canonicalRef, id, recType );
      FixRenamedRecordFields( canonicalRef, id );
 
-  -- Assignment?
-  -- if it appears, one can only rename...cannot assign.
+  -- Assignment when declaring a record variable
 
   elsif token = symbol_t and identifiers( token ).value.all = ":=" then
      if canAssign then
         ParseRecordAssignPart( id, recType );
-     elsif identifiers( id ).usage = constantUsage then
+     -- elsif identifiers( id ).usage = constantUsage then
         -- CONST SPECS
         -- if it is a constant record and there was no assignment, the full
         -- record variable is a specification.
-        identifiers( id ).specFile := getSourceFileName;
-        identifiers( id ).specAt := getLineNo;
+     --    identifiers( id ).specFile := getSourceFileName;
+     --    identifiers( id ).specAt := getLineNo;
      end if;
 
-  -- Generic type?  Check for parameters.
+  -- Paranthesis?  It looks like a Generic type.  Show an error.
 
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( optional_bold( to_string( identifiers( recType ).name ) ) & " is not a generic type but has parameters" );
 
-  -- No Assignment?  If it's a constant, than it's a constant specification.
+  -- No Assignment?  If the new record variable is a constant, than
+  -- it's a constant specification.
 
   elsif identifiers( id ).usage = constantUsage then
         -- CONST SPECS
