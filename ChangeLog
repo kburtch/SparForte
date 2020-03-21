@@ -94,3 +94,5 @@ CHANGES SINCE 2.2.2
 
 44. Fix: Copying volatiles no longer results in conflicting error messages.
 
+45. Fix: Pragma ada_95 wasn't being enforced during syntax checking but at run-time.  Now is enforced for both.
+

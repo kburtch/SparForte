@@ -1336,10 +1336,13 @@ begin
 
   -- Execute the pragma
 
-  -- these pragma only affects syntax checking.  syntax checking doesn't
-  -- happen at the command prompt.
+  -- Some pragmas have an effect at syntax checking or both syntax
+  -- checking and run-time.  Syntax checking doesn't happen at the
+  -- command prompt.
   if syntax_check then
-     if pragmaKind = assumption_used then
+     if pragmaKind = ada_95 then
+        onlyAda95 := true;
+     elsif pragmaKind = assumption_used then
         identifiers( var_id ).wasReferenced := true;
         --identifiers( var_id ).referencedByThread := getThreadName;
      elsif pragmaKind = assumption_written then

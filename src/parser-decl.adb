@@ -52,8 +52,8 @@ use spar_os,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
 
--- with ada.text_io;
--- use ada.text_io;
+with ada.text_io;
+use ada.text_io;
 
 package body parser.decl is
 
