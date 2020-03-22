@@ -1190,8 +1190,8 @@ begin
   -- Memcache Package identifiers
   declareNamespace( "memcache" );
   declareIdent( memcache_cluster_t, "memcache.memcache_cluster", long_integer_t, typeClass );
-  identifiers( memcache_cluster_t ).usage := limitedUsage;
-  identifiers( memcache_cluster_t ).resource := true;
+  -- identifiers( memcache_cluster_t ).usage := limitedUsage;
+  -- identifiers( memcache_cluster_t ).resource := true;
   declareIdent( memcache_cluster_type_t, "memcache.memcache_cluster_type", root_enumerated_t, typeClass );
   declareStandardConstant( memcache_cluster_type_normal_t, "memcache.memcache_cluster_type.normal", memcache_cluster_type_t, "0" );
 
@@ -1213,6 +1213,8 @@ begin
   declareProcedure( memcache_flush_t, "memcache.flush", ParseMemcacheFlush'access );
 
   declareIdent( highread_cluster_t, "memcache.highread.memcache_dual_cluster", long_integer_t, typeClass );
+  -- identifiers( highread_cluster_t ).usage := limitedUsage;
+  -- identifiers( highread_cluster_t ).resource := true;
 
   declareFunction(  highread_new_cluster_t, "memcache.highread.new_cluster", ParseHighreadNewCluster'access );
   declareProcedure( highread_register_alpha_server_t, "memcache.highread.register_alpha_server", ParseHighreadRegisterAlphaServer'access );
