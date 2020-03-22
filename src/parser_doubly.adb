@@ -1458,8 +1458,10 @@ begin
 
   declareIdent( doubly_list_t,   "doubly_linked_lists.list", variable_t, genericTypeClass );
   identifiers( doubly_list_t ).usage := limitedUsage;
+  identifiers( doubly_list_t ).resource := true;
   declareIdent( doubly_cursor_t, "doubly_linked_lists.cursor", variable_t, genericTypeClass );
   identifiers( doubly_cursor_t ).usage := limitedUsage;
+  identifiers( doubly_cursor_t ).resource := true;
 
   --declareProcedure( doubly_new_list_t,  "doubly_linked_lists.new_list", ParseDoublyNewList'access );
   declareProcedure( doubly_clear_t,     "doubly_linked_lists.clear",    ParseDoublyClear'access );

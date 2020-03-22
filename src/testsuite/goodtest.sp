@@ -5226,21 +5226,22 @@ pragma assumption( used, i );
 pragma assumption( written, i );
 
 -- Types derived from parameterized types
+-- Types with a resource must be limited.
 
 declare
   -- the basic type
-  type list_type is new doubly_linked_lists.list( string );
+  type list_type is new limited doubly_linked_lists.list( string );
 
   -- Derrived types
-  type list_type2 is new list_type;
+  type list_type2 is new limited list_type;
   list : list_type;
   list2 : list_type2;
 
-  subtype list_type3 is list_type;
+  subtype list_type3 is limited list_type;
   list3 : list_type3;
-  subtype list_type4 is list_type3;
+  subtype list_type4 is limited list_type3;
   list4 : list_type4;
-  subtype list_type5 is list_type2;
+  subtype list_type5 is limited list_type2;
   list5 : list_type5;
 
   -- User Functions for each type

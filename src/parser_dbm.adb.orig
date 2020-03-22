@@ -3006,6 +3006,7 @@ begin
 
   declareIdent( dbm_connection_t, "dbm.connection", positive_t, typeClass );
   identifiers( dbm_connection_t ).usage := limitedUsage;
+  identifiers( dbm_connection_t ).resource := true;
 
   declareIdent( dbm_query_t, "dbm.query", positive_t, typeClass );
 

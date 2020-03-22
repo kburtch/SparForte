@@ -2209,11 +2209,16 @@ begin
      end if;
 
      -- Types are generally allowed to change the type usage in any way they want.
-     -- As a special case, resources must always be limited.
+     -- As a special case, resources must always be limited (or abstract)
+     -- because the value is a resource id.
 
-     if identifiers( parent_id ).resource then
-        if identifiers( newtype_id ).usage /= limitedUsage then
-           err("resource identifiers must always be limited" );
+    if identifiers( parent_id ).resource then
+        if identifiers( newtype_id ).usage /= abstractUsage and
+           identifiers( newtype_id ).usage /= limitedUsage then
+           err("types that represent resources must always be " &
+               optional_bold( "abstract" ) &
+               " or " &
+               optional_bold( "limited" ) );
         end if;
         identifiers( newtype_id ).resource := true;
      end if;
@@ -2317,15 +2322,20 @@ begin
    ParseTypeUsageQualifiers( newtype_id );                 -- limited, etc.
    ParseIdentifier( parent_id );                           -- old type
 
-   -- Types are generally allowed to change the type usage in any way they want.
-   -- As a special case, resources must always be limited.
+     -- Subypes are generally allowed to change the type usage in any way they want.
+     -- As a special case, resources must always be limited (or abstract)
+     -- because the value is a resource id.
 
-   if identifiers( parent_id ).resource then
-      if identifiers( newtype_id ).usage /= limitedUsage then
-         err("resource identifiers must always be limited" );
-      end if;
-      identifiers( newtype_id ).resource := true;
-   end if;
+    if identifiers( parent_id ).resource then
+        if identifiers( newtype_id ).usage /= abstractUsage and
+           identifiers( newtype_id ).usage /= limitedUsage then
+           err("types that represent resources must always be " &
+               optional_bold( "abstract" ) &
+               " or " &
+               optional_bold( "limited" ) );
+        end if;
+        identifiers( newtype_id ).resource := true;
+     end if;
 
    if identifiers( parent_id ).class = genericTypeClass then
       err( "subtypes require an instantiated generic type but " &

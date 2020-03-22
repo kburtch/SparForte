@@ -508,6 +508,8 @@ begin
      string_t, subClass );
   declareIdent( dirops_dir_type_t, "directory_operations.dir_type_id",
      positive_t, typeClass );
+ identifiers( dirops_dir_type_t ).usage := limitedUsage;
+ identifiers( dirops_dir_type_t ).resource := true;
 
   declareFunction( dirops_dir_separator_t, "directory_operations.dir_separator", ParseDirOpsDirSeparator'access );
   declareProcedure( dirops_change_dir_t, "directory_operations.change_dir", ParseDirOpsChangeDir'access );

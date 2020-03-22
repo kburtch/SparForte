@@ -294,6 +294,9 @@ begin
   declareNamespace( "tinyserve" );
 
   declareIdent( tinyserve_socket_server_t,   "tinyserve.socket_server", variable_t, typeClass );
+  identifiers( tinyserve_socket_server_t ).usage := limitedUsage;
+  identifiers( tinyserve_socket_server_t ).resource := true;
+
   declareIdent( tinyserve_client_id_t, "tinyserve.client_id", integer_t, typeClass );
 
   -- TODO: allow multiple listeners

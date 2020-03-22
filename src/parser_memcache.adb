@@ -1190,6 +1190,8 @@ begin
   -- Memcache Package identifiers
   declareNamespace( "memcache" );
   declareIdent( memcache_cluster_t, "memcache.memcache_cluster", long_integer_t, typeClass );
+  identifiers( memcache_cluster_t ).usage := limitedUsage;
+  identifiers( memcache_cluster_t ).resource := true;
   declareIdent( memcache_cluster_type_t, "memcache.memcache_cluster_type", root_enumerated_t, typeClass );
   declareStandardConstant( memcache_cluster_type_normal_t, "memcache.memcache_cluster_type.normal", memcache_cluster_type_t, "0" );
 

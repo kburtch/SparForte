@@ -3053,6 +3053,7 @@ begin
   declareIdent( mysqlm_connection_t, "mysqlm.connection",
     positive_t, typeClass );
   identifiers( mysqlm_connection_t ).usage := limitedUsage;
+  identifiers( mysqlm_connection_t ).resource := true;
 
   declareIdent( mysqlm_query_t, "mysqlm.query",
     positive_t, typeClass );
