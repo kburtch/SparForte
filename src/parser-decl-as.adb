@@ -200,6 +200,7 @@ end ParseIfBlock;
 -- Conditionally run code based on a static expression.  Part of static if.
 -- Only pragmas, static if's or case's allowed.
 -----------------------------------------------------------------------------
+-- TODO: not currently implemented due to static expression refactor
 
 procedure ParseStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
@@ -230,6 +231,7 @@ end ParseStaticBlock;
 --
 -- Conditionally skip code based on a static expression.  Part of static if.
 -----------------------------------------------------------------------------
+-- TODO: not currently implemented due to static expression refactor
 
 procedure SkipStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;
@@ -262,6 +264,7 @@ end SkipStaticBlock;
 -- This is tied to parsePolicy: blocks may only contain policy block
 -- statements.
 -----------------------------------------------------------------------------
+-- TODO: not currently implemented due to static expression refactor
 
 procedure ParseStaticIfBlock is
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
@@ -476,6 +479,7 @@ end ParseCaseBlock;
 -- Conditionally execute code based on a static expression value.  This is
 -- tied to parsePolicy: only policy block statements allowed in the code.
 -----------------------------------------------------------------------------
+-- TODO: not currently implemented due to static expression refactor
 
 procedure ParseStaticCaseBlock is
 -- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
@@ -650,6 +654,8 @@ begin
   loop
      expect( while_t );                                    -- "while"
      ParseExpression( expr_val, expr_type );               -- expression
+     -- The type of the while expression can only change during a while loop
+     -- with a typeset at the command prompt.
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( "boolean expression expected" );
         exit;
@@ -799,6 +805,8 @@ begin
         --if error_found then                              -- errors?
         --    goto abort_loop;                             -- go no further
         --end if;
+        -- Another strange case only possible at the command prompt and
+        -- with typeset changing the data type.
         if type_checks_done or else baseTypesOK( expr1_type, expr2_type ) then      -- check types
            if getUniType( expr1_type ) = uni_numeric_t then
               null;

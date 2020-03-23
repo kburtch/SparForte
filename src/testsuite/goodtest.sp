@@ -2236,6 +2236,16 @@ when others => i2 := 2;
 end case;
 pragma assert( i2 = 2 );
 
+i2 := 0;
+c := 'a';
+case c is
+when 'a' =>
+  i2 := 1;
+when others =>
+  i2 := 2;
+end case;
+pragma assert( i2 = 1 );
+
 s := "a";
 i2 := 0;
 case s is

@@ -18,7 +18,7 @@ Priority Issues (Fix These First)
   can HTML be embedded as CDATA in junit xml?
 - improving test coverage
 - improving shell features
-- incompelte casting tests
+- incomplete casting tests
 
 - for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
@@ -40,8 +40,6 @@ Priority Issues (Fix These First)
   - disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
   - should subprogram parameters allow qualifiers?
-- memecache.new_cluster and sister function cannot return a value
-  if resource using types are limited
 - affirm blocks
     - test if HTML escaping can be implemented in an affirm block
     - should affirm blocks have an expression short-form?
@@ -139,6 +137,8 @@ Annoyances / Bugs with Workarounds / Updates
     - option to throw an exception on missing values (including replace, get, add (existing value)
 - memcache/memcache.highread
     - update design to use new resource system
+    - memecache.new_cluster and sister function cannot return a value
+      if resource using types are limited
 - exceptions
     - what are semantics of throwing an exception in a subscript `...`
     - exceptions that propogate to the top aren't formatted properly in the
