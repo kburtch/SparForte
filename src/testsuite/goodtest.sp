@@ -2663,7 +2663,7 @@ s := "*";
 s := `echo $s;`;
 pragma assert( s /= "*" );
 
--- Special Substitutions
+-- Special Substitutions (Dollar Expansions)
 
 s := `echo $?;`; -- status
 s := `echo $#;`; -- number of arguments
@@ -2672,6 +2672,7 @@ s := `echo $$;`; -- pid
 s := `echo $0;`; -- command name
 s := `echo $1;`; -- first argument
 pragma assert( s = "a" );
+s := `echo $!;`; -- last pid
 
 -- tilde expansion
 
