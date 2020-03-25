@@ -1492,6 +1492,19 @@ pragma assert( la1(aenum1) = 3 );
 pragma assert( la1(aenum2) = 2 );
 pragma assert( la1(aenum3) = 1 );
 
+-- test on null arrays
+
+arrays.bubble_sort( nularr );
+arrays.bubble_sort_descending( nularr );
+arrays.heap_sort( nularr );
+arrays.heap_sort_descending( nularr );
+arrays.shuffle( nularr );
+arrays.rotate_left( nularr);
+arrays.rotate_right( nularr );
+arrays.shift_left( nularr);
+arrays.shift_right( nularr );
+arrays.flip( nularr );
+
 -- stats
 
 la1(aenum1) := 1;
