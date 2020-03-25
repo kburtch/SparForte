@@ -2585,6 +2585,10 @@ echo \\;
 echo \\\\;
 echo "[]";
 echo [];
+-- escape globbing characters
+s := "*[\?";
+s := `echo "$s";`;
+pragma assert( s = "*[\?" );
 
 -- Shell Variable Substitution Tests
 

@@ -1140,7 +1140,9 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
           exception when program_error =>
              err( "program_error exception raised" );
           when others =>
-             err( "no such argument" );
+             err( "script argument " & to_string(expansionVar) & " not found " &
+                  "in arguments 0 .." &
+                  integer'image( Argument_Count-optionOffset) );
           end;
        end if;
     else
@@ -1179,6 +1181,8 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
        end if;
     end if;
     -- escapeGlobs affects the variable substitution
+    -- shell word will be "undefined" during syntax check.  It only has
+    -- a meaningful value at run-time.
     for i in 1..length( subword ) loop                  -- each letter
         ch := element( subword, i );                    -- get it
         if escapeGlobs and not inBackslash then         -- esc glob chars?
