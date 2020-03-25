@@ -42,7 +42,7 @@ use  ada.strings.unbounded,
      parser,
      parser_params;
 
---with ada.text_io; use ada.text_io;
+with ada.text_io; use ada.text_io;
 
 package body parser_arrays is
 
@@ -397,14 +397,17 @@ begin
      -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
-     offsetArrayBeingSorted := first-1;
-     kind := getUniType( identifiers( var_id ).kind );
-     if kind = uni_string_t or kind = universal_t then
-        GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
-     elsif kind = uni_numeric_t or kind = root_enumerated_t then
-        GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
-     else
-        err( "unable to sort this element type" );
+     -- do not sort an empty array
+     if first /= 1 and last /= 0 then
+        offsetArrayBeingSorted := first-1;
+        kind := getUniType( identifiers( var_id ).kind );
+        if kind = uni_string_t or kind = universal_t then
+           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
+        elsif kind = uni_numeric_t or kind = root_enumerated_t then
+           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
+        else
+           err( "unable to sort this element type" );
+        end if;
      end if;
   end if;
 end ParseArraysBubbleSort;
@@ -448,14 +451,17 @@ begin
      -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
-     offsetArrayBeingSorted := first-1;
-     kind := getUniType( identifiers( var_id ).kind );
-     if kind = uni_string_t or kind = universal_t then
-        GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
-     elsif kind = uni_numeric_t or kind = root_enumerated_t then
-        GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
-     else
-        err( "unable to sort this element type" );
+     -- do not sort an empty array
+     if first /= 1 and last /= 0 then
+        offsetArrayBeingSorted := first-1;
+        kind := getUniType( identifiers( var_id ).kind );
+        if kind = uni_string_t or kind = universal_t then
+           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
+        elsif kind = uni_numeric_t or kind = root_enumerated_t then
+           GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
+        else
+           err( "unable to sort this element type" );
+        end if;
      end if;
   end if;
 end ParseArraysBubbleSortDescending;
@@ -499,14 +505,17 @@ begin
      -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
-     offsetArrayBeingSorted := first-1;
-     kind := getUniType( identifiers( var_id ).kind );
-     if kind = uni_string_t or kind = universal_t then
-        GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
-     elsif kind = uni_numeric_t or kind = root_enumerated_t then
-        GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
-     else
-        err( "unable to sort this element type" );
+     -- do not sort an empty array
+     if first /= 1 and last /= 0 then
+        offsetArrayBeingSorted := first-1;
+        kind := getUniType( identifiers( var_id ).kind );
+        if kind = uni_string_t or kind = universal_t then
+           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string'access );
+        elsif kind = uni_numeric_t or kind = root_enumerated_t then
+           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
+        else
+           err( "unable to sort this element type" );
+        end if;
      end if;
   end if;
 end ParseArraysHeapSort;
@@ -550,14 +559,17 @@ begin
      -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
-     offsetArrayBeingSorted := first-1;
-     kind := getUniType( identifiers( var_id ).kind );
-     if kind = uni_string_t or kind = universal_t then
-        GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
-     elsif kind = uni_numeric_t or kind = root_enumerated_t then
-        GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
-     else
-        err( "unable to sort this element type" );
+     -- do not sort an empty array
+     if first /= 1 and last /= 0 then
+        offsetArrayBeingSorted := first-1;
+        kind := getUniType( identifiers( var_id ).kind );
+        if kind = uni_string_t or kind = universal_t then
+           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_string_descending'access );
+        elsif kind = uni_numeric_t or kind = root_enumerated_t then
+           GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
+        else
+           err( "unable to sort this element type" );
+        end if;
      end if;
   end if;
 end ParseArraysHeapSortDescending;
