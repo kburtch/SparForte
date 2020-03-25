@@ -835,7 +835,9 @@ begin
            water := water - 2.0;
            damage_to_player := damage_to_player * 2 / 3;
            hit_points := hit_points - 0.2;
-           distance := numerics.rounding( distance - integer(numerics.rnd( hit_points/3) ) - hit_points/4 );
+           distance := numerics.rounding( distance -
+              integer( numerics.rnd( numerics.ceiling( hit_points/3) ) )
+              - hit_points/4 );
            put_line( "OK" );
            exit;
          when '5' =>
