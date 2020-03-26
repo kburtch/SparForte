@@ -398,7 +398,7 @@ begin
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
-     if first /= 1 and last /= 0 then
+     if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
         if kind = uni_string_t or kind = universal_t then
@@ -452,7 +452,7 @@ begin
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
-     if first /= 1 and last /= 0 then
+     if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
         if kind = uni_string_t or kind = universal_t then
@@ -506,7 +506,7 @@ begin
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
-     if first /= 1 and last /= 0 then
+     if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
         if kind = uni_string_t or kind = universal_t then
@@ -560,7 +560,7 @@ begin
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
-     if first /= 1 and last /= 0 then
+     if first /= 1 or last /= 0 then
         offsetArrayBeingSorted := first-1;
         kind := getUniType( identifiers( var_id ).kind );
         if kind = uni_string_t or kind = universal_t then
