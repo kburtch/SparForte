@@ -1777,7 +1777,7 @@ begin
        if baseTypesOK( uni_string_t, right_type ) then
           type_token := uni_string_t; -- pretend it's a string
           if not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
-             err( '"' & toEscaped( to_string( expr_value) ) & '"' &
+             err( '"' & toEscaped( expr_value ) & '"' &
                 " is not an executable command" );
           end if;
        end if;
