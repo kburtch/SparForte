@@ -96,5 +96,7 @@ CHANGES SINCE 2.2.2
 
 45. Fix: Pragma ada_95 wasn't being enforced during syntax checking but at run-time.  Now is enforced for both.
 
-46. Fix: resourcing using types must be limited (or abstract). [memcache must be fixed]
+46. Fix: resourcing using types must be limited (or abstract).
+
+47. Fix: "not an executable command" error now escapes the command.
 
