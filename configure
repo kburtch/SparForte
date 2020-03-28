@@ -221,6 +221,23 @@ else
    echo "Using current date for build date string... $CONFIGBUILDDATE"
 fi
 
+# Dash shell test
+# Dash does not have "let".
+
+echo -n "Checking for Bourne-compatible default shell... "
+(exec /bin/sh -c '"let x=1"' >/dev/null 2>/dev/null)
+if [ $? -ne 0 ] ; then
+   echo "no"
+   echo
+   echo "/bin/sh is not a Bourne-compatible shell"
+   echo "Some Debian-based systems use the Dash shell by default."
+   echo "Change the symbolic link /bin/sh to redirect to a"
+   echo "Bourne-compatible shell like /bin/bash or /bin/ksh."
+   exit 192
+else
+   echo "yes"
+fi
+
 # Check for pkg-config command
 #
 # PKGCONFIG is non-blank if it is found
