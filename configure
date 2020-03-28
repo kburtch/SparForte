@@ -225,7 +225,7 @@ fi
 # Dash does not have "let".
 
 echo -n "Checking for Bourne-compatible default shell... "
-(exec /bin/sh -c '"let x=1"' >/dev/null 2>/dev/null)
+(exec /bin/sh -c 'let x=1' >/dev/null 2>/dev/null)
 if [ $? -ne 0 ] ; then
    echo "no"
    echo
