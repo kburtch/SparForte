@@ -1093,6 +1093,8 @@ pragma assert( % = " $123.45" );
 pragma assert( % = "a test" );
 ? "another test";
 pragma assert( % = "another test" );
+? "hello" @ "world";
+pragma assert( % = "world" );
 
 -- null statement
 

@@ -200,7 +200,6 @@ end ParseIfBlock;
 -- Conditionally run code based on a static expression.  Part of static if.
 -- Only pragmas, static if's or case's allowed.
 -----------------------------------------------------------------------------
--- TODO: not currently implemented due to static expression refactor
 
 procedure ParseStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
@@ -231,7 +230,6 @@ end ParseStaticBlock;
 --
 -- Conditionally skip code based on a static expression.  Part of static if.
 -----------------------------------------------------------------------------
--- TODO: not currently implemented due to static expression refactor
 
 procedure SkipStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   old_error : boolean;
@@ -264,7 +262,6 @@ end SkipStaticBlock;
 -- This is tied to parsePolicy: blocks may only contain policy block
 -- statements.
 -----------------------------------------------------------------------------
--- TODO: not currently implemented due to static expression refactor
 
 procedure ParseStaticIfBlock is
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
@@ -479,7 +476,6 @@ end ParseCaseBlock;
 -- Conditionally execute code based on a static expression value.  This is
 -- tied to parsePolicy: only policy block statements allowed in the code.
 -----------------------------------------------------------------------------
--- TODO: not currently implemented due to static expression refactor
 
 procedure ParseStaticCaseBlock is
 -- Syntax: case-block = "case" ident "is" "when" const-ident ["|"...] "=>" ...
@@ -6381,6 +6377,10 @@ begin
      getNextToken;                              -- load first token
 
      -- Expect some actual source code, at least token, for running.
+     -- Normally, SparForte will not load a script that is empty.  However,
+     -- eof can happen on edge cases like a script with newlines only.
+     -- (A file with spaces will trigger a whitespace at end of line error
+     -- during compilation and won't get this far.)
 
      if token = eof_t then
         err( "there were no commands to run" );
