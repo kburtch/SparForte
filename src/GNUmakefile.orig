@@ -164,7 +164,7 @@ endif
 #	./apq-2.1/configure
 #	mv -f Makeincl apq-2.1/Makeincl
 
-max: clean c_os.o c_scanner.o c_gstreamer.o c_pcre.o
+max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "Making AdaCGI"
@@ -197,6 +197,12 @@ max: clean c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	@echo "---------------------------------------------------------------"
 	@echo
 	$(MAKE) -C bdb
+	@echo
+	@echo "---------------------------------------------------------------"
+	@echo "  Making GNU Readline Support"
+	@echo "---------------------------------------------------------------"
+	@echo
+	$(MAKE) -C areadline
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "Making SparForte"
