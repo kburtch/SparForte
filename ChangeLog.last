@@ -1,132 +1,102 @@
 For the latest news, visit the SparForte web site.
 
-SparForte 2.2's additional testing and new data type features necessary to implement packages in the future.
+CHANGES SINCE 2.2
 
-CHANGES SINCE 2.1
+1. Fix: The PWD variable value is always revised when SparForte (or, at least, the scanner) starts.  This prevents an exported PWD variable from another shell confusion SparForte.
 
-1. New: Can now subtract one calendar.time value from another.
+2. Fix: The job control messages now only display in interactive or breakout sessions (unless hidden for another reason).
 
-2. New: New examples: game_24.sp, string_prepend.sp, sumseries.sp, sumsq.sp, ternary_logic.sp, twelve_days.sp, time_function.sp, graph_series.sp.
+3. Fix: The strings.csv_field function is more in line with RFC 4180.  CR+LF line ending no longer returned on the last field.  Single quotes flag.
 
-3. Fix: Anonymous array element type is treated as applied to eliminate concrete/abstract error.
+4. Fix: using equals for assignment gives an error message to use := instead.
 
-4. New: OS package functions.  os.pid, equivalent to Bourne shell $$. os.error_string (strerror) and documentation fixed.
+5. Fix: get_line no longer reports an end-of-file when reading the last line of a file that doesn't have a newline.
 
-5. Fix: instead of "identifier not declared", now get "too few parameter" when calling a user function with too few parameters.  Might be a more efficient way to implement this.
+6. Fix: --break once again shows the line where the execution stopped.
 
-6. New: abstract procedures and subprograms.
+7. (Cameron Y) Change: test phase mode (--test) replaces development phase mode as the default.  Use development phase mode (--coding) to change to development phase.
 
-7. Fix: functions without a return value statement produce an error.
+8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
 
-8. New: limited arrays, records and anonymous arrays.
+CHANGES SINCE 2.2.1
 
-9. Fix: re-raise fixed to work in if statements in an exception handler.
+9. Fix: using a built-in procedure as a function shows an appropriate error message rather than raising an exception.
 
-10. New: "nonstandard" software model as a catch-all for no standard.
+10. Fix: using a built-in function as a shell command shows an appropriate error message rather than saying it's a field of a record type.
 
-11. Fix: variables with explicit limited qualifier are now limited.
+11. Fix: strings.perl_match() now works correctly.
 
-12. New: return statements may have a when clause, like an exit statement.
+12. Fix: removed "sourceFiles:" debugging statement from breakout prompt.
 
-13. Refactor: constants are no longer a separate identifier class from variables.  constant is now an identifier usage qualifier like limited and abstract and can be applied to any identifier class.  constants are now variables with a usage of "constant".
+CHANGES SINCE 2.2.2
 
-14. Change: command variables must now be limited instead of constant, in line with new limited functionality.  They cannot be used in an expression or assigned to.
+13. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
 
-15. New: at debug prompt, limited variables, like constants, may be assigned a value but will report a warning.
+14. New: parameterized (generic) types can now be defined as types and subtypes.  These types and subtypes can be passed as parameters to user subprograms.  Types extending resource types must be limited.
 
-16. Fix: calling a procedure or function with no parameters when parameters were expected produces an appropriate error message.
+15. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
 
-17. New: types and subtypes may have an affirm clause/block to validate values, as in programming-by-contract.
+16. New: function and procedure forward specifications. [docs needed].
 
-18. New. raise statements can have a when clause, like an exit statement.
+17. Fix: multiple library paths (-L option) now work correctly.
 
-19. Fix: statements starting with paths like /bin/bash and bin/bash are now recognized as shell commands.
+18. Fix: trying to run a "with separate" file now produces an appropriate error message.
 
-20. Fix: broken pipes (such as env | head) no longer show meaningless error messages.
+19. Fix: -p option now showing functions, procedures, blocks correctly.
 
-21. Refactor: parser.adb broken up into interpreter.adb and parser child packages.
+20: New: -p option shows number of comments and comments/block statistics. (may be fooled by -- in strings).
 
-22. Change: better error message for dollar expansions with missing variable names.
+21. New: -p option shows number of branches and branches/block statistics.
 
-23. New: pragma annotate extended with icon, rationale and screenshot fields.
+22. Change: As a security precaution, the trace command, and pragma inspect, inspection_peek and inspection_point are no longer allowed in testing or maintenance phases unless at the breakout prompt.  Tracing can be invoked by the command line options.
 
-24. Fix: pragma annotate HTML output is html-encoded.
+23. Change: As a security precaution, JSON error message have values do not appear when in maintenance mode.
 
-25. Fix: executable statements in blocks no longer allowed type and variable declarations.
+24. New: --without-pcre configuration option will disable PCRE library support.
 
-26. Change: the first word in a statement can be a Bourne shell command with path characters and certain punctuation symbols allowed in the names (e.g. minus).
+25. Change: a script will not run for the same permission issues as an include file.
 
-27. Refactor: to improve performance, type checking suppressed at run-time unless necessary, 11% faster for monty.sp example.
+26. Fix: script file name fix if the error messages where it was appending file suffixes.
 
-28. Fix: backquotes in a shell word no longer have 2 extra characters after substitution.
+27. New: constant specifications (i.e. forward constants).
 
-29. Fix: unstructured scripts no longer pull/discard top-level declarations early nested block exit.
+28. Fix: tests for now ignore deleted identifiers within the symbol table.  Before, only deleted identifiers on the top of the symbol table were ignored.
 
-30. Fix: fixed memory leak with directory_operations.open declaring new resources each time.
+29. Change: strings.image handles enumerated items.
 
-31. Change: affirm blocks run in restricted mode as a precaution against side-effects.
+30. Fix: failed assignments to array variables or anonymous array variables during declaration will delete the half-declared variable.
 
-32. Change: (Mehdi) Strings package now has more univeral parameters and return results to reduce type casting and to follow a similar design to the numerics package.
+31. Fix: backquotes handled correctly in a shell word when the backquotes are not the first item in the word.
 
-33. New: SparForte core regression tests passing on Cygwin build.
+32. [Fedja B] Change: If Git exists, configure will use Git to create the build version string attached to the development command prompt.  Otherwise, the current date is used as before.
 
-34. Change: Unstructured scripts no longer require variables to be declared
-before use.  This is to make unstructure scripts more convenient for simple
-tasks, and to give them different behaviour to structured scripts.
+33. [Marek K] New: New directory function.
 
-35. Fix: raising an undeclared exception now shows an identifier not declared
-error, not a identifier of the wrong class error.
+34. [Marek K] Change: Changes to support Ubuntu 19.10.
 
-36. New: configure --release flag toggles a development version default prompt or the normal release default prompt, "=>".
+35. New: help command now supports -h and -m to produce HTML and Groff (man page) output for internal help topics.
 
-37. Fix: Case statements no long require string and character types for corresponding literals, which was causing errors on derrived types.  Now match the semanitcs of the rest of the language.
+36. Fix: certain checks for readable and executable files now handle root and gid groups better.
 
-38. New: logs package.
+37. Change: help for scripts now rendered with the same report class as the built-in topics.
 
-39. Fix: removed comment on waiting after pipelines to cleanup zombied processes.
+38. New: New annotations: content, examples, exceptions, footer.
 
-40. Fix: 2>&1 on a non-existent command no longer crashes due to the Ada.Text_IO package.
+39. New: pragma manual_test, pragma manual_test_result for manual testing.
 
-41. Change: 2>&1 was limited to the end of a command pipeline, but now may be
-used with any command in a pipeline.
+40. Change: For security, the directory containing the current script, with separate files, local profile, global profile, global policy or global config file must be readable and not world writable.  This follows Perl and Ruby (taint mode).
 
-42. Change: 2> / 2>> was limited to the end of a command pipeline, but now may be used with any command in a pipeline.
+41. Fix: concrete vs abstract error on a type of array elements but is never otherwise used is fixed.
 
-43. Fix: exception messages now appear in gcc format when -g/gcc_errors is used.
+42. [Pascal B] Fix: Additional error checking enabled on Ada compiler.  Several new errors, mostly harmless and related to static code analysis, have been fixed.
 
-44. Fix: Latin-1 support fixed in string literals: => "cmd", cmd "param".  The high ASCII charaters are still escaped in error messages.
+43. [Pascal B] Fix: Fixed various static code analysis errors on sample programs as a part of testing item 42.
 
-45. Fix: env shows limited and constant variables with the appropriate word.
+44. Fix: Copying volatiles no longer results in conflicting error messages.
 
-46. Fix: declared but never used errors are working again.
+45. Fix: Pragma ada_95 wasn't being enforced during syntax checking but at run-time.  Now is enforced for both.
 
-47. Change: volatiles are no longer allowed in expressions (to avoid side-effects).  See #48.
+46. Fix: resourcing using types must be limited (or abstract).
 
-48. New: double-write data race side-effects not allowed in function calls or type contracts.
-
-49. Fix: enabling trace no longer disables performance monitoring line counting.
-
-50. New: copies declarations (similar to renaming declarations).  Can be used to safely copy volatiles.
-
-51. New: pragma manual_test and manual_test_result [not tested, docs needed].
-
-52. New: contracts and functions writing variables used in the same expression will report an error (side-effects).
-
-53. Change: semi-colons are now optional in backquoted expressions (except if the expression includes a comment). [test]
-
-54. Fix: echo `foo` now works.  It was disabled in the code...why did I do that? [test]
-
-55. New: pragma restriction( no_volatiles );
-
-56. New: os.last_child and equivalent $!.  Get the pid of the last child run in the background.
-
-57. Change: trailing whitespace is an error in backquote literals.
-
-58. New: pragma unchecked_volatile( var ) to create a volatile which is allowed in expressions (provided restriction( no_volatiles ) is not used).
-
-59. (Blady) Fixed: SDL fixes for SDL support on Mac OS/X.
-
-60. Fix: a command with a & immediately following no longer has the & treated as part of the command name.
-
-61. Change: if a statement begins with a shell command, shell quoting is now supported.  Enclosing the command in double quotes no longer uses string literal rules but is treated a quoted shell word.
+47. Fix: "not an executable command" error now escapes the command.
 
