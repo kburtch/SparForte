@@ -36,6 +36,8 @@ package body chain_util is
 -- The chain util package contains functions related to SparForte chains.
 ------------------------------------------------------------------------------
 
+
+------------------------------------------------------------------------------
 --  IN CHAIN
 --
 -- Return the type of chain we are in (if any)
@@ -81,6 +83,8 @@ begin
   return found;
 end in_chain;
 
+
+-----------------------------------------------------------------------------
 --  CHAIN CONTEXT
 --
 -- Return the current chain context.  Must be in a chain.

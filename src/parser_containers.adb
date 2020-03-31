@@ -23,6 +23,10 @@
 
 package body parser_containers is
 
+-- There are no AdaScript procedures or functions in this package
+
+-----------------------------------------------------------------------------
+-- Housekeeping
 -----------------------------------------------------------------------------
 
 procedure StartupContainers is

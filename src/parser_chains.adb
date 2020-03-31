@@ -37,7 +37,7 @@ use
 package body parser_chains is
 
 ------------------------------------------------------------------------------
--- Exceptions package identifiers
+-- chain package identifiers
 ------------------------------------------------------------------------------
 
 chain_context_t         : identifier;
@@ -50,9 +50,15 @@ chains_in_chain_t       : identifier;
 chains_chain_context_t  : identifier;
 chains_chain_count_t    : identifier;
 
+
+------------------------------------------------------------------------------
+--  IN CHAIN
+--
+-- Syntax: s := chains.in_chain
+-- Ada:    N/A
+------------------------------------------------------------------------------
+
 procedure ParseChainsInChain( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: s := chains.in_chain
-  -- Ada:    N/A
 begin
   kind := boolean_t;
   expect( chains_in_chain_t );
@@ -61,9 +67,15 @@ begin
   end if;
 end ParseChainsInChain;
 
+
+------------------------------------------------------------------------------
+--  CHAIN CONTEXT
+--
+-- Syntax: s := chains.chain_context
+-- Ada:    N/A
+------------------------------------------------------------------------------
+
 procedure ParseChainsChainContext( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: s := chains.chain_context
-  -- Ada:    N/A
 begin
   kind := chain_context_t;
   expect( chains_chain_context_t );
@@ -83,9 +95,15 @@ begin
   end if;
 end ParseChainsChainContext;
 
+
+------------------------------------------------------------------------------
+--  CHAIN COUNT
+--
+-- Syntax: s := chains.chain_count
+-- Ada:    N/A
+------------------------------------------------------------------------------
+
 procedure ParseChainsChainCount( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: s := chains.chain_count
-  -- Ada:    N/A
   chain_count_id : identifier;
 begin
   kind := positive_t;
@@ -99,6 +117,12 @@ begin
      end if;
   end if;
 end ParseChainsChainCount;
+
+
+------------------------------------------------------------------------------
+-- Housekeeping
+------------------------------------------------------------------------------
+
 
 procedure StartupChains is
 begin

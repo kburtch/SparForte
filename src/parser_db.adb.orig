@@ -108,8 +108,14 @@ Q : Query_Type;
 C : Connection_Type;
 -- for the time being, a single query
 
+-----------------------------------------------------------------------------
+--  CONNECT
+--
+-- Syntax: db.connect( dbname [,user ,passwd [,host [,port ] ] ] );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBConnect is
-  -- Syntax: db.connect( dbname [,user ,passwd [,host [,port ] ] ] );
   dbnameExpr : unbounded_string;
   dbnameType : identifier;
   userExpr : unbounded_string;
@@ -223,9 +229,14 @@ procedure ParseDBConnect renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  ENGINE OF
+--
+-- Syntax: b := db.engine_of;
+-- Source: APQ.Engine_Of
+-----------------------------------------------------------------------------
+
 procedure ParseDBEngineOf( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := db.engine_of;
-  -- Source: APQ.Engine_Of
 begin
   kind := db_database_type_t;
   expect( db_engine_of_t );
@@ -287,8 +298,14 @@ procedure ParseDBEngineOf( result : out unbounded_string; kind : out identifier 
 --  end if;
 --end ParseDBIPrepare;
 
+-----------------------------------------------------------------------------
+--  PREPARE
+--
+-- Syntax: db.prepare( sqlstmt [,after] );
+-- APQ.Prepare
+-----------------------------------------------------------------------------
+
 procedure ParseDBPrepare is
-  -- Syntax: db.prepare( sqlstmt [,after] );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   afterExpr : unbounded_string;
@@ -322,8 +339,14 @@ procedure ParseDBPrepare renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  APPEND
+--
+-- Syntax: db.append( sqlstmt [,after] );
+-- Source: APQ.Append
+-----------------------------------------------------------------------------
+
 procedure ParseDBAppend is
-  -- Syntax: db.append( sqlstmt [,after] );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   afterExpr : unbounded_string;
@@ -357,8 +380,14 @@ procedure ParseDBAppend renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  APPEND LINE
+--
+-- Syntax: db.append_line( sqlstmt );
+-- Source: APQ.Append_Line
+-----------------------------------------------------------------------------
+
 procedure ParseDBAppendLine is
-  -- Syntax: db.append_line( sqlstmt );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
 begin
@@ -380,8 +409,14 @@ procedure ParseDBAppendLine renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  APPEND QUOTED
+--
+-- Syntax: db.append_quoted( sqlstmt [,after] );
+-- Source: APQ.Quoted
+-----------------------------------------------------------------------------
+
 procedure ParseDBAppendQuoted is
-  -- Syntax: db.append_quoted( sqlstmt [,after] );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   afterExpr : unbounded_string;
@@ -415,6 +450,13 @@ procedure ParseDBAppendQuoted renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  EXECUTE
+--
+-- Syntax: db.execute
+-- Source: APQ.Execute
+-----------------------------------------------------------------------------
+
 procedure ParseDBExecute is
 begin
   expect( db_execute_t );
@@ -440,8 +482,14 @@ procedure ParseDBExecute renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  EXECUTE CHECKED
+--
+-- Syntax: db.execute_checked( [ msg ] );
+-- Source: APQ.Execute_Checked
+-----------------------------------------------------------------------------
+
 procedure ParseDBExecuteChecked is
-  -- Syntax: db.execute_checked( [ msg ] );
   msgExpr   : unbounded_string;
   msgType   : identifier;
   hasMsg    : boolean := false;
@@ -490,8 +538,14 @@ procedure ParseDBExecuteChecked renames not_configured;
 
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  DISCONNECT
+--
+-- Syntax: db.disconnect;
+-- Source: APQ.Disconnect
+-----------------------------------------------------------------------------
+
 procedure ParseDBDisconnect is
-  -- Syntax: db.disconnect;
 begin
   expect( db_disconnect_t );
   if isExecutingCommand then
@@ -515,8 +569,14 @@ procedure ParseDBDisconnect renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IS CONNECTED
+--
+-- Syntax: db.is_connected
+-- APQ.Is_Connected
+-----------------------------------------------------------------------------
+
 procedure ParseDBIsConnected( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: db.is_connected
 begin
   kind := boolean_t;
   expect( db_is_connected_t );
@@ -536,9 +596,14 @@ procedure ParseDBIsConnected( result : out unbounded_string; kind : out identifi
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  RESET
+--
+-- Syntax: db.reset
+-- Source: APQ.Reset
+-----------------------------------------------------------------------------
+
 procedure ParseDBReset is
-  -- Syntax: db.reset
-  -- Source: APQ.Reset
 begin
   expect( db_reset_t );
   if isExecutingCommand then
@@ -557,9 +622,14 @@ procedure ParseDBReset renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  ERROR MESSAGE
+--
+-- Syntax: db.error_message
+-- Source: APQ.Error_Message
+-----------------------------------------------------------------------------
+
 procedure ParseDBErrorMessage( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: db.error_message
-  -- Source: APQ.Error_Message
 begin
   kind := string_t;
   expect( db_error_message_t );
@@ -579,9 +649,14 @@ procedure ParseDBErrorMessage( result : out unbounded_string; kind : out identif
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  NOTICE MESSAGE
+--
+-- Syntax: db.notice_message
+-- Source: APQ.Notice_Message
+-----------------------------------------------------------------------------
+
 procedure ParseDBNoticeMessage( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: db.notice_message
-  -- Source: APQ.Notice_Message
 begin
   kind := string_t;
   expect( db_notice_message_t );
@@ -601,9 +676,14 @@ procedure ParseDBNoticeMessage( result : out unbounded_string; kind : out identi
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IN ABORT STATE
+--
+-- Syntax: b := db.in_abort_state
+-- Source: APQ.In_Abort_State
+-----------------------------------------------------------------------------
+
 procedure ParseDBInAbortState( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := db.in_abort_state
-  -- Source: APQ.In_Abort_State
 begin
   kind := boolean_t;
   expect( db_in_abort_state_t );
@@ -625,9 +705,14 @@ procedure ParseDBInAbortState( result : out unbounded_string; kind : out identif
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  OPTIONS
+--
+-- Syntax: db.options
+-- Source: APQ.Options
+-----------------------------------------------------------------------------
+
 procedure ParseDBOptions( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: db.options
-  -- Source: APQ.Options
 begin
   kind := string_t;
   expect( db_options_t );
@@ -647,9 +732,14 @@ procedure ParseDBOptions( result : out unbounded_string; kind : out identifier )
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  SET ROLLBACK ON FINALIZE
+--
+-- Syntax: db.set_rollback_on_finalize( b );
+-- Source: APQ.Set_Rollback_On_Finalize
+-----------------------------------------------------------------------------
+
 procedure ParseDBSetRollbackOnFinalize is
-  -- Syntax: db.set_rollback_on_finalize( b );
-  -- Source: APQ.Set_Rollback_On_Finalize
   rollExpr : unbounded_string;
   rollType : identifier;
 begin
@@ -673,9 +763,14 @@ procedure ParseDBSetRollbackOnFinalize renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  WILL ROLLBACK ON FINALIZE
+--
+-- Syntax: b := db.will_rollback_on_finalize( b );
+-- Source: APQ.Will_Rollback_On_Finalize
+-----------------------------------------------------------------------------
+
 procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := db.will_rollback_on_finalize( b );
-  -- Source: APQ.Will_Rollback_On_Finalize
 begin
   kind := boolean_t;
   expect( db_will_rollback_on_finalize_t );
@@ -695,9 +790,14 @@ procedure ParseDBWillRollbackOnFinalize( result : out unbounded_string; kind : o
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  OPEN DB TRACE
+--
+-- Syntax: db.open_db_trace( f [,m] );
+-- Source: APQ.Open_DB_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBOpenDBTrace is
-  -- Syntax: db.open_db_trace( f [,m] );
-  -- Source: APQ.Open_DB_Trace
   fnameExpr : unbounded_string;
   fnameType : identifier;
   modeExpr  : unbounded_string;
@@ -739,9 +839,14 @@ procedure ParseDBOpenDBTrace renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  CLOSE DB TRACE
+--
+-- Syntax: db.close_db_trace( f );
+-- Source: APQ.Close_DB_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBCloseDBTrace is
-  -- Syntax: db.close_db_trace( f );
-  -- Source: APQ.Close_DB_Trace
 begin
   expect( db_close_db_trace_t );
   if isExecutingCommand then
@@ -760,9 +865,14 @@ procedure ParseDBCloseDBTrace renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  SET DB TRACE
+--
+-- Syntax: db.set_trace( b );
+-- Source: APQ.Set_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBSetTrace is
-  -- Syntax: db.set_trace( b );
-  -- Source: APQ.Set_Trace
   traceExpr : unbounded_string;
   traceType : identifier;
 begin
@@ -786,9 +896,14 @@ procedure ParseDBSetTrace renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IS TRACE
+--
+-- Syntax: b := db.is_trace( b );
+-- Source: APQ.Is_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBIsTrace( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := db.is_trace( b );
-  -- Source: APQ.Is_Trace
 begin
   kind := boolean_t;
   expect( db_is_trace_t );
@@ -808,9 +923,14 @@ procedure ParseDBIsTrace( result : out unbounded_string; kind : out identifier )
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  CLEAR
+--
+-- Syntax: db.clear;
+-- Source: APQ.Clear
+-----------------------------------------------------------------------------
+
 procedure ParseDBClear is
-  -- Syntax: db.clear;
-  -- Source: APQ.Clear
 begin
   expect( db_clear_t );
   if isExecutingCommand then
@@ -829,9 +949,14 @@ procedure ParseDBClear renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  RAISE EXCEPTIONS
+--
+-- Syntax: db.raise_exceptions( [ b ] );
+-- Source: APQ.Raise_Exceptions
+-----------------------------------------------------------------------------
+
 procedure ParseDBRaiseExceptions is
-  -- Syntax: db.raise_exceptions( [ b ] );
-  -- Source: APQ.Raise_Exceptions
   raiseExpr : unbounded_string;
   raiseType : identifier;
 begin
@@ -859,9 +984,14 @@ procedure ParseDBRaiseExceptions renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  REPORT ERRORS
+--
+-- Syntax: db.report_errors( [ b ] );
+-- Source: APQ.Report_Errors
+-----------------------------------------------------------------------------
+
 procedure ParseDBReportErrors is
-  -- Syntax: db.report_errors( [ b ] );
-  -- Source: APQ.Report_Errors
   reportExpr : unbounded_string;
   reportType : identifier;
 begin
@@ -889,9 +1019,14 @@ procedure ParseDBReportErrors renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  BEGIN WORK
+--
+-- Syntax: db.begin_work;
+-- Source: APQ.Begin_Work
+-----------------------------------------------------------------------------
+
 procedure ParseDBBeginWork is
-  -- Syntax: db.begin_work;
-  -- Source: APQ.Begin_Work
 begin
   expect( db_begin_work_t );
   if isExecutingCommand then
@@ -914,9 +1049,14 @@ procedure ParseDBBeginWork renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  ROLLBACK WORK
+--
+-- Syntax: db.rollback_work;
+-- Source: APQ.Rollback_Work
+-----------------------------------------------------------------------------
+
 procedure ParseDBRollbackWork is
-  -- Syntax: db.rollback_work;
-  -- Source: APQ.Rollback_Work
 begin
   expect( db_rollback_work_t );
   if isExecutingCommand then
@@ -939,9 +1079,14 @@ procedure ParseDBRollbackWork renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COMMIT WORK
+--
+-- Syntax: db.commit_work;
+-- Source: APQ.Commit_Work
+-----------------------------------------------------------------------------
+
 procedure ParseDBCommitWork is
-  -- Syntax: db.commit_work;
-  -- Source: APQ.Commit_Work
 begin
   expect( db_commit_work_t );
   if isExecutingCommand then
@@ -964,9 +1109,14 @@ procedure ParseDBCommitWork renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  REWIND
+--
+-- Syntax: db.rewind;
+-- Source: APQ.Rewind
+-----------------------------------------------------------------------------
+
 procedure ParseDBRewind is
-  -- Syntax: db.rewind;
-  -- Source: APQ.Rewind
 begin
   expect( db_rewind_t );
   if isExecutingCommand then
@@ -985,9 +1135,14 @@ procedure ParseDBRewind renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  FETCH
+--
+-- Syntax: db.fetch;
+-- Source: APQ.Fetch
+-----------------------------------------------------------------------------
+
 procedure ParseDBFetch is
-  -- Syntax: db.fetch;
-  -- Source: APQ.Fetch
   expr_val : unbounded_string;
   expr_type : identifier;
   haveIndex : boolean := false;
@@ -1021,9 +1176,14 @@ procedure ParseDBFetch renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  END OF QUERY
+--
+-- Syntax: b := db.end_of_query;
+-- Source: APQ.End_Of_Query
+-----------------------------------------------------------------------------
+
 procedure ParseDBEndOfQuery( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := db.end_of_query;
-  -- Source: APQ.End_Of_Query
 begin
   kind := boolean_t;
   expect( db_end_of_query_t );
@@ -1043,9 +1203,14 @@ procedure ParseDBEndOfQuery( result : out unbounded_string; kind : out identifie
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  TUPLE
+--
+-- Syntax: t := db.tuple;
+-- Source: APQ.Tuple
+-----------------------------------------------------------------------------
+
 procedure ParseDBTuple( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: t := db.tuple;
-  -- Source: APQ.Tuple
 begin
   kind := db_tuple_index_type_t;
   expect( db_tuple_t );
@@ -1067,9 +1232,14 @@ procedure ParseDBTuple( result : out unbounded_string; kind : out identifier ) r
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  TUPLE
+--
+-- Syntax: n := db.tuples;
+-- Source: APQ.Tuples
+-----------------------------------------------------------------------------
+
 procedure ParseDBTuples( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := db.tuples;
-  -- Source: APQ.Tuples
 begin
   kind := db_tuple_count_type_t;
   expect( db_tuples_t );
@@ -1091,9 +1261,14 @@ procedure ParseDBTuples( result : out unbounded_string; kind : out identifier ) 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COLUMNS
+--
+-- Syntax: n := db.columns;
+-- Source: APQ.Columns
+-----------------------------------------------------------------------------
+
 procedure ParseDBColumns( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := db.columns;
-  -- Source: APQ.Columns
 begin
   kind := natural_t;
   expect( db_columns_t );
@@ -1115,9 +1290,14 @@ procedure ParseDBColumns( result : out unbounded_string; kind : out identifier )
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COLUMN NAME
+--
+-- Syntax: n := db.column_Name;
+-- Source: APQ.Column_Name;
+-----------------------------------------------------------------------------
+
 procedure ParseDBColumnName( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := db.column_Name;
-  -- Source: APQ.Column_Name;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
@@ -1144,9 +1324,14 @@ procedure ParseDBColumnName( result : out unbounded_string; kind : out identifie
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COLUMN INDEX
+--
+-- Syntax: n := db.column_index;
+-- Source: APQ.Column_Index
+-----------------------------------------------------------------------------
+
 procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := db.column_index;
-  -- Source: APQ.Column_Index
   exprVal : unbounded_string;
   exprType : identifier;
 begin
@@ -1202,9 +1387,14 @@ procedure ParseDBColumnIndex( result : out unbounded_string; kind : out identifi
 
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IS NULL
+--
+-- Syntax: n := db.is_null;
+-- Source: APQ.Is_Null;
+-----------------------------------------------------------------------------
+
 procedure ParseDBIsNull( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := db.is_null;
-  -- Source: APQ.Is_Null;
   exprVal : unbounded_string;
   exprType : identifier;
 begin
@@ -1234,9 +1424,14 @@ procedure ParseDBIsNull( result : out unbounded_string; kind : out identifier ) 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  VALUE
+--
+-- Syntax: n := db.value;
+-- Source: APQ.Value;
+-----------------------------------------------------------------------------
+
 procedure ParseDBValue( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := db.value;
-  -- Source: APQ.Value;
   exprVal  : unbounded_string;
   exprType : identifier;
 begin
@@ -1432,9 +1627,14 @@ begin
   end if;
 end DBShowIt;
 
+-----------------------------------------------------------------------------
+--  SHOW
+--
+-- Syntax: db.show;
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBShow is
-  -- Syntax: db.show;
-  -- Source: N/A
 begin
   expect( db_show_t );
   DBShowIt;
@@ -1447,9 +1647,14 @@ procedure ParseDBShow renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  LIST
+--
+-- Syntax: db.list
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBList is
-  -- Syntax: db.list
-  -- Source: N/A
   tabularDisplay : boolean := false;
   headingWidth   : integer := 0;
   wasNull        : boolean := false;
@@ -1635,9 +1840,14 @@ procedure ParseDBList renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  SCHEMA
+--
+-- Syntax: db.schema( "table" );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBSchema is
-  -- Syntax: db.schema( "table" );
-  -- Source: N/A
   tabularDisplay : boolean := false;
   headingWidth   : integer := 0;
   wasNull        : boolean := false;
@@ -1896,9 +2106,14 @@ procedure ParseDBSchema renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  USERS
+--
+-- Syntax: db.users
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBUsers is
-  -- Syntax: db.users
-  -- Source: N/A
   tabularDisplay : boolean := false;
   headingWidth   : integer := 0;
   wasNull        : boolean := false;
@@ -2091,9 +2306,14 @@ procedure ParseDBUsers renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  DATABASES
+--
+-- Syntax: db.databases
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBDatabases is
-  -- Syntax: db.databases
-  -- Source: N/A
   tabularDisplay : boolean := false;
   headingWidth   : integer := 0;
   wasNull        : boolean := false;
@@ -2275,6 +2495,11 @@ procedure ParseDBDatabases renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  SELECT
+--
+-----------------------------------------------------------------------------
+
 procedure DoSQLSelect( sqlcmd : unbounded_string ) is
 begin
   if isExecutingCommand then
@@ -2292,6 +2517,11 @@ end DoSQLSelect;
 
 #end if;
 #if POSTGRES
+
+-----------------------------------------------------------------------------
+--  SQL STATEMENT
+--
+-----------------------------------------------------------------------------
 
 procedure DoSQLStatement( sqlcmd : unbounded_string ) is
 begin
@@ -2319,6 +2549,10 @@ begin
 end DoSQLStatement;
 
 #end if;
+
+-----------------------------------------------------------------------------
+--Housekeeping
+-----------------------------------------------------------------------------
 
 procedure StartupDB is
 begin

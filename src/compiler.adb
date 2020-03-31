@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2018 Free Software Foundation              --
+--            Copyright (C) 2001-2020 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -71,8 +71,9 @@ if_char        : character;
 loop_char      : character;
 when_char      : character;
 
+
 -----------------------------------------------------------------------------
--- getSourceFileName
+--  GET SOURCE FILE NAME
 --
 -- Determine the current source file as stored against the byte code line.
 -----------------------------------------------------------------------------
@@ -95,8 +96,9 @@ begin
   return sourceFile.Name;
 end getSourceFileName;
 
+
 -----------------------------------------------------------------------------
--- getLineNo
+--  GET LINE NO
 --
 -- Determine the current line number as stored against the byte code line.
 -----------------------------------------------------------------------------
@@ -118,14 +120,22 @@ begin
   return line_number;
 end getLineNo;
 
+
+-----------------------------------------------------------------------------
+--  RESET LINE NO
+--
+-- Reset the line number back to the lowest value.
+-----------------------------------------------------------------------------
+
 procedure resetLineNo is
 begin
-  SourceLineNoLo := 0; -- Reset line number
+  SourceLineNoLo := 0;
   SourceLineNoHi := 0;
 end resetLineNo;
 
+
 -----------------------------------------------------------------------------
--- GET COMMAND LINE
+--  GET COMMAND LINE
 --
 -- Return current command line, decoded into normal text, but not including
 -- the LF separating lines.  token_firstpos and token_lastpos is the location
@@ -328,7 +338,7 @@ begin
 end getCommandLine;
 
 
-------------------------------------------------------
+-----------------------------------------------------------------------------
 -- "BYTE CODE" GENERATION
 --
 -- Spar only runs compressed scripts.  The compression
@@ -361,11 +371,11 @@ end getCommandLine;
 -- reducing 17 bytes to 12 bytes, about 2/3rds the
 -- number of characters to read through when running
 -- a script.
-------------------------------------------------------
+-----------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------
--- SET BYTE CODE LINE
+--  SET BYTE CODE LINE
 --
 -- Set the current byte code line number.
 -----------------------------------------------------------------------------
@@ -379,7 +389,7 @@ end setByteCodeLine;
 
 
 -----------------------------------------------------------------------------
--- NEXT BYTE CODE LINE
+--  NEXT BYTE CODE LINE
 --
 -- Advance the byte code line counter.
 -- Remember: zero is reserved for end of line so count ends at 254 + 1
@@ -397,7 +407,7 @@ end nextByteCodeLine;
 
 
 -----------------------------------------------------------------------------
--- GET BYTE CODE LINE NO
+--  GET BYTE CODE LINE NO
 --
 -- Return the current value of the byte code line counter
 -----------------------------------------------------------------------------
@@ -407,8 +417,9 @@ begin
   return (SourceLineNoLo) + (SourceLineNoHi) * 254;
 end getByteCodeLineNo;
 
+
 -----------------------------------------------------------------------------
--- GET BYTE CODE LINE NO
+--  GET BYTE CODE LINE NO
 --
 -- Return the current value of the byte code line counter
 -----------------------------------------------------------------------------
@@ -418,8 +429,9 @@ begin
   return SourceFileNo+1;
 end getByteCodeFileNo;
 
+
 -----------------------------------------------------------------------------
--- ERR TOKENIZE
+--  ERR TOKENIZE
 --
 -- If this is the first error encountered, display the message set the token
 -- to eof_t to abort the parsing and set the error_found flag to indicate
@@ -510,7 +522,7 @@ begin
 end err_tokenize;
 
 
-
+-----------------------------------------------------------------------------
 -- A record containing the compressed script being generated
 -- and the parse history (to recognize and deal wtih Bourne
 -- shell parameters).
@@ -583,8 +595,9 @@ end err_tokenize;
 -- BYTE CODE PRECOMPILER
 -----------------------------------------------------------------------------
 
+
 -----------------------------------------------------------------------------
--- SKIP WHITE SPACE
+--  SKIP WHITE SPACE
 --
 -- Skip through spaces or horizontal tabs.  Put uncompressed white space into
 -- compressed script
@@ -615,7 +628,7 @@ end skipWhiteSpace;
 
 
 -----------------------------------------------------------------------------
--- IS BYTE CODE
+--  IS BYTE CODE
 --
 -- Part of line2ByteCode (for isPart)
 --
@@ -765,7 +778,7 @@ end ISByteCode;
 
 
 -----------------------------------------------------------------------------
--- ADA SCRIPT STATEMENT BYTE CODE
+--  ADA SCRIPT STATEMENT BYTE CODE
 --
 -- Part of line2ByteCode
 --
@@ -1155,8 +1168,9 @@ begin
 
 end adaScriptStatementByteCode;
 
+
 -----------------------------------------------------------------------------
--- SHELL STATEMENT BYTE CODE
+--  SHELL STATEMENT BYTE CODE
 --
 -- Part of line2ByteCode
 --
@@ -1387,7 +1401,7 @@ end shellStatementByteCode;
 
 
 -----------------------------------------------------------------------------
--- SQL STATEMENT BYTE CODE
+--  SQL STATEMENT BYTE CODE
 --
 -- Part of line2ByteCode
 --
@@ -1570,7 +1584,7 @@ end SQLStatementByteCode;
 
 
 -----------------------------------------------------------------------------
--- START OF PARAMETERS BYTE CODE
+--  START OF PARAMETERS BYTE CODE
 --
 -- Part of line2ByteCode
 --
@@ -1641,7 +1655,7 @@ end startOfParametersByteCode;
 
 
 -----------------------------------------------------------------------------
--- START OF DELETE PARAMETERS BYTE CODE
+--  START OF DELETE PARAMETERS BYTE CODE
 --
 -- Part of line2ByteCode
 --
@@ -1710,7 +1724,7 @@ end startOfDeleteParametersByteCode;
 
 
 -----------------------------------------------------------------------------
--- START OF STATEMENT BYTE CODE
+--  START OF STATEMENT BYTE CODE
 --
 -- Part of line2ByteCode
 --
@@ -2036,8 +2050,9 @@ begin
   end if;
 end startOfStatementByteCode;
 
+
 -----------------------------------------------------------------------------
--- LINE 2 BYTE CODE
+--  LINE 2 BYTE CODE
 --
 -- Receive a new line of a script and start/continue compiling the script
 -- into byte code (compressed tokens).  ci is the context the text occurs in
@@ -2162,7 +2177,7 @@ end line2ByteCode;
 
 
 -----------------------------------------------------------------------------
--- BEGIN BYTE CODE
+--  BEGIN BYTE CODE
 --
 -- Part of Byte Code Generator
 -- Write the EOF header line to complete an AdaScript script.
@@ -2193,7 +2208,7 @@ end beginByteCode;
 
 
 -----------------------------------------------------------------------------
--- END BYTE CODE
+--  END BYTE CODE
 --
 -- Part of Byte Code Generator
 -- Write the EOF trailer line to complete an AdaScript script.
@@ -2214,7 +2229,7 @@ end endByteCode;
 
 
 -----------------------------------------------------------------------------
--- DUMP BYTE CODE
+--  DUMP BYTE CODE
 --
 -- Display the compressed script to standard output in a readable form.
 -----------------------------------------------------------------------------
@@ -2257,7 +2272,7 @@ end dumpByteCode;
 
 
 -----------------------------------------------------------------------------
--- COMPILE INCLUDE
+--  COMPILE INCLUDE
 --
 -- Compile into byte code a command typed interactively at the command prompt
 -- or backquotes or templates.
@@ -2332,7 +2347,7 @@ end compileInclude;
 
 
 -----------------------------------------------------------------------------
--- COMPILE COMMAND OR TEMPLATE
+--  COMPILE COMMAND OR TEMPLATE
 --
 -- Compile into byte code a command typed interactively at the command prompt
 -- or backquotes or templates.
@@ -2401,7 +2416,7 @@ end compileCommandOrTemplate;
 
 
 -----------------------------------------------------------------------------
--- COMPILE TEMPLATE
+--  COMPILE TEMPLATE
 --
 -- Compile into byte code a command from a template.  Set the line number
 -- to reflect the template file line number.
@@ -2415,7 +2430,7 @@ end compileTemplate;
 
 
 -----------------------------------------------------------------------------
--- COMPILE COMMAND
+--  COMPILE COMMAND
 --
 -- Compile into byte code a command typed interactively at the command prompt
 -- or backquotes or templates.
@@ -2431,7 +2446,7 @@ end compileCommand;
 
 
 -----------------------------------------------------------------------------
--- COMPILE SCRIPT
+--  COMPILE SCRIPT
 --
 -- Compile into byte code a command loaded from a script file.
 -----------------------------------------------------------------------------
@@ -2508,8 +2523,9 @@ end compileScript;
 
 
 -----------------------------------------------------------------------------
--- COPY BYTE CODE LINES
--- copy the byte code lines containing point1 through point2.
+--  COPY BYTE CODE LINES
+--
+-- Copy the byte code lines containing point1 through point2.
 -----------------------------------------------------------------------------
 
 function copyByteCodeLines( point1, point2 : natural ) return string is
@@ -2568,7 +2584,8 @@ begin
 end copyByteCodeLines;
 
 
--- STATIC BYTE CODE ANALYSIS
+-----------------------------------------------------------------------------
+--  STATIC BYTE CODE ANALYSIS
 --
 -- Determine LOC for the script (including any include files)
 --
@@ -2677,8 +2694,15 @@ begin
 end staticByteCodeAnalysis;
 
 
--- START COMPILER
+-----------------------------------------------------------------------------
+-- Housekeeping
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  START COMPILER
 --
+-- Initialize the compiler.
 -----------------------------------------------------------------------------
 
 procedure startCompiler is
@@ -2949,8 +2973,10 @@ begin
 end startCompiler;
 
 
--- RESET COMPILER
+-----------------------------------------------------------------------------
+--  RESET COMPILER
 --
+-- Do a warm restart of the compiler.
 -----------------------------------------------------------------------------
 
 procedure resetCompiler is
@@ -2959,8 +2985,10 @@ begin
 end resetCompiler;
 
 
--- SHUTDOWN COMPILER
+-----------------------------------------------------------------------------
+--  SHUTDOWN COMPILER
 --
+-- Shut down the compiler.
 -----------------------------------------------------------------------------
 
 procedure shutdownCompiler is

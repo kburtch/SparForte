@@ -73,9 +73,15 @@ cgi_set_cookie_t       : identifier;
 cgi_cookie_value_t     : identifier;
 cgi_cookie_count_t     : identifier;
 
+
+-----------------------------------------------------------------------------
+--  PARSE PARSING ERRORS
+--
+-- cgi.parsing_errors return boolean
+-- True if Error on Parse.
+-----------------------------------------------------------------------------
+
 procedure ParseParsing_Errors( result : out unbounded_string; kind : out identifier ) is
-  -- cgi.parsing_errors return boolean
-  -- True if Error on Parse.
 begin
   kind := boolean_t;
   expect( cgi_parsing_errors_t );
@@ -84,9 +90,15 @@ begin
   end if;
 end ParseParsing_Errors;
 
+
+-----------------------------------------------------------------------------
+--  PARSE INPUT RECEIVED
+--
+-- cgi.input_received return boolean
+-- True if Input Received.
+-----------------------------------------------------------------------------
+
 procedure ParseInput_Received( result : out unbounded_string; kind : out identifier ) is
-  -- cgi.input_received return boolean
-  -- True if Input Received.
 begin
   kind := boolean_t;
   expect( cgi_input_received_t );
@@ -95,11 +107,17 @@ begin
   end if;
 end ParseInput_Received;
 
+
+-----------------------------------------------------------------------------
+--  PARSE IS INDEX
+--
+-- cgi.is_index return boolean
+-- True if an Isindex request made. An "Isindex" request is turned
+-- into a Key of "isindex" at position 1, with Value(1) as the actual
+-- query.
+-------------------------------------------------------------------------------
+
 procedure ParseIs_Index( result : out unbounded_string; kind : out identifier ) is
-  -- cgi.is_index return boolean
-  -- True if an Isindex request made. An "Isindex" request is turned
-  -- into a Key of "isindex" at position 1, with Value(1) as the actual
-  -- query.
 begin
   kind := boolean_t;
   expect( cgi_is_index_t );
@@ -108,13 +126,16 @@ begin
   end if;
 end ParseIs_Index;
 
--- Report the CGI Method; where possible, don't depend on this.
--- type CGI_Method_Type is (Get, Post, Unknown);
 
-procedure ParseCGI_Method( result : out unbounded_string; kind : out identifier ) is
+-----------------------------------------------------------------------------
+--  PARSE CGI METHOD
+--
 -- cgi.cgi_method return CGI_Method_Type
 -- Report the CGI Method; where possible, don't depend on this.
 -- type CGI_Method_Type is (Get, Post, Unknown);
+-----------------------------------------------------------------------------
+
+procedure ParseCGI_Method( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := cgi_cgi_method_type_t;
   expect( cgi_cgi_method_t );
@@ -123,14 +144,20 @@ begin
   end if;
 end ParseCGI_Method;
 
-procedure ParseValue( result : out unbounded_string; kind : out identifier ) is
---function ParseValue(Key : in Unbounded_String; Index : in Positive := 1;
+
+-----------------------------------------------------------------------------
+--  PARSE VALUE
+--
+-- function ParseValue(Key : in Unbounded_String; Index : in Positive := 1;
 --               Required : in Boolean := False) return Unbounded_String is
 -- Access data as an associative array - given a key, return its value.
 -- The Key value is case-sensitive.
 -- If a key is required but not present, raise Constraint_Error;
 -- otherwise a missing key's value is considered to be "".
 -- These routines find the Index'th value of that key (normally the first one).
+-----------------------------------------------------------------------------
+
+procedure ParseValue( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   expr_val2 : unbounded_string := to_unbounded_string( " 1" ); -- default
@@ -169,10 +196,16 @@ begin
   end if;
 end ParseValue;
 
-procedure ParseKey_Exists( result : out unbounded_string; kind : out identifier ) is
---function ParseKey_Exists(Key : in Unbounded_String; Index : in Positive := 1
+
+-----------------------------------------------------------------------------
+--  PARSE KEY EXISTS
+--
+-- function ParseKey_Exists(Key : in Unbounded_String; Index : in Positive := 1
 --         return Boolean is
 -- Was a given key provided?
+-----------------------------------------------------------------------------
+
+procedure ParseKey_Exists( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   expr_val2 : unbounded_string;
@@ -197,9 +230,15 @@ begin
   end if;
 end ParseKey_Exists;
 
-procedure ParseKey_Count( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE KEY COUNT
+--
 --function ParseKey_Count(Key : in Unbounded_String) return Natural is
 -- How many of a given key were provided?
+-----------------------------------------------------------------------------
+
+procedure ParseKey_Count( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -215,13 +254,18 @@ begin
   end if;
 end ParseKey_Count;
 
+
+-----------------------------------------------------------------------------
+--  CGI ARGUMENT COUNT
+--
 -- Access data as an ordered list (it was sent as Key=Value);
 -- Keys and Values may be retrieved from Position (1 .. Argument_Count).
 -- Constraint_Error will be raised if Position<1 or Position>Argument_Count
+-- function ParseArgument_Count return Natural is
+-- 0 means no data sent.
+-----------------------------------------------------------------------------
 
 procedure ParseCGIArgument_Count( result : out unbounded_string; kind : out identifier ) is
- --function ParseArgument_Count return Natural is
- -- 0 means no data sent.
 begin
    kind := natural_t;
   expect( cgi_argument_count_t );
@@ -230,8 +274,14 @@ begin
   end if;
 end ParseCGIArgument_Count;
 
+
+-----------------------------------------------------------------------------
+--  PARSE KEY
+--
+-- function ParseKey(Position : in Positive) return Unbounded_String is
+-----------------------------------------------------------------------------
+
 procedure ParseKey( result : out unbounded_string; kind : out identifier ) is
---function ParseKey(Position : in Positive) return Unbounded_String is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -253,8 +303,14 @@ begin
   end if;
 end ParseKey;
 
+
+-----------------------------------------------------------------------------
+--  PRASE KEY VALUE
+--
+-- function ParseKeyValue(Position : in Positive) return Unbounded_String is
+-----------------------------------------------------------------------------
+
 procedure ParseKeyValue( result : out unbounded_string; kind : out identifier ) is
---function ParseKeyValue(Position : in Positive) return Unbounded_String is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -276,12 +332,21 @@ begin
   end if;
 end ParseKeyValue;
 
--- The following are helpful subprograms to simplify use of CGI.
 
-procedure ParseKey_Value_Exists( result : out unbounded_string; kind : out identifier ) is
+-----------------------------------------------------------------------------
+-- The following are helpful subprograms to simplify use of CGI.
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  PARSE KEY VALUE EXISTS
+--
 --function ParseKey_Value_Exists(Key : in Unbounded_String;
 --                          Value : in Unbounded_String) return Boolean is
 -- Returns True if a given Key has exactly Value as one of its values.
+-----------------------------------------------------------------------------
+
+procedure ParseKey_Value_Exists( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   expr2_val  : unbounded_string := to_unbounded_string( "1" );
@@ -303,14 +368,23 @@ begin
   end if;
 end ParseKey_Value_Exists;
 
--- Useful output routines:
 
-procedure ParsePut_CGI_Header is
+-----------------------------------------------------------------------------
+-- Useful output routines:
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  PARSE PUT CGI HEADER
+--
 -- procedure ParsePut_CGI_Header(Header : in String := "Content-type: text/html") is
 -- Put CGI Header to Current_Output, followed by two carriage returns.
 -- This header determines what the program's reply type is.
 -- Default is to return a generated HTML document.
 -- Warning: Make calls to Set_Cookie before calling this procedure!
+-----------------------------------------------------------------------------
+
+procedure ParsePut_CGI_Header is
   expr_val  : unbounded_string := to_unbounded_string( "Content-Type: text/html" );
   expr_type : identifier;
 begin
@@ -328,13 +402,19 @@ begin
   end if;
 end ParsePut_CGI_Header;
 
-procedure ParsePut_HTML_Head is
+
+-----------------------------------------------------------------------------
+--  PARSE PUT HTML HEAD
+--
 --procedure ParsePut_HTML_Head(Title : in String; Mail_To : in String := "") is
 -- Puts to Current_Output an HTML header with title "Title".  This is:
 --   <html><head><title> _Title_ </title>
 --   <link rev="made" href="mailto:  _Mail_To_ ">
 --   </head><body>
 -- If Mail_To is omitted, the "made" reverse link is omitted.
+-----------------------------------------------------------------------------
+
+procedure ParsePut_HTML_Head is
   expr_val  : unbounded_string;
   expr_type : identifier;
   expr2_val  : unbounded_string := null_unbounded_string;
@@ -358,10 +438,16 @@ begin
   end if;
 end ParsePut_HTML_Head;
 
-procedure ParsePut_HTML_Heading is
+
+-----------------------------------------------------------------------------
+--  PARSE PUT HTML HEADIG
+--
 -- procedure ParsePut_HTML_Heading(Title : in String; Level : in Positive) is
 -- Put an HTML heading at the given level with the given text.
 -- If level=1, this puts:  <h1>Title</h1>.
+-----------------------------------------------------------------------------
+
+procedure ParsePut_HTML_Heading is
   expr_val  : unbounded_string;
   expr_type : identifier;
   level_val  : unbounded_string;
@@ -388,9 +474,15 @@ begin
   end if;
 end ParsePut_HTML_Heading;
 
-procedure ParsePut_HTML_Tail is
+
+-----------------------------------------------------------------------------
+--  PARSE PUT HTML TAIL
+--
 -- This is called at the end of an HTML document. It puts to Current_Output:
 --   </body></html>
+-----------------------------------------------------------------------------
+
+procedure ParsePut_HTML_Tail is
 begin
   expect( cgi_put_html_tail_t );
   if isExecutingCommand then
@@ -398,11 +490,17 @@ begin
   end if;
 end ParsePut_HTML_Tail;
 
-procedure ParsePut_Error_Message is
+
+-----------------------------------------------------------------------------
+--  PARSE PUT ERROR MESSAGE
+--
 --procedure ParsePut_Error_Message(Message : in String) is
 -- Put to Current_Output an error message.
 -- This Puts an HTML_Head, an HTML_Heading, and an HTML_Tail.
 -- Call "Put_CGI_Header" before calling this.
+-----------------------------------------------------------------------------
+
+procedure ParsePut_Error_Message is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -418,8 +516,14 @@ begin
   end if;
 end ParsePut_Error_Message;
 
-procedure ParsePut_Variables is
+
+-----------------------------------------------------------------------------
+--  PARSE PUT VARIABLES
+--
 -- Put to Current_Output all of the CGI variables as an HTML-formatted String.
+-----------------------------------------------------------------------------
+
+procedure ParsePut_Variables is
 begin
   expect( cgi_put_variables_t );
   if isExecutingCommand then
@@ -428,11 +532,19 @@ begin
 end ParsePut_Variables;
 
 
+-----------------------------------------------------------------------------
 -- Miscellaneous Routines:
+-----------------------------------------------------------------------------
 
-procedure ParseMy_URL( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE MY URL
+--
 --function ParseMy_URL return String is
 -- Returns the URL of this script.
+-----------------------------------------------------------------------------
+
+procedure ParseMy_URL( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := string_t;
   expect( cgi_my_url_t );
@@ -446,10 +558,16 @@ end ParseMy_URL;
 
 -- Multi-Line data support:
 
-procedure ParseLine_Count( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE LINE COUNT
+--
 --function ParseLine_Count (Value : in String) return Natural is
 -- Given a value that may have multiple lines, count the lines.
 -- Returns 0 if Value is the empty/null string (i.e., length=0)
+-----------------------------------------------------------------------------
+
+procedure ParseLine_Count( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -466,12 +584,18 @@ begin
   end if;
 end ParseLine_Count;
 
-procedure ParseLine_Count_Of_Value( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE LINE COUNT OF VALUE
+--
 --function ParseLine_Count_of_Value (Key : String) return Natural is
 -- Given a Key which has a Value that may have multiple lines,
 -- count the lines.  Returns 0 if Key's Value is the empty/null
 -- string (i.e., length=0) or if there's no such Key.
 -- This is the same as Line_Count(Value(Key)).
+-----------------------------------------------------------------------------
+
+procedure ParseLine_Count_Of_Value( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -489,10 +613,16 @@ begin
   end if;
 end ParseLine_Count_of_Value;
 
-procedure ParseCGILine (result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE CGI LINE
+--
 --function ParseLine (Value : in String; Position : in Positive) return String
 -- Given a value that may have multiple lines, return the given line.
 -- If there's no such line, raise Constraint_Error.
+-----------------------------------------------------------------------------
+
+procedure ParseCGILine (result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   pos_val  : unbounded_string;
@@ -520,13 +650,19 @@ begin
   end if;
 end ParseCGILine;
 
-procedure ParseValue_of_Line( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE VALUE OF LINE
+--
 --function ParseValue_of_Line (Key : String; Position : Positive)
 --                        return String is
 -- Given a Key which has a Value that may have multiple lines,
 -- return the given line.  If there's no such line, raise Constraint_Error.
 -- If there's no such Key, return the null string.
 -- This is the same as Line(Value(Key), Position).
+-----------------------------------------------------------------------------
+
+procedure ParseValue_of_Line( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   pos_val  : unbounded_string;
@@ -555,9 +691,14 @@ begin
 end ParseValue_of_Line;
 
 
+-----------------------------------------------------------------------------
 -- Encoding and Decoding functions:
+-----------------------------------------------------------------------------
 
-procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE URL DECODE
+--
 --function ParseURL_Decode(Data : in Unbounded_String;
 --                Translate_Plus : Boolean := True) return Unbounded_String is
 -- In the given string, convert pattern %HH into alphanumeric characters,
@@ -566,6 +707,9 @@ procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier 
 -- If "Translate_Plus" is True, translate '+' to ' '.
 -- Returns the decoded value (instead of tranlating in-place)
 -- NOTE: procedure version not implemented
+-----------------------------------------------------------------------------
+
+procedure ParseURL_Decode( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   bool_val  : unbounded_string := identifiers( true_t ).value.all;
@@ -594,11 +738,17 @@ begin
   end if;
 end ParseURL_Decode;
 
-procedure ParseURL_Encode( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE URL ENCODE
+--
 --function ParseURL_Encode(Data : in Unbounded_String;
 --                    Translate_Plus : Boolean := False)
 --         return Unbounded_String is
 -- Same as procedure, but returns a new Unbounded_String.
+-----------------------------------------------------------------------------
+
+procedure ParseURL_Encode( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   bool_val  : unbounded_string := identifiers( false_t ).value.all;
@@ -628,7 +778,10 @@ begin
   end if;
 end ParseURL_Encode;
 
-procedure ParseHTML_Encode( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE HTML ENCODE
+--
 --function ParseHTML_Encode(Data : in Unbounded_String) return Unbounded_String
 -- is
 -- Given string, perform HTML encoding, so the text can be included
@@ -641,6 +794,9 @@ procedure ParseHTML_Encode( result : out unbounded_string; kind : out identifier
 -- Even if the data appears to have come from the user, it should be filtered;
 -- the user may be unknowingly clicking though a malicious link.
 -- Same as procedure, but returns a new value.
+-----------------------------------------------------------------------------
+
+procedure ParseHTML_Encode( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
 begin
@@ -658,10 +814,15 @@ begin
 end ParseHTML_Encode;
 
 
+-----------------------------------------------------------------------------
 -- Cookie handling subprograms
 -- (Note that cookies are automatically read when the program starts):
+-----------------------------------------------------------------------------
 
-procedure ParseSet_Cookie is
+
+-----------------------------------------------------------------------------
+--  PARSE SET COOKIE
+--
 --procedure ParseSet_Cookie(Key : String;
 --                     Value : String;
 --                     Expires : String := "";
@@ -671,6 +832,9 @@ procedure ParseSet_Cookie is
 -- Sets a cookie value; call this BEFORE calling Put_CGI_Header.
 -- If you don't want to send values for Expires, Path, or Domain,
 -- just make them "".
+-----------------------------------------------------------------------------
+
+procedure ParseSet_Cookie is
   key_val      : unbounded_string;
   key_type     : identifier;
   cookie_val   : unbounded_string;
@@ -739,11 +903,17 @@ begin
   end if;
 end ParseSet_Cookie;
 
-procedure ParseCookie_Value( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE COOKIE VALUE
+--
 --function ParseCookie_Value(Key : in Unbounded_String;
 -- Index : in Positive := 1;
 -- Required : in Boolean := False)
 -- return Unbounded_String is
+-----------------------------------------------------------------------------
+
+procedure ParseCookie_Value( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
   expr_type : identifier;
   pos_val  : unbounded_string := to_unbounded_string( " 1" );
@@ -782,8 +952,14 @@ begin
   end if;
 end ParseCookie_Value;
 
-procedure ParseCookie_Count( result : out unbounded_string; kind : out identifier ) is
+
+-----------------------------------------------------------------------------
+--  PARSE COOKIE COUNT
+--
 -- Returns the number of cookies (0 if none)
+-----------------------------------------------------------------------------
+
+procedure ParseCookie_Count( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := natural_t;
   expect( cgi_cookie_count_t );
@@ -791,6 +967,10 @@ begin
      result := to_unbounded_string( cgi.cookie_count'img );
   end if;
 end ParseCookie_Count;
+
+-----------------------------------------------------------------------------
+-- Housekeeping
+-----------------------------------------------------------------------------
 
 procedure StartupCGI is
 begin

@@ -40,7 +40,7 @@ pragma warnings( on );
 package body parser_cmd is
 
 ------------------------------------------------------------------------------
--- Command_Line package identifiers
+-- command_line package identifiers
 ------------------------------------------------------------------------------
 
 cmd_argument_t    : identifier;
@@ -49,6 +49,14 @@ cmd_commandname_t : identifier;
 cmd_setexit_t     : identifier;
 cmd_envcnt_t      : identifier;
 cmd_envval_t      : identifier;
+
+
+------------------------------------------------------------------------------
+--  ARGUMENT
+--
+-- Syntax: s := command_line.argument( p )
+-- Ada: Command_Line.Argument
+------------------------------------------------------------------------------
 
 procedure ParseArgument( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
@@ -72,6 +80,14 @@ begin
   end if;
 end ParseArgument;
 
+
+------------------------------------------------------------------------------
+--  ARGUMENT COUNT
+--
+-- Syntax: s := command_line.argument_count
+-- Ada: Command_Line.Argument_Cont
+------------------------------------------------------------------------------
+
 procedure ParseArgument_Count( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := natural_t;
@@ -81,6 +97,14 @@ begin
   end if;
 end ParseArgument_Count;
 
+
+------------------------------------------------------------------------------
+--  COMMAND NAME
+--
+-- Syntax: s := command_line.command_name
+-- Ada: Command_Line.Command_Name
+------------------------------------------------------------------------------
+
 procedure ParseCommand_Name( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := string_t;
@@ -89,6 +113,14 @@ begin
      result := to_unbounded_string( Command_Name );
   end if;
 end ParseCommand_Name;
+
+
+------------------------------------------------------------------------------
+--  SET EXIT STATUS
+--
+-- Syntax: s := command_line.set_exit_status( i )
+-- Ada: Command_Line.Set_Exit_Status
+------------------------------------------------------------------------------
 
 procedure ParseSetExitStatus is
   expr_val  : unbounded_string;
@@ -109,6 +141,14 @@ begin
   end if;
 end ParseSetExitStatus;
 
+
+------------------------------------------------------------------------------
+--  ENVIRONMENT COUNT
+--
+-- Syntax: s := command_line.environment_count
+-- Ada: Command_Line.Environment_Count
+------------------------------------------------------------------------------
+
 procedure ParseEnvironment_Count( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := natural_t;
@@ -117,6 +157,14 @@ begin
      result := to_unbounded_string( integer'image( Environment_Count ));
   end if;
 end ParseEnvironment_Count;
+
+
+------------------------------------------------------------------------------
+--  ENVIRONMENT VALUE
+--
+-- Syntax: s := command_line.environment_value( p )
+-- Ada: Command_Line.Environment_Value
+------------------------------------------------------------------------------
 
 procedure ParseEnvironment_Value( result : out unbounded_string; kind : out identifier ) is
   expr_val  : unbounded_string;
@@ -139,6 +187,10 @@ begin
      end;
   end if;
 end ParseEnvironment_Value;
+
+------------------------------------------------------------------------------
+-- Housekeeping
+------------------------------------------------------------------------------
 
 procedure StartupCommandLine is
 begin

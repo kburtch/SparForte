@@ -72,6 +72,7 @@ use ada.text_io,
 package body interpreter is
 
 
+------------------------------------------------------------------------------
 --  INTERACTIVE SESSION
 --
 -- Begin an interactive session, processing a set of commands typed in by the
@@ -92,19 +93,17 @@ begin
     wasSIGINT := false;                         -- clear sig flag
     updateJobStatus;                          -- cleanup any background jobs
     error_found := false;                     -- no err for prompt
-    if length( promptScript ) = 0 then
-       if released then
-          prompt := defaultPrompt;
-       else
-          prompt := "spar-" & version & '-' & buildDate & ' ' & defaultPrompt;
-       end if;
-       if terminalWindowNaming then
-          put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  ); -- xterm window title
-       end if;
-    else
-       prompt := null_unbounded_string;
+    prompt := null_unbounded_string;
+
+    -- Try to run the prompt script
+
+    if length( promptScript ) /= 0 then
        CompileRunAndCaptureOutput( promptScript, prompt );
-       if terminalWindowNaming then
+       if error_found then
+          put_line( current_error, fullErrorMessage );
+          prompt := null_unbounded_string;
+       elsif terminalWindowNaming then
+          -- set the xterm window title
           put( ASCII.ESC & "]2;" );
           for i in 1..length( prompt ) loop
               if is_graphic( element( prompt, i ) ) then
@@ -113,9 +112,27 @@ begin
                  put( ' ' );
               end if;
           end loop;
-          put( ASCII.BEL  ); -- xterm window title
+          put( ASCII.BEL  );
        end if;
     end if;
+
+    -- If we have no prompt script or if the result was empty
+    -- then use (or fall back to) the default prompt.
+
+    if length( prompt ) = 0 then
+       if released then
+          prompt := defaultPrompt;
+       else
+          prompt := "spar-" & version & '-' & buildDate & ' ' & defaultPrompt;
+       end if;
+       -- set the xterm window title
+       if terminalWindowNaming then
+          put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  );
+       end if;
+    end if;
+
+    -- Show the command prompt and get the user's input
+
     --put_bold( prompt );                       -- show prompt in bold
     user_io.getline.getLine( command, prompt, keepHistory => true );  -- read command from keyboard
     if wasSIGINT then                         -- control-c at prompt?
@@ -220,6 +237,7 @@ begin
 end interactiveSession;
 
 
+------------------------------------------------------------------------------
 --  INTERPRET POLICY
 --
 -- Run a policy file.
@@ -330,6 +348,7 @@ begin
 end interpretPolicy;
 
 
+------------------------------------------------------------------------------
 --  INTERPRET CONFIG
 --
 -- Run a configuration file.
@@ -440,6 +459,7 @@ begin
 end interpretConfig;
 
 
+------------------------------------------------------------------------------
 --  INTERPRET SCRIPT
 --
 -- Load a script, compile byte code, perform a syntax check (if needed) and
@@ -587,7 +607,7 @@ end interpretScript;
 
 
 ------------------------------------------------------------------------------
--- INTERPRET COMMANDS
+--  INTERPRET COMMANDS
 --
 -- Compile string of commands into byte code, perform a syntax check (if
 -- needed) and execute the script (if needed).
@@ -653,6 +673,7 @@ begin
 end interpretCommands;
 
 
+------------------------------------------------------------------------------
 --  SET STANDARD VARIABLES
 --
 -- Define variables that cannot be setup by the scanner.
@@ -689,6 +710,7 @@ end SetStandardVariables;
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  DO GLOBAL POLICY
 --
 -- Run /etc/sparforte_policy for enforcing architectural policies.  Displays
@@ -737,6 +759,7 @@ begin
 end doGlobalPolicy;
 
 
+------------------------------------------------------------------------------
 --  DO GLOBAL CONFIG
 --
 -- Run /etc/sparforte_config for declaring configuration options.  Displays
@@ -787,6 +810,7 @@ begin
 end doGlobalConfig;
 
 
+------------------------------------------------------------------------------
 --  DO GLOBAL PROFILE
 --
 -- Run /etc/sparforte_profile for setting up interactive scripts.  Displays
@@ -831,6 +855,7 @@ begin
 end doGlobalProfile;
 
 
+------------------------------------------------------------------------------
 --  DO LOCAL PROFILE
 --
 -- Run ~/.sparforte_profile for setting up interactive scripts.  Displays
@@ -889,6 +914,7 @@ end doLocalProfile;
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  CHECK AND INTERPRET SCRIPT
 --
 -- Perform a syntax check and run the script.  Display any post-run errors
@@ -1020,8 +1046,9 @@ begin
 
 end checkAndInterpretScript;
 
+
 ------------------------------------------------------------------------------
--- INTERPRET
+--  INTERPRET
 --
 -- Begin executing things.  Specifically, set up the environmental flags based
 -- on the command line options, run the .profile script(s) and then interpret
@@ -1058,6 +1085,7 @@ end interpret;
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  START INTERPRETER
 --
 -- Startup this package, performing any set up tasks.  In this case, set up
@@ -1108,6 +1136,7 @@ begin
 end startInterpreter;
 
 
+------------------------------------------------------------------------------
 --  SHUTDOWN INTERPRETER
 --
 -- Shut down this package, performing any cleanup tasks.  In this case, none.
