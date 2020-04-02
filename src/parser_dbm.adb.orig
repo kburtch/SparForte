@@ -148,8 +148,14 @@ begin
   end if;
 end findQuery;
 
+-----------------------------------------------------------------------------
+--  CONNECT
+--
+-- Syntax: dbm.connect( C, dbname [,user ,passwd [,host [,port ] ] ] );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBMConnect is
-  -- Syntax: dbm.connect( C, dbname [,user ,passwd [,host [,port ] ] ] );
   connectExpr : unbounded_string;
   connectType : identifier;
   dbnameExpr : unbounded_string;
@@ -272,9 +278,14 @@ end ParseDBMConnect;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  ENGINE OF
+--
+-- Syntax: b := dbm.engine_of( c );
+-- Source: APQ.Engine_Of
+-----------------------------------------------------------------------------
+
 procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := dbm.engine_of( c );
-  -- Source: APQ.Engine_Of
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -341,8 +352,14 @@ procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier
 
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  PREPARE
+--
+-- Syntax: dbm.prepare( Q, sqlstmt [,after] );
+-- Source: APQ.Prepare
+-----------------------------------------------------------------------------
+
 procedure ParseDBMPrepare is
-  -- Syntax: dbm.prepare( Q, sqlstmt [,after] );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   afterExpr : unbounded_string;
@@ -381,8 +398,14 @@ procedure ParseDBMPrepare renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  APPEND
+--
+-- Syntax: dbm.append( Q, sqlstmt [,after] );
+-- Source: APQ.Append
+-----------------------------------------------------------------------------
+
 procedure ParseDBMAppend is
-  -- Syntax: dbm.append( Q, sqlstmt [,after] );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   afterExpr : unbounded_string;
@@ -421,8 +444,14 @@ procedure ParseDBMAppend renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  APPEND LINE
+--
+-- Syntax: dbm.append_line( query, sqlstmt );
+-- Source: APQ.Append_Line
+-----------------------------------------------------------------------------
+
 procedure ParseDBMAppendLine is
-  -- Syntax: dbm.append_line( query, sqlstmt );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   queryExpr : unbounded_string;
@@ -449,9 +478,14 @@ procedure ParseDBMAppendLine renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  APPEND LINE
+--
+-- Syntax: dbm.append_quoted( query, connect, sqlstmt [,after] );
+-- Source: APQ.Append_Quoted
+-----------------------------------------------------------------------------
 
 procedure ParseDBMAppendQuoted is
-  -- Syntax: dbm.append_quoted( query, connect, sqlstmt [,after] );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
   afterExpr : unbounded_string;
@@ -495,8 +529,14 @@ procedure ParseDBMAppendQuoted renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  EXECUTE
+--
+-- Syntax: dbm.execute( Q, C );
+-- Source: APQ.Execute
+-----------------------------------------------------------------------------
+
 procedure ParseDBMExecute is
-  -- execute( Q, C );
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -531,8 +571,14 @@ procedure ParseDBMExecute renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  EXECUTE CHECKED
+--
+-- Syntax: dbm.execute_checked( Q, C [, msg ] );
+-- Source: APQ.Execute_Checked
+-----------------------------------------------------------------------------
+
 procedure ParseDBMExecuteChecked is
-  -- Syntax: dbm.execute_checked( Q, C [, msg ] );
   msgExpr   : unbounded_string;
   msgType   : identifier;
   hasMsg    : boolean := false;
@@ -591,8 +637,14 @@ procedure ParseDBMExecuteChecked renames not_configured;
 --end ParseDBFetchrow;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  DISCONNECT
+--
+-- Syntax: dbm.disconnect( c );
+-- Source: APQ.Disconnect
+-----------------------------------------------------------------------------
+
 procedure ParseDBMDisconnect is
-  -- Syntax: dbm.disconnect( c );
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -621,8 +673,14 @@ procedure ParseDBMDisconnect renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IS CONNECTED
+--
+-- Syntax: b := dbm.is_connected( c )
+-- Source: APQ.Is_Connected
+-----------------------------------------------------------------------------
+
 procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := dbm.is_connected( c )
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -646,6 +704,13 @@ procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identif
 
 #end if;
 #if POSTGRES
+
+-----------------------------------------------------------------------------
+--  IS CONNECTED
+--
+-- Syntax: b := dbm.is_connected( c )
+-- Source: APQ.Is_Connected
+-----------------------------------------------------------------------------
 
 procedure ParseDBMReset is
   -- Syntax: dbm.reset
@@ -673,9 +738,14 @@ procedure ParseDBMReset renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  ERROR MESSAGE
+--
+-- Syntax: s := dbm.error_message( c )
+-- Source: APQ.Error_Message
+-----------------------------------------------------------------------------
+
 procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: s := dbm.error_message( c )
-  -- Source: APQ.Error_Message
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -700,9 +770,14 @@ procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identi
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  NOTICE MESSAGE
+--
+-- Syntax: dbm.notice_message( c )
+-- Source: APQ.Notice_Message
+-----------------------------------------------------------------------------
+--
 procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: dbm.notice_message( c )
-  -- Source: APQ.Notice_Message
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -727,9 +802,14 @@ procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out ident
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IN ABORT STATE
+--
+-- Syntax: dbm.in_abort_state( c )
+-- Source: APQ.In_Abort_State
+-----------------------------------------------------------------------------
+
 procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: dbm.in_abort_state( c )
-  -- Source: APQ.In_Abort_State
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -756,9 +836,14 @@ procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identi
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  OPTIONS
+--
+-- Syntax: s := dbm.options( c )
+-- Source: APQ.Options
+-----------------------------------------------------------------------------
+
 procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: s := dbm.options( c )
-  -- Source: APQ.Options
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -783,9 +868,14 @@ procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  SET ROLLBACK ON FINALIZE
+--
+-- Syntax: dbm.set_rollback_on_finalize( c, b );
+-- Source: APQ.Set_Rollback_On_Finalize
+-----------------------------------------------------------------------------
+
 procedure ParseDBMSetRollbackOnFinalize is
-  -- Syntax: dbm.set_rollback_on_finalize( c, b );
-  -- Source: APQ.Set_Rollback_On_Finalize
   rollExpr : unbounded_string;
   rollType : identifier;
   connectExpr : unbounded_string;
@@ -814,9 +904,14 @@ procedure ParseDBMSetRollbackOnFinalize renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  WILL ROLLBACK ON FINALIZE
+--
+-- Syntax: dbm.will_rollback_on_finalize( C );
+-- Source: APQ.Will_Rollback_On_Finalize
+-----------------------------------------------------------------------------
+
 procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: dbm.will_rollback_on_finalize( C );
-  -- Source: APQ.Will_Rollback_On_Finalize
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -841,9 +936,14 @@ procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  OPEN DB TRACE
+--
+-- Syntax: dbm.open_db_trace( f [,m] );
+-- Source: APQ.Open_DB_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBMOpenDBTrace is
-  -- Syntax: dbm.open_db_trace( f [,m] );
-  -- Source: APQ.Open_DB_Trace
   fnameExpr : unbounded_string;
   fnameType : identifier;
   modeExpr  : unbounded_string;
@@ -890,9 +990,14 @@ procedure ParseDBMOpenDBTrace renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  CLOSE DB TRACE
+--
+-- Syntax: dbm.close_db_trace( C );
+-- Source: APQ.Close_DB_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBMCloseDBTrace is
-  -- Syntax: dbm.close_db_trace( C );
-  -- Source: APQ.Close_DB_Trace
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -916,9 +1021,14 @@ procedure ParseDBMCloseDBTrace renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  SET TRACE
+--
+-- Syntax: dbm.set_trace( C, b );
+-- Source: APQ.Set_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBMSetTrace is
-  -- Syntax: dbm.set_trace( C, b );
-  -- Source: APQ.Set_Trace
   traceExpr : unbounded_string;
   traceType : identifier;
   connectExpr : unbounded_string;
@@ -947,9 +1057,14 @@ procedure ParseDBMSetTrace renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  IS TRACE
+--
+-- Syntax: b := dbm.is_trace( C );
+-- Source: APQ.Is_Trace
+-----------------------------------------------------------------------------
+
 procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := dbm.is_trace( C );
-  -- Source: APQ.Is_Trace
   connectExpr : unbounded_string;
   connectType : identifier;
   connection : resPtr;
@@ -974,9 +1089,14 @@ procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  CLEAR
+--
+-- Syntax: dbm.clear( Q );
+-- Source: APQ.Clear
+-----------------------------------------------------------------------------
+
 procedure ParseDBMClear is
-  -- Syntax: dbm.clear( Q );
-  -- Source: APQ.Clear
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1002,9 +1122,14 @@ procedure ParseDBMClear renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  RAISE EXCEPTIONS
+--
+-- Syntax: dbm.raise_exceptions( Q [, b ] );
+-- Source: APQ.Raise_Exceptions
+-----------------------------------------------------------------------------
+
 procedure ParseDBMRaiseExceptions is
-  -- Syntax: dbm.raise_exceptions( Q [, b ] );
-  -- Source: APQ.Raise_Exceptions
   raiseExpr : unbounded_string;
   raiseType : identifier;
   queryExpr : unbounded_string;
@@ -1038,10 +1163,14 @@ procedure ParseDBMRaiseExceptions renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  REPORT ERRORS
+--
+-- Syntax: dbm.report_errors( Q [, b ] );
+-- Source: APQ.Report_Errors
+-----------------------------------------------------------------------------
 
 procedure ParseDBMReportErrors is
-  -- Syntax: dbm.report_errors( Q [, b ] );
-  -- Source: APQ.Report_Errors
   reportExpr : unbounded_string;
   reportType : identifier;
   queryExpr : unbounded_string;
@@ -1075,9 +1204,14 @@ procedure ParseDBMReportErrors renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  BEGIN WORK
+--
+-- Syntax: dbm.begin_work( Q, C);
+-- Source: APQ.Begin_Work
+-----------------------------------------------------------------------------
+
 procedure ParseDBMBeginWork is
-  -- Syntax: dbm.begin_work( Q, C);
-  -- Source: APQ.Begin_Work
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1110,9 +1244,14 @@ procedure ParseDBMBeginWork renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  ROLLBACK WORK
+--
+-- Syntax: dbm.rollback_work( Q, C );
+-- Source: APQ.Rollback_Work
+-----------------------------------------------------------------------------
+
 procedure ParseDBMRollbackWork is
-  -- Syntax: dbm.rollback_work( Q, C );
-  -- Source: APQ.Rollback_Work
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1145,9 +1284,14 @@ procedure ParseDBMRollbackWork renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COMMIT WORK
+--
+-- Syntax: dbm.commit_work( Q, C );
+-- Source: APQ.Commit_Work
+-----------------------------------------------------------------------------
+
 procedure ParseDBMCommitWork is
-  -- Syntax: dbm.commit_work( Q, C );
-  -- Source: APQ.Commit_Work
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1180,9 +1324,14 @@ procedure ParseDBMCommitWork renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  REWIND
+--
+-- Syntax: dbm.rewind( Q );
+-- Source: APQ.Rewind
+-----------------------------------------------------------------------------
+
 procedure ParseDBMRewind is
-  -- Syntax: dbm.rewind( Q );
-  -- Source: APQ.Rewind
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1206,9 +1355,14 @@ procedure ParseDBMRewind renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  FETCH
+--
+-- Syntax: dbm.fetch( q [,i] );
+-- Source: APQ.Fetch
+-----------------------------------------------------------------------------
+
 procedure ParseDBMFetch is
-  -- Syntax: dbm.fetch( q [,i] );
-  -- Source: APQ.Fetch
   expr_val : unbounded_string;
   expr_type : identifier;
   haveIndex : boolean := false;
@@ -1248,9 +1402,14 @@ procedure ParseDBMFetch renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  END OF QUERY
+--
+-- Syntax: b := dbm.end_of_query( Q );
+-- Source: APQ.End_Of_Query
+-----------------------------------------------------------------------------
+
 procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := dbm.end_of_query( Q );
-  -- Source: APQ.End_Of_Query
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1275,9 +1434,14 @@ procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifi
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  TUPLE
+--
+-- Syntax: t := dbm.tuple( Q );
+-- Source: APQ.Tuple
+-----------------------------------------------------------------------------
+
 procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: t := dbm.tuple( Q );
-  -- Source: APQ.Tuple
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1304,9 +1468,14 @@ procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  TUPLES
+--
+-- Syntax: n := dbm.tuples( Q );
+-- Source: APQ.Tuples
+-----------------------------------------------------------------------------
+
 procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := dbm.tuples( Q );
-  -- Source: APQ.Tuples
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1333,9 +1502,14 @@ procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier )
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COLUMNS
+--
+-- Syntax: n := dbm.columns( Q );
+-- Source: APQ.Columns
+-----------------------------------------------------------------------------
+
 procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := dbm.columns( Q );
-  -- Source: APQ.Columns
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -1362,9 +1536,14 @@ procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier 
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COLUMN NAME
+--
+-- Syntax: n := dbm.column_Name;
+-- Source: APQ.Column_Name;
+-----------------------------------------------------------------------------
+
 procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := dbm.column_Name;
-  -- Source: APQ.Column_Name;
   exprVal : unbounded_string;
   exprType : identifier;
   queryExpr : unbounded_string;
@@ -1396,9 +1575,14 @@ procedure ParseDBMColumnName( result : out unbounded_string; kind : out identifi
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  COLUMN INDEX
+--
+-- Syntax: n := dbm.column_index( Q, s );
+-- Source: APQ.Column_Index
+-----------------------------------------------------------------------------
+
 procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := dbm.column_index( Q, s );
-  -- Source: APQ.Column_Index
   exprVal : unbounded_string;
   exprType : identifier;
   queryExpr : unbounded_string;
@@ -1458,9 +1642,14 @@ procedure ParseDBMColumnIndex( result : out unbounded_string; kind : out identif
   --end if;
 --end ParseDBColumnType;
 
+-----------------------------------------------------------------------------
+--  IS NULL
+--
+-- Syntax: n := dbm.is_null;
+-- Source: APQ.Is_Null;
+-----------------------------------------------------------------------------
+
 procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := dbm.is_null;
-  -- Source: APQ.Is_Null;
   exprVal : unbounded_string;
   exprType : identifier;
   queryExpr : unbounded_string;
@@ -1495,9 +1684,14 @@ procedure ParseDBMIsNull( result : out unbounded_string; kind : out identifier )
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  VALUES
+--
+-- Syntax: n := dbm.value;
+-- Source: APQ.Value;
+-----------------------------------------------------------------------------
+
 procedure ParseDBMValue( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := dbm.value;
-  -- Source: APQ.Value;
   exprVal  : unbounded_string;
   exprType : identifier;
   queryExpr : unbounded_string;
@@ -1534,8 +1728,13 @@ procedure ParseDBMValue( result : out unbounded_string; kind : out identifier ) 
 
 #if POSTGRES
 
-procedure DBMShowIt( Q : in out APQ.PostgreSQL.Client.Query_Type; C : resPtr ) is
+-----------------------------------------------------------------------------
+--  SHOW IT
+--
 -- run SQL command and display results in tabular format
+-----------------------------------------------------------------------------
+
+procedure DBMShowIt( Q : in out APQ.PostgreSQL.Client.Query_Type; C : resPtr ) is
   tabularDisplay : boolean := false;
   headingWidth   : integer := 0;
   wasNull        : boolean := false;
@@ -1699,9 +1898,14 @@ begin
   end if;
 end DBMShowIt;
 
+-----------------------------------------------------------------------------
+--  SHOW
+--
+-- Syntax: dbm.show( Q, C );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBMShow is
-  -- Syntax: dbm.show( Q, C );
-  -- Source: N/A
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -2600,9 +2804,14 @@ procedure ParseDBMDatabases renames not_configured;
 --  end if;
 --end DoSQLStatement;
 
+-----------------------------------------------------------------------------
+--  NEW CONNECTION
+--
+-- Syntax: dbm.new_connection( c )
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBMNewConnection is
-  -- Syntax: dbm.new_connection( c )
-  -- Source: N/A
   resId : resHandleId;
   ref : reference;
 begin
@@ -2625,9 +2834,14 @@ procedure ParseDBMNewConnection renames not_configured;
 #end if;
 #if POSTGRES
 
+-----------------------------------------------------------------------------
+--  NEW QUERY
+--
+-- Syntax: dbm.new_connection( q )
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDBMNewQuery is
-  -- Syntax: dbm.new_connection( q )
-  -- Source: N/A
   resId : resHandleId;
   ref : reference;
 begin
@@ -2650,11 +2864,17 @@ procedure ParseDBMNewQuery renames not_configured;
 #end if;
 #if POSTGRES
 
-procedure ParseDBMFetchValues is
--- dbm.fetch_values( Q, C, r );
+-----------------------------------------------------------------------------
+--  FETCH VALUES
+--
+-- Syntax: dbm.fetch_values( Q, C, r );
+-- Source: N/A
 -- Fetch a row, reading all values into record r.  The column names must match
 -- the fields in the record (the record fields need not be in the same order
 -- as the query results).
+-----------------------------------------------------------------------------
+
+procedure ParseDBMFetchValues is
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -2786,10 +3006,16 @@ procedure ParseDBMFetchValues renames not_configured;
 #end if;
 #if POSTGRES
 
-procedure ParseDBMAppendForInsert is
--- dbm.append_for_insert( Q, C, r );
+-----------------------------------------------------------------------------
+--  APPEND FOR INSERT
+--
+-- Syntax: dbm.append_for_insert( Q, C, r );
+-- Source: N/A
 -- append the fields of record r to the query in the format of an ANSI SQL insert
 -- " ( a, b, ... ) VALUES ( 'a', 'b', ... )"
+-----------------------------------------------------------------------------
+
+procedure ParseDBMAppendForInsert is
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -2907,10 +3133,16 @@ procedure ParseDBMAppendForInsert renames not_configured;
 #end if;
 #if POSTGRES
 
-procedure ParseDBMAppendForUpdate is
--- dbm.append_for_update( Q, C, r );
+-----------------------------------------------------------------------------
+--  APPEND FOR UPDATE
+--
+-- Syntax: dbm.append_for_update( Q, C, r );
+-- Source: N/A
 -- append the fields of record r to the query in the format of an ANSI SQL update
 -- " SET a = 'a', b = 'b', ..."
+-----------------------------------------------------------------------------
+
+procedure ParseDBMAppendForUpdate is
   queryExpr : unbounded_string;
   queryType : identifier;
   query : resPtr;
@@ -2999,6 +3231,10 @@ end ParseDBMAppendForUpdate;
 procedure ParseDBMAppendForUpdate renames not_configured;
 
 #end if;
+
+-----------------------------------------------------------------------------
+-- Housekeeping
+-----------------------------------------------------------------------------
 
 procedure StartupDBM is
 begin

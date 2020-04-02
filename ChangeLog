@@ -4,3 +4,5 @@ CHANGES SINCE 2.3
 
 1. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
 
+2. New: new example scripts: git_prompt_script,
+

@@ -124,9 +124,14 @@ end ParseFirstTableParameter;
 --  end if;
 --end ParseDHTNewTable;
 
+-----------------------------------------------------------------------------
+--  RESET
+--
+-- Syntax: dynamic_hash_tables.reset( t );
+-- Source: dynamic_hash_tables.reset( t );
+-----------------------------------------------------------------------------
+
 procedure ParseDHTReset is
-  -- Syntax: dynamic_hash_tables.reset( t );
-  -- Ada:    dynamic_hash_tables.reset( t );
   tableId  : identifier;
   theTable : resPtr;
 begin
@@ -142,9 +147,14 @@ begin
   end if;
 end ParseDHTReset;
 
+-----------------------------------------------------------------------------
+--  SET
+--
+-- Syntax: dynamic_hash_tables.set( t, s, e );
+-- Source: dynamic_hash_tables.set( t, s, e );
+-----------------------------------------------------------------------------
+
 procedure ParseDHTSet is
-  -- Syntax: dynamic_hash_tables.set( t, s, e );
-  -- Ada:    dynamic_hash_tables.set( t, s, e );
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -169,9 +179,14 @@ begin
   end if;
 end ParseDHTSet;
 
+-----------------------------------------------------------------------------
+--  GET
+--
+-- Syntax: e := doubly_linked_list.get( t, s );
+-- Source: e := doubly_linked_list.get( t, s );
+-----------------------------------------------------------------------------
+
 procedure ParseDHTGet( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: e := doubly_linked_list.get( t, s );
-  -- Ada:    e := doubly_linked_list.get( t, s );
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -189,9 +204,14 @@ begin
   end if;
 end ParseDHTGet;
 
+-----------------------------------------------------------------------------
+--  HAS ELEMENT
+--
+-- Syntax: e := doubly_linked_list.has_element( t, s );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTHasElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: e := doubly_linked_list.has_element( t, s );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -209,9 +229,14 @@ begin
   end if;
 end ParseDHTHasElement;
 
+-----------------------------------------------------------------------------
+--  REMOVE
+--
+-- Syntax: dynamic_hash_tables.remove( t, s );
+-- Source: dynamic_hash_tables.remove( t, s );
+-----------------------------------------------------------------------------
+
 procedure ParseDHTRemove is
-  -- Syntax: dynamic_hash_tables.remove( t, s );
-  -- Ada:    dynamic_hash_tables.remove( t, s );
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -230,9 +255,14 @@ begin
   end if;
 end ParseDHTRemove;
 
+-----------------------------------------------------------------------------
+--  GET FIRST
+--
+-- Syntax: dynamic_hash_tables.get_first( t, e, eof );
+-- Source: e := dynamic_hash_tables.get_first( t );
+-----------------------------------------------------------------------------
+
 procedure ParseDHTGetFirst is
-  -- Syntax: dynamic_hash_tables.get_first( t, e, eof );
-  -- Ada:    e := dynamic_hash_tables.get_first( t );
   tableId  : identifier;
   theTable : resPtr;
   itemRef  : reference;
@@ -259,9 +289,14 @@ begin
   end if;
 end ParseDHTGetFirst;
 
+-----------------------------------------------------------------------------
+--  GET NEXT
+--
+-- Syntax: dynamic_hash_tables.get_next( t, e, eof );
+-- Source: e := dynamic_hash_tables.get_next( t );
+-----------------------------------------------------------------------------
+
 procedure ParseDHTGetNext is
-  -- Syntax: dynamic_hash_tables.get_next( t, e, eof );
-  -- Ada:    e := dynamic_hash_tables.get_next( t );
   tableId  : identifier;
   theTable : resPtr;
   itemRef  : reference;
@@ -288,9 +323,14 @@ begin
   end if;
 end ParseDHTGetNext;
 
+-----------------------------------------------------------------------------
+--  ADD
+--
+-- Syntax: dynamic_hash_tables.add( t, s, e );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTAdd is
-  -- Syntax: dynamic_hash_tables.add( t, s, e );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -319,9 +359,14 @@ begin
   end if;
 end ParseDHTAdd;
 
+-----------------------------------------------------------------------------
+--  REPLACE
+--
+-- Syntax: dynamic_hash_tables.replace( t, s, e );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTReplace is
-  -- Syntax: dynamic_hash_tables.replace( t, s, e );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -350,9 +395,14 @@ begin
   end if;
 end ParseDHTReplace;
 
+-----------------------------------------------------------------------------
+--  APPEND
+--
+-- Syntax: dynamic_hash_tables.append( t, s, e );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTAppend is
-  -- Syntax: dynamic_hash_tables.append( t, s, e );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -384,9 +434,14 @@ begin
   end if;
 end ParseDHTAppend;
 
+-----------------------------------------------------------------------------
+--  PREPEND
+--
+-- Syntax: dynamic_hash_tables.prepend( t, s, e );
+-- Source:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTPrepend is
-  -- Syntax: dynamic_hash_tables.prepend( t, s, e );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -418,9 +473,14 @@ begin
   end if;
 end ParseDHTPrepend;
 
+-----------------------------------------------------------------------------
+--  INCREMENT
+--
+-- Syntax: dynamic_hash_tables.increment( t, s [,n] );
+-- Source: N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTIncrement is
-  -- Syntax: dynamic_hash_tables.increment( t, s [,n] );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
@@ -468,9 +528,14 @@ begin
   end if;
 end ParseDHTIncrement;
 
+-----------------------------------------------------------------------------
+--  DECREMENT
+--
+-- Syntax: dynamic_hash_tables.decrement( t, s [,n] );
+-- Ada:    N/A
+-----------------------------------------------------------------------------
+
 procedure ParseDHTDecrement is
-  -- Syntax: dynamic_hash_tables.decrement( t, s [,n] );
-  -- Ada:    N/A
   tableId  : identifier;
   theTable : resPtr;
   keyExpr  : unbounded_string;
