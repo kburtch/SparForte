@@ -1,0 +1,104 @@
+<HEAD><TITLE>git_prompt_script.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : git_prompt_script.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+~/git
+ken@desktop =&gt; cd myrepo
+
+~/git/my_repo [<span style="color:black;background:white">ticket123</span>]
+ken@desktop =&gt; git add changed_file.sp
+
+~/git/my_repo [<b>ticket123</b>]
+ken@local =&gt; git commit -m 'ticket123: saving changes'
+ 1 file changed, 1 insertion(+), 1 deletion(-_
+
+~/git/my_repo [ticket123]
+ken@desktop =&gt;
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "git_prompt_script" );
+<b>pragma</b> annotate( description, "This can be run from your SparForte profile with:" );
+<b>pragma</b> annotate( description, "pragma prompt_script( `spar ~/bin/prompt_script.sp;` );" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>type</b> profile_string <b>is</b> <b>new</b> string;
+
+LOGNAME : <b>constant</b> profile_string := "unknown";
+<b>pragma</b> unchecked_import( shell, LOGNAME );
+
+HOSTNAME : <b>constant</b> profile_string := `hostname`;
+
+pwd_tmp : string;
+git_changes : string;
+git_changes_staged : string;
+git_branch  : string;
+
+<FONT COLOR=green><EM>-- Blank line</EM></FONT>
+
+new_line;
+
+<FONT COLOR=green><EM>-- Current directory</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Convert home directory to tilde to save space</EM></FONT>
+
+pwd_tmp := <b>PWD</b>;
+<b>if</b> strings.head( pwd_tmp, strings.length( HOME ) ) = HOME <b>then</b>
+   pwd_tmp := strings.<b>delete</b>( @, 1, strings.length( HOME ) );
+   pwd_tmp := "~" &amp; pwd_tmp;
+<b>end</b> <b>if</b>;
+put(pwd_tmp);
+
+<FONT COLOR=green><EM>-- Git Branch</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- If in a git project, show the branch.  Highlight the branch if it has</EM></FONT>
+<FONT COLOR=green><EM>-- unsaved changes.</EM></FONT>
+
+<FONT COLOR=green><EM>-- Git Branch</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- If in a git project, show the branch.  Highlight the branch if it has</EM></FONT>
+<FONT COLOR=green><EM>-- unsaved changes.</EM></FONT>
+
+git_branch := `git branch 2&gt;&amp;1`;
+<b>if</b> $? = 0 <b>then</b>
+  git_branch := `echo "$git_branch" | fgrep '*'`;
+  git_branch := strings.<b>delete</b>( @, 1, 2 );
+  git_changes := `git status | fgrep "not staged";`;
+  git_changes_staged := git_changes &amp; `git status | fgrep "to be committed";`;
+  put( " [" );
+  <b>if</b> git_changes /= "" <b>then</b>
+     tput smso;
+  <b>elsif</b> git_changes_staged /= "" <b>then</b>
+     tput bold;
+  <b>end</b> <b>if</b>;
+  put( git_branch );
+  <b>if</b> git_changes /= "" <b>then</b>
+     tput rmso;
+  <b>elsif</b> git_changes_staged /= "" <b>then</b>
+     tput sgr0;
+  <b>end</b> <b>if</b>;
+  put( "]" );
+<b>end</b> <b>if</b>;
+new_line;
+
+<FONT COLOR=green><EM>-- Identity and big arrow</EM></FONT>
+
+put(LOGNAME) @ ('@') @ (HOSTNAME) @ (" =&gt; ");
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
