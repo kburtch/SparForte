@@ -1192,6 +1192,7 @@ procedure shellStatementByteCode( ci : in out compressionInfo;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
   inRedirect     : boolean;
+  redirectAmpersand : boolean;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1269,11 +1270,12 @@ begin
 
   -- We start will all quoting off
 
-  inDoubleQuotes := false;
-  inSingleQuotes := false;
-  inBackQuotes   := false;
-  inBackslash    := false;
-  inRedirect     := false;
+  inDoubleQuotes    := false;
+  inSingleQuotes    := false;
+  inBackQuotes      := false;
+  inBackslash       := false;
+  inRedirect        := false;
+  redirectAmpersand := false;
 
   -- Check for special single-character shell words
   --
@@ -1321,7 +1323,7 @@ begin
           err_tokenize( "missing backslashed character", to_string( command ) );
           return;
        end if;
-       if inRedirect then
+       if redirectAmpersand then
           err_tokenize( "missing end of redirect", to_string( command ) );
           return;
        end if;
@@ -1353,8 +1355,18 @@ begin
        inBackQuotes := not inBackQuotes;
     elsif ch = '\' and not inSingleQuotes and not inBackslash then
        inBackslash := true;
+
+    -- A shell redirect is detected by an unescaped '>'.  It can only
+    -- be followed by >, & or 1.  Any other character terminates the
+    -- redirection and finishes the shell word.
+
+    elsif inRedirect and ch /= '>' and ch /= '&' and ch /= '1' then
+       lastpos := cmdpos - 1;
+       exit;
     elsif ch = '>' and not inSingleQuotes and not inBackslash then
        inRedirect := true;
+       redirectAmpersand := true;
+
     else
 
     -- Fourth, look for word terminators
@@ -1374,7 +1386,7 @@ begin
           elsif ch = '|' then
              lastpos := cmdpos - 1;
              exit;
-          elsif ch = '&' and not inRedirect then
+          elsif ch = '&' and not redirectAmpersand then
              lastpos := cmdpos - 1;
              exit;
           end if;
@@ -1838,7 +1850,7 @@ begin
   -- Get the first token on the line.
   --
   -- Determine if this could be an Adascript identifier.  If it's not, then
-  -- it mus be a Bourne shell word.
+  -- it must be a Bourne shell word.
 
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
         ch = '.' or ch = directory_delimiter or -- KB: 17/12/22
@@ -1852,6 +1864,7 @@ begin
      inBackQuotes   := false;
      inBackslash    := false;
      inRedirect     := false;
+     -- checkAppend    := false;
      -- read the first character, escaping high ascii if needed
      if ch > ASCII.DEL then
         word := word & toByteCode( char_escape_t );

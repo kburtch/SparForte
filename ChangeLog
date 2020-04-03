@@ -6,3 +6,7 @@ CHANGES SINCE 2.3
 
 2. New: new example scripts: git_prompt_script,
 
+3. Fix: missing files with 2> and 2>> now reported as an error.  (<, > and >> were working properly).
+
+4. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
+

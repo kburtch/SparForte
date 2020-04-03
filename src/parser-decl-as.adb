@@ -1467,6 +1467,9 @@ begin
      pattern := redirectIn_string;
      wordType := redirectInWord;
      shellWordList.Queue( wordList, aShellWord'( wordtype, pattern, word ) );
+     if wordLen > length( word ) then
+        err( "unexpected characters after redirection " & to_string(word) );
+     end if;
      getNextToken;
      return;
 
@@ -1477,6 +1480,9 @@ begin
         pattern := redirectAppend_string;
         wordType := redirectAppendWord;
         shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+        if wordLen > length( word ) then
+           err( "unexpected characters after redirection " & to_string(word) );
+        end if;
         getNextToken;
         return;
      end if;
@@ -1484,6 +1490,9 @@ begin
      pattern := redirectOut_string;
      wordType := redirectOutWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     if wordLen > length( word ) then
+        err( "unexpected characters after redirection " & to_string(word) );
+     end if;
      getNextToken;
      return;
 
@@ -1494,6 +1503,9 @@ begin
            pattern := redirectErr2Out_string;
            wordType := redirectErr2OutWord;
            shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+           if wordLen > length( word ) then
+              err( "unexpected characters after redirection " & to_string(word) );
+           end if;
            getNextToken;
            return;
         end if;
@@ -1502,6 +1514,9 @@ begin
         pattern := redirectErrAppend_string;
         wordType := redirectErrAppendWord;
         shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+        if wordLen > length( word ) then
+           err( "unexpected characters after redirection " & to_string(word) );
+        end if;
         getNextToken;
         return;
      end if;
@@ -1509,6 +1524,9 @@ begin
      pattern := redirectErrOut_string;
      wordType := redirectErrOutWord;
      shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
+     if wordLen > length( word ) then
+        err( "unexpected characters after redirection " & to_string(word) );
+     end if;
      getNextToken;
      return;
 
@@ -4180,11 +4198,15 @@ procedure ParseShellCommand is
     -- an appropriate error message.
   begin
      if expectRedirectOutFile then
-        err( "expected > file" );
+        err( "expected a file path for >" );
      elsif expectRedirectInFile then
-        err( "expected < file" );
+        err( "expected a file path for <" );
      elsif expectRedirectAppendFile then
-        err( "expected >> file" );
+        err( "expected a file path for >>" );
+     elsif expectRedirectErrOutFile then
+        err( "expected a file path for 2>" );
+     elsif expectRedirectErrAppendFile then
+        err( "expected a file path for 2>>" );
      end if;
   end checkRedirectFile;
 
