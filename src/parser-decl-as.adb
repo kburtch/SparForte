@@ -1064,6 +1064,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   inBQuote    : boolean := false;                      -- in double quoted part
   inBackslash : boolean := false;                      -- in backquoted part
   inDollar    : boolean := false;                      -- $ expansion
+  inDollarBraces : boolean := false;                   -- ${ expansion
   wasSQuote   : boolean := false;                      -- is $ expan in sin qu
   wasDQuote   : boolean := false;                      -- is $ expan in dbl qu
   wasBQuote   : boolean := false;                      -- is $ expan in bck qu
@@ -1096,85 +1097,142 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
      id      : identifier;
      subword : unbounded_string;
      ch      : character;
-  begin
-    --put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
-    -- Handle Special Substitutions ($#, $? $$, $!, $0...$9 )
-    if expansionVar = "#" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "?" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( last_status'img );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "$" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( aPID'image( getpid ) );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "!" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( aPID'image( lastChild ) );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "0" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( Ada.Command_Line.Command_Name );
-       end if;
-    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
-       if syntax_check and then not suppress_word_quoting and then not inDQuote then
-          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-       end if;
-       if isExecutingCommand then
-          begin
-             subword := to_unbounded_string(
-                 Argument(
-                   integer'value(
-                     to_string( " " & expansionVar ) )+optionOffset ) );
-          exception when program_error =>
-             err( "program_error exception raised" );
-          when others =>
-             err( "script argument " & to_string(expansionVar) & " not found " &
-                  "in arguments 0 .." &
-                  integer'image( Argument_Count-optionOffset) );
-          end;
-       end if;
-    else
-       if syntax_check and then not suppress_word_quoting and then not inDQuote then
-          err( "style issue: expected double quoted word parameters in shell or SQL command to prevent word splitting" );
-       end if;
-       -- Regular variable substitution
+
+     -- SIMPLE DOLLAR EXPANSION
+     --
+     -- A dollar expansion given a specific value.  Also handle $0..$9.
+
+     procedure simpleDollarExpansion( expansionVar : unbounded_string ) is
+     begin
        if expansionVar = "" or expansionVar = " " then
           err( "dollar expansion expects a variable name (or escape the $ if not an expansion)" );
           id := eof_t;
+       elsif expansionVar = "#" then
+          if isExecutingCommand then
+             subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+             delete( subword, 1, 1 );
+          end if;
+       elsif expansionVar = "?" then
+          if isExecutingCommand then
+             subword := to_unbounded_string( last_status'img );
+             delete( subword, 1, 1 );
+          end if;
+       elsif expansionVar = "$" then
+          if isExecutingCommand then
+             subword := to_unbounded_string( aPID'image( getpid ) );
+             delete( subword, 1, 1 );
+          end if;
+       elsif expansionVar = "!" then
+          if isExecutingCommand then
+             subword := to_unbounded_string( aPID'image( lastChild ) );
+             delete( subword, 1, 1 );
+          end if;
+       elsif expansionVar = "0" then
+          if isExecutingCommand then
+             subword := to_unbounded_string( Ada.Command_Line.Command_Name );
+          end if;
+       elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
+          if syntax_check and then not suppress_word_quoting and then not inDQuote then
+             err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+          end if;
+          if isExecutingCommand then
+             begin
+                subword := to_unbounded_string(
+                    Argument(
+                      integer'value(
+                        to_string( " " & expansionVar ) )+optionOffset ) );
+             exception when program_error =>
+                err( "program_error exception raised" );
+             when others =>
+                err( "script argument " & to_string(expansionVar) & " not found " &
+                     "in arguments 0 .." &
+                     integer'image( Argument_Count-optionOffset) );
+             end;
+          end if;
        else
           findIdent( expansionVar, id );
-       end if;
-       if id = eof_t then
-          -- TODO: this check takes place after the token is read, so token
-          -- following the one in question is highlighted
-          err( optional_bold( to_string( expansionVar ) ) & " not declared" );
-       else
-          if syntax_check then
-             identifiers( id ).wasReferenced := true;
-             --identifiers( id ).referencedByThread := getThreadName;
-             subword := to_unbounded_string( "undefined" );
+          if id = eof_t then
+             -- TODO: this check takes place after the token is read, so token
+             -- following the one in question is highlighted
+             err( optional_bold( to_string( expansionVar ) ) & " not declared" );
           else
-             subword := identifiers( id ).value.all;       -- word to substit.
-             if not inDQuote then                          -- strip spaces
-                subword := Ada.Strings.Unbounded.Trim(     -- unless double
-                   subword, Ada.Strings.Both );            -- quotes;
-             elsif getUniType( id ) = uni_numeric_t then   -- a number?
-                if length( subword ) > 0 then              -- something there?
-                   if element( subword, 1 ) = ' ' then     -- leading space
-                      delete( subword, 1, 1 );             -- we don't want it
+             if syntax_check then
+                identifiers( id ).wasReferenced := true;
+                --identifiers( id ).referencedByThread := getThreadName;
+                subword := to_unbounded_string( "undefined" );
+             else
+                subword := identifiers( id ).value.all;     -- word to substit.
+                if not inDQuote then                        -- strip spaces
+                   subword := Ada.Strings.Unbounded.Trim(   -- unless double
+                      subword, Ada.Strings.Both );          -- quotes;
+                elsif getUniType( id ) = uni_numeric_t then -- a number?
+                   if length( subword ) > 0 then            -- something there?
+                      if element( subword, 1 ) = ' ' then   -- leading space
+                         delete( subword, 1, 1 );           -- we don't want it
+                      end if;
                    end if;
                 end if;
              end if;
           end if;
        end if;
+    end simpleDollarExpansion;
+
+  begin
+    -- put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
+    -- Handle Special Substitutions ($#, $? $$, $!, $0...$9 )
+    -- if expansionVar = "#" then
+    --    if isExecutingCommand then
+    --       subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+    --       delete( subword, 1, 1 );
+    --    end if;
+    -- elsif expansionVar = "?" then
+    --    if isExecutingCommand then
+    --       subword := to_unbounded_string( last_status'img );
+    --       delete( subword, 1, 1 );
+    --    end if;
+    -- elsif expansionVar = "$" then
+    --    if isExecutingCommand then
+    --       subword := to_unbounded_string( aPID'image( getpid ) );
+    --       delete( subword, 1, 1 );
+    --    end if;
+    -- elsif expansionVar = "!" then
+    --    if isExecutingCommand then
+    --       subword := to_unbounded_string( aPID'image( lastChild ) );
+    --       delete( subword, 1, 1 );
+    --    end if;
+    -- elsif expansionVar = "0" then
+    --    if isExecutingCommand then
+    --       subword := to_unbounded_string( Ada.Command_Line.Command_Name );
+    --    end if;
+    -- elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
+    --    if syntax_check and then not suppress_word_quoting and then not inDQuote then
+    --       err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+    --    end if;
+    --    if isExecutingCommand then
+    --       begin
+    --          subword := to_unbounded_string(
+    --              Argument(
+    --                integer'value(
+    --                  to_string( " " & expansionVar ) )+optionOffset ) );
+    --       exception when program_error =>
+    --          err( "program_error exception raised" );
+    --       when others =>
+    --          err( "script argument " & to_string(expansionVar) & " not found " &
+    --               "in arguments 0 .." &
+    --               integer'image( Argument_Count-optionOffset) );
+    --       end;
+    --    end if;
+    if element(expansionVar,1) = '{' then
+       if element(expansionVar, length(expansionVar)) /= '}' then
+          err( "expected closing } in " & to_string(toEscaped(expansionVar) ) );
+       else
+          simpleDollarExpansion( unbounded_slice( expansionVar, 2, length(expansionVar)-1 ) );
+       end if;
+    else
+       if syntax_check and then not suppress_word_quoting and then not inDQuote then
+          err( "style issue: expected double quoted word parameters in shell or SQL command to prevent word splitting" );
+       end if;
+       simpleDollarExpansion( expansionVar );
     end if;
     -- escapeGlobs affects the variable substitution
     -- shell word will be "undefined" during syntax check.  It only has
@@ -1679,10 +1737,23 @@ begin
 
        pattern := pattern & "\";                           -- an escaping \
 
+       -- Dollar Brace handling
+
+    elsif ch = '{' and inDollar then
+       inDollarBraces := true;
+       expansionVar := expansionVar & ch;
+    elsif inDollarBraces and ch = '}' then
+       expansionVar := expansionVar & ch;
+       if length( expansionVar ) > 0 then  -- TODO: needed?
+          dollarExpansion;
+          inDollarBraces := false;
+           expansionVar := null_unbounded_string;
+       end if;
+
        -- Dollar sign?  Then begin collecting the letters to the substitution
        -- variable.
 
-    elsif ch = '$' and not (inSQuote and not expandInSingleQuotes) and not inBackslash then
+    elsif ch = '$' and not (inSQuote and not expandInSingleQuotes) and not inBackslash and not inDollarBraces then
        if inDollar then                                    -- in a $?
           if length( expansionVar ) = 0 then               -- $$ is special
              expansionVar := expansionVar & ch;            -- var is $
@@ -1704,10 +1775,16 @@ begin
        -- non-alpha/digit/underscore is read.  Pass through to allow the
        -- character to otherwise be treated normally.
 
-       if inDollar then
-          if ch /= '_' and ch not in 'A'..'Z'  and ch not in 'a'..'z'
-             and ch not in '0'..'9' then
-             if length( expansionVar ) > 0 then
+       if inDollar and not inDollarBraces then
+          if ch /= '_' and
+             ch not in 'A'..'Z' and
+             ch not in 'a'..'z' and
+             ch not in '0'..'9' then
+             -- ch /= '$' and
+             -- ch /= '?' and
+             -- ch /= '#' and
+             -- ch /= '!' then
+             if length( expansionVar ) > 0 then  -- TODO: needed?
                 dollarExpansion;
              end if;
           end if;
@@ -1726,6 +1803,7 @@ begin
        -- Looking at a $ expansion?  Then collect the letters of the variable
        -- to substitute but don't add them to the shell word.  Apply dollar
        -- expansions to both word and pattern.
+
        if inDollar then                                    -- in a $?
           expansionVar := expansionVar & ch;               -- collect $ name
        else                                                -- not in $?
@@ -1753,7 +1831,7 @@ begin
     end if;
   end loop;                                                -- expansions done
 
-  if inDollar then                                         -- last $ not done ?
+  if inDollar then                                      -- last $ not done ?
      dollarExpansion;                                      -- finish it
   end if;
 

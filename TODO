@@ -15,6 +15,7 @@ Priority Issues (Fix These First)
   - characters before a redirection
   - when i tried git branch 2>/dev/null, standard output was redirected
   - 2> wasn't allowed after the first command in a pipeline but should be
+- daniel - command completion should auto-fill simple directory levels
 - pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
 - manual test cases -  can HTML be embedded as CDATA in junit xml?

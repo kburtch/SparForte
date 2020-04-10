@@ -4,9 +4,11 @@ CHANGES SINCE 2.3
 
 1. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
 
-2. New: new example scripts: git_prompt_script,
+2. New: new example scripts: git_prompt_script. [Needs updating]
 
 3. Fix: missing files with 2> and 2>> now reported as an error.  (<, > and >> were working properly).
 
-4. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
+4. Change: Bourne shell redirection operators now behave closer to Bourne shell standard in terms of whitespace around the operators. [Tests needed]
+
+5. New: Bourne shell dollar brace ${...} variable substitutions. [Docs needed, tests needed]
 
