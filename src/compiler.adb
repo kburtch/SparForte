@@ -1192,6 +1192,8 @@ procedure shellStatementByteCode( ci : in out compressionInfo;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
   inRedirect     : boolean;
+  redirectAmpersand : boolean;
+  maybeStdErrRedirect : boolean;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1218,6 +1220,10 @@ begin
 
   -- special tokens: check up front
 
+  inRedirect        := false;
+  redirectAmpersand := false;
+  maybeStdErrRedirect := false;
+
   ch := Element( command, cmdpos );
   if ch = ';' then
      ci.context := startOfStatement;
@@ -1234,6 +1240,17 @@ begin
      ci.compressedScript := ci.compressedScript & ch;
      cmdpos := cmdpos + 1;
      return;
+  elsif ch = '>' then
+     -- TODO: error redirect
+     -- TODO: should probably have a handle redirect subroutine
+     inRedirect := true;
+     redirectAmpersand := true;
+  elsif ch = '<' then
+     -- TODO: should probably have a handle redirect subroutine
+     inRedirect := true;
+  elsif ch = '2' then
+     -- TODO: should probably have a handle redirect subroutine
+     maybeStdErrRedirect := true;
   end if;
 
   -- Check for an Ada-style comment
@@ -1269,11 +1286,10 @@ begin
 
   -- We start will all quoting off
 
-  inDoubleQuotes := false;
-  inSingleQuotes := false;
-  inBackQuotes   := false;
-  inBackslash    := false;
-  inRedirect     := false;
+  inDoubleQuotes    := false;
+  inSingleQuotes    := false;
+  inBackQuotes      := false;
+  inBackslash       := false;
 
   -- Check for special single-character shell words
   --
@@ -1321,7 +1337,7 @@ begin
           err_tokenize( "missing backslashed character", to_string( command ) );
           return;
        end if;
-       if inRedirect then
+       if redirectAmpersand then
           err_tokenize( "missing end of redirect", to_string( command ) );
           return;
        end if;
@@ -1331,6 +1347,7 @@ begin
     end if;
 
     ch := Element( command, cmdpos );                       -- next character
+    -- put_line( "ch = " & ch & " redirect = " & inRedirect'img ); -- DEBUG
 
     -- Second, check for characters that will interfere with the compressed
     -- tokens.
@@ -1345,7 +1362,30 @@ begin
 
     -- Third, handle quoting quoting characters
 
-    if ch = '"' and not inSingleQuotes and not inBackslash then
+    -- A shell redirect is detected by an unescaped '>'.  It can only
+    -- be followed by >, & or 1.  Any other character terminates the
+    -- redirection and finishes the shell word.
+
+    if maybeStdErrRedirect then
+       if ch = '>' then
+          inRedirect := true;
+          redirectAmpersand := true;
+          maybeStdErrRedirect := false;
+       elsif ch /= '2' then  -- should not be
+          maybeStdErrRedirect := false;
+       end if;
+    end if;
+
+    if inRedirect and ch /= '>' and ch /= '<' and ch /= '&' and ch /= '1' then
+       inRedirect := false;
+       redirectAmpersand := false;
+       lastpos := cmdpos - 1;
+       exit;
+    elsif not inRedirect and (ch = '>' or ch = '<') and not inDoubleQuotes 
+       and not inSingleQuotes and not inBackslash then
+       lastpos := cmdpos - 1;
+       exit;
+    elsif ch = '"' and not inSingleQuotes and not inBackslash then
        inDoubleQuotes := not inDoubleQuotes;
     elsif ch = ''' and not inDoubleQuotes and not inBackslash then
        inSingleQuotes := not inSingleQuotes;
@@ -1353,8 +1393,6 @@ begin
        inBackQuotes := not inBackQuotes;
     elsif ch = '\' and not inSingleQuotes and not inBackslash then
        inBackslash := true;
-    elsif ch = '>' and not inSingleQuotes and not inBackslash then
-       inRedirect := true;
     else
 
     -- Fourth, look for word terminators
@@ -1374,7 +1412,7 @@ begin
           elsif ch = '|' then
              lastpos := cmdpos - 1;
              exit;
-          elsif ch = '&' and not inRedirect then
+          elsif ch = '&' and not redirectAmpersand then
              lastpos := cmdpos - 1;
              exit;
           end if;
@@ -1383,13 +1421,13 @@ begin
        -- Got here? Character is good.  Backslashing?  Turn it off.
 
        inBackslash := false;
-       inRedirect  := false;
 
     end if; -- no quoting characters
     word := word & ch;
     cmdpos := cmdpos + 1;
   end loop;
 
+  --put_line( "word = " & to_string(word) ); -- DEBUG
   ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
      word & toByteCode( imm_delim_t );
   --ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
@@ -1759,6 +1797,7 @@ procedure startOfStatementByteCode( ci : in out compressionInfo;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
   inRedirect     : boolean;
+  redirectAmpersand : boolean;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1838,7 +1877,7 @@ begin
   -- Get the first token on the line.
   --
   -- Determine if this could be an Adascript identifier.  If it's not, then
-  -- it mus be a Bourne shell word.
+  -- it must be a Bourne shell word.
 
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
         ch = '.' or ch = directory_delimiter or -- KB: 17/12/22
@@ -1852,6 +1891,8 @@ begin
      inBackQuotes   := false;
      inBackslash    := false;
      inRedirect     := false;
+     redirectAmpersand := false;
+
      -- read the first character, escaping high ascii if needed
      if ch > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
@@ -1900,8 +1941,17 @@ begin
               lastpos := lastpos+1;
               exit when lastpos > length( command );
               goto next_word_char;
-           elsif ch = '>' and not inSingleQuotes and not inBackslash then
-              -- this affects & as in >& as a stopword
+
+          -- A shell redirect is detected by an unescaped '>'.  It can only
+          -- be followed by >, & or 1.  Any other character terminates the
+          -- redirection and finishes the shell word.
+
+            elsif inRedirect and ch /= '>' and ch /= '&' and ch /= '1' then
+               lastpos := cmdpos - 1;
+               exit;
+            elsif ch = '>' and not inSingleQuotes and not inBackslash then
+              inRedirect := true;
+              redirectAmpersand := true;
               inRedirect := true;
               word := word & ch;
               lastpos := lastpos+1;
@@ -1923,7 +1973,7 @@ begin
                  ch = '=' or
                  ch = '(' ;
               exit when
-                 ch = '&' and not inRedirect;
+                 ch = '&' and not redirectAmpersand;
            end if;
 
            -- It must be a shell word if not an identifier...if it's not
