@@ -1,12 +1,16 @@
 For the latest news, visit the SparForte web site.
 
+CHANGES SINCE 2.3.1
+
+1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.
+
 CHANGES SINCE 2.3
 
-1. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
+2. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
 
-2. New: new example scripts: git_prompt_script,
+3. New: new example scripts: git_prompt_script,
 
-3. Fix: missing files with 2> and 2>> now reported as an error.  (<, > and >> were working properly).
+4. Fix: missing files with 2> and 2>> now reported as an error.  (<, > and >> were working properly).
 
-4. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
+5. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
 
