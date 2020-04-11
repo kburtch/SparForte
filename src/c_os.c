@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <limits.h>
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 int group_member(gid_t gid) {
   int ngroups, i, ret;
   int groups[NGROUPS_MAX];
