@@ -1133,7 +1133,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
      -- put_line( "PSW: word (2) = '" & word & "'" );
 
      word := word & simpleCommandSubstitution( tempStr );
-     -- put_line( "PSW: word (3) = '" & word & "'" );
+     -- put_line( "backquoteSubstitution: word is """ & word & """" ); -- DEBUG
   end backquoteSubstitution;
 
   --  DOLLAR EXPANSION (parseShellWord)
@@ -1226,7 +1226,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
     end simpleDollarExpansion;
 
   begin
-    -- put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
+    --put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
     if expansionVar = "" or expansionVar = " " then
        err( "dollar expansion expects a variable name (or escape the $ if not an expansion)" );
     elsif element(expansionVar,1) = '{' then
@@ -1240,6 +1240,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
           err( "expected closing ) in " & to_string(toEscaped(expansionVar) ) );
        else
           subword := simpleCommandSubstitution( unbounded_slice( expansionVar, 2, length(expansionVar)-1 ) );
+          --put_line( "dollarExpansion: subword is """ & subword & """" ); -- DEBUG
        end if;
     else
        if syntax_check and then not suppress_word_quoting and then not inDQuote then
@@ -1264,7 +1265,10 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
         pattern := pattern & ch;                        -- add the letter
         word := word & ch;                              -- add the letter
     end loop;
-    inDollar := false;
+    --put_line( "dollarExpansion: word is """ & word & """" ); -- DEBUG
+    inDollar := false;       -- TODO: recursion not handled
+    inDollarBraces := false;
+    inDollarParen := false;
   -- SQL words require the quote marks to be left intact in the word.
   -- Unfortunately, this has to be checked after the quote character has
   -- been processed.  This checks for the flag variables to attach a quote
@@ -1723,27 +1727,25 @@ begin
 
        -- Dollar Brace handling
 
-    elsif ch = '{' and inDollar then
+    elsif ch = '{' and inDollar and not inDollarBraces then
        inDollarBraces := true;
        expansionVar := expansionVar & ch;
     elsif inDollarBraces and ch = '}' then
        expansionVar := expansionVar & ch;
        if length( expansionVar ) > 0 then  -- TODO: needed?
           dollarExpansion;
-          inDollarBraces := false;
           expansionVar := null_unbounded_string;
        end if;
 
        -- Dollar Parenthesis handling
 
-    elsif ch = '(' and inDollar then
+    elsif ch = '(' and inDollar and not inDollarParen then
        inDollarParen := true;
        expansionVar := expansionVar & ch;
-    elsif inDollarParen and ch = '}' then
+    elsif inDollarParen and ch = ')' then
        expansionVar := expansionVar & ch;
        if length( expansionVar ) > 0 then  -- TODO: needed?
           dollarExpansion;
-          inDollarParen := false;
           expansionVar := null_unbounded_string;
        end if;
 

@@ -1427,7 +1427,7 @@ begin
     cmdpos := cmdpos + 1;
   end loop;
 
-  -- put_line( "word = " & to_string(word) ); -- DEBUG
+  --put_line( "word = " & to_string(word) ); -- DEBUG
   ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
      word & toByteCode( imm_delim_t );
   --ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
