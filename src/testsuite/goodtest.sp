@@ -1379,6 +1379,9 @@ type limitedarray is limited array(1..2) of integer;
 limitedarrayvar : limited constantarray;
 pragma assumption( used, limitedarrayvar );
 
+limitedarrayvar2 : limitedarray;
+pragma assumption( used, limitedarrayvar2 );
+
 type abstractarray is abstract array(1..2) of integer;
 
 
@@ -1552,6 +1555,8 @@ rec3 : arec1 := (5);
 rec4 : arec2 := (6,7,'8');
 rec5 : arec2 := rec4;
 rec6, rec7 : arec1 := (1);
+rec8 : arec4 := (9);
+pragma assumption( used, rec8 );
 
 -- This will be an error: specification not complete
 --rec8 : constant arec1;
@@ -1658,11 +1663,11 @@ declare
    end proc2;
    pragma assert( i = 0 ); -- no execution of proc2
 begin
-   proc2;
-   pragma assert( i = 1 ); -- execution of proc2
+   proc1;
+   pragma assert( i = 0 ); -- execution of proc2
 
    proc2;
-   pragma assert( i = 2 ); -- execution of proc2
+   pragma assert( i = 1 ); -- execution of proc2
 end;
 
 declare
@@ -1672,10 +1677,10 @@ declare
   begin
     i := i - 1;
   end proc3;
-  pragma assert( i = 2 ); -- no execution of proc3
+  pragma assert( i = 1 ); -- no execution of proc3
 begin
   proc3;
-  pragma assert( i = 1 ); -- execution of proc2
+  pragma assert( i = 0 ); -- execution of proc2
 end;
 
 declare
@@ -1688,10 +1693,10 @@ declare
     proc5;
     i := i + 5;
   end proc4;
-  pragma assert( i = 1 ); -- no execution of procs
+  pragma assert( i = 0 ); -- no execution of procs
 begin
   proc4;                  -- call procedures
-  pragma assert( i = 9 ); -- execution of proc4 and proc5
+  pragma assert( i = 8 ); -- execution of proc4 and proc5
 end;
 
 declare
@@ -1701,10 +1706,10 @@ declare
        i := i + 1;
     end;
   end proc6;
-  pragma assert( i = 9 );
+  pragma assert( i = 8 );
 begin
   proc6;
-  pragma assert( i = 10 ); -- execution of proc6 and nested begin block
+  pragma assert( i = 9 ); -- execution of proc6 and nested begin block
 end;
 
 -- self-referential variables
@@ -3350,7 +3355,7 @@ declare
     declare
       j : integer := 4;
     begin
-      j := j;
+      i := j;
       return;
     end;
     i := 2;
@@ -3367,7 +3372,14 @@ declare
   end return_test4;
 
 begin
-  null;
+  return_test;
+  pragma assert( i = 1 );
+  i := return_test2;
+  pragma assert( i = 3 );
+  return_test3;
+  pragma assert( i = 4 );
+  i := return_test4;
+  pragma assert( i = 5 );
 end;
 
 -- integer casting

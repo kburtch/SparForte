@@ -1065,6 +1065,7 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   inBackslash : boolean := false;                      -- in backquoted part
   inDollar    : boolean := false;                      -- $ expansion
   inDollarBraces : boolean := false;                   -- ${ expansion
+  inDollarParen : boolean := false;                    -- $( expansion
   wasSQuote   : boolean := false;                      -- is $ expan in sin qu
   wasDQuote   : boolean := false;                      -- is $ expan in dbl qu
   wasBQuote   : boolean := false;                      -- is $ expan in bck qu
@@ -1085,29 +1086,76 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
   pattern     : unbounded_string;
   wordType    : aShellWordType;
 
+    --  SIMPLE COMMAND SUBSTITUTION
+    --
+    -- to run this backquoted shell word, we need to save the current
+    -- script, compile the command into byte code, and run the commands
+    -- while capturing the output.  Substitute the results into the
+    -- shell word and restore the original script.
+    -- tempStr is the command to run in the back quotes.
+    --------------------------------------------------------------------------
+
+    function simpleCommandSubstitution( originalCommands : unbounded_string ) return unbounded_string is
+       commands : unbounded_string := originalCommands;
+       commandsOutput : unbounded_string;
+    begin
+       -- put_line( "commands = " & to_string( commands ) );
+       if commands = "" or commands = " " then
+          err( "no commands to run" );
+       else
+
+          -- If the backquoted commands don't end with a semi-colon, add one.
+          -- There is a chance that the semi-colon could be hidden by a
+          -- comment symbol (--).
+
+          if tail( commands, 1 ) /= ";" then
+             commands := commands & ";";
+          end if;
+
+          -- Run the command and attach the output to the word we are
+          -- assembling.
+          CompileRunAndCaptureOutput( commands, commandsOutput );
+          -- put_line( "PSW: res  = " & to_string(commandsOutput) );
+      end if;
+      return commandsOutput;
+    end simpleCommandSubstitution;
+
+  --  BACKQUOTE SUBSTITUTION
+  --
+  ----------------------------------------------------------------------------
+
+  procedure backquoteSubstitution is
+     tempStr : unbounded_string := unbounded_slice( word, startOfBQuote+1, length( word ) );
+  begin
+     -- remove the command from the end of the word assembled so far
+
+     delete( word, startOfBQuote+1, length( word ) );
+     -- put_line( "PSW: word (2) = '" & word & "'" );
+
+     word := word & simpleCommandSubstitution( tempStr );
+     -- put_line( "PSW: word (3) = '" & word & "'" );
+  end backquoteSubstitution;
+
   --  DOLLAR EXPANSION (parseShellWord)
   --
   -- perform a dollar expansion by appending a variable's value to the
-  -- shell word.
-  -- NOTE: what about $?, $#, $1, etc?  These need to be handed specially here?
-  -- NOTE: special $ expansion, including ${...} should be handled here
+  -- shell word.  Also handles dollar brace expansions.
   ---------------------------------------------------------------------------
 
   procedure dollarExpansion is
-     id      : identifier;
      subword : unbounded_string;
      ch      : character;
 
-     -- SIMPLE DOLLAR EXPANSION
+     --  SIMPLE DOLLAR EXPANSION
      --
-     -- A dollar expansion given a specific value.  Also handle $0..$9.
+     -- A dollar expansion given a specific variable name.  Also handle $0..$9,
+     -- $#, $?, $$, $!.
+     -------------------------------------------------------------------------
 
      procedure simpleDollarExpansion( expansionVar : unbounded_string ) is
+       id      : identifier;
      begin
-       if expansionVar = "" or expansionVar = " " then
-          err( "dollar expansion expects a variable name (or escape the $ if not an expansion)" );
-          id := eof_t;
-       elsif expansionVar = "#" then
+       if expansionVar = "#" then
           if isExecutingCommand then
              subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
              delete( subword, 1, 1 );
@@ -1179,54 +1227,19 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
 
   begin
     -- put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
-    -- Handle Special Substitutions ($#, $? $$, $!, $0...$9 )
-    -- if expansionVar = "#" then
-    --    if isExecutingCommand then
-    --       subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-    --       delete( subword, 1, 1 );
-    --    end if;
-    -- elsif expansionVar = "?" then
-    --    if isExecutingCommand then
-    --       subword := to_unbounded_string( last_status'img );
-    --       delete( subword, 1, 1 );
-    --    end if;
-    -- elsif expansionVar = "$" then
-    --    if isExecutingCommand then
-    --       subword := to_unbounded_string( aPID'image( getpid ) );
-    --       delete( subword, 1, 1 );
-    --    end if;
-    -- elsif expansionVar = "!" then
-    --    if isExecutingCommand then
-    --       subword := to_unbounded_string( aPID'image( lastChild ) );
-    --       delete( subword, 1, 1 );
-    --    end if;
-    -- elsif expansionVar = "0" then
-    --    if isExecutingCommand then
-    --       subword := to_unbounded_string( Ada.Command_Line.Command_Name );
-    --    end if;
-    -- elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
-    --    if syntax_check and then not suppress_word_quoting and then not inDQuote then
-    --       err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-    --    end if;
-    --    if isExecutingCommand then
-    --       begin
-    --          subword := to_unbounded_string(
-    --              Argument(
-    --                integer'value(
-    --                  to_string( " " & expansionVar ) )+optionOffset ) );
-    --       exception when program_error =>
-    --          err( "program_error exception raised" );
-    --       when others =>
-    --          err( "script argument " & to_string(expansionVar) & " not found " &
-    --               "in arguments 0 .." &
-    --               integer'image( Argument_Count-optionOffset) );
-    --       end;
-    --    end if;
-    if element(expansionVar,1) = '{' then
+    if expansionVar = "" or expansionVar = " " then
+       err( "dollar expansion expects a variable name (or escape the $ if not an expansion)" );
+    elsif element(expansionVar,1) = '{' then
        if element(expansionVar, length(expansionVar)) /= '}' then
           err( "expected closing } in " & to_string(toEscaped(expansionVar) ) );
        else
           simpleDollarExpansion( unbounded_slice( expansionVar, 2, length(expansionVar)-1 ) );
+       end if;
+    elsif element(expansionVar,1) = '(' then
+       if element(expansionVar, length(expansionVar)) /= ')' then
+          err( "expected closing ) in " & to_string(toEscaped(expansionVar) ) );
+       else
+          subword := simpleCommandSubstitution( unbounded_slice( expansionVar, 2, length(expansionVar)-1 ) );
        end if;
     else
        if syntax_check and then not suppress_word_quoting and then not inDQuote then
@@ -1691,36 +1704,7 @@ begin
           if inDollar then                                   -- in a $?
              dollarExpansion;                                -- finish it
           end if;
---put_line( "PSW: word = '" & word & "'" );
---put_line( "PSW: `    = " & startOfBQuote'img );
---put_line( "PSW: len  = " & length( word )'img );
---put_line( "PSW: slic = " & slice( word, startOfBQuote+1, length( word ) ) );
-         declare
-            -- to run this backquoted shell word, we need to save the current
-            -- script, compile the command into byte code, and run the commands
-            -- while capturing the output.  Substitute the results into the
-            -- shell word and restore the original script.
-            -- tempStr is the command to run in the back quotes.
-            tempStr : unbounded_string := to_unbounded_string( slice( word, startOfBQuote+1, length( word ) ) );
-            result : unbounded_string;
-         begin
---put_line( "PSW: tempStr ='" & to_string(tempStr)&"'" );
-            -- remove the command from the end of the word assembled so far
-            delete( word, startOfBQuote+1, length( word ) );
---put_line( "PSW: word (2) = '" & word & "'" );
-            -- If the backquoted commands don't end with a semi-colon, add one.
-            -- There is a chance that the semi-colon could be hidden by a
-            -- comment symbol (--).
-            if tail( tempStr, 1 ) /= ";" then
-               tempStr := tempStr & ";";
-            end if;
-            -- Run the command and attach the output to the word we are
-            -- assembling.
-            CompileRunAndCaptureOutput( tempStr, result );
---put_line( "PSW: res  = " & to_string(result) );
-            word := word & result;
---put_line( "PSW: word (3) = '" & word & "'" );
-         end;
+          backquoteSubstitution;
        end if;
        escapeGlobs := inBQuote;                            -- inside? do esc
 
@@ -1747,13 +1731,27 @@ begin
        if length( expansionVar ) > 0 then  -- TODO: needed?
           dollarExpansion;
           inDollarBraces := false;
-           expansionVar := null_unbounded_string;
+          expansionVar := null_unbounded_string;
+       end if;
+
+       -- Dollar Parenthesis handling
+
+    elsif ch = '(' and inDollar then
+       inDollarParen := true;
+       expansionVar := expansionVar & ch;
+    elsif inDollarParen and ch = '}' then
+       expansionVar := expansionVar & ch;
+       if length( expansionVar ) > 0 then  -- TODO: needed?
+          dollarExpansion;
+          inDollarParen := false;
+          expansionVar := null_unbounded_string;
        end if;
 
        -- Dollar sign?  Then begin collecting the letters to the substitution
        -- variable.
 
-    elsif ch = '$' and not (inSQuote and not expandInSingleQuotes) and not inBackslash and not inDollarBraces then
+    elsif ch = '$' and not (inSQuote and not expandInSingleQuotes) and
+       not inBackslash and not inDollarBraces and not inDollarParen then
        if inDollar then                                    -- in a $?
           if length( expansionVar ) = 0 then               -- $$ is special
              expansionVar := expansionVar & ch;            -- var is $
@@ -1775,15 +1773,11 @@ begin
        -- non-alpha/digit/underscore is read.  Pass through to allow the
        -- character to otherwise be treated normally.
 
-       if inDollar and not inDollarBraces then
+       if inDollar and not inDollarBraces and not inDollarParen then
           if ch /= '_' and
              ch not in 'A'..'Z' and
              ch not in 'a'..'z' and
              ch not in '0'..'9' then
-             -- ch /= '$' and
-             -- ch /= '?' and
-             -- ch /= '#' and
-             -- ch /= '!' then
              if length( expansionVar ) > 0 then  -- TODO: needed?
                 dollarExpansion;
              end if;

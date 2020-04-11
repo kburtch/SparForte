@@ -12,3 +12,5 @@ CHANGES SINCE 2.3
 
 5. New: Bourne shell dollar brace ${...} variable substitutions. [Docs needed, tests needed]
 
+6. New: Bourne shell dollar parenthesis $(...) command substitution. [Docs needed, tests needed]
+

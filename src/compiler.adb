@@ -1369,13 +1369,14 @@ begin
     if maybeStdErrRedirect then
        if ch = '>' then
           inRedirect := true;
+          redirectAmpersand := true;
+          maybeStdErrRedirect := false;
        elsif ch /= '2' then  -- should not be
           maybeStdErrRedirect := false;
        end if;
     end if;
 
     if inRedirect and ch /= '>' and ch /= '<' and ch /= '&' and ch /= '1' then
---put_line( "redirect done: exiting" ); -- DEBUG
        inRedirect := false;
        redirectAmpersand := false;
        lastpos := cmdpos - 1;
