@@ -14,3 +14,5 @@ CHANGES SINCE 2.3
 
 6. New: Bourne shell dollar parenthesis $(...) command substitution. [Docs needed, tests needed]
 
+7. New: Bource shell length expansion ${#VAR}.  [Docs needed, tests needed]
+

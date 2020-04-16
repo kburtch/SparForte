@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- AdaScript Language Scanner (Shell)                                       --
+-- AdaScript Language Parser (Bourne Shell)                                 --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ with ada.strings.unbounded;
 
 use  ada.strings.unbounded;
 
-package scanner_shell is
+package parser.decl.shell is
 
 
 -----------------------------------------------------------------------------
@@ -35,7 +35,8 @@ package scanner_shell is
 -----------------------------------------------------------------------------
 
 
-type aShellWord is new unbounded_string;
+-- this is currently defined in world and is a record
+-- type aShellWord is new unbounded_string;
 
 shellWord : aShellWord;
 
@@ -53,6 +54,20 @@ procedure getNextShellWord;
 
 -----------------------------------------------------------------------------
 --
+--  Legacy Subprograms
+--
+-----------------------------------------------------------------------------
+
+
+procedure ParseOneShellWord( wordType : out aShellWordType;
+   pattern, word : in out unbounded_string; First : boolean := false );
+
+procedure ParseShellWords( wordList : in out shellWordList.List; First : boolean := false );
+
+
+
+-----------------------------------------------------------------------------
+--
 --  Housekeeping
 --
 -----------------------------------------------------------------------------
@@ -62,4 +77,4 @@ procedure startShellScanner;
 
 procedure stopShellScanner;
 
-end scanner_shell;
+end parser.decl.shell;
