@@ -21,24 +21,51 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
+with ada.strings.unbounded,
+     gen_list,
+     scanner,
+     scanner.shell;
 
-use  ada.strings.unbounded;
+use  ada.strings.unbounded,
+     scanner,
+     scanner.shell;
 
 package parser.decl.shell is
 
-
------------------------------------------------------------------------------
---
---  Shell Words
---
------------------------------------------------------------------------------
-
-
--- this is currently defined in world and is a record
--- type aShellWord is new unbounded_string;
-
 shellWord : aShellWord;
+
+package bourneShellWordLists is new gen_list( anExpandedShellWord, ">","=" );
+
+
+semicolon_string : constant unbounded_string := to_unbounded_string( ";" );
+--   semi-colon, as an unbounded string
+
+verticalbar_string : constant unbounded_string := to_unbounded_string( "|" );
+--   vertical bar, as an unbounded string
+
+ampersand_string : constant unbounded_string := to_unbounded_string( "&" );
+--   ampersand, as an unbounded string
+
+redirectIn_string : constant unbounded_string := to_unbounded_string( "<" );
+--   less than, as an unbounded string
+
+redirectOut_string : constant unbounded_string := to_unbounded_string( ">" );
+--   greater than, as an unbounded string
+
+redirectAppend_string : constant unbounded_string := to_unbounded_string( ">>" );
+--   double greater than, as an unbounded string
+
+redirectErrOut_string : constant unbounded_string := to_unbounded_string( "2>" );
+--   '2' + greater than, as an unbounded string
+
+redirectErrAppend_string : constant unbounded_string := to_unbounded_string( "2>>" );
+--   '2' + double greater than, as an unbounded string
+
+redirectErr2Out_string : constant unbounded_string := to_unbounded_string( "2>&1" );
+--   '2' + greater than + ampersand and '1', as an unbounded string
+
+itself_string : constant unbounded_string := to_unbounded_string( "@" );
+--   itself, as an unbounded string
 
 
 -----------------------------------------------------------------------------
@@ -51,20 +78,17 @@ shellWord : aShellWord;
 procedure getNextShellWord;
 -- return the next shell word
 
+procedure addAdaScriptValue( wordList : in out bourneShellWordLists.List;
+  unbounded_val : unbounded_string );
+-- Add an AdaScript value to the shell word list as if it was a final shell
+-- word.
 
------------------------------------------------------------------------------
---
---  Legacy Subprograms
---
------------------------------------------------------------------------------
+procedure parseShellWord(
+      --rawWordValue : aRawShellWord;
+      bourneShellWordList : in out bourneShellWordLists.List );
 
-
-procedure ParseOneShellWord( wordType : out aShellWordType;
-   pattern, word : in out unbounded_string; First : boolean := false );
-
-procedure ParseShellWords( wordList : in out shellWordList.List; First : boolean := false );
-
-
+procedure parseUniqueShellWord( shellWord : in out anExpandedShellWord );
+-- A shell word that expands into exactly one word.
 
 -----------------------------------------------------------------------------
 --

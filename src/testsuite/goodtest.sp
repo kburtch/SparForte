@@ -2543,6 +2543,25 @@ echo '\';
 echo is;
 -- ^ compressed token ('is' is a reserved word)
 -- command echo;
+
+-- Path globbing tests
+
+touch /tmp/a;
+rm /tmp/a;
+touch /tmp/foo123;
+ls /tmp/foo123;
+ls /tmp/foo1*3;
+ls /t*p/foo1*3;
+rm /tmp/foo123;
+touch ./foo123;
+rm ./foo123;
+ls *goodte*t.sp;
+mkdir /tmp/a;
+touch /tmp/a/b;
+ls /tmp/a/*;
+rm /tmp/a/b;
+rmdir /tmp/a/b;
+
 touch ./__testfile;
 rm ./__testfile;
 touch "./__testfile";
@@ -2719,6 +2738,83 @@ pragma assert( s = "~" );
 
 s  := `echo "~";`;
 pragma assert( s = "~" );
+
+-- New features of shell rewrite: brace substitutions
+
+s  := `echo ${HOME}`;
+pragma assert( s = HOME );
+
+s  := `echo "${HOME}"`;
+pragma assert( s = HOME );
+
+s  := `echo '${HOME}'`;
+pragma assert( s = "${HOME}" );
+
+s  := `echo ${#HOME}`;
+pragma assert( numerics.value(s) = strings.length( HOME ) );
+
+s  := `echo ${0}`;
+pragma assert( s = command_line.command_name );
+
+s  := `echo ${#0}`;
+pragma assert( numerics.value(s) = strings.length( command_line.command_name ) );
+
+s  := `echo ${1}`;
+pragma assert( s = command_line.argument(1) );
+
+s  := `echo ${#1}`;
+pragma assert( numerics.value(s) = strings.length( command_line.argument(1) ) );
+
+s  := `echo ${#}`;
+pragma assert( numerics.value(s) = command_line.argument_count );
+
+s  := `echo ${?}`;
+pragma assert( numerics.value(s) = os.status );
+
+s  := `echo ${$}`;
+pragma assert( numerics.value(s) = os.pid );
+
+s  := `echo ${!}`;
+pragma assert( numerics.value(s) = os.last_child );
+
+s  := `echo ${true}`;
+pragma assert( s = "true" );
+
+b  := true;
+s  := `echo ${b}`;
+pragma assert( s = "true" );
+
+echo "`pwd`" > /tmp/foo ;
+s := `cat /tmp/foo`;
+rm /tmp/foo ;
+pragma assert( s = `pwd` );
+
+s  := "foo";
+s1 := `echo ${s:-bar}`;
+pragma assert( s1 = "foo" );
+
+s1 := `echo ${s:+bar}`;
+pragma assert( s1 = "bar" );
+
+s  := "";
+s1 := `echo ${s:-bar}`;
+pragma assert( s1 = "bar" );
+
+s1 := `echo ${s:+bar}`;
+pragma assert( s1 = "" );
+
+s  := "";
+s1 := `echo ${s:-}`;
+pragma assert( s1 = "" );
+
+s  := "abc";
+s1 := `echo ${s:+}`;
+pragma assert( s1 = "" );
+
+-- New features of shell rewrite: brace process substitutions
+
+s := `echo $(pwd)`;
+pragma assert( s = `pwd` );
 
 -- pathname expansion with a single / as directory
 

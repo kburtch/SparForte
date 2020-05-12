@@ -38,6 +38,7 @@ package compiler is
 
 immediate_word_delimiter     : character;
 immediate_sql_word_delimiter : character;
+immediate_symbol_delimiter   : character;
 high_ascii_escape            : character;
 eof_character                : character;
 

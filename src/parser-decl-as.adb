@@ -3132,7 +3132,7 @@ procedure ParseShellCommand is
   expr_val   : unbounded_string;
   expr_type  : identifier;
   ap         : argumentListPtr;          -- list of parameters to the cmd
-  paramCnt   : natural;                  -- number of parameters in ap
+  --paramCnt   : natural;                  -- number of parameters in ap
   firstParam : aScannerState;
   Success    : boolean;
   exportList : argumentListPtr;          -- exported C-string variables
@@ -3238,20 +3238,20 @@ procedure ParseShellCommand is
     free( ap );
   end clearParamList;
 
-  function isParenthesis return boolean is
+  --function isParenthesis return boolean is
   -- check for a paranthesis, skipping any white space in front.
-  begin
-     skipWhiteSpace;
-     return token = symbol_t and identifiers( token ).value.all = "(";
-     -- return script( cmdpos ) = '(';
-  end isParenthesis;
+  --begin
+  --   skipWhiteSpace;
+  --   return token = symbol_t and identifiers( token ).value.all = "(";
+  --   -- return script( cmdpos ) = '(';
+  --end isParenthesis;
 
   -- Word parsing and Parameter counting
 
   word         : unbounded_string;
   pattern      : unbounded_string;
   inBackground : boolean;
-  wordType     : aShellWordType;
+  --wordType     : aShellWordType;
 
   -- Pipeline parsing
 
@@ -3275,27 +3275,37 @@ procedure ParseShellCommand is
   result                      : aFileDescriptor;
   closeResult                 : int;
 
-    procedure externalCommandParameters( ap : out argumentListPtr; list : in out shellWordList.List ) is
+
+  -- EXTERNAL COMMAND PARAMETER
+  --
+  ----------------------------------------------------------------------------
+
+  procedure externalCommandParameters( ap : out argumentListPtr; list : in out bourneShellWordLists.List ) is
      len  : positive;
-     theWord : aShellWord;
+     theWord : anExpandedShellWord;
   begin
-     if shellWordList.Length( list ) = 0 then
+     if bourneShellWordLists.Length( list ) = 0 then
         ap := new argumentList( 1..0 );
         return;
      end if;
-     len := positive( shellWordList.Length( list ) );
+     len := positive( bourneShellWordLists.Length( list ) );
      ap := new argumentList( 1..len );
      for i in 1..len loop
-         shellWordList.Find( list, long_integer( i ), theWord );
-         ap( i ) := new string( 1..positive( length( theWord.word ) + 1 ) );
-         ap( i ).all := to_string( theWord.word ) & ASCII.NUL;
+         bourneShellWordLists.Find( list, long_integer( i ), theWord );
+         ap( i ) := new string( 1..positive( length( theWord ) + 1 ) );
+         ap( i ).all := to_string( theWord ) & ASCII.NUL;
      end loop;
   end externalCommandParameters;
 
+
+  -- CHECK REDIRECT FILE
+  --
+  -- Check for a missing file for a redirection operator.  If a file
+  -- was expected (according to the flags) but has not appeared, show
+  -- an appropriate error message.
+  ----------------------------------------------------------------------------
+
   procedure checkRedirectFile is
-    -- Check for a missing file for a redirection operator.  If a file
-    -- was expected (according to the flags) but has not appeared, show
-    -- an appropriate error message.
   begin
      if expectRedirectOutFile then
         err( "expected a file path for >" );
@@ -3310,11 +3320,308 @@ procedure ParseShellCommand is
      end if;
   end checkRedirectFile;
 
-  wordList   : shellWordList.List;
-  shellWord  : aShellWord;
+  wordList   : bourneShellWordLists.List;
 
   itselfNext : boolean := false;  -- true if a @ was encountered
   pipeStderr : boolean := false;  -- true stderr through pipeline
+  needToRedirectErr2Out : boolean := false;  -- true if we're doing 2>&1
+
+  --  PARSE SHELL REDIRECT TARGET
+  --
+  -- Read the next shell word argument, which should be the target for a
+  -- redirection.  Expand the raw shell word if necessary.  Updates shellWord
+  -- variable.
+  ----------------------------------------------------------------------------
+-- TODO: this could be a renaming
+
+  procedure ParseShellRedirectTarget( shellWord : out anExpandedShellWord ) is
+    rawWordValue : aRawShellWord;
+  begin
+    parseUniqueShellWord( shellWord );
+  end ParseShellRedirectTarget;
+
+  --  CHECK ADA 95 REDIRECTS
+  ----------------------------------------------------------------------------
+
+  procedure checkAda95Redirects is
+  begin
+     if onlyAda95 then
+        err( "command line redirection not allowed with " &
+             optional_bold( "pragma ada_95" ) & ".  Use set_output/input/error instead" );
+     end if;
+  end checkAda95Redirects;
+
+  --  PARSE SHELL OUTPUT REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellOutputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, ">" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedAppendFD > 0 then
+     err( "cannot redirect using both > and >>" );
+  elsif rshOpt then
+     err( "cannot redirect > in a " & optional_bold( "restricted shell" ) );
+  elsif pipe2Next then
+     err( "> file should only be after the last pipeline command" );
+  elsif isExecutingCommand then
+<<retry1>> redirectedOutputFd := open( to_string( targetPath ) & ASCII.NUL,
+              O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
+     -- Linux applies the umask to open()
+     if redirectedOutputFd < 0 then
+        if C_errno = EINTR then
+           goto retry1;
+        end if;
+        err( "Unable to open > file: " & OSerror( C_errno ) );
+     else
+<<retry2>> result := dup2( redirectedOutputFd, stdout );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry2;
+           end if;
+           err( "unable to set output: " & OSerror( C_errno ) );
+           closeResult := close( redirectedOutputFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedOutputFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellOutputRedirect;
+
+  --  PARSE SHELL INPUT REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellInputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, "<" );
+  ParseShellRedirectTarget( targetPath );
+  if pipeFromLast then
+     err( "< file should only be after the first pipeline command" );
+  elsif isExecutingCommand then
+<<retry4>> redirectedInputFd := open( to_string( targetPath ) & ASCII.NUL, O_RDONLY, 8#644# );
+     if redirectedInputFd < 0 then
+        if C_errno = EINTR then
+           goto retry4;
+        end if;
+        err( "Unable to open < file: " & OSerror( C_errno ) );
+     else
+<<retry5>> result := dup2( redirectedInputFd, stdin );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry5;
+           end if;
+           err( "unable to redirect input: " & OSerror( C_errno ) );
+           closeResult := close( redirectedInputFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedInputFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellInputRedirect;
+
+  --  PARSE SHELL OUTPUT APPEND REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellOutputAppendRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, ">>" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedOutputFD > 0 then
+     err( "cannot redirect using both > and >>" );
+  elsif pipe2Next then
+     err( ">> file should only be after the last pipeline command" );
+  elsif isExecutingCommand then
+<<retry7>> redirectedAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+     -- Linux applies the umask to open()
+     if redirectedAppendFd < 0 then
+        if C_errno = EINTR then
+           goto retry7;
+        end if;
+        err( "Unable to open >> file: " & OSerror( C_errno ) );
+     else
+<<retry8>> result := dup2( redirectedAppendFd, stdout );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry8;
+           end if;
+           err( "unable to append output: " & OSerror( C_errno ) );
+           closeResult := close( redirectedAppendFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedAppendFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellOutputAppendRedirect;
+
+  --  PARSE SHELL ERR OUTPUT REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellErrOutputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, "2>" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedErrAppendFD > 0 then
+<<retry10>> result := dup2( currentStandardError, stderr );  -- restore stderr
+     if result < 0 then                              -- check for error
+        if C_errno = EINTR then
+           goto retry10;
+        end if;
+        err( "unable to restore current error output: " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( redirectedErrOutputFd );        -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
+     redirectedErrOutputFD := 0;
+     err( "cannot redirect using both 2> and 2>>" );
+  elsif isExecutingCommand then
+     -- Note: redirecting 2> to the same file twice in a pipeline
+     -- is a race condition, but I don't know an easy way to
+     -- guarantee a file isn't reused as multiple paths may lead
+     -- to the same file.
+<<retry12>> redirectedErrOutputFd := open( to_string( targetPath ) & ASCII.NUL,
+               O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
+     -- Linux applies the umask to open()
+     if redirectedErrOutputFd < 0 then
+        if C_errno = EINTR then
+           goto retry12;
+        end if;
+        err( "Unable to open 2> file: " & OSerror( C_errno ) );
+     elsif rshOpt then
+        err( "cannot redirect 2> in a " & optional_bold( "restricted shell" ) );
+     else
+<<retry13>> result := dup2( redirectedErrOutputFd, stderr );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry13;
+           end if;
+           err( "unable to set error output: " & OSerror( C_errno ) );
+           closeResult := close( redirectedErrOutputFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedErrOutputFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellErrOutputRedirect;
+
+  --  PARSE SHELL ERR OUTPUT APPEND REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellErrOutputAppendRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, "2>>" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedErrOutputFD > 0 then
+<<retry15>> result := dup2( currentStandardError, stderr );  -- restore stderr
+      if result < 0 then                              -- check for error
+         if C_errno = EINTR then
+            goto retry15;
+         end if;
+         err( "unable to restore current error output: " & OSerror( C_errno ) );
+      end if;
+      closeResult := close( redirectedErrOutputFd );           -- done with file
+      -- close EINTR is a diagnostic message.  Do not handle.
+      redirectedErrOutputFD := 0;
+      err( "cannot redirect using both 2> and 2>>" );
+  elsif isExecutingCommand then
+<<retry17>> redirectedErrAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+      -- Linux applies the umask to open()
+      if redirectedErrAppendFd < 0 then
+         if C_errno = EINTR then
+            goto retry17;
+         end if;
+         err( "Unable to open 2>> file: " & OSerror( C_errno ) );
+      else
+<<retry18>> result := dup2( redirectedErrAppendFd, stderr );
+         if result < 0 then
+            if C_errno = EINTR then
+               goto retry18;
+            end if;
+            err( "unable to append error output: " & OSerror( C_errno ) );
+            closeResult := close( redirectedErrAppendFd );
+            -- close EINTR is a diagnostic message.  Do not handle.
+            redirectedErrAppendFd := 0;
+         end if;
+      end if;
+  end if;
+end ParseShellErrOutputAppendRedirect;
+
+  --  DO SHELL ERROR TO OUTPUT REDIRECT
+  --
+  -- This must be performed after we know if we're in a pipeline.
+  ----------------------------------------------------------------------------
+
+procedure DoShellErrorToOutputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  needToRedirectErr2Out := false;
+  if redirectedErrOutputFD > 0 then       -- no file for this one
+<<retry20>> result := dup2( currentStandardError, stderr );  -- restore stderr
+     if result < 0 then                              -- check for error
+        if C_errno = EINTR then
+           goto retry20;
+        end if;
+        err( "unable to restore current error output: " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( redirectedErrOutputFd );          -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
+     redirectedErrOutputFD := 0;
+     err( "cannot redirect using two of 2>, 2>> and 2>&1" );
+
+  elsif redirectedErrAppendFD > 0 then       -- no file for this one
+<<retry22>> result := dup2( currentStandardError, stderr );  -- restore stderr
+     if result < 0 then                               -- check for error
+        if C_errno = EINTR then
+           goto retry22;
+        end if;
+        err( "unable to restore current error output: " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( redirectedErrAppendFd );   -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
+     redirectedErrAppendFD := 0;
+     err( "cannot redirect using two of 2>, 2>> and 2>&1" );
+     -- KB: debugging
+     --elsif pipe2Next then
+     --   err( "2>&1 file should only be after the last pipeline command" );
+  elsif isExecutingCommand then
+     -- When redirecting standard error to standard output, how we
+     -- do it depends on the context.  If we are in a pipeline,
+     -- the jobs package must redirect both standard error and
+     -- output to the pipe.  If we tried to redirect it here,
+     -- the pipe hasn't been opened yet and there would nowhere to redirect
+     -- to. If we are not in a pipeline, or are the last command,
+     -- we redirect it here.
+    if pipe2Next then
+       pipeStderr := true; -- jobs package will handle it
+    else
+-- It looks wrong but, yes, active stderr to active stdout.
+<<retry24>> redirectedErrOutputFd := dup2( stdout, stderr );
+        if redirectedErrOutputFd < 0 then
+           if C_errno = EINTR then
+              goto retry24;
+           end if;
+           redirectedErrOutputFd := 0;
+           err( "unable to set error output: " & OSerror( C_errno ) );
+        end if;
+     end if;
+  end if;
+end DoShellErrorToOutputRedirect;
+
+  rawWordValue : aRawShellWord;
+  shellWord  : anExpandedShellWord;
+  -- TODO: refactor shellWord?
+
+  haveAllParameters : boolean;
+
 begin
 
   -- ParseGeneralStatement just did a resumeScanning.  The token should
@@ -3346,7 +3653,21 @@ begin
   -- improved in the future.
 
      cmdNameToken := token;                       -- avoid prob below w/discard
-     ParseOneShellWord( wordType, pattern, cmdName, First => true );
+
+     -- For built-ins like cd, the command is the token name.  Otherwise, we'll
+     -- have to treat the token as a shell word.
+     if token >= env_t and token <= delete_t then
+        cmdName := identifiers( token ).name;
+        getNextToken;
+     elsif identifiers( token ).kind /= new_t and then getBaseType( identifiers( token ).kind ) = command_t then
+        cmdName := identifiers( token ).value.all;
+        identifiers( token ).wasReferenced := true;
+        getNextToken;
+     else
+        parseUniqueShellWord( shellWord );
+        cmdName := unbounded_string( shellWord );
+     end if;
+
      itself := cmdName;                                    -- this is new @
      pipeStderr := false;
 
@@ -3356,16 +3677,18 @@ begin
 <<restart_with_itself>>
 
   inBackground := false;                                 -- assume fg command
-  paramCnt := 0;                                         -- params unknown
+  --paramCnt := 0;                                         -- params unknown
 
-  if isParenthesis then                                  -- parenthesis?
-     -- getNextToken;                                       -- AdaScript syntax
+  if token = symbol_t and identifiers( token ).value.all = "(" then                                  -- parenthesis?
+     -- getNextToken;                                    -- AdaScript syntax
      expect( symbol_t, "(" );                            -- skip paraenthesis
      markScanner( firstParam );                          -- save position
      while not error_found and token /= eof_t loop       -- count parameters
         ParseExpression( expr_val, expr_type );
-        shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
-        paramCnt := paramCnt + 1;
+        -- shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
+        -- bourneShellWordLists.Queue( wordList, anExpandedShellWord( expr_val ) );
+        addAdaScriptValue( wordList, expr_val );
+        --paramCnt := paramCnt + 1;
         if Token = symbol_t and then identifiers( Token ).value.all = "," then
            getNextToken;
         else
@@ -3402,327 +3725,127 @@ begin
      -- markScanner( firstParam );
      word := null_unbounded_string;
 
-     -- Some arguments, | or @ ? go get them...
-     if token /= symbol_t or else identifiers( token ).value.all /= ";" then
-        ParseShellWords( wordList, First => false );
+     -- Shell words are not the only thing returned by the compiler, as there
+     -- may be numbers, symbols, etc.  The compiler doesn't always know how
+     -- to categorize tokens without the ability to look ahead.
+
+  ---
+
+  -- If there are no more shell words, then get the next token.
+  -- If it's a semi-colon, then the we're done parsing the shell
+  -- command.  Otherwise, if it's anything other than a shell
+  -- symbol, then treat it as a shell word and expand it.
+
+  -- First parameter
+
+  haveAllParameters := false;
+  while not haveAllParameters and not error_found and not done loop
+
+    -- if bourneShellWordLists.IsEmpty(wordList) and not error_found and not done then
+    if not error_found and not done then
+       loop
+--put_token; -- DEBUG
+          declare
+             token_value : unbounded_string renames identifiers( token ).value.all;
+          begin
+             if token = eof_t then
+                expectSemicolon;
+                haveAllParameters := true;
+                exit;
+             elsif token = symbol_t then
+                -- if these exist, then the individual command is ended.
+                if token_value = "|" then
+                   if onlyAda95 then
+                      err( "pipelines not allowed with " & optional_bold( "pragma ada_95" ) );
+                   end if;
+                   pipe2next := true;
+                   haveAllParameters := true;
+                   getNextToken;
+                   exit;
+                elsif token_value = "@" then
+                   if onlyAda95 then
+                      err( "@ not allowed with " & optional_bold( "pragma ada_95" ) );
+                   end if;
+                   itselfNext := true;
+                   haveAllParameters := true;
+                   getNextToken;
+                   exit;
+                elsif token_value = ";" then
+                   haveAllParameters := true;
+                   exit;
+                elsif token_value = "&" then
+                   --if not bourneShellWordLists.IsEmpty( wordList ) then
+              -- if bourneShellWordLists.aListIndex( paramCnt ) /= bourneShellWordLists.Length( wordList ) then
+                   --   err( "unexpected arguments after &" );
+                   --end if;
+                   inbackground := true;
+                   if pipe2Next then
+                      err( "no & - piped commands are automatically run in the background" );
+                   elsif pipeFromLast then
+                      err( "no & - final piped command always runs in the foreground" );
+                   end if;
+                   haveAllParameters := true;
+                   expect( symbol_t, "&" );
+                   if token /= symbol_t or identifiers( token ).value.all /= ";" then
+                      err( "unexpected arguments after &" );
+                   end if;
+                   exit;
+                 -- bourneShellWordLists.Clear( wordList, long_integer( paramCnt ) );
+                 -- paramCnt := paramCnt-1;
+               end if;
+
+               --rawWordValue := aRawShellWord( token_value );
+               parseShellWord( wordList );
+
+             elsif token = shell_symbol_t then
+
+               -- 2>&1 is not performed here because we need to know if we're
+               -- in a pipeline first.
+
+               if token_value = redirectOut_string then              -- > redirection
+                  ParseShellOutputRedirect;
+               elsif token_value = redirectIn_string then            -- < redirection
+                  ParseShellInputRedirect;
+               elsif token_value = redirectAppend_string then       -- >> redirection
+                  ParseShellOutputAppendRedirect;
+               elsif token_value = redirectErrOut_string then       -- 2> redirection
+                  ParseShellErrOutputRedirect;
+               elsif token_value = redirectErrAppend_string then   -- 2>> redirection
+                 ParseShellErrOutputAppendRedirect;
+               elsif token_value = redirectErr2Out_string then     -- 2>&1 redirection
+                 expect( shell_symbol_t, "2>&1" );
+                 needToRedirectErr2Out := true;
+               end if;
+           -- paramCnt := paramCnt+1;
+
+          -- TODO: review this.
+          -- Not a symbol or a shell symbol.
+             else
+            --rawWordValue := aRawShellWord( token_value );
+               parseShellWord( wordList );
+             end if;
+          end; -- token_value
+        --end if;
+        end loop;
      end if;
-     for i in 1..shellWordList.Length( wordList ) loop
-        shellWordList.Find( wordList, i, shellWord );
-        if shellWord.wordType = semicolonWord then
-           shellWordList.Clear( wordList, i );
-           exit;
-        elsif shellWord.wordType = pipeWord then
-           shellWordList.Clear( wordList, i );
-           pipe2Next := true;
-           exit;
-        elsif shellWord.wordType = itselfWord then
-           shellWordList.Clear( wordList, i );
-           itselfNext := true;
-        elsif error_found then
-           exit;
-        end if;
-        if shellWord.wordType = redirectOutWord or
-           shellWord.wordType = redirectInWord or
-           shellWord.wordType = redirectAppendWord or
-           shellWord.wordType = redirectErrOutWord or
-           shellWord.wordType = redirectErrAppendWord then
-           if onlyAda95 then
-              err( "command line redirection not allowed with " &
-                   optional_bold( "ada_95" ) & ".  Use set_output / set_input instead" );
-           end if;
-           expectRedirectOutFile := true;
-        elsif expectRedirectOutFile then           -- redirect filenames
-           expectRedirectOutFile := false;         -- not in param list
-        elsif wordType = redirectErr2OutWord then
-           null;                                   -- no file needed
-        end if;
-     end loop;
-     if pipe2Next and onlyAda95 then
-        err( "pipelines not allowed with " & optional_bold( "pragma ada_95" ) );
-     end if;
-     if shellWordList.length( wordList ) > 0 and onlyAda95 then
+   end loop;
+
+-- Unlike the previous version, we're not processing the words first
+
+  -- Ada 95 does not allow Bourne shell parameters after the command.
+
+  if bourneShellWordLists.length( wordList ) > 0 then
+     if onlyAda95 then
         err( "Bourne shell parameters not allowed with " &
              optional_bold( "pragma ada_95" ) );
      end if;
+   end if;
 
-     -- create loop
-     --resumeScanning( firstParam );
+end if; -- AdaScript vs Bourne Shell
 
-     -- at this point, the token is the first "word".  Discard it if it is
-     -- an unused identifier.
-
-     -- At this point, wordList contains a list of shell word parameters for
-     -- the command.  This includes redirections, &, and so forth.  Next,
-     -- examine all shell arguments, interpreting them and removing
-     -- them from the list.  Set up all I/O redirections as required.  When
-     -- this loop is finished, only the command parameters should remain the
-     -- word list.
-
-     paramCnt := 1;
-     while long_integer( paramCnt ) <= shellWordList.Length( wordList ) loop
-        shellWordList.Find( wordList, long_integer( ParamCnt ), shellWord );
--- put_line( "  processing = " & paramCnt'img & " - " & shellWord.pattern & " / " & shellWord.word & "/" & shellWord.wordType'img );
-
-        -- There is no check for multiple filenames after redirections.
-        -- This behaviour is the same as BASH: "echo > t.t t2.t" will
-        -- write t2.t to the file t.t in both BASH and BUSH.
-
-        if expectRedirectOutFile then             -- expecting > file?
-           expectRedirectOutFile := false;
-           if redirectedAppendFD > 0 then
-              err( "cannot redirect using both > and >>" );
-           elsif rshOpt then
-              err( "cannot redirect > in a " & optional_bold( "restricted shell" ) );
-           elsif pipe2Next then
-              err( "> file should only be after the last pipeline command" );
-           elsif isExecutingCommand then
-<<retry1>> redirectedOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
-                 O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
-              if redirectedOutputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry1;
-                 end if;
-                 err( "Unable to open > file: " & OSerror( C_errno ) );
-              else
-<<retry2>>       result := dup2( redirectedOutputFd, stdout );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry2;
-                    end if;
-                    err( "unable to set output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedOutputFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedOutputFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectInFile then
-           expectRedirectInFile := false;         -- expecting < file?
-           if pipeFromLast then
-              err( "< file should only be after the first pipeline command" );
-           elsif isExecutingCommand then
-<<retry4>>    redirectedInputFd := open( to_string( shellWord.word ) & ASCII.NUL, O_RDONLY, 8#644# );
-              if redirectedInputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry4;
-                 end if;
-                 err( "Unable to open < file: " & OSerror( C_errno ) );
-              else
-<<retry5>>       result := dup2( redirectedInputFd, stdin );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry5;
-                    end if;
-                    err( "unable to redirect input: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedInputFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedInputFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectAppendFile then
-           expectRedirectAppendFile := false;
-           if redirectedOutputFD > 0 then
-              err( "cannot redirect using both > and >>" );
-           elsif pipe2Next then
-              err( ">> file should only be after the last pipeline command" );
-           elsif isExecutingCommand then
-<<retry7>>    redirectedAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
-              if redirectedAppendFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry7;
-                 end if;
-                 err( "Unable to open >> file: " & OSerror( C_errno ) );
-              else
-<<retry8>>       result := dup2( redirectedAppendFd, stdout );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry8;
-                    end if;
-                    err( "unable to append output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedAppendFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedAppendFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectErrOutFile then             -- expecting 2> file?
-           expectRedirectErrOutFile := false;
-           if redirectedErrAppendFD > 0 then
-<<retry10>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
-                 if C_errno = EINTR then
-                    goto retry10;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrOutputFd );        -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrOutputFD := 0;
-              err( "cannot redirect using both 2> and 2>>" );
-           elsif isExecutingCommand then
-              -- Note: redirecting 2> to the same file twice in a pipeline
-              -- is a race condition, but I don't know an easy way to
-              -- guarantee a file isn't reused as multiple paths may lead
-              -- to the same file.
-<<retry12>>   redirectedErrOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
-                 O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
-              if redirectedErrOutputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry12;
-                 end if;
-                 err( "Unable to open 2> file: " & OSerror( C_errno ) );
-              elsif rshOpt then
-                 err( "cannot redirect 2> in a " & optional_bold( "restricted shell" ) );
-              else
-<<retry13>>      result := dup2( redirectedErrOutputFd, stderr );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry13;
-                    end if;
-                    err( "unable to set error output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedErrOutputFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedErrOutputFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectErrAppendFile then
-           expectRedirectErrAppendFile := false;
-           if redirectedErrOutputFD > 0 then
-<<retry15>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
-                 if C_errno = EINTR then
-                    goto retry15;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrOutputFd );           -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrOutputFD := 0;
-              err( "cannot redirect using both 2> and 2>>" );
-           elsif isExecutingCommand then
-<<retry17>>   redirectedErrAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
-              if redirectedErrAppendFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry17;
-                 end if;
-                 err( "Unable to open 2>> file: " & OSerror( C_errno ) );
-              else
-<<retry18>>      result := dup2( redirectedErrAppendFd, stderr );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry18;
-                    end if;
-                    err( "unable to append error output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedErrAppendFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedErrAppendFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectOutWord then     -- >? expect a file?
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectOutFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectInWord then      -- < ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectInFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectAppendWord then  -- >> ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectAppendFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectErrOutWord then  -- 2> ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectErrOutFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectErrAppendWord then  -- 2>> ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectErrAppendFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectErr2OutWord then  -- expecting 2>&1 file?
-           if redirectedErrOutputFD > 0 then       -- no file for this one
-<<retry20>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
-                 if C_errno = EINTR then
-                    goto retry20;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrOutputFd );          -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrOutputFD := 0;
-              err( "cannot redirect using two of 2>, 2>> and 2>&1" );
-           elsif redirectedErrAppendFD > 0 then       -- no file for this one
-<<retry22>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                               -- check for error
-                 if C_errno = EINTR then
-                    goto retry22;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrAppendFd );   -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrAppendFD := 0;
-              err( "cannot redirect using two of 2>, 2>> and 2>&1" );
-           -- KB: debugging
-           --elsif pipe2Next then
-           --   err( "2>&1 file should only be after the last pipeline command" );
-           else
-              -- When redirecting standard error to standard output, how we
-              -- do it depends on the context.  If we are in a pipeline,
-              -- the jobs package must redirect both standard error and
-              -- output to the pipe.  If we are not in a pipeline, or
-              -- are the last command, we redirect it here.
-              if pipe2Next then
-                 pipeStderr := true; -- jobs package will handle it
-              else
-<<retry24>>      redirectedErrOutputFd := dup2( currentStandardOutput, stderr );
-                 if redirectedErrOutputFd < 0 then
-                    if C_errno = EINTR then
-                       goto retry24;
-                    end if;
-                    redirectedErrOutputFd := 0;
-                    err( "unable to set error output: " & OSerror( C_errno ) );
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = ampersandWord then       -- & ?
-           if shellWordList.aListIndex( paramCnt ) /= shellWordList.Length( wordList ) then
-              err( "unexpected arguments after &" );
-           end if;
-           inbackground := true;
-           if pipe2Next then
-              err( "no & - piped commands are automatically run in the background" );
-           elsif pipeFromLast then
-              err( "no & - final piped command always runs in the foreground" );
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        end if;
-        paramCnt := paramCnt+1;
-     end loop;
-     checkRedirectFile;                               -- check for missing file
-
-  end if;
+if needToRedirectErr2Out then
+   DoShellErrorToOutputRedirect;
+end if;
 
   -- End of Parameter Parsing
 
@@ -3734,6 +3857,8 @@ begin
      exportVariables;                                       -- make environment
 
      -- Create a list of C-strings for the parameters
+
+-- TODO: wordList is only partial
 
      externalCommandParameters( ap, wordList );
 
@@ -3851,7 +3976,7 @@ begin
 
   if ap /= null then                                        -- parameter list?
      clearParamList;                                        -- discard it
-     shellWordList.Clear( wordList );
+     bourneShellWordLists.Clear( wordList );
   end if;
 
   -- Comand complete.  Look for next in pipeline (if any).
@@ -3870,6 +3995,8 @@ begin
      itselfNext := false;
      goto restart_with_itself;
   end if;
+
+  bourneShellWordLists.clear( wordList );
 end ParseShellCommand;
 
 

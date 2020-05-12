@@ -158,6 +158,9 @@ begin
   elsif token = charlit_t then
      err( optional_bold( "shell word" ) & " expected, not a " &
           optional_bold( "character literal" ) );
+  elsif token = shell_symbol_t then
+     err( optional_bold( "shell word" ) & " expected, not a " &
+          optional_bold( "shell symbol" ) );
   -- This should be impossible as a backlit would be scanned as a word token
   --elsif token = backlit_t then
   --   err( optional_bold( "shell word" ) & " expected, not a " &
@@ -224,6 +227,9 @@ begin
      elsif token = symbol_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "symbol" ) );
+     elsif token = shell_symbol_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "shell symbol" ) );
      elsif identifiers( token ).field_of /= eof_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "field of a record type" ) );
@@ -297,6 +303,9 @@ begin
      elsif token = symbol_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "symbol" ) );
+     elsif token = shell_symbol_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "shell symbol" ) );
      elsif identifiers( token ).field_of /= eof_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "field of a record type" ) );
@@ -387,6 +396,9 @@ begin
      elsif token = symbol_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "symbol" ) );
+     elsif token = shell_symbol_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "shell symbol" ) );
      elsif isLocal( token ) then
         err( "already declared " &
              optional_bold( to_string( identifiers( token ).name ) ) );
@@ -461,6 +473,9 @@ begin
      elsif token = symbol_t then
         err( optional_bold( "identifier" ) & " expected, not a " &
              optional_bold( "symbol" ) );
+     elsif token = shell_symbol_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "shell symbol" ) );
      elsif isLocal( token ) then
         err( "already declared " &
              optional_bold( to_string( identifiers( token ).name ) ) );
@@ -531,6 +546,9 @@ begin
   elsif token = symbol_t then
      err( optional_bold( "identifier" ) & " expected, not a " &
           optional_bold( "symbol" ) );
+     elsif token = shell_symbol_t then
+        err( optional_bold( "identifier" ) & " expected, not a " &
+             optional_bold( "shell symbol" ) );
   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
      -- if we're skipping a block, it doesn't matter if the identifier is
      -- declared, but it does if we're executing a block or checking syntax
@@ -620,6 +638,9 @@ begin
   elsif token = symbol_t then
      err( optional_bold( "identifier" ) & " expected, not a " &
           optional_bold( "symbol" ) );
+  elsif token = shell_symbol_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "shell symbol" ) );
   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
      -- if we're skipping a block, it doesn't matter if the identifier is
      -- declared, but it does if we're executing a block or checking syntax

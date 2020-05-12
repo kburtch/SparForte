@@ -45,6 +45,31 @@ package scanner is
 optionOffset: natural := 0;     -- offset to script parameters
 
 
+-----------------------------------------------------------------------------
+--
+--  Shell Words
+--
+-- Shell words, because they are globbed into multiple words at run-time, must
+-- be handled by a separate process than the main language.  These types are
+-- provided here for the parsers that consume shell words.
+--
+-- Data types for shell words are different versions of standard unbounded
+-- strings.  A drawback is that functions like to_string become ambiguous,
+-- being provided by all of these types.
+-----------------------------------------------------------------------------
+
+subtype aBourneShellWord is unbounded_string;            -- a root type
+type aRawShellWord is new aBourneShellWord;              -- unprocessed word
+type aGlobShellWord is new aBourneShellWord;             -- glob-able word
+type anExpandedShellWord is new aBourneShellWord;        -- fully expanded word
+
+-- Useful constants for shell words with null strings.
+
+nullRawShellWord : constant aRawShellWord := aRawShellWord( null_unbounded_string );
+nullGlobShellWord : constant aGlobShellWord := aGlobShellWord( null_unbounded_string );
+nullExpandedShellWord : constant anExpandedShellWord := anExpandedShellWord( null_unbounded_string );
+
+
 ------------------------------------------------------------------------------
 -- Scripts
 ------------------------------------------------------------------------------
@@ -121,6 +146,9 @@ os_system_t       : identifier;
 
 function get_script_execution_position( msg : string ) return unbounded_string;
 -- get the script position but do not cause an error
+
+procedure err_shell( msg : string; wordOffset : natural );
+-- a shell error message with an offset into the token (shell word)
 
 procedure err( msg : string );
 -- if this is the first error encountered, display the message

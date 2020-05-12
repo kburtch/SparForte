@@ -14,5 +14,23 @@ CHANGES SINCE 2.3
 
 6. New: Bourne shell dollar parenthesis $(...) command substitution. [Docs needed, tests needed]
 
-7. New: Bource shell length expansion ${#VAR}.  [Docs needed, tests needed]
+7. New: Bourne shell length expansion ${#VAR}.  [Docs needed, tests needed]
+
+8. New: Bourne shell ~user is equivalent to /home/user.
+
+9. Refactor: Bourne shell parsing completely rewritten to provide the foundation for certain new features.
+
+10. Fix: (shell rewrite) high-ascii characters in SQL commands. [testing needed]
+
+11. Fix: (shell rewrite) "Word" can be used as a variable name.
+
+12. Fix: (shell rewrite) 2>&1 fixed to redirect in a pipeline.
+
+13. Fix: (shell rewrite) 2>&1 no longer redirects output for all commands in the pipeline, to match Bourne shell behaviour.
+
+14. New: (shell rewrite) ${:-}, ${:+} and ${:?}. [testing] [docs]
+
+15. New: (shell rewrite) Glob patterns are allowed in directories in a path (e.g. ls /home/k*/*.txt is now possible). [docs]
+
+16. Change: cd, env and unset no longer show the variable name in maintenance mode.  Because these are shell commands, an accidental use of a variable expansion could reveal values in production.
 

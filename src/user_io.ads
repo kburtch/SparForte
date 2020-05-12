@@ -86,6 +86,10 @@ function bold( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in bold characters
 
+function toProtectedValue( s : unbounded_string ) return string;
+-- combines optional bold, secure data and escaped.  A null value will
+-- return double single quotes.
+
 procedure put_bold( s : string );
 -- display a string in emphasized characters
 

@@ -4,7 +4,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
-tion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>SparForte - Reference - Bourne Shell Word Expansions</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
@@ -114,6 +113,78 @@ variables.</p>
 
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Expansion</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME}/a.txt</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home/usr/a.txt</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Default</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME:-default}/a.txt</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home/usr/a.txt</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Replace</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME:+default}/a.txt</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home/usr/a.txt</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Default Check</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME:?}/a.txt</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home/usr/a.txt</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Default Assignment</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME:=new}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>-</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>Not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Length</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${#HOME}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>9</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
       <td style="vertical-align: top;"><span>Command Substitution</span><br>
 
       </td>
@@ -163,12 +234,9 @@ variables.</p>
   </tbody>
 </table>
 
-<p>There is no brace expansion, arithmetic expansion or process
-substitution.&nbsp; Some features support only a subset of the BASH
-features.&nbsp; For example, many of the special $ substitutions
-(${...}, $(...) and others) are not implemented.&nbsp; Otherwise, the
-basic Bourne shell features implemented in SparForte conform to
-the POSIX standard.</p>
+<p>There is no arithmetic expansion
+.&nbsp; Some features support only a subset of the BASH
+features.</p>
 
 <h3>Spaces and Dollar Expansions</h3>
 
@@ -219,6 +287,10 @@ t := " hello "; -- identifier of the type string<br>
         </div>
         </div>
         </center>
+
+<h3>Brace Expansions</h3>
+
+<p>The colon is not optional with :-, :+ and :? because testing for unset variables is meaningless in SparForte.</p>
 
 <br>&nbsp;
 
