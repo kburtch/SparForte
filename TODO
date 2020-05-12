@@ -11,83 +11,83 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- redirection
+- Fix: redirection
   - characters before a redirection
   - when i tried git branch 2>/dev/null, standard output was redirected
   - 2> wasn't allowed after the first command in a pipeline but should be
-- pack - script is not exiting on a return, but was working before
+- Fix: pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
-- manual test cases -  can HTML be embedded as CDATA in junit xml?
-- improving shell features
-- incomplete casting tests
+- Change: manual test cases -  can HTML be embedded as CDATA in junit xml?
+- New: improving shell features
+  - Verify: review and fix of shell features
+- Verify: incomplete casting tests
 
-- for web to be secure, you can output raw strings to the console.
+- Research: for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
-- generic/parameterized types
+- Verify: generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
-- testing validator project I noticed
+- Fix: testing validator project I noticed
   - under some conditions, the breakout prompt my have end-of-file and be
     interpreted as a return to resume execution.  I have not identified what
     those conditions are.
-- recent Ada checks which might be useful
+- Verify: recent Ada checks which might be useful
   - run time: failure to assign to an out parameter.  e.g. define
     the initial value as eof_t and check for it on subprogram end
-- review and fix of shell features
-* waitToReveal sometimes throws an unexpected exception
-- raise in one of my exception handlers in SSDS did not function properly...
+* Verify: waitToReveal sometimes throws an unexpected exception
+- Verify: raise in one of my exception handlers in SSDS did not function properly...
   investigate what happened.
 - the new type qualifiers system and renaming
-  - disabling qualifiers when tests are underway and special regression
+  - Verify: disabling qualifiers when tests are underway and special regression
     tests for the same. (tests)
-  - should subprogram parameters allow qualifiers?
-- affirm blocks
-    - test if HTML escaping can be implemented in an affirm block
-    - should affirm blocks have an expression short-form?
-    - should affirm blocks have storage specifications?
-    - move DoContracts to parser_aux?
-    - constant limited?
-  - copy
-    - copying arrays
-    - copying records
-      - full copy of arrays and records
-      - document new keyword copying
-      - was wasWritten obsolete with writtenByThread?
-    - the affect of renamings?
-    - this probably need to be run-time
+  - Research: should subprogram parameters allow qualifiers?
+- Research: affirm blocks
+    - Research: test if HTML escaping can be implemented in an affirm block
+    - Research: should affirm blocks have an expression short-form?
+    - Research: should affirm blocks have storage specifications?
+    - Research: move DoContracts to parser_aux?
+    - Research: constant limited?
+  - New: copy of aggregates and renamings
+    - New: copying arrays
+    - New: copying records
+      - New: full copy of arrays and records
+      - New: document new keyword copying
+      - Research: was wasWritten obsolete with writtenByThread?
+    - Verify: the affect of renamings?
+    - Verify: this probably need to be run-time
 - unstructured scripts
-  - additional examples to be added to automated tests
-- static expressions
-- csv support
-     - csv_replace - single quote, cr+lf ending
-* if the system shutdown, BDB locks are left in place
-  - these need to be recovered using txn_recover and txn_abort, possibly
+  - Docs: additional examples to be added to automated tests
+- Refactor: static expressions
+- Change: csv support
+     - Change: csv_replace - single quote, cr+lf ending
+* Fix: if the system shutdown, BDB locks are left in place
+  - Fix: these need to be recovered using txn_recover and txn_abort, possibly
     whenever a BDB file is opened.  See
     https://apps.state.or.us/tech/berkeleyDB/api_c/txn_recover.html
-- enforcing strong types and/or contracts
-  - should import require contracts rather than custom type?
+- Research: enforcing strong types and/or contracts
+  - Research: should import require contracts rather than custom type?
 - unsorted/misc
-    - check that x : arraytype := (x) works correctly, both with specs
+    - Verify: check that x : arraytype := (x) works correctly, both with specs
       and normal declaration.
-    - finish manual test pragmas
-    - generally, we need to identify built-in types.  It's not enough that
+    - Verify: finish manual test pragmas
+    - Change: generally, we need to identify built-in types.  It's not enough that
       they are descended from universals.  We need to understand what a
       base type is.  That is, the difference from a standard package type.
-    - an early return from the main program doesn't pull the final block,
+    - Verify: an early return from the main program doesn't pull the final block,
       even if the template isn't parsed.
-    - control-c is propogating to all child processes when it shouldn't
+    - Fix: control-c is propogating to all child processes when it shouldn't
       - check SIGPIPE handling also
-    - btree_io.cursor should have the key type assigned when declared.  Why did
+    - Research: btree_io.cursor should have the key type assigned when declared.  Why did
       I choose not to?  What's the reason?
-    - pragma risk_tolerance(amt) or pragma optimize( reliability )
+    - Research: pragma risk_tolerance(amt) or pragma optimize( reliability )
       - perhaps optimize is too simplistic: these need to be ranked/rated
         (like pragma emphasize/deemphasize).
       - forcing static side-effect checking
-    - spell checking comments (as Windows does?)  must whitelist all
+    - Research: spell checking comments (as Windows does?)  must whitelist all
       identifiers.  See /usr/include/aspell.h for interface to spell checker.
-    - a variable not declared is said to be declared but not used (this_run_on in
+    - Verify: a variable not declared is said to be declared but not used (this_run_on in
       ssds project) - could not duplicate in simple test
-    - is close_on_exec useful?
+    - Research: is close_on_exec useful?
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
