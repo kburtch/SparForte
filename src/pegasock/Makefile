@@ -2,14 +2,14 @@
 all:
 	cc -c -O2 -Wall -Werror -fstack-protector -D_FORTIFY_SOURCE=2 -c c_tinyserve.c
 	cc -c -O2 -Wall -fstack-protector -D_FORTIFY_SOURCE=2 c_errno.c
-	gnatmake -c -I../ -gnatfoN  -gnatVaep -gnateEeAeEeF tester.adb
+	gnatmake -c -I../ -gnatfoN  -gnatVaep -gnateEeEeF tester.adb
 	gnatbind -x -I../ tester.ali
 	gnatlink tester.ali c_errno.o c_tinyserve.o -I../
 
 test:
 	cc -c -O2 -Wall -Werror -fstack-protector -D_FORTIFY_SOURCE=2 -c c_tinyserve.c
 	cc -c -O2 -Wall -Werror -fstack-protector -D_FORTIFY_SOURCE=2 c_errno.c
-	gnatmake -c -I../ -gnatfao  -gnatVaep -gnateEeAeEeF tester.adb
+	gnatmake -c -I../ -gnatfao  -gnatVaep -gnateEeEeF tester.adb
 	gnatbind -x -I../ tester.ali
 	gnatlink tester.ali c_errno.o c_tinyserve.o
 	./tester
