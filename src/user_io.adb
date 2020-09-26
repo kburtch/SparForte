@@ -139,6 +139,17 @@ begin
   put( term( bold ) & s & term( normal ) );
 end put_inverse;
 
+function toProtectedValue( s : unbounded_string ) return string is
+-- combines optional bold, secure data and escaped.  A null value will
+-- return double single quotes.
+begin
+  if s = "" then
+     return "''";
+  else
+     return optional_bold( toSecureData( to_string( toEscaped( s ) ) ) );
+  end if;
+end toProtectedValue;
+
 -----------------------------------------------------------------------------
 -- PUT TRACE
 --

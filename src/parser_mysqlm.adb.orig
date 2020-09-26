@@ -1553,7 +1553,7 @@ begin
               fetch( Q );
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
-                    width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                    width := length( ada.strings.unbounded.to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                     if width > 256 then
                        width := 256;
                     end if;
@@ -1590,7 +1590,7 @@ begin
            for i in 1..columns( Q ) loop
                put(
                   to_string(
-                      Head(
+                      ada.strings.unbounded.Head(
                           to_unbounded_string(
                               column_name( Q, Column_Index_Type( i ) ) )
                       , columnWidths( i ) )
@@ -1603,7 +1603,7 @@ begin
            new_line;
            put( "-" );
            for i in 1..columns( Q ) loop
-               put( to_string( columnWidths( i ) * "-" ) );
+               put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
                if i /= columns( Q ) then
                   put( "-+-" );
                else
@@ -1623,7 +1623,7 @@ begin
             for i in 1..columns( Q ) loop
                 if tabularDisplay then
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    else
                       put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
@@ -1632,7 +1632,7 @@ begin
                       put( " | " );
                    end if;
                 else
-                   put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
                    put( ": " );
                    if is_null( Q, Column_Index_Type( i ) ) then
                       put( inverse( "NULL" ) );
@@ -1778,11 +1778,11 @@ begin
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
                     if i = 2 then -- column 2 is table type
-                       width := length( to_unbounded_string( mysql_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( mysql_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                     elsif i = 3 then -- column 3 is engine type
-                       width := length( to_unbounded_string( mysql_engine_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( mysql_engine_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                     else
-                       width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                     end if;
                     if width > 256 then
                        width := 256;
@@ -1821,7 +1821,7 @@ begin
            for i in 1..columns( Q ) loop
                put(
                   to_string(
-                      Head(
+                      ada.strings.unbounded.Head(
                           to_unbounded_string(
                               column_name( Q, Column_Index_Type( i ) ) )
                       , columnWidths( i ) )
@@ -1834,7 +1834,7 @@ begin
            new_line;
            put( "-" );
            for i in 1..columns( Q ) loop
-               put( to_string( columnWidths( i ) * "-" ) );
+               put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
                if i /= columns( Q ) then
                   put( "-+-" );
                else
@@ -1854,7 +1854,7 @@ begin
             for i in 1..columns( Q ) loop
                 if tabularDisplay then
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    elsif i = 2 then -- column 2 is table type
                       put( to_string( Head( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
@@ -1867,7 +1867,7 @@ begin
                       put( " | " );
                    end if;
                 else
-                   put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
                    put( ": " );
                    if is_null( Q, Column_Index_Type( i ) ) then
                       put( inverse( "NULL" ) );
@@ -2006,17 +2006,17 @@ begin
                  if i /= 3 then -- column 3 is type length (not shown)
                     if not is_null( Q, Column_Index_Type( i ) ) then
                        if i = 2 then -- column 2 is column type
-                          width := length( to_unbounded_string(
+                          width := length( ada.strings.unbounded.to_unbounded_string(
                                     mysql_column_type_to_string( Value( Q, Column_Index_Type( i ) ),
                                                               Value( Q, Column_Index_Type( i+1 ) ) ) ) );
                        elsif i = 4 then
-                          width := length( to_unbounded_string(
+                          width := length( ada.strings.unbounded.to_unbounded_string(
                                    mysql_not_null_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                        elsif i = 5 then
-                          width := length( to_unbounded_string(
+                          width := length( ada.strings.unbounded.to_unbounded_string(
                                    mysql_default_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                        else
-                          width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                          width := length( ada.strings.unbounded.to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                        end if;
                        if width > 256 then
                           width := 256;
@@ -2058,7 +2058,7 @@ begin
                if i /= 3 then -- column 3 is type length (not shown)
                   put(
                      to_string(
-                         Head(
+                         ada.strings.unbounded.Head(
                              to_unbounded_string(
                                  column_name( Q, Column_Index_Type( i ) ) )
                          , columnWidths( i ) )
@@ -2073,7 +2073,7 @@ begin
            put( "-" );
            for i in 1..columns( Q ) loop
                if i /= 3 then -- column 3 is type length (not shown)
-                  put( to_string( columnWidths( i ) * "-" ) );
+                  put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
                   if i /= columns( Q ) then
                      put( "-+-" );
                   else
@@ -2095,7 +2095,7 @@ begin
                 if i /= 3 then -- column 3 is type length (not shown)
                    if tabularDisplay then
                       if is_null( Q, Column_Index_Type( i ) ) then
-                         put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                         put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                          wasNull := true;
                       elsif i = 2 then -- column 2 is column type
                          put( to_string( Head( ToEscaped( to_unbounded_string( mysql_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ), columnWidths( i ) ) ) );
@@ -2110,7 +2110,7 @@ begin
                          put( " | " );
                       end if;
                    else
-                      put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                      put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
                       put( ": " );
                       if is_null( Q, Column_Index_Type( i ) ) then
                          put( inverse( "NULL" ) );
@@ -2259,11 +2259,11 @@ begin
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
                     if i = 3 then -- column 3 and 4 are attributes
-                       width := length( to_unbounded_string( mysql_userattributes_to_string( Value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( mysql_userattributes_to_string( Value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) );
                     elsif i = 4 then
                        null;
                     else
-                       width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                     end if;
                     if width > 256 then
                        width := 256;
@@ -2302,7 +2302,7 @@ begin
                if i /= 4 then
                   put(
                      to_string(
-                         Head(
+                         ada.strings.unbounded.Head(
                              to_unbounded_string(
                                  column_name( Q, Column_Index_Type( i ) ) )
                          , columnWidths( i ) )
@@ -2317,7 +2317,7 @@ begin
            put( "-" );
            for i in 1..columns( Q ) loop
                if i /= 4 then
-                  put( to_string( columnWidths( i ) * "-" ) );
+                  put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
                   if i /= 3 then
                      put( "-+-" );
                   else
@@ -2339,7 +2339,7 @@ begin
                 if i /= 4 then
                    if tabularDisplay then
                       if is_null( Q, Column_Index_Type( i ) ) then
-                         put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                         put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                          wasNull := true;
                       elsif i = 2 then -- right-aligned
                          put( to_string( Tail( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
@@ -2352,7 +2352,7 @@ begin
                          put( " | " );
                       end if;
                    else
-                      put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                      put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
                       put( ": " );
                       if is_null( Q, Column_Index_Type( i ) ) then
                          put( inverse( "NULL" ) );
@@ -2471,9 +2471,9 @@ begin
               for i in 1..columns( Q ) loop
                  if not is_null( Q, Column_Index_Type( i ) ) then
                     if i = 3 then -- column 2 is table type
-                       width := length( to_unbounded_string( mysql_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( mysql_kind_to_string( Value( Q, Column_Index_Type( i ) ) ) ) );
                     else
-                       width := length( to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
+                       width := length( ada.strings.unbounded.to_unbounded_string( Value( Q, Column_Index_Type( i ) ) ) );
                     end if;
                     if width > 256 then
                        width := 256;
@@ -2511,7 +2511,7 @@ begin
            for i in 1..columns( Q ) loop
                put(
                   to_string(
-                      Head(
+                      ada.strings.unbounded.Head(
                           to_unbounded_string(
                               column_name( Q, Column_Index_Type( i ) ) )
                       , columnWidths( i ) )
@@ -2524,7 +2524,7 @@ begin
            new_line;
            put( "-" );
            for i in 1..columns( Q ) loop
-               put( to_string( columnWidths( i ) * "-" ) );
+               put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
                if i /= columns( Q ) then
                   put( "-+-" );
                else
@@ -2544,7 +2544,7 @@ begin
             for i in 1..columns( Q ) loop
                 if tabularDisplay then
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( to_string( Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    elsif i = 3 then -- column 2 is table type
                       put( to_string( Head( ToEscaped( to_unbounded_string( mysql_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
@@ -2555,7 +2555,7 @@ begin
                       put( " | " );
                    end if;
                 else
-                   put( to_string( head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
                    put( ": " );
                    if is_null( Q, Column_Index_Type( i ) ) then
                       put( inverse( "NULL" ) );

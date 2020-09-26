@@ -926,7 +926,7 @@ end doLocalProfile;
 
 procedure checkAndInterpretScript( fullScriptPath : string ) is
 begin
-  if tail( to_unbounded_string( fullScriptPath ), 3 ) = ".sh" then
+  if tail( ada.strings.unbounded.to_unbounded_string( fullScriptPath ), 3 ) = ".sh" then
      put_line( standard_error, ".sh probably means " & fullScriptPath & " (if it exists) is not a SparForte script" );
      set_exit_status( Failure );
      return;

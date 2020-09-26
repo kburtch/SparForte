@@ -672,9 +672,11 @@ charlit_t  : identifier;  -- character literal, value = the literal
 number_t   : identifier;  -- numeric literal, value = the literal
 imm_delim_t: identifier;  -- immediate word delimiter / identifier terminator
 imm_sql_delim_t: identifier;  -- same for SQL word
+imm_symbol_delim_t : identifier; -- same for shell symbols
 word_t     : identifier;  -- immediate word value
 sql_word_t : identifier;  -- a SQL word (not to be escaped)
 char_escape_t : identifier; -- character escape
+shell_symbol_t : identifier; -- shell symbol like "2>&1"
 
 
 ------------------------------------------------------------------------------

@@ -1187,12 +1187,16 @@ procedure shellStatementByteCode( ci : in out compressionInfo;
   -- sr : aVMSRNumber;
   -- ir : aVMIRNumber;
   ch : character;
+  -- Various states because this is an iterative algorithm
   inDoubleQuotes : boolean;
   inSingleQuotes : boolean;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
   inRedirect     : boolean;
+  isSymbolNotWord : boolean;
   redirectAmpersand : boolean;
+  maybeStdErrRedirect : boolean;
+  processExpansionLevel : natural;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1211,6 +1215,7 @@ begin
 
   firstpos := cmdpos;                                         -- prepare to
   lastpos := cmdpos;                                          -- get token
+  isSymbolNotWord := false;
 
   skipWhiteSpace( ci, command );
   if cmdpos > length( command ) then
@@ -1218,6 +1223,10 @@ begin
   end if;
 
   -- special tokens: check up front
+
+  inRedirect        := false;
+  redirectAmpersand := false;
+  maybeStdErrRedirect := false;
 
   ch := Element( command, cmdpos );
   if ch = ';' then
@@ -1230,11 +1239,33 @@ begin
      ci.compressedScript := ci.compressedScript & ch;
      cmdpos := cmdpos + 1;
      return;
+  elsif ch = '@' then
+     ci.context := startOfStatement;
+     ci.compressedScript := ci.compressedScript & ch;
+     cmdpos := cmdpos + 1;
+     return;
   elsif ch = '&' then
      ci.context := startOfStatement;
      ci.compressedScript := ci.compressedScript & ch;
      cmdpos := cmdpos + 1;
      return;
+  elsif ch = '>' then
+     -- TODO: error redirect
+     -- TODO: should probably have a handle redirect subroutine
+     inRedirect := true;
+     redirectAmpersand := true;
+     word := word & ch;
+     cmdpos := cmdpos + 1;
+  elsif ch = '<' then
+     -- TODO: should probably have a handle redirect subroutine
+     inRedirect := true;
+     word := word & ch;
+     cmdpos := cmdpos + 1;
+  elsif ch = '2' then
+     -- TODO: should probably have a handle redirect subroutine
+     maybeStdErrRedirect := true;
+     word := word & ch;
+     cmdpos := cmdpos + 1;
   end if;
 
   -- Check for an Ada-style comment
@@ -1274,9 +1305,7 @@ begin
   inSingleQuotes    := false;
   inBackQuotes      := false;
   inBackslash       := false;
-  inRedirect        := false;
-  redirectAmpersand := false;
-
+  processExpansionLevel := 0;
   -- Check for special single-character shell words
   --
   -- A semi-colon is the last word of the shell statement.  Return control
@@ -1333,6 +1362,7 @@ begin
     end if;
 
     ch := Element( command, cmdpos );                       -- next character
+    -- put_line( "ch = " & ch & " redirect = " & inRedirect'img ); -- DEBUG
 
     -- Second, check for characters that will interfere with the compressed
     -- tokens.
@@ -1347,7 +1377,60 @@ begin
 
     -- Third, handle quoting quoting characters
 
-    if ch = '"' and not inSingleQuotes and not inBackslash then
+    -- A shell redirect is detected by an unescaped '>'.  It can only
+    -- be followed by >, & or 1.  Any other character terminates the
+    -- redirection and finishes the shell word.
+
+    if maybeStdErrRedirect then
+       if ch = '>' then
+          inRedirect := true;
+          redirectAmpersand := true;
+          maybeStdErrRedirect := false;
+       elsif ch /= '2' then  -- should not be
+          maybeStdErrRedirect := false;
+       end if;
+    end if;
+
+    -- General word handling
+
+    -- If we are in a redirect, it's a special case and we're looking to
+    -- see when it is complete.  We're not allow $ substitutions as a part
+    -- of the same word: a redirect is a word to itself even if more characters
+    -- follow without a field separator character.
+
+    if inRedirect and ch /= '>' and ch /= '<' and ch /= '&' and ch /= '1' then
+       inRedirect := false;
+       redirectAmpersand := false;
+       lastpos := cmdpos - 1;
+       isSymbolNotWord := true;
+       exit;
+
+    -- $(..) process expansion is nest-able
+
+    elsif ch = '$' and not inSingleQuotes and not inBackslash then
+       if cmdpos < length( command ) then
+          if element( command, cmdpos + 1 ) = '('  then
+             processExpansionLevel := processExpansionLevel + 1;
+             --word := word & ch;
+            -- cmdpos := cmdpos + 1;
+          end if;
+       end if;
+    elsif ch = ')' and not inSingleQuotes
+       and not inBackslash then
+       if processExpansionLevel > 0 then
+          processExpansionLevel := processExpansionLevel - 1;
+          --cmdpos := cmdpos + 1;
+       else
+          err_tokenize( "extra closing ')' with no '$(' process expansion", to_string( command ) );
+       end if;
+
+    -- Redirects
+
+    elsif not inRedirect and (ch = '>' or ch = '<') and not inDoubleQuotes 
+       and not inSingleQuotes and not inBackslash and processExpansionLevel = 0 then
+       lastpos := cmdpos - 1;
+       exit;
+    elsif ch = '"' and not inSingleQuotes and not inBackslash then
        inDoubleQuotes := not inDoubleQuotes;
     elsif ch = ''' and not inDoubleQuotes and not inBackslash then
        inSingleQuotes := not inSingleQuotes;
@@ -1355,25 +1438,14 @@ begin
        inBackQuotes := not inBackQuotes;
     elsif ch = '\' and not inSingleQuotes and not inBackslash then
        inBackslash := true;
-
-    -- A shell redirect is detected by an unescaped '>'.  It can only
-    -- be followed by >, & or 1.  Any other character terminates the
-    -- redirection and finishes the shell word.
-
-    elsif inRedirect and ch /= '>' and ch /= '&' and ch /= '1' then
-       lastpos := cmdpos - 1;
-       exit;
-    elsif ch = '>' and not inSingleQuotes and not inBackslash then
-       inRedirect := true;
-       redirectAmpersand := true;
-
     else
 
     -- Fourth, look for word terminators
     -- These only terminate if they're not the first character, which is
     -- checked up front.
 
-       if not (inSingleQuotes or inDoubleQuotes or inBackQuotes or inBackslash) then
+       if not (inSingleQuotes or inDoubleQuotes or inBackQuotes or inBackslash
+          or processExpansionLevel > 0) then
           if ch = ' ' then
              lastpos := cmdpos - 1;
              exit;
@@ -1395,15 +1467,23 @@ begin
        -- Got here? Character is good.  Backslashing?  Turn it off.
 
        inBackslash := false;
-       inRedirect  := false;
 
     end if; -- no quoting characters
     word := word & ch;
     cmdpos := cmdpos + 1;
   end loop;
 
-  ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
-     word & toByteCode( imm_delim_t );
+  --put_line( "word = " & to_string(word) ); -- DEBUG
+
+  -- for bareword &, redirections, these are encoded as symbols, not words
+
+  if isSymbolNotWord then
+     ci.compressedScript := ci.compressedScript & toByteCode( imm_symbol_delim_t ) &
+        word & toByteCode( imm_symbol_delim_t );
+  else
+     ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
+        word & toByteCode( imm_delim_t );
+  end if;
   --ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
   --   slice( command, firstpos, lastpos ) & toByteCode( imm_delim_t );
   word := null_unbounded_string;
@@ -1771,6 +1851,7 @@ procedure startOfStatementByteCode( ci : in out compressionInfo;
   inBackQuotes   : boolean;
   inBackslash    : boolean;
   inRedirect     : boolean;
+  redirectAmpersand : boolean;
 begin
   -- Tokenize shell words in the line.  This is very similar to getNextToken
   -- except tokens are stored in the compressed script instead of in a
@@ -1864,7 +1945,8 @@ begin
      inBackQuotes   := false;
      inBackslash    := false;
      inRedirect     := false;
-     -- checkAppend    := false;
+     redirectAmpersand := false;
+
      -- read the first character, escaping high ascii if needed
      if ch > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
@@ -1913,8 +1995,17 @@ begin
               lastpos := lastpos+1;
               exit when lastpos > length( command );
               goto next_word_char;
-           elsif ch = '>' and not inSingleQuotes and not inBackslash then
-              -- this affects & as in >& as a stopword
+
+          -- A shell redirect is detected by an unescaped '>'.  It can only
+          -- be followed by >, & or 1.  Any other character terminates the
+          -- redirection and finishes the shell word.
+
+            elsif inRedirect and ch /= '>' and ch /= '&' and ch /= '1' then
+               lastpos := cmdpos - 1;
+               exit;
+            elsif ch = '>' and not inSingleQuotes and not inBackslash then
+              inRedirect := true;
+              redirectAmpersand := true;
               inRedirect := true;
               word := word & ch;
               lastpos := lastpos+1;
@@ -1936,7 +2027,7 @@ begin
                  ch = '=' or
                  ch = '(' ;
               exit when
-                 ch = '&' and not inRedirect;
+                 ch = '&' and not redirectAmpersand;
            end if;
 
            -- It must be a shell word if not an identifier...if it's not
@@ -2895,14 +2986,21 @@ begin
      put_line( standard_error, gnat.source_info.source_location &": internal error: imm_sql_delim_t is declared too late" );
   end if;
 
+  declareIdent( imm_symbol_delim_t, "", symbol_t );
+  toByteCode( imm_symbol_delim_t, immediate_symbol_delimiter, discard_char );
+  if discard_char /= ASCII.NUL then
+     put_line( standard_error, gnat.source_info.source_location & ": internal error: imm_symbol_t is declared too late" );
+  end if;
+
   declareIdent( char_escape_t, "", symbol_t );
   toByteCode( char_escape_t, high_ascii_escape, discard_char );
   if discard_char /= ASCII.NUL then
      put_line( standard_error, gnat.source_info.source_location & ": internal error: high_ascii_escape is declared too late" );
   end if;
 
-  declareIdent( word_t, "Word", uni_string_t );
+  declareIdent( word_t, "Shell Word", uni_string_t );
   declareIdent( sql_word_t, "SQL Word", uni_string_t );
+  declareIdent( shell_symbol_t, "Shell Symbol", uni_string_t );
 
   -- declareKeyword( load_nr_t, "[Load Numeric Register]" );
   -- declareKeyword( load_sr_t, "[Load String Register]" );
@@ -2914,6 +3012,8 @@ begin
   -- BOURNE SHELL
   --
   -- Built-in Bourne shell-type commands
+  -- Note: keep built-ins and SQL together.  They are some statements that
+  -- check for built-ins using >= and <=.
 
   declareProcedure( env_t, "env" );
   declareProcedure( typeset_t, "typeset" );

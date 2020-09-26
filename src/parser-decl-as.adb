@@ -26,10 +26,7 @@ pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
 with Interfaces.C,
-    ada.command_line,
     ada.strings.unbounded.text_io,
-    gnat.regexp,
-    gnat.directory_operations,
     gnat.source_info,
     spar_os.exec,
     string_util,
@@ -40,6 +37,7 @@ with Interfaces.C,
     signal_flags,
     compiler,
     scanner_res,
+    parser.decl.shell, -- sybling package
     parser_aux,
     parser_sidefx,
     parser_params,
@@ -48,10 +46,7 @@ with Interfaces.C,
     parser_pen,
     interpreter; -- circular relationship for breakout prompt
 use Interfaces.C,
-    ada.command_line,
     ada.strings.unbounded.text_io,
-    gnat.regexp,
-    gnat.directory_operations,
     spar_os,
     spar_os.exec,
     user_io,
@@ -62,6 +57,7 @@ use Interfaces.C,
     signal_flags,
     compiler,
     scanner_res,
+    parser.decl.shell, -- sybling package
     parser_aux,
     parser_sidefx,
     parser_params,
@@ -990,902 +986,6 @@ begin
       b := deleteIdent( id );
    end if;
 end ParseTypeset;
-
-
------------------------------------------------------------------------------
---  PARSE SHELL WORD
---
--- Parse and expand a shell word argument.  Return a shellWordList containing
--- the original pattern, the expanded words and their types.  If the first is
--- true, the word should be the first word.  If there is already shell words
--- in the list, any new words will be appended to the list.  The caller is
--- responsible for clearing (deallocating) the list.
---   Expansion is the process of performing substitutions on a shell word.
---
--- Bourne shell expansions include:
---   TYPE                  PATTERN        EX. WORDS        STATUS
---   Brace expansion       a{.txt,.dat}   a.txt a.dat      not implemented
---   Tilde expansion       ~/a.txt        /home/ken/a.txt  OK
---   Variable expansion    $HOME/a.txt    /home/ken/a.txt  no special $
---   Command substituion   `echo a.txt`   a.txt            no $(...)
---   Arithmetic expansion  -              -                not implemented
---   Word splitting        a\ word        "a word"         OK
---   Pathname expansion    *.txt          a.txt b.txt      OK
---
--- Since Spar has to interpret the shell words as part of the byte code
--- compilation, word splitting before pathname expansion.  This means that
--- certain rare expansions will have different results in Spar than in a
--- standard Bourne shell.  (Some might call this an improvement over the
--- standard.)  Otherwise, Spar conforms to the Bourne shell standard.
---
--- UsedEscape is true if the shell word was escaped
---
--- The wordType is used to differentiate between words like "|" (a string)
--- and | (the pipe operator) which look the same once quotes are removed.
------------------------------------------------------------------------------
-
-procedure ParseShellWord( wordList : in out shellWordList.List; First : boolean := false ) is
--- TODO: first is not implemented
-
--- these should be global
-semicolon_string : constant unbounded_string := to_unbounded_string( ";" );
---   semi-colon, as an unbounded string
-
-verticalbar_string : constant unbounded_string := to_unbounded_string( "|" );
---   vertical bar, as an unbounded string
-
-ampersand_string : constant unbounded_string := to_unbounded_string( "&" );
---   ampersand, as an unbounded string
-
-redirectIn_string : constant unbounded_string := to_unbounded_string( "<" );
---   less than, as an unbounded string
-
-redirectOut_string : constant unbounded_string := to_unbounded_string( ">" );
---   greater than, as an unbounded string
-
-redirectAppend_string : constant unbounded_string := to_unbounded_string( ">>" );
---   double greater than, as an unbounded string
-
-redirectErrOut_string : constant unbounded_string := to_unbounded_string( "2>" );
---   '2' + greater than, as an unbounded string
-
-redirectErrAppend_string : constant unbounded_string := to_unbounded_string( "2>>" );
---   '2' + double greater than, as an unbounded string
-
-redirectErr2Out_string : constant unbounded_string := to_unbounded_string( "2>&1" );
---   '2' + greater than + ampersand and '1', as an unbounded string
-
-itself_string : constant unbounded_string := to_unbounded_string( "@" );
---   itself, as an unbounded string
-
-  ch          : character;
-  inSQuote    : boolean := false;                      -- in single quoted part
-  inDQuote    : boolean := false;                      -- in double quoted part
-  inBQuote    : boolean := false;                      -- in double quoted part
-  inBackslash : boolean := false;                      -- in backquoted part
-  inDollar    : boolean := false;                      -- $ expansion
-  wasSQuote   : boolean := false;                      -- is $ expan in sin qu
-  wasDQuote   : boolean := false;                      -- is $ expan in dbl qu
-  wasBQuote   : boolean := false;                      -- is $ expan in bck qu
-  expansionVar: unbounded_string;                      -- the $ name
-  escapeGlobs : boolean := false;                      -- escaping glob chars
-  ignoreTerminatingWhitespace : boolean := false;                 -- SQL word has whitespace in it (do not use whitespace as a word terminator)
-  expandInSingleQuotes : boolean := false;  -- SQL words allow $ expansion for single quotes (for PostgreSQL)
-  stripQuoteMarks : boolean := true; -- SQL words require quotes words left in the word
-  startOfBQuote : integer;
-
-  addExpansionSQuote : boolean := false;               -- SQL, add ' after exp
-  addExpansionDQuote : boolean := false;               -- SQL, add " after exp
-  temp_id     : identifier;                            -- for ~ processing
-  shell_word  : unbounded_string;
-
-  word        : unbounded_string;
-  wordLen     : integer;
-  pattern     : unbounded_string;
-  wordType    : aShellWordType;
-
-  --  DOLLAR EXPANSION (parseShellWord)
-  --
-  -- perform a dollar expansion by appending a variable's value to the
-  -- shell word.
-  -- NOTE: what about $?, $#, $1, etc?  These need to be handed specially here?
-  -- NOTE: special $ expansion, including ${...} should be handled here
-  ---------------------------------------------------------------------------
-
-  procedure dollarExpansion is
-     id      : identifier;
-     subword : unbounded_string;
-     ch      : character;
-  begin
-    --put_line( "dollarExpansion for var """ & expansionVar & """" ); -- DEBUG
-    -- Handle Special Substitutions ($#, $? $$, $!, $0...$9 )
-    if expansionVar = "#" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "?" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( last_status'img );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "$" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( aPID'image( getpid ) );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "!" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( aPID'image( lastChild ) );
-          delete( subword, 1, 1 );
-       end if;
-    elsif expansionVar = "0" then
-       if isExecutingCommand then
-          subword := to_unbounded_string( Ada.Command_Line.Command_Name );
-       end if;
-    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
-       if syntax_check and then not suppress_word_quoting and then not inDQuote then
-          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
-       end if;
-       if isExecutingCommand then
-          begin
-             subword := to_unbounded_string(
-                 Argument(
-                   integer'value(
-                     to_string( " " & expansionVar ) )+optionOffset ) );
-          exception when program_error =>
-             err( "program_error exception raised" );
-          when others =>
-             err( "script argument " & to_string(expansionVar) & " not found " &
-                  "in arguments 0 .." &
-                  integer'image( Argument_Count-optionOffset) );
-          end;
-       end if;
-    else
-       if syntax_check and then not suppress_word_quoting and then not inDQuote then
-          err( "style issue: expected double quoted word parameters in shell or SQL command to prevent word splitting" );
-       end if;
-       -- Regular variable substitution
-       if expansionVar = "" or expansionVar = " " then
-          err( "dollar expansion expects a variable name (or escape the $ if not an expansion)" );
-          id := eof_t;
-       else
-          findIdent( expansionVar, id );
-       end if;
-       if id = eof_t then
-          -- TODO: this check takes place after the token is read, so token
-          -- following the one in question is highlighted
-          err( optional_bold( to_string( expansionVar ) ) & " not declared" );
-       else
-          if syntax_check then
-             identifiers( id ).wasReferenced := true;
-             --identifiers( id ).referencedByThread := getThreadName;
-             subword := to_unbounded_string( "undefined" );
-          else
-             subword := identifiers( id ).value.all;       -- word to substit.
-             if not inDQuote then                          -- strip spaces
-                subword := Ada.Strings.Unbounded.Trim(     -- unless double
-                   subword, Ada.Strings.Both );            -- quotes;
-             elsif getUniType( id ) = uni_numeric_t then   -- a number?
-                if length( subword ) > 0 then              -- something there?
-                   if element( subword, 1 ) = ' ' then     -- leading space
-                      delete( subword, 1, 1 );             -- we don't want it
-                   end if;
-                end if;
-             end if;
-          end if;
-       end if;
-    end if;
-    -- escapeGlobs affects the variable substitution
-    -- shell word will be "undefined" during syntax check.  It only has
-    -- a meaningful value at run-time.
-    for i in 1..length( subword ) loop                  -- each letter
-        ch := element( subword, i );                    -- get it
-        if escapeGlobs and not inBackslash then         -- esc glob chars?
-           case ch is                                   -- is a glob char?
-           when '*' => pattern := pattern & "\";        -- escape *
-           when '[' => pattern := pattern & "\";        -- escape [
-           when '\' => pattern := pattern & "\";        -- escape \
-           when '?' => pattern := pattern & "\";        -- escape *
-           when others => null;                         -- others? no esc
-           end case;
-        end if;
-        pattern := pattern & ch;                        -- add the letter
-        word := word & ch;                              -- add the letter
-    end loop;
-    inDollar := false;
-  -- SQL words require the quote marks to be left intact in the word.
-  -- Unfortunately, this has to be checked after the quote character has
-  -- been processed.  This checks for the flag variables to attach a quote
-  -- mark retroactively.
-    if addExpansionSQuote then
-        word := word & "'";
-        addExpansionSQuote := false;
-    end if;
-    if addExpansionDQuote then
-        word := word & ASCII.Quotation;
-        addExpansionDQuote := false;
-    end if;
-  end dollarExpansion;
-
-  --  PATHNAME EXPANSION (parseShellWord)
-  --
-  -- Perform shell pathname expansion by using the shell word as a glob
-  -- pattern and searching the current directory.  Return a list of shell
-  -- words created by the expansion.
-  --
-  -- Note: file name length is limited to 256 characters.
-  ---------------------------------------------------------------------------
-
-  procedure pathnameExpansion( word, pattern : unbounded_string; list : in out shellWordList.List ) is
-    globCriteria : regexp;
-    currentDir   : Dir_Type;
-    fileName     : string(1..256);
-    fileNameLen  : natural;
-    found        : boolean := false;
-    noPWD        : boolean := false;
-    dirpath      : string := to_string( dirname( word ) );
-    globexpr     : constant string := to_string( basename( pattern ) );
-    noDir        : boolean;
-    isOpen       : boolean := false;
-  begin
-    -- put_line( "pathnameExpansion for original pattern """ & pattern & """" ); -- DEBUG
-    -- put_line( "pathnameExpansion for expanded word """ & word & """" ); -- DEBUG
-    -- put_line( "wasDQuote: " & wasDQuote'img ); -- DEBUG
-    -- In the case of a syntax check, return the word as-is as a place holder.
-    -- Don't try to glob it.
-    if syntax_check then
-       shellWordList.Queue( wordList, aShellWord'( normalWord, pattern, shell_word ) );
-       return;
-    end if;
-    -- word is an empty string? it still counts: param is a null string
-    if length( pattern ) = 0 or length( word ) = 0 then
-       shellWordList.Queue( list, aShellWord'( normalWord, pattern, null_unbounded_string ) );
-       return;
-    end if;
-    -- otherwise, prepare to glob the current directory
-    noDir := globexpr = pattern;
-    globCriteria := Compile( globexpr, Glob => true, Case_Sensitive => true );
-    begin
-      open( currentDir, dirpath );
-      isOpen := true;
-    exception when others =>
-      noPWD := true;
-    end;
-    -- is the current directory invalid? then param is just the word
-    if noPWD then
-       shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
-       return;
-    end if;
-    -- Linux/UNIX: skip "." and ".." directory entries
-    --read( currentDir, fileName, fileNameLen );
-    --read( currentDir, fileName, fileNameLen );
-    -- search the directory, adding files that match the glob pattern
-    loop
-      read( currentDir, fileName, fileNameLen );
-      -- KB: 12/02/18 - no longer returns "." and "..".  Commented out reads
-      -- but as a safety precaution check the filename here.
-      exit when fileNameLen = 0;
-      if filename( 1..fileNameLen ) = "." then
-         null;
-      elsif filename( 1..fileNameLen ) = ".." then
-         null;
-      elsif Match( fileName(1..fileNameLen ) , globCriteria ) then
-         if noDir then
-            shellWordList.Queue( list, aShellWord'(
-               normalWord,
-               pattern,
-               to_unbounded_string( fileName( 1..fileNameLen ) ) ) );
-         else
-            -- root directory?  no need to add directory delimiter
-            if dirpath'length = 1 and dirpath(1) = directory_delimiter then
-               shellWordList.Queue( list, aShellWord'(
-                  normalWord,
-                  pattern,
-                  to_unbounded_string( dirpath & fileName( 1..fileNameLen ) ) ) );
-            else
-               shellWordList.Queue( list, aShellWord'(
-                  normalWord,
-                  pattern,
-                  to_unbounded_string( dirpath & directory_delimiter & fileName( 1..fileNameLen ) ) ) );
-            end if;
-         end if;
-         found := true;
-      end if;
-    end loop;
-    -- there are no matches? word still counts: the param is just the word
-    if not found then
-       shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
-    end if;
-    if isOpen then
-       close( currentDir );
-    end if;
-  exception when ERROR_IN_REGEXP =>
-    -- The globbing expression may be bad.  For example,
-    -- '/</{ :loop s/<[^>]*>//g /</{ N b loop } }'
-    -- will be split into ... / globExpr = { N b loop } }
-    -- which will fail with this exception.  There's no way to know if the
-    -- expression produced by basename will be glob-able.  So this is not
-    -- an error...there's just nothing to glob.
-    --
-    -- Was:
-    -- err( "error in globbing expression """ & globExpr & """" );
-    --
-    -- Now, queue the shell word as the word just counts as-is.
-    shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
-    if isOpen then
-       close( currentDir );
-    end if;
-  when DIRECTORY_ERROR =>
-    err( "directory error on directory " & toSecureData(dirPath));
-  end pathnameExpansion;
-
-  --  PATHNAME EXPANSION WITH IFS (parseShellWord)
-  --
-  -- Breakup barewords into subwords and do pathname expansion (that is, apply
-  -- globbing pattern and get applicable files).
-  -- Quoted words pathname expanded as-is
-  -- TODO: is this too high?  Probably goes lower in the logic. What about the pattern?
-  ---------------------------------------------------------------------------
-
-  procedure pathnameExpansionWithIFS( word, pattern : unbounded_string; list : in out shellWordList.List ) is
-    subword    : unbounded_string;
-    subpattern : unbounded_string;
-    ch         : character;
-    word_pos   : natural := 1;
-    pattern_pos: natural := 1;
-    isBackslash: boolean;
-  begin
-    -- put_line( "pathnameExpansionWithIFS for original pattern """ & pattern & """" ); -- DEBUG
-    -- put_line( "pathnameExpansionWithIFS for expanded word """ & word & """" ); -- DEBUG
-    -- put_line( "wasBQuote: " & wasBQuote'img ); -- DEBUG
-    -- if in double quotes, then no IFS handling
-    if wasDQuote then
-       pathnameExpansion( word, pattern, list );
-    elsif wasSQuote then
-       shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
-    elsif wasBQuote then
-       shellWordList.Queue( list, aShellWord'( normalWord, pattern, word ) );
-    elsif length( pattern ) = 0 or length( word ) = 0 then
-       pathnameExpansion( word, pattern, list );
-    else
-       -- If this is a bareword, break up each piece separated by whitespace
-       -- into separate worders to be handled individually.
-       while word_pos <= length( word ) loop
-          -- skip leading whitespace
-          while word_pos <= length( word ) loop
-             ch := element( word, word_pos );
-             exit when ch /= ASCII.HT and ch /= ' ';
-             word_pos := word_pos + 1;
-          end loop;
-          -- handle word and backslash characters
-          while word_pos <= length( word ) loop
-             ch := element( word, word_pos );
-             exit when ch = ASCII.HT or ch = ' ';
-             subword := subword & ch;
-             word_pos := word_pos + 1;
-          end loop;
-          -- skip leading whitespace in pattern
-          while pattern_pos <= length( pattern ) loop
-             ch := element( pattern, pattern_pos );
-             exit when ch /= ASCII.HT and ch /= ' ';
-             pattern_pos := pattern_pos + 1;
-          end loop;
-          -- break up the pattern but honour backslashes
-          isBackslash := false;
-          while pattern_pos <= length( pattern ) loop
-             ch := element( pattern, pattern_pos );
-             if ch = '\' then
-                isBackslash := true;
-             elsif isBackslash then
-               isBackslash := false;
-             else
-               exit when ch = ASCII.HT or ch = ' ';
-             end if;
-             subpattern := subpattern & ch;
-             pattern_pos := pattern_pos + 1;
-          end loop;
-          -- expand the whitespace delinated subword
-          pathnameExpansion( subword, subpattern, list );
-          subword := null_unbounded_string;
-          subpattern := null_unbounded_string;
-          word_pos := word_pos + 1;
-          pattern_pos := pattern_pos + 1;
-       end loop;
-    end if;
-  end pathnameExpansionWithIFS;
-
-begin
-
-  word := null_unbounded_string;
-  pattern := null_unbounded_string;
-  wordType := normalWord;
-
-  -- Get the next unexpanded word.  A SQL command is a special case: never
-  -- expand it.  We don't want the * in "select *" to be replaced with a list
-  -- of files.
-
-  -- ignoreTerminatingWhitespace is a workaround and should be redone.  We
-  -- need one word but expand the items in the word (for SQL).
-
-  if token = sql_word_t then
-     shell_word := identifiers( token ).value.all;
-     ignoreTerminatingWhitespace := true;                -- word contains space
-     expandInSingleQuotes := true;
-     stripQuoteMarks := false;
-  else
-     -- Otherwise, get a non-SQL shell word
-     ParseBasicShellWord( shell_word );
-  end if;
-
-  wordLen := length( shell_word ); -- we refer a lot to the length
-
-  -- Null string shell word?  Then nothing to do.
-
-  if wordLen = 0 then
-     word := null_unbounded_string;
-     pattern := null_unbounded_string;
-     wordType := normalWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     getNextToken;
-     return;
-  end if;
-
-  -- Special Cases
-  --
-  -- The special shell words are always unescaped and never expand.  We handle
-  -- them as special cases before beginning the expansion process.
-
-  ch := Element( shell_word, 1 );                      -- next character
-
-  if ch = ';' then                                     -- semicolon?
-     word := semicolon_string;                         -- type
-     pattern := semicolon_string;
-     wordType := semicolonWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     getNextToken;
-     return;
-
-  elsif ch = '|' then                                  -- vertical bar?
-     word := verticalbar_string;
-     pattern := verticalbar_string;
-     wordType := pipeWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     getNextToken;
-     return;
-
-  elsif ch = '&' then                                  -- ampersand?
-     word := ampersand_string;                         -- type
-     pattern := ampersand_string;
-     wordType := ampersandWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     getNextToken;
-     return;
-
-  elsif ch = '<' then                                  -- less than?
-     word := redirectIn_string;                        -- type
-     pattern := redirectIn_string;
-     wordType := redirectInWord;
-     shellWordList.Queue( wordList, aShellWord'( wordtype, pattern, word ) );
-     if wordLen > length( word ) then
-        err( "unexpected characters after redirection " & to_string(word) );
-     end if;
-     getNextToken;
-     return;
-
-  elsif ch = '>' then                                  -- greater than?
-
-     if wordLen > 1 and then Element(shell_word, 2 ) = '>' then -- double greater than?
-        word := redirectAppend_string;                 -- type
-        pattern := redirectAppend_string;
-        wordType := redirectAppendWord;
-        shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-        if wordLen > length( word ) then
-           err( "unexpected characters after redirection " & to_string(word) );
-        end if;
-        getNextToken;
-        return;
-     end if;
-     word := redirectOut_string;                       -- it's redirectOut
-     pattern := redirectOut_string;
-     wordType := redirectOutWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     if wordLen > length( word ) then
-        err( "unexpected characters after redirection " & to_string(word) );
-     end if;
-     getNextToken;
-     return;
-
-  elsif ch = '2' and then wordLen > 1 and then Element(shell_word, 2 ) = '>' then -- 2+greater than?
-     if wordLen > 2 and then Element( shell_word, 3  ) = '&' then            -- fold error into out?
-        if wordLen > 3 and then Element( shell_word, 4 ) = '1' then
-           word := redirectErr2Out_string;              -- type
-           pattern := redirectErr2Out_string;
-           wordType := redirectErr2OutWord;
-           shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-           if wordLen > length( word ) then
-              err( "unexpected characters after redirection " & to_string(word) );
-           end if;
-           getNextToken;
-           return;
-        end if;
-     elsif wordLen > 2 and then Element( shell_word, 3 ) = '>' then -- double greater than?
-        word := redirectErrAppend_string;               -- it's redirectErrApp
-        pattern := redirectErrAppend_string;
-        wordType := redirectErrAppendWord;
-        shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-        if wordLen > length( word ) then
-           err( "unexpected characters after redirection " & to_string(word) );
-        end if;
-        getNextToken;
-        return;
-     end if;
-     word := redirectErrOut_string;                     -- it's redirectErrOut
-     pattern := redirectErrOut_string;
-     wordType := redirectErrOutWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     if wordLen > length( word ) then
-        err( "unexpected characters after redirection " & to_string(word) );
-     end if;
-     getNextToken;
-     return;
-
-  elsif ch = '@' then                                   -- itself?
-     word := itself_string;                             -- it's an itself type
-     pattern := itself_string;
-     wordType := itselfWord;
-     shellWordList.Queue( wordList, aShellWord'( wordType, pattern, word ) );
-     getNextToken;
-     return;
-
-  end if;
-
-  -- There are times when we don't want to expand the word.  In the case of
-  -- a syntax check, return the word as-is as a place holder (not sure if
-  -- it's necessary but "> $path" becomes ">" with no path otherwise...at
-  -- least, it's easier for the programmer to debug.
-  --  However, to trace whether variables are referenced.
-
-  if error_found then                                 -- error:
-     getNextToken;
-     return;                                          -- no expansions
-  --elsif syntax_check then                             -- chk?
-  --   shellWordList.Queue( wordList, aShellWord'( normalWord, pattern, shell_word ) );
-  --   return;                                          -- just the word
-  end if;                                             -- as a place holder
-
-  ---------------------------------------------------------------------------
-  -- We have a word.  Perform the expansion: process quotes and other escape
-  -- characters, possibly creating multiple words from one original pattern.
-  ---------------------------------------------------------------------------
-
-  temp_id := eof_t; -- for tilde expansion
-
-  -- Expand any quotes quotes and handle shell variable substitutions
-
-  for i in 1..length( shell_word ) loop
-    ch := Element( shell_word, i );                          -- next character
-
-    -- tilde expansion must only occur in an unescaped word and not within a
-    -- dollar expansion.  The tilde expansion is only valid for the first
-    -- character in the word
-
-    if ch = '~' and i = 1 and not inSQuote and not inDQuote and not inBackslash then
-       if temp_id = eof_t then
-          findIdent( to_unbounded_string( "HOME" ), temp_id ); -- find HOME var
-       end if;
-       word := word & to_string( identifiers( temp_id ).value.all );  -- replace w/HOME
-       pattern := pattern & ch;  -- TODO: verify this should be ch
-
-
-       -- Double Quote?  If not escaped by a backslash or single quote,
-       -- we're in a new double quote escape.  If we were in a dollar expansion,
-       -- perform the expansion.
-
-    --elsif ch = '"' and not inSQuote and not inBackslash then    -- unescaped "?
-    elsif ch = '"' and not inSQuote and not inBackslash then    -- unescaped "?
-       if inDollar then                                      -- was doing $?
-          dollarExpansion;                                    -- complete it
-       end if;
-       wasDQuote := inDQuote;                                -- remember
-       inDQuote := not inDQuote;                             -- toggle " flag
-       if not stripQuoteMarks then                           -- SQL word?
-          if inDollar then                                   -- in an exp?
-             addExpansionDQuote := true;                     -- add after exp
-          else                                               -- else
-             word := word & """";                            -- add quote now
-          end if;
-       end if;
-       escapeGlobs := inDQuote;                              -- inside? do esc
-
-       -- Single Quote?  If not escaped by a backslash or double quote,
-       -- we're in a new single quote escape.  If we were in a dollar expansion,
-       -- perform the expansion.
-
-    elsif ch = ''' and not inDQuote and not inBackslash then -- unescaped '?
-       if inDollar then                                      -- was doing $?
-          dollarExpansion;                                   -- complete it
-       end if;
-       wasSQuote := inSQuote;                                -- remember
-       inSQuote := not inSQuote;                             -- toggle ' flag
-       if not stripQuoteMarks then                           -- SQL word?
-          if inDollar then                                   -- in an exp?
-             addExpansionSQuote := true;                     -- add after exp
-          else                                               -- else
-             word := word & "'";                             -- add quote now
-          end if;
-       end if;
-       escapeGlobs := inSQuote;                              -- inside? do esc
-
-       -- Back Quote?  If not escaped by a backslash or single quote,
-       -- we're in a new back quote escape.  If we were in a dollar expansion,
-       -- perform the expansion before executing the back quote.
-
-    elsif ch = '`' and not inSQuote and not inBackslash then -- unescaped `?
-       wasBQuote := inBQuote;                                -- remember
-       inBQuote := not inBQuote;                             -- toggle ` flag
-       if inBQuote and inDollar then                         -- doing $ ere `?
-          dollarExpansion;                                   -- complete it
-       end if;
-       if inBQuote then                                      -- starting?
-          startOfBQuote := length( word );                   -- offset to start
-       else                                                  -- ending?
-          if inDollar then                                   -- in a $?
-             dollarExpansion;                                -- finish it
-          end if;
---put_line( "PSW: word = '" & word & "'" );
---put_line( "PSW: `    = " & startOfBQuote'img );
---put_line( "PSW: len  = " & length( word )'img );
---put_line( "PSW: slic = " & slice( word, startOfBQuote+1, length( word ) ) );
-         declare
-            -- to run this backquoted shell word, we need to save the current
-            -- script, compile the command into byte code, and run the commands
-            -- while capturing the output.  Substitute the results into the
-            -- shell word and restore the original script.
-            -- tempStr is the command to run in the back quotes.
-            tempStr : unbounded_string := to_unbounded_string( slice( word, startOfBQuote+1, length( word ) ) );
-            result : unbounded_string;
-         begin
---put_line( "PSW: tempStr ='" & to_string(tempStr)&"'" );
-            -- remove the command from the end of the word assembled so far
-            delete( word, startOfBQuote+1, length( word ) );
---put_line( "PSW: word (2) = '" & word & "'" );
-            -- If the backquoted commands don't end with a semi-colon, add one.
-            -- There is a chance that the semi-colon could be hidden by a
-            -- comment symbol (--).
-            if tail( tempStr, 1 ) /= ";" then
-               tempStr := tempStr & ";";
-            end if;
-            -- Run the command and attach the output to the word we are
-            -- assembling.
-            CompileRunAndCaptureOutput( tempStr, result );
---put_line( "PSW: res  = " & to_string(result) );
-            word := word & result;
---put_line( "PSW: word (3) = '" & word & "'" );
-         end;
-       end if;
-       escapeGlobs := inBQuote;                            -- inside? do esc
-
-       -- Backslash?  If not escaped by another backslash or single quote,
-       -- we're in a new backslash escape.  If we were in a dollar expansion,
-       -- perform the expansion.  Keep the backslashes for pathname expansion
-       -- but not for SQL words.
-
-    elsif ch = '\' and not inSQuote and not inBackslash then -- unescaped \?
-       inBackslash := true;                                -- \ escape
-       if inDollar then                                    -- in a $?
-          dollarExpansion;                                 -- complete it
-       end if;
-
-       pattern := pattern & "\";                           -- an escaping \
-
-       -- Dollar sign?  Then begin collecting the letters to the substitution
-       -- variable.
-
-    elsif ch = '$' and not (inSQuote and not expandInSingleQuotes) and not inBackslash then
-       if inDollar then                                    -- in a $?
-          if length( expansionVar ) = 0 then               -- $$ is special
-             expansionVar := expansionVar & ch;            -- var is $
-             dollarExpansion;                              -- expand it
-          else                                             -- otherwise
-             dollarExpansion;                              -- complete it
-             inDollar := true;                             -- start new one
-          end if;
-       else                                                -- not in one?
-          inDollar := true;                                -- start new one
-       end if;
-       expansionVar := null_unbounded_string;
-
-    else
-
-       -- End of quote handling...now we have a character, handle it
-
-       -- if name is greater than 1 char, dollarExpansion ends when
-       -- non-alpha/digit/underscore is read.  Pass through to allow the
-       -- character to otherwise be treated normally.
-
-       if inDollar then
-          if ch /= '_' and ch not in 'A'..'Z'  and ch not in 'a'..'z'
-             and ch not in '0'..'9' then
-             if length( expansionVar ) > 0 then
-                dollarExpansion;
-             end if;
-          end if;
-       end if;
-
-       -- Terminating characters (whitespace or semi-colon)
-
-       -- exit when (ch = ' ' or ch = ASCII.HT or ch = ';' or ch = '|' )
-       --   and not inDQuote and not inSQuote and not inBQuote and not inBackslash and not ignoreTerminatingWhitespace;
-       if (ch = ' ' or ch = ASCII.HT or ch = ';' or ch = '|' )
-          and not inDQuote and not inSQuote and not inBQuote and not inBackslash
-          and not ignoreTerminatingWhitespace then
-          exit;
-       end if;
-
-       -- Looking at a $ expansion?  Then collect the letters of the variable
-       -- to substitute but don't add them to the shell word.  Apply dollar
-       -- expansions to both word and pattern.
-       if inDollar then                                    -- in a $?
-          expansionVar := expansionVar & ch;               -- collect $ name
-       else                                                -- not in $?
-          -- When escaping characters that affect globbing, this is only done
-          -- for the pattern to be used for globbing.  Do not escape the
-          -- characters in the word...this will be the fallback word used if
-          -- globbing fails to match any files.
-          -- backslash => user already escaped it
-          if escapeGlobs and not inBackslash then          -- esc glob chars?
-             case ch is                                    -- is a glob char?
-             when '*' => pattern := pattern & "\";         -- escape *
-             when '[' => pattern := pattern & "\";         -- escape [
-             when ']' => pattern := pattern & "\";         -- escape ]
-             when '\' => pattern := pattern & "\";         -- escape \
-             when '?' => pattern := pattern & "\";         -- escape *
-             when others => null;                          -- others? no esc
-             end case;
-          end if;
-          pattern := pattern & ch;                         -- add the char
-          word := word & ch;                               -- original word
-          if inBackslash then                              -- \ escaping?
-             inBackslash := false;                         -- not anymore
-          end if;
-       end if;
-    end if;
-  end loop;                                                -- expansions done
-
-  if inDollar then                                         -- last $ not done ?
-     dollarExpansion;                                      -- finish it
-  end if;
-
-  -- These should never occur because of the tokenizing process, but
-  -- to be safe there should be no open quotes.
-
-  if inSQuote then
-     err( gnat.source_info.source_location & ": Internal error: missing single quote mark" );
-  elsif inDQuote then
-     err( gnat.source_info.source_location & ": Internal error: missing double quote mark" );
-  end if;
-
-  -- process special characters
-
-  --for i in 1..length( word ) loop
-      --if Element( word, i ) = '~' then                      -- leading tilda?
-  if length( word ) > 0 then
-     if Element( word, 1 ) = '~' then                      -- leading tilda?
-        findIdent( to_unbounded_string( "HOME" ), temp_id ); -- find HOME var
-        pattern := identifiers( temp_id ).value.all;       -- replace w/HOME
-     end if;
-  end if;
-
-  --end loop;
-
-  -- Perform pathname expansion (file globbing).  Since the expansion can create
-  -- multiple words, this also queues the words in the word list.  If a syntax
-  -- check, we don't want to actually scan the disk and expand paths--instead,
-  -- a dummy word will be queued and no other action is taken.
-  --
-  -- If this is a bareword dollar substitution, a second round of IFS (space/
-  -- tab processing) must be performed.  Otherwise, the IFS processing in this
-  -- procedure is sufficient (doing it twice will lose the escaping of IFS
-  -- characters).
-  --
-  -- Here, I am assuming if the first element is a bareword dollar substitution.
-  -- However, they could occur anywhere and this needs to be refactored.  The
-  -- issue is noted in the Todo file.
-
-  if Element( shell_word, 1 ) = '$' then
-     pathnameExpansionWithIFS( word, pattern, wordList );
-  else
-     pathnameExpansion( word, pattern, wordList );
-  end if;
-
-  if isExecutingCommand then
-
-     if trace then
-        declare
-          theWord : aShellWord;
-        begin
-          if ignoreTerminatingWhitespace then
-             put_trace( "SQL word '" & to_string( toEscaped( pattern ) ) &
-                "' expands to:" );
-          else
-             put_trace( "shell word '" & to_string( toEscaped( pattern ) ) &
-                "' expands to:" );
-          end if;
-          for i in 1..shellWordList.length( wordList ) loop
-              shellWordList.Find( wordList, i, theWord );
-              put_trace( to_string( toEscaped( theWord.word ) ) );
-          end loop;
-        end;
-     end if;
-  end if;
-  getNextToken;
-
-end ParseShellWord;
-
-
------------------------------------------------------------------------------
---  PARSE ONE SHELL WORD
---
--- Parse and expand one shell word arguments.  Return the resulting pattern,
--- the expanded word, and the type of word.  First should be true if the word
--- can be a command.  An error occurs if the word can expand into more than
--- one word.
------------------------------------------------------------------------------
-
-procedure ParseOneShellWord( wordType : out aShellWordType;
-   pattern, word : in out unbounded_string; First : boolean := false ) is
-   wordList : shellWordList.List;
-   theWord  : aShellWord;
-   listLen  : shellWordList.aListIndex;
-begin
-   ParseShellWord( wordList, First );
-   listLen := shellWordList.Length( wordList );
-   if listLen > 1 then
-      err( "one shell word expected but it expanded to multiple words.  (SparForte requires commands that expand to one shell word.)" );
-   elsif listLen = 0 then
-      err( "internal error: one shell word expected but it expanded to none" );
-   else
-      shellWordList.Find( wordList, 1, theWord );
-      wordType := theWord.wordType;
-      pattern  := theWord.pattern;
-      word     := theWord.word;
-   end if;
-   shellWordList.Clear( wordList );
-end ParseOneShellWord;
-
-
------------------------------------------------------------------------------
---  PARSE SHELL WORDS
---
--- Parse and expand zero or more shell word arguments.  Return the results
--- as a shellWordList.  First should be true if the first word is a command.
---
--- A list of shell words ends with either a semi-colon (the end of a general
--- statement) or when a pipe or @ is read in as a parameter.  Do not include
--- a semi-colon in the parameters.
------------------------------------------------------------------------------
-
-procedure ParseShellWords( wordList : in out shellWordList.List; First : boolean := false ) is
-   theWord  : aShellWord;
-   theFirst : boolean := First;
-   listLen  : shellWordList.aListIndex;
-begin
-   loop
-     exit when token = symbol_t and identifiers( token ).value.all = ";";
-     ParseShellWord( wordList, theFirst );
-     listLen := shellWordList.Length( wordList );
-     if listLen = 0 then
-        err( "internal error: one shell word expected but it expanded to none" );
-     else
-        theFirst := false;
-        shellWordList.Find( wordList, shellWordList.Length( wordList ), theWord );
-        exit when theWord.wordType = pipeWord;       -- pipe always ends a command
-        exit when theWord.wordType = itselfWord;     -- itself always ends a command
-        exit when error_found;
-     end if;
-   end loop;
-end ParseShellWords;
 
 
 -----------------------------------------------------------------------------
@@ -4032,7 +3132,7 @@ procedure ParseShellCommand is
   expr_val   : unbounded_string;
   expr_type  : identifier;
   ap         : argumentListPtr;          -- list of parameters to the cmd
-  paramCnt   : natural;                  -- number of parameters in ap
+  --paramCnt   : natural;                  -- number of parameters in ap
   firstParam : aScannerState;
   Success    : boolean;
   exportList : argumentListPtr;          -- exported C-string variables
@@ -4138,20 +3238,20 @@ procedure ParseShellCommand is
     free( ap );
   end clearParamList;
 
-  function isParenthesis return boolean is
+  --function isParenthesis return boolean is
   -- check for a paranthesis, skipping any white space in front.
-  begin
-     skipWhiteSpace;
-     return token = symbol_t and identifiers( token ).value.all = "(";
-     -- return script( cmdpos ) = '(';
-  end isParenthesis;
+  --begin
+  --   skipWhiteSpace;
+  --   return token = symbol_t and identifiers( token ).value.all = "(";
+  --   -- return script( cmdpos ) = '(';
+  --end isParenthesis;
 
   -- Word parsing and Parameter counting
 
   word         : unbounded_string;
   pattern      : unbounded_string;
   inBackground : boolean;
-  wordType     : aShellWordType;
+  --wordType     : aShellWordType;
 
   -- Pipeline parsing
 
@@ -4175,27 +3275,37 @@ procedure ParseShellCommand is
   result                      : aFileDescriptor;
   closeResult                 : int;
 
-    procedure externalCommandParameters( ap : out argumentListPtr; list : in out shellWordList.List ) is
+
+  -- EXTERNAL COMMAND PARAMETER
+  --
+  ----------------------------------------------------------------------------
+
+  procedure externalCommandParameters( ap : out argumentListPtr; list : in out bourneShellWordLists.List ) is
      len  : positive;
-     theWord : aShellWord;
+     theWord : anExpandedShellWord;
   begin
-     if shellWordList.Length( list ) = 0 then
+     if bourneShellWordLists.Length( list ) = 0 then
         ap := new argumentList( 1..0 );
         return;
      end if;
-     len := positive( shellWordList.Length( list ) );
+     len := positive( bourneShellWordLists.Length( list ) );
      ap := new argumentList( 1..len );
      for i in 1..len loop
-         shellWordList.Find( list, long_integer( i ), theWord );
-         ap( i ) := new string( 1..positive( length( theWord.word ) + 1 ) );
-         ap( i ).all := to_string( theWord.word ) & ASCII.NUL;
+         bourneShellWordLists.Find( list, long_integer( i ), theWord );
+         ap( i ) := new string( 1..positive( length( theWord ) + 1 ) );
+         ap( i ).all := to_string( theWord ) & ASCII.NUL;
      end loop;
   end externalCommandParameters;
 
+
+  -- CHECK REDIRECT FILE
+  --
+  -- Check for a missing file for a redirection operator.  If a file
+  -- was expected (according to the flags) but has not appeared, show
+  -- an appropriate error message.
+  ----------------------------------------------------------------------------
+
   procedure checkRedirectFile is
-    -- Check for a missing file for a redirection operator.  If a file
-    -- was expected (according to the flags) but has not appeared, show
-    -- an appropriate error message.
   begin
      if expectRedirectOutFile then
         err( "expected a file path for >" );
@@ -4210,11 +3320,308 @@ procedure ParseShellCommand is
      end if;
   end checkRedirectFile;
 
-  wordList   : shellWordList.List;
-  shellWord  : aShellWord;
+  wordList   : bourneShellWordLists.List;
 
   itselfNext : boolean := false;  -- true if a @ was encountered
   pipeStderr : boolean := false;  -- true stderr through pipeline
+  needToRedirectErr2Out : boolean := false;  -- true if we're doing 2>&1
+
+  --  PARSE SHELL REDIRECT TARGET
+  --
+  -- Read the next shell word argument, which should be the target for a
+  -- redirection.  Expand the raw shell word if necessary.  Updates shellWord
+  -- variable.
+  ----------------------------------------------------------------------------
+-- TODO: this could be a renaming
+
+  procedure ParseShellRedirectTarget( shellWord : out anExpandedShellWord ) is
+    rawWordValue : aRawShellWord;
+  begin
+    parseUniqueShellWord( shellWord );
+  end ParseShellRedirectTarget;
+
+  --  CHECK ADA 95 REDIRECTS
+  ----------------------------------------------------------------------------
+
+  procedure checkAda95Redirects is
+  begin
+     if onlyAda95 then
+        err( "command line redirection not allowed with " &
+             optional_bold( "pragma ada_95" ) & ".  Use set_output/input/error instead" );
+     end if;
+  end checkAda95Redirects;
+
+  --  PARSE SHELL OUTPUT REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellOutputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, ">" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedAppendFD > 0 then
+     err( "cannot redirect using both > and >>" );
+  elsif rshOpt then
+     err( "cannot redirect > in a " & optional_bold( "restricted shell" ) );
+  elsif pipe2Next then
+     err( "> file should only be after the last pipeline command" );
+  elsif isExecutingCommand then
+<<retry1>> redirectedOutputFd := open( to_string( targetPath ) & ASCII.NUL,
+              O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
+     -- Linux applies the umask to open()
+     if redirectedOutputFd < 0 then
+        if C_errno = EINTR then
+           goto retry1;
+        end if;
+        err( "Unable to open > file: " & OSerror( C_errno ) );
+     else
+<<retry2>> result := dup2( redirectedOutputFd, stdout );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry2;
+           end if;
+           err( "unable to set output: " & OSerror( C_errno ) );
+           closeResult := close( redirectedOutputFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedOutputFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellOutputRedirect;
+
+  --  PARSE SHELL INPUT REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellInputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, "<" );
+  ParseShellRedirectTarget( targetPath );
+  if pipeFromLast then
+     err( "< file should only be after the first pipeline command" );
+  elsif isExecutingCommand then
+<<retry4>> redirectedInputFd := open( to_string( targetPath ) & ASCII.NUL, O_RDONLY, 8#644# );
+     if redirectedInputFd < 0 then
+        if C_errno = EINTR then
+           goto retry4;
+        end if;
+        err( "Unable to open < file: " & OSerror( C_errno ) );
+     else
+<<retry5>> result := dup2( redirectedInputFd, stdin );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry5;
+           end if;
+           err( "unable to redirect input: " & OSerror( C_errno ) );
+           closeResult := close( redirectedInputFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedInputFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellInputRedirect;
+
+  --  PARSE SHELL OUTPUT APPEND REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellOutputAppendRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, ">>" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedOutputFD > 0 then
+     err( "cannot redirect using both > and >>" );
+  elsif pipe2Next then
+     err( ">> file should only be after the last pipeline command" );
+  elsif isExecutingCommand then
+<<retry7>> redirectedAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+     -- Linux applies the umask to open()
+     if redirectedAppendFd < 0 then
+        if C_errno = EINTR then
+           goto retry7;
+        end if;
+        err( "Unable to open >> file: " & OSerror( C_errno ) );
+     else
+<<retry8>> result := dup2( redirectedAppendFd, stdout );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry8;
+           end if;
+           err( "unable to append output: " & OSerror( C_errno ) );
+           closeResult := close( redirectedAppendFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedAppendFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellOutputAppendRedirect;
+
+  --  PARSE SHELL ERR OUTPUT REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellErrOutputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, "2>" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedErrAppendFD > 0 then
+<<retry10>> result := dup2( currentStandardError, stderr );  -- restore stderr
+     if result < 0 then                              -- check for error
+        if C_errno = EINTR then
+           goto retry10;
+        end if;
+        err( "unable to restore current error output: " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( redirectedErrOutputFd );        -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
+     redirectedErrOutputFD := 0;
+     err( "cannot redirect using both 2> and 2>>" );
+  elsif isExecutingCommand then
+     -- Note: redirecting 2> to the same file twice in a pipeline
+     -- is a race condition, but I don't know an easy way to
+     -- guarantee a file isn't reused as multiple paths may lead
+     -- to the same file.
+<<retry12>> redirectedErrOutputFd := open( to_string( targetPath ) & ASCII.NUL,
+               O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
+     -- Linux applies the umask to open()
+     if redirectedErrOutputFd < 0 then
+        if C_errno = EINTR then
+           goto retry12;
+        end if;
+        err( "Unable to open 2> file: " & OSerror( C_errno ) );
+     elsif rshOpt then
+        err( "cannot redirect 2> in a " & optional_bold( "restricted shell" ) );
+     else
+<<retry13>> result := dup2( redirectedErrOutputFd, stderr );
+        if result < 0 then
+           if C_errno = EINTR then
+              goto retry13;
+           end if;
+           err( "unable to set error output: " & OSerror( C_errno ) );
+           closeResult := close( redirectedErrOutputFd );
+           -- close EINTR is a diagnostic message.  Do not handle.
+           redirectedErrOutputFd := 0;
+        end if;
+     end if;
+  end if;
+end ParseShellErrOutputRedirect;
+
+  --  PARSE SHELL ERR OUTPUT APPEND REDIRECT
+  ----------------------------------------------------------------------------
+
+procedure ParseShellErrOutputAppendRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  expect( shell_symbol_t, "2>>" );
+  ParseShellRedirectTarget( targetPath );
+  if redirectedErrOutputFD > 0 then
+<<retry15>> result := dup2( currentStandardError, stderr );  -- restore stderr
+      if result < 0 then                              -- check for error
+         if C_errno = EINTR then
+            goto retry15;
+         end if;
+         err( "unable to restore current error output: " & OSerror( C_errno ) );
+      end if;
+      closeResult := close( redirectedErrOutputFd );           -- done with file
+      -- close EINTR is a diagnostic message.  Do not handle.
+      redirectedErrOutputFD := 0;
+      err( "cannot redirect using both 2> and 2>>" );
+  elsif isExecutingCommand then
+<<retry17>> redirectedErrAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
+      -- Linux applies the umask to open()
+      if redirectedErrAppendFd < 0 then
+         if C_errno = EINTR then
+            goto retry17;
+         end if;
+         err( "Unable to open 2>> file: " & OSerror( C_errno ) );
+      else
+<<retry18>> result := dup2( redirectedErrAppendFd, stderr );
+         if result < 0 then
+            if C_errno = EINTR then
+               goto retry18;
+            end if;
+            err( "unable to append error output: " & OSerror( C_errno ) );
+            closeResult := close( redirectedErrAppendFd );
+            -- close EINTR is a diagnostic message.  Do not handle.
+            redirectedErrAppendFd := 0;
+         end if;
+      end if;
+  end if;
+end ParseShellErrOutputAppendRedirect;
+
+  --  DO SHELL ERROR TO OUTPUT REDIRECT
+  --
+  -- This must be performed after we know if we're in a pipeline.
+  ----------------------------------------------------------------------------
+
+procedure DoShellErrorToOutputRedirect is
+  targetPath : anExpandedShellWord;
+begin
+  checkAda95Redirects;
+  needToRedirectErr2Out := false;
+  if redirectedErrOutputFD > 0 then       -- no file for this one
+<<retry20>> result := dup2( currentStandardError, stderr );  -- restore stderr
+     if result < 0 then                              -- check for error
+        if C_errno = EINTR then
+           goto retry20;
+        end if;
+        err( "unable to restore current error output: " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( redirectedErrOutputFd );          -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
+     redirectedErrOutputFD := 0;
+     err( "cannot redirect using two of 2>, 2>> and 2>&1" );
+
+  elsif redirectedErrAppendFD > 0 then       -- no file for this one
+<<retry22>> result := dup2( currentStandardError, stderr );  -- restore stderr
+     if result < 0 then                               -- check for error
+        if C_errno = EINTR then
+           goto retry22;
+        end if;
+        err( "unable to restore current error output: " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( redirectedErrAppendFd );   -- done with file
+     -- close EINTR is a diagnostic message.  Do not handle.
+     redirectedErrAppendFD := 0;
+     err( "cannot redirect using two of 2>, 2>> and 2>&1" );
+     -- KB: debugging
+     --elsif pipe2Next then
+     --   err( "2>&1 file should only be after the last pipeline command" );
+  elsif isExecutingCommand then
+     -- When redirecting standard error to standard output, how we
+     -- do it depends on the context.  If we are in a pipeline,
+     -- the jobs package must redirect both standard error and
+     -- output to the pipe.  If we tried to redirect it here,
+     -- the pipe hasn't been opened yet and there would nowhere to redirect
+     -- to. If we are not in a pipeline, or are the last command,
+     -- we redirect it here.
+    if pipe2Next then
+       pipeStderr := true; -- jobs package will handle it
+    else
+-- It looks wrong but, yes, active stderr to active stdout.
+<<retry24>> redirectedErrOutputFd := dup2( stdout, stderr );
+        if redirectedErrOutputFd < 0 then
+           if C_errno = EINTR then
+              goto retry24;
+           end if;
+           redirectedErrOutputFd := 0;
+           err( "unable to set error output: " & OSerror( C_errno ) );
+        end if;
+     end if;
+  end if;
+end DoShellErrorToOutputRedirect;
+
+  rawWordValue : aRawShellWord;
+  shellWord  : anExpandedShellWord;
+  -- TODO: refactor shellWord?
+
+  haveAllParameters : boolean;
+
 begin
 
   -- ParseGeneralStatement just did a resumeScanning.  The token should
@@ -4246,7 +3653,21 @@ begin
   -- improved in the future.
 
      cmdNameToken := token;                       -- avoid prob below w/discard
-     ParseOneShellWord( wordType, pattern, cmdName, First => true );
+
+     -- For built-ins like cd, the command is the token name.  Otherwise, we'll
+     -- have to treat the token as a shell word.
+     if token >= env_t and token <= delete_t then
+        cmdName := identifiers( token ).name;
+        getNextToken;
+     elsif identifiers( token ).kind /= new_t and then getBaseType( identifiers( token ).kind ) = command_t then
+        cmdName := identifiers( token ).value.all;
+        identifiers( token ).wasReferenced := true;
+        getNextToken;
+     else
+        parseUniqueShellWord( shellWord );
+        cmdName := unbounded_string( shellWord );
+     end if;
+
      itself := cmdName;                                    -- this is new @
      pipeStderr := false;
 
@@ -4256,16 +3677,18 @@ begin
 <<restart_with_itself>>
 
   inBackground := false;                                 -- assume fg command
-  paramCnt := 0;                                         -- params unknown
+  --paramCnt := 0;                                         -- params unknown
 
-  if isParenthesis then                                  -- parenthesis?
-     -- getNextToken;                                       -- AdaScript syntax
+  if token = symbol_t and identifiers( token ).value.all = "(" then                                  -- parenthesis?
+     -- getNextToken;                                    -- AdaScript syntax
      expect( symbol_t, "(" );                            -- skip paraenthesis
      markScanner( firstParam );                          -- save position
      while not error_found and token /= eof_t loop       -- count parameters
         ParseExpression( expr_val, expr_type );
-        shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
-        paramCnt := paramCnt + 1;
+        -- shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
+        -- bourneShellWordLists.Queue( wordList, anExpandedShellWord( expr_val ) );
+        addAdaScriptValue( wordList, expr_val );
+        --paramCnt := paramCnt + 1;
         if Token = symbol_t and then identifiers( Token ).value.all = "," then
            getNextToken;
         else
@@ -4302,327 +3725,127 @@ begin
      -- markScanner( firstParam );
      word := null_unbounded_string;
 
-     -- Some arguments, | or @ ? go get them...
-     if token /= symbol_t or else identifiers( token ).value.all /= ";" then
-        ParseShellWords( wordList, First => false );
+     -- Shell words are not the only thing returned by the compiler, as there
+     -- may be numbers, symbols, etc.  The compiler doesn't always know how
+     -- to categorize tokens without the ability to look ahead.
+
+  ---
+
+  -- If there are no more shell words, then get the next token.
+  -- If it's a semi-colon, then the we're done parsing the shell
+  -- command.  Otherwise, if it's anything other than a shell
+  -- symbol, then treat it as a shell word and expand it.
+
+  -- First parameter
+
+  haveAllParameters := false;
+  while not haveAllParameters and not error_found and not done loop
+
+    -- if bourneShellWordLists.IsEmpty(wordList) and not error_found and not done then
+    if not error_found and not done then
+       loop
+--put_token; -- DEBUG
+          declare
+             token_value : unbounded_string renames identifiers( token ).value.all;
+          begin
+             if token = eof_t then
+                expectSemicolon;
+                haveAllParameters := true;
+                exit;
+             elsif token = symbol_t then
+                -- if these exist, then the individual command is ended.
+                if token_value = "|" then
+                   if onlyAda95 then
+                      err( "pipelines not allowed with " & optional_bold( "pragma ada_95" ) );
+                   end if;
+                   pipe2next := true;
+                   haveAllParameters := true;
+                   getNextToken;
+                   exit;
+                elsif token_value = "@" then
+                   if onlyAda95 then
+                      err( "@ not allowed with " & optional_bold( "pragma ada_95" ) );
+                   end if;
+                   itselfNext := true;
+                   haveAllParameters := true;
+                   getNextToken;
+                   exit;
+                elsif token_value = ";" then
+                   haveAllParameters := true;
+                   exit;
+                elsif token_value = "&" then
+                   --if not bourneShellWordLists.IsEmpty( wordList ) then
+              -- if bourneShellWordLists.aListIndex( paramCnt ) /= bourneShellWordLists.Length( wordList ) then
+                   --   err( "unexpected arguments after &" );
+                   --end if;
+                   inbackground := true;
+                   if pipe2Next then
+                      err( "no & - piped commands are automatically run in the background" );
+                   elsif pipeFromLast then
+                      err( "no & - final piped command always runs in the foreground" );
+                   end if;
+                   haveAllParameters := true;
+                   expect( symbol_t, "&" );
+                   if token /= symbol_t or identifiers( token ).value.all /= ";" then
+                      err( "unexpected arguments after &" );
+                   end if;
+                   exit;
+                 -- bourneShellWordLists.Clear( wordList, long_integer( paramCnt ) );
+                 -- paramCnt := paramCnt-1;
+               end if;
+
+               --rawWordValue := aRawShellWord( token_value );
+               parseShellWord( wordList );
+
+             elsif token = shell_symbol_t then
+
+               -- 2>&1 is not performed here because we need to know if we're
+               -- in a pipeline first.
+
+               if token_value = redirectOut_string then              -- > redirection
+                  ParseShellOutputRedirect;
+               elsif token_value = redirectIn_string then            -- < redirection
+                  ParseShellInputRedirect;
+               elsif token_value = redirectAppend_string then       -- >> redirection
+                  ParseShellOutputAppendRedirect;
+               elsif token_value = redirectErrOut_string then       -- 2> redirection
+                  ParseShellErrOutputRedirect;
+               elsif token_value = redirectErrAppend_string then   -- 2>> redirection
+                 ParseShellErrOutputAppendRedirect;
+               elsif token_value = redirectErr2Out_string then     -- 2>&1 redirection
+                 expect( shell_symbol_t, "2>&1" );
+                 needToRedirectErr2Out := true;
+               end if;
+           -- paramCnt := paramCnt+1;
+
+          -- TODO: review this.
+          -- Not a symbol or a shell symbol.
+             else
+            --rawWordValue := aRawShellWord( token_value );
+               parseShellWord( wordList );
+             end if;
+          end; -- token_value
+        --end if;
+        end loop;
      end if;
-     for i in 1..shellWordList.Length( wordList ) loop
-        shellWordList.Find( wordList, i, shellWord );
-        if shellWord.wordType = semicolonWord then
-           shellWordList.Clear( wordList, i );
-           exit;
-        elsif shellWord.wordType = pipeWord then
-           shellWordList.Clear( wordList, i );
-           pipe2Next := true;
-           exit;
-        elsif shellWord.wordType = itselfWord then
-           shellWordList.Clear( wordList, i );
-           itselfNext := true;
-        elsif error_found then
-           exit;
-        end if;
-        if shellWord.wordType = redirectOutWord or
-           shellWord.wordType = redirectInWord or
-           shellWord.wordType = redirectAppendWord or
-           shellWord.wordType = redirectErrOutWord or
-           shellWord.wordType = redirectErrAppendWord then
-           if onlyAda95 then
-              err( "command line redirection not allowed with " &
-                   optional_bold( "ada_95" ) & ".  Use set_output / set_input instead" );
-           end if;
-           expectRedirectOutFile := true;
-        elsif expectRedirectOutFile then           -- redirect filenames
-           expectRedirectOutFile := false;         -- not in param list
-        elsif wordType = redirectErr2OutWord then
-           null;                                   -- no file needed
-        end if;
-     end loop;
-     if pipe2Next and onlyAda95 then
-        err( "pipelines not allowed with " & optional_bold( "pragma ada_95" ) );
-     end if;
-     if shellWordList.length( wordList ) > 0 and onlyAda95 then
+   end loop;
+
+-- Unlike the previous version, we're not processing the words first
+
+  -- Ada 95 does not allow Bourne shell parameters after the command.
+
+  if bourneShellWordLists.length( wordList ) > 0 then
+     if onlyAda95 then
         err( "Bourne shell parameters not allowed with " &
              optional_bold( "pragma ada_95" ) );
      end if;
+   end if;
 
-     -- create loop
-     --resumeScanning( firstParam );
+end if; -- AdaScript vs Bourne Shell
 
-     -- at this point, the token is the first "word".  Discard it if it is
-     -- an unused identifier.
-
-     -- At this point, wordList contains a list of shell word parameters for
-     -- the command.  This includes redirections, &, and so forth.  Next,
-     -- examine all shell arguments, interpreting them and removing
-     -- them from the list.  Set up all I/O redirections as required.  When
-     -- this loop is finished, only the command parameters should remain the
-     -- word list.
-
-     paramCnt := 1;
-     while long_integer( paramCnt ) <= shellWordList.Length( wordList ) loop
-        shellWordList.Find( wordList, long_integer( ParamCnt ), shellWord );
--- put_line( "  processing = " & paramCnt'img & " - " & shellWord.pattern & " / " & shellWord.word & "/" & shellWord.wordType'img );
-
-        -- There is no check for multiple filenames after redirections.
-        -- This behaviour is the same as BASH: "echo > t.t t2.t" will
-        -- write t2.t to the file t.t in both BASH and BUSH.
-
-        if expectRedirectOutFile then             -- expecting > file?
-           expectRedirectOutFile := false;
-           if redirectedAppendFD > 0 then
-              err( "cannot redirect using both > and >>" );
-           elsif rshOpt then
-              err( "cannot redirect > in a " & optional_bold( "restricted shell" ) );
-           elsif pipe2Next then
-              err( "> file should only be after the last pipeline command" );
-           elsif isExecutingCommand then
-<<retry1>> redirectedOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
-                 O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
-              if redirectedOutputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry1;
-                 end if;
-                 err( "Unable to open > file: " & OSerror( C_errno ) );
-              else
-<<retry2>>       result := dup2( redirectedOutputFd, stdout );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry2;
-                    end if;
-                    err( "unable to set output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedOutputFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedOutputFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectInFile then
-           expectRedirectInFile := false;         -- expecting < file?
-           if pipeFromLast then
-              err( "< file should only be after the first pipeline command" );
-           elsif isExecutingCommand then
-<<retry4>>    redirectedInputFd := open( to_string( shellWord.word ) & ASCII.NUL, O_RDONLY, 8#644# );
-              if redirectedInputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry4;
-                 end if;
-                 err( "Unable to open < file: " & OSerror( C_errno ) );
-              else
-<<retry5>>       result := dup2( redirectedInputFd, stdin );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry5;
-                    end if;
-                    err( "unable to redirect input: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedInputFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedInputFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectAppendFile then
-           expectRedirectAppendFile := false;
-           if redirectedOutputFD > 0 then
-              err( "cannot redirect using both > and >>" );
-           elsif pipe2Next then
-              err( ">> file should only be after the last pipeline command" );
-           elsif isExecutingCommand then
-<<retry7>>    redirectedAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
-              if redirectedAppendFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry7;
-                 end if;
-                 err( "Unable to open >> file: " & OSerror( C_errno ) );
-              else
-<<retry8>>       result := dup2( redirectedAppendFd, stdout );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry8;
-                    end if;
-                    err( "unable to append output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedAppendFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedAppendFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectErrOutFile then             -- expecting 2> file?
-           expectRedirectErrOutFile := false;
-           if redirectedErrAppendFD > 0 then
-<<retry10>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
-                 if C_errno = EINTR then
-                    goto retry10;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrOutputFd );        -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrOutputFD := 0;
-              err( "cannot redirect using both 2> and 2>>" );
-           elsif isExecutingCommand then
-              -- Note: redirecting 2> to the same file twice in a pipeline
-              -- is a race condition, but I don't know an easy way to
-              -- guarantee a file isn't reused as multiple paths may lead
-              -- to the same file.
-<<retry12>>   redirectedErrOutputFd := open( to_string( shellWord.word ) & ASCII.NUL,
-                 O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
-              if redirectedErrOutputFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry12;
-                 end if;
-                 err( "Unable to open 2> file: " & OSerror( C_errno ) );
-              elsif rshOpt then
-                 err( "cannot redirect 2> in a " & optional_bold( "restricted shell" ) );
-              else
-<<retry13>>      result := dup2( redirectedErrOutputFd, stderr );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry13;
-                    end if;
-                    err( "unable to set error output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedErrOutputFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedErrOutputFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif expectRedirectErrAppendFile then
-           expectRedirectErrAppendFile := false;
-           if redirectedErrOutputFD > 0 then
-<<retry15>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
-                 if C_errno = EINTR then
-                    goto retry15;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrOutputFd );           -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrOutputFD := 0;
-              err( "cannot redirect using both 2> and 2>>" );
-           elsif isExecutingCommand then
-<<retry17>>   redirectedErrAppendFd := open( to_string( shellWord.word ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
-              if redirectedErrAppendFd < 0 then
-                 if C_errno = EINTR then
-                    goto retry17;
-                 end if;
-                 err( "Unable to open 2>> file: " & OSerror( C_errno ) );
-              else
-<<retry18>>      result := dup2( redirectedErrAppendFd, stderr );
-                 if result < 0 then
-                    if C_errno = EINTR then
-                       goto retry18;
-                    end if;
-                    err( "unable to append error output: " & OSerror( C_errno ) );
-                    closeResult := close( redirectedErrAppendFd );
-                    -- close EINTR is a diagnostic message.  Do not handle.
-                    redirectedErrAppendFd := 0;
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectOutWord then     -- >? expect a file?
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectOutFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectInWord then      -- < ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectInFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectAppendWord then  -- >> ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectAppendFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectErrOutWord then  -- 2> ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectErrOutFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectErrAppendWord then  -- 2>> ? expect a file
-           checkRedirectFile;                     -- check for missing file
-           expectRedirectErrAppendFile := true;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = redirectErr2OutWord then  -- expecting 2>&1 file?
-           if redirectedErrOutputFD > 0 then       -- no file for this one
-<<retry20>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                              -- check for error
-                 if C_errno = EINTR then
-                    goto retry20;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrOutputFd );          -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrOutputFD := 0;
-              err( "cannot redirect using two of 2>, 2>> and 2>&1" );
-           elsif redirectedErrAppendFD > 0 then       -- no file for this one
-<<retry22>>   result := dup2( currentStandardError, stderr );  -- restore stderr
-              if result < 0 then                               -- check for error
-                 if C_errno = EINTR then
-                    goto retry22;
-                 end if;
-                 err( "unable to restore current error output: " & OSerror( C_errno ) );
-              end if;
-              closeResult := close( redirectedErrAppendFd );   -- done with file
-              -- close EINTR is a diagnostic message.  Do not handle.
-              redirectedErrAppendFD := 0;
-              err( "cannot redirect using two of 2>, 2>> and 2>&1" );
-           -- KB: debugging
-           --elsif pipe2Next then
-           --   err( "2>&1 file should only be after the last pipeline command" );
-           else
-              -- When redirecting standard error to standard output, how we
-              -- do it depends on the context.  If we are in a pipeline,
-              -- the jobs package must redirect both standard error and
-              -- output to the pipe.  If we are not in a pipeline, or
-              -- are the last command, we redirect it here.
-              if pipe2Next then
-                 pipeStderr := true; -- jobs package will handle it
-              else
-<<retry24>>      redirectedErrOutputFd := dup2( currentStandardOutput, stderr );
-                 if redirectedErrOutputFd < 0 then
-                    if C_errno = EINTR then
-                       goto retry24;
-                    end if;
-                    redirectedErrOutputFd := 0;
-                    err( "unable to set error output: " & OSerror( C_errno ) );
-                 end if;
-              end if;
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        elsif shellWord.wordType = ampersandWord then       -- & ?
-           if shellWordList.aListIndex( paramCnt ) /= shellWordList.Length( wordList ) then
-              err( "unexpected arguments after &" );
-           end if;
-           inbackground := true;
-           if pipe2Next then
-              err( "no & - piped commands are automatically run in the background" );
-           elsif pipeFromLast then
-              err( "no & - final piped command always runs in the foreground" );
-           end if;
-           shellWordList.Clear( wordList, long_integer( paramCnt ) );
-           paramCnt := paramCnt-1;
-        end if;
-        paramCnt := paramCnt+1;
-     end loop;
-     checkRedirectFile;                               -- check for missing file
-
-  end if;
+if needToRedirectErr2Out then
+   DoShellErrorToOutputRedirect;
+end if;
 
   -- End of Parameter Parsing
 
@@ -4634,6 +3857,8 @@ begin
      exportVariables;                                       -- make environment
 
      -- Create a list of C-strings for the parameters
+
+-- TODO: wordList is only partial
 
      externalCommandParameters( ap, wordList );
 
@@ -4751,7 +3976,7 @@ begin
 
   if ap /= null then                                        -- parameter list?
      clearParamList;                                        -- discard it
-     shellWordList.Clear( wordList );
+     bourneShellWordLists.Clear( wordList );
   end if;
 
   -- Comand complete.  Look for next in pipeline (if any).
@@ -4770,6 +3995,8 @@ begin
      itselfNext := false;
      goto restart_with_itself;
   end if;
+
+  bourneShellWordLists.clear( wordList );
 end ParseShellCommand;
 
 

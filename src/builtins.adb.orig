@@ -177,7 +177,7 @@ begin
         identifiers( pwd ).value.all := current_working_directory;
      end if;
   else
-     err( "cannot access '" & to_string( path ) & "'" );
+     err( "cannot access " & toProtectedValue( path ) );
   end if;
   if showPath then
      put_line( current_working_directory );
@@ -588,7 +588,8 @@ begin
      delete( tempStr, length( tempStr ), length( tempStr ) );
      findIdent( tempStr, identToUnset );
      if identToUnset = eof_t then
-        err( "identifier not declared" );
+        -- it is possible a mistaken variable substitution could reveal data
+        err( "identifier " & toProtectedValue(( tempStr )) & " not declared" );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
         err( "unsetting PATH is not allowed in a " &
           optional_bold( "restricted shell" ) );
@@ -609,7 +610,7 @@ begin
            for i in keywords_top..identifiers_top - 1 loop
                if identifiers( i ).field_of = identToUnset and not identifiers( i ).deleted then
                 if not deleteIdent( i ) then
-                     err( "unable to unset identifier field " & to_string( identifiers( i ).name ) );
+                     err( "unable to unset identifier field " & toProtectedValue( identifiers( i ).name ) );
                   end if;
                end if;
            end loop;
@@ -657,7 +658,8 @@ begin
            delete( tempStr, length( tempStr ), length( tempStr ) );
            findIdent( tempStr, identToShow );
            if identToShow = eof_t then
-              err( "identifier not declared" );
+              -- it is possible a mistaken variable substitution could reveal data
+              err( "identifier " & toProtectedValue( tempStr ) & " not declared" );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
               err( "env PATH is not allowed in a " &
                 optional_bold( "restricted shell" ) );

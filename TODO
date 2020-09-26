@@ -11,17 +11,41 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- Fix: redirection
-  - characters before a redirection
-  - when i tried git branch 2>/dev/null, standard output was redirected
-  - 2> wasn't allowed after the first command in a pipeline but should be
-- Fix: pack - script is not exiting on a return, but was working before
+- shell parser rewrite
+  - length substitution
+      - does bash allow array elements?  even so, a different syntax in
+        SparForte so maybe disallowed for compatibility reasons.
+  - echo \\ ;
+  - subword combination tests
+  - fix all todos
+  - :-, :+, :? not :=
+  - leaving a ; off the end of a command gives an internal error in goodtests.sp
+  - command substitution testing
+  - recursive command substitution
+  - arithmetic expansion $((..))
+  - see also "Bourne shell issues" below
+  - edge-case and tests: pwd "&" is not being treated as a file
+    - ls \& &
+  - globbing in a directory path (/a/*/b), not just the file name
+  - ls("-l") | wc -l does not work (legacy compiler issue) but the
+    opposite works.
+TESTING NOTES FOR SHELL PARSER REWRITE
+    - document that fields and array elements are not allowed ${#field}
+- updating adascript shell commands to correspond with bourne shell changes
+- renamings on expansions
+- tests
+   - e.g. echo "&" &
+- "literal" & custom-string is an error, but custom-string & "literal" is
+  not?  Check this.  Encountered with imported shell variable.
+- first word handling, including executable program glob
+- daniel - command completion should auto-fill simple directory levels
+- pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
-- Change: manual test cases -  can HTML be embedded as CDATA in junit xml?
-- New: improving shell features
-  - Verify: review and fix of shell features
-- Verify: incomplete casting tests
-
+- manual test cases -  can HTML be embedded as CDATA in junit xml?
+- improving shell features
+- incomplete casting tests
+- Linux supplies a umask, but no umask command in shell. - discuss
+- optional ; on spar -e
 - Research: for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
 - Verify: generic/parameterized types
@@ -67,7 +91,12 @@ Priority Issues (Fix These First)
 - Research: enforcing strong types and/or contracts
   - Research: should import require contracts rather than custom type?
 - unsorted/misc
+<<<<<<< HEAD
     - Verify: check that x : arraytype := (x) works correctly, both with specs
+=======
+    - subprogram parameter side-effects checking
+    - check that x : arraytype := (x) works correctly, both with specs
+>>>>>>> shell
       and normal declaration.
     - Verify: finish manual test pragmas
     - Change: generally, we need to identify built-in types.  It's not enough that
@@ -255,6 +284,10 @@ Nice to Haves / Missing Functionality
 
 - foreach
   - in PHP, foreach returns a pointer to the items, not a copy.
+- design
+  - pragma restriction( io_bound );  (cpu_bound);  no execution
+    thread can have both at once.  Helps to design the application.
+    How could this be implemented?
 - Java-style monitor
   - a restricted shell should prohibit certain Linux command names like "nc"
     (netcat) due to security, reading /etc/passwd, etc.
@@ -283,6 +316,15 @@ Nice to Haves / Missing Functionality
   - package specifications should be renames, not forwards, since they
     can have their qualities modified on export (abstract, limited, constant)
     .. can that work?
+  - should there be an option to reload a package on a filesystem change? or
+    is this not the responsibility of the programming language?  that is,
+    is it a service that needs to be stopped and restarted by an orchestration
+    program, in a controlled way if there is a cluster with the script?
+  - should loadable files have keyword/tag requirements to denote architectural
+    concerns
+    - i.e. tag a file is compatible with containers/jails, or not horizontally
+      scalable, not public facing, etc.
+
 - pragmas
     - distinguish types of pragmas, to later separate by block or context
     - a pragma to check for the version of SparForte?  Is it a doc pragma,
@@ -445,20 +487,31 @@ New Unique Concepts
       software model be exposed through System?  Currently pragmas are applied
       directly to the current program, rather than triggered by pragma
       software_model and applied through some kind of architecture system.
-  - units of measure for numerics
-    - define a standard record type for units with singular/plural/etc.
+  - units of measure
+    - units of measure should be able to be changed dynamically at run-time
+      - units.get_unit_of_measure / units.set_unit_of_measure
+    - units of measure should be defined as a type (not unlike an exception)
+      - a unit of measure should be related to a universal type (string/numeric)
+      - define a standard record type for units with singular/plural/etc.
+      - e.g. kilometers : unit_of_measure of universal_numeric := ("km", "kms");
     - allow the standard record type to be extended by subtype (providing
       alternate spellings but compatible) or new types.  Allow the creation
       of unit hierarchies.  e.g. null (root) units, currencies (abstract),
       dollars (english canadian) and subtype dollars (french canadian)
+      - if not a record, functions can be in the units package to get the
+        singular and plura values.
       - this requires derived records to be implemented
       - e.g. distance : integer in feet := 0;
         (where feet.singular := "foot", feet.plural := "feet")
+    - a unit of measure should be able to be constant (unchanging at run-time)
+      - e.g. distance : integer in constant feet := 0;
+        (where feet.singular := "foot", feet.plural := "feet")
     - can units be applied to strings.  e.g. x : title in spanish or
       x : title in europe_region.  Affecting concatenation.
-    - should multiple units be allowed?  Is this a special case of multiple
-      inherance, where x belongs to multiple hierarches?  Should it be
-      generalized/
+    - should multiple units be allowed?
+    -  Is this a special case of multiple inherance, where x belongs to multiple
+       hierarches?  Should it be generalized?  I'm thinking generalizing it with
+       this way adds confusion.
   - naming convention
     - what are the naming standards of functions.  e.g. sin(), to_sin(), sin_of()?
   - type system
@@ -487,6 +540,46 @@ New Unique Concepts
     - abstract should be usable anywhere to create a type that is not intended
       to have a variable created of that type.
     - would syntax trees help? https://en.wikipedia.org/wiki/Abstract_syntax_tree
+  - relations
+    - business rules should have their own block as programmers may not be the
+      one updating these rules.
+    - the executable part of the when should not allow if or case statements
+    - examples:
+In its simplest form, we need a block for business
+users to enter options.  We would like to limit what
+is visible to the business user.
+
+options business_settings(i, j, k : integer) is
+
+  tax_rate : constant float := 13.5;
+
+end business_settings;
+
+An options block may only contain constants.
+
+The main purpose, though, is to provide a place to
+hold business rules.
+
+relation Male(X) return boolean is
+  -- a relation is essentially a list of case/when
+begin
+  when X = ken => 
+     return true;
+  when others =>
+     return false;
+end Male;
+
+relation Male(X) return true when X = ken;
+-- maybe one liners
+
+relation Love(X,Y) return boolean is
+  when others =>
+     return Male(X) and not Male(Y);
+end Love;
+
+Relations require namespacing or all relations will
+fire.
+
 
 -------------------------------------------------------------------------------
 KNOWN ISSUES/IDEAS
@@ -622,6 +715,7 @@ ISSUES (AdaScript)
     - linux socket calls in bush_linux
     - set_output, etc. redirection for sockets
     - optimize fd - don't need to pull it out with stringField for every DoGet
+    - rate limiting (set transfer speed per second)
 
   * command_line package (AdaScript issues)
     - command_line.argument() cannot be used in open...get an error.  Expects

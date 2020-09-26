@@ -964,10 +964,10 @@ begin
   -- Draw the underline error pointer
 
   if script /= null then
-     outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
+     outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
      outLine := outLine & '^';                                  -- token start
      if lastpos > firstpos then                                 -- multi chars?
-        outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+        outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
         outLine := outLine & '^';                               -- token end
      end if;
      outLine := outLine & ' ';                                  -- token start
@@ -1035,7 +1035,7 @@ end get_script_execution_position;
 -- Only display the first error/exception encounted.
 -----------------------------------------------------------------------------
 
-procedure err( msg : string ) is
+procedure err_shell( msg : string; wordOffset : natural ) is
   cmdline    : unbounded_string;
   firstpos   : natural;
   lastpos    : natural;
@@ -1159,13 +1159,20 @@ begin
   fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
 
   -- Draw the underline error pointer
+  -- If it's a shell word with an offset into the word, just show a single
+  -- caret.
 
   if script /= null then
-     outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
-     outLine := outLine & '^';                                  -- token start
-     if lastpos > firstpos then                                 -- multi chars?
-        outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
-        outLine := outLine & '^';                               -- token end
+     outLine := outLine & to_unbounded_string( (firstPos-1) * " " );      -- indent
+     if wordOffset > 0 then
+        outLine := outLine & to_unbounded_string( (wordOffset-1) * " " );
+        outLine := outLine & '^';
+     else
+        outLine := outLine & '^';                               -- token start
+        if lastpos > firstpos then                              -- multi chars?
+           outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * "-" );
+           outLine := outLine & '^';                            -- token end
+        end if;
      end if;
      outLine := outLine & ' ';                                  -- token start
   end if;
@@ -1233,7 +1240,22 @@ begin
   if traceOpt then
      put_trace( "error: " & msg );
   end if;
+end err_shell;
+
+-----------------------------------------------------------------------------
+--  ERR
+--
+-- Stop execution and record an compile-time or run-time error.  Format the
+-- error according to the user's preferences and set the error_found flag.
+--
+-- Only display the first error/exception encounted.
+-----------------------------------------------------------------------------
+
+procedure err( msg : string ) is
+begin
+   err_shell( msg, 0 );
 end err;
+
 
 -----------------------------------------------------------------------------
 --  ERR EXCEPTION RAISED
@@ -1396,10 +1418,10 @@ begin
 
   -- Draw the underline error pointer
 
-  outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
+  outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
   outLine := outLine & '^';                                  -- token start
   if lastpos > firstpos then                                 -- multi chars?
-     outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+     outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
      outLine := outLine & '^';                               -- token end
   end if;
   outLine := outLine & ' ';                                  -- token start
@@ -1551,10 +1573,10 @@ begin
 
   -- Draw the underline error pointer
 
-  outLine := outLine & to_string( (firstPos-1) * " " );      -- indent
+  outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
   outLine := outLine & '^';                                  -- token start
   if lastpos > firstpos then                                 -- multi chars?
-     outLine := outLine & to_string( (lastpos-firstPos-1) * "-" );
+     outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
      outLine := outLine & '^';                               -- token end
   end if;
   outLine := outLine & ' ';                                  -- token start
@@ -5527,17 +5549,26 @@ begin
      identifiers( word_t ).value.all := word;
      return;
 
-     --cmdpos := cmdpos+1;                                      -- continue
-     --lastpos := cmdpos;                                       -- reading
-     --while script( lastpos ) /= immediate_word_delimiter loop -- until last
-     --   lastpos := lastpos+1;
-     --end loop;
-     --lastpos := lastpos-1;
-     --identifiers( word_t ).value.all := To_Unbounded_String(      -- extract string
-     --  script( cmdpos..lastpos ) );
-     --cmdpos := lastpos+2;                                     -- skip last "
-     --token := word_t;                                         -- word literal
-     --return;
+  elsif  ch = immediate_symbol_delimiter then
+
+     -- Immediate symbols (imm_symbol_delim_t)
+     --
+     -- The preprocessor will have placed delimiters around the symbols
+     -- with complex characters that are not obvious sybmols, such as 2>&1
+     -- (a leading number and ending with a number).  By using delimiters
+     -- as bookends, we'll read these faster.
+
+     cmdpos := cmdpos+1;                                      -- continue
+     lastpos := cmdpos;                                       -- reading
+     while script( lastpos ) /= immediate_symbol_delimiter loop -- until last
+        lastpos := lastpos+1;
+     end loop;
+     lastpos := lastpos-1;
+     identifiers( shell_symbol_t ).value.all := To_Unbounded_String( -- extract string
+       script( cmdpos..lastpos ) );
+     cmdpos := lastpos+2;                                     -- skip delim
+     token := shell_symbol_t;                                 -- a shell symbol
+     return;
 
   elsif  ch = immediate_sql_word_delimiter then
 
@@ -5550,16 +5581,19 @@ begin
      -- The preprocessor will have placed delimiters around the word so we
      -- shouldn't have to check for a missing one.
 
-     cmdpos := cmdpos+1;                                      -- continue
-     lastpos := cmdpos;                                       -- reading
-     while script( lastpos ) /= immediate_sql_word_delimiter loop -- until last
-        lastpos := lastpos+1;
+     word := null_unbounded_string;
+     cmdpos := cmdpos + 1;
+     while script( cmdpos ) /= immediate_sql_word_delimiter loop
+        if ch = high_ascii_escape then  -- high_ascii escape?
+           cmdpos := cmdpos + 1;
+        end if;
+        word := word & script( cmdpos );
+        cmdpos := cmdpos + 1;
      end loop;
-     lastpos := lastpos-1;
-     identifiers( sql_word_t ).value.all := To_Unbounded_String(  -- extract string
-       script( cmdpos..lastpos ) );
-     cmdpos := lastpos+2;                                     -- skip last "
-     token := sql_word_t;                                     -- word literal
+     lastpos := cmdpos - 1; -- last char
+     cmdpos := cmdpos + 1; -- skip delim
+     token := sql_word_t;
+     identifiers( sql_word_t ).value.all := word;
      return;
 
   elsif (ch >= 'a' and ch <='z') or
