@@ -823,7 +823,7 @@ if [ -z "$TMP" ] ; then
    if [ -z "$TMP" ] ; then
       echo "no"
       echo -n "checking for libSDL (locate, Darwin)... "
-      TMP=`"$LOCATE" libSDL`
+      TMP=`"$LOCATE" libSDL libsdl`
       if [ ! -z "$TMP" ] ; then
           echo "yes"
       else
