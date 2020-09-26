@@ -789,7 +789,8 @@ function doCommandSubstitution( originalCommands : unbounded_string ) return unb
 begin
    -- put_line( "commands = " & to_string( commands ) );
    if commands = "" or commands = " " then
-      err( "no commands to run" );
+      -- In Bourne shell, nothing happens.  It's not an error.
+      null;
    else
 
       -- If the backquoted commands don't end with a semi-colon, add one.
@@ -865,7 +866,7 @@ begin
       if element( rawWordValue, wordPos ) = ':' then
          expectChar( ':', rawWordValue, wordLen, wordPos  );
          if endOfShellWord then
-            err_shell( "expected - after colon", wordPos );
+            err_shell( "expected -, + or ? after colon", wordPos );
          elsif isLengthExpansion then
             err_shell( "# cannot be used with colon", wordPos );
          elsif element( rawWordValue, wordPos ) = '-' then
@@ -892,6 +893,8 @@ begin
               defaultValue := defaultValue & element( rawWordValue, wordPos );
               getNextChar( rawWordValue, wordLen, wordPos );
             end loop;
+         elsif element( rawWordValue, wordPos ) = '=' then
+            err_shell( "assignment in curly braces not supported", wordPos );
          else
             err_shell( "unexpected symbol after colon", wordPos );
          end if;

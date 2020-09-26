@@ -1,3 +1,5 @@
+-- This should fail
+
 type rt is record
   i : integer;
 end record;

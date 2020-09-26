@@ -3101,6 +3101,15 @@ pragma assert( s = "~" );
 s  := `echo "~";`;
 pragma assert( s = "~" );
 
+s  := `echo ~ken;`;
+pragma assert( s = "/home/ken" );
+
+s  := `echo "~ken";`;
+pragma assert( s = "~ken" );
+
+s  := `echo ken~;`;
+pragma assert( s = "ken~" );
+
 -- New features of shell rewrite: brace substitutions
 
 s  := `echo ${HOME}`;
@@ -3220,6 +3229,11 @@ pragma assert( s1 = "" );
 
 s := `echo $(pwd)`;
 pragma assert( s = `pwd` );
+
+-- No commands does nothing in Bourne shell
+
+s := `echo $()`;
+pragma assert( s = "" );
 
 -- pathname expansion with a single / as directory
 

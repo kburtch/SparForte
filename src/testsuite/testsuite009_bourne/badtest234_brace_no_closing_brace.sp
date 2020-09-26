@@ -1,4 +1,4 @@
 -- This should fail
 
-echo ${if};
+echo ${HOME;
 
