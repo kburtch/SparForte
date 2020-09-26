@@ -16,6 +16,8 @@ Priority Issues (Fix These First)
       - does bash allow array elements?  even so, a different syntax in
         SparForte so maybe disallowed for compatibility reasons.
   - echo \\ ;
+  - subword combination tests
+  - fix all todos
   - :-, :+, :? not :=
   - leaving a ; off the end of a command gives an internal error in goodtests.sp
   - command substitution testing

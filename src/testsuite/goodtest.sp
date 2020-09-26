@@ -2576,6 +2576,368 @@ sleep 1 &;
 wait;
 cmd_echo : limited command := "/bin/echo";
 cmd_echo;
+
+tmp : limited string := "t.tmp";
+
+-- Bourne Shell Compatibility: Standard Output
+
+-- Literal target
+
+echo "a" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( result = "a" );
+rm t.tmp;
+
+echo "b" >t.tmp;
+result := `cat t.tmp`;
+pragma assert( result = "b" );
+rm t.tmp;
+
+-- Double quoted target
+
+echo "c" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "c" );
+rm t.tmp;
+
+echo "d" > "$tmp";
+result := `cat t.tmp`;
+pragma assert( result = "d" );
+rm t.tmp;
+
+echo "e" >"$tmp";
+result := `cat t.tmp`;
+pragma assert( result = "e" );
+rm t.tmp;
+
+echo "f">"t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "f" );
+rm t.tmp;
+
+echo "f">"t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "f" );
+rm t.tmp;
+
+echo ">" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = ">" );
+rm t.tmp;
+
+-- Single quoted target
+
+echo "g" > 't.tmp';
+result := `cat t.tmp`;
+pragma assert( result = "g" );
+rm t.tmp;
+
+echo "h" > '$tmp';
+result := `cat '$tmp'`;
+pragma assert( result = "h" );
+rm '$tmp';
+
+echo "i" >'$tmp';
+result := `cat '$tmp'`;
+pragma assert( result = "i" );
+rm '$tmp';
+
+echo 'j'>'t.tmp';
+result := `cat t.tmp`;
+pragma assert( result = "j" );
+rm t.tmp;
+
+echo '>' > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = ">" );
+rm t.tmp;
+
+-- Bourne Shell Compatibility: Standard Output Append
+
+-- Literal target
+
+touch t.tmp;
+echo "a1" >> t.tmp;
+result := `cat t.tmp`;
+pragma assert( result = "a1" );
+rm t.tmp;
+
+touch t.tmp;
+echo "b2" >>t.tmp;
+result := `cat t.tmp`;
+pragma assert( result = "b2" );
+rm t.tmp;
+
+-- Double quoted target
+
+touch t.tmp;
+echo "c2" >> "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "c2" );
+rm t.tmp;
+
+touch t.tmp;
+echo "d2" >> "$tmp";
+result := `cat t.tmp`;
+pragma assert( result = "d2" );
+rm t.tmp;
+
+touch t.tmp;
+echo "e2" >>"$tmp";
+result := `cat t.tmp`;
+pragma assert( result = "e2" );
+rm t.tmp;
+
+touch t.tmp;
+echo "f2">>t.tmp;
+result := `cat t.tmp`;
+pragma assert( result = "f2" );
+rm t.tmp;
+
+echo ">>" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = ">>" );
+rm t.tmp;
+
+-- Single quoted target
+
+touch t.tmp;
+echo "g2" >> 't.tmp';
+result := `cat t.tmp`;
+pragma assert( result = "g2" );
+rm t.tmp;
+
+touch '$tmp';
+echo "h2" >> '$tmp';
+result := `cat '$tmp'`;
+pragma assert( result = "h2" );
+rm '$tmp';
+
+touch '$tmp';
+echo "i2" >>'$tmp';
+result := `cat '$tmp'`;
+pragma assert( result = "i2" );
+rm '$tmp';
+
+touch t.tmp;
+echo 'j2'>>'t.tmp';
+result := `cat t.tmp`;
+pragma assert( result = "j2" );
+rm t.tmp;
+
+echo '>>' > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = ">>" );
+rm t.tmp;
+
+-- Bourne Shell Compatibility: Standard Error Output
+
+-- Literal Target
+
+echo "a" 2> t.tmp;
+result := `cat < t.tmp`;
+-- trace output will add output to the next line
+pragma assert( result /= "a" );
+rm t.tmp;
+
+echo "b" 2>t.tmp;
+result := `cat < t.tmp`;
+-- trace output will add output to the next line
+pragma assert( result /= "b" );
+rm t.tmp;
+
+echo "c" 21 > t.tmp;
+result := `cat < t.tmp`;
+pragma assert( result = "c 21" );
+rm t.tmp;
+
+-- Double quoted target
+
+echo "c" > t.tmp;
+echo "c2" 2> "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result /= "c2" );
+rm t.tmp;
+
+echo "d" > t.tmp;
+echo "d2" 2> "$tmp";
+result := `cat t.tmp`;
+pragma assert( result /= "d2" );
+rm t.tmp;
+
+echo "e" > t.tmp;
+echo "e2" 2>"$tmp";
+result := `cat t.tmp`;
+pragma assert( result /= "e2" );
+rm t.tmp;
+
+echo "2>" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "2>" );
+rm t.tmp;
+
+-- Single quoted target
+
+echo "g" > t.tmp;
+echo "g2" 2> 't.tmp';
+result := `cat t.tmp`;
+pragma assert( result /= "g2" );
+rm t.tmp;
+
+echo "h" > t.tmp;
+echo "h2" 2> '$tmp';
+result := `cat '$tmp'`;
+pragma assert( result /= "h2" );
+rm '$tmp';
+
+echo "i" > t.tmp;
+echo "i2" 2>'$tmp';
+result := `cat '$tmp'`;
+pragma assert( result /= "i2" );
+rm '$tmp';
+
+echo "j" > t.tmp;
+echo 'j2'2>'t.tmp';
+result := `cat t.tmp`;
+pragma assert( result /= "j2" );
+rm t.tmp;
+
+echo '2>' > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "2>" );
+rm t.tmp;
+
+-- Bourne Shell Compatibility: Standard Error Output Append
+
+-- Literal Target
+
+touch t.tmp;
+echo "a" 2>> t.tmp;
+result := `cat < t.tmp`;
+-- trace output will add output to the next line
+pragma assert( result /= "a" );
+rm t.tmp;
+
+touch t.tmp;
+echo "b" 2>>t.tmp;
+result := `cat < t.tmp`;
+-- trace output will add output to the next line
+pragma assert( result /= "b" );
+rm t.tmp;
+
+touch t.tmp;
+echo "c" 21 >> t.tmp;
+result := `cat < t.tmp`;
+pragma assert( result = "c 21" );
+rm t.tmp;
+
+-- Double quoted target
+
+echo "c" > t.tmp;
+echo "c2" 2>> "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result /= "c2" );
+rm t.tmp;
+
+echo "d" > t.tmp;
+echo "d2" 2>> "$tmp";
+result := `cat t.tmp`;
+pragma assert( result /= "d2" );
+rm t.tmp;
+
+echo "e" > t.tmp;
+echo "e2" 2>>"$tmp";
+result := `cat t.tmp`;
+pragma assert( result /= "e2" );
+rm t.tmp;
+
+echo "2>>" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "2>>" );
+rm t.tmp;
+
+-- Single quoted target
+
+echo "g" > t.tmp;
+echo "g2" 2>> 't.tmp';
+result := `cat t.tmp`;
+pragma assert( result /= "g2" );
+rm t.tmp;
+
+echo "h" > '$tmp';
+echo "h2" 2>> '$tmp';
+result := `cat '$tmp'`;
+pragma assert( result /= "h2" );
+rm '$tmp';
+
+echo "i" > '$tmp';
+echo "i2" 2>>'$tmp';
+result := `cat '$tmp'`;
+pragma assert( result /= "i2" );
+rm '$tmp';
+
+echo "j" > 't.tmp';
+echo 'j2'2>>'t.tmp';
+result := `cat t.tmp`;
+pragma assert( result /= "j2" );
+rm t.tmp;
+
+echo '2>>' > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "2>>" );
+rm t.tmp;
+
+-- Bourne Shell Compatibility: Standard Input
+
+-- Literal target
+
+echo "a" > t.tmp;
+result := `cat < t.tmp`;
+pragma assert( result = "a" );
+rm t.tmp;
+
+echo "b" > t.tmp;
+result := `cat <t.tmp`;
+? result;
+pragma assert( result = "b" );
+rm t.tmp;
+
+-- Double quoted target
+
+echo "a" > "t.tmp";
+result := `cat < "$tmp";`;
+pragma assert( result = "a" );
+rm t.tmp;
+
+echo "b" > "t.tmp";
+result := `cat <"$tmp";`;
+pragma assert( result = "b" );
+rm t.tmp;
+
+echo "<" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "<" );
+rm t.tmp;
+
+echo "a" > '$tmp';
+result := `cat < '$tmp';`;
+pragma assert( result = "a" );
+rm '$tmp';
+
+-- Single quoted target
+
+echo '<' > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "<" );
+rm t.tmp;
+
+echo "b" > '$tmp';
+result := `cat <'$tmp';`;
+pragma assert( result = "b" );
+rm '$tmp';
+
+-- Pipelines
+
 echo | head;
 echo | sort | head;
 echo "test" | head;
@@ -2784,6 +3146,49 @@ b  := true;
 s  := `echo ${b}`;
 pragma assert( s = "true" );
 
+-- Dollar Brace Expansion: Double Quotes
+
+echo "${0}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( $0 = result );
+rm t.tmp;
+
+echo "${#}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( $# = numerics.value(result) );
+rm t.tmp;
+
+echo "${!}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( $! = numerics.value(result) );
+rm t.tmp;
+
+echo "${?}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( "0" = result );
+rm t.tmp;
+
+echo "${$}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( $$ = numerics.value(result) );
+rm t.tmp;
+
+echo "${HOME}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( HOME = result );
+rm t.tmp;
+
+-- Dollar Brace Expansion: Combinations
+
+echo ${HOME}${HOME} > t.tmp;
+result := `cat t.tmp`;
+pragma assert( HOME & HOME = result );
+rm t.tmp;
+
+echo "${HOME}${HOME}" > t.tmp;
+result := `cat t.tmp`;
+pragma assert( HOME & HOME = result );
+
 echo "`pwd`" > /tmp/foo ;
 s := `cat /tmp/foo`;
 rm /tmp/foo ;
@@ -2820,7 +3225,6 @@ pragma assert( s = `pwd` );
 
 s := `echo /tmp ;`;
 pragma assert( s = "/tmp" );
-
 
 -- advanced text_io
 

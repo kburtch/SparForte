@@ -422,9 +422,8 @@ procedure parseShellExpansionName(
       wordPos  : in out natural ) is
    ch       : character;
    firstPos : constant natural := wordPos;
-   skipChar : natural := 0;
 begin
-   --put_line( "parseShellExpansionName" ); -- DEBUG
+   -- put_line( "parseShellExpansionName" ); -- DEBUG
 
    -- if no characters left or an error occurred, do not proceed
 
@@ -439,16 +438,12 @@ begin
       ch := Element( rawWordValue, wordPos );
       if ch = '#' then
          getNextChar( rawWordValue, wordLen, wordPos );
-         skipChar := 1;
       elsif ch = '?' then
          getNextChar( rawWordValue, wordLen, wordPos );
-         skipChar := 1;
       elsif ch = '$' then
          getNextChar( rawWordValue, wordLen, wordPos );
-         skipChar := 1;
       elsif ch = '!' then
          getNextChar( rawWordValue, wordLen, wordPos );
-         skipChar := 1;
       else
 
          -- Environment variables can contain any character except equals, but
@@ -468,20 +463,43 @@ begin
          end loop;
 
          -- Check for valid leading character
-         --
-         -- skipChar is 1 if we need to skip a leading character like a #
-         --
-         -- $0 - command name
-         -- $1 to $9 - first nine parameters
 
-         if firstPos+skipChar < wordLen-1 then -- if more than one char
-            ch := Element( rawWordValue, firstPos+skipChar );
-            if ch = '_' then
-               err_shell( "leading underscores should not be in identifier names", wordPos );
-            elsif ch in '0'..'9' and firstPos /= wordPos then
-               err_shell( "identifier names should not start with numerals", wordPos );
-            end if;
+         -- Determine the length of the variable name and the position of the
+         -- first character.
+
+         if syntax_check then
+            declare
+              varNameLen    : natural := 0;
+              firstNameChar : natural := 0;
+            begin
+               for i in 1..wordLen loop
+                   ch := Element( rawWordValue, i );
+                   if ch = ':' or ch = '}' then
+                      exit;
+                   elsif ch /= '$' and ch /= '#' and ch /= '{' and ch /= '"' then
+                      varNameLen := varNameLen + 1;
+                      if firstNameChar = 0 then
+                         firstNameChar := i;
+                      end if;
+                   end if;
+               end loop;
+
+               --
+               -- $0 - command name
+               -- $1 to $9 - first nine parameters
+               -- also "${0}" vs ${0}
+
+               if varNameLen > 1 then -- if more than one char
+                  ch := Element( rawWordValue, firstNameChar );
+                  if ch = '_' then
+                     err_shell( "leading underscores should not be in identifier names", wordPos );
+                  elsif ch in '0'..'9' then --and firstPos /= wordPos then
+                     err_shell( "identifier names should not start with numerals", wordPos );
+                  end if;
+               end if;
+            end;
          end if;
+
       end if;
   end if;
 end parseShellExpansionName;
@@ -532,7 +550,7 @@ procedure getExpansionValue(
    var_id       : identifier;
    temp         : unbounded_string;
 begin
-
+   -- put_line("getExpansionValue: " & to_string( expansionVar )); -- DEBUG
    if expansionVar = "" then
       err_shell( "missing variable name", wordPos );
    elsif expansionVar = "#" then
@@ -688,7 +706,7 @@ procedure doVariableExpansion(
       whitespaceOption : whitespaceOptions ) is
    subword      : aGlobShellWord;
 begin
-   --put_line( "doVariableExpansion" ); -- DEBUG
+   -- put_line( "doVariableExpansion" ); -- DEBUG
    -- Perform the expansion
 
    getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
@@ -842,7 +860,7 @@ begin
       else
          expansionVar := null_unbounded_string;
       end if;
-      -- put_line( "expansionVar = " & to_string( expansionVar ) ); -- DEBUG
+      -- put_line( "parseDollarBraceExpansion: expansionVar = " & to_string( expansionVar ) ); -- DEBUG
 
       if element( rawWordValue, wordPos ) = ':' then
          expectChar( ':', rawWordValue, wordLen, wordPos  );
@@ -952,16 +970,11 @@ procedure parseDollarProcessExpansion(
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
    whitespaceOption : whitespaceOptions ) is
-   --firstPos     : natural;
    commands     : unbounded_string;
    expansionResult : aGlobShellWord;
    ch           : character;
 begin
    --put_line( "parseDollarProcessExpansion" ); -- DEBUG
-   --   put_line( "raw: " & to_string( rawWordValue ) ); -- DEBUG
-  -- expectChar( '(', rawWordValue, wordLen, wordPos );
-  -- firstPos := wordPos;
-  -- parseShellExpansionName( rawWordValue, wordLen, wordPos );
 
    -- Extract the variable name
    -- wordPos is always one position ahead.
@@ -972,66 +985,26 @@ begin
    -- TODO: should dollar expansions run now or later when the command is run.
    -- The timing may give different results.
 
-   --while token /= eof_t and identifiers( token ).value.all /= ")" and not error_found loop
 
     expectChar( '(', rawWordValue, wordLen, wordPos );
 
       while wordPos <= wordLen loop
         ch := element( rawWordValue, wordPos );
---put_line( "pos = " & wordPos'img & " = " & ch ); -- DEBUG
         exit when ch = ')';
-        --if ch = '\' then
-        --   parseBackslash( rawWordValue, wordLen, wordPos, commands, bourneShellWordList );
-        --   exit when wordPos = wordLen;
-        --elsif ch = '"' then
-        --   parseDoubleQuotedShellSubword( rawWordValue, wordLen, wordPos, commands, bourneShellWordList );
-        --   exit when wordPos = wordLen;
-        --elsif ch = ''' then
-        --   parseSingleQuotedShellSubword( rawWordValue, wordLen, wordPos, commands, bourneShellWordList );
-        --   exit when wordPos = wordLen;
-        --elsif ch = '$' then
-        --   -- TODO: this should not run yet
-        --   parseDollarExpansion( rawWordValue, wordLen, wordPos, commands, bourneShellWordList, trim );
-        --   exit when wordPos = wordLen;
-        --else
-         if ch = '$' then
-            expansionResult := nullGlobShellWord;
-            parseDollarExpansion( rawWordValue, wordLen, wordPos, expansionResult, bourneShellWordList, keep );
---put_line( "sub-expansion result= " & to_string( expansionResult ) ); -- DEBUG
+        if ch = '$' then
+           expansionResult := nullGlobShellWord;
+           parseDollarExpansion( rawWordValue, wordLen, wordPos, expansionResult, bourneShellWordList, keep );
            commands := commands & unbounded_string( expansionResult );
---put_line( "commands = " & to_string( commands ) ); -- DEBUG
-         else
-           commands := commands & ch;
-           exit when wordPos = wordLen;
-           getNextChar( rawWordValue, wordLen, wordPos );
-         end if;
-        --end if;
+        else
+          commands := commands & ch;
+          exit when wordPos = wordLen;
+          getNextChar( rawWordValue, wordLen, wordPos );
+        end if;
      end loop;
 
-     -- The command is extending into the characters of the next shell word
-
-     --resetShellScanner;
-     --getNextToken;
-     --rawWordValue := aRawShellWord( identifiers( token ).value );
-     --wordLength := length( rawWordValue );
-     --wordPos := 1;
-  -- end loop;
-
-   --if firstPos < wordPos then
-   --   commands := anExpandedShellWord( unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos-1 ) );
-   --else
-   --   commands := nullExpandedShellWord;
-   --end if;
-  -- put_line( "commands = " & to_string( commands ) ); -- DEBUG
-
    expectChar( ')', rawWordValue, wordLen, wordPos );
+-- TODO: is executing commands?
    globPattern := globPattern & aGlobShellWord( doCommandSubstitution( commands ) ) ;
-
-   -- TODO: we do not execute it yet
-   -- if isExecutingCommand then
-   --   null;
-   -- end if;
---expandedWord := commands;
 
 end parseDollarProcessExpansion;
 
