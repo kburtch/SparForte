@@ -97,8 +97,8 @@ procedure parseUniqueShellWord( shellWord : in out anExpandedShellWord );
 -----------------------------------------------------------------------------
 
 
-procedure startShellScanner;
+--procedure startShellScanner;
 
-procedure stopShellScanner;
+--procedure stopShellScanner;
 
 end parser.decl.shell;

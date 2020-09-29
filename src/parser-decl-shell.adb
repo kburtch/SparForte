@@ -325,6 +325,10 @@ procedure doPathnameExpansion(
     end if;
   when DIRECTORY_ERROR =>
     err( "directory error on directory " & toSecureData(to_string( candidateParentPath)));
+  when program_error =>
+    err( "program_error exception raised" );
+  when others =>
+    err_exception_raised;
   end walkSegment;
 
   ---------------------------------------------------------------------------
@@ -587,9 +591,7 @@ begin
                 Argument(
                    integer'value(
                    to_string( " " & expansionVar ) )+optionOffset ) );
-         exception when program_error =>
-            err( "program_error exception raised" );
-         when others =>
+         exception when others =>
             err_shell( "script argument " & to_string(expansionVar) & " not found " &
                  "in arguments 0 .." &
                  integer'image( Argument_Count-optionOffset), wordPos );
@@ -616,15 +618,13 @@ begin
       elsif identifiers( var_id ).class = varClass then
 
          -- For an array or a record, there's no value
+         -- record fields are not checked because the name will end with the period,
+         -- and will be the record name.
 
          if identifiers( var_id ).list then
             err_shell( optional_bold( to_string( expansionVar ) ) & " is an array", wordPos);
          elsif getUniType( identifiers( var_id ).kind ) = root_record_t then
             err_shell( optional_bold( to_string( expansionVar ) ) & " is a record", wordPos);
-         -- this may not happen.
-         elsif identifiers( var_id ).field_of /= identifiers'first and
-               identifiers( var_id ).field_of /= eof_t then
-            err_shell( optional_bold( to_string( expansionVar ) ) & " is a record field", wordPos);
          elsif syntax_check then
             identifiers( var_id ).wasReferenced := true;
             --identifiers( id ).referencedByThread := getThreadName;
@@ -859,6 +859,7 @@ begin
       if firstPos < wordPos then
          expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos-1 );
       else
+         -- this may not happen
          expansionVar := null_unbounded_string;
       end if;
       -- put_line( "parseDollarBraceExpansion: expansionVar = " & to_string( expansionVar ) ); -- DEBUG
@@ -1558,35 +1559,6 @@ begin
 end addAdaScriptValue;
 
 
-
------------------------------------------------------------------------------
---  PARSE SHELL WORDS
---
--- Parse and expand zero or more shell word arguments.  Return the results
--- as a shellWordList.  First should be true if the first word is a command.
---
--- A list of shell words ends with either a semi-colon (the end of a general
--- statement) or when a pipe or @ is read in as a parameter.  Do not include
--- a semi-colon in the parameters.
------------------------------------------------------------------------------
-
-procedure ParseShellWords( wordList : in out bourneShellWordLists.List; First : boolean := false ) is
-   -- theWord  : aShellWord;
-   theFirst : boolean := First;
-   -- listLen  : shellWordList.aListIndex;
-   rawWordValue : aRawShellWord;
-begin
-   -- TODO: "first" not implemented.  what does it do?
-   loop
-     exit when token = symbol_t and identifiers( token ).value.all = ";";
-        --rawWordValue := aRawShellWord( identifiers( token ).value.all );
-        -- parseShellWord( rawWordValue, wordList );
-        parseShellWord( wordList );
-   end loop;
-end ParseShellWords;
-
-
-
 -----------------------------------------------------------------------------
 --
 --  Housekeeping
@@ -1594,14 +1566,14 @@ end ParseShellWords;
 -----------------------------------------------------------------------------
 
 
-procedure startShellScanner is
-begin
-  null;
-end startShellScanner;
+-- procedure startShellScanner is
+-- begin
+--   null;
+-- end startShellScanner;
 
-procedure stopShellScanner is
-begin
-  null;
-end stopShellScanner;
+-- procedure stopShellScanner is
+-- begin
+--   null;
+-- end stopShellScanner;
 
 end parser.decl.shell;

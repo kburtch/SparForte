@@ -2991,6 +2991,9 @@ s := "*[\?";
 s := `echo "$s";`;
 pragma assert( s = "*[\?" );
 
+s := `echo '*[\?';`;
+pragma assert( s = "*[\?" );
+
 -- Shell Variable Substitution Tests
 
 -- without suppression
@@ -3109,6 +3112,10 @@ pragma assert( s = "~ken" );
 
 s  := `echo ken~;`;
 pragma assert( s = "ken~" );
+
+s  := "~/ken";
+s  := `echo "$s";`;
+pragma assert( s = "~/ken" );
 
 -- New features of shell rewrite: brace substitutions
 
@@ -3234,6 +3241,11 @@ pragma assert( s = `pwd` );
 
 s := `echo $()`;
 pragma assert( s = "" );
+
+-- Recursion allowed
+
+s := `echo $(echo $(pwd))`;
+pragma assert( s = `pwd` );
 
 -- pathname expansion with a single / as directory
 

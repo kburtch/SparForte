@@ -12,12 +12,16 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
+  - line 2986 - backslash escapes in double quotes not working...issue in compiler?
   - length substitution
       - does bash allow array elements?  even so, a different syntax in
         SparForte so maybe disallowed for compatibility reasons.
   - echo \\ ;
   - subword combination tests
   - fix all todos
+    - compiler todos
+    - shell parser todos
+    - adascript parser todos
   - :-, :+, :? not :=
   - leaving a ; off the end of a command gives an internal error in goodtests.sp
   - command substitution testing
