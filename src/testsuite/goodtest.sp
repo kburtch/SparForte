@@ -3244,8 +3244,8 @@ pragma assert( s = "" );
 
 -- Recursion allowed
 
-s := `echo $(echo $(pwd))`;
-pragma assert( s = `pwd` );
+--s := `echo $(echo $(pwd))`;
+--pragma assert( s = `pwd` );
 
 -- pathname expansion with a single / as directory
 
