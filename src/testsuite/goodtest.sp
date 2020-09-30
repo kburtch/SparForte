@@ -2560,7 +2560,7 @@ mkdir /tmp/a;
 touch /tmp/a/b;
 ls /tmp/a/*;
 rm /tmp/a/b;
-rmdir /tmp/a/b;
+rmdir /tmp/a;
 
 touch ./__testfile;
 rm ./__testfile;
