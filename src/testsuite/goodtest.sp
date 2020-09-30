@@ -2556,11 +2556,11 @@ rm /tmp/foo123;
 touch ./foo123;
 rm ./foo123;
 ls *goodte*t.sp;
-mkdir /tmp/a;
-touch /tmp/a/b;
-ls /tmp/a/*;
-rm /tmp/a/b;
-rmdir /tmp/a;
+mkdir /tmp/z;
+touch /tmp/z/b;
+ls /tmp/z/*;
+rm /tmp/z/b;
+rmdir /tmp/z;
 
 touch ./__testfile;
 rm ./__testfile;
