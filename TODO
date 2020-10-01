@@ -12,7 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
-  - line 2986 - backslash escapes in double quotes not working...issue in compiler?
+  - line 2986 - backslash backquote in double quotes not working...probably issue in compiler?
   - length substitution
       - does bash allow array elements?  even so, a different syntax in
         SparForte so maybe disallowed for compatibility reasons.

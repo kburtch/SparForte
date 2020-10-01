@@ -2994,6 +2994,11 @@ pragma assert( s = "*[\?" );
 s := `echo '*[\?';`;
 pragma assert( s = "*[\?" );
 
+--s := `echo "\$\"\`\\";`;
+--pragma assert( s = "$"`\" );
+s := `echo "\$\"\\";`;
+pragma assert( s = "$" & ASCII.Quotation & "\" );
+
 -- Shell Variable Substitution Tests
 
 -- without suppression

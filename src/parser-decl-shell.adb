@@ -1202,6 +1202,9 @@ begin
    elsif ch = '`' then
      globPattern := globPattern & "\" & ch;
      getNextChar( rawWordValue, wordLen, wordPos );
+   elsif ch = '\' then
+     globPattern := globPattern & "\" & ch;
+     getNextChar( rawWordValue, wordLen, wordPos );
    else
      globPattern := globPattern & "\\";
    end if;
