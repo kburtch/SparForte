@@ -720,6 +720,7 @@ begin
    content( e, "records" );
    content( e, "return" );
    content( e, "set_input" );
+   content( e, "shell" );
    content( e, "skip_line" );
    content( e, "sound" );
    content( e, "source_info" );
@@ -2320,6 +2321,34 @@ begin
      content( e, "set_output( file )" );
      content( e, "set_error( file )" );
      seeAlso( e, "doc/pkg_text_io.html" );
+     endHelp( e );
+  elsif helpTopic = "shell" then
+     startHelp( e, "shell" );
+     summary( e, "Bourne shell feature syntax" );
+     description( e, "Bourne shell features." );
+     section( e, "Variable Substitution" );
+     content( e, "$X - replace with value of X" );
+     content( e, "${X} - replace with value of X" );
+     content( e, "${#X} - replace with length of X" );
+     content( e, "${X:-Y} - replace with X.  Use Y if X is empty" );
+     content( e, "${X:+Y} - replace with X.  Use Y if X is not empty" );
+     content( e, "${X:?Y} - replace with X or show error if X is not empty.  Y is optional error message" );
+     content( e, "$(X) - replace with output of commands X.  Recursive." );
+     section( e, "Positional Parameters and Special Variables" );
+     content( e, "$0 - the command" );
+     content( e, "$1..$9 - the first 9 parameters" );
+     content( e, "$# - the number of parameters" );
+     content( e, "$? - the error status of the last command" );
+     content( e, "$$ - the current process id" );
+     content( e, "$! - the process id of the last background command" );
+     content( e, "$* - all arguments" );
+     content( e, "$@ - all arguments, escaping spaces" );
+     section( e, "Quoting" );
+     content( e, ASCII.Quotation & "X" & ASCII.Quotation & " - weak quoting" );
+     content( e, "'X' - strong quoting" );
+     content( e, "`X` - replace with output of commands X" );
+     authorKen( e );
+     seeAlso( e, "doc/ref_shellargs.html" );
      endHelp( e );
   elsif helpTopic = "skip_line" then
      startHelp( e, "skip_line" );

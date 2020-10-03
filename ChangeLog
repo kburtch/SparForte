@@ -38,3 +38,5 @@ CHANGES SINCE 2.3
 
 16. Change: cd, env and unset no longer show the variable name in maintenance mode.  Because these are shell commands, an accidental use of a variable expansion could reveal values in production.
 
+14. New: (shell rewrite) $* and $@. [testing] [docs]
+

@@ -438,6 +438,8 @@ begin
      -- $? - status of last command
      -- $$ - process id (pid)
      -- $! - child process id
+     -- $* - all parameters
+     -- $@ - all parameters, escape spaces
 
       ch := Element( rawWordValue, wordPos );
       if ch = '#' then
@@ -447,6 +449,10 @@ begin
       elsif ch = '$' then
          getNextChar( rawWordValue, wordLen, wordPos );
       elsif ch = '!' then
+         getNextChar( rawWordValue, wordLen, wordPos );
+      elsif ch = '*' then
+         getNextChar( rawWordValue, wordLen, wordPos );
+      elsif ch = '@' then
          getNextChar( rawWordValue, wordLen, wordPos );
       else
 
@@ -580,6 +586,37 @@ begin
    elsif expansionVar = "0" then
       if isExecutingCommand then
          subword := to_unbounded_string( Ada.Command_Line.Command_Name );
+      end if;
+   elsif expansionVar = "*" then
+      if isExecutingCommand then
+         for i in optionOffset+1..Argument_Count loop
+             subword := subword & to_unbounded_string( Argument( i ) );
+             if i /= Argument_Count then
+                subword := subword & ' ';
+             end if;
+         end loop;
+      end if;
+   elsif expansionVar = "@" then
+      if isExecutingCommand then
+         for i in optionOffset+1..Argument_Count loop
+            -- TODO: function
+             declare
+               temp : constant unbounded_string := to_unbounded_string( Argument( i ) );
+               ch : character;
+             begin
+               for i in 1..length(temp) loop
+                   ch := element( temp, i );
+                   if ch = ' ' then
+                      subword := subword & '\' & ch;
+                   else
+                      subword := subword & ch;
+                   end if;
+               end loop;
+             end;
+             if i /= Argument_Count then
+                subword := subword & ' ';
+             end if;
+         end loop;
       end if;
    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
       if syntax_check and then not suppress_word_quoting and then whitespaceOption = keep then
