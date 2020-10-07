@@ -61,7 +61,8 @@ variables.</p>
 
 <h3>Shell Expansion Coverage</h3>
 
-<p>Bourne shell expansions include:</p>
+<p>This table summarizes the shell features that are implemented
+in SparForte.</p>
 
 <br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
@@ -149,7 +150,7 @@ variables.</p>
 
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span>Variable Brace Default Check</span><br>
+      <td style="vertical-align: top;"><span>Variable Brace Empty Value Check</span><br>
       </td>
       <td style="vertical-align: top;"><tt>${HOME:?}/a.txt</tt><br>
 
@@ -168,7 +169,7 @@ variables.</p>
       </td>
       <td style="vertical-align: top;"><tt>-</tt><br>
       </td>
-      <td style="vertical-align: top;"><span>Not implemented</span><br>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
       </td>
 
     </tr>
@@ -192,7 +193,19 @@ variables.</p>
       </td>
       <td style="vertical-align: top;"><tt>a.txt</tt><br>
       </td>
-      <td style="vertical-align: top;"><span>Backquotes only</span><br>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Parenthesis Command Substitution</span><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>$(/bin/echo a.txt)</tt><br>
+      </td>
+      <td style="vertical-align: top;"><tt>a.txt</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
       </td>
 
     </tr>
@@ -234,9 +247,30 @@ variables.</p>
   </tbody>
 </table>
 
-<p>There is no arithmetic expansion
-.&nbsp; Some features support only a subset of the BASH
-features.</p>
+<p>Parenthesis Command Substitution can be nested.</p>
+
+<p><b>Implementation Note</b>: Default assignment is not implemented.  As
+a general principle, assignments are not done during expressions.</p>
+
+<p><b>Implementation Note</b>: The $@ variable must be in double quotes.</p>
+
+<p><b>Implementation Note</b>: Arithmetic expressions would require
+a Bourne-shell expression functionality, which was too much effort
+when AdaScript parameters could be used instead.</p>
+
+<p><b>Implementation Note</b>: Brace expansion is not widely used and
+has not been implemented.</p>
+
+<p><b>Implementation Note</b>: The colon is not optional with :-, :+ and :? because testing for unset variables is meaningless in SparForte.</p>
+
+<p><b>Implementation Note</b>: When substituting variables, only scalar
+variables can be used (no records or arrays).  This improves
+compatibility with the Bourne shell.</p>
+
+<p><b>Ada 95</b>: Bourne shell features are not available with
+pragma ada_95, the Ada compatibility mode.</p>
+<br>&nbsp;
+
 
 <h3>Spaces and Dollar Expansions</h3>
 
@@ -288,11 +322,120 @@ t := " hello "; -- identifier of the type string<br>
         </div>
         </center>
 
-<h3>Brace Expansions</h3>
+<h3>Positional Parameters and Special Variables</h3>
 
-<p>The colon is not optional with :-, :+ and :? because testing for unset variables is meaningless in SparForte.</p>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+     <tr>
+      <td style="vertical-align: top;"><span><b>Expansion</b><br></span>
+      </td>
+      <td style="vertical-align: top;"><span><b>Before</b></span><br>
+      </td>
+      <td style="vertical-align: top;"><span><b>After</b></span><br>
+      </td>
+      <td style="vertical-align: top;"><span><b>SparForte</b></span><br>
+      </td>
+    </tr>
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span>Script path</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$0 or ${0}</tt><br>
 
-<br>&nbsp;
+      </td>
+      <td style="vertical-align: top;"><tt>/home/user/myscript.sp</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>The First Nine Script Parameters</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$1..$9 or ${1}..${9}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>-</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Parameter Substitution (with word splitting)</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$* or ${*} with "a" "b" "c d"</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>"a" "b" "c" "d"</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Parameter Substitution</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>"$@" with "a" "b" "c d"</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>"a" "b" "c d"</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>Double quotes only (no quotes)</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>The Number of Parameters</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$# or ${#}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>-</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>The Current Process ID</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$$ or ${$}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>-</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Last Background Process ID</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$! or ${!}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>-</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Error Status of the Last Command</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>$? or ${?}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>-</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

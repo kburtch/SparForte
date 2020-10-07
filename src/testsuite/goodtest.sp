@@ -2951,21 +2951,25 @@ i := numerics.value( s );
 pragma assert( i > 0 );
 
 -- 2> redirection
--- TODO: this could be a race condition since pid isn't in the filename
-tr -z 2> "/tmp/foo";
-s := `cat "/tmp/foo";`;
+tr -z 2> "t.tmp.$$";
+s := `cat "t.tmp.$$";`;
 pragma assert( s /= "" );
-rm "/tmp/foo";
+rm "t.tmp.$$";
 
-tr -z 2> "/tmp/foo" | cat;
-s := `cat "/tmp/foo";`;
+tr -z 2> "t.tmp.$$" | cat;
+s := `cat "t.tmp.$$";`;
 pragma assert( s /= "" );
-rm "/tmp/foo";
+rm "t.tmp.$$";
 
-echo | tr -z 2> "/tmp/foo" | cat;
-s := `cat "/tmp/foo";`;
+echo | tr -z 2> "t.tmp.$$" | cat;
+s := `cat "t.tmp.$$";`;
 pragma assert( s /= "" );
-rm "/tmp/foo";
+rm "t.tmp.$$";
+
+echo `echo \`` > "t.tmp.$$";
+s := `cat "t.tmp.$$"`;
+rm "t.tmp.$$";
+pragma assert( s = '`' );
 
 -- character escaping tests
 
@@ -3169,50 +3173,50 @@ pragma assert( s = "true" );
 
 -- Dollar Brace Expansion: Double Quotes
 
-echo "${0}" > t.tmp;
-result := `cat t.tmp`;
+echo "${0}" > t.tmp.$$;
+result := `cat t.tmp.$$`;
 pragma assert( $0 = result );
-rm t.tmp;
+rm t.tmp.$$;
 
-echo "${#}" > t.tmp;
-result := `cat t.tmp`;
+echo "${#}" > t.tmp.$$;
+result := `cat t.tmp.$$`;
 pragma assert( $# = numerics.value(result) );
-rm t.tmp;
+rm t.tmp.$$;
 
-echo "${!}" > t.tmp;
-result := `cat t.tmp`;
+echo "${!}" > t.tmp.$$;
+result := `cat t.tmp.$$`;
 pragma assert( $! = numerics.value(result) );
-rm t.tmp;
+rm t.tmp.$$;
 
-echo "${?}" > t.tmp;
-result := `cat t.tmp`;
+echo "${?}" > t.tmp.$$;
+result := `cat t.tmp.$$`;
 pragma assert( "0" = result );
-rm t.tmp;
+rm t.tmp.$$;
 
-echo "${$}" > t.tmp;
-result := `cat t.tmp`;
+echo "${$}" > t.tmp.$$;
+result := `cat t.tmp.$$`;
 pragma assert( $$ = numerics.value(result) );
-rm t.tmp;
+rm t.tmp.$$;
 
-echo "${HOME}" > t.tmp;
-result := `cat t.tmp`;
+echo "${HOME}" > t.tmp.$$;
+result := `cat t.tmp.$$`;
 pragma assert( HOME = result );
-rm t.tmp;
+rm t.tmp.$$;
 
 -- Dollar Brace Expansion: Combinations
 
-echo ${HOME}${HOME} > t.tmp;
-result := `cat t.tmp`;
+echo ${HOME}${HOME} > "t.tmp.$$";
+result := `cat "t.tmp.$$"`;
 pragma assert( HOME & HOME = result );
-rm t.tmp;
+rm "t.tmp.$$";
 
-echo "${HOME}${HOME}" > t.tmp;
-result := `cat t.tmp`;
+echo "${HOME}${HOME}" > "t.tmp.$$";
+result := `cat "t.tmp.$$"`;
 pragma assert( HOME & HOME = result );
 
-echo "`pwd`" > /tmp/foo ;
-s := `cat /tmp/foo`;
-rm /tmp/foo ;
+echo "`pwd`" > "t.tmp.$$" ;
+s := `cat "t.tmp.$$"`;
+rm "t.tmp.$$" ;
 pragma assert( s = `pwd` );
 
 s  := "foo";

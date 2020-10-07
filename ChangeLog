@@ -32,11 +32,11 @@ CHANGES SINCE 2.3
 
 13. Fix: (shell rewrite) 2>&1 no longer redirects output for all commands in the pipeline, to match Bourne shell behaviour.
 
-14. New: (shell rewrite) ${:-}, ${:+} and ${:?}. [testing] [docs]
+14. New: (shell rewrite) ${:-}, ${:+} and ${:?}.
 
-15. New: (shell rewrite) Glob patterns are allowed in directories in a path (e.g. ls /home/k*/*.txt is now possible). [docs]
+15. New: (shell rewrite) Glob patterns are allowed in directories in a path (e.g. ls /home/k*/*.txt is now possible).
 
 16. Change: cd, env and unset no longer show the variable name in maintenance mode.  Because these are shell commands, an accidental use of a variable expansion could reveal values in production.
 
-14. New: (shell rewrite) $* and $@. [testing] [docs]
+14. New: (shell rewrite) $* and $@.
 

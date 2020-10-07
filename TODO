@@ -13,30 +13,29 @@ Priority Issues (Fix These First)
 
 - shell parser rewrite
   - line 2986 - backslash backquote in double quotes not working...probably issue in compiler?
-  - line 3247 - nested process substitution - works on command line, not in jenkins
+  - recursive command substitution
+    - line 3247 - nested process substitution - works on command line, not in jenkins
   - length substitution
       - does bash allow array elements?  even so, a different syntax in
         SparForte so maybe disallowed for compatibility reasons.
   - quoting in ${:-`pwd`}, etc.
   - echo \\ ;
+  - globbing on ./b* vs b*.  ./b* did not match
   - subword combination tests
   - fix all todos
     - compiler todos
     - shell parser todos
     - adascript parser todos
+      - `..` in adascript vs shell - support for backslash backquote?
   - :-, :+, :? not :=
   - leaving a ; off the end of a command gives an internal error in goodtests.sp
   - command substitution testing
-  - recursive command substitution
-  - arithmetic expansion $((..))
   - see also "Bourne shell issues" below
   - edge-case and tests: pwd "&" is not being treated as a file
     - ls \& &
   - globbing in a directory path (/a/*/b), not just the file name
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
-TESTING NOTES FOR SHELL PARSER REWRITE
-    - document that fields and array elements are not allowed ${#field}
 - updating adascript shell commands to correspond with bourne shell changes
 - renamings on expansions
 - tests

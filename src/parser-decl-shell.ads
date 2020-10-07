@@ -75,9 +75,6 @@ itself_string : constant unbounded_string := to_unbounded_string( "@" );
 -----------------------------------------------------------------------------
 
 
-procedure getNextShellWord;
--- return the next shell word
-
 procedure addAdaScriptValue( wordList : in out bourneShellWordLists.List;
   unbounded_val : unbounded_string );
 -- Add an AdaScript value to the shell word list as if it was a final shell

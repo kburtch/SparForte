@@ -125,7 +125,7 @@ procedure doPathnameExpansion(
     end loop;
     return expandedWord;
   exception when others =>
-    err( "internal error: cannot remove escapes from globbing pattern " & to_string( originalGlobPattern ) );
+    err( "internal error: cannot remove escapes from globbing pattern " & toProtectedValue( unbounded_string( originalGlobPattern ) ) );
     return anExpandedShellWord( originalGlobPattern );
   end globPatternWithoutEscapes;
 
@@ -596,28 +596,6 @@ begin
              end if;
          end loop;
       end if;
-   elsif expansionVar = "@" then
-      if isExecutingCommand then
-         for i in optionOffset+1..Argument_Count loop
-            -- TODO: function
-             declare
-               temp : constant unbounded_string := to_unbounded_string( Argument( i ) );
-               ch : character;
-             begin
-               for i in 1..length(temp) loop
-                   ch := element( temp, i );
-                   if ch = ' ' then
-                      subword := subword & '\' & ch;
-                   else
-                      subword := subword & ch;
-                   end if;
-               end loop;
-             end;
-             if i /= Argument_Count then
-                subword := subword & ' ';
-             end if;
-         end loop;
-      end if;
    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
       if syntax_check and then not suppress_word_quoting and then whitespaceOption = keep then
          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
@@ -742,6 +720,7 @@ procedure doVariableExpansion(
       bourneShellWordList : in out bourneShellWordLists.List;
       whitespaceOption : whitespaceOptions ) is
    subword      : aGlobShellWord;
+               expandedWord : anExpandedShellWord;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
    -- Perform the expansion
@@ -1420,6 +1399,42 @@ end parseBareShellSubword;
 
 
 -----------------------------------------------------------------------------
+--  PARSE DOLLAR AT SIGN
+--
+-- $@ is a special case because we have to handle word splitting at the
+-- parameter level.  The parameters are passed as-is into the word queue.
+-----------------------------------------------------------------------------
+
+procedure parseDollarAtSign(bourneShellWordList : in out bourneShellWordLists.List) is
+begin
+   if isExecutingCommand then
+      for i in optionOffset+1..Argument_Count loop
+          -- TODO: first parameter concatted with $1
+          --declare
+          --   temp : constant unbounded_string := to_unbounded_string( Argument( i ) );
+          --   ch : character;
+          --begin
+             --expandedWord := nullExpandedShellWord;
+             --for i in 1..length(temp) loop
+             --    ch := element( temp, i );
+             --    if ch = ' ' then
+             --       expandedWord := expandedWord & '\' & ch;
+             --    else
+             --       expandedWord := expandedWord & ch;
+             --    end if;
+             --end loop;
+           --end;
+           --if i /= Argument_Count then
+           --   expandedWord := expandedWord & ' ';
+           --end if;
+           bourneShellWordLists.Queue( bourneShellWordList, to_unbounded_string(
+             Argument( i ) ) );
+      end loop;
+   end if;
+end parseDollarAtSign;
+
+
+-----------------------------------------------------------------------------
 --  PARSE SHELL WORD
 --
 -- Treat the token as a shell word.
@@ -1448,21 +1463,30 @@ begin
       shellWord := aRawShellWord( identifiers( token ).value.all );
       len := length( shellWord );
       if len > 0 then
-         while wordPos <= len and not error_found and not endOfShellWord  loop
-            first_ch := element( shellWord, wordPos );
-            if first_ch = '"' then
-               parseDoubleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
-            elsif first_ch = ''' then
-               parseSingleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
-            elsif first_ch = '`' then
-               parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
-            else
-               parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
-            end if;
-         end loop;
-         -- Globbing happens after substitutions and quotes are handled
-         -- i.e. HELLO="*.txt" ls $HELLO will show text files
-         doGlobPattern( globPattern, bourneShellWordList );
+         -- $@ is a special case because the word splitting is not done
+         -- the normal way.  We don't allow it to be combined with other
+         -- subwords.
+         if shellWord = "$@" then
+            err_shell("$@ should be in double quotes", wordPos);
+         elsif shellWord = ASCII.Quotation & "$@" & ASCII.Quotation then
+            parseDollarAtSign( bourneShellWordList );
+         else
+            while wordPos <= len and not error_found and not endOfShellWord  loop
+               first_ch := element( shellWord, wordPos );
+               if first_ch = '"' then
+                  parseDoubleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+               elsif first_ch = ''' then
+                  parseSingleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+               elsif first_ch = '`' then
+                  parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+               else
+                  parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+               end if;
+            end loop;
+            -- Globbing happens after substitutions and quotes are handled
+            -- i.e. HELLO="*.txt" ls $HELLO will show text files
+            doGlobPattern( globPattern, bourneShellWordList );
+         end if;
       end if;
    elsif token = sql_word_t then
       -- TODO: review this
@@ -1563,25 +1587,6 @@ begin
      bourneShellWordLists.Pull(wordList, shellWord);
   end if;
 end parseUniqueShellWord;
-
-
------------------------------------------------------------------------------
---  PARSE NEXT SHELL WORD
---
--- return the next shell word
------------------------------------------------------------------------------
-
-procedure getNextShellWord is
-begin
-  
-  --if not shellWordLists.Empty( shellWordList ) then
-  --   shellWordLists.Pull( shellWordList, shellWord );
-  --else
-  --   getNextToken;
-  --   scanShellWord( shellWord );
-  --end if;
-null;
-end getNextShellWord;
 
 
 -----------------------------------------------------------------------------
