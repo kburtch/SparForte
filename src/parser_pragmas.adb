@@ -268,7 +268,8 @@ begin
      -- param and return are singular but they are plural in the report class.
      -- they probably should be plural the the annotation but it wasn't
      -- important enough to fix.
-     if name /= "author" and
+     if name /= "account" and
+        name /= "author" and
         name /= "created" and
         name /= "category" and
         name /= "contents" and

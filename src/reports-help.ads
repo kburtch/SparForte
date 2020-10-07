@@ -70,6 +70,8 @@ package reports.help is
        version       : unbounded_string;
        iconPath      : unbounded_string;
        screenshotPath: unbounded_string;
+       accounts      : contentList.List;
+       accountsWidth : positive := 1;
        empty         : boolean := true;
        -- TODO: nesting
   end record;
@@ -83,6 +85,8 @@ package reports.help is
   procedure endHelp( e : in out aHelpEntry );
 
   function isEmpty( e : aHelpEntry ) return boolean;
+
+  procedure accounts( e : in out aHelpEntry; s : string );
 
   procedure author( e : in out aHelpEntry; s : string );
   procedure authorKen( e : in out aHelpEntry );

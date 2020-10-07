@@ -40,3 +40,5 @@ CHANGES SINCE 2.3
 
 14. New: (shell rewrite) $* and $@.
 
+15. New: pragma annotate( accounts ...).
+

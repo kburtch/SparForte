@@ -126,6 +126,7 @@ package body builtins.help is
        annotate_str : constant unbounded_string := to_unbounded_string( "annotate" );
        refactor_str : constant unbounded_string := to_unbounded_string( "refactor" );
 
+       accounts_str    : constant unbounded_string := to_unbounded_string( "accounts" );
        author_str      : constant unbounded_string := to_unbounded_string( "author" );
        bugs_str        : constant unbounded_string := to_unbounded_string( "bugs" );
        created_str     : constant unbounded_string := to_unbounded_string( "created" );
@@ -305,7 +306,9 @@ package body builtins.help is
                getNextToken;
                expect( symbol_t, "," );
                ParseStaticExpression( exprVal, exprType );
-               if annotationKind = author_str then
+               if annotationKind = accounts_str then
+                  accounts( e, to_string(exprVal)  );
+               elsif annotationKind = author_str then
                   author( e, to_string(exprVal)  );
                   -- handle a teams.member variable for an author
                   -- declarations don't happen so this doesn't work.

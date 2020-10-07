@@ -48,6 +48,7 @@ package body reports.help is
   procedure clearHelp( e : in out aHelpEntry ) is
   begin
     e.author := null_unbounded_string;
+    contentList.Clear( e.accounts );
     contentList.Clear( e.bugs );
     contentList.Clear( e.content );
     contentList.Clear( e.sectionContent );
@@ -67,14 +68,15 @@ package body reports.help is
     contentList.Clear( e.todos );
     e.topic := null_unbounded_string;
 
-    e.contentWidth := 1;
-    e.bugsWidth    := 1;
-    e.errorsWidth  := 1;
-    e.examplesWidth  := 1;
-    e.rationaleWidth := 1;
-    e.paramsWidth   := 1;
+    e.contentWidth    := 1;
+    e.bugsWidth       := 1;
+    e.errorsWidth     := 1;
+    e.examplesWidth   := 1;
+    e.rationaleWidth  := 1;
+    e.paramsWidth     := 1;
     e.exceptionsWidth := 1;
-    e.todosWidth    := 1;
+    e.todosWidth      := 1;
+    e.accountsWidth   := 1;
     e.empty := true;
   end clearHelp;
 
@@ -327,6 +329,16 @@ package body reports.help is
      end if;
   end todos;
 
+  procedure accounts( e : in out aHelpEntry; s : string ) is
+  begin
+     if s'length > 0 then
+        contentList.Queue( e.accounts, to_unbounded_string( s ) );
+        if s'length > e.accountsWidth then
+           e.accountsWidth := positive( s'length );
+        end if;
+     end if;
+  end accounts;
+
   procedure releaseVersion( e : in out aHelpEntry; s : string ) is
   begin
     e.version := to_unbounded_string( s );
@@ -397,6 +409,7 @@ package body reports.help is
      --end if;
      renderBulletList( r, e.rationale, "Rationale" );
      renderBulletList( r, e.bugs, "Bugs" );
+     renderBulletList( r, e.accounts, "Accounts" );
      renderText( r, "See Also", e.seeAlso );
 
      -- display footer
@@ -460,6 +473,7 @@ package body reports.help is
      renderBulletList( r, e.todos, "To Do" );
      renderBulletList( r, e.rationale, "Rationale" );
      renderBulletList( r, e.bugs, "Bugs" );
+     renderBulletList( r, e.accounts, "Accounts" );
      renderText( r, "See Also", e.seeAlso );
 
      -- display footer
@@ -547,6 +561,7 @@ package body reports.help is
      --end if;
      renderBulletList( r, e.rationale, "Rationale" );
      renderBulletList( r, e.bugs, "Bugs" );
+     renderBulletList( r, e.accounts, "Accounts" );
      renderText( r, "See Also", e.seeAlso );
 
      -- display footer
