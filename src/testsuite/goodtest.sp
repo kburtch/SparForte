@@ -2998,8 +2998,8 @@ pragma assert( s = "*[\?" );
 s := `echo '*[\?';`;
 pragma assert( s = "*[\?" );
 
---s := `echo "\$\"\`\\";`;
---pragma assert( s = "$"`\" );
+s := `echo "\$\"\`\\";`;
+pragma assert( s = "$" & ASCII.Quotation & "`\" );
 s := `echo "\$\"\\";`;
 pragma assert( s = "$" & ASCII.Quotation & "\" );
 

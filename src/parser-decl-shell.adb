@@ -554,7 +554,7 @@ end addSubwordWithWordSplitting;
 
 procedure getExpansionValue(
       expansionVar : unbounded_string;
-      subword : out aGlobShellWord;
+      subword : out unbounded_string;
       whitespaceOption : whitespaceOptions;
       wordPos : natural ) is
    var_id       : identifier;
@@ -626,7 +626,7 @@ begin
          if syntax_check then
             identifiers( var_id ).wasReferenced := true;
          end if;
-         subword := aGlobShellWord( expansionVar );
+         subword := expansionVar;
 
       -- For a variable, the value is the variable's value
 
@@ -647,14 +647,14 @@ begin
          else
             if getUniType( identifiers( var_id ).kind ) = root_enumerated_t then
                -- an enumerated is just the name of the value
-               subword := aGlobShellWord( identifiers( var_id ).name );
+               subword := identifiers( var_id ).name;
                findEnumImage( identifiers( var_id ).value.all , identifiers( var_id ).kind, temp );
-               subword := aGlobShellWord( temp );
+               subword := temp;
             else
-               subword := aGlobShellWord( identifiers( var_id ).value.all );     -- word to substit.
+               subword := identifiers( var_id ).value.all;              -- word to substit.
                if whitespaceOption = trim then
-                  subword := aGlobShellWord( Ada.Strings.Unbounded.Trim(   -- unless double
-                     unbounded_string( subword ), Ada.Strings.Both ) );          -- quotes;
+                  subword := Ada.Strings.Unbounded.Trim(                   -- unless double
+                     unbounded_string( subword ), Ada.Strings.Both );            -- quotes;
                elsif getUniType( var_id ) = uni_numeric_t then -- a number?
                   if length( subword ) > 0 then            -- something there?
                      if element( subword, 1 ) = ' ' then   -- leading space
@@ -674,11 +674,15 @@ end getExpansionValue;
 -----------------------------------------------------------------------------
 --  GLOB BACKSLASH ESCAPE
 --
--- Escape special characters that affect globbing.  The tilde is not a glob
--- character: but I have to handle it and not expand the tilde.
+-- Convert an unbounded string to a glob word by escaping the special
+-- characters that affect globbing.
+--
+-- The tilde is not a glob character: but I have to handle it and not expand
+-- the tilde.
 -----------------------------------------------------------------------------
 
-function globBackslashEscape( unescapedWord : aGlobShellWord ) return aGlobShellWord is
+function globBackslashEscape( unescapedWord : unbounded_string;
+      whitespaceOption : whitespaceOptions ) return aGlobShellWord is
    escapedWord : aGlobShellWord;
    ch : character;
    p  : natural := 1;
@@ -688,12 +692,19 @@ begin
      ch := element( unescapedWord, p );
      case ch is
      when '*' =>
-        escapedWord := escapedWord & '\' & ch;
+        -- in a bareword, * is not escaped.  In double quotes, it is.
+        if whitespaceOption = keep then
+           escapedWord := escapedWord & '\' & ch;
+        else
+           escapedWord := escapedWord & ch;
+        end if;
      when '[' =>
         escapedWord := escapedWord & '\' & ch;
      when '?' =>
         escapedWord := escapedWord & '\' & ch;
      when '~' =>
+        escapedWord := escapedWord & '\' & ch;
+     when '\' =>
         escapedWord := escapedWord & '\' & ch;
      when others =>
         escapedWord := escapedWord & ch;
@@ -702,6 +713,24 @@ begin
    end loop;
    return escapedWord;
 end globBackslashEscape;
+
+--   if endOfShellWord then
+--      err_shell( "missing character after backslash", wordPos );
+--   elsif ch = '"' then
+--     globPattern := globPattern & "\" & ch;
+--     getNextChar( rawWordValue, wordLen, wordPos );
+--   elsif ch = '$' then
+--     globPattern := globPattern & "\" & ch;
+--     getNextChar( rawWordValue, wordLen, wordPos );
+--   elsif ch = '`' then
+--     globPattern := globPattern & "\" & ch;
+--     getNextChar( rawWordValue, wordLen, wordPos );
+--   elsif ch = '\' then
+--     globPattern := globPattern & "\" & ch;
+--     getNextChar( rawWordValue, wordLen, wordPos );
+--   else
+--     globPattern := globPattern & "\\";
+--   end if;
 
 -----------------------------------------------------------------------------
 --  DO VARIABLE EXPANSION
@@ -719,8 +748,9 @@ procedure doVariableExpansion(
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
       whitespaceOption : whitespaceOptions ) is
-   subword      : aGlobShellWord;
-               expandedWord : anExpandedShellWord;
+   subword      : unbounded_string;
+   globSubword  : aGlobShellWord;
+   expandedWord : anExpandedShellWord;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
    -- Perform the expansion
@@ -732,11 +762,11 @@ begin
    case defaultMode is
    when minus =>
       if subword = "" then
-         subword := aGlobShellWord( defaultValue );
+         subword := defaultValue ;
       end if;
    when plus =>
       if subword /= "" then
-         subword := aGlobShellWord( defaultValue );
+         subword := defaultValue;
       end if;
    when question =>
       if subword = "" then
@@ -750,6 +780,11 @@ begin
       null;
    end case;
 
+   -- The string returned may have special characters that need to be escaped
+   -- for a glob pattern (such as a \).
+
+   globSubword := globBackslashEscape( subword, whitespaceOption );
+
    -- if trimming, then it's a bareword.  Even a bareword escapes a leading
    -- tilde.
 
@@ -762,9 +797,10 @@ begin
       addSubwordWithWordSplitting(
          globPattern,
          bourneShellWordList,
-         subword );
+         globSubword );
    else
-      globPattern := globPattern & globBackslashEscape( subword );
+
+      globPattern := globPattern & globSubword;
       -- put_line( "doVariableExpansion: expandedWord = " & to_string( globPattern ) );
    end if;
 end doVariableExpansion;
@@ -781,7 +817,7 @@ procedure doVariableLengthExpansion(
       globPattern : in out aGlobShellWord;
       whitespaceOption : whitespaceOptions;
       wordPos : natural ) is
-   subword      : aGlobShellWord;
+   subword      : unbounded_string;
 begin
    -- Perform the expansion
 
@@ -820,7 +856,18 @@ begin
       -- Run the command and attach the output to the word we are
       -- assembling.
       CompileRunAndCaptureOutput( commands, commandsOutput );
-      -- put_line( "PSW: res  = " & to_string(commandsOutput) );
+      if trace then
+         declare
+            fragment : unbounded_string;
+         begin
+           if length( commandsOutput ) > 70 then
+              fragment := head( commandsOutput, 70 );
+              put_trace( "output '" & to_string( toEscaped( fragment ) ) & "'..." );
+           else
+              put_trace( "output '" & to_string( toEscaped( commandsOutput ) ) & "'" );
+           end if;
+         end;
+      end if;
    end if;
    return commandsOutput;
 end doCommandSubstitution;
@@ -959,6 +1006,7 @@ procedure parseBackQuotedShellSubword(
       wordLen : natural;
       wordPos : in out natural;
       globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
       bourneShellWordList : in out bourneShellWordLists.List );
 
 procedure parseDollarExpansion(
@@ -1024,7 +1072,11 @@ begin
 
    expectChar( ')', rawWordValue, wordLen, wordPos );
 -- TODO: is executing commands?
-   globPattern := globPattern & aGlobShellWord( doCommandSubstitution( commands ) ) ;
+
+   -- The string returned may have special characters that need to be escaped
+   -- for a glob pattern (such as a \).
+
+   globPattern := globPattern & globBackslashEscape( doCommandSubstitution( commands ), whitespaceOption );
 
 end parseDollarProcessExpansion;
 
@@ -1260,7 +1312,8 @@ begin
          -- TODO: must escape dollar expansion value
       when '`' =>
          -- This is permitted in double quotes in a Bourne shell
-         parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
+         parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
+            keep, bourneShellWordList );
                                                       -- is a glob char?
       when '~' => globPattern := globPattern & "\~";  -- escape \
          getNextChar( rawWordValue, wordLen, wordPos );
@@ -1291,7 +1344,8 @@ procedure parseBareShellSubword(
 --  PARSE BACK QUOTED SHELL SUBWORD
 --
 -- Syntax: `word`
--- Handle a back quoted section of a shell word
+-- Handle a back quoted section of a shell word.  A backquote subword can
+-- occur as a bareword or within double quotes so it has a whitespace option.
 -- Note substitutions happen when the back quotes execute:
 --   export HELLO="a" ; echo `export HELLO="b" ; echo "$HELLO"`
 --     displays "b"
@@ -1305,6 +1359,7 @@ procedure parseBackQuotedShellSubword(
       wordLen : natural;
       wordPos : in out natural;
       globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
       bourneShellWordList : in out bourneShellWordLists.List ) is
    ch : character;
    commands     : unbounded_string;
@@ -1317,17 +1372,7 @@ begin
       exit when ch = '`';
       if ch = '\' then
          parseBackslash( rawWordValue, wordLen, wordPos, aGlobShellWord( commands ), bourneShellWordList );
-      --elsif ch = '"' then
-      --   parseDoubleQuotedShellSubword( rawWordValue, wordLen, wordPos, commands, bourneShellWordList );
-      --   exit when wordPos = wordLen;
-      --elsif ch = ''' then
-      --   parseSingleQuotedShellSubword( rawWordValue, wordLen, wordPos, commands, bourneShellWordList );
-      --   exit when wordPos = wordLen;
-      --elsif ch = '$' then
-      --   parseDollarExpansion( rawWordValue, wordLen, wordPos, commands, bourneShellWordList, trim );
-      --   exit when wordPos = wordLen;
       else
-         -- DEBUG: BACKQ
          commands := commands & ch;
          getNextChar( rawWordValue, wordLen, wordPos );
       end if;
@@ -1335,7 +1380,11 @@ begin
 
    -- put_line( "commands = " & to_string( commands ) ); -- DEBUG
    expectChar( '`', rawWordValue, wordLen, wordPos );
-   globPattern := globPattern & globBackslashEscape( aGlobShellWord( doCommandSubstitution( commands ) ) ) ;
+
+   -- The string returned may have special characters that need to be escaped
+   -- for a glob pattern (such as a \).
+
+   globPattern := globPattern & globBackslashEscape( doCommandSubstitution( commands ), whitespaceOption ) ;
    -- put_line( "end of back quotes, expanded word is = " & to_string( globPattern ) );
 end parseBackQuotedShellSubword;
 
@@ -1478,7 +1527,7 @@ begin
                elsif first_ch = ''' then
                   parseSingleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
                elsif first_ch = '`' then
-                  parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+                  parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, trim, bourneShellWordList );
                else
                   parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
                end if;

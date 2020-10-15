@@ -12,14 +12,12 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
-  - line 2986 - backslash backquote in double quotes not working...probably issue in compiler?
   - recursive command substitution
     - line 3247 - nested process substitution - works on command line, not in jenkins
   - length substitution
       - does bash allow array elements?  even so, a different syntax in
         SparForte so maybe disallowed for compatibility reasons.
   - quoting in ${:-`pwd`}, etc.
-  - echo \\ ;
   - globbing on ./b* vs b*.  ./b* did not match
   - subword combination tests
   - fix all todos
@@ -251,6 +249,7 @@ Annoyances / Bugs with Workarounds / Updates
           shell words and the process is quite complicated.
 
 - unsorted/misc
+    - err_tokenize doesn't indent properly (e.g. s := `xxx - missing backquote)
     - the first word needs command completion.  This includes a command,
       exported variable, or statement.  It should not be a filename.  requested
       by user

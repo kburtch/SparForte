@@ -5453,7 +5453,7 @@ procedure getNextToken is
   is_based_number : boolean; -- true if numeric literal has a base
   token_firstpos, token_lastpos, lineno, fileno : natural;
   sfr : aSourceFile;
-
+  inBackslash : boolean;
   adj : integer;
 
 begin
@@ -5779,11 +5779,21 @@ begin
      -- Backquoted strings (backlit_t)
      --
      -- (Note: Missing trailing quote handled in tokenizing stage.)
+     -- TODO: this would run faster if the compiler but unique symbols
+     -- so the backslashes would not have to be parsed here.
 
      cmdpos := cmdpos+1;                                      -- continue
      lastpos := cmdpos;                                       -- reading
      identifiers( backlit_t ).value.all := Null_Unbounded_String;
-     while script( lastpos ) /= '`' loop                      -- until last `
+     inBackslash := false;
+     while not (script( lastpos ) = '`' and not inBackslash) loop -- until last `
+        -- allow anything to be backslashed. the shell parser will
+        -- check if it's legitimate later.
+        if inBackslash then
+           inBackslash := false;
+        elsif script( lastpos ) = '\' then
+           inBackslash := true;
+        end if;
         if script( lastpos ) = high_ascii_escape then
            lastpos := lastpos + 1;
         end if;

@@ -42,3 +42,5 @@ CHANGES SINCE 2.3
 
 15. New: pragma annotate( accounts ...).
 
+16. New (shell rewrite) AdaScript `` may have backslash escapes.
+

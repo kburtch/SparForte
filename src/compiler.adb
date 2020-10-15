@@ -792,6 +792,7 @@ procedure adaScriptStatementByteCode( ci : in out compressionInfo;
   word : unbounded_string;
   decimalCount : natural;
   octathorneCount : natural;
+  inBackslash : boolean;
   -- nr : aVMNRNumber;
   -- sr : aVMSRNumber;
   -- ir : aVMIRNumber;
@@ -1071,8 +1072,16 @@ begin
   elsif Element( command, cmdpos ) = '`' then
      cmdpos := cmdpos+1;
      lastpos := cmdpos;
+     inBackslash := false;
      if lastpos <= length( command ) then  -- quote as last char on line
-        while Element( command, lastpos ) /= '`' loop
+        while not (Element( command, lastpos ) = '`' and not inBackslash) loop
+            -- allow anything to be backslashed. the shell parser will
+            -- check if it's legitimate later.
+            if inBackslash then
+               inBackslash := false;
+            elsif Element( command, lastpos ) = '\' then
+               inBackslash := true;
+            end if;
             lastpos := lastpos+1;
             exit when lastpos > length( command );
         end loop;
@@ -1362,7 +1371,7 @@ begin
     end if;
 
     ch := Element( command, cmdpos );                       -- next character
-    -- put_line( "ch = " & ch & " redirect = " & inRedirect'img ); -- DEBUG
+     --put_line( "ch = " & ch & " at" & cmdpos'img & " quotes = " & inDoubleQuotes'img ); -- DEBUG
 
     -- Second, check for characters that will interfere with the compressed
     -- tokens.

@@ -2345,7 +2345,7 @@ begin
      content( e, "$$ or ${$} - the current process id" );
      content( e, "$! or ${!} - the process id of the last background command" );
      content( e, "$* or ${*} - all arguments with word splitting" );
-     content( e, "$@ - all arguments" );
+     content( e, ASCII.Quotation & "$@" & ASCII.Quotation & " - all arguments" );
      section( e, "Quoting" );
      content( e, ASCII.Quotation & "X" & ASCII.Quotation & " - weak quoting" );
      content( e, "'X' - strong quoting" );
