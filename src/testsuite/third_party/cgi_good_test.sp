@@ -13,7 +13,7 @@ pragma annotate( todo, "some coverage is done by other regression tests so not "
 procedure cgi_good_test is
   key  : string;
   val  : string;
-  bool : boolean;
+  abool : boolean;
   hdr  : string;
   url  : string;
   nat  : natural;
@@ -25,25 +25,25 @@ begin
   url := cgi.my_url;
   pragma assert( url = "http://example.com/example/cgi_test.html" );
 
-  bool := cgi.parsing_errors;
-  pragma assert( not bool );
+  abool := cgi.parsing_errors;
+  pragma assert( not abool );
 
-  bool := cgi.input_received;
-  pragma assert( bool );
+  abool := cgi.input_received;
+  pragma assert( abool );
 
-  bool := cgi.is_index;
-  pragma assert( not bool );
+  abool := cgi.is_index;
+  pragma assert( not abool );
 
   -- FORM variables
 
-  bool := cgi.key_exists( "first_key", 1 );
-  pragma assert( bool );
+  abool := cgi.key_exists( "first_key", 1 );
+  pragma assert( abool );
 
   key := cgi.key( 1 );
   pragma assert( key = "first_key" );
 
-  bool := cgi.key_value_exists( "first_key", "first value" );
-  pragma assert( bool );
+  abool := cgi.key_value_exists( "first_key", "first value" );
+  pragma assert( abool );
 
   val := cgi.key_value( 1 );
   pragma assert( val = "first value" );
