@@ -78,6 +78,65 @@ uppercase_o : constant unbounded_string := to_unbounded_string( "O" );
 
 nonmeaningful_words : constant unbounded_string := to_unbounded_string( " blah amount asset assets const data func proc equals info input output parm param parms params stuff that thing things this whatever whatnot whatsoever value values variable variables " );
 
+-- HONONYM WORDS
+--
+-- This is a list of characters that sound alike, common mispellings or are
+-- common abbreviations.  This list is not exhaustive.
+
+type a_hononym is record
+   word  : unbounded_string;
+   alias : unbounded_string;
+end record;
+
+hononymn_words : array(1..44) of a_hononym := (
+   ( to_unbounded_string( "zero" ),    to_unbounded_string( "0" ) ),
+   ( to_unbounded_string( "one" ),     to_unbounded_string( "1" ) ),
+   ( to_unbounded_string( "two" ),     to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "three" ),   to_unbounded_string( "3" ) ),
+   ( to_unbounded_string( "four" ),    to_unbounded_string( "4" ) ),
+   ( to_unbounded_string( "five" ),    to_unbounded_string( "5" ) ),
+   ( to_unbounded_string( "six" ),     to_unbounded_string( "6" ) ),
+   ( to_unbounded_string( "seven" ),   to_unbounded_string( "7" ) ),
+   ( to_unbounded_string( "eight" ),   to_unbounded_string( "8" ) ),
+   ( to_unbounded_string( "nine" ),    to_unbounded_string( "9" ) ),
+   ( to_unbounded_string( "first" ),   to_unbounded_string( "1st" ) ),
+   ( to_unbounded_string( "second" ),  to_unbounded_string( "2nd" ) ),
+   ( to_unbounded_string( "third" ),   to_unbounded_string( "3rd" ) ),
+
+   ( to_unbounded_string( "boolean" ), to_unbounded_string( "bool" ) ),
+   ( to_unbounded_string( "character" ), to_unbounded_string( "char" ) ),
+   ( to_unbounded_string( "class" ),   to_unbounded_string( "cls" ) ),
+   ( to_unbounded_string( "cnt" ),     to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "constant" ), to_unbounded_string( "const" ) ),
+   ( to_unbounded_string( "copy" ),    to_unbounded_string( "cpy" ) ),
+   ( to_unbounded_string( "count" ),   to_unbounded_string( "cnt" ) ),
+   ( to_unbounded_string( "count" ),   to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "element" ), to_unbounded_string( "elem" ) ),
+   ( to_unbounded_string( "high" ),    to_unbounded_string( "hi" ) ),
+   ( to_unbounded_string( "index" ),   to_unbounded_string( "idx" ) ),
+   ( to_unbounded_string( "init" ),   to_unbounded_string( "initialize" ) ),
+   ( to_unbounded_string( "integer" ), to_unbounded_string( "int" ) ),
+   ( to_unbounded_string( "iterator" ), to_unbounded_string( "iter" ) ),
+   ( to_unbounded_string( "length" ),  to_unbounded_string( "len" ) ),
+   ( to_unbounded_string( "low" ),     to_unbounded_string( "lo" ) ),
+   ( to_unbounded_string( "object" ),  to_unbounded_string( "obj" ) ),
+   ( to_unbounded_string( "offset" ),  to_unbounded_string( "off" ) ),
+   ( to_unbounded_string( "pointer" ), to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "position" ), to_unbounded_string( "pos" ) ),
+   ( to_unbounded_string( "read" ),    to_unbounded_string( "get" ) ),
+   ( to_unbounded_string( "reference" ), to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "ref" ),     to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "result" ),  to_unbounded_string( "res" ) ),
+   ( to_unbounded_string( "start" ),   to_unbounded_string( "init" ) ),
+   ( to_unbounded_string( "start" ),   to_unbounded_string( "initialize" ) ),
+   ( to_unbounded_string( "start" ),   to_unbounded_string( "startup" ) ),
+   ( to_unbounded_string( "stop" ),    to_unbounded_string( "end" ) ),
+   ( to_unbounded_string( "temp" ),    to_unbounded_string( "tmp" ) ),
+   ( to_unbounded_string( "total" ),   to_unbounded_string( "ttl" ) ),
+   ( to_unbounded_string( "write" ),   to_unbounded_string( "put" ) )
+);
+
+
 -- CONFUSING PROGRAM WORDS
 --
 -- These are words that, if used as the name of a program, will result in
@@ -86,6 +145,7 @@ nonmeaningful_words : constant unbounded_string := to_unbounded_string( " blah a
 -- no output, making it look like the program didn't run.
 
 confusingprogram_words : constant unbounded_string := to_unbounded_string( " eval exec read test " );
+
 
 
 -----------------------------------------------------------------------------
@@ -360,6 +420,56 @@ end ParseProcedureIdentifier;
 -----------------------------------------------------------------------------
 
 procedure ParseVariableIdentifier( id : out identifier ) is
+
+   -- CHECK HONONYMS
+   --
+   -- Check for common mispellings and short-forms.  e.g. "hi" vs "high".
+   -- Doesn't take into account letter case.
+
+   procedure CheckHononyms is
+      tempId : identifier;
+      temp   : unbounded_string;
+      pos    : natural;
+   begin
+      for i in hononymn_words'range loop
+          temp := identifiers(id).name;
+          pos := index( temp, to_string( hononymn_words(i).word ) );
+          if pos > 0 then
+             temp := replace_slice(
+                identifiers(id).name,
+                pos,
+                pos + length( hononymn_words(i).word ) - 1,
+                to_string( hononymn_words(i).alias )
+             );
+             findIdent( temp, tempId );
+             if tempId /= eof_t then
+                err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
+                     " is similar to another visible name " &
+                     optional_bold( to_string( temp ) ) );
+                     exit;
+             end if;
+          end if;
+          -- same in reverse: was the alias used previously
+          temp := identifiers(id).name;
+          pos := index( temp, to_string( hononymn_words(i).alias ) );
+          if pos > 0 then
+             temp := replace_slice(
+                 identifiers(id).name,
+                 pos,
+                 pos + length( hononymn_words(i).alias ) - 1,
+                 to_string( hononymn_words(i).word )
+             );
+             findIdent( temp, tempId );
+             if tempId /= eof_t then
+                err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
+                     " is similar to another visible name " &
+                     optional_bold( to_string( temp ) ) );
+                exit;
+             end if;
+          end if;
+      end loop;
+   end CheckHononyms;
+
 begin
   id := eof_t; -- dummy
   -- forward constant specification
@@ -427,6 +537,12 @@ begin
            err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
             err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+        elsif length( nameAsLower ) > 32 then
+            if index( nameAsLower, "_" ) = 0 then
+               err( "style issue: long names are more readable when underscores are used" );
+            end if;
+        else
+            checkHononyms;
         end if;
      end;
      getNextToken;

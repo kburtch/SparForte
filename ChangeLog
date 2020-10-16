@@ -44,3 +44,7 @@ CHANGES SINCE 2.3
 
 16. New (shell rewrite) AdaScript `` may have backslash escapes.
 
+17. New: variable declaration names are checked for common mispellings (e.g. "hi" vs. "high") should the similar variable exist and be visible.
+
+18. New: long variable names ought to have underscores.
+

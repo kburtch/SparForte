@@ -14,6 +14,8 @@ Priority Issues (Fix These First)
 - shell parser rewrite
   - recursive command substitution
     - line 3247 - nested process substitution - works on command line, not in jenkins
+      - the compiler counting of $(..) nesting level does not work because a closing
+        parenthesis need not belong to the $(..).
   - length substitution
       - does bash allow array elements?  even so, a different syntax in
         SparForte so maybe disallowed for compatibility reasons.

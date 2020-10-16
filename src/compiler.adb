@@ -1415,6 +1415,8 @@ begin
        exit;
 
     -- $(..) process expansion is nest-able
+    -- However, $(..) can contain regular (..) also.  A closing parenthesis
+    -- could belong to something else, or even be unrelated like "echo ')'.
 
     elsif ch = '$' and not inSingleQuotes and not inBackslash then
        if cmdpos < length( command ) then
