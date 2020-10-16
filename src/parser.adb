@@ -78,62 +78,175 @@ uppercase_o : constant unbounded_string := to_unbounded_string( "O" );
 
 nonmeaningful_words : constant unbounded_string := to_unbounded_string( " blah amount asset assets const data func proc equals info input output parm param parms params stuff that thing things this whatever whatnot whatsoever value values variable variables " );
 
--- HONONYM WORDS
+-- HOMONYM WORDS
 --
--- This is a list of characters that sound alike, common mispellings or are
+-- This is a list of characters that sound in English alike or are
 -- common abbreviations.  This list is not exhaustive.
+-- Use lowercase.
 
-type a_hononym is record
+-- The algorithm will try both word vs alias, and alias vs word.
+
+type a_homonym is record
    word  : unbounded_string;
    alias : unbounded_string;
 end record;
 
-hononymn_words : array(1..44) of a_hononym := (
-   ( to_unbounded_string( "zero" ),    to_unbounded_string( "0" ) ),
-   ( to_unbounded_string( "one" ),     to_unbounded_string( "1" ) ),
-   ( to_unbounded_string( "two" ),     to_unbounded_string( "2" ) ),
-   ( to_unbounded_string( "three" ),   to_unbounded_string( "3" ) ),
-   ( to_unbounded_string( "four" ),    to_unbounded_string( "4" ) ),
-   ( to_unbounded_string( "five" ),    to_unbounded_string( "5" ) ),
-   ( to_unbounded_string( "six" ),     to_unbounded_string( "6" ) ),
-   ( to_unbounded_string( "seven" ),   to_unbounded_string( "7" ) ),
-   ( to_unbounded_string( "eight" ),   to_unbounded_string( "8" ) ),
-   ( to_unbounded_string( "nine" ),    to_unbounded_string( "9" ) ),
-   ( to_unbounded_string( "first" ),   to_unbounded_string( "1st" ) ),
-   ( to_unbounded_string( "second" ),  to_unbounded_string( "2nd" ) ),
-   ( to_unbounded_string( "third" ),   to_unbounded_string( "3rd" ) ),
+homonymn_words : constant array(1..150) of a_homonym := (
+   ( to_unbounded_string( "zero" ),     to_unbounded_string( "0" ) ),
+   ( to_unbounded_string( "zero" ),     to_unbounded_string( "none" ) ),
+   ( to_unbounded_string( "none" ),     to_unbounded_string( "0" ) ),
+   ( to_unbounded_string( "one" ),      to_unbounded_string( "1" ) ),
+   ( to_unbounded_string( "one" ),      to_unbounded_string( "won" ) ),
+   ( to_unbounded_string( "won" ),      to_unbounded_string( "1" ) ),
+   ( to_unbounded_string( "two" ),      to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "two" ),      to_unbounded_string( "too" ) ),
+   ( to_unbounded_string( "to" ),       to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "too" ),      to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "three" ),    to_unbounded_string( "3" ) ),
+   ( to_unbounded_string( "four" ),     to_unbounded_string( "4" ) ),
+   ( to_unbounded_string( "four" ),     to_unbounded_string( "for" ) ),
+   ( to_unbounded_string( "for" ),      to_unbounded_string( "4" ) ),
+   ( to_unbounded_string( "five" ),     to_unbounded_string( "5" ) ),
+   ( to_unbounded_string( "six" ),      to_unbounded_string( "6" ) ),
+   ( to_unbounded_string( "seven" ),    to_unbounded_string( "7" ) ),
+   ( to_unbounded_string( "eight" ),    to_unbounded_string( "8" ) ),
+   ( to_unbounded_string( "eight" ),    to_unbounded_string( "ate" ) ),
+   ( to_unbounded_string( "ate" ),      to_unbounded_string( "8" ) ),
+   ( to_unbounded_string( "nine" ),     to_unbounded_string( "9" ) ),
+   ( to_unbounded_string( "first" ),    to_unbounded_string( "1st" ) ),
+   ( to_unbounded_string( "second" ),   to_unbounded_string( "2nd" ) ),
+   ( to_unbounded_string( "third" ),    to_unbounded_string( "3rd" ) ),
+   ( to_unbounded_string( "fourth" ),   to_unbounded_string( "forth" ) ),
 
-   ( to_unbounded_string( "boolean" ), to_unbounded_string( "bool" ) ),
+   ( to_unbounded_string( "address" ),  to_unbounded_string( "addr" ) ),
+   ( to_unbounded_string( "argument" ), to_unbounded_string( "arg" ) ),
+   ( to_unbounded_string( "array" ),    to_unbounded_string( "arr" ) ),
+   ( to_unbounded_string( "attribute" ), to_unbounded_string( "attr" ) ),
+   ( to_unbounded_string( "blank" ),    to_unbounded_string( "empty" ) ),
+   ( to_unbounded_string( "boolean" ),  to_unbounded_string( "bool" ) ),
+   ( to_unbounded_string( "buffer" ),   to_unbounded_string( "buf" ) ),
+   ( to_unbounded_string( "certificate" ), to_unbounded_string( "cert" ) ),
    ( to_unbounded_string( "character" ), to_unbounded_string( "char" ) ),
-   ( to_unbounded_string( "class" ),   to_unbounded_string( "cls" ) ),
-   ( to_unbounded_string( "cnt" ),     to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "check" ),    to_unbounded_string( "chk" ) ),
+   ( to_unbounded_string( "class" ),    to_unbounded_string( "cls" ) ),
+   ( to_unbounded_string( "cnt" ),      to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "command" ),   to_unbounded_string( "cmd" ) ),
+   ( to_unbounded_string( "config" ),    to_unbounded_string( "conf" ) ),
+   ( to_unbounded_string( "config" ),    to_unbounded_string( "configuration" ) ),
+   ( to_unbounded_string( "configuration" ), to_unbounded_string( "conf" ) ),
    ( to_unbounded_string( "constant" ), to_unbounded_string( "const" ) ),
-   ( to_unbounded_string( "copy" ),    to_unbounded_string( "cpy" ) ),
-   ( to_unbounded_string( "count" ),   to_unbounded_string( "cnt" ) ),
-   ( to_unbounded_string( "count" ),   to_unbounded_string( "num" ) ),
-   ( to_unbounded_string( "element" ), to_unbounded_string( "elem" ) ),
-   ( to_unbounded_string( "high" ),    to_unbounded_string( "hi" ) ),
-   ( to_unbounded_string( "index" ),   to_unbounded_string( "idx" ) ),
-   ( to_unbounded_string( "init" ),   to_unbounded_string( "initialize" ) ),
-   ( to_unbounded_string( "integer" ), to_unbounded_string( "int" ) ),
+   ( to_unbounded_string( "copy" ),     to_unbounded_string( "cpy" ) ),
+   ( to_unbounded_string( "count" ),    to_unbounded_string( "cnt" ) ),
+   ( to_unbounded_string( "count" ),    to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "current" ),  to_unbounded_string( "cur" ) ),
+   ( to_unbounded_string( "credentials" ), to_unbounded_string( "creds" ) ),
+   ( to_unbounded_string( "data" ),     to_unbounded_string( "Info" ) ),
+   ( to_unbounded_string( "destination" ), to_unbounded_string( "dest" ) ),
+   ( to_unbounded_string( "destination" ), to_unbounded_string( "dst" ) ),
+   ( to_unbounded_string( "dst" ),      to_unbounded_string( "dest" ) ),
+   ( to_unbounded_string( "element" ),  to_unbounded_string( "elem" ) ),
+   ( to_unbounded_string( "error" ),    to_unbounded_string( "err" ) ),
+   ( to_unbounded_string( "flag" ),     to_unbounded_string( "flg" ) ),
+   ( to_unbounded_string( "foward" ),   to_unbounded_string( "fwd" ) ),
+   ( to_unbounded_string( "header" ),   to_unbounded_string( "hdr" ) ),
+   ( to_unbounded_string( "high" ),     to_unbounded_string( "hi" ) ),
+   ( to_unbounded_string( "index" ),    to_unbounded_string( "idx" ) ),
+   ( to_unbounded_string( "init" ),     to_unbounded_string( "initialize" ) ),
+   ( to_unbounded_string( "integer" ),  to_unbounded_string( "int" ) ),
+   ( to_unbounded_string( "internet" ), to_unbounded_string( "inet" ) ),
+   ( to_unbounded_string( "item" ),     to_unbounded_string( "itm" ) ),
    ( to_unbounded_string( "iterator" ), to_unbounded_string( "iter" ) ),
-   ( to_unbounded_string( "length" ),  to_unbounded_string( "len" ) ),
-   ( to_unbounded_string( "low" ),     to_unbounded_string( "lo" ) ),
-   ( to_unbounded_string( "object" ),  to_unbounded_string( "obj" ) ),
-   ( to_unbounded_string( "offset" ),  to_unbounded_string( "off" ) ),
-   ( to_unbounded_string( "pointer" ), to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "length" ),   to_unbounded_string( "len" ) ),
+   ( to_unbounded_string( "library" ),  to_unbounded_string( "lib" ) ),
+   ( to_unbounded_string( "low" ),      to_unbounded_string( "lo" ) ),
+   ( to_unbounded_string( "memory" ),   to_unbounded_string( "mem" ) ),
+   ( to_unbounded_string( "message" ),  to_unbounded_string( "msg" ) ),
+   ( to_unbounded_string( "network" ),  to_unbounded_string( "net" ) ),
+   ( to_unbounded_string( "object" ),   to_unbounded_string( "obj" ) ),
+   ( to_unbounded_string( "offset" ),   to_unbounded_string( "off" ) ),
+   ( to_unbounded_string( "offset" ),   to_unbounded_string( "ofs" ) ),
+   ( to_unbounded_string( "ofs" ),      to_unbounded_string( "off" ) ),
+   ( to_unbounded_string( "option" ),   to_unbounded_string( "opt" ) ),
+   ( to_unbounded_string( "output" ),   to_unbounded_string( "out" ) ),
+   ( to_unbounded_string( "pointer" ),  to_unbounded_string( "ptr" ) ),
    ( to_unbounded_string( "position" ), to_unbounded_string( "pos" ) ),
-   ( to_unbounded_string( "read" ),    to_unbounded_string( "get" ) ),
+   ( to_unbounded_string( "previous" ), to_unbounded_string( "prev" ) ),
+   ( to_unbounded_string( "print" ),    to_unbounded_string( "put" ) ),
+   ( to_unbounded_string( "read" ),     to_unbounded_string( "get" ) ),
    ( to_unbounded_string( "reference" ), to_unbounded_string( "ptr" ) ),
-   ( to_unbounded_string( "ref" ),     to_unbounded_string( "ptr" ) ),
-   ( to_unbounded_string( "result" ),  to_unbounded_string( "res" ) ),
-   ( to_unbounded_string( "start" ),   to_unbounded_string( "init" ) ),
-   ( to_unbounded_string( "start" ),   to_unbounded_string( "initialize" ) ),
-   ( to_unbounded_string( "start" ),   to_unbounded_string( "startup" ) ),
-   ( to_unbounded_string( "stop" ),    to_unbounded_string( "end" ) ),
-   ( to_unbounded_string( "temp" ),    to_unbounded_string( "tmp" ) ),
-   ( to_unbounded_string( "total" ),   to_unbounded_string( "ttl" ) ),
-   ( to_unbounded_string( "write" ),   to_unbounded_string( "put" ) )
+   ( to_unbounded_string( "ref" ),      to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "request" ),  to_unbounded_string( "req" ) ),
+   ( to_unbounded_string( "res" ),      to_unbounded_string( "ret" ) ),
+   ( to_unbounded_string( "result" ),   to_unbounded_string( "res" ) ),
+   ( to_unbounded_string( "result" ),   to_unbounded_string( "ret" ) ),
+   ( to_unbounded_string( "sequence" ), to_unbounded_string( "seq" ) ),
+   ( to_unbounded_string( "socket" ),   to_unbounded_string( "sock" ) ),
+   ( to_unbounded_string( "source" ),   to_unbounded_string( "src" ) ),
+   ( to_unbounded_string( "standard" ), to_unbounded_string( "std" ) ),
+   ( to_unbounded_string( "start" ),    to_unbounded_string( "init" ) ),
+   ( to_unbounded_string( "start" ),    to_unbounded_string( "initialize" ) ),
+   ( to_unbounded_string( "start" ),    to_unbounded_string( "startup" ) ),
+   ( to_unbounded_string( "status" ),   to_unbounded_string( "stat" ) ),
+   ( to_unbounded_string( "stop" ),     to_unbounded_string( "end" ) ),
+   ( to_unbounded_string( "string" ),   to_unbounded_string( "str" ) ),
+   ( to_unbounded_string( "target" ),   to_unbounded_string( "tar" ) ),
+   ( to_unbounded_string( "target" ),   to_unbounded_string( "dest" ) ),
+   ( to_unbounded_string( "temp" ),     to_unbounded_string( "tmp" ) ),
+   ( to_unbounded_string( "text" ),     to_unbounded_string( "txt" ) ),
+   ( to_unbounded_string( "total" ),    to_unbounded_string( "ttl" ) ),
+   ( to_unbounded_string( "warn" ),     to_unbounded_string( "worn" ) ),
+   ( to_unbounded_string( "warning" ),  to_unbounded_string( "warn" ) ),
+   ( to_unbounded_string( "write" ),    to_unbounded_string( "print" ) ),
+   ( to_unbounded_string( "write" ),    to_unbounded_string( "put" ) ),
+   ( to_unbounded_string( "write" ),    to_unbounded_string( "right" ) ),
+   ( to_unbounded_string( "value" ),    to_unbounded_string( "val" ) ),
+
+   -- Common English homonyms not covered above that might occur in a program.
+
+   ( to_unbounded_string( "accept" ),    to_unbounded_string( "except" ) ),
+   ( to_unbounded_string( "affect" ),    to_unbounded_string( "effect" ) ),
+   ( to_unbounded_string( "aloud" ),     to_unbounded_string( "allowed" ) ),
+   ( to_unbounded_string( "are" ),       to_unbounded_string( "our" ) ),
+   ( to_unbounded_string( "bear" ),      to_unbounded_string( "bare" ) ),
+   ( to_unbounded_string( "brake" ),     to_unbounded_string( "break" ) ),
+   ( to_unbounded_string( "buy" ),       to_unbounded_string( "by" ) ),
+   ( to_unbounded_string( "capital" ),   to_unbounded_string( "capitol" ) ),
+   ( to_unbounded_string( "cell" ),      to_unbounded_string( "sell" ) ),
+   ( to_unbounded_string( "cent" ),      to_unbounded_string( "sent" ) ),
+   ( to_unbounded_string( "complement" ), to_unbounded_string( "compliment" ) ),
+   ( to_unbounded_string( "fax" ),       to_unbounded_string( "facts" ) ),
+   ( to_unbounded_string( "faze" ),      to_unbounded_string( "phase" ) ),
+   ( to_unbounded_string( "find" ),      to_unbounded_string( "fined" ) ),
+   ( to_unbounded_string( "for" ),       to_unbounded_string( "fore" ) ),
+   ( to_unbounded_string( "halve" ),     to_unbounded_string( "have" ) ),
+   ( to_unbounded_string( "hear" ),      to_unbounded_string( "here" ) ),
+   ( to_unbounded_string( "hole" ),      to_unbounded_string( "whole" ) ),
+   ( to_unbounded_string( "hour" ),      to_unbounded_string( "our" ) ),
+   ( to_unbounded_string( "knew" ),      to_unbounded_string( "new" ) ),
+   ( to_unbounded_string( "know" ),      to_unbounded_string( "no" ) ),
+   ( to_unbounded_string( "least" ),     to_unbounded_string( "leased" ) ),
+   ( to_unbounded_string( "loan" ),      to_unbounded_string( "lone" ) ),
+   ( to_unbounded_string( "lie" ),       to_unbounded_string( "lay" ) ),
+   ( to_unbounded_string( "mail" ),      to_unbounded_string( "male" ) ),
+   ( to_unbounded_string( "overdo" ),    to_unbounded_string( "overdue" ) ),
+   ( to_unbounded_string( "peak" ),      to_unbounded_string( "peek" ) ),
+   ( to_unbounded_string( "plain" ),     to_unbounded_string( "plane" ) ),
+   ( to_unbounded_string( "poll" ),      to_unbounded_string( "pole" ) ),
+   ( to_unbounded_string( "principle" ),   to_unbounded_string( "principal" ) ),
+   ( to_unbounded_string( "rose" ),      to_unbounded_string( "rows" ) ),
+   ( to_unbounded_string( "scene" ),     to_unbounded_string( "seen" ) ),
+   ( to_unbounded_string( "sole" ),      to_unbounded_string( "soul" ) ),
+   ( to_unbounded_string( "some" ),      to_unbounded_string( "sum" ) ),
+   ( to_unbounded_string( "suite" ),     to_unbounded_string( "sweet" ) ),
+   ( to_unbounded_string( "there" ),     to_unbounded_string( "their" ) ),
+   ( to_unbounded_string( "threw" ),     to_unbounded_string( "through" ) ),
+   ( to_unbounded_string( "vary" ),      to_unbounded_string( "very" ) ),
+   ( to_unbounded_string( "wait" ),      to_unbounded_string( "weight" ) ),
+   ( to_unbounded_string( "weak" ),      to_unbounded_string( "week" ) ),
+   ( to_unbounded_string( "wear" ),      to_unbounded_string( "where" ) ),
+   ( to_unbounded_string( "weather" ),   to_unbounded_string( "whether" ) ),
+   ( to_unbounded_string( "wood" ),      to_unbounded_string( "would" ) )
+
 );
 
 
@@ -421,54 +534,83 @@ end ParseProcedureIdentifier;
 
 procedure ParseVariableIdentifier( id : out identifier ) is
 
-   -- CHECK HONONYMS
+   -- CHECK HOMONYMS
    --
    -- Check for common mispellings and short-forms.  e.g. "hi" vs "high".
-   -- Doesn't take into account letter case.
+   -- While other features check for bad spellings of declared names, this
+   -- checks for existing names that are too similar.
 
-   procedure CheckHononyms is
-      tempId : identifier;
-      temp   : unbounded_string;
-      pos    : natural;
-   begin
-      for i in hononymn_words'range loop
+   procedure CheckHomonyms is
+
+      -- CHECK ONE HOMONYM
+      --
+      -- Perform a check on one word/alias combination (e.g. "high" vs "hi").
+      -- TODO: Only the first occurrence is checked.
+
+      procedure CheckOneHomonym( id : identifier; word, alias : unbounded_string ) is
+         tempId : identifier;
+         temp   : unbounded_string;
+         pos    : natural;
+      begin
           temp := identifiers(id).name;
-          pos := index( temp, to_string( hononymn_words(i).word ) );
+          pos := index( temp, to_string( word ) );
           if pos > 0 then
              temp := replace_slice(
                 identifiers(id).name,
                 pos,
-                pos + length( hononymn_words(i).word ) - 1,
-                to_string( hononymn_words(i).alias )
+                pos + length( word ) - 1,
+                to_string( alias )
              );
              findIdent( temp, tempId );
              if tempId /= eof_t then
                 err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
                      " is similar to another visible name " &
-                     optional_bold( to_string( temp ) ) );
-                     exit;
+                     optional_bold( to_string( temp ) ) &
+                     " and may cause confusion" );
              end if;
-          end if;
+         end if;
+      end CheckOneHomonym;
+
+     ch    : character;
+     word  : unbounded_string;
+     alias : unbounded_string;
+     camelIsPossible : boolean;
+   begin
+      for i in homonymn_words'range loop
+          -- for example, this "high" vs existing "hi"
+          CheckOneHomonym( id, homonymn_words(i).word, homonymn_words(i).alias );
+          exit when error_found;
           -- same in reverse: was the alias used previously
-          temp := identifiers(id).name;
-          pos := index( temp, to_string( hononymn_words(i).alias ) );
-          if pos > 0 then
-             temp := replace_slice(
-                 identifiers(id).name,
-                 pos,
-                 pos + length( hononymn_words(i).alias ) - 1,
-                 to_string( hononymn_words(i).word )
-             );
-             findIdent( temp, tempId );
-             if tempId /= eof_t then
-                err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
-                     " is similar to another visible name " &
-                     optional_bold( to_string( temp ) ) );
-                exit;
-             end if;
+          -- for example, this "hi" vs existing "high"
+          CheckOneHomonym( id, homonymn_words(i).alias, homonymn_words(i).word );
+          exit when error_found;
+          -- Camel-case: upper-case the word and alias and try again
+          -- If neither the word or alias can be upper-cased, then there's
+          -- no need to test this case.
+          word  := homonymn_words(i).word;
+          alias := homonymn_words(i).alias;
+          camelIsPossible := false;
+          ch := Element( word, 1 );
+          if ch >= 'a' and ch <= 'z' then
+             ch := character'val( character'pos( ch ) - 32 );
+             Replace_Element( word, 1, ch );
+             camelIsPossible := true;
+          end if;
+          ch := Element( alias, 1 );
+          if ch >= 'a' and ch <= 'z' then
+             ch := character'val( character'pos( ch ) - 32 );
+             Replace_Element( alias, 1, ch );
+             camelIsPossible := true;
+          end if;
+          -- same deal: check both one way and reverse
+          if camelIsPossible then
+             CheckOneHomonym( id, word, alias );
+             exit when error_found;
+             CheckOneHomonym( id, alias, word );
+             exit when error_found;
           end if;
       end loop;
-   end CheckHononyms;
+   end CheckHomonyms;
 
 begin
   id := eof_t; -- dummy
@@ -541,8 +683,9 @@ begin
             if index( nameAsLower, "_" ) = 0 then
                err( "style issue: long names are more readable when underscores are used" );
             end if;
-        else
-            checkHononyms;
+        elsif not boolean( maintenanceOpt ) then
+            -- for performance, don't check.
+            checkHomonyms;
         end if;
      end;
      getNextToken;
