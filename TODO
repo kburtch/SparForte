@@ -254,7 +254,7 @@ Annoyances / Bugs with Workarounds / Updates
       exported variable, or statement.  It should not be a filename.  requested
       by user
     - spitbol support
-      - http://www.dmitry-kazakov.de/match/match.htm 
+      - http://www.dmitry-kazakov.de/match/match.htm
     - text_io's get requires a file but shouldn't, or docs should be updated
     - case..is doesn't accept an array element like a(i)
     - control-z handling - fork, send a sleep signal and reset scanner
