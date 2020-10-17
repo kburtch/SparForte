@@ -1437,7 +1437,7 @@ begin
 
     -- Redirects
 
-    elsif not inRedirect and (ch = '>' or ch = '<') and not inDoubleQuotes 
+    elsif not inRedirect and (ch = '>' or ch = '<') and not inDoubleQuotes
        and not inSingleQuotes and not inBackslash and processExpansionLevel = 0 then
        lastpos := cmdpos - 1;
        exit;

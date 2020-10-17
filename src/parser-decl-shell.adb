@@ -284,7 +284,7 @@ procedure doPathnameExpansion(
            elsif candidateParentPath = "" &directory_delimiter then
               newCandidatePath := candidateParentPath &
                  to_unbounded_string( filename( 1..fileNameLen ) );
-           else              
+           else
               newCandidatePath := candidateParentPath & directory_delimiter &
                  to_unbounded_string( filename( 1..fileNameLen ) );
            end if;
