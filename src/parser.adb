@@ -59,8 +59,8 @@ use ada.command_line,
     parser_cal,
     interpreter; -- circular relationship for breakout prompt
 
---with ada.text_io;
---use ada.text_io;
+with ada.text_io;
+use ada.text_io;
 
 package body parser is
 
@@ -91,7 +91,10 @@ type a_homonym is record
    alias : unbounded_string;
 end record;
 
-homonymn_words : constant array(1..150) of a_homonym := (
+homonymn_words : constant array(1..151) of a_homonym := (
+
+   -- Numbers short-cuts and similar sounding words.
+
    ( to_unbounded_string( "zero" ),     to_unbounded_string( "0" ) ),
    ( to_unbounded_string( "zero" ),     to_unbounded_string( "none" ) ),
    ( to_unbounded_string( "none" ),     to_unbounded_string( "0" ) ),
@@ -118,6 +121,8 @@ homonymn_words : constant array(1..150) of a_homonym := (
    ( to_unbounded_string( "third" ),    to_unbounded_string( "3rd" ) ),
    ( to_unbounded_string( "fourth" ),   to_unbounded_string( "forth" ) ),
 
+   -- Common short-cuts and aliases in programming.
+
    ( to_unbounded_string( "address" ),  to_unbounded_string( "addr" ) ),
    ( to_unbounded_string( "argument" ), to_unbounded_string( "arg" ) ),
    ( to_unbounded_string( "array" ),    to_unbounded_string( "arr" ) ),
@@ -129,6 +134,7 @@ homonymn_words : constant array(1..150) of a_homonym := (
    ( to_unbounded_string( "character" ), to_unbounded_string( "char" ) ),
    ( to_unbounded_string( "check" ),    to_unbounded_string( "chk" ) ),
    ( to_unbounded_string( "class" ),    to_unbounded_string( "cls" ) ),
+   ( to_unbounded_string( "clear" ),    to_unbounded_string( "reset" ) ),
    ( to_unbounded_string( "cnt" ),      to_unbounded_string( "num" ) ),
    ( to_unbounded_string( "command" ),   to_unbounded_string( "cmd" ) ),
    ( to_unbounded_string( "config" ),    to_unbounded_string( "conf" ) ),
@@ -259,6 +265,85 @@ homonymn_words : constant array(1..150) of a_homonym := (
 
 confusingprogram_words : constant unbounded_string := to_unbounded_string( " eval exec read test " );
 
+
+-- CHECK HOMONYMS
+--
+-- Check for common mispellings and short-forms.  e.g. "hi" vs "high".
+-- While other features check for bad spellings of declared names, this
+-- checks for existing names that are too similar.
+-----------------------------------------------------------------------------
+
+procedure CheckHomonyms( id : identifier ) is
+
+   -- CHECK ONE HOMONYM
+   --
+   -- Perform a check on one word/alias combination (e.g. "high" vs "hi").
+   -- TODO: Only the first occurrence is checked.
+
+   procedure CheckOneHomonym( id : identifier; word, alias : unbounded_string ) is
+      tempId : identifier;
+      temp   : unbounded_string;
+      pos    : natural;
+   begin
+       temp := identifiers(id).name;
+       pos := index( temp, to_string( word ) );
+       if pos > 0 then
+          temp := replace_slice(
+             identifiers(id).name,
+             pos,
+             pos + length( word ) - 1,
+             to_string( alias )
+          );
+          findIdent( temp, tempId );
+          if tempId /= eof_t then
+             err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
+                  " is similar to another visible name " &
+                  optional_bold( to_string( temp ) ) &
+                  " and may cause confusion" );
+          end if;
+      end if;
+   end CheckOneHomonym;
+
+  ch    : character;
+  word  : unbounded_string;
+  alias : unbounded_string;
+  camelIsPossible : boolean;
+begin
+   for i in homonymn_words'range loop
+       -- for example, this "high" vs existing "hi"
+       CheckOneHomonym( id, homonymn_words(i).word, homonymn_words(i).alias );
+       exit when error_found;
+       -- same in reverse: was the alias used previously
+       -- for example, this "hi" vs existing "high"
+       CheckOneHomonym( id, homonymn_words(i).alias, homonymn_words(i).word );
+       exit when error_found;
+       -- Camel-case: upper-case the word and alias and try again
+       -- If neither the word or alias can be upper-cased, then there's
+       -- no need to test this case.
+       word  := homonymn_words(i).word;
+       alias := homonymn_words(i).alias;
+       camelIsPossible := false;
+       ch := Element( word, 1 );
+       if ch >= 'a' and ch <= 'z' then
+          ch := character'val( character'pos( ch ) - 32 );
+          Replace_Element( word, 1, ch );
+          camelIsPossible := true;
+       end if;
+       ch := Element( alias, 1 );
+       if ch >= 'a' and ch <= 'z' then
+          ch := character'val( character'pos( ch ) - 32 );
+          Replace_Element( alias, 1, ch );
+          camelIsPossible := true;
+       end if;
+       -- same deal: check both one way and reverse
+       if camelIsPossible then
+          CheckOneHomonym( id, word, alias );
+          exit when error_found;
+          CheckOneHomonym( id, alias, word );
+          exit when error_found;
+       end if;
+   end loop;
+end CheckHomonyms;
 
 
 -----------------------------------------------------------------------------
@@ -512,6 +597,11 @@ begin
 
      if length( identifiers(id).name ) < 3 then
         err( optional_bold( "style issue: " & to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
+     elsif not type_checks_done and then not boolean( maintenanceOpt ) then
+        -- for performance, don't check in maintenance phase.  Also, only
+        -- need to check the names once (i.e. during type checking) and
+        -- not on execution.
+        checkHomonyms( id );
      end if;
 
      getNextToken;
@@ -533,84 +623,6 @@ end ParseProcedureIdentifier;
 -----------------------------------------------------------------------------
 
 procedure ParseVariableIdentifier( id : out identifier ) is
-
-   -- CHECK HOMONYMS
-   --
-   -- Check for common mispellings and short-forms.  e.g. "hi" vs "high".
-   -- While other features check for bad spellings of declared names, this
-   -- checks for existing names that are too similar.
-
-   procedure CheckHomonyms is
-
-      -- CHECK ONE HOMONYM
-      --
-      -- Perform a check on one word/alias combination (e.g. "high" vs "hi").
-      -- TODO: Only the first occurrence is checked.
-
-      procedure CheckOneHomonym( id : identifier; word, alias : unbounded_string ) is
-         tempId : identifier;
-         temp   : unbounded_string;
-         pos    : natural;
-      begin
-          temp := identifiers(id).name;
-          pos := index( temp, to_string( word ) );
-          if pos > 0 then
-             temp := replace_slice(
-                identifiers(id).name,
-                pos,
-                pos + length( word ) - 1,
-                to_string( alias )
-             );
-             findIdent( temp, tempId );
-             if tempId /= eof_t then
-                err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
-                     " is similar to another visible name " &
-                     optional_bold( to_string( temp ) ) &
-                     " and may cause confusion" );
-             end if;
-         end if;
-      end CheckOneHomonym;
-
-     ch    : character;
-     word  : unbounded_string;
-     alias : unbounded_string;
-     camelIsPossible : boolean;
-   begin
-      for i in homonymn_words'range loop
-          -- for example, this "high" vs existing "hi"
-          CheckOneHomonym( id, homonymn_words(i).word, homonymn_words(i).alias );
-          exit when error_found;
-          -- same in reverse: was the alias used previously
-          -- for example, this "hi" vs existing "high"
-          CheckOneHomonym( id, homonymn_words(i).alias, homonymn_words(i).word );
-          exit when error_found;
-          -- Camel-case: upper-case the word and alias and try again
-          -- If neither the word or alias can be upper-cased, then there's
-          -- no need to test this case.
-          word  := homonymn_words(i).word;
-          alias := homonymn_words(i).alias;
-          camelIsPossible := false;
-          ch := Element( word, 1 );
-          if ch >= 'a' and ch <= 'z' then
-             ch := character'val( character'pos( ch ) - 32 );
-             Replace_Element( word, 1, ch );
-             camelIsPossible := true;
-          end if;
-          ch := Element( alias, 1 );
-          if ch >= 'a' and ch <= 'z' then
-             ch := character'val( character'pos( ch ) - 32 );
-             Replace_Element( alias, 1, ch );
-             camelIsPossible := true;
-          end if;
-          -- same deal: check both one way and reverse
-          if camelIsPossible then
-             CheckOneHomonym( id, word, alias );
-             exit when error_found;
-             CheckOneHomonym( id, alias, word );
-             exit when error_found;
-          end if;
-      end loop;
-   end CheckHomonyms;
 
 begin
   id := eof_t; -- dummy
@@ -683,9 +695,11 @@ begin
             if index( nameAsLower, "_" ) = 0 then
                err( "style issue: long names are more readable when underscores are used" );
             end if;
-        elsif not boolean( maintenanceOpt ) then
-            -- for performance, don't check.
-            checkHomonyms;
+        elsif not type_checks_done and then not boolean( maintenanceOpt ) then
+            -- for performance, don't check in maintenance phase.  Also, only
+            -- need to check the names once (i.e. during type checking) and
+            -- not on execution.
+            checkHomonyms( id );
         end if;
      end;
      getNextToken;
