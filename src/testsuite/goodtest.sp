@@ -1631,8 +1631,8 @@ end;
 
 i := 0;
 declare
-  type int is new abstract integer;
-  subtype int2 is int;
+  type int1 is new abstract integer;
+  subtype int2 is int1;
   i : int2 := 1;
   path2 : string := PATH; -- global path
   PATH  : import_string; -- overshadows global path
@@ -4684,9 +4684,9 @@ end;
 -- subtypes and renamings
 
 declare
-  subtype int is integer;
+  subtype myint is integer;
   i2 : integer := 9;
-  j2 : int renames i2;
+  j2 : myint renames i2;
 begin
   null;
   pragma assert( j2 = 9 );
@@ -4843,9 +4843,9 @@ end;
 -- subtypes and copies
 
 declare
-  subtype int is integer;
+  subtype myint is integer;
   i2 : integer := 9;
-  j2 : int copies i2;
+  j2 : myint copies i2;
 begin
   null;
   pragma assert( j2 = 9 );
@@ -4937,8 +4937,8 @@ end;
 -- basic in out procedure - subtype
 
 declare
-  subtype int is integer;
-  procedure in_out_proc ( i : in out int ) is
+  subtype myint is integer;
+  procedure in_out_proc ( i : in out myint ) is
   begin
     i := i * 2;
   end in_out_proc;
@@ -5094,8 +5094,8 @@ end;
 -- basic out procedure - subtype
 
 declare
-  subtype int is integer;
-  procedure out_proc ( i : out int ) is
+  subtype myint is integer;
+  procedure out_proc ( i : out myint ) is
   begin
     i := 2;
   end out_proc;

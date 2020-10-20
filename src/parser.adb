@@ -59,8 +59,8 @@ use ada.command_line,
     parser_cal,
     interpreter; -- circular relationship for breakout prompt
 
-with ada.text_io;
-use ada.text_io;
+--with ada.text_io;
+--use ada.text_io;
 
 package body parser is
 
@@ -91,121 +91,129 @@ type a_homonym is record
    alias : unbounded_string;
 end record;
 
-homonymn_words : constant array(1..151) of a_homonym := (
+homonymn_words : constant array(1..159) of a_homonym := (
 
    -- Numbers short-cuts and similar sounding words.
 
-   ( to_unbounded_string( "zero" ),     to_unbounded_string( "0" ) ),
-   ( to_unbounded_string( "zero" ),     to_unbounded_string( "none" ) ),
-   ( to_unbounded_string( "none" ),     to_unbounded_string( "0" ) ),
-   ( to_unbounded_string( "one" ),      to_unbounded_string( "1" ) ),
-   ( to_unbounded_string( "one" ),      to_unbounded_string( "won" ) ),
-   ( to_unbounded_string( "won" ),      to_unbounded_string( "1" ) ),
-   ( to_unbounded_string( "two" ),      to_unbounded_string( "2" ) ),
-   ( to_unbounded_string( "two" ),      to_unbounded_string( "too" ) ),
-   ( to_unbounded_string( "to" ),       to_unbounded_string( "2" ) ),
-   ( to_unbounded_string( "too" ),      to_unbounded_string( "2" ) ),
-   ( to_unbounded_string( "three" ),    to_unbounded_string( "3" ) ),
-   ( to_unbounded_string( "four" ),     to_unbounded_string( "4" ) ),
-   ( to_unbounded_string( "four" ),     to_unbounded_string( "for" ) ),
-   ( to_unbounded_string( "for" ),      to_unbounded_string( "4" ) ),
-   ( to_unbounded_string( "five" ),     to_unbounded_string( "5" ) ),
-   ( to_unbounded_string( "six" ),      to_unbounded_string( "6" ) ),
-   ( to_unbounded_string( "seven" ),    to_unbounded_string( "7" ) ),
-   ( to_unbounded_string( "eight" ),    to_unbounded_string( "8" ) ),
-   ( to_unbounded_string( "eight" ),    to_unbounded_string( "ate" ) ),
-   ( to_unbounded_string( "ate" ),      to_unbounded_string( "8" ) ),
-   ( to_unbounded_string( "nine" ),     to_unbounded_string( "9" ) ),
-   ( to_unbounded_string( "first" ),    to_unbounded_string( "1st" ) ),
-   ( to_unbounded_string( "second" ),   to_unbounded_string( "2nd" ) ),
-   ( to_unbounded_string( "third" ),    to_unbounded_string( "3rd" ) ),
-   ( to_unbounded_string( "fourth" ),   to_unbounded_string( "forth" ) ),
+   ( to_unbounded_string( "zero" ),      to_unbounded_string( "0" ) ),
+   ( to_unbounded_string( "zero" ),      to_unbounded_string( "none" ) ),
+   ( to_unbounded_string( "none" ),      to_unbounded_string( "0" ) ),
+   ( to_unbounded_string( "one" ),       to_unbounded_string( "1" ) ),
+   ( to_unbounded_string( "one" ),       to_unbounded_string( "won" ) ),
+   ( to_unbounded_string( "won" ),       to_unbounded_string( "1" ) ),
+   ( to_unbounded_string( "two" ),       to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "two" ),       to_unbounded_string( "too" ) ),
+   ( to_unbounded_string( "to" ),        to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "too" ),       to_unbounded_string( "2" ) ),
+   ( to_unbounded_string( "three" ),     to_unbounded_string( "3" ) ),
+   ( to_unbounded_string( "four" ),      to_unbounded_string( "4" ) ),
+   ( to_unbounded_string( "four" ),      to_unbounded_string( "for" ) ),
+   ( to_unbounded_string( "for" ),       to_unbounded_string( "4" ) ),
+   ( to_unbounded_string( "five" ),      to_unbounded_string( "5" ) ),
+   ( to_unbounded_string( "six" ),       to_unbounded_string( "6" ) ),
+   ( to_unbounded_string( "seven" ),     to_unbounded_string( "7" ) ),
+   ( to_unbounded_string( "eight" ),     to_unbounded_string( "8" ) ),
+   ( to_unbounded_string( "eight" ),     to_unbounded_string( "ate" ) ),
+   ( to_unbounded_string( "ate" ),       to_unbounded_string( "8" ) ),
+   ( to_unbounded_string( "nine" ),      to_unbounded_string( "9" ) ),
+   ( to_unbounded_string( "first" ),     to_unbounded_string( "1st" ) ),
+   ( to_unbounded_string( "second" ),    to_unbounded_string( "2nd" ) ),
+   ( to_unbounded_string( "third" ),     to_unbounded_string( "3rd" ) ),
+   ( to_unbounded_string( "fourth" ),    to_unbounded_string( "forth" ) ),
 
    -- Common short-cuts and aliases in programming.
 
-   ( to_unbounded_string( "address" ),  to_unbounded_string( "addr" ) ),
-   ( to_unbounded_string( "argument" ), to_unbounded_string( "arg" ) ),
-   ( to_unbounded_string( "array" ),    to_unbounded_string( "arr" ) ),
+   ( to_unbounded_string( "address" ),   to_unbounded_string( "addr" ) ),
+   ( to_unbounded_string( "argument" ),  to_unbounded_string( "arg" ) ),
+   ( to_unbounded_string( "array" ),     to_unbounded_string( "arr" ) ),
    ( to_unbounded_string( "attribute" ), to_unbounded_string( "attr" ) ),
-   ( to_unbounded_string( "blank" ),    to_unbounded_string( "empty" ) ),
-   ( to_unbounded_string( "boolean" ),  to_unbounded_string( "bool" ) ),
-   ( to_unbounded_string( "buffer" ),   to_unbounded_string( "buf" ) ),
+   ( to_unbounded_string( "blank" ),     to_unbounded_string( "empty" ) ),
+   ( to_unbounded_string( "boolean" ),   to_unbounded_string( "bool" ) ),
+   ( to_unbounded_string( "buffer" ),    to_unbounded_string( "buf" ) ),
+   ( to_unbounded_string( "build" ),     to_unbounded_string( "make" ) ),
    ( to_unbounded_string( "certificate" ), to_unbounded_string( "cert" ) ),
    ( to_unbounded_string( "character" ), to_unbounded_string( "char" ) ),
-   ( to_unbounded_string( "check" ),    to_unbounded_string( "chk" ) ),
-   ( to_unbounded_string( "class" ),    to_unbounded_string( "cls" ) ),
-   ( to_unbounded_string( "clear" ),    to_unbounded_string( "reset" ) ),
-   ( to_unbounded_string( "cnt" ),      to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "check" ),     to_unbounded_string( "chk" ) ),
+   ( to_unbounded_string( "class" ),     to_unbounded_string( "cls" ) ),
+   ( to_unbounded_string( "clear" ),     to_unbounded_string( "reset" ) ),
+   ( to_unbounded_string( "cnt" ),       to_unbounded_string( "num" ) ),
    ( to_unbounded_string( "command" ),   to_unbounded_string( "cmd" ) ),
+   ( to_unbounded_string( "complete" ),  to_unbounded_string( "finalize" ) ),
+   ( to_unbounded_string( "complete" ),  to_unbounded_string( "finish" ) ),
+   ( to_unbounded_string( "complete" ),  to_unbounded_string( "close" ) ),
    ( to_unbounded_string( "config" ),    to_unbounded_string( "conf" ) ),
    ( to_unbounded_string( "config" ),    to_unbounded_string( "configuration" ) ),
    ( to_unbounded_string( "configuration" ), to_unbounded_string( "conf" ) ),
-   ( to_unbounded_string( "constant" ), to_unbounded_string( "const" ) ),
-   ( to_unbounded_string( "copy" ),     to_unbounded_string( "cpy" ) ),
-   ( to_unbounded_string( "count" ),    to_unbounded_string( "cnt" ) ),
-   ( to_unbounded_string( "count" ),    to_unbounded_string( "num" ) ),
-   ( to_unbounded_string( "current" ),  to_unbounded_string( "cur" ) ),
+   ( to_unbounded_string( "constant" ),  to_unbounded_string( "const" ) ),
+   ( to_unbounded_string( "copy" ),      to_unbounded_string( "cpy" ) ),
+   ( to_unbounded_string( "count" ),     to_unbounded_string( "cnt" ) ),
+   ( to_unbounded_string( "count" ),     to_unbounded_string( "num" ) ),
+   ( to_unbounded_string( "current" ),   to_unbounded_string( "cur" ) ),
    ( to_unbounded_string( "credentials" ), to_unbounded_string( "creds" ) ),
-   ( to_unbounded_string( "data" ),     to_unbounded_string( "Info" ) ),
+   ( to_unbounded_string( "data" ),      to_unbounded_string( "Info" ) ),
    ( to_unbounded_string( "destination" ), to_unbounded_string( "dest" ) ),
    ( to_unbounded_string( "destination" ), to_unbounded_string( "dst" ) ),
-   ( to_unbounded_string( "dst" ),      to_unbounded_string( "dest" ) ),
-   ( to_unbounded_string( "element" ),  to_unbounded_string( "elem" ) ),
-   ( to_unbounded_string( "error" ),    to_unbounded_string( "err" ) ),
-   ( to_unbounded_string( "flag" ),     to_unbounded_string( "flg" ) ),
-   ( to_unbounded_string( "foward" ),   to_unbounded_string( "fwd" ) ),
-   ( to_unbounded_string( "header" ),   to_unbounded_string( "hdr" ) ),
-   ( to_unbounded_string( "high" ),     to_unbounded_string( "hi" ) ),
-   ( to_unbounded_string( "index" ),    to_unbounded_string( "idx" ) ),
-   ( to_unbounded_string( "init" ),     to_unbounded_string( "initialize" ) ),
-   ( to_unbounded_string( "integer" ),  to_unbounded_string( "int" ) ),
-   ( to_unbounded_string( "internet" ), to_unbounded_string( "inet" ) ),
-   ( to_unbounded_string( "item" ),     to_unbounded_string( "itm" ) ),
-   ( to_unbounded_string( "iterator" ), to_unbounded_string( "iter" ) ),
-   ( to_unbounded_string( "length" ),   to_unbounded_string( "len" ) ),
-   ( to_unbounded_string( "library" ),  to_unbounded_string( "lib" ) ),
-   ( to_unbounded_string( "low" ),      to_unbounded_string( "lo" ) ),
-   ( to_unbounded_string( "memory" ),   to_unbounded_string( "mem" ) ),
-   ( to_unbounded_string( "message" ),  to_unbounded_string( "msg" ) ),
-   ( to_unbounded_string( "network" ),  to_unbounded_string( "net" ) ),
-   ( to_unbounded_string( "object" ),   to_unbounded_string( "obj" ) ),
-   ( to_unbounded_string( "offset" ),   to_unbounded_string( "off" ) ),
-   ( to_unbounded_string( "offset" ),   to_unbounded_string( "ofs" ) ),
-   ( to_unbounded_string( "ofs" ),      to_unbounded_string( "off" ) ),
-   ( to_unbounded_string( "option" ),   to_unbounded_string( "opt" ) ),
-   ( to_unbounded_string( "output" ),   to_unbounded_string( "out" ) ),
-   ( to_unbounded_string( "pointer" ),  to_unbounded_string( "ptr" ) ),
-   ( to_unbounded_string( "position" ), to_unbounded_string( "pos" ) ),
-   ( to_unbounded_string( "previous" ), to_unbounded_string( "prev" ) ),
-   ( to_unbounded_string( "print" ),    to_unbounded_string( "put" ) ),
-   ( to_unbounded_string( "read" ),     to_unbounded_string( "get" ) ),
+   ( to_unbounded_string( "dst" ),       to_unbounded_string( "dest" ) ),
+   ( to_unbounded_string( "element" ),   to_unbounded_string( "elem" ) ),
+   ( to_unbounded_string( "error" ),     to_unbounded_string( "err" ) ),
+   ( to_unbounded_string( "finish" ),    to_unbounded_string( "finalize" ) ),
+   ( to_unbounded_string( "finish" ),    to_unbounded_string( "close" ) ),
+   ( to_unbounded_string( "finalize" ),  to_unbounded_string( "finish" ) ),
+   ( to_unbounded_string( "flag" ),      to_unbounded_string( "flg" ) ),
+   ( to_unbounded_string( "foward" ),    to_unbounded_string( "fwd" ) ),
+   ( to_unbounded_string( "header" ),    to_unbounded_string( "hdr" ) ),
+   ( to_unbounded_string( "high" ),      to_unbounded_string( "hi" ) ),
+   ( to_unbounded_string( "index" ),     to_unbounded_string( "idx" ) ),
+   ( to_unbounded_string( "init" ),      to_unbounded_string( "initialize" ) ),
+   ( to_unbounded_string( "integer" ),   to_unbounded_string( "int" ) ),
+   ( to_unbounded_string( "internet" ),  to_unbounded_string( "inet" ) ),
+   ( to_unbounded_string( "item" ),      to_unbounded_string( "itm" ) ),
+   ( to_unbounded_string( "iterator" ),  to_unbounded_string( "iter" ) ),
+   ( to_unbounded_string( "length" ),    to_unbounded_string( "len" ) ),
+   ( to_unbounded_string( "library" ),   to_unbounded_string( "lib" ) ),
+   ( to_unbounded_string( "low" ),       to_unbounded_string( "lo" ) ),
+   ( to_unbounded_string( "memory" ),    to_unbounded_string( "mem" ) ),
+   ( to_unbounded_string( "message" ),   to_unbounded_string( "msg" ) ),
+   ( to_unbounded_string( "network" ),   to_unbounded_string( "net" ) ),
+   ( to_unbounded_string( "object" ),    to_unbounded_string( "obj" ) ),
+   ( to_unbounded_string( "offset" ),    to_unbounded_string( "off" ) ),
+   ( to_unbounded_string( "offset" ),    to_unbounded_string( "ofs" ) ),
+   ( to_unbounded_string( "ofs" ),       to_unbounded_string( "off" ) ),
+   ( to_unbounded_string( "option" ),    to_unbounded_string( "opt" ) ),
+   ( to_unbounded_string( "output" ),    to_unbounded_string( "out" ) ),
+   ( to_unbounded_string( "pointer" ),   to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "position" ),  to_unbounded_string( "pos" ) ),
+   ( to_unbounded_string( "previous" ),  to_unbounded_string( "prev" ) ),
+   ( to_unbounded_string( "print" ),     to_unbounded_string( "put" ) ),
+   ( to_unbounded_string( "read" ),      to_unbounded_string( "get" ) ),
    ( to_unbounded_string( "reference" ), to_unbounded_string( "ptr" ) ),
-   ( to_unbounded_string( "ref" ),      to_unbounded_string( "ptr" ) ),
-   ( to_unbounded_string( "request" ),  to_unbounded_string( "req" ) ),
-   ( to_unbounded_string( "res" ),      to_unbounded_string( "ret" ) ),
-   ( to_unbounded_string( "result" ),   to_unbounded_string( "res" ) ),
-   ( to_unbounded_string( "result" ),   to_unbounded_string( "ret" ) ),
-   ( to_unbounded_string( "sequence" ), to_unbounded_string( "seq" ) ),
-   ( to_unbounded_string( "socket" ),   to_unbounded_string( "sock" ) ),
-   ( to_unbounded_string( "source" ),   to_unbounded_string( "src" ) ),
-   ( to_unbounded_string( "standard" ), to_unbounded_string( "std" ) ),
-   ( to_unbounded_string( "start" ),    to_unbounded_string( "init" ) ),
-   ( to_unbounded_string( "start" ),    to_unbounded_string( "initialize" ) ),
-   ( to_unbounded_string( "start" ),    to_unbounded_string( "startup" ) ),
-   ( to_unbounded_string( "status" ),   to_unbounded_string( "stat" ) ),
-   ( to_unbounded_string( "stop" ),     to_unbounded_string( "end" ) ),
-   ( to_unbounded_string( "string" ),   to_unbounded_string( "str" ) ),
-   ( to_unbounded_string( "target" ),   to_unbounded_string( "tar" ) ),
-   ( to_unbounded_string( "target" ),   to_unbounded_string( "dest" ) ),
-   ( to_unbounded_string( "temp" ),     to_unbounded_string( "tmp" ) ),
-   ( to_unbounded_string( "text" ),     to_unbounded_string( "txt" ) ),
-   ( to_unbounded_string( "total" ),    to_unbounded_string( "ttl" ) ),
-   ( to_unbounded_string( "warn" ),     to_unbounded_string( "worn" ) ),
-   ( to_unbounded_string( "warning" ),  to_unbounded_string( "warn" ) ),
-   ( to_unbounded_string( "write" ),    to_unbounded_string( "print" ) ),
-   ( to_unbounded_string( "write" ),    to_unbounded_string( "put" ) ),
-   ( to_unbounded_string( "write" ),    to_unbounded_string( "right" ) ),
-   ( to_unbounded_string( "value" ),    to_unbounded_string( "val" ) ),
+   ( to_unbounded_string( "ref" ),       to_unbounded_string( "ptr" ) ),
+   ( to_unbounded_string( "request" ),   to_unbounded_string( "req" ) ),
+   ( to_unbounded_string( "res" ),       to_unbounded_string( "ret" ) ),
+   ( to_unbounded_string( "result" ),    to_unbounded_string( "res" ) ),
+   ( to_unbounded_string( "result" ),    to_unbounded_string( "ret" ) ),
+   ( to_unbounded_string( "sequence" ),  to_unbounded_string( "seq" ) ),
+   ( to_unbounded_string( "socket" ),    to_unbounded_string( "sock" ) ),
+   ( to_unbounded_string( "source" ),    to_unbounded_string( "src" ) ),
+   ( to_unbounded_string( "standard" ),  to_unbounded_string( "std" ) ),
+   ( to_unbounded_string( "start" ),     to_unbounded_string( "init" ) ),
+   ( to_unbounded_string( "start" ),     to_unbounded_string( "initialize" ) ),
+   ( to_unbounded_string( "start" ),     to_unbounded_string( "startup" ) ),
+   ( to_unbounded_string( "status" ),    to_unbounded_string( "stat" ) ),
+   ( to_unbounded_string( "stop" ),      to_unbounded_string( "end" ) ),
+   ( to_unbounded_string( "string" ),    to_unbounded_string( "str" ) ),
+   ( to_unbounded_string( "target" ),    to_unbounded_string( "tar" ) ),
+   ( to_unbounded_string( "target" ),    to_unbounded_string( "dest" ) ),
+   ( to_unbounded_string( "temp" ),      to_unbounded_string( "tmp" ) ),
+   ( to_unbounded_string( "text" ),      to_unbounded_string( "txt" ) ),
+   ( to_unbounded_string( "total" ),     to_unbounded_string( "ttl" ) ),
+   ( to_unbounded_string( "warn" ),      to_unbounded_string( "worn" ) ),
+   ( to_unbounded_string( "warning" ),   to_unbounded_string( "warn" ) ),
+   ( to_unbounded_string( "write" ),     to_unbounded_string( "print" ) ),
+   ( to_unbounded_string( "write" ),     to_unbounded_string( "put" ) ),
+   ( to_unbounded_string( "write" ),     to_unbounded_string( "right" ) ),
+   ( to_unbounded_string( "write" ),     to_unbounded_string( "set" ) ),
+   ( to_unbounded_string( "value" ),     to_unbounded_string( "val" ) ),
 
    -- Common English homonyms not covered above that might occur in a program.
 
@@ -597,6 +605,10 @@ begin
 
      if length( identifiers(id).name ) < 3 then
         err( optional_bold( "style issue: " & to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
+        elsif length( identifiers(id).name ) > 32 then
+            if index( identifiers(id).name, "_" ) = 0 then
+               err( "style issue: long names are more readable when underscores are used" );
+            end if;
      elsif not type_checks_done and then not boolean( maintenanceOpt ) then
         -- for performance, don't check in maintenance phase.  Also, only
         -- need to check the names once (i.e. during type checking) and
@@ -752,9 +764,6 @@ begin
      elsif isLocal( token ) then
         err( "already declared " &
              optional_bold( to_string( identifiers( token ).name ) ) );
-     elsif element( identifiers( token ).name,
-         length( identifiers( token ).name ) ) = '_' then
-            err( "trailing underscores not allowed in identifiers" );
      else
         -- create a new one in this scope
         declareIdent( id, identifiers( token ).name, new_t, varClass );
@@ -777,6 +786,18 @@ begin
            err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
             err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+        elsif element( identifiers(id).name,
+            length( identifiers(id).name ) ) = '_' then
+               err( "trailing underscores not allowed in identifiers" );
+        elsif length( identifiers(id).name ) > 32 then
+            if index( identifiers(id).name, "_" ) = 0 then
+               err( "style issue: long names are more readable when underscores are used" );
+            end if;
+        elsif not type_checks_done and then not boolean( maintenanceOpt ) then
+           -- for performance, don't check in maintenance phase.  Also, only
+           -- need to check the names once (i.e. during type checking) and
+           -- not on execution.
+           checkHomonyms( id );
         end if;
      end;
      getNextToken;
