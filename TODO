@@ -11,6 +11,8 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- ssds - error importing data from standard input
+
 - shell parser rewrite
   - recursive command substitution
     - line 3247 - nested process substitution - works on command line, not in jenkins
@@ -36,6 +38,7 @@ Priority Issues (Fix These First)
   - globbing in a directory path (/a/*/b), not just the file name
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
+- missing a case "when" keyword can cause string exception
 - updating adascript shell commands to correspond with bourne shell changes
 - renamings on expansions
 - tests

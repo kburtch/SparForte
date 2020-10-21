@@ -1122,7 +1122,7 @@ begin
           if cmdpos < length( command ) then
              if Element( command, cmdpos+1 ) = '>' then
                 -- A big arrow can be the start of a case/when.
-                --ci.context := startOfStatement; --DEBUGME
+                ci.context := startOfStatement; --DEBUGME
                 cmdpos := cmdpos + 1;
              end if;
           end if;
@@ -1484,7 +1484,7 @@ begin
     cmdpos := cmdpos + 1;
   end loop;
 
-  --put_line( "word = " & to_string(word) ); -- DEBUG
+  -- put_line( "word = " & to_string(word) ); -- DEBUG
 
   -- for bareword &, redirections, these are encoded as symbols, not words
 

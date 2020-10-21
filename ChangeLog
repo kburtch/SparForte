@@ -50,3 +50,7 @@ CHANGES SINCE 2.3
 
 19. Fix: trailing underscores not allowed in variable names. [test needed]
 
+20. Fix: fixed constraint error on certain text_io subprocedures.
+
+21. Fix: shell statements in a case statement now parsed properly.
+

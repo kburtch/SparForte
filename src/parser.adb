@@ -59,8 +59,8 @@ use ada.command_line,
     parser_cal,
     interpreter; -- circular relationship for breakout prompt
 
---with ada.text_io;
---use ada.text_io;
+-- with ada.text_io;
+-- use ada.text_io;
 
 package body parser is
 

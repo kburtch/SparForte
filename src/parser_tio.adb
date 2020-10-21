@@ -350,7 +350,9 @@ procedure ParseOpenFileOrSocket( return_ref : out reference; kind : out identifi
   ref : reference;
 begin
   ref.id := eof_t;
+  ref.kind := eof_t;
   return_ref.id := eof_t; -- assume failure
+  return_ref.kind := eof_t;
 
   -- Special Files: Current_Input, Current_Output and Current_Error
   -- are aliases for a different file variable.  For example, by default,

@@ -431,7 +431,8 @@ begin
         end if;
         if not error_found then                         -- OK? check case
            b := b or                                    -- against test var
-             Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) = Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+             Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
+             Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
         end if;
         exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
         expect( symbol_t, "|" );                        -- expect alternate
