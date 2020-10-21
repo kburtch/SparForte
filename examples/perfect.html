@@ -35,14 +35,14 @@ $ spar perfect
 <b>procedure</b> perfect <b>is</b>
 
   <b>function</b> is_perfect( n : positive ) <b>return</b> boolean <b>is</b>
-    sum : natural := 0;
+    total : natural := 0;
   <b>begin</b>
     <b>for</b> i <b>in</b> 1..n-1 <b>loop</b>
       <b>if</b> n <b>mod</b> i = 0 <b>then</b>
-         sum := @+i;
+         total := @+i;
       <b>end</b> <b>if</b>;
     <b>end</b> <b>loop</b>;
-    <b>return</b> sum = natural( n );
+    <b>return</b> total = natural( n );
   <b>end</b> is_perfect;
 
   number : positive;

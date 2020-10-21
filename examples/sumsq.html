@@ -36,12 +36,12 @@ $ spar sumsq.sp
 <b>type</b> float_array <b>is</b> <b>array</b>(1..10) <b>of</b> float;
 
 <b>function</b> sum_of_squares( x : <b>in</b> <b>out</b> float_array; len : positive ) <b>return</b> float <b>is</b>
-  sum : float := 0.0;
+  total : float := 0.0;
 <b>begin</b>
   <b>for</b> i <b>in</b> arrays.first(x)..len <b>loop</b>
-    sum := @ + x(i)**2;
+    total := @ + x(i)**2;
   <b>end</b> <b>loop</b>;
-  <b>return</b> sum;
+  <b>return</b> total;
 <b>end</b> sum_of_squares;
 
   fa : float_array;

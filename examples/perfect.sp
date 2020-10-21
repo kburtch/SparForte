@@ -14,14 +14,14 @@ pragma restriction( no_external_commands );
 procedure perfect is
 
   function is_perfect( n : positive ) return boolean is
-    sum : natural := 0;
+    total : natural := 0;
   begin
     for i in 1..n-1 loop
       if n mod i = 0 then
-         sum := @+i;
+         total := @+i;
       end if;
     end loop;
-    return sum = natural( n );
+    return total = natural( n );
   end is_perfect;
 
   number : positive;

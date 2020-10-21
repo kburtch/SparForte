@@ -6,7 +6,7 @@
 <TR>
 <TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
 <PRE>
-$ spar sumseries.sp           
+$ spar sumseries.sp
 Sum of F(x) from 1 to 1000 is 1.64393456668165E+00
 
 </PRE>
@@ -37,18 +37,18 @@ Sum of F(x) from 1 to 1000 is 1.64393456668165E+00
     <b>return</b> 1/x**2;
   <b>end</b> inverse_square;
 
-sum : long_float := 0.0;
+total : long_float := 0.0;
 max_param : natural := 1000;
 
 <b>begin</b>
   <b>for</b> i <b>in</b> 1..max_param <b>loop</b>
-    sum := @ + inverse_square( i );
+    total := @ + inverse_square( i );
   <b>end</b> <b>loop</b>;
 
   put( "Sum of F(x) from 1 to" )
     @( max_param )
     @( " is" )
-    @( sum );
+    @( total );
   new_line;
 <b>end</b> sumseries;
 

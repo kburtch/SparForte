@@ -16,12 +16,12 @@ procedure sumsq is
 type float_array is array(1..6) of float;
 
 function sum_of_squares( x : in out float_array; len : positive ) return float is
-  sum : float := 0.0;
+  total : float := 0.0;
 begin
   for i in arrays.first(x)..len loop
-    sum := @ + x(i)**2;
+    total := @ + x(i)**2;
   end loop;
-  return sum;
+  return total;
 end sum_of_squares;
 
   fa : float_array := (3.0, 1.0, 4.0, 1.0, 5.0, 9.0);

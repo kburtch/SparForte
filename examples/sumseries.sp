@@ -18,18 +18,18 @@ procedure sumseries is
     return 1/x**2;
   end inverse_square;
 
-sum : long_float := 0.0;
+total : long_float := 0.0;
 max_param : natural := 1000;
 
 begin
   for i in 1..max_param loop
-    sum := @ + inverse_square( i );
+    total := @ + inverse_square( i );
   end loop;
 
   put( "Sum of F(x) from 1 to" )
     @( max_param )
     @( " is" )
-    @( sum );
+    @( total );
   new_line;
 end sumseries;
 
