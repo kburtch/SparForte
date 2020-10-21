@@ -21,7 +21,7 @@ procedure dotproduct is
   v1 : constant vect3 := (1,3,-5);
   v2 : constant vect3 := (4,-2,-1);
 
-  sum : integer := 0;
+  sum_total : integer := 0;
 begin
   if arrays.length( v1 ) /= arrays.length( v2 ) then
      put_line( standard_error, "different lengths" );
@@ -34,9 +34,9 @@ begin
      return;
   end if;
   for p in arrays.first( v1 )..arrays.last( v1 ) loop
-      sum := @ + v1(p)*v2(p);
+      sum_total := @ + v1(p)*v2(p);
   end loop;
-  ? sum;
+  ? sum_total;
 end dotproduct;
 
 -- VIM editor formatting instructions

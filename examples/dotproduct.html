@@ -40,7 +40,7 @@ $ spar dotproduct
   v1 : <b>constant</b> vect3 := (1,3,-5);
   v2 : <b>constant</b> vect3 := (4,-2,-1);
 
-  sum : integer := 0;
+  sum_total : integer := 0;
 <b>begin</b>
   <b>if</b> arrays.length( v1 ) /= arrays.length( v2 ) <b>then</b>
      put_line( standard_error, "different lengths" );
@@ -53,9 +53,9 @@ $ spar dotproduct
      <b>return</b>;
   <b>end</b> <b>if</b>;
   <b>for</b> p <b>in</b> arrays.first( v1 )..arrays.last( v1 ) <b>loop</b>
-      sum := @ + v1(p)*v2(p);
+      sum_total := @ + v1(p)*v2(p);
   <b>end</b> <b>loop</b>;
-  ? sum;
+  ? sum_total;
 <b>end</b> dotproduct;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
