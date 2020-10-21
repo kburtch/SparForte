@@ -30,14 +30,14 @@ $ spar arraysum
 
 <b>procedure</b> arraysum <b>is</b>
   <b>type</b> int_array <b>is</b> <b>array</b>(1..10) <b>of</b> integer;
-  arr : int_array := (1,2,3,4,5,6,7,8,9,10 );
+  myarr : int_array := (1,2,3,4,5,6,7,8,9,10 );
 <b>begin</b>
-  ? stats.sum( arr );
+  ? stats.sum( myarr );
   <b>declare</b>
      product : integer := 1;
   <b>begin</b>
-     <b>for</b> i <b>in</b> arrays.first( arr )..arrays.last( arr ) <b>loop</b>
-         product := @ * arr(i);
+     <b>for</b> i <b>in</b> arrays.first( myarr )..arrays.last( myarr ) <b>loop</b>
+         product := @ * myarr(i);
      <b>end</b> <b>loop</b>;
      ? product;
   <b>end</b>;
@@ -53,7 +53,7 @@ $ spar arraysum
 
 <FONT COLOR=green><EM>-- Test data</EM></FONT>
 
-arr : <b>constant</b> <b>array</b>(1..10) <b>of</b> integer := (1,2,3,4,5,6,7,8,9,10 );
+myarr : <b>constant</b> <b>array</b>(1..10) <b>of</b> integer := (1,2,3,4,5,6,7,8,9,10 );
 
 <FONT COLOR=green><EM>-- Sum of the array</EM></FONT>
 
@@ -62,8 +62,8 @@ arr : <b>constant</b> <b>array</b>(1..10) <b>of</b> integer := (1,2,3,4,5,6,7,8,
 <FONT COLOR=green><EM>-- Product of the array</EM></FONT>
 
 product := 1;
-<b>for</b> i <b>in</b> arrays.first( arr )..arrays.last( arr ) <b>loop</b>
-    product := @ * arr(i);
+<b>for</b> i <b>in</b> arrays.first( myarr )..arrays.last( myarr ) <b>loop</b>
+    product := @ * myarr(i);
 <b>end</b> <b>loop</b>;
 ? product;
 

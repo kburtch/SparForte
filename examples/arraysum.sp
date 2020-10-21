@@ -10,14 +10,14 @@ pragma restriction( no_external_commands );
 
 procedure arraysum is
   type int_array is array(1..10) of integer;
-  arr : constant int_array := (1,2,3,4,5,6,7,8,9,10 );
+  myarr : constant int_array := (1,2,3,4,5,6,7,8,9,10 );
 begin
-  ? stats.sum( arr );
+  ? stats.sum( myarr );
   declare
      product : integer := 1;
   begin
-     for i in arrays.first( arr )..arrays.last( arr ) loop
-         product := @ * arr(i);
+     for i in arrays.first( myarr )..arrays.last( myarr ) loop
+         product := @ * myarr(i);
      end loop;
      ? product;
   end;
