@@ -34,10 +34,10 @@ character a = character code 97
 
 <b>procedure</b> charcode <b>is</b>
   code : <b>constant</b> natural := 97;
-  char : <b>constant</b> character := 'a';
+  ch   : <b>constant</b> character := 'a';
 <b>begin</b>
   put_line( "character code" &amp; strings.image( code ) &amp; " = character " &amp; strings.val( code ) );
-  put_line( "character " &amp; char &amp; " = character code" &amp; strings.image( numerics.pos( char ) ) );
+  put_line( "character " &amp; ch &amp; " = character code" &amp; strings.image( numerics.pos( ch ) ) );
 <b>end</b> charcode;
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>

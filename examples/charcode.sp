@@ -14,10 +14,10 @@ pragma restriction( no_external_commands );
 
 procedure charcode is
   code : constant natural := 97;
-  char : constant character := 'a';
+  ch   : constant character := 'a';
 begin
   put_line( "character code" & strings.image( code ) & " = character " & strings.val( code ) );
-  put_line( "character " & char & " = character code" & strings.image( numerics.pos( char ) ) );
+  put_line( "character " & ch & " = character code" & strings.image( numerics.pos( ch ) ) );
 end charcode;
 
 -- VIM editor formatting instructions
