@@ -23,16 +23,16 @@ procedure gss is
   beginmax : integer := 0;
   endmax : integer := -1;
   maxsum : integer := 0;
-  sum : integer := 0;
+  running_sum : integer := 0;
 
 begin
 
  for start in arrays.first(a)..length-1 loop
-     sum := 0;
+     running_sum := 0;
      for finish in start..length-1 loop
-        sum := @ + a(finish);
-        if sum > maxsum then
-           maxsum := sum;
+        running_sum := @ + a(finish);
+        if running_sum > maxsum then
+           maxsum := running_sum;
            beginmax := start;
            endmax := finish;
         end if;

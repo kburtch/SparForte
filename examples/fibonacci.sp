@@ -15,14 +15,14 @@ procedure fibonacci is
   function fib( n : natural ) return natural is
     a : natural := 0;
     b : natural := 1;
-    sum : natural;
+    sum_total : natural;
   begin
     for i in 1..n loop
-        sum := a+b;
+        sum_total := a+b;
         b := a;
-        a := sum;
+        a := sum_total;
     end loop;
-    return sum;
+    return sum_total;
   end fib;
 
   fib_pos : constant integer := numerics.value( $1 );

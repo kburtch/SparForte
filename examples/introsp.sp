@@ -53,7 +53,7 @@ begin
      ln  : string;
      ch  : character;
      cnt : natural := 0;
-     sum : integer := 0;
+     sum_total : integer := 0;
    begin
      while pos < strings.length( e ) loop
        ln := "";
@@ -69,12 +69,12 @@ begin
          cnt := @ + 1;
          s := strings.trim( strings.field( ln, 2, "|" ), trim_end.both );
          if strings.length( s ) > 0 then
-            sum := @ + numerics.value( s );
+            sum_total := @ + numerics.value( s );
          end if;
        end if;
      end loop;
      ? "There are" & strings.image( cnt ) & " integer variables";
-     ? "Their sum is " & strings.image( sum );
+     ? "Their sum is " & strings.image( sum_total );
    end;
 
 end introsp;

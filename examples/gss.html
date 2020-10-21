@@ -47,16 +47,16 @@ $ spar gss
   beginmax : integer := 0;
   endmax : integer := -1;
   maxsum : integer := 0;
-  sum : integer := 0;
+  running_sum : integer := 0;
 
 <b>begin</b>
 
  <b>for</b> start <b>in</b> arrays.first(a)..length-1 <b>loop</b>
-     sum := 0;
+     running_sum := 0;
      <b>for</b> finish <b>in</b> start..length-1 <b>loop</b>
-        sum := @ + a(finish);
-        <b>if</b> sum &gt; maxsum <b>then</b>
-           maxsum := sum;
+        running_sum := @ + a(finish);
+        <b>if</b> running_sum &gt; maxsum <b>then</b>
+           maxsum := running_sum;
            beginmax := start;
            endmax := finish;
         <b>end</b> <b>if</b>;

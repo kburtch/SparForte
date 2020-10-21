@@ -34,14 +34,14 @@ $ spar fibonacci 7
   <b>function</b> fib( n : natural ) <b>return</b> natural <b>is</b>
     a : natural := 0;
     b : natural := 1;
-    sum : natural;
+    sum_total : natural;
   <b>begin</b>
     <b>for</b> i <b>in</b> 1..n <b>loop</b>
-        sum := a+b;
+        sum_total := a+b;
         b := a;
-        a := sum;
+        a := sum_total;
     <b>end</b> <b>loop</b>;
-    <b>return</b> sum;
+    <b>return</b> sum_total;
   <b>end</b> fib;
 
   fib_pos : <b>constant</b> integer := numerics.value( $1 );

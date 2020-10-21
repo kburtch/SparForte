@@ -79,7 +79,7 @@ Their sum is -5
      ln  : string;
      ch  : character;
      cnt : natural := 0;
-     sum : integer := 0;
+     sum_total : integer := 0;
    <b>begin</b>
      <b>while</b> pos &lt; strings.length( e ) <b>loop</b>
        ln := "";
@@ -95,12 +95,12 @@ Their sum is -5
          cnt := @ + 1;
          s := strings.trim( strings.field( ln, 2, "|" ), trim_end.both );
          <b>if</b> strings.length( s ) &gt; 0 <b>then</b>
-            sum := @ + numerics.value( s );
+            sum_total := @ + numerics.value( s );
          <b>end</b> <b>if</b>;
        <b>end</b> <b>if</b>;
      <b>end</b> <b>loop</b>;
      ? "There are" &amp; strings.image( cnt ) &amp; " integer variables";
-     ? "Their sum is " &amp; strings.image( sum );
+     ? "Their sum is " &amp; strings.image( sum_total );
    <b>end</b>;
 
 <b>end</b> introsp;
