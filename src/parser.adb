@@ -80,18 +80,21 @@ nonmeaningful_words : constant unbounded_string := to_unbounded_string( " blah a
 
 -- HOMONYM WORDS
 --
--- This is a list of characters that sound in English alike or are
--- common abbreviations.  This list is not exhaustive.
--- Use lowercase.
-
--- The algorithm will try both word vs alias, and alias vs word.
+-- This is a list of characters that sound in English alike or are common
+-- abbreviations.  This list is not exhaustive and some words are more
+-- common than others.
+--
+-- Use lowercase in this list.  The homonym check will uppercase letters
+-- if needed.
+--
+-- The homonym check will try both word vs alias, and alias vs word.
 
 type a_homonym is record
    word  : unbounded_string;
    alias : unbounded_string;
 end record;
 
-homonymn_words : constant array(1..159) of a_homonym := (
+homonymn_words : constant array(1..169) of a_homonym := (
 
    -- Numbers short-cuts and similar sounding words.
 
@@ -131,6 +134,7 @@ homonymn_words : constant array(1..159) of a_homonym := (
    ( to_unbounded_string( "boolean" ),   to_unbounded_string( "bool" ) ),
    ( to_unbounded_string( "buffer" ),    to_unbounded_string( "buf" ) ),
    ( to_unbounded_string( "build" ),     to_unbounded_string( "make" ) ),
+   ( to_unbounded_string( "capability" ), to_unbounded_string( "cap" ) ),
    ( to_unbounded_string( "certificate" ), to_unbounded_string( "cert" ) ),
    ( to_unbounded_string( "character" ), to_unbounded_string( "char" ) ),
    ( to_unbounded_string( "check" ),     to_unbounded_string( "chk" ) ),
@@ -138,6 +142,7 @@ homonymn_words : constant array(1..159) of a_homonym := (
    ( to_unbounded_string( "clear" ),     to_unbounded_string( "reset" ) ),
    ( to_unbounded_string( "cnt" ),       to_unbounded_string( "num" ) ),
    ( to_unbounded_string( "command" ),   to_unbounded_string( "cmd" ) ),
+   ( to_unbounded_string( "company" ),   to_unbounded_string( "comp" ) ),
    ( to_unbounded_string( "complete" ),  to_unbounded_string( "finalize" ) ),
    ( to_unbounded_string( "complete" ),  to_unbounded_string( "finish" ) ),
    ( to_unbounded_string( "complete" ),  to_unbounded_string( "close" ) ),
@@ -145,12 +150,18 @@ homonymn_words : constant array(1..159) of a_homonym := (
    ( to_unbounded_string( "config" ),    to_unbounded_string( "configuration" ) ),
    ( to_unbounded_string( "configuration" ), to_unbounded_string( "conf" ) ),
    ( to_unbounded_string( "constant" ),  to_unbounded_string( "const" ) ),
+   ( to_unbounded_string( "context" ),   to_unbounded_string( "ctx" ) ),
    ( to_unbounded_string( "copy" ),      to_unbounded_string( "cpy" ) ),
+   ( to_unbounded_string( "corporate" ), to_unbounded_string( "corp" ) ),
+   ( to_unbounded_string( "corporation" ), to_unbounded_string( "corp" ) ),
+   ( to_unbounded_string( "corporation" ), to_unbounded_string( "corporate" ) ),
    ( to_unbounded_string( "count" ),     to_unbounded_string( "cnt" ) ),
    ( to_unbounded_string( "count" ),     to_unbounded_string( "num" ) ),
    ( to_unbounded_string( "current" ),   to_unbounded_string( "cur" ) ),
    ( to_unbounded_string( "credentials" ), to_unbounded_string( "creds" ) ),
-   ( to_unbounded_string( "data" ),      to_unbounded_string( "Info" ) ),
+   ( to_unbounded_string( "data" ),      to_unbounded_string( "info" ) ),
+   ( to_unbounded_string( "data" ),      to_unbounded_string( "dat" ) ),
+   ( to_unbounded_string( "dat" ),       to_unbounded_string( "info" ) ),
    ( to_unbounded_string( "destination" ), to_unbounded_string( "dest" ) ),
    ( to_unbounded_string( "destination" ), to_unbounded_string( "dst" ) ),
    ( to_unbounded_string( "dst" ),       to_unbounded_string( "dest" ) ),
@@ -163,6 +174,7 @@ homonymn_words : constant array(1..159) of a_homonym := (
    ( to_unbounded_string( "foward" ),    to_unbounded_string( "fwd" ) ),
    ( to_unbounded_string( "header" ),    to_unbounded_string( "hdr" ) ),
    ( to_unbounded_string( "high" ),      to_unbounded_string( "hi" ) ),
+   ( to_unbounded_string( "ident" ),     to_unbounded_string( "id" ) ),
    ( to_unbounded_string( "index" ),     to_unbounded_string( "idx" ) ),
    ( to_unbounded_string( "init" ),      to_unbounded_string( "initialize" ) ),
    ( to_unbounded_string( "integer" ),   to_unbounded_string( "int" ) ),
@@ -180,6 +192,7 @@ homonymn_words : constant array(1..159) of a_homonym := (
    ( to_unbounded_string( "offset" ),    to_unbounded_string( "ofs" ) ),
    ( to_unbounded_string( "ofs" ),       to_unbounded_string( "off" ) ),
    ( to_unbounded_string( "option" ),    to_unbounded_string( "opt" ) ),
+   ( to_unbounded_string( "organization" ), to_unbounded_string( "org" ) ),
    ( to_unbounded_string( "output" ),    to_unbounded_string( "out" ) ),
    ( to_unbounded_string( "pointer" ),   to_unbounded_string( "ptr" ) ),
    ( to_unbounded_string( "position" ),  to_unbounded_string( "pos" ) ),

@@ -93,7 +93,6 @@ end parseTilde;
 -----------------------------------------------------------------------------
 
 procedure doPathnameExpansion(
-  -- rawWordValue : aRawShellWord; -- TODO: needed?
   originalGlobPattern : aGlobShellWord;
   bourneShellWordList : in out bourneShellWordLists.List
 ) is
@@ -466,7 +465,7 @@ begin
          while not endOfShellWord and not error_found loop
             -- I know this is done twice...
             ch := Element( rawWordValue, wordPos );
-            -- TODO: for arrays, this will have to change
+            -- to support arrays, this will have to change
             exit when ch /= '_' and ch not in 'A'..'Z' and ch not in 'a'..'z'
                and ch not in '0'..'9';
             getNextChar( rawWordValue, wordLen, wordPos );
