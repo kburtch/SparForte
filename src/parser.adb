@@ -94,7 +94,7 @@ type a_homonym is record
    alias : unbounded_string;
 end record;
 
-homonymn_words : constant array(1..169) of a_homonym := (
+homonymn_words : constant array(1..180) of a_homonym := (
 
    -- Numbers short-cuts and similar sounding words.
 
@@ -124,7 +124,8 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "third" ),     to_unbounded_string( "3rd" ) ),
    ( to_unbounded_string( "fourth" ),    to_unbounded_string( "forth" ) ),
 
-   -- Common short-cuts and aliases in programming.
+   -- Common short-cuts and aliases in programming which could cause
+   -- confusion.
 
    ( to_unbounded_string( "address" ),   to_unbounded_string( "addr" ) ),
    ( to_unbounded_string( "argument" ),  to_unbounded_string( "arg" ) ),
@@ -137,6 +138,8 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "capability" ), to_unbounded_string( "cap" ) ),
    ( to_unbounded_string( "certificate" ), to_unbounded_string( "cert" ) ),
    ( to_unbounded_string( "character" ), to_unbounded_string( "char" ) ),
+   ( to_unbounded_string( "change" ),    to_unbounded_string( "modify" ) ),
+   ( to_unbounded_string( "change" ),    to_unbounded_string( "update" ) ),
    ( to_unbounded_string( "check" ),     to_unbounded_string( "chk" ) ),
    ( to_unbounded_string( "class" ),     to_unbounded_string( "cls" ) ),
    ( to_unbounded_string( "clear" ),     to_unbounded_string( "reset" ) ),
@@ -162,10 +165,13 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "data" ),      to_unbounded_string( "info" ) ),
    ( to_unbounded_string( "data" ),      to_unbounded_string( "dat" ) ),
    ( to_unbounded_string( "dat" ),       to_unbounded_string( "info" ) ),
+   ( to_unbounded_string( "delete" ),    to_unbounded_string( "erase" ) ),
+   ( to_unbounded_string( "delete" ),    to_unbounded_string( "remove" ) ),
    ( to_unbounded_string( "destination" ), to_unbounded_string( "dest" ) ),
    ( to_unbounded_string( "destination" ), to_unbounded_string( "dst" ) ),
    ( to_unbounded_string( "dst" ),       to_unbounded_string( "dest" ) ),
    ( to_unbounded_string( "element" ),   to_unbounded_string( "elem" ) ),
+   ( to_unbounded_string( "erasee" ),    to_unbounded_string( "remove" ) ),
    ( to_unbounded_string( "error" ),     to_unbounded_string( "err" ) ),
    ( to_unbounded_string( "finish" ),    to_unbounded_string( "finalize" ) ),
    ( to_unbounded_string( "finish" ),    to_unbounded_string( "close" ) ),
@@ -181,11 +187,13 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "internet" ),  to_unbounded_string( "inet" ) ),
    ( to_unbounded_string( "item" ),      to_unbounded_string( "itm" ) ),
    ( to_unbounded_string( "iterator" ),  to_unbounded_string( "iter" ) ),
+   ( to_unbounded_string( "job" ),       to_unbounded_string( "task" ) ),
    ( to_unbounded_string( "length" ),    to_unbounded_string( "len" ) ),
    ( to_unbounded_string( "library" ),   to_unbounded_string( "lib" ) ),
    ( to_unbounded_string( "low" ),       to_unbounded_string( "lo" ) ),
    ( to_unbounded_string( "memory" ),    to_unbounded_string( "mem" ) ),
    ( to_unbounded_string( "message" ),   to_unbounded_string( "msg" ) ),
+   ( to_unbounded_string( "modify" ),    to_unbounded_string( "update" ) ),
    ( to_unbounded_string( "network" ),   to_unbounded_string( "net" ) ),
    ( to_unbounded_string( "object" ),    to_unbounded_string( "obj" ) ),
    ( to_unbounded_string( "offset" ),    to_unbounded_string( "off" ) ),
@@ -199,6 +207,7 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "previous" ),  to_unbounded_string( "prev" ) ),
    ( to_unbounded_string( "print" ),     to_unbounded_string( "put" ) ),
    ( to_unbounded_string( "read" ),      to_unbounded_string( "get" ) ),
+   ( to_unbounded_string( "read" ),      to_unbounded_string( "receive" ) ),
    ( to_unbounded_string( "reference" ), to_unbounded_string( "ptr" ) ),
    ( to_unbounded_string( "ref" ),       to_unbounded_string( "ptr" ) ),
    ( to_unbounded_string( "request" ),   to_unbounded_string( "req" ) ),
@@ -206,6 +215,8 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "result" ),    to_unbounded_string( "res" ) ),
    ( to_unbounded_string( "result" ),    to_unbounded_string( "ret" ) ),
    ( to_unbounded_string( "sequence" ),  to_unbounded_string( "seq" ) ),
+   ( to_unbounded_string( "send" ),      to_unbounded_string( "put" ) ),
+   ( to_unbounded_string( "send" ),      to_unbounded_string( "set" ) ),
    ( to_unbounded_string( "socket" ),    to_unbounded_string( "sock" ) ),
    ( to_unbounded_string( "source" ),    to_unbounded_string( "src" ) ),
    ( to_unbounded_string( "standard" ),  to_unbounded_string( "std" ) ),
@@ -226,6 +237,7 @@ homonymn_words : constant array(1..169) of a_homonym := (
    ( to_unbounded_string( "write" ),     to_unbounded_string( "put" ) ),
    ( to_unbounded_string( "write" ),     to_unbounded_string( "right" ) ),
    ( to_unbounded_string( "write" ),     to_unbounded_string( "set" ) ),
+   ( to_unbounded_string( "write" ),     to_unbounded_string( "send" ) ),
    ( to_unbounded_string( "value" ),     to_unbounded_string( "val" ) ),
 
    -- Common English homonyms not covered above that might occur in a program.
