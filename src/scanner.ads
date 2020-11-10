@@ -135,9 +135,22 @@ os_system_t       : identifier;
 
 
 ------------------------------------------------------------------------------
+--
 -- Scanner Subprograms
 --
 ------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+-- Design Constraints and Affinity
+------------------------------------------------------------------------------
+
+designConstraintList : DesignConstraintLists.List;
+enforcedDesignConstraintList : EnforcedDesignConstraintLists.List;
+enforcedLocalDesignConstraintList : EnforcedLocalDesignConstraintLists.List;
+designAffinityList : DesignAffinityLists.List;
+enforcedDesignAffinityList : EnforcedDesignAffinityLists.List;
+enforcedLocalDesignAffinityList : EnforcedLocalDesignAffinityLists.List;
 
 ------------------------------------------------------------------------------
 -- Errors

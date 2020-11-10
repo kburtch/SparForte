@@ -67,6 +67,7 @@ package body parser_pragmas is
 type aPragmaKind is (
      ada_95,
      advise,
+     affinity,
      asserting,
      assumption,
      assumption_applied,
@@ -76,8 +77,11 @@ type aPragmaKind is (
      annotate,
      blocked,
      clarify,
+     constraint,
      debug,
      debug_on,
+     declare_affinity,
+     declare_constraint,
      depreciated,
      dispute,
      error,
@@ -138,6 +142,8 @@ myTextTestReport : textTestReport;
 myXmlTestReport  : xmlTestReport;
 reportPath       : unbounded_string;
 
+
+-----------------------------------------------------------------------------
 --  PARSE PRAGMA KIND
 --
 -- Check the current token for the kind of pragma and advance the scanner.
@@ -154,12 +160,20 @@ begin
      pragmaKind := ada_95;
   elsif name = "advise" then
      pragmaKind :=  advise;
+  elsif name = "affinity" then
+     pragmaKind :=  affinity;
   elsif name = "assert" then
      pragmaKind :=  asserting;
   elsif name = "assumption" then
      pragmaKind :=  assumption;
   elsif name = "debug" then
      pragmaKind :=  debug;
+  elsif name = "constraint" then
+     pragmaKind :=  constraint;
+  elsif name = "declare_affinity" then
+     pragmaKind :=  declare_affinity;
+  elsif name = "declare_constraint" then
+     pragmaKind :=  declare_constraint;
   elsif name = "annotate" then
      pragmaKind :=  annotate;
   elsif name = "blocked" then
@@ -252,15 +266,16 @@ begin
 end parsePragmaKind;
 
 
+-----------------------------------------------------------------------------
 --  PARSE ANNOTATE KIND
 --
+-- Check the current token for the kind of annotation and advance the scanner.
 -----------------------------------------------------------------------------
 
 procedure ParseAnnotateKind is
   name : constant string := to_string( identifiers( token ).name );
   exprVal  : unbounded_string;
   exprType : identifier;
-  --authorId : identifier := eof_t;
 begin
   annotationsFound := true;
   if token /= strlit_t and token /= charlit_t and not identifiers( token ).static then
@@ -290,31 +305,18 @@ begin
         name /= "version" then
         err( "unknown annotation field type" );
      else
-        discardUnusedIdentifier( token );
-        getNextToken;
+        ParsePragmaIdentifier;
         expect( symbol_t, "," );
      end if;
   end if;
-  -- allow a team.member variable for the author
-  -- This doesn't work because variables aren't declared when help runs and
-  -- parses output.
-  -- note: a string literal is also treated as a variable...
-  --if name = "author" then
-     --if token /= strlit_t then
-     --   if identifiers( token ).class = VarClass then
-     --      if getBaseType( identifiers( token ).kind ) = teams_member_t then
-     --         ParseIdentifier( authorId );
-     --      end if;
-     --   end if;
-     --end if;
-  --end if;
-  -- Otherwise, author is an expression
-  --if authorId = eof_t then
-     ParseStaticExpression( exprVal, exprType );
-     baseTypesOK( exprType, uni_string_t );
-  --end if;
+  -- A team.member variable for the author doesn't work because variables
+  -- aren't declared when help runs.
+  ParseStaticExpression( exprVal, exprType );
+  baseTypesOK( exprType, uni_string_t );
 end ParseAnnotateKind;
 
+
+-----------------------------------------------------------------------------
 --  PARSE ASSUMPTION KIND
 --
 -- Assumptions are workarounds...
@@ -326,26 +328,22 @@ procedure ParseAssumptionKind( var_id : out identifier; assumeKind: out aPragmaK
 begin
   if name = "used" then
      assumeKind := assumption_used;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "written" then
      assumeKind := assumption_written;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "applied" then
      assumeKind := assumption_applied;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "factor" then
      assumeKind := assumption_factor;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   else
@@ -355,6 +353,8 @@ begin
   end if;
 end ParseAssumptionKind;
 
+
+-----------------------------------------------------------------------------
 --  PARSE IMPORT KIND
 --
 -----------------------------------------------------------------------------
@@ -365,38 +365,33 @@ procedure ParseImportKind( var_id : out identifier; importKind: out unbounded_st
 begin
   if name = "shell" then
      importKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "cgi" then
      importKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "local_memcache" then
      if restriction_no_memcache then
-        err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+        err( "cannot be used " & bold( "pragma restriction( no_memcache )" ) );
      end if;
      importKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "memcache" then
      if restriction_no_memcache then
-        err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+        err( "cannot be used " & bold( "pragma restriction( no_memcache )" ) );
      end if;
      importKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "session" then
      importKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   else
@@ -407,6 +402,7 @@ begin
 end ParseImportKind;
 
 
+-----------------------------------------------------------------------------
 --  PARSE EXPORT KIND
 --
 -----------------------------------------------------------------------------
@@ -417,26 +413,22 @@ procedure ParseExportKind( var_id : out identifier; exportKind: out unbounded_st
 begin
   if name = "shell" then
      exportKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "local_memcache" then
      exportKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "memcache" then
      exportKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   elsif name = "session" then
      exportKind := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
+     ParsePragmaIdentifier;
      expect( symbol_t, "," );
      ParseIdentifier( var_id );
   else
@@ -447,13 +439,14 @@ begin
 end ParseExportKind;
 
 
+-----------------------------------------------------------------------------
 --  PARSE LICENSE KIND
 --
+-- Check the current token for the kind of license and advance the scanner.
 -----------------------------------------------------------------------------
 
 procedure ParseLicenseKind( expr_val : out unbounded_string ) is
-  name_unbounded : constant unbounded_string := identifiers( token ).name;
-  name : constant string := to_string( name_unbounded );
+  name_unbounded : unbounded_string;
 
   procedure ParseLicenseExtra is
   begin
@@ -465,158 +458,142 @@ procedure ParseLicenseKind( expr_val : out unbounded_string ) is
   end ParseLicenseExtra;
 
 begin
-  if name = "unrestricted" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "gpl" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "gplv2" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "gplv3" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "agpl" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "bsd_original" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "bsd_revised" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "artistic" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "mit" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "apache" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "apache_2" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "freeware" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "shareware" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "public_domain" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "commercial" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  elsif name = "restricted" then
-     expr_val := name_unbounded;
-     discardUnusedIdentifier( token );
-     getNextToken;
-     ParseLicenseExtra;
-  else
-     err( "unknown license " & bold( to_string( expr_val ) ) );
-  end if;
+  ParsePragmaIdentifier( name_unbounded );
+  expr_val := null_unbounded_string;
+  declare
+     name : constant string := to_string( name_unbounded );
+  begin
+     if name = "unrestricted" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "gpl" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "gplv2" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "gplv3" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "agpl" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "bsd_original" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "bsd_revised" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "artistic" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "mit" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "apache" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "apache_2" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "freeware" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "shareware" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "public_domain" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "commercial" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     elsif name = "restricted" then
+        expr_val := name_unbounded;
+        ParseLicenseExtra;
+     else
+        err( "unknown license " & bold( name ) );
+     end if;
+   end;
 end ParseLicenseKind;
 
 
+-----------------------------------------------------------------------------
 --  PARSE SOFTWARE MODEL NAME
 --
+-- Check the current token for the kind of model and advance the scanner.
 -----------------------------------------------------------------------------
 
 procedure ParseSoftwareModelName( expr_val : out unbounded_string ) is
-  name_unbounded : constant unbounded_string := identifiers( token ).name;
-  name : constant string := to_string( name_unbounded );
+  name_unbounded : unbounded_string;
 begin
-  expr_val := null_unbounded_string;
-  if name = "application_desktop" then
-     expr_val := name_unbounded;
-  elsif name = "application_mobile" then
-     expr_val := name_unbounded;
-  elsif name = "application_realtime" then
-     expr_val := name_unbounded;
-  elsif name = "application_realtime_ravenscar" then
-     expr_val := name_unbounded;
-  elsif name = "daemon" then
-     expr_val := name_unbounded;
-  elsif name = "daemon_proxy" then
-     expr_val := name_unbounded;
-  elsif name = "http_framework" then
-     expr_val := name_unbounded;
-  elsif name = "http_service_external" then
-     expr_val := name_unbounded;
-  elsif name = "http_service_internal" then
-     expr_val := name_unbounded;
-  elsif name = "http_site_external" then
-     expr_val := name_unbounded;
-  elsif name = "http_site_internal" then
-     expr_val := name_unbounded;
-  elsif name = "http_proxy" then
-     expr_val := name_unbounded;
-  elsif name = "http_form" then
-     expr_val := name_unbounded;
-  elsif name = "package" then
-     expr_val := name_unbounded;
-  elsif name = "shell_batch" then
-     expr_val := name_unbounded;
-  elsif name = "shell_filter_script" then
-     expr_val := name_unbounded;
-  elsif name = "shell_report_script" then
-     expr_val := name_unbounded;
-  elsif name = "shell_script" then
-     expr_val := name_unbounded;
-  elsif name = "multimedia" then
-     expr_val := name_unbounded;
-  elsif name = "etl" then
-     expr_val := name_unbounded;
-  elsif name = "monitor" then
-     expr_val := name_unbounded;
-  elsif name = "driver" then
-     expr_val := name_unbounded;
-  elsif name = "nonstandard" then
-     expr_val := name_unbounded;
-  end if;
-
-  if length( expr_val ) > 0 then
-     discardUnusedIdentifier( token );
+  -- special case: package is a keyword and will cause an error with
+  -- PragmaIdentifier.
+  if token = package_t then
+     name_unbounded := identifiers( token ).name;
      getNextToken;
   else
-     err( "unknown software model " & bold( to_string( expr_val ) ) );
+     ParsePragmaIdentifier( name_unbounded );
   end if;
+  declare
+     name : constant string := to_string( name_unbounded );
+  begin
+     expr_val := null_unbounded_string;
+     if name = "application_desktop" then
+        expr_val := name_unbounded;
+     elsif name = "application_mobile" then
+        expr_val := name_unbounded;
+     elsif name = "application_realtime" then
+        expr_val := name_unbounded;
+     elsif name = "application_realtime_ravenscar" then
+        expr_val := name_unbounded;
+     elsif name = "daemon" then
+        expr_val := name_unbounded;
+     elsif name = "daemon_proxy" then
+        expr_val := name_unbounded;
+     elsif name = "http_framework" then
+        expr_val := name_unbounded;
+     elsif name = "http_service_external" then
+        expr_val := name_unbounded;
+     elsif name = "http_service_internal" then
+        expr_val := name_unbounded;
+     elsif name = "http_site_external" then
+        expr_val := name_unbounded;
+     elsif name = "http_site_internal" then
+        expr_val := name_unbounded;
+     elsif name = "http_proxy" then
+        expr_val := name_unbounded;
+     elsif name = "http_form" then
+        expr_val := name_unbounded;
+     elsif name = "package" then
+        expr_val := name_unbounded;
+     elsif name = "shell_batch" then
+        expr_val := name_unbounded;
+     elsif name = "shell_filter_script" then
+        expr_val := name_unbounded;
+     elsif name = "shell_report_script" then
+        expr_val := name_unbounded;
+     elsif name = "shell_script" then
+        expr_val := name_unbounded;
+     elsif name = "multimedia" then
+        expr_val := name_unbounded;
+     elsif name = "etl" then
+        expr_val := name_unbounded;
+     elsif name = "monitor" then
+        expr_val := name_unbounded;
+     elsif name = "driver" then
+        expr_val := name_unbounded;
+     elsif name = "nonstandard" then
+        expr_val := name_unbounded;
+     end if;
+     if length( expr_val ) = 0 then
+        err( "unknown software model " & bold( name ) );
+     end if;
+  end;
 end ParseSoftwareModelName;
 
 
+-----------------------------------------------------------------------------
 --  PARSE WORK ESTIMATE
 --
 -- Syntax: measure, value
@@ -662,6 +639,7 @@ begin
 end ParseWorkEstimate;
 
 
+-----------------------------------------------------------------------------
 --  PARSE WORK PRIORITY
 --
 -- Syntax: measure, value
@@ -762,6 +740,7 @@ begin
 end ParseWorkPriority;
 
 
+-----------------------------------------------------------------------------
 --  RUN TEST CASE
 --
 -- Run a test case and report the result.
@@ -853,6 +832,7 @@ begin
 end run_test_case;
 
 
+-----------------------------------------------------------------------------
 --  RECORD TEST RESULT
 --
 -- Record the test result
@@ -878,6 +858,491 @@ begin
 end record_test_result;
 
 
+-----------------------------------------------------------------------------
+--  ENFORCE CONSTRAINT
+--
+-- Apply a constraint, checking the mode and the weight.
+-----------------------------------------------------------------------------
+
+procedure enforceConstraint( constraint, name : unbounded_string;
+  weight : float ) is
+  dc     : aDesignConstraint;
+  dcPos  : DesignConstraintLists.aListIndex := 0;
+  edc    : anEnforcedDesignConstraint;
+  edcPos : EnforcedDesignConstraintLists.aListIndex := 0;
+  fullUnitName : unbounded_string;
+  isUnique : boolean;
+begin
+
+  -- Weight must be non-zero
+
+  if weight < 0.0 then
+     err( "weight " & optional_bold( weight'img ) & " is less than zero" );
+     return;
+  end if;
+  if name = "" then
+      err( "constraint name should not be an empty string" );
+      return;
+  end if;
+
+  -- Lookup the definition of the constraint
+
+  dc.mode := undefined;
+  dc.constraint := constraint;
+  dc.name := name;
+  dc.limit := 0.0;
+  DesignConstraintLists.Find( designConstraintList, dc, foundAt => dcPos  );
+  if dcPos = 0 then
+     err( "constraint " &
+          optional_bold( to_string( constraint ) ) &
+          ", " &
+          optional_bold( to_string( name ) ) &
+          " is not declared" );
+    return;
+  end if;
+  DesignConstraintLists.Find( designConstraintList, dcPos, dc  );
+
+ -- Look up the last use of the constraint.  Note this Find procedure
+ -- will looking up the category, as only one entry per category is
+ -- allowed.
+
+  --edc.mode := dc.mode;
+  edc.mode := undefined;
+  edc.enforcedFile := getSourceFileName;
+  edc.constraint := constraint;
+  edc.name := name;
+  edc.weight := 0.0;
+
+  if dc.mode = subprogram then
+-- TODO: effect of nesting units
+     GetFullParentUnitName( fullUnitName, isUnique  );
+     edc.enforcedUnit := fullUnitName;
+     EnforcedLocalDesignConstraintLists.Find( enforcedLocalDesignConstraintList, edc, foundAt => edcPos  );
+     if edcPos > 0 then
+        EnforcedLocalDesignConstraintLists.Find( enforcedLocalDesignConstraintList, edcPos, edc );
+    end if;
+  else
+    EnforcedDesignConstraintLists.Find( enforcedDesignConstraintList, edc, foundAt => edcPos  );
+    if edcPos > 0 then
+       EnforcedDesignConstraintLists.Find( enforcedDesignConstraintList, edcPos, edc );
+    end if;
+  end if;
+
+  --if edcPos = 0 then
+  --      put_line(
+  --                edc.mode'img & "/" &
+  --                to_string( edc.enforcedFile ) & "/" &
+  --                to_string( edc.constraint ) & "/" &
+  --                to_string( edc.name ) & "/" &
+  --                to_string( edc.enforcedUnit ) &
+  --                " not found" );
+  --else
+  --      put_line(
+  --                edc.mode'img & "/" &
+  --                to_string( edc.enforcedFile ) & "/" &
+  --                to_string( edc.constraint ) & "/" &
+  --                to_string( edc.name ) & "/" &
+  --                to_string( edc.enforcedUnit ) &
+  --                " found" );
+--
+ -- end if;
+
+  -- If this constraint is enforced already...
+
+  if edcPos > 0 then
+
+     case edc.mode is
+
+     -- For a unique constraint, if the category exists, it is a failure
+     -- to create a second one for that category.
+     -- Otherwise, apply the constraint.
+
+     when unique =>
+
+        -- We don't accumulate weight because it's an automatic error to
+        -- have two unique constraints.
+
+        err( "unique constraint " &
+              optional_bold( to_string( edc.constraint ) ) &
+              " value " &
+              optional_bold( to_string( name ) ) &
+              " conflicts with " &
+              optional_bold( to_string( edc.name ) ) &
+              " (at " &
+                to_string( edc.enforcedFile ) & ":" &
+              edc.enforcedAt'img & ")" );
+
+    -- For an exclusive constraint, if the category exists but has a different
+    -- name, it is a failure.  The identical category and name is permitted.
+    -- Otherwise, do nothing because the constraint is repeated.
+
+    when file =>
+
+        -- Accumulate weight
+
+        edc.weight := edc.weight + weight;
+
+        if edc.constraint = constraint and edc.name /= name then
+           err( "exclusive constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " value " &
+                optional_bold( to_string( name ) ) &
+                " conflicts with " &
+                optional_bold( to_string( edc.name ) ) &
+                " (at " &
+                  to_string( edc.enforcedFile ) & ":" &
+                edc.enforcedAt'img & ")" );
+        elsif edc.constraint = constraint and edc.name /= name and
+              edc.weight > dc.limit then
+           err( "exclusive constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " accumulated weight" &
+                optional_bold( edc.weight'img ) &
+                " exceeds the limit of" &
+                optional_bold( dc.limit'img ) );
+        elsif edc.weight /= weight then
+           EnforcedDesignConstraintLists.Replace( enforcedDesignConstraintList, edcPos, edc );
+        end if;
+
+    when subprogram =>
+
+     -- put_line( to_string( edc.enforcedUnit ) & " vs " & to_string( fullUnitName ) );
+     -- put_line( to_string( edc.constraint )   & " vs " & to_string( constraint ) );
+     -- put_line( to_string( edc.name )         & " vs " & to_string( name ) );
+
+        -- Accumulate weight
+
+        edc.weight := edc.weight + weight;
+
+        if edc.enforcedUnit = fullUnitName and
+           edc.constraint = constraint and
+           edc.name /= name then
+           err( -- optional_bold( to_string( edc.enforcedUnit ) ) &
+                -- " local constraint " &
+                "local constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " value " &
+                optional_bold( to_string( name ) ) &
+                " conflicts with " &
+                optional_bold( to_string( edc.name ) ) &
+                " (at " &
+                  to_string( edc.enforcedFile ) & ":" &
+                edc.enforcedAt'img & ")" );
+        elsif edc.constraint = constraint and edc.name = name and
+              edc.enforcedUnit = fullUnitName and edc.weight > dc.limit then
+           err( "local constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " accumulated weight" &
+                optional_bold( edc.weight'img ) &
+                " exceeds the limit of" &
+                optional_bold( dc.limit'img ) );
+        elsif edc.weight /= weight then
+           EnforcedLocalDesignConstraintLists.Replace( enforcedLocalDesignConstraintList, edcPos, edc );
+        end if;
+
+    when others =>
+       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected constraint mode" );
+    end case;
+
+  else
+
+     -- If the constraint category is unused, it is safe to apply the
+     -- constraint.
+
+     edc.mode := dc.mode;
+     edc.enforcedAt := getLineNo;
+     edc.enforcedFile := getSourceFileName;
+     edc.enforcedUnit := null_unbounded_string;
+     edc.constraint := constraint;
+     edc.name := name;
+     edc.weight := weight;
+
+     case edc.mode is
+     when unique =>
+        -- Even though unique constraints can only be used once, they can still
+        -- have a weight too high on their first use.
+        if edc.weight > dc.limit then
+           err( "unique constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " weight" &
+                optional_bold( weight'img ) &
+                " exceeds limit of" &
+                optional_bold( dc.limit'img ) );
+        else
+           EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
+        end if;
+     when file =>
+        if edc.weight > dc.limit then
+           err( "exclusive constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " weight" &
+                optional_bold( weight'img ) &
+                " exceeds limit of" &
+                optional_bold( dc.limit'img ) );
+        else
+           EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
+        end if;
+     when subprogram =>
+        if edc.weight > dc.limit then
+           err( "local constraint " &
+                optional_bold( to_string( edc.constraint ) ) &
+                " weight" &
+                optional_bold( weight'img ) &
+                " exceeds limit of" &
+                optional_bold( dc.limit'img ) );
+        else
+           edc.enforcedUnit := fullUnitName;
+           EnforcedLocalDesignConstraintLists.Queue( enforcedLocalDesignConstraintList, edc );
+        end if;
+    when others =>
+       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected constraint mode" );
+    end case;
+
+    -- if dc.mode = local then
+    --    -- put_line(
+    --    --           edc.mode'img & "/" &
+    --    --           to_string( edc.enforcedFile ) & "/" &
+    --    --           to_string( edc.constraint ) & "/" &
+    --    --           to_string( edc.name ) & "/" &
+    --    --           to_string( edc.enforcedUnit ) &
+    --    --           " local save" );
+    --    edc.enforcedUnit := fullUnitName;
+    --    EnforcedLocalDesignConstraintLists.Queue( enforcedLocalDesignConstraintList, edc );
+    -- else
+    --    edc.enforcedUnit := null_unbounded_string;
+    --    EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
+    -- end if;
+  end if;
+end enforceConstraint;
+
+
+-----------------------------------------------------------------------------
+--  DECLARE CONSTRAINT
+--
+-- Define the constraints to be used with pragma constraint.
+-----------------------------------------------------------------------------
+
+procedure declareConstraint( mode : designConstraintModes; constraint, name : unbounded_string; limit : float ) is
+  dc : aDesignConstraint;
+  pos : DesignConstraintLists.aListIndex := 0;
+begin
+  if limit < 0.0 then
+     err( "limit " & optional_bold( limit'img ) & " is less than zero" );
+  else
+     dc.mode := mode;
+     dc.constraint := constraint;
+     dc.name := name;
+     dc.limit := limit;
+     DesignConstraintLists.Find( designConstraintList, dc, foundAt => pos  );
+     if pos > 0 then
+        err( "constraint " &
+             optional_bold( to_string( constraint ) ) &
+             ", " &
+             optional_bold( to_string( name ) ) &
+             " is already declared" );
+     else
+        DesignConstraintLists.Queue( designConstraintList, dc );
+     end if;
+  end if;
+end declareConstraint;
+
+
+-----------------------------------------------------------------------------
+--  ENFORCE AFFINITY
+--
+-- Apply an affinity, checking the mode and the weight.
+-----------------------------------------------------------------------------
+
+procedure enforceAffinity( affinity : unbounded_string;
+  weight : float ) is
+  da     : aDesignAffinity;
+  daPos  : DesignAffinityLists.aListIndex := 0;
+  eda    : anEnforcedDesignAffinity;
+  edaPos : EnforcedDesignAffinityLists.aListIndex := 0;
+  fullUnitName : unbounded_string;
+  isUnique : boolean;
+begin
+
+  -- Weight must be non-zero
+
+  if weight < 0.0 then
+     err( "weight " & optional_bold( weight'img ) & " is less than zero" );
+     return;
+  end if;
+
+  -- Lookup the definition of the affinity
+
+  da.mode := undefined;
+  da.affinity := affinity;
+  da.limit := 0.0;
+  DesignAffinityLists.Find( designAffinityList, da, foundAt => daPos  );
+  if daPos = 0 then
+     err( "affinity " &
+          optional_bold( to_string( affinity ) ) &
+          " is not declared" );
+    return;
+  end if;
+  DesignAffinityLists.Find( designAffinityList, daPos, da  );
+
+ -- Look up the last use of the affinity.  Note this Find procedure
+ -- will looking up the category, as only one entry per category is
+ -- allowed.
+
+  eda.mode := undefined;
+  eda.enforcedFile := getSourceFileName;
+  eda.affinity := affinity;
+  eda.weight := 0.0;
+
+  if da.mode = subprogram then
+-- TODO: effect of nesting units
+     GetFullParentUnitName( fullUnitName, isUnique  );
+     eda.enforcedUnit := fullUnitName;
+     EnforcedLocalDesignAffinityLists.Find( enforcedLocalDesignAffinityList, eda, foundAt => edaPos  );
+     if edaPos > 0 then
+        EnforcedLocalDesignAffinityLists.Find( enforcedLocalDesignAffinityList, edaPos, eda );
+    end if;
+  else
+    EnforcedDesignAffinityLists.Find( enforcedDesignAffinityList, eda, foundAt => edaPos  );
+    if edaPos > 0 then
+       EnforcedDesignAffinityLists.Find( enforcedDesignAffinityList, edaPos, eda );
+    end if;
+  end if;
+
+
+  -- If this affinity is enforced already...
+
+  if edaPos > 0 then
+
+     case eda.mode is
+
+    -- For an inclusive affinity, if the category exists but has a different
+    -- name, it is a failure.  The identical category and name is permitted.
+    -- Otherwise, do nothing because the constraint is repeated.
+
+    when file =>
+
+        -- Accumulate weight
+
+        eda.weight := eda.weight + weight;
+
+        if eda.affinity = affinity and eda.enforcedFile /= getSourceFileName then
+           err( "inclusive affinity " &
+                optional_bold( to_string( eda.affinity ) ) &
+                " is declared in at least two files (at " &
+                  to_string( eda.enforcedFile ) & ":" &
+                eda.enforcedAt'img & ")" );
+        elsif eda.affinity = affinity and eda.weight > da.limit then
+           err( "inclusive constraint " &
+                optional_bold( to_string( eda.affinity ) ) &
+                " accumulated weight" &
+                optional_bold( eda.weight'img ) &
+                " exceeds the limit of" &
+                optional_bold( da.limit'img ) );
+        elsif eda.weight /= weight then
+           EnforcedDesignAffinityLists.Replace( enforcedDesignAffinityList, edaPos, eda );
+        end if;
+
+    when subprogram =>
+
+        -- Accumulate weight
+
+        eda.weight := eda.weight + weight;
+
+        if eda.affinity = affinity and eda.enforcedUnit /= fullUnitName then
+           err( "local affinity " &
+                optional_bold( to_string( eda.affinity ) ) &
+                " is declared in at least two subprograms (at " &
+                  to_string( eda.enforcedFile ) & ":" &
+                eda.enforcedAt'img & ")" );
+        elsif eda.affinity = affinity and
+              eda.enforcedUnit = fullUnitName and eda.weight > da.limit then
+           err( "local affinity " &
+                optional_bold( to_string( eda.affinity ) ) &
+                " accumulated weight" &
+                optional_bold( eda.weight'img ) &
+                " exceeds the limit of" &
+                optional_bold( da.limit'img ) );
+        elsif eda.weight /= weight then
+           EnforcedLocalDesignAffinityLists.Replace( enforcedLocalDesignAffinityList, edaPos, eda );
+        end if;
+
+    when others =>
+       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected affinity mode" );
+    end case;
+
+  else
+
+     -- If the constraint category is unused, it is safe to apply the
+     -- affinity.
+
+     eda.mode := da.mode;
+     eda.enforcedAt := getLineNo;
+     eda.enforcedFile := getSourceFileName;
+     eda.enforcedUnit := null_unbounded_string;
+     eda.affinity := affinity;
+     eda.weight := weight;
+
+     case eda.mode is
+     when file =>
+        if eda.weight > da.limit then
+           err( "inclusive affinity " &
+                optional_bold( to_string( eda.affinity ) ) &
+                " weight" &
+                optional_bold( weight'img ) &
+                " exceeds limit of" &
+                optional_bold( da.limit'img ) );
+        else
+           EnforcedDesignAffinityLists.Queue( enforcedDesignAffinityList, eda );
+        end if;
+     when subprogram =>
+        if eda.weight > da.limit then
+           err( "local affinity " &
+                optional_bold( to_string( eda.affinity ) ) &
+                " weight" &
+                optional_bold( weight'img ) &
+                " exceeds limit of" &
+                optional_bold( da.limit'img ) );
+        else
+           eda.enforcedUnit := fullUnitName;
+           EnforcedLocalDesignAffinityLists.Queue( enforcedLocalDesignAffinityList, eda );
+        end if;
+    when others =>
+       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected affinity mode" );
+    end case;
+
+  end if;
+end enforceAffinity;
+
+
+-----------------------------------------------------------------------------
+--  DECLARE AFFINITY
+--
+-- Define the affinities to be used with pragma constraint.
+-----------------------------------------------------------------------------
+
+procedure declareAffinity( mode : designAffinityModes; affinity : unbounded_string; limit : float ) is
+  da  : aDesignAffinity;
+  pos : DesignAffinityLists.aListIndex := 0;
+begin
+  if limit < 0.0 then
+     err( "limit " & optional_bold( limit'img ) & " is less than zero" );
+  else
+     da.mode := mode;
+     da.affinity := affinity;
+     da.limit := limit;
+     DesignAffinityLists.Find( designAffinityList, da, foundAt => pos  );
+     if pos > 0 then
+        err( "affinity " &
+             optional_bold( to_string( affinity ) ) &
+             " is already declared" );
+     else
+        DesignAffinityLists.Queue( designAffinityList, da );
+     end if;
+  end if;
+end declareAffinity;
+
+
+-----------------------------------------------------------------------------
 --  PARSE PRAGMA STATEMENT
 --
 -- Syntax: ... kind [params]
@@ -887,15 +1352,19 @@ procedure ParsePragmaStatement( thePragmaKind : aPragmaKind ) is
   pragmaKind  : aPragmaKind := thePragmaKind; -- TODO: Hack
   expr_val    : unbounded_string;
   expr_val2   : unbounded_string;
+  expr_val3   : unbounded_string;
   expr_type   : identifier;
   --results     : unbounded_string;
   var_id      : identifier;
+  --var_id2     : identifier;
   exportType  : unbounded_string;
   importType  : unbounded_string;
   newValue    : unbounded_string;
   test_result_status : boolean := false;
   test_message : unbounded_string;
   testCaseName : unbounded_string;
+  constraintMode : designconstraintmodes;
+  affinityMode : designaffinitymodes;
 begin
 
   -- Parse the pragma parameters (if any)
@@ -922,6 +1391,15 @@ begin
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
+     end if;
+  when affinity =>                           -- pragma affinity
+     ParseDesignPragmaAffinityIdentifier( expr_val );
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val3, var_id );
+        baseTypesOK( var_id, float_t );
+     else
+        expr_val3 := to_unbounded_string( "0.0" );
      end if;
   when asserting =>                          -- pragma assert
      ParseExpression( expr_val, var_id );
@@ -951,11 +1429,73 @@ begin
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
+  when constraint =>                         -- pragma constraint
+     ParseDesignPragmaConstraintIdentifier( expr_val );
+     expect( symbol_t, "," );
+     if token = strlit_t then
+        expr_val2 := identifiers( token ).value.all;
+        getNextToken;
+     else
+        ParsePragmaIdentifier ( expr_val2 );
+     end if;
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val3, var_id );
+        baseTypesOK( var_id, float_t );
+     else
+        expr_val3 := to_unbounded_string( "0.0" );
+     end if;
   when debug =>                              -- pragma debug
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when debug_on =>                              -- pragma debug (no param)
      null;
+  when declare_affinity =>                      -- pragma declare_affinity
+     ParseDesignPragmaAffinityModeIdentifier( expr_val );
+     affinityMode := toAffinityMode( expr_val );
+     expect( symbol_t, "," );
+     ParseDesignPragmaAffinityIdentifier( expr_val );
+     -- expect( symbol_t, "," );
+     -- if token = strlit_t then
+     --    if identifiers( token ).value.all = "" then
+     --       err( "affinity name should not be an empty string" );
+     --    else
+     --       expr_val2 := identifiers( token ).value.all;
+     --    end if;
+     --    getNextToken;
+     -- else
+     --    ParsePragmaIdentifier( expr_val2 );
+     -- end if;
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val3, var_id );
+        baseTypesOK( var_id, float_t );
+     else
+        expr_val3 := to_unbounded_string( "0.0" );
+     end if;
+  when declare_constraint =>                    -- pragma declare_constraint
+     ParseDesignPragmaModeIdentifier( expr_val );
+     constraintMode := toConstraintMode( expr_val );
+     expect( symbol_t, "," );
+     ParseDesignPragmaConstraintIdentifier( expr_val );
+     expect( symbol_t, "," );
+     if token = strlit_t then
+        if identifiers( token ).value.all = "" then
+           err( "constraint name should not be an empty string" );
+        else
+           expr_val2 := identifiers( token ).value.all;
+        end if;
+        getNextToken;
+     else
+        ParsePragmaIdentifier( expr_val2 );
+     end if;
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val3, var_id );
+        baseTypesOK( var_id, float_t );
+     else
+        expr_val3 := to_unbounded_string( "0.0" );
+     end if;
   when depreciated =>                           -- pragma depreciated
      expr_val := identifiers( token ).value.all;
      ParseStaticExpression( expr_val, var_id );
@@ -1064,13 +1604,13 @@ begin
      pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
      pragma warnings( on );
-         err( "inspection_peek is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+         err( "inspection_peek cannot be used with testing or maintenance phase mode unless at the breakout prompt" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
      null;
   when promptChange =>                       -- pragma prompt_script
      if rshOpt then                          -- security precaution
-        err( "prompt scripts are not allowed in a restricted shell" );
+        err( "prompt scripts cannot be used in a restricted shell" );
      else
         expr_val := identifiers( token ).value.all;
         expect( backlit_t );
@@ -1104,44 +1644,26 @@ begin
      expr_val2 := identifiers( token ).value.all;
      expect( number_t );
   when restriction =>                        -- pragma restriction
-     if identifiers( token ).name = "no_auto_declarations" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     ParsePragmaIdentifier( expr_val );
+     if expr_val = "no_auto_declarations" then
         pragmaKind := restriction_auto;
-     elsif identifiers( token ).name = "no_annotate_todos" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_annotate_todos" then
         pragmaKind := restriction_todos;
-     elsif identifiers( token ).name = "annotations_not_optional" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "annotations_not_optional" then
         pragmaKind := restriction_annotations;
-     elsif identifiers( token ).name = "no_external_commands" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_external_commands" then
         pragmaKind := restriction_external;
-     elsif identifiers( token ).name = "no_memcache" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_memcache" then
         pragmaKind := restriction_memcache;
-     elsif identifiers( token ).name = "no_mysql_database" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_mysql_database" then
         pragmaKind := restriction_mysql;
-     elsif identifiers( token ).name = "no_postgresql_database" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_postgresql_database" then
         pragmaKind := restriction_postgresql;
-     elsif identifiers( token ).name = "no_unused_identifiers" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_unused_identifiers" then
         pragmaKind := restriction_unused;
-     elsif identifiers( token ).name = "no_volatiles" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "no_volatiles" then
         pragmaKind := restriction_volatiles;
      else
-        discardUnusedIdentifier( token );
         err( "unknown restriction" );
         return;
      end if;
@@ -1150,7 +1672,7 @@ begin
      pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
      pragma warnings( on );
-         err( "inspect is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+         err( "inspect cannot be used in testing or maintenance phase mode unless at the breakout prompt" );
      end if;
      ParseIdentifier( var_id );
   when license =>                            -- pragma license
@@ -1170,30 +1692,22 @@ begin
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when suppress =>                           -- pragma restriction
-     if identifiers( token ).name = "word_quoting" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     ParsePragmaIdentifier( expr_val );
+     if expr_val = "word_quoting" then
         pragmaKind := suppress_word_quoting;
-     elsif identifiers( token ).name = "low_priority_todos_for_release" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "low_priority_todos_for_release" then
         pragmaKind := suppress_low_priority_todos;
-     elsif identifiers( token ).name = "all_todos_for_release" then
-        discardUnusedIdentifier( token );
-        getNextToken;
+     elsif expr_val = "all_todos_for_release" then
         pragmaKind := suppress_all_todos;
      else
-        discardUnusedIdentifier( token );
         err( "unknown error type" );
         return;
      end if;
   when template | unrestricted_template =>   -- pragma (unrestricted) template
      if rshOpt then
-        err( "templates are not allowed in a restricted shell" );
+        err( "templates cannot be used in a restricted shell" );
      else
-        expr_val := identifiers( token ).name;
-        discardUnusedIdentifier( token );
-        getNextToken;
+        ParsePragmaIdentifier( expr_val );
         if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            expect( strlit_t );
@@ -1340,9 +1854,22 @@ begin
   -- Some pragmas have an effect at syntax checking or both syntax
   -- checking and run-time.  Syntax checking doesn't happen at the
   -- command prompt.
-  if syntax_check then
+
+  --if syntax_check then
+  if interpreterPhase = checking then
      if pragmaKind = ada_95 then
         onlyAda95 := true;
+     elsif pragmaKind = affinity then
+        if not maintenanceOpt then
+           if isExecutingStaticCommand then
+              declare
+                limit : float;
+              begin
+                limit := float( to_numeric( expr_val3 ) );
+                EnforceAffinity( expr_val, limit );
+              end;
+           end if;
+        end if;
      elsif pragmaKind = assumption_used then
         identifiers( var_id ).wasReferenced := true;
         --identifiers( var_id ).referencedByThread := getThreadName;
@@ -1366,6 +1893,43 @@ begin
            err( "variable expected" );
         else
            identifiers( var_id ).wasFactor := true;
+        end if;
+     elsif pragmaKind = constraint then
+        if not maintenanceOpt then
+           if isExecutingStaticCommand then
+              declare
+                weight : float;
+              begin
+                weight := float( to_numeric( expr_val3 ) );
+                EnforceConstraint( expr_val, expr_val2, weight );
+              end;
+           end if;
+        end if;
+     elsif pragmaKind = declare_affinity then
+        if not maintenanceOpt then
+           if isExecutingStaticCommand then
+              declare
+                limit : float := 0.0;
+              begin
+                if expr_val3 /= null_unbounded_string then
+                   limit := float( to_numeric( expr_val3 ) );
+                end if;
+                DeclareAffinity( affinityMode, expr_val, limit );
+              end;
+           end if;
+        end if;
+     elsif pragmaKind = declare_constraint then
+        if not maintenanceOpt then
+           if isExecutingStaticCommand then
+              declare
+                limit : float := 0.0;
+              begin
+                if expr_val3 /= null_unbounded_string then
+                   limit := float( to_numeric( expr_val3 ) );
+                end if;
+                DeclareConstraint( constraintMode, expr_val, expr_val2, limit );
+              end;
+           end if;
         end if;
      elsif pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
@@ -1393,6 +1957,10 @@ begin
         onlyAda95 := true;
      when advise =>
         null;
+     when affinity =>                               -- pragma constraint
+        if inputMode = interactive or inputMode = breakout then
+            err( "pragma affinity cannot be used in an interactive session" );
+        end if;
      when asserting =>
         if debugOpt or testOpt then
            if not syntax_check then   -- has no meaning during syntax check
@@ -1411,6 +1979,10 @@ begin
         null;
      when clarify =>
         null;
+     when constraint =>                            -- pragma constraint
+        if inputMode = interactive or inputMode = breakout then
+            err( "pragma constraint cannot be used in an interactive session" );
+        end if;
      when debug =>
         if debugOpt then
            if not syntax_check then
@@ -1427,6 +1999,14 @@ begin
         end if;
      when debug_on =>
         debugOpt := true;
+     when declare_affinity =>                      -- pragma declare_affinity
+        if inputMode = interactive or inputMode = breakout then
+            err( "pragma declare_affinity cannot be used in an interactive session" );
+        end if;
+     when declare_constraint =>                    -- pragma declare_constraint
+        if inputMode = interactive or inputMode = breakout then
+            err( "pragma declare_constraint cannot be used in an interactive session" );
+        end if;
      when depreciated =>
         -- TODO: this should create a list of depreciation message
         -- for now, only the entire script is depreciated
@@ -1689,7 +2269,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "manual_test is not allowed in an interactive session" );
+              err( "manual_test cannot be used in an interactive session" );
            elsif not syntax_check then
               -- for a manual test case, there's nothing to run
               run_test_case( null_unbounded_string, testCaseName, manual_test => true );
@@ -1701,7 +2281,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "manual_test_result is not allowed in an interactive session" );
+              err( "manual_test_result cannot be used in an interactive session" );
            elsif not syntax_check then
               record_test_result( test_result_status, test_message );
            end if;
@@ -1795,7 +2375,7 @@ begin
         if processingTemplate then
            err( "template already used" );
         elsif inputMode = interactive or inputMode = breakout then
-           err( "template is not allowed in an interactive session" );
+           err( "template cannot be used in an interactive session" );
         end if;
         if var_id = eof_t  then
            templatePath := basename( scriptFilePath );
@@ -1821,7 +2401,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "test is not allowed in an interactive session" );
+              err( "test cannot be used in an interactive session" );
            elsif not syntax_check then
                run_test_case( expr_val, expr_val2, manual_test => false );
            end if;
@@ -1843,7 +2423,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "test_result is not allowed in an interactive session" );
+              err( "test_result cannot be used in an interactive session" );
            elsif not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
                  record_test_result( test_result_status, null_unbounded_string );
@@ -1994,6 +2574,7 @@ begin
 end ParsePragmaStatement;
 
 
+-----------------------------------------------------------------------------
 --  PARSE PRAGMA
 --
 -- Syntax: pragma kind pragma-params [@ pragma-params]..; |
@@ -2006,7 +2587,7 @@ begin
   expect( pragma_t );
   if token = is_t then
      if onlyAda95 then
-        err( "pragma block is not allowed with " & optional_bold( "pragma ada_95" ) );
+        err( "pragma block cannot be used with " & optional_bold( "pragma ada_95" ) );
      end if;
      -- a pragma block
      expect( is_t );
@@ -2024,7 +2605,7 @@ begin
         ParsePragmaStatement( pragmaKind );
         if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
            if onlyAda95 then
-              err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+              err( "@ cannot be used with " & optional_bold( "pragma ada_95" ) );
            end if;
            expect( symbol_t, "@" );
         elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
@@ -2053,7 +2634,7 @@ begin
         end if;
         exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "@cannot be used with " & optional_bold( "pragma ada_95" ) );
         end if;
         expect( symbol_t, "@" );
      end loop;

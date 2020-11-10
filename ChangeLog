@@ -54,3 +54,15 @@ CHANGES SINCE 2.3
 
 21. Fix: shell statements in a case statement now parsed properly.
 
+22. New: pragma declare_constraint and pragma constraint for design constraints.
+
+23. Fix: pragma restriction, suppress, software_model, license now checked for an identifier name (rather than a string, number or some other token).
+
+24. Fix: pragma license and software_model show the names in the error message for unknown value.
+
+25. Fix: updated man page to version 2.3.2.
+
+26. Fix: static expressions, such as used in pragmas, are now being evaluated.
+
+27. New: pragma declare_affinity and pragma affinity for design affinities.
+

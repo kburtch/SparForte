@@ -374,14 +374,6 @@ which means they are not ready for use.  Subprograms that do nothing
 are called "stubs".  Using stubs creates a skeleton program that has
 enough structure to be tested by SparForte.</p>
 
-<p>Explain your unfinished work with
-<span style="font-weight: bold;">pragma todo</span>, describing
-the work owner, effort and priority.</p>
-
-<span style="font-weight: bold;">pragma annotate( todo )</span>.
-Then run syntax checking to confirm that your overall design is
-well-crafted.</p>
-
         <center>
         <div class="code">
         <p class="code">
@@ -410,7 +402,7 @@ well-crafted.</p>
 &nbsp;&nbsp;-- a stub function
 <br>
 <b>begin</b><br>
-&nbsp;&nbsp;<b>null</b>; -- no main program
+&nbsp;&nbsp;<b>null</b>; -- no main program<br>
 <b>end</b> design_example;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
@@ -430,6 +422,100 @@ well-crafted.</p>
 <p>In design mode, SparForte will focus on design errors and will ignore
 errors related to unfinished work.  If no errors are reported, the
 design is good.</p>
+
+<p class="plain">While designing, you may have real-world concerns
+that impact how you design your project.  For example, you may
+have multiple development teams, hardware limitations or quotas,
+areas of uncertainty or financial budgets.  There are a set of pragmas
+dealing with the design constraints and affinities.  They will alert you if you
+have conflicts in your design or if you are over your budget.  These
+are especially useful on larger projects as move pieces of source
+code from one file to another.  See the
+<a href="ref_pragmas.html">pragma reference page</a> for more information.</p>
+
+<p>Explain your unfinished work with
+<span style="font-weight: bold;">pragma todo</span>, describing
+the work owner, effort and priority.  Use this pragma to
+generate estimates of the amount of work.</p>
+
+<span style="font-weight: bold;">pragma annotate( todo )</span>.
+Then run syntax checking to confirm that your overall design is
+well-crafted.</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+#!/usr/local/bin/spar<br>
+&nbsp;<br>
+<b>procedure</b> design_example <b>is</b><br>
+
+team_awesome : team.member;
+
+<br>
+&nbsp;&nbsp;<b>type</b> customer <b>is</b> <b>new</b> natural;<br>
+&nbsp;&nbsp;no_customer : <b>constant</b> customer := 0;<br>
+<br>
+&nbsp;&nbsp;<b>type</b> supplier <b>is</b> <b>new</b> natural;<br>
+&nbsp;&nbsp;no_supplier : <b>constant</b> supplier := 0;<br>
+<br>
+&nbsp;&nbsp;total : integer;<br>
+<br>
+&nbsp;&nbsp;<b>function</b> get_customer <b>return</b> customer <b>is</b> <b>null</b> <b>abstract</b>;<br>
+<b>pragma</b> constraint( optmization, scalability );<br>
+<b>pragma</b> constraint( physical, network );<br>
+<b>pragma</b> todo( team_awesome, "get_customer", work_measure.story_points, 2, work_priority.severity, 3 );<br>
+&nbsp;&nbsp;-- a stub function<br>
+<br>
+&nbsp;&nbsp;<b>function</b> get_supplier <b>return</b> supplier <b>is</b> <b>null</b> <b>abstract</b>;<br>
+<b>pragma</b> constraint( optmization, scalability );<br>
+<b>pragma</b> constraint( physical, network );<br>
+<b>pragma</b> todo( team_awesome, "get_supplier", work_measure.story_points, 2, work_priority.severity, 3 );<br>
+&nbsp;&nbsp;-- a stub function<br>
+<br>
+&nbsp;&nbsp;<b>procedure</b> set_customer( c : customer; name : string ) <b>is</b> <b>null</b> <b>abstract</b>;<br>
+<b>pragma</b> constraint( optmization, scalability );<br>
+<b>pragma</b> constraint( physical, network );<br>
+<b>pragma</b> todo( team_awesome, "set_customer", work_measure.story_points, 2, work_priority.severity, 3 );<br>
+&nbsp;&nbsp;-- a stub function<br>
+<br>
+&nbsp;&nbsp;<b>procedure</b> set_supplier( s : supplier; name : string ) <b>is</b> <b>null</b> <b>abstract</b>;<br>
+<b>pragma</b> constraint( optmization, scalability );<br>
+<b>pragma</b> constraint( physical, network );<br>
+<b>pragma</b> todo( team_awesome, "set_supplier", work_measure.story_points, 2, work_priority.severity, 3 );<br>
+&nbsp;&nbsp;-- a stub function<br>
+<br>
+<b>begin</b><br>
+&nbsp;&nbsp;<b>null</b>; -- no main program<br>
+<b>end</b> design_example;<br>&nbsp;<br>
+        </p>
+        <div class="code_caption">
+        <b>Example</b>: Simple Example of Design Constraints and Estimating Work
+        </div>
+        </div>
+        </center>
+
+<p>The work report can be created with the help command:</p>
+
+        <center>
+        <div class="code">
+        <p class="code">
+=&gt; help -t design_example<br>
+team_awesome,"get_customer",work_measure.story_points, 2,work_priority.severity, 3<br>
+team_awesome,"get_supplier",work_measure.story_points, 2,work_priority.severity, 3<br>
+team_awesome,"set_customer",work_measure.story_points, 2,work_priority.severity, 3<br>
+team_awesome,"set_supplier",work_measure.story_points, 2,work_priority.severity, 3<br>
+<br>
+Amount of Work<br>
+<br>
+Story Points: 8<br>
+<br>
+Priorities of Work<br>
+<br>
+Severity 3: 4<br>
+<br>
+Number of To-Do Items: 4</p>
+        </div>
+        </center>
 
 <p>This is also a good time to choose any architectural pragmas to shape
 the design of your project.</p>

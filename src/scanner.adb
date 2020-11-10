@@ -2484,6 +2484,15 @@ begin
   ShutdownSparOS;
   ShutdownPragmas;
 
+  -- Clear design constraints
+
+  EnforcedLocalDesignConstraintLists.Clear( enforcedLocalDesignConstraintList );
+  EnforcedDesignConstraintLists.Clear( enforcedDesignConstraintList );
+  DesignConstraintLists.Clear( designConstraintList );
+  EnforcedLocalDesignAffinityLists.Clear( enforcedLocalDesignAffinityList );
+  EnforcedDesignAffinityLists.Clear( enforcedDesignAffinityList );
+  DesignAffinityLists.Clear( designAffinityList );
+
   -- Deallocate arrays and resources before the symbol and block tables
   -- is cleared
 
@@ -3001,6 +3010,75 @@ end declareStandardPackage;
 
 
 -----------------------------------------------------------------------------
+--  DECLARE DEFAULT DESIGN CONSTRAINTS
+--
+-- 
+-----------------------------------------------------------------------------
+
+procedure declareDefaultDesignConstraints is
+  dc : aDesignConstraint;
+begin
+
+  -- Erase both the declared constraints and the enforced constraint lists
+
+  EnforcedLocalDesignConstraintLists.Clear( enforcedLocalDesignConstraintList );
+  EnforcedDesignConstraintLists.Clear( enforcedDesignConstraintList );
+  DesignConstraintLists.Clear( designConstraintList );
+  EnforcedDesignAffinityLists.Clear( enforcedDesignAffinityList );
+  EnforcedDesignAffinityLists.Clear( enforcedDesignAffinityList );
+  DesignAffinityLists.Clear( designAffinityList );
+
+  -- Predefined constraints: physical
+
+  dc.mode := file;
+  dc.constraint := to_unbounded_string( "physical" );
+  dc.name :=  to_unbounded_string( "cpu" );
+  dc.limit := 0.0;
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name :=  to_unbounded_string( "memory" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name :=  to_unbounded_string( "network" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name :=  to_unbounded_string( "storage" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.mode := unique;
+  dc.name :=  to_unbounded_string( "uncertain" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+
+  -- Predefined constraints: optimization
+
+  dc.mode := file;
+  dc.constraint := to_unbounded_string( "optimization" );
+  dc.name := to_unbounded_string( "complexity" );
+  dc.limit := 0.0;
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name := to_unbounded_string( "maintenance" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name := to_unbounded_string( "performance" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name := to_unbounded_string( "reliability" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name := to_unbounded_string( "reusable" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name := to_unbounded_string( "scalability" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.name := to_unbounded_string( "size" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+  dc.mode := unique;
+  dc.name := to_unbounded_string( "uncertain" );
+  DesignConstraintLists.Queue( designConstraintList, dc );
+
+  -- Predefined constraints: knowledge
+
+  dc.mode := unique;
+  dc.constraint := to_unbounded_string( "knowledge" );
+  dc.name := to_unbounded_string( "uncertain" );
+  dc.limit := 0.0;
+  DesignConstraintLists.Queue( designConstraintList, dc );
+end declareDefaultDesignConstraints;
+
+
+-----------------------------------------------------------------------------
 --  RESET SCANNER
 --
 -- A less harsh version of shutdownScanner / startScanner.
@@ -3285,6 +3363,16 @@ begin
        tabSize := 8;
      end;
   end if;
+
+  -- Erase both the declared constraints and the enforced constraint lists
+
+  EnforcedLocalDesignConstraintLists.Clear( enforcedLocalDesignConstraintList );
+  EnforcedDesignConstraintLists.Clear( enforcedDesignConstraintList );
+  DesignConstraintLists.Clear( designConstraintList );
+  EnforcedDesignAffinityLists.Clear( enforcedDesignAffinityList );
+  EnforcedDesignAffinityLists.Clear( enforcedDesignAffinityList );
+  DesignAffinityLists.Clear( designAffinityList );
+  declareDefaultDesignConstraints;
 
 end resetScanner;
 

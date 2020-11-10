@@ -478,6 +478,50 @@ end ParseBasicShellWord;
 
 
 -----------------------------------------------------------------------------
+--  IS TOKEN VALID IDENTIFIER
+--
+-- Common checks to make sure the token is not something other than an
+-- identifier.  This does not check for style.
+-----------------------------------------------------------------------------
+
+function isTokenValidIdentifier return boolean is
+  valid : boolean := false;
+begin
+  valid := false;
+  if token = number_t then
+     err( optional_bold( "identifier") & " expected, not a " &
+          optional_bold( "number" ) );
+  elsif token = strlit_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "string literal" ) );
+  elsif token = backlit_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "backquoted literal" ) );
+  elsif token = charlit_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "character literal" ) );
+  elsif token = word_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "(shell immediate) word" ) );
+  elsif token = eof_t then
+     err( optional_bold( "identifier" ) & " expected" );
+  elsif is_keyword( token ) and token /= eof_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "keyword" ) );
+  elsif token = symbol_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "symbol" ) );
+  elsif token = shell_symbol_t then
+     err( optional_bold( "identifier" ) & " expected, not a " &
+          optional_bold( "shell symbol" ) );
+  else
+     valid := true;
+  end if;
+  return valid;
+end isTokenValidIdentifier;
+
+
+-----------------------------------------------------------------------------
 --  PARSE FIELD IDENTIFIER
 --
 -- Expect a new identifier, or one declared in this scope, but
@@ -495,44 +539,20 @@ procedure ParseFieldIdentifier( record_id : identifier; id : out identifier ) is
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
-     if token = number_t then
-        err( optional_bold( "identifier") & " expected, not a " &
-             optional_bold( "number" ) );
-     elsif token = strlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "string literal" ) );
-     elsif token = charlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "character literal" ) );
-     elsif token = backlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "backquoted literal" ) );
-     elsif token = word_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "(shell immediate) word" ) );
-     elsif token = eof_t then
-        err( optional_bold( "identifier" ) & " expected" );
-     elsif is_keyword( token ) then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "keyword" ) );
-     elsif token = symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "symbol" ) );
-     elsif token = shell_symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "shell symbol" ) );
-     elsif identifiers( token ).field_of /= eof_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "field of a record type" ) );
-     else
-        -- an existing token name
-        fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
-        findIdent( fieldName, temp_id );
-        if temp_id /= eof_t then
-           err( "already declared " &
-                optional_bold( to_string( fieldName ) ) );
-        else                                                     -- declare it
-           declareIdent( id, fieldName, new_t, varClass );
+     if isTokenValidIdentifier then
+        if identifiers( token ).field_of /= eof_t then
+           err( optional_bold( "identifier" ) & " expected, not a " &
+                optional_bold( "field of a record type" ) );
+        else
+           -- an existing token name
+           fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
+           findIdent( fieldName, temp_id );
+           if temp_id /= eof_t then
+              err( "already declared " &
+                   optional_bold( to_string( fieldName ) ) );
+           else                                                     -- declare it
+              declareIdent( id, fieldName, new_t, varClass );
+           end if;
         end if;
      end if;
      getNextToken;
@@ -571,56 +591,32 @@ procedure ParseProcedureIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
-     if token = number_t then
-        err( optional_bold( "identifier") & " expected, not a " &
-             optional_bold( "number" ) );
-     elsif token = strlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "string literal" ) );
-     elsif token = charlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "character literal" ) );
-     elsif token = backlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "backquoted literal" ) );
-     elsif token = word_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "(shell immediate) word" ) );
-     elsif token = eof_t then
-        err( optional_bold( "identifier" ) & " expected" );
-     elsif is_keyword( token ) then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "keyword" ) );
-     elsif token = symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "symbol" ) );
-     elsif token = shell_symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "shell symbol" ) );
-     elsif identifiers( token ).field_of /= eof_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "field of a record type" ) );
-     -- if old, don't redeclare if it was a forward declaration
-     elsif identifiers( token ).class = userProcClass or         -- a proc?
-           identifiers( token ).class = userFuncClass then       -- or func?
-        if isLocal( token ) then                                 -- local?
-           if length( identifiers( token ).value.all ) = 0 then      -- forward?
-              id := token;                                       -- then it's
-           else                                                  -- not fwd?
-              err( "already declared " &
-                   optional_bold( to_string( identifiers( token ).name ) ) );
-           end if;                                               -- not local?
-        else                                                     -- declare it
+     if isTokenValidIdentifier then
+        if identifiers( token ).field_of /= eof_t then
+           err( optional_bold( "identifier" ) & " expected, not a " &
+                optional_bold( "field of a record type" ) );
+        -- if old, don't redeclare if it was a forward declaration
+        elsif identifiers( token ).class = userProcClass or         -- a proc?
+              identifiers( token ).class = userFuncClass then       -- or func?
+           if isLocal( token ) then                                 -- local?
+              if length( identifiers( token ).value.all ) = 0 then      -- forward?
+                 id := token;                                       -- then it's
+              else                                                  -- not fwd?
+                 err( "already declared " &
+                      optional_bold( to_string( identifiers( token ).name ) ) );
+              end if;                                               -- not local?
+           else                                                     -- declare it
+              declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
+              identifiers( token ).class);
+           end if;                                                  -- otherwise
+        elsif isLocal( token ) then
+           err( "already declared " &
+                optional_bold( to_string( identifiers( token ).name ) ) );
+        else
+           -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
            identifiers( token ).class);
-        end if;                                                  -- otherwise
-     elsif isLocal( token ) then
-        err( "already declared " &
-             optional_bold( to_string( identifiers( token ).name ) ) );
-     else
-        -- create a new one in this scope
-        declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
-        identifiers( token ).class);
+        end if;
      end if;
      getNextToken;
   else
@@ -652,6 +648,160 @@ end ParseProcedureIdentifier;
 
 
 -----------------------------------------------------------------------------
+--  PARSE PRAGMA IDENTIFIER
+--
+-- Identifiers used in pragmas are a part of the language but whether they
+-- are declared or not does not matter.  Only the name is important, and
+-- they are otherwise destroyed if they are not declared identifiers.
+-----------------------------------------------------------------------------
+
+procedure ParsePragmaIdentifier( name : out unbounded_string ) is
+begin
+  if identifiers( token ).kind /= new_t then
+     if isTokenValidIdentifier then
+        name := identifiers( token ).name;
+        getNextToken;
+     end if;
+  else
+     name := identifiers( token ).name;
+     discardUnusedIdentifier( token );
+     getNextToken;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParsePragmaIdentifier;
+
+procedure ParsePragmaIdentifier is
+  discardedString : unbounded_string;
+begin
+  ParsePragmaIdentifier( discardedString );
+end ParsePragmaIdentifier;
+
+-----------------------------------------------------------------------------
+--  PARSE DESIGN PRAGMA CONSTRAINT IDENTIFIER
+--
+-- Like pragma design identifier, but not allowing certain names.
+-----------------------------------------------------------------------------
+
+procedure ParseDesignPragmaConstraintIdentifier( name : out unbounded_string ) is
+begin
+  if identifiers( token ).kind /= new_t then
+     if isTokenValidIdentifier then
+        name := identifiers( token ).name;
+        if toConstraintMode( name ) /= undefined then
+           err( "unique, exclusive or local are not allowed for a constraint name" );
+        end if;
+        getNextToken;
+     end if;
+  else
+     name := identifiers( token ).name;
+     if toConstraintMode( name ) /= undefined then
+        err( "unique, exclusive or local are not allowed for a constraint name" );
+     end if;
+     discardUnusedIdentifier( token );
+     getNextToken;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseDesignPragmaConstraintIdentifier;
+
+-----------------------------------------------------------------------------
+--  PARSE DESIGN PRAGMA AFFINITY IDENTIFIER
+--
+-- Like pragma design identifier, but not allowing certain names.
+-----------------------------------------------------------------------------
+
+procedure ParseDesignPragmaAffinityIdentifier( name : out unbounded_string ) is
+begin
+  if identifiers( token ).kind /= new_t then
+     if isTokenValidIdentifier then
+        name := identifiers( token ).name;
+        if toAffinityMode( name ) /= undefined then
+           err( "inclusive is not allowed for an affinity name" );
+        end if;
+        getNextToken;
+     end if;
+  else
+     name := identifiers( token ).name;
+     if toAffinityMode( name ) /= undefined then
+        err( "inclusive is not allowed for an affinity name" );
+     end if;
+     discardUnusedIdentifier( token );
+     getNextToken;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseDesignPragmaAffinityIdentifier;
+
+-----------------------------------------------------------------------------
+--  PARSE DESIGN PRAGMA MODE IDENTIFIER
+--
+-- Like pragma design identifier, but not allowing certain names.
+-----------------------------------------------------------------------------
+
+procedure ParseDesignPragmaModeIdentifier( name : out unbounded_string ) is
+begin
+  if identifiers( token ).kind /= new_t then
+     if isTokenValidIdentifier then
+        name := identifiers( token ).name;
+        if toConstraintMode( name ) = undefined then
+           err( "unique, file or subprogram expected for a constraint Mode" );
+        end if;
+        getNextToken;
+     end if;
+  else
+     name := identifiers( token ).name;
+     if toConstraintMode( name ) = undefined then
+        err( "unique, file or subprogram expected for a constraint Mode" );
+     end if;
+     discardUnusedIdentifier( token );
+     getNextToken;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseDesignPragmaModeIdentifier;
+
+
+-----------------------------------------------------------------------------
+--  PARSE DESIGN PRAGMA AFFINITY MODE IDENTIFIER
+--
+-- Like pragma design identifier, but not allowing certain names.
+-----------------------------------------------------------------------------
+
+procedure ParseDesignPragmaAffinityModeIdentifier( name : out unbounded_string ) is
+begin
+  if identifiers( token ).kind /= new_t then
+     if isTokenValidIdentifier then
+        name := identifiers( token ).name;
+        if toAffinityMode( name ) = undefined then
+           err( "file or subprogram expected for an affinity mode" );
+        end if;
+        getNextToken;
+     end if;
+  else
+     name := identifiers( token ).name;
+     if toAffinityMode( name ) = undefined then
+        err( "file or subprogram expected for an affinity mode" );
+     end if;
+     discardUnusedIdentifier( token );
+     getNextToken;
+  end if;
+exception when symbol_table_overflow =>
+  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  token := eof_t; -- this exception cannot be handled
+  done := true;   -- abort
+end ParseDesignPragmaAffinityModeIdentifier;
+
+
+-----------------------------------------------------------------------------
 --  PARSE VARIABLE IDENTIFIER
 --
 -- A variable is either an existing earlier specification, or it is a new
@@ -660,7 +810,6 @@ end ParseProcedureIdentifier;
 -----------------------------------------------------------------------------
 
 procedure ParseVariableIdentifier( id : out identifier ) is
-
 begin
   id := eof_t; -- dummy
   -- forward constant specification
@@ -674,41 +823,17 @@ begin
      getNextToken;
   -- error messages if not new
   elsif identifiers( token ).kind /= new_t then
-     if token = number_t then
-        err( optional_bold( "identifier") & " expected, not a " &
-             optional_bold( "number" ) );
-     elsif token = strlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "string literal" ) );
-     elsif token = backlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "backquoted literal" ) );
-     elsif token = charlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "character literal" ) );
-     elsif token = word_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "(shell immediate) word" ) );
-     elsif token = eof_t then
-        err( optional_bold( "identifier" ) & " expected" );
-     elsif is_keyword( token ) and token /= eof_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "keyword" ) );
-     elsif token = symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "symbol" ) );
-     elsif token = shell_symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "shell symbol" ) );
-     elsif isLocal( token ) then
-        err( "already declared " &
-             optional_bold( to_string( identifiers( token ).name ) ) );
-     elsif element( identifiers( token ).name,
-         length( identifiers( token ).name ) ) = '_' then
-            err( "trailing underscores not allowed in identifiers" );
-     else
-        -- create a new one in this scope
-        declareIdent( id, identifiers( token ).name, new_t, varClass );
+     if isTokenValidIdentifier then
+        if isLocal( token ) then
+           err( "already declared " &
+                optional_bold( to_string( identifiers( token ).name ) ) );
+        elsif element( identifiers( token ).name,
+            length( identifiers( token ).name ) ) = '_' then
+               err( "trailing underscores not allowed in identifiers" );
+        else
+           -- create a new one in this scope
+           declareIdent( id, identifiers( token ).name, new_t, varClass );
+        end if;
      end if;
      getNextToken;
   else
@@ -760,38 +885,14 @@ procedure ParseNewIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
-     if token = number_t then
-        err( optional_bold( "identifier") & " expected, not a " &
-             optional_bold( "number" ) );
-     elsif token = strlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "string literal" ) );
-     elsif token = backlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "backquoted literal" ) );
-     elsif token = charlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "character literal" ) );
-     elsif token = word_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "(shell immediate) word" ) );
-     elsif token = eof_t then
-        err( optional_bold( "identifier" ) & " expected" );
-     elsif is_keyword( token ) and token /= eof_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "keyword" ) );
-     elsif token = symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "symbol" ) );
-     elsif token = shell_symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "shell symbol" ) );
-     elsif isLocal( token ) then
-        err( "already declared " &
-             optional_bold( to_string( identifiers( token ).name ) ) );
-     else
-        -- create a new one in this scope
-        declareIdent( id, identifiers( token ).name, new_t, varClass );
+     if isTokenValidIdentifier then
+        if isLocal( token ) then
+           err( "already declared " &
+                optional_bold( to_string( identifiers( token ).name ) ) );
+        else
+           -- create a new one in this scope
+           declareIdent( id, identifiers( token ).name, new_t, varClass );
+        end if;
      end if;
      getNextToken;
   else
@@ -844,60 +945,37 @@ procedure ParseIdentifier( id : out identifier ) is
   recId : identifier;
 begin
   id := eof_t; -- assume failure
-  if token = number_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "number" ) );
-  elsif token = strlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "string literal" ) );
-  elsif token = backlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
-  elsif token = charlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "character literal" ) );
-  elsif token = word_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "(shell immediate) word" ) );
-  elsif is_keyword( token ) and token /= eof_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "keyword" ) );
-  elsif token = symbol_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "symbol" ) );
-     elsif token = shell_symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "shell symbol" ) );
-  elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
-     -- if we're skipping a block, it doesn't matter if the identifier is
-     -- declared, but it does if we're executing a block or checking syntax
-     if isExecutingCommand or syntax_check then
-        for i in identifiers'first..identifiers_top-1 loop
-            if i /= token and not identifiers(i).deleted then
-               if typoOf( identifiers(i).name, identifiers(token).name ) then
-                  discardUnusedIdentifier( token );
-                  err( optional_bold( to_string( identifiers(token).name ) ) &
-                  " is a possible typo of " &
-                  optional_bold( to_string( identifiers(i).name ) ) );
-                  exit;
-               end if;
-           end if;
-       end loop;
-       if not error_found then
-          -- token will be eof_t if error has already occurred
-          discardUnusedIdentifier( token );
-          -- help for common mistakes
-          -- php/shell - checking for echo/print doesn't work since these
-          -- are Linux commands anyway and will be found.  Code removed.
-          err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared" );
-       end if;
-     end if;
-     -- this only appears if err in typo loop didn't occur
-     --if not error_found then
-     --   discardUnusedIdentifier( token );
-     --end if;
-  else
-     if syntax_check and then not error_found then
+  if isTokenValidIdentifier then
+     if identifiers( token ).kind = new_t or identifiers( token ).deleted then
+        -- if we're skipping a block, it doesn't matter if the identifier is
+        -- declared, but it does if we're executing a block or checking syntax
+        if isExecutingCommand or syntax_check then
+           for i in identifiers'first..identifiers_top-1 loop
+               if i /= token and not identifiers(i).deleted then
+                  if typoOf( identifiers(i).name, identifiers(token).name ) then
+                     discardUnusedIdentifier( token );
+                     err( optional_bold( to_string( identifiers(token).name ) ) &
+                     " is a possible typo of " &
+                     optional_bold( to_string( identifiers(i).name ) ) );
+                     exit;
+                  end if;
+              end if;
+          end loop;
+          if not error_found then
+             -- token will be eof_t if error has already occurred
+             discardUnusedIdentifier( token );
+             -- help for common mistakes
+             -- php/shell - checking for echo/print doesn't work since these
+             -- are Linux commands anyway and will be found.  Code removed.
+             err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared" );
+          end if;
+        end if;
+        -- this only appears if err in typo loop didn't occur
+        --if not error_found then
+        --   discardUnusedIdentifier( token );
+        --end if;
+     else
+        if syntax_check and then not error_found then
            -- for a record field, mark the record itself as used.
            -- record fields are ignored in the unused identifier checks.
            -- also do this for writing since it is hard to determine if
@@ -916,6 +994,7 @@ begin
               identifiers( token ).wasReferenced := true;
               --identifiers( token ).referencedByThread := getThreadName;
            end if;
+        end if;
      end if;
      id := token;
   end if;
@@ -2393,9 +2472,9 @@ end ParseExpression;
 
 procedure ParseStaticFactor( f : out unbounded_string; kind : out identifier ) is
   castType  : identifier;
-  array_id  : identifier;
+  --array_id  : identifier;
   -- array_id2 : arrayID;
-  arrayIndex: long_integer;
+  --arrayIndex: long_integer;
   type aUniOp is ( noOp, doPlus, doMinus, doNot );
   uniOp : aUniOp := noOp;
   t : identifier;
@@ -2433,7 +2512,7 @@ begin
            err( "$# not allowed with " & optional_bold( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
-        if isExecutingCommand then
+        if isExecutingStaticCommand then
            f := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
         end if;
         kind := uni_numeric_t;
@@ -2446,7 +2525,7 @@ begin
            " -- use command_line package" );
         end if;
         kind := uni_string_t;
-        if isExecutingCommand then
+        if isExecutingStaticCommand then
            begin
               f := to_unbounded_string(
                  Argument(
@@ -2466,7 +2545,7 @@ begin
            err( "$0 not allowed with " & optional_bold( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
-        if isExecutingCommand then
+        if isExecutingStaticCommand then
            f := to_unbounded_string( Ada.Command_Line.Command_Name );
         end if;
         kind := uni_string_t;
@@ -2573,8 +2652,9 @@ begin
         kind := string_t;
         getNextToken;
      -- Static expressions must not run user functions because they will
-     -- accept regular expressions
-      elsif identifiers( token ).class = userFuncClass then
+     -- may expect non-static expressions.
+      elsif identifiers( token ).class = userFuncClass or
+            identifiers( token ).class = funcClass then
         err( "static expressions cannot call functions" );
      --    declare
      --      funcToken : identifier := token;
@@ -2588,13 +2668,14 @@ begin
         err( "variable, value or expression expected" );
      else                                                  -- some kind of user ident?
         ParseStaticIdentifier( t );
-        --if isExecutingCommand then
+        --if isExecutingStaticCommand then
         if identifiers( t ).specAt /= noSpec then
             err( "earlier specification has not been completed (at " &
                  to_string( identifiers( t ).specFile) & ":" &
                  identifiers( t ).specAt'img & ")");
         end if;
-        -- end if;
+        --end if;
+        -- Note: Variables must be allowed for System package variables
         if identifiers( t ).volatile /= none then  -- volatile user identifier
            refreshVolatile( t );
            f := identifiers( t ).value.all;
@@ -2616,43 +2697,44 @@ begin
               if syntax_check then
                  identifiers( kind ).wasCastTo := true;
               end if;
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  --f := castToType( to_numeric( f ), kind );
                  f := castToType( f, kind );
               end if;
            end if;
-        elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
-           array_id := t;                            -- array_id=array variable
-           expect( symbol_t, "(" );                  -- parse index part
-           ParseExpression( f, kind );               -- kind is the index type
-           if getUniType( kind ) = uni_string_t or   -- index must be scalar
-              identifiers( getBaseType( kind ) ).list then
-              err( "array index must be a scalar type" );
-           end if;                                   -- variables are not
-           if isExecutingCommand then                -- declared in syntax chk
-              arrayIndex := long_integer(to_numeric(f));  -- convert to number
-              -- TODO: make a utility function for doing all this.
-              -- TODO: probably needs a better error message
-              if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
-                 if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
-                    err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
-                 end if;
-              end if;
-              if not error_found then
-                 begin
-                   f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
-                 exception when CONSTRAINT_ERROR =>
-                   err( gnat.source_info.source_location &
-                     ": internal error: constraint_error : index out of range " &
-                     identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
-                 when STORAGE_ERROR =>
-                   err( gnat.source_info.source_location &
-                     ": internal error : storage error raised in ParseStaticFactor" );
-                 end;
-              end if;
-           end if;
-           expect( symbol_t, ")" );                  -- element type is k's k
-           kind := identifiers( identifiers( array_id ).kind ).kind;
+        -- KB: 20/11/16 : array values don't exist in static context
+        --elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
+        --   array_id := t;                            -- array_id=array variable
+        --   expect( symbol_t, "(" );                  -- parse index part
+        --   ParseExpression( f, kind );               -- kind is the index type
+        --   if getUniType( kind ) = uni_string_t or   -- index must be scalar
+        --      identifiers( getBaseType( kind ) ).list then
+        --      err( "array index must be a scalar type" );
+        --   end if;                                   -- variables are not
+        --   if isExecutingStaticCommand then                -- declared in syntax chk
+        --      arrayIndex := long_integer(to_numeric(f));  -- convert to number
+        --      -- TODO: make a utility function for doing all this.
+        --      -- TODO: probably needs a better error message
+        --      if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
+        --         if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
+        --            err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+        --         end if;
+        --      end if;
+        --      if not error_found then
+        --         begin
+        --           f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
+        --         exception when CONSTRAINT_ERROR =>
+        --           err( gnat.source_info.source_location &
+        --             ": internal error: constraint_error : index out of range " &
+        --             identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+        --         when STORAGE_ERROR =>
+        --           err( gnat.source_info.source_location &
+        --             ": internal error : storage error raised in ParseStaticFactor" );
+        --         end;
+        --      end if;
+        --   end if;
+        --   expect( symbol_t, ")" );                  -- element type is k's k
+        --   kind := identifiers( identifiers( array_id ).kind ).kind;
         -- regular variable with an array index?
         else
           if token = symbol_t and identifiers( token ).value.all = "(" then
@@ -2673,8 +2755,8 @@ begin
   when doMinus =>
        begin
           if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
-             if isExecutingCommand then
-                f := to_unbounded_string( -to_numeric( f ) );
+             if isExecutingStaticCommand then
+             f := to_unbounded_string( -to_numeric( f ) );
              end if;
           end if;
        exception when others =>
@@ -2683,7 +2765,7 @@ begin
   when doNot =>
        begin
           if type_checks_done or else baseTypesOK( kind, boolean_t ) then
-             if isExecutingCommand then
+             if isExecutingStaticCommand then
                 if to_numeric( f ) = 1.0 then
                    f := to_unbounded_string( "0" );
                 else
@@ -2750,7 +2832,7 @@ begin
         if operation = uni_numeric_t then
            if operator = "**" then
               begin
-                 if isExecutingCommand then
+                 if isExecutingStaticCommand then
                     term := to_unbounded_string(
                          to_numeric( term ) **
                          natural( to_numeric( factor2 ) ) );
@@ -2835,7 +2917,7 @@ begin
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      term := castToType(
                         to_numeric( term ) *
                         to_numeric( pterm2 ),
@@ -2858,7 +2940,7 @@ begin
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      -- GCC Ada 4.7.1 doesn't catch divide by zero (returns
                      -- infinity for the following division:
                      -- term := castToType(
@@ -2890,7 +2972,7 @@ begin
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      term := castToType(
                         --long_long_integer'image(
                         long_float(
@@ -2911,7 +2993,7 @@ begin
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      term := castToType(
                         --long_long_integer'image(
                         long_float(
@@ -2950,7 +3032,7 @@ begin
                     term_type := kind1;
                  end if;
                  if type_checks_done or else baseTypesOK( kind1, kind2 ) then
-                    if isExecutingCommand then
+                    if isExecutingStaticCommand then
                        term := term & pterm2;
                     end if;
                  end if;
@@ -3064,7 +3146,7 @@ begin
                   if syntax_check then
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      se := castToType(
                         to_numeric( se ) +
                         to_numeric( term2 ),
@@ -3083,7 +3165,7 @@ begin
                   if syntax_check then
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      se := castToType(
                         to_numeric( se ) -
                         to_numeric( term2 ),
@@ -3099,7 +3181,7 @@ begin
              end if;
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  declare
                     c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                  begin
@@ -3108,7 +3190,7 @@ begin
                  end;
               end if;
            elsif operator = "-" then
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  declare
                     c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                  begin
@@ -3119,7 +3201,7 @@ begin
            end if;
         elsif operation = variable_t then -- duration + time
            if operator = "+" then
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  declare
                     c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
                  begin
@@ -3134,7 +3216,7 @@ begin
            if operator = "+" then
               err( "operation + not defined for these types" );
            else
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  declare
                     c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
                     c2: duration;
@@ -3248,35 +3330,35 @@ begin
         if operation = uni_numeric_t or else operation = root_enumerated_t or else operation = cal_time_t then
              begin
                if operator = ">=" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) >= to_numeric( se2 );
                   end if;
                elsif operator = ">" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) > to_numeric( se2 );
                   end if;
                elsif operator = "<" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) < to_numeric( se2 );
                   end if;
                elsif operator = "<=" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) <= to_numeric( se2 );
                   end if;
                elsif operator = "=" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) = to_numeric( se2 );
                   end if;
                elsif operator = "/=" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) /= to_numeric( se2 );
                   end if;
                elsif operator = "in" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) in to_numeric( se2 )..to_numeric( se3 );
                   end if;
                elsif operator = "not in" then
-                  if isExecutingCommand then
+                  if isExecutingStaticCommand then
                      b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
                   end if;
                else
@@ -3293,31 +3375,31 @@ begin
              end;
         elsif operation = uni_string_t then
              if operator = ">=" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    b := se1 >= se2;
                 end if;
              elsif operator = ">" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    b := se1 > se2;
                 end if;
              elsif operator = "<" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    b := se1 < se2;
                 end if;
              elsif operator = "<=" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    b := se1 <= se2;
                 end if;
              elsif operator = "=" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    b := se1 = se2;
                 end if;
              elsif operator = "/=" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    b := se1 /= se2;
                 end if;
              elsif operator = "in" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    if length( se1 ) /= 1 or
                       length( se2 ) /= 1 or
                       length( se3 ) /= 1 then
@@ -3335,7 +3417,7 @@ begin
                    end if;
                 end if;
              elsif operator = "not in" then
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    if length( se1 ) /= 1 or
                       length( se2 ) /= 1 or
                       length( se3 ) /= 1 then
@@ -3418,7 +3500,7 @@ begin
            expr_type := getBaseType( kind1 );
            if operator = and_t then
               begin
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    re1 := to_unbounded_string(
                       long_float(
                       bitwise_number( to_numeric( re1 ) ) and
@@ -3436,7 +3518,7 @@ begin
               end;
            elsif operator = or_t then
               begin
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    re1 := to_unbounded_string(
                       long_float(
                       bitwise_number( to_numeric( re1 ) ) or
@@ -3454,7 +3536,7 @@ begin
               end;
            elsif operator = xor_t then
               begin
-                if isExecutingCommand then
+                if isExecutingStaticCommand then
                    re1 := to_unbounded_string(
                       long_float(
                       bitwise_number( to_numeric( re1 ) ) xor
@@ -3474,15 +3556,15 @@ begin
         elsif getBaseType( kind1 ) = boolean_t then
            expr_type := getBaseType( kind1 );
            if operator = and_t then
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  b := re1 = "1" and re2 = "1";
               end if;
            elsif operator= or_t then
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  b := re1 = "1" or re2 = "1";
               end if;
            elsif operator = xor_t then
-              if isExecutingCommand then
+              if isExecutingStaticCommand then
                  b := re1 = "1" xor re2 = "1";
               end if;
            else

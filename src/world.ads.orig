@@ -94,7 +94,7 @@ subtype reservedWordRange is identifier range 1..8192;
 
 
 ------------------------------------------------------------------------------
--- Modes
+-- Interpreting and Parsing
 ------------------------------------------------------------------------------
 
 trace            : boolean := false;      -- true if trace is on
@@ -106,6 +106,13 @@ stepFlag1        : boolean := false;      -- first parser step cmd flag
 stepFlag2        : boolean := false;      -- second parser step cmd flag
 isTesting        : boolean := false;      -- true if running a pragma test
 
+-- Often the syntax_check phase is all that is required to deterime if
+-- we checking or executing the source code.  In the case of some parts
+-- of the parser, such as certain pragmas, we need to strictly know if
+-- this is the syntax check phase or the execution phase.
+
+type interpreterPhases is ( initializing, compiling, checking, executing );
+interpreterPhase : interpreterPhases := initializing;
 
 ------------------------------------------------------------------------------
 -- Scanning
@@ -196,6 +203,99 @@ annotationTodoFound : boolean := false; -- pragma annotations_no_todo
 licenseSet       : boolean := false;
 softwareModelSet : boolean := false;
 softwareModelReq : softwareModelPtr := null;
+
+------------------------------------------------------------------------------
+-- DESIGN CONSTRAINTS
+--
+-- A constraint has a mode, category, name and a limit.
+------------------------------------------------------------------------------
+
+type designConstraintModes is (
+   undefined, unique, file, subprogram
+);
+
+function toConstraintMode( s : unbounded_string ) return designConstraintModes;
+
+type aDesignConstraint is record
+    mode       : designConstraintModes;
+    constraint :  unbounded_string;
+    name       : unbounded_string;
+    limit      : float;
+end record;
+
+function ">="( left, right : aDesignConstraint ) return boolean;
+
+function equal( left, right : aDesignConstraint ) return boolean;
+
+package DesignConstraintLists is new gen_list( aDesignConstraint, equal,  ">=" );
+
+-- value indicating asserted constraint exists
+
+noDesignConstraint : constant natural := 0;
+
+type anEnforcedDesignConstraint is record
+    mode         : designConstraintModes;         -- how strict
+    enforcedAt   : natural := noDesignConstraint; -- line enforced
+    enforcedFile : unbounded_string;              -- file enforced
+    enforcedUnit : unbounded_string;              -- subr enforced (local only)
+    constraint   : unbounded_string;
+    name         : unbounded_string;
+    weight       : float;
+end record;
+
+function ">="( left, right : anEnforcedDesignConstraint ) return boolean;
+
+function equal( left, right : anEnforcedDesignConstraint ) return boolean;
+
+package EnforcedDesignConstraintLists is new gen_list( anEnforcedDesignConstraint, equal,  ">=" );
+
+package EnforcedLocalDesignConstraintLists is new gen_list( anEnforcedDesignConstraint, equal,  ">=" );
+
+------------------------------------------------------------------------------
+-- DESIGN AFFINITIES
+--
+-- An affinity has a mode, name and goal.
+------------------------------------------------------------------------------
+
+type designAffinityModes is (
+   undefined, file, subprogram
+);
+
+function toAffinityMode( s : unbounded_string ) return designAffinityModes;
+
+type aDesignAffinity is record
+    mode       : designAffinityModes;
+    affinity   : unbounded_string;
+    limit      : float;
+end record;
+
+function ">="( left, right : aDesignAffinity ) return boolean;
+
+function equal( left, right : aDesignAffinity ) return boolean;
+
+package DesignAffinityLists is new gen_list( aDesignAffinity, equal,  ">=" );
+
+-- value indicating asserted constraint exists
+
+noDesignAffinity : constant natural := 0;
+
+type anEnforcedDesignAffinity is record
+    mode         : designAffinityModes;           -- how strict
+    enforcedAt   : natural := noDesignAffinity;   -- line enforced
+    enforcedFile : unbounded_string;              -- file enforced
+    enforcedUnit : unbounded_string;              -- subr enforced (local only)
+    affinity     : unbounded_string;
+    weight       : float;
+end record;
+
+function ">="( left, right : anEnforcedDesignAffinity ) return boolean;
+
+function equal( left, right : anEnforcedDesignAffinity ) return boolean;
+
+package EnforcedDesignAffinityLists is new gen_list( anEnforcedDesignAffinity, equal,  ">=" );
+
+package EnforcedLocalDesignAffinityLists is new gen_list( anEnforcedDesignAffinity, equal,  ">=" );
+
 
 ------------------------------------------------------------------------------
 -- Templates
@@ -784,6 +884,9 @@ function isExecutingCommand return boolean;
 -- That is, the parser isn't skipping the line because of
 -- an error or exiting a block.
 pragma inline( isExecutingCommand );
+
+function isExecutingStaticCommand return boolean;
+pragma inline( isExecutingStaticCommand );
 
 ------------------------------------------------------------------------------
 -- Declarations

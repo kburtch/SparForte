@@ -551,7 +551,7 @@ package body builtins.help is
                 end if;
 
                 new_line;
-                put_line( "Priorities of  Work" );
+                put_line( "Priorities of Work" );
                 new_line;
                 if workPriorityCntUnknown > 0 then
                    put_line( "Unknown:" & workPriorityCntUnknown'img );
@@ -1202,6 +1202,7 @@ begin
                   "communication, debugging, configuration and other things.");
   content( e, "pragma ada_95 - enforce Ada 95 restrictions" );
   content( e, "pragma advise( from, to, message ) - request team advice/assistance" );
+  content( e, "pragma affinity( affinity [, weight] ) - enforce a design affinity" );
   content( e, "pragma annotate( [type,] " & Ada.Characters.Latin_1.Quotation & "text" & Ada.Characters.Latin_1.Quotation & " ) - embed a comment for help command" );
   content( e, "pragma assert( condition ) - with --debug/--test, terminate program on condition fail" );
   content( e, "pragma assumption( applied, type ) - assume a type or subtype was used to make a variable" );
@@ -1210,7 +1211,10 @@ begin
   content( e, "pragma assumption( written, var ) - assume a variable was written" );
   content( e, "pragma blocked( from, message ) - announce programmer progress blocked" );
   content( e, "pragma clarify( from, to, message ) - request programmer clarification" );
+  content( e, "pragma constraint( constraint, value [, weight] ) - enforce a design constraint" );
   content( e, "pragma debug( `commands` ) - with --debug, execute debug commands" );
+  content( e, "pragma declare_affinity( mode, affinity [, limit] ) - create a design affinity" );
+  content( e, "pragma declare_constraint( mode, constraint, value [,limit] ) - create a design constraint" );
   content( e, "pragma depreciated/deprecated( " & Ada.Characters.Latin_1.Quotation & "newscript" & Ada.Characters.Latin_1.Quotation &" ) - report script as obsolete by newscript" );
   content( e, "pragma dispute( from, to, message ) - request program review" );
   content( e, "pragma export( shell | local_memcache | memcache | session , var ) - export a variable" );

@@ -125,6 +125,15 @@ begin
   return not error_found and not exit_block and not syntax_check;
 end isExecutingCommand;
 
+-- The same, but can run during syntax checking.  Used for static
+-- expressions.
+
+function isExecutingStaticCommand return boolean is
+begin
+  return not error_found and not exit_block and not
+     (interpreterPhase = executing and syntax_check);
+end isExecutingStaticCommand;
+
 
 -----------------------------------------------------------------------------
 -- STORAGE CACHE
@@ -1781,6 +1790,122 @@ function equal( left, right : aSourceFile ) return boolean is
 begin
   return left.pos = right.pos;
 end equal;
+
+
+------------------------------------------------------------------------------
+--
+-- DESIGN CONSTRAINTS
+--
+------------------------------------------------------------------------------
+
+function toConstraintMode( s : unbounded_string ) return designConstraintModes is
+  constraintMode : designConstraintModes := undefined;
+begin
+  --return s = "unique" or s = "exclusive" or s = "local";
+  if s = "unique" then
+     constraintMode := unique;
+  elsif s = "file" then
+     constraintMode:= file;
+  elsif s = "subprogram" then
+     constraintMode:= subprogram;
+  end if;
+  return constraintMode;
+end toConstraintMode;
+
+--  DESIGN CONSTRAINT list sorting functions.
+--
+-- Both category and name matter.
+------------------------------------------------------------------------------
+
+-- We're not actually using >=
+
+function ">="( left, right : aDesignConstraint ) return boolean is
+begin
+  return left.constraint >= right.constraint and left.name >= right.name;
+end ">=";
+
+function equal( left, right : aDesignConstraint ) return boolean is
+begin
+  return left.constraint = right.constraint and left.name = right.name;
+end equal;
+
+
+--  ENFORCED DESIGN CONSTRAINT sorting functions.
+--
+-- We can have only one constraint so we only check the category.
+-- This might change as constraints become more powerful in the future.
+------------------------------------------------------------------------------
+
+-- We're not actually using >=
+
+function ">="( left, right : anEnforcedDesignConstraint ) return boolean is
+begin
+  return left.enforcedFile >= right.enforcedFile and
+         left.enforcedUnit = right.enforcedUnit and
+         left.constraint >= right.constraint;
+end ">=";
+
+function equal( left, right : anEnforcedDesignConstraint ) return boolean is
+begin
+  return left.enforcedFile = right.enforcedFile and
+         left.enforcedUnit = right.enforcedUnit and
+         left.constraint = right.constraint;
+end equal;
+
+------------------------------------------------------------------------------
+--
+-- DESIGN AFFINITIES
+--
+------------------------------------------------------------------------------
+
+function toAffinityMode( s : unbounded_string ) return designAffinityModes is
+  affinityMode : designAffinityModes := undefined;
+begin
+  if s = "file" then
+     affinityMode:= file;
+  elsif s = "subprogram" then
+     affinityMode:= subprogram;
+  end if;
+  return affinityMode;
+end toAffinityMode;
+
+
+--  DESIGN AFFINITY list sorting functions.
+--
+-- The affinity matters.
+------------------------------------------------------------------------------
+
+-- We're not actually using >=
+
+function ">="( left, right : aDesignAffinity ) return boolean is
+begin
+  return left.affinity >= right.affinity;
+end ">=";
+
+function equal( left, right : aDesignAffinity ) return boolean is
+begin
+  return left.affinity = right.affinity;
+end equal;
+
+
+--  ENFORCED DESIGN AFFINITY list sorting functions.
+--
+-- We can have only one affinity so we only check the category.
+-- This might change as affinities become more powerful in the future.
+------------------------------------------------------------------------------
+
+-- We're not actually using >=
+
+function ">="( left, right : anEnforcedDesignAffinity ) return boolean is
+begin
+  return left.affinity >= right.affinity;
+end ">=";
+
+function equal( left, right : anEnforcedDesignAffinity ) return boolean is
+begin
+  return left.affinity = right.affinity;
+end equal;
+
 
 procedure findField( recordVar : identifier; fieldNumber: natural;
   fieldVar : out identifier ) is

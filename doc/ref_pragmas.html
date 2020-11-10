@@ -57,7 +57,9 @@ environment.</p>
   <b>pragma</b> assert( condition )
   <b>pragma</b> assumption( applied | factor | used | written, var )
   <b>pragma</b> clarify( from, message )
+  <b>pragma</b> constraint( constraint, name )
   <b>pragma</b> debug( `commands` )
+  <b>pragma</b> declare_constraint( mode, constraint, name )
   <b>pragma</b> depreciated/deprecated( "newscript" )
   <b>pragma</b> dispute( from, message )
   <b>pragma</b> error( "message" )
@@ -179,6 +181,187 @@ be used with both standalone pragmas and pragma blocks.</p>
         </div>
         </div>
         </center>
+
+<h4>Design Pragmas</h4>
+
+<p>Design constraint describe real-world concerns that affect
+the design of a project.  The idea is like sticky notes attached
+to the source code, identifying where the source code may be
+"network-bound", where relability is important, financial
+issues, team dynamics, where there
+is uncertainty in the requirements and so forth.  This
+assists in the design phase or in refactoring source code
+later in the project's life cycle.</p>
+
+<p>When design constraints conflict, an error will occur.  Either
+a constraint must be removed, or the work must be split into
+separate files.  For example, if a file contains both network-bound
+routines (physical/network) and cpu-bound routines (physical/cpu),
+SparForte will report a physical constraint conflict: the network-bound
+routines and he cpu-bound routines must be placed in different files
+to resolve the conflict</p>
+
+<p>Design constraints represent real-world issues.  SparForte provides
+some basic constraints, but there is a pragma to declare custom
+constraints that your project needs.</p>
+
+<ul>
+  <li> <b>declare_constraint( mode, constraint,  name|"name" [, limit] )</b> - declares a
+new design constraint and value pair.  There is an optional float weight limit.
+Each pair has an associated mode: unique, file or subprogram.</li>
+  <li> <b>constraint( constraint,  name|"name" [, weight] )</b> - enforces a design constraint
+with the given value for the current file.  There is an optional float weight
+which is added to the constraint each time it is used.  There will be an
+error if the total weight exceeds the weight limit.
+The affect of the constraint depends on the constraint mode:</li>
+<ul>
+<li> <b>unique</b>  If the constraint is declared as a unique constraint,
+it cannot be enforced twice in a file or an error will occur.</li>
+<li><b>file</b> If the constraint is declared as a file
+constraint, it can only be constrainted to one value within
+a file.  The same constraint can be repeated.  If the
+constraint is enforced twice each to a different value, an
+error will occur.</li>
+<li> <b>subprogram</b>  If the constraint is declared as a subprogram constraint,
+it is enforced in the scope of the subprogram where it is used.</li>
+</ul>
+</ul>
+
+<p>These are the predefined constraint/value pairs are:</p>
+
+<ul>
+  <li>physical / cpu - a file constraint. This is cpu-bound, heavily uses CPU.</li>
+  <li>physical / memory - a file constraint. This is memory-bound, heavily uses memory.</li>
+  <li>physical / network - a file constraint. This is network-bound, heavily uses networking.</li>
+  <li>physical / storage - a file constraint. This is storage-bound, heavily uses storage.</li>
+  <li>physical / uncertain - a unique constraint. uncertain physical requirements</li>
+  <li>optimization / complexity - a file constraint. This section of source code encapsulates complexity.</li>
+  <li>optimization / maintenance- a file constraint. This section of should be easy to maintain.</li>
+  <li>optimization / performance - a file constraint.  This section must execute quickly.</li>
+  <li>optimization / reliability - a file constraint.  This section must be few bugs.</li>
+  <li>optimization / reusable - a file constraint.  This section must be reusable.</li>
+  <li>optimization / scalability - a file constraint. This section of source code must be scalable.</li>
+  <li>optimization / size - a file constraint.  This section must use resources efficiently.</li>
+  <li>optimization / uncertain - a unique constraint.  There is uncertainty over how this section should be optmized.</li>
+  <li>knowledge / uncertain - a unique constraint.  There is research before this section can be implemented.  The design is a "black box".</li>
+</ul>
+
+<p>With a file constraint, only one value is allowed in a source file.
+In this next example, you can use scalability optimization all that
+you want, but you cannot have two types of optimization in one source
+file.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> constraint( optimization, scalability ); -- this source code file must be scalable<br />
+...<br />
+<b>pragma</b> constraint( optimization, scalability ); -- may be used more than once in one file<br />
+<b>pragma</b> constraint( optimization, size ); -- error: different values not allowed in one file<br />
+        <div class="code_caption">
+                <b>Example</b>: File Design Constraints</span>
+        </div>
+        </div>
+        </center>
+
+<p>Unique constraints can only be used once in a source file,
+even if the values are the same.  In this case, uncertainty should be isolated
+in separate files.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> constraint( physical, uncertain ); -- physical impacts for this source code file are uncertain<br />
+...<br />
+<b>pragma</b> constraint( physical, uncertain ); -- error: each uncertain part should be in a separate file<br />
+        <div class="code_caption">
+                <b>Example</b>: Unique Design Constraints</span>
+        </div>
+        </div>
+        </center>
+
+<p>This next example shows how to define your own constraints.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> declare_constraint( file, development_team, "Team A" ); -- defining development teams<br />
+<b>pragma</b> declare_constraint( file, development_team, team_b ); -- defining development teams<br />
+<b>pragma</b> declare_constraint( file, quota, network_bandwidth, 100 ); -- limit on network use<br />
+...<br />
+<b>pragma</b> constraint( development_team, "Team A" ); -- this source code file owned by Team A<br />
+<b>pragma</b> constraint( quota, network_bandwith, 10 ); -- spend 10 from network bandwidth quota<br />
+<b>pragma</b> constraint( development_team, team_b ); -- error: two teams assigned to one source file<br />
+        <div class="code_caption">
+                <b>Example</b>: Examples of custom design constraints</span>
+        </div>
+        </div>
+        </center>
+
+<p>This next example shows limits and weights.  Suppose that your project has
+two budgets.  You can define the budget amounts and spend portions of the
+budget in your design.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> declare_constraint( file, financing, app_budget, 10000 ); -- a $10,000 budget the application<br />
+<b>pragma</b> declare_constraint( file, financing, db_budget,  5000 ); -- a $5,000 budget for databases<br />
+...<br />
+<b>pragma</b> constraint( financing, app_budget, 1000 ); -- spend 1000 dollars of the app budget<br />
+<b>pragma</b> constraint( financing, app_budget, 1000 ); -- spend another 1000 dollars<br />
+<b>pragma</b> constraint( financing, app_budget, 8000 ); -- error: exceeded our app budget<br />
+<b>pragma</b> constraint( financing, db_budget,  1000 ); -- error: conflict because two different budgets used within one source file<br />
+        <div class="code_caption">
+                <b>Example</b>: Design constraints with Weights</span>
+        </div>
+        </div>
+        </center>
+
+<p>Design affinities are the opposite of design constraints.  They indicate when
+parts of the projects should be drawn together into one place.  Affinities can
+have an optional maximum limit.</p>
+
+<ul>
+  <li> <b>declare_affinity( mode, affinity [, limit] )</b> - declares a
+new design affinity.  There is an optional float weight limit.
+Each affinity has an associated mode: file or local.</li>
+  <li> <b>affinity( affinity [, weight] )</b> - enforces a design affinity
+for the current file.  There is an optional float weight
+which is added to the affinity each time it is used.  There will be an
+error if the total weight is more than the weight limitl.
+The affect of the affinity depends on the affinity mode:</li>
+<ul>
+<li><b>file</b> If the affinity is declared as a file
+affinity, every use must be in the same file.  If the
+affinity is enforced in two different files, an error will occur.</li>
+<li><b>subprogram</b> If the affinity is declared as a subprogram
+affinity, every use must be in the same procedure or function.  If the
+affinity is enforced in two different subprograms, an error will occur.</li>
+</ul>
+</ul>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>pragma</b> define_affinity( file, accounting_server ); -- the accounting stuff will be collected into one server<br />
+<b>pragma</b> define_affinity( file, inventory_pod ); -- the inventory stuff will be collected into one container/pod<br />
+<b>pragma</b> affinity( accounting_server );<br />
+... and in another with separate file...<br />
+<b>pragma</b> affinity( accounting_server ); -- error: file affinity: stuff labeled for accounting_server should be defined in the same file<br />
+        <div class="code_caption">
+                <b>Example</b>: File Design Affinities</span>
+        </div>
+        </div>
+        </center>
+
+
+<p>Weight and limits can use static expressions (that is, expressions that don't
+require user variables).</p>
+
+<p>Constraints and affinities cannot be used at the command prompt.</p>
+
+<p>For performance reasons, constraints and affinities are not applied in maintenance phase mode.</p>
 
 <h4>Architectural Pragmas</h4>
 

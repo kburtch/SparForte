@@ -11,8 +11,11 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- ssds - error importing data from standard input
-
+- design
+  - design affinities - should work on branches of the file include tree
+- interpreterPhase - is it set correctly in all places?
+- static expressions crashes on abs()... string index error
+  - static expressions need further testing
 - shell parser rewrite
   - recursive command substitution
     - line 3247 - nested process substitution - works on command line, not in jenkins

@@ -481,15 +481,18 @@ procedure interpretScript( scriptPath : string ) is
   res : int;
   scriptDir : unbounded_string;
 begin
-  if syntax_check then
+  case interpreterPhase is
+  when checking =>
      if verboseOpt then
         Put_Trace( "Checking Syntax" );
      end if;
-  else
+  when executing =>
      if verboseOpt then
-        Put_Trace( "Executing Script" );
+        Put_Trace( "Executing Commands" );
      end if;
-  end if;
+  when others =>
+     err( "internal error: unexpected interpreter phase" );
+  end case;
   inputMode := fromScriptFile;                     -- running a script
   if execOpt then                                  -- -e?
      if verboseOpt then
@@ -613,31 +616,26 @@ end interpretScript;
 -- needed) and execute the script (if needed).
 -- This is run by parse, as the command line options dictate.
 -- This will output error messages.
+-- This is used when SparForte is called as a library.  It is not used by
+-- the spar command.
 --
 -- commandString: a string of uncompressed commands (e.g. from -e).
 ------------------------------------------------------------------------------
 
-procedure SPAR_interpretCommands( C_commandString : C_cmds ) is
-begin
-   interpretCommands( To_Ada( C_commandString ) );
-end SPAR_interpretCommands;
-
-procedure interpretCommands( commandString : string ) is
-begin
-  interpretCommands( to_unbounded_string( commandString ) );
-end interpretCommands;
-
 procedure interpretCommands( commandString : unbounded_string ) is
 begin
-  if syntax_check then
+  case interpreterPhase is
+  when checking =>
      if verboseOpt then
         Put_Trace( "Checking Syntax" );
      end if;
-  else
+  when executing =>
      if verboseOpt then
         Put_Trace( "Executing Commands" );
      end if;
-  end if;
+  when others =>
+     err( "internal error: unexpected interpreter phase" );
+  end case;
   scriptFilePath := to_unbounded_string( commandLineSource ); -- "script" name
   sourceFilesList.Clear( SourceFiles );
   sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( scriptFilePath ) ) );
@@ -671,6 +669,20 @@ begin
      end if;
   end if;
 end interpretCommands;
+
+procedure interpretCommands( commandString : string ) is
+begin
+  -- TODO: incomplete, no syntax check checking
+  interpreterPhase := executing;
+  interpretCommands( to_unbounded_string( commandString ) );
+end interpretCommands;
+
+procedure SPAR_interpretCommands( C_commandString : C_cmds ) is
+begin
+  -- TODO: incomplete, no syntax check checking
+  interpreterPhase := executing;
+  interpretCommands( To_Ada( C_commandString ) );
+end SPAR_interpretCommands;
 
 
 ------------------------------------------------------------------------------
@@ -748,6 +760,7 @@ begin
           raise BAD_PROFILE with "global policy file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        interpreterPhase := executing;               -- we are executing
         interpretPolicy( path ); -- run policy script
      end if;
   end if;
@@ -799,6 +812,7 @@ begin
           raise BAD_PROFILE with "global config file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        interpreterPhase := executing;               -- we are executing
         interpretConfig( path ); -- run config script
      end if;
   end if;
@@ -844,6 +858,7 @@ begin
           raise BAD_PROFILE with "global profile file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        interpreterPhase := executing;               -- we are executing
         interpretScript( path ); -- run login script
      end if;
   end if;
@@ -897,6 +912,7 @@ begin
              raise BAD_PROFILE with "local profile file '" & to_string( profilePath ) & "' is either not readable, is world writable, is not a regular file or is empty";
            end if;
            sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( profilePath ) ) );
+           interpreterPhase := executing;               -- we are executing
            interpretScript( to_string( profilePath ) ); -- do profile
         end if;
      end if;
@@ -932,6 +948,7 @@ begin
      return;
   elsif syntaxOpt then                               -- -c / --check?
      syntax_check := true;                           -- check syntax only
+     interpreterPhase := checking;                   -- we are checking
      interpretScript( fullScriptPath );    -- check the script
   -- no syntax check obsolete with BUSH 2.0 (syntax check stage is needed to
   -- load "include" files)
@@ -945,6 +962,7 @@ begin
      end if;
   else
      syntax_check := true;                           -- check syntax only
+     interpreterPhase := checking;                   -- we are checking
      interpretScript( fullScriptPath );    -- check the script
      if not error_found then                         -- no errors?
         resetScanner;                                -- discard declarations
@@ -952,6 +970,7 @@ begin
         if traceOpt then                             -- -x?
            trace := true;                            -- turn on trace
         end if;
+        interpreterPhase := executing;               -- we are executing
         interpretScript( fullScriptPath ); -- run the script
      end if;
      if testOpt then
