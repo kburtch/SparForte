@@ -35,7 +35,6 @@ package parser is
 -- size of the main parser file.
 ------------------------------------------------------------------------------
 
-procedure ParseBasicShellWord( shell_word : out unbounded_string );
 procedure ParseFieldIdentifier( record_id : identifier; id : out identifier );
 procedure ParseProcedureIdentifier( id : out identifier );
 procedure ParseVariableIdentifier( id : out identifier );
