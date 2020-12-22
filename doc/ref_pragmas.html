@@ -53,13 +53,15 @@ environment.</p>
 <pre>
   <b>pragma</b> ada_95
   <b>pragma</b> advise( from, message )
+  <b>pragma</b> affinity( affinity [,weight] )
   <b>pragma</b> annotate( [type,]"text" )
   <b>pragma</b> assert( condition )
   <b>pragma</b> assumption( applied | factor | used | written, var )
   <b>pragma</b> clarify( from, message )
-  <b>pragma</b> constraint( constraint, name )
+  <b>pragma</b> constraint( constraint, name [,weight] )
   <b>pragma</b> debug( `commands` )
-  <b>pragma</b> declare_constraint( mode, constraint, name )
+  <b>pragma</b> declare_affinity( mode, affinity [,limit] )
+  <b>pragma</b> declare_constraint( mode, constraint, name [,limit] )
   <b>pragma</b> depreciated/deprecated( "newscript" )
   <b>pragma</b> dispute( from, message )
   <b>pragma</b> error( "message" )
@@ -184,6 +186,8 @@ be used with both standalone pragmas and pragma blocks.</p>
 
 <h4>Design Pragmas</h4>
 
+<p><b>Introduced</b>: SparForte 2.3.1</p>
+
 <p>Design constraint describe real-world concerns that affect
 the design of a project.  The idea is like sticky notes attached
 to the source code, identifying where the source code may be
@@ -258,6 +262,7 @@ file.</p>
 ...<br />
 <b>pragma</b> constraint( optimization, scalability ); -- may be used more than once in one file<br />
 <b>pragma</b> constraint( optimization, size ); -- error: different values not allowed in one file<br />
+&nbsp;<br>
         <div class="code_caption">
                 <b>Example</b>: File Design Constraints</span>
         </div>
@@ -274,6 +279,7 @@ in separate files.</p>
 <b>pragma</b> constraint( physical, uncertain ); -- physical impacts for this source code file are uncertain<br />
 ...<br />
 <b>pragma</b> constraint( physical, uncertain ); -- error: each uncertain part should be in a separate file<br />
+&nbsp;<br>
         <div class="code_caption">
                 <b>Example</b>: Unique Design Constraints</span>
         </div>
@@ -292,6 +298,7 @@ in separate files.</p>
 <b>pragma</b> constraint( development_team, "Team A" ); -- this source code file owned by Team A<br />
 <b>pragma</b> constraint( quota, network_bandwith, 10 ); -- spend 10 from network bandwidth quota<br />
 <b>pragma</b> constraint( development_team, team_b ); -- error: two teams assigned to one source file<br />
+&nbsp;<br>
         <div class="code_caption">
                 <b>Example</b>: Examples of custom design constraints</span>
         </div>
@@ -312,6 +319,7 @@ budget in your design.</p>
 <b>pragma</b> constraint( financing, app_budget, 1000 ); -- spend another 1000 dollars<br />
 <b>pragma</b> constraint( financing, app_budget, 8000 ); -- error: exceeded our app budget<br />
 <b>pragma</b> constraint( financing, db_budget,  1000 ); -- error: conflict because two different budgets used within one source file<br />
+&nbsp;<br>
         <div class="code_caption">
                 <b>Example</b>: Design constraints with Weights</span>
         </div>
@@ -349,6 +357,7 @@ affinity is enforced in two different subprograms, an error will occur.</li>
 <b>pragma</b> affinity( accounting_server );<br />
 ... and in another with separate file...<br />
 <b>pragma</b> affinity( accounting_server ); -- error: file affinity: stuff labeled for accounting_server should be defined in the same file<br />
+&nbsp;<br>
         <div class="code_caption">
                 <b>Example</b>: File Design Affinities</span>
         </div>
