@@ -3012,7 +3012,7 @@ end declareStandardPackage;
 -----------------------------------------------------------------------------
 --  DECLARE DEFAULT DESIGN CONSTRAINTS
 --
--- 
+-- Declare standard design constraints and affinities.
 -----------------------------------------------------------------------------
 
 procedure declareDefaultDesignConstraints is
