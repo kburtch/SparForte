@@ -1226,7 +1226,7 @@ begin
         if eda.enforcedFile /= getSourceFileName then
            err( "file affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
-                " is declared in at least two files (at " &
+                " is enforced in at least two files (at " &
                   to_string( eda.enforcedFile ) & ":" &
                 eda.enforcedAt'img & ")" );
         elsif eda.weight > da.limit then
@@ -1249,7 +1249,7 @@ begin
         if eda.enforcedUnit /= fullUnitName then
            err( "local affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
-                " is declared in at least two subprograms (at " &
+                " is enforced in at least two subprograms (at " &
                   to_string( eda.enforcedFile ) & ":" &
                 eda.enforcedAt'img & ")" );
         elsif eda.weight > da.limit then
@@ -1282,7 +1282,7 @@ begin
      case eda.mode is
      when file =>
         if eda.weight > da.limit then
-           err( "inclusive affinity " &
+           err( "file affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " weight" &
                 optional_bold( weight'img ) &
@@ -1293,7 +1293,7 @@ begin
         end if;
      when subprogram =>
         if eda.weight > da.limit then
-           err( "local affinity " &
+           err( "subprogram affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " weight" &
                 optional_bold( weight'img ) &
