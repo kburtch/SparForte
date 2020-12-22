@@ -982,8 +982,9 @@ begin
 
         edc.weight := edc.weight + weight;
 
-        if edc.constraint = constraint and edc.name /= name then
-           err( "exclusive constraint " &
+        --if edc.constraint = constraint and edc.name /= name then
+        if edc.name /= name then
+           err( "file constraint " &
                 optional_bold( to_string( edc.constraint ) ) &
                 " value " &
                 optional_bold( to_string( name ) ) &
@@ -992,9 +993,9 @@ begin
                 " (at " &
                   to_string( edc.enforcedFile ) & ":" &
                 edc.enforcedAt'img & ")" );
-        elsif edc.constraint = constraint and edc.name /= name and
-              edc.weight > dc.limit then
-           err( "exclusive constraint " &
+        --elsif edc.constraint = constraint and edc.name = name and
+        elsif edc.weight > dc.limit then
+           err( "file constraint " &
                 optional_bold( to_string( edc.constraint ) ) &
                 " accumulated weight" &
                 optional_bold( edc.weight'img ) &
@@ -1014,9 +1015,7 @@ begin
 
         edc.weight := edc.weight + weight;
 
-        if edc.enforcedUnit = fullUnitName and
-           edc.constraint = constraint and
-           edc.name /= name then
+        if edc.name /= name then
            err( -- optional_bold( to_string( edc.enforcedUnit ) ) &
                 -- " local constraint " &
                 "local constraint " &
@@ -1028,8 +1027,7 @@ begin
                 " (at " &
                   to_string( edc.enforcedFile ) & ":" &
                 edc.enforcedAt'img & ")" );
-        elsif edc.constraint = constraint and edc.name = name and
-              edc.enforcedUnit = fullUnitName and edc.weight > dc.limit then
+        elsif edc.weight > dc.limit then
            err( "local constraint " &
                 optional_bold( to_string( edc.constraint ) ) &
                 " accumulated weight" &
@@ -1073,7 +1071,7 @@ begin
         end if;
      when file =>
         if edc.weight > dc.limit then
-           err( "exclusive constraint " &
+           err( "file constraint " &
                 optional_bold( to_string( edc.constraint ) ) &
                 " weight" &
                 optional_bold( weight'img ) &
@@ -1084,7 +1082,7 @@ begin
         end if;
      when subprogram =>
         if edc.weight > dc.limit then
-           err( "local constraint " &
+           err( "file constraint " &
                 optional_bold( to_string( edc.constraint ) ) &
                 " weight" &
                 optional_bold( weight'img ) &
@@ -1225,14 +1223,14 @@ begin
 
         eda.weight := eda.weight + weight;
 
-        if eda.affinity = affinity and eda.enforcedFile /= getSourceFileName then
-           err( "inclusive affinity " &
+        if eda.enforcedFile /= getSourceFileName then
+           err( "file affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " is declared in at least two files (at " &
                   to_string( eda.enforcedFile ) & ":" &
                 eda.enforcedAt'img & ")" );
-        elsif eda.affinity = affinity and eda.weight > da.limit then
-           err( "inclusive constraint " &
+        elsif eda.weight > da.limit then
+           err( "file affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " accumulated weight" &
                 optional_bold( eda.weight'img ) &
@@ -1248,14 +1246,13 @@ begin
 
         eda.weight := eda.weight + weight;
 
-        if eda.affinity = affinity and eda.enforcedUnit /= fullUnitName then
+        if eda.enforcedUnit /= fullUnitName then
            err( "local affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " is declared in at least two subprograms (at " &
                   to_string( eda.enforcedFile ) & ":" &
                 eda.enforcedAt'img & ")" );
-        elsif eda.affinity = affinity and
-              eda.enforcedUnit = fullUnitName and eda.weight > da.limit then
+        elsif eda.weight > da.limit then
            err( "local affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " accumulated weight" &
