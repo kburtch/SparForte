@@ -1247,7 +1247,7 @@ begin
         eda.weight := eda.weight + weight;
 
         if eda.enforcedUnit /= fullUnitName then
-           err( "local affinity " &
+           err( "subprogram affinity " &
                 optional_bold( to_string( eda.affinity ) ) &
                 " is enforced in at least two subprograms (at " &
                   to_string( eda.enforcedFile ) & ":" &
