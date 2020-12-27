@@ -1422,6 +1422,10 @@ begin
        if cmdpos < length( command ) then
           if element( command, cmdpos + 1 ) = '('  then
              processExpansionLevel := processExpansionLevel + 1;
+             -- Nesting not supported
+             if processExpansionlevel > 1 then
+                err_tokenize( "$( cannot be nested", to_string( command ) );
+             end if;
              --word := word & ch;
             -- cmdpos := cmdpos + 1;
           end if;

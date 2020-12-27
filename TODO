@@ -17,14 +17,12 @@ Priority Issues (Fix These First)
 - static expressions crashes on abs()... string index error
   - static expressions need further testing
 - shell parser rewrite
-  - recursive command substitution
-    - line 3247 - nested process substitution - works on command line, not in jenkins
-      - the compiler counting of $(..) nesting level does not work because a closing
-        parenthesis need not belong to the $(..).
-  - length substitution
-      - does bash allow array elements?  even so, a different syntax in
-        SparForte so maybe disallowed for compatibility reasons.
   - quoting in ${:-`pwd`}, etc.
+    - conflicts over backquote quoting
+    - escaping backquote not working: s1 := `echo ${s:+\`pwd\`}`;
+    -                                  s := `echo "\$\"\`\\";`
+    - prevents backquotes in : default values
+
   - globbing on ./b* vs b*.  ./b* did not match
   - subword combination tests
   - fix all todos

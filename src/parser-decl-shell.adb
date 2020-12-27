@@ -541,7 +541,7 @@ begin
        pos := pos + 1;
    end loop;
    globPattern := globPattern & aGlobShellWord( unbounded_slice( subword, last_pos, length( subword ) ) );
-   --put_line( "addSubwordWithWordSplitting: final globPattern = " & to_string( globPattern ) );
+   -- put_line( "addSubwordWithWordSplitting: final globPattern = " & to_string( globPattern ) ); -- DEBUG
 end addSubwordWithWordSplitting;
 
 
@@ -559,7 +559,7 @@ procedure getExpansionValue(
    var_id       : identifier;
    temp         : unbounded_string;
 begin
-   -- put_line("getExpansionValue: " & to_string( expansionVar )); -- DEBUG
+-- put_line("getExpansionValue: " & to_string( expansionVar )); -- DEBUG
    if expansionVar = "" then
       err_shell( "missing variable name", wordPos );
    elsif expansionVar = "#" then
@@ -752,6 +752,7 @@ procedure doVariableExpansion(
    expandedWord : anExpandedShellWord;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
+
    -- Perform the expansion
 
    getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
@@ -798,9 +799,8 @@ begin
          bourneShellWordList,
          globSubword );
    else
-
       globPattern := globPattern & globSubword;
-      -- put_line( "doVariableExpansion: expandedWord = " & to_string( globPattern ) );
+      --put_line( "doVariableExpansion: expandedWord = " & to_string( globPattern ) ); -- DEBUG
    end if;
 end doVariableExpansion;
 
@@ -873,6 +873,39 @@ end doCommandSubstitution;
 
 
 -----------------------------------------------------------------------------
+
+
+procedure parseDoubleQuotedShellSubword(
+   rawWordValue : aRawShellWord;
+   wordLen : natural;
+   wordPos : in out natural;
+   globPattern : in out aGlobShellWord;
+   bourneShellWordList : in out bourneShellWordLists.List );
+
+procedure parseSingleQuotedShellSubword(
+   rawWordValue : aRawShellWord;
+   wordLen : natural;
+   wordPos : in out natural;
+   globPattern : in out aGlobShellWord;
+   bourneShellWordList : in out bourneShellWordLists.List );
+
+procedure parseBackQuotedShellSubword(
+      rawWordValue : aRawShellWord;
+      wordLen : natural;
+      wordPos : in out natural;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      bourneShellWordList : in out bourneShellWordLists.List );
+
+procedure parseBackslash(
+   rawWordValue : aRawShellWord;
+   wordLen : natural;
+   wordPos : in out natural;
+   globPattern : in out aGlobShellWord;
+   bourneShellWordList : in out bourneShellWordLists.List );
+
+
+-----------------------------------------------------------------------------
 --  PARSE DOLLAR BRACE EXPANSION
 --
 -- Syntax: ${...}
@@ -891,6 +924,65 @@ procedure parseDollarBraceExpansion(
    defaultValue : unbounded_string;
    isLengthExpansion : boolean := false;
    defaultMode  : defaultModes := none;
+
+   --  GET BRACE OPERATOR DEFAULT VALUE
+   --
+   -- The default value in a brace operation can be quoted and
+   -- contain other substitutions.
+   --------------------------------------------------------------------------
+
+   procedure getBraceOperatorDefaultValue is
+     globPattern: aGlobShellWord;
+     ch : character;
+   begin
+     while not endOfShellWord loop
+       ch := element( rawWordValue, wordPos );
+       exit when ch = '}';
+       case ch is
+       when '}' =>
+          exit;
+       when ''' =>
+          parseSingleQuotedShellSubword(
+             rawWordValue,
+             wordLen,
+             wordPos,
+             globPattern,
+             bourneShellWordList );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+       when '"' =>
+          parseDoubleQuotedShellSubword(
+             rawWordValue,
+             wordLen,
+             wordPos,
+             globPattern,
+             bourneShellWordList );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+       exit when ch = '}';
+       when '`' =>
+          parseBackQuotedShellSubword(
+             rawWordValue,
+             wordLen,
+             wordPos,
+             globPattern,
+             trim,
+             bourneShellWordList );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+       when '\' =>
+          parseBackslash(
+             rawWordValue,
+             wordLen,
+             wordPos,
+             globPattern,
+             bourneShellWordList );
+             defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
+       when others =>
+          defaultValue := defaultValue & ch;
+          getNextChar( rawWordValue, wordLen, wordPos );
+       end case;
+     end loop;
+-- put_line( "getBraceOperatorDefaultValue: " & to_string( defaultvalue ) ); -- DEBUG
+  end getBraceOperatorDefaultValue;
+
 begin
    --put_line( "parseDollarBraceExpansion" ); -- DEBUG
    expectChar( '{', rawWordValue, wordLen, wordPos );
@@ -912,6 +1004,9 @@ begin
 
    if endOfShellWord then
       -- forced error: otherwise, we'll get a no expansion name error.
+if error_found then
+   put_line("B - ERROR"); -- DEBUG
+end if;
       expectChar( '}', rawWordValue, wordLen, wordPos  );
    else
 
@@ -935,27 +1030,30 @@ begin
          elsif element( rawWordValue, wordPos ) = '-' then
             defaultMode := minus;
             expectChar( '-', rawWordValue, wordLen, wordPos  );
-            while not endOfShellWord loop
-              exit when element( rawWordValue, wordPos ) = '}';
-              defaultValue := defaultValue & element( rawWordValue, wordPos );
-              getNextChar( rawWordValue, wordLen, wordPos );
-            end loop;
+            getBraceOperatorDefaultValue;
+            --while not endOfShellWord loop
+            --  exit when element( rawWordValue, wordPos ) = '}';
+            --  defaultValue := defaultValue & element( rawWordValue, wordPos );
+            --  getNextChar( rawWordValue, wordLen, wordPos );
+            --end loop;
          elsif element( rawWordValue, wordPos ) = '+' then
             defaultMode := plus;
             expectChar( '+', rawWordValue, wordLen, wordPos  );
-            while not endOfShellWord loop
-              exit when element( rawWordValue, wordPos ) = '}';
-              defaultValue := defaultValue & element( rawWordValue, wordPos );
-              getNextChar( rawWordValue, wordLen, wordPos );
-            end loop;
+            getBraceOperatorDefaultValue;
+            --while not endOfShellWord loop
+            --  exit when element( rawWordValue, wordPos ) = '}';
+            --  defaultValue := defaultValue & element( rawWordValue, wordPos );
+            --  getNextChar( rawWordValue, wordLen, wordPos );
+            --end loop;
          elsif element( rawWordValue, wordPos ) = '?' then
             defaultMode := question;
             expectChar( '?', rawWordValue, wordLen, wordPos  );
-            while not endOfShellWord loop
-              exit when element( rawWordValue, wordPos ) = '}';
-              defaultValue := defaultValue & element( rawWordValue, wordPos );
-              getNextChar( rawWordValue, wordLen, wordPos );
-            end loop;
+            getBraceOperatorDefaultValue;
+            --while not endOfShellWord loop
+            --  exit when element( rawWordValue, wordPos ) = '}';
+            --  defaultValue := defaultValue & element( rawWordValue, wordPos );
+            --  getNextChar( rawWordValue, wordLen, wordPos );
+            --end loop;
          elsif element( rawWordValue, wordPos ) = '=' then
             err_shell( "assignment in curly braces not supported", wordPos );
          else
@@ -986,28 +1084,6 @@ end parseDollarBraceExpansion;
 -----------------------------------------------------------------------------
 
 
-procedure parseDoubleQuotedShellSubword(
-   rawWordValue : aRawShellWord;
-   wordLen : natural;
-   wordPos : in out natural;
-   globPattern : in out aGlobShellWord;
-   bourneShellWordList : in out bourneShellWordLists.List );
-
-procedure parseSingleQuotedShellSubword(
-   rawWordValue : aRawShellWord;
-   wordLen : natural;
-   wordPos : in out natural;
-   globPattern : in out aGlobShellWord;
-   bourneShellWordList : in out bourneShellWordLists.List );
-
-procedure parseBackQuotedShellSubword(
-      rawWordValue : aRawShellWord;
-      wordLen : natural;
-      wordPos : in out natural;
-      globPattern : in out aGlobShellWord;
-      whitespaceOption : whitespaceOptions;
-      bourneShellWordList : in out bourneShellWordLists.List );
-
 procedure parseDollarExpansion(
    rawWordValue : aRawShellWord;
    wordLen : natural;
@@ -1015,13 +1091,6 @@ procedure parseDollarExpansion(
    globPattern : in out aGlobShellWord;
    bourneShellWordList : in out bourneShellWordLists.List;
    whitespaceOption : whitespaceOptions );
-
-procedure parseBackslash(
-   rawWordValue : aRawShellWord;
-   wordLen : natural;
-   wordPos : in out natural;
-   globPattern : in out aGlobShellWord;
-   bourneShellWordList : in out bourneShellWordLists.List );
 
 -----------------------------------------------------------------------------
 --  PARSE DOLLAR PROCESS EXPANSION

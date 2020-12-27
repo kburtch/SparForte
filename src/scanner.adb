@@ -5879,8 +5879,19 @@ begin
         -- check if it's legitimate later.
         if inBackslash then
            inBackslash := false;
+           --if script( lastpos ) = high_ascii_escape then
+           --   lastpos := lastpos + 1;
+           --end if;
+           --identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+           --   script( lastpos );
         elsif script( lastpos ) = '\' then
            inBackslash := true;
+        --else
+           --if script( lastpos ) = high_ascii_escape then
+           --   lastpos := lastpos + 1;
+           --end if;
+           --identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+           --   script( lastpos );
         end if;
         if script( lastpos ) = high_ascii_escape then
            lastpos := lastpos + 1;

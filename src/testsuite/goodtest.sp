@@ -3223,15 +3223,35 @@ s  := "foo";
 s1 := `echo ${s:-bar}`;
 pragma assert( s1 = "foo" );
 
+s := "";
+s1 := `echo ${s:-"bar1"}`;
+pragma assert( s1 = "bar1" );
+
+s1 := `echo ${s:-'bar2'}`;
+pragma assert( s1 = "bar2" );
+
+--s1 := `echo ${s:-\`pwd\`}`;
+--pragma assert( s1 = `pwd` );
+
+s  := "foo";
 s1 := `echo ${s:+bar}`;
 pragma assert( s1 = "bar" );
+
+s1 := `echo ${s:+"bar1"}`;
+pragma assert( s1 = "bar1" );
+
+s1 := `echo ${s:+'bar2'}`;
+pragma assert( s1 = "bar2" );
+
+--s1 := `echo ${s:+\`pwd\`}`;
+--pragma assert( s1 = `pwd` );
 
 s  := "";
 s1 := `echo ${s:-bar}`;
 pragma assert( s1 = "bar" );
 
 s1 := `echo ${s:+bar}`;
-pragma assert( s1 = "" );
+pragma assert( s1 = `pwd` );
 
 s  := "";
 s1 := `echo ${s:-}`;
