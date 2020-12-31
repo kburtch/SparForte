@@ -1076,7 +1076,6 @@ begin
   ParseSingleStringParameter( expr_val, expr_type, character_t );
   begin
      if isExecutingCommand then
-       --result := trim( to_unbounded_string( character'pos( Element( expr_val, 1 ) )'img ), left );
        result := to_unbounded_string( character'pos( Element( expr_val, 1 ) )'img );
      end if;
   exception when others =>
@@ -1094,7 +1093,6 @@ begin
   ParseSingleNumericParameter( expr_val, expr_type );
   begin
      if isExecutingCommand then
-       --result := trim( to_unbounded_string( abs( to_numeric( expr_val ) ) ), left );
        result := to_unbounded_string( abs( to_numeric( expr_val ) ) );
      end if;
   exception when others =>
@@ -1133,7 +1131,6 @@ begin
   result := null_unbounded_string;
   expect( serial_t );
   if isExecutingCommand then
-     --result := trim( to_unbounded_string( serialNumber ), left );
      result := to_unbounded_string( serialNumber );
      if serialNumber = maxInteger then
         serialNumber := 0.0;

@@ -3250,8 +3250,9 @@ s  := "";
 s1 := `echo ${s:-bar}`;
 pragma assert( s1 = "bar" );
 
+s  := "";
 s1 := `echo ${s:+bar}`;
-pragma assert( s1 = `pwd` );
+pragma assert( s1 = "" );
 
 s  := "";
 s1 := `echo ${s:-}`;

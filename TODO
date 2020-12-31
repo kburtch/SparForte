@@ -11,11 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- design
-  - design affinities - should work on branches of the file include tree
-- interpreterPhase - is it set correctly in all places?
-- static expressions crashes on abs()... string index error
-  - static expressions need further testing
 - shell parser rewrite
   - quoting in ${:-`pwd`}, etc.
     - conflicts over backquote quoting
@@ -30,15 +25,15 @@ Priority Issues (Fix These First)
     - shell parser todos
     - adascript parser todos
       - `..` in adascript vs shell - support for backslash backquote?
-  - :-, :+, :? not :=
   - leaving a ; off the end of a command gives an internal error in goodtests.sp
-  - command substitution testing
+  - testing: command substitution
   - see also "Bourne shell issues" below
   - edge-case and tests: pwd "&" is not being treated as a file
     - ls \& &
   - globbing in a directory path (/a/*/b), not just the file name
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
+- interpreterPhase - is it set correctly in all places?
 - missing a case "when" keyword can cause string exception
 - updating adascript shell commands to correspond with bourne shell changes
 - renamings on expansions
@@ -100,12 +95,8 @@ Priority Issues (Fix These First)
 - Research: enforcing strong types and/or contracts
   - Research: should import require contracts rather than custom type?
 - unsorted/misc
-<<<<<<< HEAD
-    - Verify: check that x : arraytype := (x) works correctly, both with specs
-=======
     - subprogram parameter side-effects checking
-    - check that x : arraytype := (x) works correctly, both with specs
->>>>>>> shell
+    - Verify: check that x : arraytype := (x) works correctly, both with specs
       and normal declaration.
     - Verify: finish manual test pragmas
     - Change: generally, we need to identify built-in types.  It's not enough that
@@ -134,6 +125,8 @@ Annoyances / Bugs with Workarounds / Updates
   - array constant specifications
     - array foo referencing another foo during initialization (confirm)
     - likewise records
+- design
+  - design affinities - should work on branches of the file include tree
 - handling confidential/PII data
   - pragma secure_mode
     - all data types assumed to have secure data
@@ -334,6 +327,8 @@ Nice to Haves / Missing Functionality
     concerns
     - i.e. tag a file is compatible with containers/jails, or not horizontally
       scalable, not public facing, etc.
+  - affirms can be thought of as a specific case of "triggers" on a variable.
+    Are their other triggers that can be defined?
 
 - pragmas
     - distinguish types of pragmas, to later separate by block or context
@@ -341,6 +336,8 @@ Nice to Haves / Missing Functionality
       executable or both?
     - pragma no_bourne_shell
     - pragma no_universal_types
+    - pragma import( rest, function, "url" )
+      - define something to be called by REST protocol.  (What to do about HTTPS?)
     - pragma restriction is too restrictive.  If the goal is to migrate
       designs, we need levels of restrictions.  For example, pragma
       pending_restriction( x ), similar to pragma deprecated, which is
