@@ -2995,12 +2995,12 @@ s := "*[\?";
 s := `echo "$s";`;
 pragma assert( s = "*[\?" );
 
-s := `echo '*[\?';`;
+s := `echo '*[\\?';`;
 pragma assert( s = "*[\?" );
 
-s := `echo "\$\"\`\\";`;
+s := `echo "\\\$\\\"\\\`\\\\";`;
 pragma assert( s = "$" & ASCII.Quotation & "`\" );
-s := `echo "\$\"\\";`;
+s := `echo "\\\$\\\"\\\\";`;
 pragma assert( s = "$" & ASCII.Quotation & "\" );
 
 -- Shell Variable Substitution Tests
@@ -3064,7 +3064,7 @@ pragma assert( s = "$s1" );
 
 -- Shell Globbing Tests
 
-s := `echo \*;`;
+s := `echo \\*;`;
 pragma assert( s = "*" );
 s := `echo "*";`;
 pragma assert( s = "*" );
@@ -3104,7 +3104,7 @@ s1 := "~";
 s  := `echo $s1;`;
 pragma assert( s = "~" );
 
-s  := `echo \~;`;
+s  := `echo \\~;`;
 pragma assert( s = "~" );
 
 s  := `echo '~';`;
@@ -3230,8 +3230,8 @@ pragma assert( s1 = "bar1" );
 s1 := `echo ${s:-'bar2'}`;
 pragma assert( s1 = "bar2" );
 
---s1 := `echo ${s:-\`pwd\`}`;
---pragma assert( s1 = `pwd` );
+s1 := `echo ${s:-\`pwd\`}`;
+pragma assert( s1 = `pwd` );
 
 s  := "foo";
 s1 := `echo ${s:+bar}`;
@@ -3243,8 +3243,8 @@ pragma assert( s1 = "bar1" );
 s1 := `echo ${s:+'bar2'}`;
 pragma assert( s1 = "bar2" );
 
---s1 := `echo ${s:+\`pwd\`}`;
---pragma assert( s1 = `pwd` );
+s1 := `echo ${s:+\`pwd\`}`;
+pragma assert( s1 = `pwd` );
 
 s  := "";
 s1 := `echo ${s:-bar}`;

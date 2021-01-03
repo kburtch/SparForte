@@ -5879,29 +5879,30 @@ begin
         -- check if it's legitimate later.
         if inBackslash then
            inBackslash := false;
-           --if script( lastpos ) = high_ascii_escape then
-           --   lastpos := lastpos + 1;
-           --end if;
-           --identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
-           --   script( lastpos );
+           if script( lastpos ) = high_ascii_escape then
+              lastpos := lastpos + 1;
+           end if;
+           identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+              script( lastpos );
         elsif script( lastpos ) = '\' then
            inBackslash := true;
-        --else
-           --if script( lastpos ) = high_ascii_escape then
-           --   lastpos := lastpos + 1;
-           --end if;
-           --identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
-           --   script( lastpos );
+        else
+           if script( lastpos ) = high_ascii_escape then
+              lastpos := lastpos + 1;
+           end if;
+           identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+              script( lastpos );
         end if;
-        if script( lastpos ) = high_ascii_escape then
-           lastpos := lastpos + 1;
-        end if;
-        identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
-            script( lastpos );
+        --if script( lastpos ) = high_ascii_escape then
+        --   lastpos := lastpos + 1;
+        --end if;
+        --identifiers( backlit_t ).value.all := identifiers( backlit_t ).value.all &
+        --    script( lastpos );
         lastpos := lastpos + 1;
      end loop;
-     -- lastpos := lastpos+1;
+     --lastpos := lastpos+1;
      cmdpos := lastpos+1;                                     -- skip last `
+--put_line( to_string( identifiers( backlit_t ).value.all ) ); -- DEBUG
      token := backlit_t;                                      -- string literal
      return;
 
