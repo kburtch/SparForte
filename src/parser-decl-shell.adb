@@ -1472,46 +1472,20 @@ procedure parseBareShellSubword(
       bourneShellWordList : in out bourneShellWordLists.List ) is
    ch : character;
 begin
-   --put_line( "parseBareShellSubword" ); -- DEBUG
-   --put_line( "  rawWordValue = " & to_string( rawWordValue ) );
-   --put_line( "  wordLen =" & wordLen'img );
-   --put_line( "  wordPos =" & wordPos'img );
-  -- If this is a bareword, break up each piece separated by whitespace
-  -- into separate words to be handled individually.
+   -- handle word and backslash characters
 
-  --while wordPos <= wordLen and not error_found loop
-
-     -- skip leading whitespace
-     -- DOES THIS EVER HAPPEN?  The compiler would remove whitespace.
-
-     --while wordPos <= wordLen loop
-     --   ch := element( rawWordValue, wordPos );
-     --   exit when ch /= ASCII.HT and ch /= ' ';
-     --   wordPos := wordPos + 1;
-     --end loop;
-
-     -- handle word and backslash characters
-
-     -- while wordPos <= length( rawWordValue ) loop
-     while wordPos <= wordLen and not error_found and not endOfShellWord loop
-        ch := element( rawWordValue, wordPos );
-        exit when ch = ASCII.HT or ch = ' ' or ch = '"' or ch = ''';
-        if ch = '\' then
-           parseBackslash( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
-        --elsif ch = '"' then
-        --   parseDoubleQuotedShellSubword( rawWordValue, wordLen, wordPos, expandedword, bourneShellWordList );
-        --   exit when wordPos = wordLen;
-        --elsif ch = ''' then
-        --   parseSingleQuotedShellSubword( rawWordValue, wordLen, wordPos, expandedword, bourneShellWordList );
-        --   exit when wordPos = wordLen;
-        elsif ch = '$' then
-           parseDollarExpansion( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList, trim );
-        else
-           globPattern := globPattern & ch;
-           getNextChar( rawWordValue, wordLen, wordPos );
-        end if;
-     end loop;
-  --end loop;
+   while wordPos <= wordLen and not error_found and not endOfShellWord loop
+      ch := element( rawWordValue, wordPos );
+      exit when ch = ASCII.HT or ch = ' ' or ch = '"' or ch = ''';
+      if ch = '\' then
+         parseBackslash( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
+      elsif ch = '$' then
+         parseDollarExpansion( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList, trim );
+      else
+         globPattern := globPattern & ch;
+         getNextChar( rawWordValue, wordLen, wordPos );
+      end if;
+   end loop;
 end parseBareShellSubword;
 
 
@@ -1526,24 +1500,6 @@ procedure parseDollarAtSign(bourneShellWordList : in out bourneShellWordLists.Li
 begin
    if isExecutingCommand then
       for i in optionOffset+1..Argument_Count loop
-          -- TODO: first parameter concatted with $1
-          --declare
-          --   temp : constant unbounded_string := to_unbounded_string( Argument( i ) );
-          --   ch : character;
-          --begin
-             --expandedWord := nullExpandedShellWord;
-             --for i in 1..length(temp) loop
-             --    ch := element( temp, i );
-             --    if ch = ' ' then
-             --       expandedWord := expandedWord & '\' & ch;
-             --    else
-             --       expandedWord := expandedWord & ch;
-             --    end if;
-             --end loop;
-           --end;
-           --if i /= Argument_Count then
-           --   expandedWord := expandedWord & ' ';
-           --end if;
            bourneShellWordLists.Queue( bourneShellWordList, to_unbounded_string(
              Argument( i ) ) );
       end loop;
@@ -1559,10 +1515,7 @@ end parseDollarAtSign;
 -----------------------------------------------------------------------------
 
 procedure parseShellWord(
-      --rawWordValue : aRawShellWord;
-      bourneShellWordList : in out bourneShellWordLists.List ) is
-   -- rawWordValue : constant shellWord := unbounded_string(
-   --   identifiers( token ).value.all );
+   bourneShellWordList : in out bourneShellWordLists.List ) is
    len       : natural;
    first_ch  : character;
    wordPos   : natural := 1;
@@ -1643,12 +1596,30 @@ begin
       if length( globPattern ) > 0 then
          bourneShellWordLists.Queue( bourneShellWordList, anExpandedShellWord( globPattern ) );
       end if;
-   --elsif token = shell_symbol_t then
-   --   err( "unexpected shell symbol" );
-   else
+   -- The following may never happen...but are included here to catch the unexpected.
+   -- These follow the same pattern as expected identifiers.
+   elsif token = number_t then
+     err( optional_bold( "shell word") & " expected, not a " &
+          optional_bold( "number" ) );
+   elsif token = strlit_t then
+     err( optional_bold( "shell word" ) & " expected, not a " &
+          optional_bold( "string literal" ) );
+   elsif token = backlit_t then
+     err( optional_bold( "shell word" ) & " expected, not a " &
+          optional_bold( "backquoted literal" ) );
+   elsif token = charlit_t then
+     err( optional_bold( "shell word" ) & " expected, not a " &
+          optional_bold( "character literal" ) );
+   --elsif token = eof_t then
+   --   err( optional_bold( "shell word" ) & " expected" );
+   elsif is_keyword( token ) and token /= eof_t then
+      err( optional_bold( "shell word" ) & " expected, not a " &
+           optional_bold( "keyword" ) );
+   else -- including EOF
+      err( optional_bold( "shell word" ) & " expected" );
       -- TODO: are there other types of shell words?
--- TODO: probably should be an error and not null.
-      null;
+      -- TODO: probably should be an error and not null.
+      --null;
    end if;
 
    if trace then

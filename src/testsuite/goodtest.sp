@@ -810,7 +810,7 @@ b := strings.is_slashed_date( "" );
 pragma assert( b = false );
 b := strings.is_slashed_date( "1976" );
 pragma assert( b = false );
-b := strings.is_slashed_date( "xyzzy" );
+b := strings.is_slashed_date( "zyxzy" );
 pragma assert( b = false );
 b := strings.is_slashed_date( "xx/xx/xx" );
 pragma assert( b = false );
@@ -891,7 +891,7 @@ pragma assert( s = "foobar" );
 
 b := files.exists( "goodtest.sp" );
 pragma assert( b = true );
-b := files.exists( "xyzzy.foobar" );
+b := files.exists( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_absolute_path( "/tmp/" );
 pragma assert( b = true );
@@ -903,13 +903,13 @@ b := files.is_regular_file( "goodtest.sp" );
 pragma assert( b = true );
 b := files.is_regular_file( "cdtest" );
 pragma assert( b = false );
-b := files.is_regular_file( "xyzzy.foobar" );
+b := files.is_regular_file( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_directory( "goodtest.sp" );
 pragma assert( b = false );
 b := files.is_directory( "cdtest" );
 pragma assert( b = true );
-b := files.is_directory( "xyzzy.foobar" );
+b := files.is_directory( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_directory( "" );
 pragma assert( b = false );
@@ -921,7 +921,7 @@ b := files.is_readable_file( "exec_only.txt" );
 pragma assert( b = false );
 b := files.is_readable_file( "cdtest" );
 pragma assert( b = false );
-b := files.is_readable_file( "xyzzy.foobar" );
+b := files.is_readable_file( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_readable_file( "" );
 pragma assert( b = false );
@@ -933,7 +933,7 @@ b := files.is_readable( "exec_only.txt" );
 pragma assert( b = false );
 b := files.is_readable( "cdtest" );
 pragma assert( b = true );
-b := files.is_readable( "xyzzy.foobar" );
+b := files.is_readable( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_readable( "" );
 pragma assert( b = false );
@@ -945,7 +945,7 @@ b := files.is_writable_file( "exec_only.txt" );
 pragma assert( b = false );
 b := files.is_writable_file( "cdtest" );
 pragma assert( b = false );
-b := files.is_writable_file( "xyzzy.foobar" );
+b := files.is_writable_file( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_writable_file( "" );
 pragma assert( b = false );
@@ -957,7 +957,7 @@ b := files.is_writable( "exec_only.txt" );
 pragma assert( b = false );
 b := files.is_writable( "cdtest" );
 pragma assert( b = true );
-b := files.is_writable( "xyzzy.foobar" );
+b := files.is_writable( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_writable( "" );
 pragma assert( b = false );
@@ -969,7 +969,7 @@ b := files.is_executable_file( "write_only.txt" );
 pragma assert( b = false );
 b := files.is_executable_file( "exec_only.txt" );
 pragma assert( b = true );
-b := files.is_executable_file( "xyzzy.foobar" );
+b := files.is_executable_file( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_executable_file( "" );
 pragma assert( b = false );
@@ -981,7 +981,7 @@ b := files.is_executable( "write_only.txt" );
 pragma assert( b = false );
 b := files.is_executable( "exec_only.txt" );
 pragma assert( b = true );
-b := files.is_executable( "xyzzy.foobar" );
+b := files.is_executable( "zyxzy.foobar" );
 pragma assert( b = false );
 b := files.is_executable_file( "" );
 pragma assert( b = false );
@@ -3044,6 +3044,12 @@ pragma assert( s = "n9" );
 i := 0;
 s := `echo "$i$i";`;
 pragma assert( s = "00" );
+i := 0;
+s := `echo "$i""$i";`;
+pragma assert( s = "00" );
+i := 0;
+s := `echo "$i"\`echo $i\`;`;
+pragma assert( s = "00" );
 -- Space Handling in Double Quotes
 s1 := " h ";
 s := `echo $s1;`;
@@ -3262,9 +3268,25 @@ s  := "abc";
 s1 := `echo ${s:+}`;
 pragma assert( s1 = "" );
 
--- New features of shell rewrite: brace process substitutions
+-- New features of shell rewrite: dollar process substitutions
 
 s := `echo $(pwd)`;
+pragma assert( s = `pwd` );
+
+s := `echo $(pwd)$(pwd)`;
+pragma assert( s = `pwd` & `pwd` );
+
+s := `echo "$(pwd)"`;
+pragma assert( s = `pwd` );
+
+s := `echo $('pwd')`;
+pragma assert( s = `pwd` );
+
+s := `echo $("pwd")`;
+pragma assert( s = `pwd` );
+
+s1 := "pwd";
+s := `echo $($s1)`;
 pragma assert( s = `pwd` );
 
 -- No commands does nothing in Bourne shell
@@ -3272,10 +3294,8 @@ pragma assert( s = `pwd` );
 s := `echo $()`;
 pragma assert( s = "" );
 
--- Recursion allowed
-
---s := `echo $(echo $(pwd))`;
---pragma assert( s = `pwd` );
+-- Recursion allowed in Bourne shell but not SparForte because
+-- the compiler is iterative.
 
 -- pathname expansion with a single / as directory
 
@@ -3503,13 +3523,13 @@ b := cgi.is_index;
 pragma assert( b = false );
 cgim : cgi.cgi_method_type := cgi.cgi_method;
 pragma assert( cgim = cgi.unknown );
-s := cgi.value( "xyzabc_fake", 1 ); -- hopefully non-existent!
+s := cgi.value( "zyxabc_fake", 1 ); -- hopefully non-existent!
 pragma assert( s = "" );
-s := cgi.value( "xyzabc_fake", 1, false );
+s := cgi.value( "zyxabc_fake", 1, false );
 pragma assert( s = "" );
-b := cgi.key_exists( "xyzabc_fake", 1 );
+b := cgi.key_exists( "zyxabc_fake", 1 );
 pragma assert( b = false );
-n := cgi.key_count( "xyzabc_fake" );
+n := cgi.key_count( "zyxabc_fake" );
 pragma assert( n = 0 );
 n := cgi.argument_count;
 pragma assert( n = 0 );
