@@ -3291,7 +3291,22 @@ pragma assert( s = `pwd` );
 
 -- No commands does nothing in Bourne shell
 
+s := `echo $(null)`;
+pragma assert( s = "" );
+
+echo `null`;
+
+s := `null`;
+pragma assert( s = "" );
+
+pragma suppress( no_empty_command_substitutions );
+
 s := `echo $()`;
+pragma assert( s = "" );
+
+echo ``;
+
+s := ``;
 pragma assert( s = "" );
 
 -- Recursion allowed in Bourne shell but not SparForte because

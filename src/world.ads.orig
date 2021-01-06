@@ -46,7 +46,7 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string  := "2.3.1";
+version   : constant string  := "2.4";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
 copyright : constant string  :=  " Copyright (c)2001-2021 Free Software Foundation";
@@ -191,6 +191,7 @@ restriction_no_postgresql_database: boolean := false; -- pragma restriction
 restriction_no_volatiles         : boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 suppress_word_quoting            : boolean := false; -- pragma suppress
+suppress_no_empty_command_subs   : boolean := false; -- pragma suppress
 allowLowPriorityTodosForRelease  : boolean := false; -- pragma suppress
 allowAllTodosForRelease          : boolean := false; -- pragma suppress
 

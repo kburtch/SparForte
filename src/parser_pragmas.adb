@@ -118,6 +118,7 @@ type aPragmaKind is (
      suppress_word_quoting,
      suppress_low_priority_todos,
      suppress_all_todos,
+     suppress_no_empty_command_subs,
      template,
      test,
      test_report,
@@ -1696,6 +1697,8 @@ begin
         pragmaKind := suppress_low_priority_todos;
      elsif expr_val = "all_todos_for_release" then
         pragmaKind := suppress_all_todos;
+     elsif expr_val = "no_empty_command_substitutions" then
+        pragmaKind := suppress_no_empty_command_subs;
      else
         err( "unknown error type" );
         return;
@@ -1938,7 +1941,9 @@ begin
         allowAllTodosForRelease := true;
      elsif pragmaKind = suppress_all_todos then
         allowAllTodosForRelease := true;
-     -- Pragma volatile is checked at syntax check time because voltailes
+     elsif expr_val = "no_empty_command_substitutions" then
+        world.suppress_no_empty_command_subs := true;
+     -- Pragma volatile is checked at syntax check time because volatiles
      -- must be exempt from limited testing.  They will also be applied
      -- at run-time.
      elsif pragmaKind = volatile then
@@ -2368,6 +2373,8 @@ begin
         null; -- only applies in syntax check
      when suppress_all_todos =>
         null; -- only applies in syntax check
+     when suppress_no_empty_command_subs =>
+        world.suppress_no_empty_command_subs := true;
      when template | unrestricted_template =>
         if processingTemplate then
            err( "template already used" );

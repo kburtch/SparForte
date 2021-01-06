@@ -1247,6 +1247,7 @@ begin
   content( e, "pragma suppress( word_quoting ) - allow shell 'barewords'" );
   content( e, "pragma suppress( all_priority_todos_for_release ) - all todo's allowed late in SDLC" );
   content( e, "pragma suppress( low_priority_todos_for_release ) - low priority todo's allowed late in SDLC" );
+  content( e, "pragma suppress( suppress_no_empty_command_substitutions ) - allow empty strings in `..` and $(..)" );
   content( e, "pragma template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
   content( e, "pragma test( condition [, " & ASCII.Quotation & "description" & ASCII.Quotation & "] ) - with --test, execute test commands" );
   content( e, "pragma test_report( text|xml [, " & ASCII.Quotation & "filepath" & ASCII.Quotation & "] ) - type and location of test report" );

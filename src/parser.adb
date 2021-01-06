@@ -59,8 +59,8 @@ use ada.command_line,
     parser_cal,
     interpreter; -- circular relationship for breakout prompt
 
--- with ada.text_io;
--- use ada.text_io;
+ with ada.text_io;
+ use ada.text_io;
 
 package body parser is
 
@@ -1400,13 +1400,20 @@ begin
         -- There is a chance that the semi-colon could be hidden by a
         -- comment symbol (--).
         codeFragment := identifiers( token ).value.all;
-        if tail( codeFragment, 1 ) = " " or
-           tail( codeFragment, 1 ) = "" & ASCII.HT then
-           err( "trailing whitespace" );
-        elsif tail( codeFragment, 1 ) /= ";" then
-           codeFragment := codeFragment & ";";
+        -- Bourne shell allows empty backquotes.  However, we do not by default.
+        if length( codeFragment ) = 0 then
+           if not suppress_no_empty_command_subs then
+              err( "empty command substitution" );
+           end if;
+        else
+           if tail( codeFragment, 1 ) = " " or
+              tail( codeFragment, 1 ) = "" & ASCII.HT then
+              err( "trailing whitespace" );
+           elsif tail( codeFragment, 1 ) /= ";" then
+              codeFragment := codeFragment & ";";
+           end if;
+           CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         end if;
-        CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         getNextToken;
      elsif token = abs_t then                             -- abs function
         ParseNumericsAbs( f );
