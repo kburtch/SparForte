@@ -165,7 +165,6 @@ procedure doPathnameExpansion(
 
     while pos <= originalGlobPatternLen loop
        ch := element( originalGlobPattern, pos );
-
        if not inBackslash then
           if ch = directory_delimiter then
              exit;
@@ -206,9 +205,8 @@ procedure doPathnameExpansion(
      fileNameLen     : natural;
      found           : boolean := false;
      noPWD           : boolean := false;
-
-  isOpen          : boolean := false;
-
+     isOpen          : boolean := false;
+     segmentFound    : boolean := false;
   begin
   -- put_line( "Walking '" & to_string( candidateParentPath ) & "'"); -- DEBUG
      if start > originalGlobPatternLen then
@@ -217,6 +215,9 @@ procedure doPathnameExpansion(
      end if;
 
      splitNextGlobSegment( nextSegment, start, finish );
+     -- if trace then
+     --    put_trace( "next path segment is '" & toSecureData( to_string( nextSegment ) ) & "'" );
+     -- end if;
 
      -- A leading slash is an absolute path.  There's no need to check
      -- the slash.  Just make it the parent and go continue walking.
@@ -253,8 +254,13 @@ procedure doPathnameExpansion(
      -- is the current directory invalid? then param is just the word
 
      if noPWD then
-        bourneShellWordLists.Queue( bourneShellWordList, globPatternWithoutEscapes );
         return;
+     end if;
+
+     if trace then
+        if verboseOpt then
+           put_trace( "walking path '" & toSecureData( to_string( candidateParentPath ) ) & "'" );
+        end if;
      end if;
 
      -- search the directory, adding files that match the glob pattern
@@ -265,11 +271,20 @@ procedure doPathnameExpansion(
         -- but as a safety precaution check the filename here.
 --put_line( filename(1..fileNameLen) ); -- DEBUG
         exit when fileNameLen = 0;
-        if filename( 1..fileNameLen ) = "." then
+        segmentFound := false;
+        if filename( 1..fileNameLen ) = "." and nextSegment = "." then
+           segmentFound := true;
+        elsif filename( 1..fileNameLen ) = ".." and nextSegment = ".." then
+           segmentFound := true;
+        elsif filename( 1..fileNameLen ) = "." then
            null;
         elsif filename( 1..fileNameLen ) = ".." then
            null;
         elsif Match( fileName(1..fileNameLen ) , globCriteria ) then
+           segmentFound := true;
+        end if;
+
+        if segmentFound then
 
            -- if no parent directory, it's the current directory.  The filename
            -- is a potential directory...just copy.  Otherwise, attach the
@@ -280,7 +295,7 @@ procedure doPathnameExpansion(
 
            if candidateParentPath = nullExpandedShellWord then
               newCandidatePath := to_unbounded_string( filename( 1..fileNameLen ) );
-           elsif candidateParentPath = "" &directory_delimiter then
+           elsif candidateParentPath = "" & directory_delimiter then
               newCandidatePath := candidateParentPath &
                  to_unbounded_string( filename( 1..fileNameLen ) );
            else
@@ -297,7 +312,11 @@ procedure doPathnameExpansion(
      -- there are no matches? word still counts: the param is just the word
 
      if not found then
-        bourneShellWordLists.Queue( bourneShellWordList, globPatternWithoutEscapes );
+        if trace then
+           if verboseOpt then
+              put_trace( "no matches" );
+           end if;
+        end if;
      end if;
 
      if isOpen then
@@ -317,8 +336,11 @@ procedure doPathnameExpansion(
     --
     -- Now, queue the shell word as the word just counts as-is.
 
-    bourneShellWordLists.Queue( bourneShellWordList, globPatternWithoutEscapes );
-
+    if trace then
+       if verboseOpt then
+          put_trace( "error in globbing expression" );
+       end if;
+    end if;
     if isOpen then
        close( parentDir );
     end if;
@@ -337,8 +359,14 @@ procedure doPathnameExpansion(
   ---------------------------------------------------------------------------
 
   procedure walkFirstSegment is
+     numShellWords : long_integer;
   begin
+     numShellWords := bourneShellWordLists.Length( bourneShellWordList );
      walkSegment( nullExpandedShellWord, 1 );
+     -- If globbing produced nothing, use the original pattern
+     if numShellWords = bourneShellWordLists.Length( bourneShellWordList ) then
+        bourneShellWordLists.Queue( bourneShellWordList, globPatternWithoutEscapes );
+     end if;
   end walkFirstSegment;
 
 begin
@@ -840,8 +868,11 @@ function doCommandSubstitution( originalCommands : unbounded_string ) return unb
 begin
    -- put_line( "commands = " & to_string( commands ) );
    if commands = "" or commands = " " then
-      -- In Bourne shell, nothing happens.  It's not an error.
-      null;
+      -- In Bourne shell, nothing happens.  It's not an error.  However, we
+      -- enforce an error by default.
+      if not suppress_no_empty_command_subs then
+         err( "empty command substitution" );
+      end if;
    else
 
       -- If the backquoted commands don't end with a semi-colon, add one.

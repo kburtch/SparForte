@@ -60,9 +60,12 @@ CHANGES SINCE 2.3
 
 24. Fix: pragma license and software_model show the names in the error message for unknown value.
 
-25. Fix: updated man page to version 2.3.2.
+25. Fix: updated man page to version 2.4.  Updated version to 2.4.
 
 26. Fix: static expressions, such as used in pragmas, are now being evaluated.
 
 27. New: pragma declare_affinity and pragma affinity for design affinities.
 
+28. New: pragma suppress( no_empty_command_substitutions ).
+
+29. Fix: s := `` no longer gives a trailing whitespace error message.
