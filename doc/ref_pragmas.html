@@ -94,6 +94,7 @@ environment.</p>
   <b>pragma</b> suppress( word_quoting )
   <b>pragma</b> suppress( all_todos_on_release )
   <b>pragma</b> suppress( low_priority_todos_for_release )
+  <b>pragma</b> suppress( no_empty_command_substitutions )
   <b>pragma</b> template( css|html|js|json|text|wml|xml [, path] )
   <b>pragma</b> todo( to, story, measure, units, priority, units [, ticket] )
   <b>pragma</b> test( condition [, "description" )
@@ -542,6 +543,11 @@ SIGINT (control-C) was received, displaying the call stack and any
 variables marked for inspection with pragma inspect. Has no effect if
 --break option isn't used. A "break point".  It is not allowed in test
 or maintenance phase modes.</li>
+<li><b>pragma suppress( no_empty_command_substitutions )</b> - the
+Bourne shell normally runs empty commands such as `` or $() without
+an error.  For reliability purposes, AdaScript treats this as an error,
+in the same way an empty if statement is an error.  Use this pragma
+to allow empty substitutions.</li>
 <li><b>pragma suppress( word_quoting )</b> - disable style errors when
 dollar variables expansions are not double-quoted.  Dollar expansions
 should almost always be quoted to prevent whitespace from creating
