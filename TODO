@@ -12,22 +12,17 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
-  - subword combination tests
   - fix all todos
     - compiler todos
     - shell parser todos
   - leaving a ; off the end of a command gives an internal error in goodtests.sp
   - see also "Bourne shell issues" below
-  - edge-case and tests: pwd "&" is not being treated as a file
-    - ls \& &
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
 - interpreterPhase - is it set correctly in all places?
 - missing a case "when" keyword can cause string exception
 - updating adascript shell commands to correspond with bourne shell changes
 - renamings on expansions
-- tests
-   - e.g. echo "&" &
 - "literal" & custom-string is an error, but custom-string & "literal" is
   not?  Check this.  Encountered with imported shell variable.
 - first word handling, including executable program glob

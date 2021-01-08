@@ -90,12 +90,6 @@ function toProtectedValue( s : unbounded_string ) return string;
 -- combines optional bold, secure data and escaped.  A null value will
 -- return double single quotes.
 
-procedure put_bold( s : string );
--- display a string in emphasized characters
-
-procedure put_bold( s : unbounded_string );
--- ditto
-
 function optional_inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in inverse characters if -g not used
@@ -103,12 +97,6 @@ function optional_inverse( s : string ) return string;
 function inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in inverse characters
-
-procedure put_inverse( s : string );
--- display a string in emphasized characters
-
-procedure put_inverse( s : unbounded_string );
--- ditto
 
 procedure put_trace( msg : string );
 -- display a trace message to standard error

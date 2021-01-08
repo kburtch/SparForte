@@ -38,15 +38,25 @@ use ada.text_io,
 
 package body user_io is
 
+-----------------------------------------------------------------------------
+--  BEEP
+--
+-- Ring the terminal bell.
+-----------------------------------------------------------------------------
 
 procedure beep is
-  -- beep the terminal
 begin
   simpleBeep;
 end beep;
 
+
+-----------------------------------------------------------------------------
+--  GET KEY
+--
+-- Read a single keypress and don't show the character to user
+-----------------------------------------------------------------------------
+
 procedure getKey( ch : out character; nonblock : boolean := false ) is
--- read a single keypress and don't show the character to user
 begin
   simpleGetKey( ch, nonblock );
   -- constrain to lower ASCII
@@ -55,10 +65,16 @@ begin
   end if;
 end getKey;
 
+
+-----------------------------------------------------------------------------
+--  GET PROMPT INDENT
+--
+-- determine how far the command prompt indents from the
+-- left hand side of the screen, taking into account
+-- control characters and carriage returns / line feeds
+-----------------------------------------------------------------------------
+
 function getPromptIndent return natural is
-  -- determine how far the command prompt indents from the
-  -- left hand side of the screen, taking into account
-  -- control characters and carriage returns / line feeds
   len : natural := 0;
 begin
   for i in 1..length( prompt ) loop
@@ -73,10 +89,16 @@ begin
   return len;
 end getPromptIndent;
 
+
+-----------------------------------------------------------------------------
+--  GET PROMPT EXTRA LINES
+--
+-- determine how far the command prompt indents from the
+-- left hand side of the screen, taking into account
+-- control characters and carriage returns / line feeds
+-----------------------------------------------------------------------------
+
 function getPromptExtraLines return natural is
-  -- determine how far the command prompt indents from the
-  -- left hand side of the screen, taking into account
-  -- control characters and carriage returns / line feeds
   last : character := ASCII.NUL;
   extra : natural := 0;
 begin
@@ -93,10 +115,26 @@ begin
   return extra;
 end getPromptExtraLines;
 
+
+-----------------------------------------------------------------------------
+--  BOLD
+--
+-- Add to the string the character codes to draw the string in bold in the
+-- terminal.
+-----------------------------------------------------------------------------
+
 function bold( s : string ) return string is
 begin
   return to_string( term( bold ) ) & s & to_string( term( normal ) );
 end bold;
+
+
+-----------------------------------------------------------------------------
+--  OPTIONAL BOLD
+--
+-- Add to the string the character codes to draw the string in bold in the
+-- terminal, but only if not for GCC format errors.
+-----------------------------------------------------------------------------
 
 function optional_bold( s : string ) return string is
 begin
@@ -106,20 +144,26 @@ begin
   return to_string( term( bold ) ) & s & to_string( term( normal ) );
 end optional_bold;
 
-procedure put_bold( s : string ) is
-begin
-   put( bold( s ) );
-end put_bold;
 
-procedure put_bold( s : unbounded_string ) is
-begin
-  put( term( bold ) & s & term( normal ) );
-end put_bold;
+-----------------------------------------------------------------------------
+--  INVERSE
+--
+-- Add to the string the character codes to draw the string in inverse in the
+-- terminal.
+-----------------------------------------------------------------------------
 
 function inverse( s : string ) return string is
 begin
   return to_string( term( inverse ) ) & s & to_string( term( normal ) );
 end inverse;
+
+
+-----------------------------------------------------------------------------
+--  OPTIONAL INVERSE
+--
+-- Add to the string the character codes to draw the string in inverse in the
+-- terminal, but only if not for GCC format errors.
+-----------------------------------------------------------------------------
 
 function optional_inverse( s : string ) return string is
 begin
@@ -129,19 +173,15 @@ begin
   return to_string( term( inverse ) ) & s & to_string( term( normal ) );
 end optional_inverse;
 
-procedure put_inverse( s : string ) is
-begin
-   put( bold( s ) );
-end put_inverse;
 
-procedure put_inverse( s : unbounded_string ) is
-begin
-  put( term( bold ) & s & term( normal ) );
-end put_inverse;
-
-function toProtectedValue( s : unbounded_string ) return string is
+-----------------------------------------------------------------------------
+--  TO PROTECTED VALUE
+--
 -- combines optional bold, secure data and escaped.  A null value will
 -- return double single quotes.
+-----------------------------------------------------------------------------
+
+function toProtectedValue( s : unbounded_string ) return string is
 begin
   if s = "" then
      return "''";
@@ -150,23 +190,39 @@ begin
   end if;
 end toProtectedValue;
 
+
 -----------------------------------------------------------------------------
--- PUT TRACE
+--  PUT TRACE
 --
+-- Display an escaped message to standard error in the format used when
+-- "trace true" is used.  This does not check the tracing flag.
 -----------------------------------------------------------------------------
 
 procedure put_trace( msg : string ) is
--- Display an escaped message to standard error in the format used when
--- "trace true" is used.  This does not check the tracing flag.
 begin
   put_line( standard_error, "=> (" & toEscaped( to_unbounded_string( msg ) ) & ")" );
 end put_trace;
+
+
+-----------------------------------------------------------------------------
+--  CHECK DISPLAY
+--
+-- if the terminal display changed, update for the changes. ttype is the TERM
+-- environment variable value.
+-----------------------------------------------------------------------------
 
 procedure checkDisplay( ttype : unbounded_string ) is
 begin
   updateTtyAttributes( ttype );
   updateDisplayInfo;
 end checkDisplay;
+
+
+-----------------------------------------------------------------------------
+--  TERMINAL RESET
+--
+-- reset the terminal.  ttype is the TERM environment variable value.
+-----------------------------------------------------------------------------
 
 procedure terminalReset( ttype : unbounded_string ) is
 begin
@@ -175,6 +231,13 @@ begin
      checkDisplay( ttype );
   end if;
 end terminalReset;
+
+
+-----------------------------------------------------------------------------
+--  TERMINAL CLEAR
+--
+-- clear the terminal.  ttype is the TERM environment variable value.
+-----------------------------------------------------------------------------
 
 procedure terminalClear( ttype : unbounded_string ) is
 begin
@@ -185,8 +248,14 @@ begin
   end if;
 end terminalClear;
 
+
+-----------------------------------------------------------------------------
+--  CLEAR HISTORY
+--
+-- Clear the command line history
+-----------------------------------------------------------------------------
+
 procedure clearHistory is
-  -- Clear the command line history
 begin
   historyNext := 1;
   for i in historyArray'range loop
@@ -194,9 +263,15 @@ begin
   end loop;
 end clearHistory;
 
+
+-----------------------------------------------------------------------------
+--  DISPLAY VERSION SPLASH
+--
+-- display --version message.  This is located here because it
+-- uses term attributes.
+-----------------------------------------------------------------------------
+
 procedure displayVersionSplash is
-  -- display --version message.  This is located here because it
-  -- uses term attributes.
 begin
   if isatty( stdout ) = 1 then
      Put( "SparForte version " );
@@ -211,20 +286,20 @@ begin
   end if;
 end displayVersionSplash;
 
+
+-----------------------------------------------------------------------------
+--  DISPLAY COPYRIGHT SPLASH
+--
+-- display copyright message.  This is located here because it
+-- uses term attributes.  Suppress the message on a login shell
+-- or if there is no tty.
+-- Some of this is now defind in the world.ads file.
+-----------------------------------------------------------------------------
+
 procedure displayCopyrightSplash is
-  -- display copyright message.  This is located here because it
-  -- uses term attributes.  Suppress the message on a login shell
-  -- or if there is no tty.
 begin
   if isatty( stdout ) = 1 and not isLoginShell then
-     -- Put( "BUSH " );
-     -- Put( version );
-     -- Put_Line( " Copyright (c)2001-2011 Free Software Foundation");
-     -- Put_Line( "AdaCGI 1.6 Copyright (c)2000 David A. Wheeler & Free Software Foundation");
-     -- Put_Line( "APQ 2.1 Copyright (c)2002-2003 Warren W. Gay & Free Software Foundation");
-     -- Put_Line( "MD5 Copyright RSA Data Security, Inc. -- Message-Digest Algorithm" );
      Put_Line( "Type ""help"" for help" );
-     -- New_Line;
   end if;
 end displayCopyrightSplash;
 
