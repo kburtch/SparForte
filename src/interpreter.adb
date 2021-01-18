@@ -1152,6 +1152,7 @@ begin
   if pwd /= eof_t then
      identifiers( pwd ).value.all := current_working_directory;
   end if;
+  user_io.getline.startupGetline;
 end startInterpreter;
 
 
@@ -1163,7 +1164,7 @@ end startInterpreter;
 
 procedure shutdownInterpreter is
 begin
-  null;
+  user_io.getline.shutdownGetline;
 end shutdownInterpreter;
 
 end interpreter;

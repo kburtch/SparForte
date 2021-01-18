@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------------------------
 -- Reading the keyboard, writing to the terminal/console                    --
 --                                                                          --
@@ -22,13 +21,25 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with interfaces.C.strings,
+     ada.strings.unbounded;
+use  interfaces.C,
+     interfaces.C.strings,
+     ada.strings.unbounded;
+
 package user_io.getline is
 
-procedure getLine( line : out unbounded_string; prompt : unbounded_string := null_unbounded_string; keepHistory : boolean := false );
+--READLINE_EOF : exception;
+COMPLETION_MEMORY_LEAK : exception;
+
+procedure getLine( line : out unbounded_string;
+                   prompt : unbounded_string := null_unbounded_string;
+                   keepHistory : boolean := false );
 -- read a line from the keyboard
 -- This uses GNU readline or the older Ada-only version depending on
 -- the configuration options.  For the older Ada-only version,
 -- the keymap is hard-coded, not taken from current terminal settings.
+
 
 function has_readline return boolean;
 -- return true if using GNU readline / history for getLine
@@ -38,4 +49,33 @@ function has_readline return boolean;
 RL_PROMPT_START_IGNORE : constant character := ASCII.SOH; -- Ctrl-A
 RL_PROMPT_END_IGNORE   : constant character := ASCII.STX; -- Ctrl-B
 
+
+-----------------------------------------------------------------------------
+--
+-- HOUSEKEEPING
+--
+-----------------------------------------------------------------------------
+
+
+procedure startupGetLine;
+
+procedure shutdownGetLine;
+
+private
+
+-- These are callbacks for c_rl.c, for GNU readline completion.
+
+function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_git_word_generator, "Ada_git_word_generator" );
+
+function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_executable_word_generator, "Ada_executable_word_generator" );
+
+function Ada_assignment_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_assignment_word_generator, "Ada_assignment_word_generator" );
+
+function Ada_parameter_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_parameter_word_generator, "Ada_parameter_word_generator" );
+
 end user_io.getline;
+

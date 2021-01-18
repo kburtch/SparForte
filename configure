@@ -1623,9 +1623,9 @@ if [ -z "$NO_READLINE" ] ; then
    # Linux Mint doesn't need ncurses and breaks...needed for Slackware?
    #RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6\ \-lncurses"
    if [ -z "$READLINE_VERSION" ] ; then
-      RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-lreadline\ \-lhistory"
+      RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-lreadline\ \-lhistory c_rl.o"
    else
-      RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.$READLINE_VERSION\ \-l:libhistory.so.$READLINE_VERSION"
+      RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.$READLINE_VERSION\ \-l:libhistory.so.$READLINE_VERSION c_rl.o"
    fi
 else
    RLINCL=
@@ -1654,12 +1654,7 @@ echo "Creating...src/GNUmakefile"
 
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROBJSUB/$GSTREAMEROBJ/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g;s/PCRELIBSSUB/$PCRELIBS/g;s/PCREOBJSUB/$PCREOBJ/g;s/PCREFLAGSUB/$PCREFLAG/g" < GNUmakefile.orig > GNUmakefile
 
-cd areadline
-
-echo "Creating...src/areadline/GNUmakefile"
-sed "s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g" < GNUmakefile.orig > GNUmakefile
-
-cd ../..
+cd ..
 echo "Creating...GNUmakefile"
 sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/GMAKETYPE/$GMAKETYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g" < GNUmakefile.orig > GNUmakefile
 

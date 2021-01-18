@@ -22,38 +22,32 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
-    ada.strings.unbounded.text_io,
-    ada.calendar,
-    spar_os.tty,
-#if not READLINE
-    gnat.regexp,
-    gnat.os_lib,
-#end if;
-    gnat.directory_operations,
-    world,
-#if not READLINE
-    signal_flags,
-#end if;
-    string_util;
-use ada.text_io,
-    ada.strings.unbounded.text_io,
-    ada.calendar,
-    spar_os,
-    spar_os.tty,
-#if not READLINE
-    gnat.regexp,
-    gnat.os_lib,
-#end if;
-    gnat.directory_operations,
-#if not READLINE
-    signal_flags,
-#end if;
-    world,
-    string_util;
+     ada.strings.unbounded.text_io,
+     ada.calendar,
+     gnat.directory_operations,
+     gnat.source_info,
+     ada.containers.vectors,
+     spar_os.tty,
+     spar_os.readline,
+     world;
+use  ada.text_io,
+     ada.strings.unbounded.text_io,
+     ada.calendar,
+     gnat.directory_operations,
+     spar_os,
+     spar_os.tty,
+     spar_os.readline,
+     world;
 
-#if READLINE
-    with readline;
-    use  readline;
+#if not READLINE
+with gnat.regexp,
+     gnat.os_lib,
+     signal_flags,
+     string_util;
+use  gnat.regexp,
+     gnat.os_lib,
+     signal_flags,
+     string_util;
 #end if;
 
 package body user_io.getline is
@@ -98,60 +92,529 @@ begin
 end getPromptExtraLines;
 #end if;
 
-procedure getLine( line : out unbounded_string; prompt : unbounded_string := null_unbounded_string; keepHistory : boolean := false ) is
-   pwd_id : identifier;
 #if READLINE
-   bold_prompt : unbounded_string;
+-----------------------------------------------------------------------------
+--
+-- COMPLETION LIST
+--
+-----------------------------------------------------------------------------
+-- May be removed
+
+
+package completionLists is new ada.containers.vectors( Positive,
+  chars_ptr );
+memoryLeakCnt : integer := 0;
+
+
+-----------------------------------------------------------------------------
+--
+-- GIT WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+gitWords  : completionLists.Vector;
+gitCursor : completionLists.Cursor;
+
+-----------------------------------------------------------------------------
+--  RESERVED WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  use completionLists;
+  needle   : constant string := To_Ada( Value( text ) );
+  ptr : chars_ptr;
 begin
-  -- TODO: control-c should clear the line, not enter a control-c
-  -- for consistent behaviour with the old getLine, bold the prompt.
-  -- The prompt, when bold, initialially places the cursor on the
-  -- space at the end of the prompt.  The next line will have it
-  -- placed currectly.  And when the command line gets long, the
-  -- line doesn't display properly...it drops to the next line.
-  if length( prompt ) > 0 then
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     gitCursor := completionLists.First( gitWords );
+  elsif gitCursor /= completionLists.No_Element then
+     gitCursor := completionLists.Next( gitCursor );
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while gitCursor /= completionLists.No_Element loop
+     ptr := completionLists.Element( gitCursor );
+     if Strlen( text ) <= Strlen( ptr ) then
+        declare
+           haystack : constant string := To_Ada( Value( ptr ) );
+        begin
+           if needle = haystack(1..needle'last) then
+              return C_strdup( ptr );
+           end if;
+        end;
+     end if;
+     gitCursor := completionLists.Next( gitCursor );
+  end loop;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_git_word_generator;
+
+
+-----------------------------------------------------------------------------
+--  ASSIGNMENT WORD GENERATOR (C language callback to Ada)
+--
+-- Return candidate words for assignment substitutions from the symbol table.
+-----------------------------------------------------------------------------
+
+assignmentIdx : identifier:=identifiers'last;
+
+function Ada_assignment_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  needle    : constant string := To_Ada( Value( text ) );
+  needleLen : constant size_t := Strlen( text );
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     assignmentIdx := identifiers'last;
+  elsif assignmentIdx > identifiers'first then
+     -- Note: walks everything, even things not visible.  Perhaps not a big
+     -- concern on the command line?
+     assignmentIdx := assignmentIdx  - 1;
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while assignmentIdx > identifiers'first loop
+     if needleLen <= size_t( length( identifiers( assignmentIdx ).name ) ) then
+        declare
+           haystack : constant string := to_string( identifiers(assignmentIdx ).name );
+           haystack_cstr : aliased char_array :=  To_C( haystack );
+        begin
+           if needle = haystack( 1..integer( needleLen ) ) then
+              if not identifiers( assignmentIdx ).deleted and
+                     -- root record, string literal, etc. have spaces
+                     -- so users cannot use them.
+                       index( identifiers( assignmentIdx ).name, " " ) = 0 and
+                     ( identifiers( assignmentIdx ).class = funcClass or
+                       identifiers( assignmentIdx ).class = userFuncClass or
+                       identifiers( assignmentIdx ).class = varClass or
+                       identifiers( assignmentIdx ).class = typeClass or
+                       identifiers( assignmentIdx ).class = subClass or
+                       identifiers( assignmentIdx ).class = enumClass ) then
+                       -- many reserved words do not apply.  those that do
+                       -- are often very short.
+                       --assignmentIdx <= reserved_top ) then
+                return C_strdup( To_Chars_Ptr( haystack_cstr'unchecked_access ) );
+              end if;
+           end if;
+        end;
+     end if;
+     assignmentIdx := assignmentIdx  - 1;
+  end loop;
+
+  -- Return a C NULL pointer to indicate there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_assignment_word_generator;
+
+
+-----------------------------------------------------------------------------
+--  FIRST WORD GENERATOR (C language callback to Ada)
+--
+-- Return candidate words for first word substitutions from the symbol table.
+-----------------------------------------------------------------------------
+
+identifierIdx : identifier := identifiers'last;
+
+function Ada_first_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  needle    : constant string := To_Ada( Value( text ) );
+  needleLen : constant size_t := Strlen( text );
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     identifierIdx := identifiers'last;
+  elsif identifierIdx > identifiers'first then
+     -- Note: walks everything, even things not visible.  Perhaps not a big
+     -- concern on the command line?
+     identifierIdx := identifierIdx  - 1;
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while identifierIdx > identifiers'first loop
+     if needleLen <= size_t( length( identifiers( identifierIdx ).name ) ) then
+        declare
+           haystack : constant string := to_string( identifiers(identifierIdx ).name );
+           haystack_cstr : aliased char_array :=  To_C( haystack );
+        begin
+           if needle = haystack( 1..integer( needleLen ) ) then
+              if not identifiers( identifierIdx ).deleted and
+                     -- root record, string literal, etc. have spaces
+                     -- so users cannot use them.
+                       index( identifiers( identifierIdx ).name, " " ) = 0 and
+                     ( identifiers( identifierIdx ).class = procClass or
+                       identifiers( identifierIdx ).class = userProcClass or
+                       identifiers( identifierIdx ).class = varclass or
+                       identifierIdx <= reserved_top ) then
+                return C_strdup( To_Chars_Ptr( haystack_cstr'unchecked_access ) );
+              end if;
+           end if;
+        end;
+     end if;
+     identifierIdx := identifierIdx  - 1;
+  end loop;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_first_word_generator;
+
+
+-----------------------------------------------------------------------------
+--  COMMAND WORD GENERATOR (C language callback to Ada)
+--
+-- Return candidate commands for first word substitutions from PATH dirs.
+-----------------------------------------------------------------------------
+
+remainingCmdPathDirs : unbounded_string;
+-- the remaining directories the PATH string
+
+currentCmdPathDir    : unbounded_string;
+-- the current directory from the PATH string
+
+currentCmdDir        : dir_type;
+-- the directory file type for commands, referring to currentCmdPathDir
+
+function Ada_command_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  path_id : identifier;
+  completionFileLen : integer;
+  completionFile : string(1..1024); -- TODO: file length limit
+  needle    : constant string := To_Ada( Value( text ) );
+  needleLen : constant size_t := Strlen( text );
+  firstColon : natural;
+begin
+  if state = 0 then
+     findIdent( to_unbounded_string( "PATH" ), path_id );
+     if path_id /= eof_t then
+        remainingCmdPathDirs := identifiers( path_id ).value.all;
+     else
+        remainingCmdPathDirs := null_unbounded_string;
+     end if;
+  end if;
+
+  -- Search the remaining PATH values for a valid directory.
+  -- Open that directory.
+
+  while is_open( currentCmdDir ) or remainingCmdPathDirs /= null_unbounded_string loop
+
+     -- If we have an open directory, find a suitable file for substitution.
+     -- Read files from the directory.  If a file is found and it matches
+     -- the text and is executable, return it as a completion candidate.
+     -- Ignore errors.  Continue until an empty string is returned.
+
+     if is_open( currentCmdDir ) then
+        loop
+           begin
+             read( currentCmdDir, completionFile, completionFileLen );
+             exit when completionFileLen <= 0;
+             if needle = completionFile( 1..integer( needleLen ) ) then
+                declare
+                   completionFileAsC : aliased char_array := To_C(
+                      completionFile(1..completionFileLen ) );
+                   testpath : constant string := to_string( currentCmdPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
+                begin
+-- TODO: messy.  too many string conversions
+-- TODO: does not follow links
+                   if C_is_executable( testpath ) then
+                      return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                   end if;
+                end;
+             end if;
+           exception when DIRECTORY_ERROR =>
+             null;
+           when others =>
+             put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+           end;
+        end loop;
+     end if;
+
+     -- Search for a new directory.  Remove paths from the PATH
+     -- variable.  Try to open the directory.  If you cannot open
+     -- the directory, try the next directory.  Stop searching
+     -- when a directory is found or When no paths remain.
+
+     loop
+        firstColon := index( remainingCmdPathDirs, ":" );
+        if firstColon /= 0 then
+           currentCmdPathDir := head( remainingCmdPathDirs, firstColon-1 );
+           remainingCmdPathDirs := unbounded_slice( remainingCmdPathDirs, firstColon+1, length( remainingCmdPathDirs ) );
+        else
+           currentCmdPathDir := remainingCmdPathDirs;
+           remainingCmdPathDirs := null_unbounded_string;
+        end if;
+        begin
+          if is_open( currentCmdDir ) then
+             close( currentCmdDir );
+          end if;
+          open( currentCmdDir, to_string( currentCmdPathDir ) );
+          exit;
+        exception when DIRECTORY_ERROR =>
+          null;
+        when others =>
+          put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+        end;
+     exit when remainingCmdPathDirs = null_unbounded_string;
+     end loop;
+
+  end loop;
+
+  -- Close off the directory search.  Initiate the identifier search.
+
+  if is_open( currentCmdDir ) then
+     close( currentCmdDir );
+  end if;
+
+  return Null_Ptr;
+
+end Ada_command_word_generator;
+
+
+-----------------------------------------------------------------------------
+--  FILE WORD GENERATOR (C language callback to Ada)
+--
+-- Return candidate commands for subsequent word substitutions.
+-----------------------------------------------------------------------------
+
+currentFileDir : dir_type;
+
+function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  completionFileLen : integer;
+  completionFile : string(1..1024);
+  needle    : constant string := To_Ada( Value( text ) );
+  needleLen : constant size_t := Strlen( text );
+begin
+  if state = 0 then
+     begin
+       if is_open( currentFileDir ) then
+          close( currentFileDir );
+       end if;
+       open( currentFileDir, Dir_Name( needle ) );
+     exception when DIRECTORY_ERROR =>
+       null;
+     when others =>
+       put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+       null;
+     end;
+  end if;
+
+  -- Search the remaining PATH values for a valid directory.
+  -- Open that directory.
+
+  if is_open( currentFileDir ) then
+
+     -- If we have an open directory, find a suitable file for substitution.
+     -- Read files from the directory.  If a file is found and it matches
+     -- the text and is executable, return it as a completion candidate.
+     -- Ignore errors.  Continue until an empty string is returned.
+
+     loop
+        begin
+          read( currentFileDir, completionFile, completionFileLen );
+          exit when completionFileLen <= 0;
+          if needle = completionFile( 1..integer( needleLen ) ) then
+             declare
+                completionFileAsC : aliased char_array := To_C(
+                   completionFile(1..completionFileLen ) );
+                --testpath : constant string := to_string( currentPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
+             begin
+-- TODO: messy.  too many string conversions
+-- TODO: does not follow links
+                return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+             end;
+          end if;
+        exception when DIRECTORY_ERROR =>
+          null;
+        when others =>
+          put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+        end;
+     end loop;
+
+     -- Search for a new directory.  Remove paths from the PATH
+     -- variable.  Try to open the directory.  If you cannot open
+     -- the directory, try the next directory.  Stop searching
+     -- when a directory is found or When no paths remain.
+
+
+  end if;
+
+  -- Close off the directory search.  Initiate the identifier search.
+
+  if is_open( currentFileDir ) then
+     close( currentFileDir );
+  end if;
+
+  return Null_Ptr;
+
+end Ada_file_word_generator;
+
+
+-----------------------------------------------------------------------------
+--  EXECUTABLE WORD GENERATOR (C language callback to Ada)
+--
+-- Chains together all callbacks for the first word on a line.
+-----------------------------------------------------------------------------
+
+type executableStages is (commands, idents);
+executableStage : executableStages;
+
+function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  localState : int := state;
+  res : chars_ptr;
+begin
+  -- Just starting?  We're doing commands.
+
+  if state = 0 then
+     executableStage := commands;
+  end if;
+
+  -- Do command completions.  If we're done, switch to identifiers.
+  -- Remember to set state to 0 (just starting).
+
+  if executableStage = commands then
+     res := Ada_command_word_generator(text, localState );
+     if res = Null_Ptr then
+        executableStage := idents;
+        localState := 0;
+     end if;
+  end if;
+
+  -- Do first completions
+
+  if executableStage = idents then
+     res := Ada_first_word_generator(text, localState );
+  end if;
+
+  return res;
+end Ada_executable_word_generator;
+
+
+-----------------------------------------------------------------------------
+--  PARAMETER WORD GENERATOR (C language callback to Ada)
+--
+-- Chains together all callbacks for the additional words on a line.
+-----------------------------------------------------------------------------
+
+type parameterStages is (files, idents);
+parameterStage : parameterStages;
+
+function Ada_parameter_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  localState : int := state;
+  res : chars_ptr;
+begin
+  -- Just starting?  We're doing commands.
+  if state = 0 then
+     parameterStage := files;
+  end if;
+
+  -- Do command completions.  If we're done, switch to identifiers.
+  -- Remember to set state to 0 (just starting).
+
+  if parameterStage = files then
+     res := Ada_file_word_generator(text, localState );
+     if res = Null_Ptr then
+        parameterStage := idents;
+        localState := 0;
+     end if;
+  end if;
+
+  -- Do identifier completions
+
+  if parameterStage = idents then
+     res := Ada_assignment_word_generator(text, localState );
+  end if;
+
+  return res;
+end Ada_parameter_word_generator;
+#end if;
+
+#if READLINE
+-----------------------------------------------------------------------------
+--  GET LINE
+--
+-- Read a command line.  Set the terminal to the current TERM variable.
+-- Use GNU Readline library to read a line of text, performing any
+-- command completions.
+--   Exception: raises READLINE_EOF if end-of-file is encountered.
+-----------------------------------------------------------------------------
+-- TODO: prompt
+
+procedure getLine( line : out unbounded_string;
+                   prompt : unbounded_string := null_unbounded_string;
+                   keepHistory : boolean := false ) is
+  pwd_id  : identifier;
+  term_id : identifier;
+  termEmu : chars_ptr;
+  buffer  : chars_ptr := Null_Ptr;
+  bold_prompt : unbounded_string;
+begin
+  findIdent( to_unbounded_string( "TERM" ), term_id );
+  if term_id /= eof_t then
+     termEmu := New_String( to_string( identifiers( term_id ).value.all ));
+  else
+     termEmu := New_String( "xterm" );
+  end if;
+
+  if prompt /= null_unbounded_string then
+     bold_prompt := prompt;
+  else
      -- by default
      -- [# 1][# 27][1m[# 2]=> [# 1][# 27](B[# 27][m[# 2]
-     --bold_prompt :=
-     --   RL_PROMPT_START_IGNORE &
-     --   term( bold ) &
-     --   RL_PROMPT_END_IGNORE &
-     --   prompt &
-     --   RL_PROMPT_START_IGNORE &
-     --   term( normal ) &
-     --   RL_PROMPT_END_IGNORE;
-     bold_prompt := prompt;
+     bold_prompt :=
+        RL_PROMPT_START_IGNORE &
+        term( bold ) &
+        RL_PROMPT_END_IGNORE &
+        to_string( defaultPrompt ) &
+        RL_PROMPT_START_IGNORE &
+        term( normal ) &
+        RL_PROMPT_END_IGNORE;
   end if;
-  -- Debug the prompt characters
-  -- declare
-  -- ch : character;
-  -- begin
-  --for i in 1..length( bold_prompt ) loop
-  --    ch := Element( bold_prompt, i );
-  --    if ch < ' ' or ch > '~' then
-  --       put( "[#" & character'pos( ch )'img & "]" );
-  --    else
-  --       put( ch );
-  --    end if;
-  --end loop;
-  -- new_line;
-  -- end;
+
+  declare
+     cprompt: constant char_array := To_C( to_string( bold_prompt ) );
   begin
-    line := to_unbounded_string( read_line( to_string( bold_prompt ) ) );
-  exception when END_ERROR =>
-    -- EOT: control-d
-    --if length( line ) = 0 and keepHistory then  -- nothing at prompt?
-    -- The line has no value when Ctrl-D occurs because readline returns
-    -- a NULL pointer for the line.
-    if keepHistory then  -- nothing at prompt?
-       line := to_unbounded_string( "return" ); -- treat as "return"
-       -- TODO: this is a bit of a hack, simulating the line of input.
-       -- may be done better?
-       new_line;
-       --put( line );
-       return;
-    end if;
+     C_readline( Value( termEmu ), cprompt, buffer );
+     if buffer = Null_Ptr then
+        if keepHistory then  -- nothing at prompt?
+           line := to_unbounded_string( "return" ); -- treat as "return"
+           -- TODO: this is a bit of a hack, simulating the line of input.
+           -- may be done better?
+           new_line;
+           --put( line );
+           return;
+        end if;
+     end if;
   end;
+
+  line := to_unbounded_string( Value( buffer ) );
+
+  -- Deallocate C's string buffer once Ada has captured the string.
+
+  C_free_readline( buffer );
+
+  interfaces.c.strings.free( termEmu );
 
   -- history
 
@@ -168,11 +631,15 @@ begin
      end if;
   end if;
 
-# else
+end getLine;
+#else
 
+procedure getLine( line : out unbounded_string; prompt : unbounded_string := null_unbounded_string; keepHistory : boolean := false ) is
+   pwd_id : identifier;
 -- read a line from the keyboard
 -- Note: the keymap is hard-coded, but really should be taken from
 -- current terminal settings.
+
 
   procedure redrawLine( oldPos : natural; newPos : natural := 0 ) is
   -- redraw the command line
@@ -740,10 +1207,30 @@ begin
        end if;
     end case;
   end loop;
-
-#end if;
-
 end getLine;
+
+-- Dummy Functions (not used unless GNU readline)
+
+function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_git_word_generator;
+
+function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_executable_word_generator;
+
+function Ada_assignment_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_assignment_word_generator;
+
+function Ada_parameter_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_parameter_word_generator;
+#end if;
 
 function has_readline return boolean is
 begin
@@ -753,6 +1240,219 @@ begin
   return false;
 #end if;
 end has_readline;
+
+
+-----------------------------------------------------------------------------
+--
+-- HOUSEKEEPING
+--
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  STARTUP READLINE
+--
+-- Startup this package and GNU Readline library, performing any setup
+-- tasks.
+-----------------------------------------------------------------------------
+
+#if READLINE
+procedure startupGetline is
+
+  procedure git_add( s : string ) is
+  begin
+    completionLists.append( gitWords, New_String( s ) );
+    memoryLeakCnt := memoryLeakCnt + 1;
+  end git_add;
+
+begin
+  C_init_readline;
+-- TODO: better options
+  git_add("add");
+  git_add("add--interactive");
+  git_add("am");
+  git_add("annotate");
+  git_add("apply");
+  git_add("archive");
+  git_add("bisect");
+  git_add("bisect--helper");
+  git_add("blame");
+  git_add("branch");
+  git_add("bundle");
+  git_add("cat-file");
+  git_add("check-attr");
+  git_add("check-ignore");
+  git_add("check-mailmap");
+  git_add("check-ref-format");
+  git_add("checkout");
+  git_add("checkout-index");
+  git_add("cherry");
+  git_add("cherry-pick");
+  git_add("clean");
+  git_add("clone");
+  git_add("column");
+  git_add("commit");
+  git_add("commit-tree");
+  git_add("config");
+  git_add("count-objects");
+  git_add("credential");
+  git_add("credential-cache");
+  git_add("credential-cache--daemon");
+  git_add("credential-store");
+  git_add("daemon");
+  git_add("describe");
+  git_add("diff");
+  git_add("diff-files");
+  git_add("diff-index");
+  git_add("diff-tree");
+  git_add("difftool");
+  git_add("difftool--helper");
+  git_add("fast-export");
+  git_add("fast-import");
+  git_add("fetch");
+  git_add("fetch-pack");
+  git_add("filter-branch");
+  git_add("fmt-merge-msg");
+  git_add("for-each-ref");
+  git_add("format-patch");
+  git_add("fsck");
+  git_add("fsck-objects");
+  git_add("gc");
+  git_add("get-tar-commit-id");
+  git_add("grep");
+  git_add("hash-object");
+  git_add("help");
+  git_add("http-backend");
+  git_add("http-fetch");
+  git_add("http-push");
+  git_add("imap-send");
+  git_add("index-pack");
+  git_add("init");
+  git_add("init-db");
+  git_add("instaweb");
+  git_add("interpret-trailers");
+  git_add("log");
+  git_add("ls-files");
+  git_add("ls-remote");
+  git_add("ls-tree");
+  git_add("mailinfo");
+  git_add("mailsplit");
+  git_add("merge");
+  git_add("merge-base");
+  git_add("merge-file");
+  git_add("merge-index");
+  git_add("merge-octopus");
+  git_add("merge-one-file");
+  git_add("merge-ours");
+  git_add("merge-recursive");
+  git_add("merge-resolve");
+  git_add("merge-subtree");
+  git_add("merge-tree");
+  git_add("mergetool");
+  git_add("mktag");
+  git_add("mktree");
+  git_add("mv");
+  git_add("name-rev");
+  git_add("notes");
+  git_add("pack-objects");
+  git_add("pack-redundant");
+  git_add("pack-refs");
+  git_add("patch-id");
+  git_add("prune");
+  git_add("prune-packed");
+  git_add("pull");
+  git_add("push");
+  git_add("quiltimport");
+  git_add("read-tree");
+  git_add("rebase");
+  git_add("rebase--helper");
+  git_add("receive-pack");
+  git_add("reflog");
+  git_add("remote");
+  git_add("remote-ext");
+  git_add("remote-fd");
+  git_add("remote-ftp");
+  git_add("remote-ftps");
+  git_add("remote-http");
+  git_add("remote-https");
+  git_add("remote-testsvn");
+  git_add("repack");
+  git_add("replace");
+  git_add("request-pull");
+  git_add("rerere");
+  git_add("reset");
+  git_add("rev-list");
+  git_add("rev-parse");
+  git_add("revert");
+  git_add("rm");
+  git_add("send-pack");
+  git_add("sh-i18n--envsubst");
+  git_add("shell");
+  git_add("shortlog");
+  git_add("show");
+  git_add("show-branch");
+  git_add("show-index");
+  git_add("show-ref");
+  git_add("submodule");
+  git_add("stage");
+  git_add("stash");
+  git_add("status");
+  git_add("stripspace");
+  git_add("submodule--helper");
+  git_add("subtree");
+  git_add("symbolic-ref");
+  git_add("tag");
+  git_add("unpack-file");
+  git_add("unpack-objects");
+  git_add("update-index");
+  git_add("update-ref");
+  git_add("update-server-info");
+  git_add("upload-archive");
+  git_add("upload-pack");
+  git_add("var");
+  git_add("verify-commit");
+  git_add("verify-pack");
+  git_add("verify-tag");
+  git_add("web--browse");
+  git_add("whatchanged");
+  git_add("worktree");
+  git_add("write-tree");
+end startupGetline;
+#else
+procedure startupGetline is
+begin
+  null;
+end startupGetline;
+#end if;
+
+-----------------------------------------------------------------------------
+--  SHUTDOWN READLINE
+--
+-- Shutdown this package and GNU Readline library, performing any cleanup
+-- tasks.
+--  Exception: COMPLETION_MEMORY_LEAK is raised if there are C strings
+-- that weren't deallocated.
+-----------------------------------------------------------------------------
+
+#if READLINE
+procedure shutdownGetline is
+  wordPtr : chars_ptr;
+begin
+  for i in completionLists.First_Index( gitWords )..completionLists.Last_Index( gitWords ) loop
+      wordPtr := completionLists.Element( gitWords, i );
+      Free( wordPtr );
+      memoryLeakCnt := memoryLeakCnt - 1;
+  end loop;
+  if memoryLeakCnt /= 0 then
+     raise COMPLETION_MEMORY_LEAK with "items" & memoryLeakCnt'img;
+  end if;
+end shutdownGetline;
+#else
+procedure shutdownGetline is
+begin
+  null;
+end shutdownGetline;
+#end if;
 
 end user_io.getline;
 

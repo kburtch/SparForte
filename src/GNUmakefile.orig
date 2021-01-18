@@ -58,7 +58,7 @@ LIBS=${PGLIBS} ${MYSQLLIBS} ${APQLIBS} -L./pegasock/ ./pegasock/c_tinyserve.o ./
 
 # Make Rules Start
 
-all: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
+all: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o
 	@echo
 	@echo "==============================================================="
 	@echo "  SparForte - Business Shell"
@@ -103,16 +103,6 @@ else
 endif
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "  Making GNU Readline Support"
-	@echo "---------------------------------------------------------------"
-	@echo
-ifneq ($(strip $(RLLIBS)),)
-	$(MAKE) -C areadline
-else
-	@echo "Disabled"
-endif
-	@echo
-	@echo "---------------------------------------------------------------"
 	@echo " Making SparForte"
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
@@ -139,6 +129,9 @@ c_os.o:	c_os.c
 c_scanner.o: c_scanner.c
 	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_scanner.c
 
+c_rl.o: c_rl.c
+	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_rl.c
+
 # GStreamer binding is optional
 
 c_gstreamer.o: c_gstreamer.c
@@ -164,7 +157,7 @@ endif
 #	./apq-2.1/configure
 #	mv -f Makeincl apq-2.1/Makeincl
 
-max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
+max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "Making AdaCGI"
@@ -199,12 +192,6 @@ max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	$(MAKE) -C bdb
 	@echo
 	@echo "---------------------------------------------------------------"
-	@echo "  Making GNU Readline Support"
-	@echo "---------------------------------------------------------------"
-	@echo
-	$(MAKE) -C areadline
-	@echo
-	@echo "---------------------------------------------------------------"
 	@echo "Making SparForte"
 	@echo "---------------------------------------------------------------"
 	@echo
@@ -213,7 +200,7 @@ max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 
 clean:
-	-$(MAKE) -C areadline clean
+	#-$(MAKE) -C areadline clean
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C apq-2.1 clean
 	$(MAKE) -C bdb clean
@@ -223,7 +210,7 @@ clean:
 	-rm -f *.gcda *.gcno *.gcov coverage.info gmon.out testsuite/templates/gmon.out testsuite/goodsuite/gmon.out testsuite/helpsuite/gmon.out testsuite/third_party/gmon.out testsuite/gmon.out testsuite/testsuite010_pragmas/gmon.out testsuite/testsuite015_arrays/gmon.out testsuite/testsuite012_calendar/gmon.out
 
 distclean:
-	-$(MAKE) -C areadline clean
+	#-$(MAKE) -C areadline clean
 	$(MAKE) -C adacgi-1.6 clean
 	#$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
@@ -240,7 +227,7 @@ test: all
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh runtests.sh -f)
 
-coverage: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
+coverage: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o
 	@echo
 	@echo "Coverage will require:"
 	@echo
@@ -281,16 +268,6 @@ coverage: c_os.o c_scanner.o c_gstreamer.o c_pcre.o
 	@echo
 ifneq ($(strip $(BDBLIBS)),)
 	$(MAKE) -C bdb
-else
-	@echo "Disabled"
-endif
-	@echo
-	@echo "---------------------------------------------------------------"
-	@echo "  Making GNU Readline Support"
-	@echo "---------------------------------------------------------------"
-	@echo
-ifneq ($(strip $(RLLIBS)),)
-	$(MAKE) -C areadline
 else
 	@echo "Disabled"
 endif
