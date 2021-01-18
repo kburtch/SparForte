@@ -53,10 +53,16 @@ use  gnat.regexp,
 package body user_io.getline is
 
 #if not READLINE
+
+-----------------------------------------------------------------------------
+--  GET PROMPT INDENT (no getline library)
+--
+-- determine how far the command prompt indents from the
+-- left hand side of the screen, taking into account
+-- control characters and carriage returns / line feeds
+-----------------------------------------------------------------------------
+
 function getPromptIndent return natural is
-  -- determine how far the command prompt indents from the
-  -- left hand side of the screen, taking into account
-  -- control characters and carriage returns / line feeds
   len : natural := 0;
 begin
   for i in 1..length( prompt ) loop
@@ -71,10 +77,16 @@ begin
   return len;
 end getPromptIndent;
 
+
+-----------------------------------------------------------------------------
+--  GET PROMPT EXTRA LINES (no readline library)
+--
+-- determine how far the command prompt indents from the
+-- left hand side of the screen, taking into account
+-- control characters and carriage returns / line feeds
+-----------------------------------------------------------------------------
+
 function getPromptExtraLines return natural is
-  -- determine how far the command prompt indents from the
-  -- left hand side of the screen, taking into account
-  -- control characters and carriage returns / line feeds
   last : character := ASCII.NUL;
   extra : natural := 0;
 begin
@@ -695,52 +707,56 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
     --put( displayInfo.col'img );
   end redrawLine;
 
----> IS DIRECTORY
---
--- A quick and simple function to check to see if string dir refers
--- to a directory.
------------------------------------------------------------------------------
+  --  IS DIRECTORY (no readline library)
+  --
+  -- A quick and simple function to check to see if string dir refers
+  -- to a directory.
+  ---------------------------------------------------------------------------
 
-function isDirectory( dir : unbounded_string ) return boolean is
-   f : dir_type;
-   result : boolean := true;
-begin
+  function isDirectory( dir : unbounded_string ) return boolean is
+     f : dir_type;
+     result : boolean := true;
   begin
-  GNAT.Directory_Operations.Open( f, to_string( dir ) );
-  GNAT.Directory_Operations.Close( f );
-  -- TODO: should do a stat() probably more efficient
-  exception when others => result := false;
-  end;
-  return result;
-end isDirectory;
+    begin
+    GNAT.Directory_Operations.Open( f, to_string( dir ) );
+    GNAT.Directory_Operations.Close( f );
+    -- TODO: should do a stat() probably more efficient
+    exception when others => result := false;
+    end;
+    return result;
+  end isDirectory;
 
----> SLASHIFY PATH
---
--- Add a trailing character for a path.  If a directory, add a trailing /.
--- If a file, add a trailing space.  If both, add nothing.
------------------------------------------------------------------------------
+  --- SLASHIFY PATH (no readline library)
+  --
+  -- Add a trailing character for a path.  If a directory, add a trailing /.
+  -- If a file, add a trailing space.  If both, add nothing.
+  -----------------------------------------------------------------------------
 
-function slashifyPath( dir, path : unbounded_string ) return string is
-  f  : file_type;
-  ch : character := ASCII.NUL;
-begin
+  function slashifyPath( dir, path : unbounded_string ) return string is
+    f  : file_type;
+    ch : character := ASCII.NUL;
   begin
-    Ada.Text_IO.Open( f, in_file, to_string( dir & Dir_Separator & path ) );
-    Ada.Text_IO.Close( f );
-    if isDirectory( dir & Dir_Separator & path ) then
-       ch := Dir_Separator;
-    else
-       ch := ' ';
+    begin
+      Ada.Text_IO.Open( f, in_file, to_string( dir & Dir_Separator & path ) );
+      Ada.Text_IO.Close( f );
+      if isDirectory( dir & Dir_Separator & path ) then
+         ch := Dir_Separator;
+      else
+         ch := ' ';
+      end if;
+    exception when others => null;
+    end;
+    if ch /= ASCII.NUL then
+       return "" & ch;
     end if;
-  exception when others => null;
-  end;
-  if ch /= ASCII.NUL then
-     return "" & ch;
-  end if;
-  return "";
-end slashifyPath;
+    return "";
+  end slashifyPath;
 
- procedure completePathname( dir : unbounded_string;
+  --- COMPLETE PATHANME (no readline library)
+  --
+  ---------------------------------------------------------------------------
+
+  procedure completePathname( dir : unbounded_string;
     s : unbounded_string;
     result : out unbounded_string;
     list : boolean := false ) is
@@ -835,10 +851,14 @@ end slashifyPath;
     end if;
   end completePathname;
 
+  --- LAST WORD (no readline library)
+  --
+  -- remove the last "word" delinated by a space from the string
+  -- return the ending character of the rest of the string
+  ---------------------------------------------------------------------------
+
   procedure lastWord( s : unbounded_string; lw : out unbounded_string;
     lp : out natural ) is
-    -- remove the last "word" delinated by a space from the string
-    -- return the ending character of the rest of the string
   begin
     lp := 0;
     for i in reverse 1..length( s )-1 loop
@@ -1231,6 +1251,13 @@ begin
   return Null_Ptr;
 end Ada_parameter_word_generator;
 #end if;
+
+
+-----------------------------------------------------------------------------
+--  HAS READLINE
+--
+-- TRUE if we are using the GNU readline library.
+-----------------------------------------------------------------------------
 
 function has_readline return boolean is
 begin

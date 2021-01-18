@@ -2574,6 +2574,8 @@ sleep (1) &;
 wait;
 sleep 1 &;
 wait;
+echo "&" &;
+wait;
 cmd_echo : limited command := "/bin/echo";
 cmd_echo;
 
@@ -2625,6 +2627,11 @@ result := `cat t.tmp`;
 pragma assert( result = ">" );
 rm t.tmp;
 
+echo "&" > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "&" );
+rm t.tmp;
+
 -- Single quoted target
 
 echo "g" > 't.tmp';
@@ -2650,6 +2657,11 @@ rm t.tmp;
 echo '>' > "t.tmp";
 result := `cat t.tmp`;
 pragma assert( result = ">" );
+rm t.tmp;
+
+echo '&' > "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "&" );
 rm t.tmp;
 
 -- Bourne Shell Compatibility: Standard Output Append
@@ -2725,9 +2737,16 @@ result := `cat t.tmp`;
 pragma assert( result = "j2" );
 rm t.tmp;
 
-echo '>>' > "t.tmp";
+touch t.tmp;
+echo '>>' >> "t.tmp";
 result := `cat t.tmp`;
 pragma assert( result = ">>" );
+rm t.tmp;
+
+touch t.tmp;
+echo '&' >> "t.tmp";
+result := `cat t.tmp`;
+pragma assert( result = "&" );
 rm t.tmp;
 
 -- Bourne Shell Compatibility: Standard Error Output
