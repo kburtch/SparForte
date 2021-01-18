@@ -683,7 +683,7 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
     end loop;
     -- draw new line
     if keepHistory then
-       put_bold( prompt );
+       put( bold( to_string( prompt ) ) );
     end if;
     put( line );
     -- the final character on the bottom-right of the screen has special
@@ -886,7 +886,7 @@ begin
 
   -- if a prompt, show it in bold first
   if length( prompt ) > 0 then
-         put_bold( prompt );
+     put( bold( to_string( prompt ) ) );
   end if;
 
   line     := null_unbounded_string;

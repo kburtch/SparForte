@@ -39,6 +39,7 @@ BDBINCL=BDBINCLSUB
 BDBLIBS=BDBSUB
 RLINCL=RLINCLSUB
 RLLIBS=RLLIBSSUB
+RLFLAG=RLFLAGSUB
 #PCREINCL=PCREINCLSUB
 PCRELIBS=PCRELIBSSUB
 PCREOBJ=PCREOBJSUB
@@ -130,7 +131,11 @@ c_scanner.o: c_scanner.c
 	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_scanner.c
 
 c_rl.o: c_rl.c
+ifneq ($(strip $(RLFLAG)),)
 	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_rl.c
+else
+	@echo "Readline disabled"
+endif
 
 # GStreamer binding is optional
 
