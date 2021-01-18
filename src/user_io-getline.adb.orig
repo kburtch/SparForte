@@ -571,7 +571,6 @@ end Ada_parameter_word_generator;
 -- command completions.
 --   Exception: raises READLINE_EOF if end-of-file is encountered.
 -----------------------------------------------------------------------------
--- TODO: prompt
 
 procedure getLine( line : out unbounded_string;
                    prompt : unbounded_string := null_unbounded_string;
@@ -589,25 +588,27 @@ begin
      termEmu := New_String( "xterm" );
   end if;
 
+  -- TODO: the prompt is always the bold prompt - this should be cleaned up
   if prompt /= null_unbounded_string then
      bold_prompt := prompt;
-  else
-     -- by default
-     -- [# 1][# 27][1m[# 2]=> [# 1][# 27](B[# 27][m[# 2]
-     bold_prompt :=
-        RL_PROMPT_START_IGNORE &
-        term( bold ) &
-        RL_PROMPT_END_IGNORE &
-        to_string( defaultPrompt ) &
-        RL_PROMPT_START_IGNORE &
-        term( normal ) &
-        RL_PROMPT_END_IGNORE;
+  --else
+  --   -- by default
+  --   -- [# 1][# 27][1m[# 2]=> [# 1][# 27](B[# 27][m[# 2]
+  --   bold_prompt :=
+  --      RL_PROMPT_START_IGNORE &
+  --      term( bold ) &
+  --      RL_PROMPT_END_IGNORE &
+   ----     to_string( defaultPrompt ) &
+  --      RL_PROMPT_START_IGNORE &
+  --      term( normal ) &
+  --      RL_PROMPT_END_IGNORE;
   end if;
 
   declare
      cprompt: constant char_array := To_C( to_string( bold_prompt ) );
   begin
      C_readline( Value( termEmu ), cprompt, buffer );
+     interfaces.c.strings.free( termEmu );
      if buffer = Null_Ptr then
         if keepHistory then  -- nothing at prompt?
            line := to_unbounded_string( "return" ); -- treat as "return"
@@ -620,13 +621,16 @@ begin
      end if;
   end;
 
-  line := to_unbounded_string( Value( buffer ) );
+  if buffer = Null_Ptr then
+     null; -- put_line( "debug eof" );
+  else
+     line := to_unbounded_string( Value( buffer ) );
 
-  -- Deallocate C's string buffer once Ada has captured the string.
+     -- Deallocate C's string buffer once Ada has captured the string.
 
-  C_free_readline( buffer );
+      C_free_readline( buffer );
 
-  interfaces.c.strings.free( termEmu );
+  end if;
 
   -- history
 
