@@ -11,6 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- heuristic complete should only apply for second word, not third
 - shell parser rewrite
   - fix all todos
     - compiler todos

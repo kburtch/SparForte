@@ -120,6 +120,120 @@ memoryLeakCnt : integer := 0;
 
 -----------------------------------------------------------------------------
 --
+-- IPSET WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+ipsetWords  : completionLists.Vector;
+ipsetCursor : completionLists.Cursor;
+
+-----------------------------------------------------------------------------
+--  IPSET WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_ipset_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  use completionLists;
+  needle   : constant string := To_Ada( Value( text ) );
+  ptr : chars_ptr;
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     ipsetCursor := completionLists.First( ipsetWords );
+  elsif ipsetCursor /= completionLists.No_Element then
+     ipsetCursor := completionLists.Next( ipsetCursor );
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while ipsetCursor /= completionLists.No_Element loop
+     ptr := completionLists.Element( ipsetCursor );
+     if Strlen( text ) <= Strlen( ptr ) then
+        declare
+           haystack : constant string := To_Ada( Value( ptr ) );
+        begin
+           if needle = haystack(1..needle'last) then
+              return C_strdup( ptr );
+           end if;
+        end;
+     end if;
+     ipsetCursor := completionLists.Next( ipsetCursor );
+  end loop;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_ipset_word_generator;
+
+
+-----------------------------------------------------------------------------
+--
+-- SVN WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+svnWords  : completionLists.Vector;
+svnCursor : completionLists.Cursor;
+
+-----------------------------------------------------------------------------
+--  SVN WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_svn_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  use completionLists;
+  needle   : constant string := To_Ada( Value( text ) );
+  ptr : chars_ptr;
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     svnCursor := completionLists.First( svnWords );
+  elsif svnCursor /= completionLists.No_Element then
+     svnCursor := completionLists.Next( svnCursor );
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while svnCursor /= completionLists.No_Element loop
+     ptr := completionLists.Element( svnCursor );
+     if Strlen( text ) <= Strlen( ptr ) then
+        declare
+           haystack : constant string := To_Ada( Value( ptr ) );
+        begin
+           if needle = haystack(1..needle'last) then
+              return C_strdup( ptr );
+           end if;
+        end;
+     end if;
+     svnCursor := completionLists.Next( svnCursor );
+  end loop;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_svn_word_generator;
+
+
+-----------------------------------------------------------------------------
+--
 -- GIT WORD COMPLETION
 --
 -----------------------------------------------------------------------------
@@ -173,6 +287,122 @@ begin
 
   return Null_Ptr;
 end Ada_git_word_generator;
+
+
+-----------------------------------------------------------------------------
+--
+-- YUM WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+yumWords  : completionLists.Vector;
+yumCursor : completionLists.Cursor;
+
+-----------------------------------------------------------------------------
+--  YUM WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_yum_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  use completionLists;
+  needle   : constant string := To_Ada( Value( text ) );
+  ptr : chars_ptr;
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     yumCursor := completionLists.First( yumWords );
+  elsif yumCursor /= completionLists.No_Element then
+     yumCursor := completionLists.Next( yumCursor );
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while yumCursor /= completionLists.No_Element loop
+     ptr := completionLists.Element( yumCursor );
+     if Strlen( text ) <= Strlen( ptr ) then
+        declare
+           haystack : constant string := To_Ada( Value( ptr ) );
+        begin
+           if needle = haystack(1..needle'last) then
+put_line( haystack );
+              return C_strdup( ptr );
+           end if;
+        end;
+     end if;
+     yumCursor := completionLists.Next( yumCursor );
+  end loop;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_yum_word_generator;
+
+
+-----------------------------------------------------------------------------
+--
+-- APT WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+aptWords  : completionLists.Vector;
+aptCursor : completionLists.Cursor;
+
+-----------------------------------------------------------------------------
+--  APT WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_apt_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  use completionLists;
+  needle   : constant string := To_Ada( Value( text ) );
+  ptr : chars_ptr;
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     aptCursor := completionLists.First( aptWords );
+  elsif aptCursor /= completionLists.No_Element then
+     aptCursor := completionLists.Next( aptCursor );
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while aptCursor /= completionLists.No_Element loop
+     ptr := completionLists.Element( aptCursor );
+     if Strlen( text ) <= Strlen( ptr ) then
+        declare
+           haystack : constant string := To_Ada( Value( ptr ) );
+        begin
+           if needle = haystack(1..needle'last) then
+put_line( haystack );
+              return C_strdup( ptr );
+           end if;
+        end;
+     end if;
+     aptCursor := completionLists.Next( aptCursor );
+  end loop;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_apt_word_generator;
 
 
 -----------------------------------------------------------------------------
@@ -1235,10 +1465,30 @@ end getLine;
 
 -- Dummy Functions (not used unless GNU readline)
 
+function Ada_ipset_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_ipset_word_generator;
+
 function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr is
 begin
   return Null_Ptr;
 end Ada_git_word_generator;
+
+function Ada_svn_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_svn_word_generator;
+
+function Ada_apt_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_apt_word_generator;
+
+function Ada_yum_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_yum_word_generator;
 
 function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
 begin
@@ -1254,6 +1504,7 @@ function Ada_parameter_word_generator(text : chars_ptr; state : int ) return cha
 begin
   return Null_Ptr;
 end Ada_parameter_word_generator;
+
 #end if;
 
 
@@ -1296,9 +1547,69 @@ procedure startupGetline is
     memoryLeakCnt := memoryLeakCnt + 1;
   end git_add;
 
+  procedure svn_add( s : string ) is
+  begin
+    completionLists.append( svnWords, New_String( s ) );
+    memoryLeakCnt := memoryLeakCnt + 1;
+  end svn_add;
+
+  procedure ipset_add( s : string ) is
+  begin
+    completionLists.append( ipsetWords, New_String( s ) );
+    memoryLeakCnt := memoryLeakCnt + 1;
+  end ipset_add;
+
+  procedure yum_add( s : string ) is
+  begin
+    completionLists.append( yumWords, New_String( s ) );
+    memoryLeakCnt := memoryLeakCnt + 1;
+  end yum_add;
+
 begin
   C_init_readline;
 -- TODO: better options
+--  add-repository
+  --autoclean
+  --autoremove
+  --build
+  --build-dep
+  --changelog
+  --check
+  --clean
+  --contains
+  --content
+  --deb
+  --depends
+  --dist-upgrade
+  --download
+  --edit-sources
+  --dselect-upgrade
+  --full-upgrade
+  --held
+  --help
+  --hold
+  --install
+  --help
+  --hold
+  --install
+  --list
+  --policy
+  --purge
+  --recommends
+  --rdepends
+  --reinstall
+  --remove
+  --search
+  --show
+  --showhold
+  --showsrc
+  --source
+  --sources
+  --unhold
+  --update
+  --upgrade
+  --version
+
   git_add("add");
   git_add("add--interactive");
   git_add("am");
@@ -1448,6 +1759,94 @@ begin
   git_add("whatchanged");
   git_add("worktree");
   git_add("write-tree");
+  svn_add("blame");
+  svn_add("praise");
+  svn_add("annotate");
+  svn_add("cat");
+  svn_add("changelist");
+  svn_add("checkout");
+  svn_add("cleanup");
+  svn_add("commit");
+  svn_add("copy");
+  svn_add("delete");
+  svn_add("remove");
+  svn_add("diff");
+  svn_add("export");
+  svn_add("help");
+  svn_add("import");
+  svn_add("info");
+  svn_add("list");
+  svn_add("lock");
+  svn_add("log");
+  svn_add("merge");
+  svn_add("mergeinfo");
+  svn_add("mkdir");
+  svn_add("move");
+  svn_add("patch");
+  svn_add("propdel");
+  svn_add("propedit");
+  svn_add("propget");
+  svn_add("proplist");
+  svn_add("propset");
+  svn_add("relocate");
+  svn_add("resolve");
+  svn_add("resolved");
+  svn_add("revert");
+  svn_add("status");
+  svn_add("switch");
+  svn_add("unlock");
+  svn_add("update");
+  svn_add("upgrade");
+  ipset_add("create");
+  ipset_add("add");
+  ipset_add("del");
+  ipset_add("test");
+  ipset_add("destroy");
+  ipset_add("list");
+  ipset_add("save");
+  ipset_add("restore");
+  ipset_add("flush");
+  ipset_add("rename");
+  ipset_add("swap");
+  ipset_add("help");
+  ipset_add("version");
+  yum_add("install");
+  yum_add("update");
+  yum_add("update-to");
+  yum_add("update-minimal");
+  yum_add("check-update");
+  yum_add("upgrade");
+  yum_add("upgrade-to");
+  yum_add("distribution-synchronization");
+  yum_add("remove");
+  yum_add("erase");
+  yum_add("autoremove");
+  yum_add("list");
+  yum_add("info");
+  yum_add("provides");
+  yum_add("whatprovides");
+  yum_add("clean");
+  yum_add("makecache");
+  yum_add("groups");
+  yum_add("search");
+  yum_add("shell");
+  yum_add("resolvedep");
+  yum_add("localinstall");
+  yum_add("localupdate");
+  yum_add("reinstall");
+  yum_add("downgrade");
+  yum_add("deplist");
+  yum_add("repolist");
+  yum_add("repoinfo");
+  yum_add("repository-packages");
+  yum_add("version");
+  yum_add("history");
+  yum_add("load-transaction");
+  yum_add("updateinfo");
+  yum_add("fssnapshot");
+  yum_add("fs");
+  yum_add("check");
+  yum_add("help");
 end startupGetline;
 #else
 procedure startupGetline is
@@ -1471,6 +1870,21 @@ procedure shutdownGetline is
 begin
   for i in completionLists.First_Index( gitWords )..completionLists.Last_Index( gitWords ) loop
       wordPtr := completionLists.Element( gitWords, i );
+      Free( wordPtr );
+      memoryLeakCnt := memoryLeakCnt - 1;
+  end loop;
+  for i in completionLists.First_Index( svnWords )..completionLists.Last_Index( svnWords ) loop
+      wordPtr := completionLists.Element( svnWords, i );
+      Free( wordPtr );
+      memoryLeakCnt := memoryLeakCnt - 1;
+  end loop;
+  for i in completionLists.First_Index( ipsetWords )..completionLists.Last_Index( ipsetWords ) loop
+      wordPtr := completionLists.Element( ipsetWords, i );
+      Free( wordPtr );
+      memoryLeakCnt := memoryLeakCnt - 1;
+  end loop;
+  for i in completionLists.First_Index( yumWords )..completionLists.Last_Index( yumWords ) loop
+      wordPtr := completionLists.Element( yumWords, i );
       Free( wordPtr );
       memoryLeakCnt := memoryLeakCnt - 1;
   end loop;
