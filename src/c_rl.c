@@ -39,7 +39,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     const char ipset_str[7] = "ipset ";
     const char svn_str[5] = "svn ";
     const char yum_str[5] = "yum ";
-    const char yum_str[5] = "apt ";
+    const char apt_str[5] = "apt ";
 
     int completion_type = completion_type_none;
 
