@@ -195,7 +195,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     } else if (completion_type == completion_type_yum) {
        matches = rl_completion_matches(text, Ada_yum_word_generator);
     } else if (completion_type == completion_type_apt) {
-       matches = rl_completion_matches(text, Ada_apt_word_generator);
+       matches = rl_completion_matches(text, Ada_git_word_generator); //////
     } else { // case completion_type_default:
        matches = ( (char **) NULL );
        rl_attempted_completion_over = 0;
