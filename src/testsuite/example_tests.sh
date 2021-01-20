@@ -207,6 +207,8 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+# For user input, the GNU readline library may output control
+# characters, depending on the terminal emulation.
 EXAMPLE="distance.sp"
 RESULT=`src/spar --test examples/$EXAMPLE <<HERE
 1
@@ -221,7 +223,9 @@ Starting Longitude: 2
 
 Distance between the two places is
   195.57030 miles"
-if [ "$RESULT" != "$EXPECTED" ] ; then
+RESULT=`echo "$RESULT" | tr -d '\r\n'`
+TMP=`echo "$RESULT" | fgrep "$EXPECTED"`
+if [ -z "$TMP" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
    exit 192
