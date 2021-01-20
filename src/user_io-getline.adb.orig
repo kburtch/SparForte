@@ -332,7 +332,6 @@ begin
            haystack : constant string := To_Ada( Value( ptr ) );
         begin
            if needle = haystack(1..needle'last) then
-put_line( haystack );
               return C_strdup( ptr );
            end if;
         end;
@@ -390,7 +389,6 @@ begin
            haystack : constant string := To_Ada( Value( ptr ) );
         begin
            if needle = haystack(1..needle'last) then
-put_line( haystack );
               return C_strdup( ptr );
            end if;
         end;
@@ -588,7 +586,7 @@ begin
            exception when DIRECTORY_ERROR =>
              null;
            when others =>
-             put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+             put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
            end;
         end loop;
      end if;
@@ -616,7 +614,7 @@ begin
         exception when DIRECTORY_ERROR =>
           null;
         when others =>
-          put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+          put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
         end;
      exit when remainingCmdPathDirs = null_unbounded_string;
      end loop;
@@ -657,7 +655,7 @@ begin
      exception when DIRECTORY_ERROR =>
        null;
      when others =>
-       put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+       put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
        null;
      end;
   end if;
@@ -690,7 +688,7 @@ begin
         exception when DIRECTORY_ERROR =>
           null;
         when others =>
-          put_line( current_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+          put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
         end;
      end loop;
 
@@ -837,7 +835,7 @@ begin
   declare
      cprompt: constant char_array := To_C( to_string( bold_prompt ) );
   begin
-     C_readline( Value( termEmu ), cprompt, buffer );
+     C_readline( Value( termEmu ), cprompt, buffer, boolean'pos(keepHistory) );
      interfaces.c.strings.free( termEmu );
      if buffer = Null_Ptr then
         if keepHistory then  -- nothing at prompt?
@@ -1565,51 +1563,56 @@ procedure startupGetline is
     memoryLeakCnt := memoryLeakCnt + 1;
   end yum_add;
 
+  procedure apt_add( s : string ) is
+  begin
+    completionLists.append( aptWords, New_String( s ) );
+    memoryLeakCnt := memoryLeakCnt + 1;
+  end apt_add;
+
 begin
   C_init_readline;
--- TODO: better options
---  add-repository
-  --autoclean
-  --autoremove
-  --build
-  --build-dep
-  --changelog
-  --check
-  --clean
-  --contains
-  --content
-  --deb
-  --depends
-  --dist-upgrade
-  --download
-  --edit-sources
-  --dselect-upgrade
-  --full-upgrade
-  --held
-  --help
-  --hold
-  --install
-  --help
-  --hold
-  --install
-  --list
-  --policy
-  --purge
-  --recommends
-  --rdepends
-  --reinstall
-  --remove
-  --search
-  --show
-  --showhold
-  --showsrc
-  --source
-  --sources
-  --unhold
-  --update
-  --upgrade
-  --version
-
+-- TODO: maybe better options for looking up words quickly
+  apt_add("add-repository");
+  apt_add("autoclean");
+  apt_add("autoremove");
+  apt_add("build");
+  apt_add("build-dep");
+  apt_add("changelog");
+  apt_add("check");
+  apt_add("clean");
+  apt_add("contains");
+  apt_add("content");
+  apt_add("deb");
+  apt_add("depends");
+  apt_add("dist-upgrade");
+  apt_add("download");
+  apt_add("edit-sources");
+  apt_add("dselect-upgrade");
+  apt_add("full-upgrade");
+  apt_add("held");
+  apt_add("help");
+  apt_add("hold");
+  apt_add("install");
+  apt_add("help");
+  apt_add("hold");
+  apt_add("install");
+  apt_add("list");
+  apt_add("policy");
+  apt_add("purge");
+  apt_add("recommends");
+  apt_add("rdepends");
+  apt_add("reinstall");
+  apt_add("remove");
+  apt_add("search");
+  apt_add("show");
+  apt_add("showhold");
+  apt_add("showsrc");
+  apt_add("source");
+  apt_add("sources");
+  apt_add("unhold");
+  apt_add("update");
+  apt_add("upgrade");
+  apt_add("version");
   git_add("add");
   git_add("add--interactive");
   git_add("am");
@@ -1885,6 +1888,11 @@ begin
   end loop;
   for i in completionLists.First_Index( yumWords )..completionLists.Last_Index( yumWords ) loop
       wordPtr := completionLists.Element( yumWords, i );
+      Free( wordPtr );
+      memoryLeakCnt := memoryLeakCnt - 1;
+  end loop;
+  for i in completionLists.First_Index( aptWords )..completionLists.Last_Index( aptWords ) loop
+      wordPtr := completionLists.Element( aptWords, i );
       Free( wordPtr );
       memoryLeakCnt := memoryLeakCnt - 1;
   end loop;

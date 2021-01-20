@@ -44,7 +44,7 @@ pragma import( C, C_init_readline, "C_init_readline" );
 -- Setup the GNU readline library and the C helper functions.
 -- C defintion: void C_readline( char *term, char **ada_buffer)
 -----------------------------------------------------------------------------
-procedure C_readline( term : char_array; prompt : char_array; buffer : in out chars_ptr );
+procedure C_readline( term : char_array; prompt : char_array; buffer : in out chars_ptr; keep_history : int );
 pragma import( C, C_readline, "C_readline" );
 
 -----------------------------------------------------------------------------
