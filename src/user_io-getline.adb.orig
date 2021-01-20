@@ -466,6 +466,61 @@ end Ada_assignment_word_generator;
 
 
 -----------------------------------------------------------------------------
+--  VARIABLE WORD GENERATOR (C language callback to Ada)
+--
+-- Return candidate words for dollar expansion from the symbol table.
+-----------------------------------------------------------------------------
+
+variableIdx : identifier:=identifiers'last;
+
+function Ada_variable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  needle    : constant string := To_Ada( Value( text ) );
+  needleLen : constant size_t := Strlen( text );
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     variableIdx := identifiers'last;
+  elsif variableIdx > identifiers'first then
+     -- Note: walks everything, even things not visible.  Perhaps not a big
+     -- concern on the command line?
+     variableIdx := variableIdx  - 1;
+  end if;
+
+  -- From the current position in the list, if the text matches the leading
+  -- characters of the candidate word, then return the candidate word to C.
+  -- Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  while variableIdx > identifiers'first loop
+     if needleLen <= size_t( length( identifiers( variableIdx ).name ) ) then
+        declare
+           haystack : constant string := to_string( identifiers(variableIdx ).name );
+           haystack_cstr : aliased char_array :=  To_C( haystack );
+        begin
+           if needle = haystack( 1..integer( needleLen ) ) then
+              if not identifiers( variableIdx ).deleted and
+                     -- root record, string literal, etc. have spaces
+                     -- so users cannot use them.
+                       index( identifiers( variableIdx ).name, " " ) = 0 and
+                     ( identifiers( variableIdx ).class = varClass or
+                       identifiers( variableIdx ).class = enumClass ) then
+                return C_strdup( To_Chars_Ptr( haystack_cstr'unchecked_access ) );
+              end if;
+           end if;
+        end;
+     end if;
+     variableIdx := variableIdx  - 1;
+  end loop;
+
+  -- Return a C NULL pointer to indicate there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_variable_word_generator;
+
+
+-----------------------------------------------------------------------------
 --  FIRST WORD GENERATOR (C language callback to Ada)
 --
 -- Return candidate words for first word substitutions from the symbol table.

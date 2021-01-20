@@ -3,21 +3,19 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-// sudo apt-get install libreadline-dev
-// gcc -o rl rl.c -lreadline
-
-// Bash readline support is 4500 lines of code.
-
 // completion functions (as defined in Ada)
 
 extern char * Ada_executable_word_generator(const char *text, int state);
 extern char * Ada_assignment_word_generator(const char *text, int state);
+extern char * Ada_variable_word_generator(const char *text, int state);
 extern char * Ada_parameter_word_generator(const char *text, int state);
 extern char * Ada_git_word_generator(const char *text, int state);
 extern char * Ada_ipset_word_generator(const char *text, int state);
 extern char * Ada_svn_word_generator(const char *text, int state);
 extern char * Ada_yum_word_generator(const char *text, int state);
 extern char * Ada_apt_word_generator(const char *text, int state);
+
+// types of completions
 
 const int completion_type_none       = -1;
 const int completion_type_default    = 0;
@@ -29,8 +27,16 @@ const int completion_type_svn        = 5;
 const int completion_type_ipset      = 6;
 const int completion_type_yum        = 7;
 const int completion_type_apt        = 8;
+const int completion_type_variable   = 9;
 
-//char ** sparforte_completion( const char *text, int start, int end, int qc, int compflags) {
+/**
+ *  SPARFORTE COMPLETION
+ *
+ * This function is the callback for GNU readline which tries to
+ * determine which word generation function to call in Ada.  The
+ * word generators produce the list of completion words.
+ */
+
 char ** sparforte_completion( const char *text, int start, int end ) {
     char **matches;
     int  text_idx      = -9999;
@@ -51,8 +57,6 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     const char apt_str[5]   = "apt ";
 
     int completion_type = completion_type_none;
-
-    // printf( "executable_completion\n" ); // DEBUG
 
     // start with no matches
 
@@ -174,6 +178,14 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        completion_type = completion_type_command;
     } else if ( rl_line_buffer[text_idx] == '|' ) {
        completion_type = completion_type_command;
+    } else if ( rl_line_buffer[text_idx] == '$' ) {
+       completion_type = completion_type_variable;
+    } else if ( rl_line_buffer[text_idx] == '{' ) {
+      if (text_idx > 0) {
+         if ( rl_line_buffer[text_idx-1] == '$' ) {
+            completion_type = completion_type_variable;
+         }
+      }
     }
 
     // Git subcommand completion: a special case.
@@ -276,7 +288,9 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     } else if (completion_type == completion_type_yum) {
        matches = rl_completion_matches(text, Ada_yum_word_generator);
     } else if (completion_type == completion_type_apt) {
-       matches = rl_completion_matches(text, Ada_apt_word_generator); //////
+       matches = rl_completion_matches(text, Ada_apt_word_generator);
+    } else if (completion_type == completion_type_variable) {
+       matches = rl_completion_matches(text, Ada_variable_word_generator);
     } else { // case completion_type_default:
        matches = ( (char **) NULL );
        rl_attempted_completion_over = 0;
@@ -285,9 +299,25 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     return matches;
 }
 
+
+/**
+ *  C STRDUP (called from Ada)
+ *
+ * A binding to the strdup() function because readline frees strings
+ * allocated by STRDUP.  This is here for portability but might be
+ * better defined in the spar_os package.
+ */
+
 char *C_strdup( const char *s ) {
 	return strdup( s );
 }
+
+
+/**
+ *  C INIT READLINE (called from Ada)
+ *
+ * Initialize the GNU readline library.
+ */
 
 void C_init_readline() {
   // This identifies SparForte configurations in inputrc files
@@ -304,10 +334,6 @@ void C_init_readline() {
 
   // Tilde expansion (not sure if this is necessary)
   rl_variable_bind( "expand-tilde", "on" );
-}
-
-void C_readline( char *term, char *prompt, char **ada_buffer, int keep_history) {
-  char *buffer = NULL;
 
   // This defines the quote characters for breaking up a line
   // for completion.
@@ -318,6 +344,18 @@ void C_readline( char *term, char *prompt, char **ada_buffer, int keep_history) 
   // completion.
 
   rl_attempted_completion_function = sparforte_completion;
+}
+
+
+/**
+ *  C READLINE (called from Ada)
+ *
+ * Read a line of text.  ada_buffer will have the line of text, which must
+ * be later deallocated by free_readline.
+ */
+
+void C_readline( char *term, char *prompt, char **ada_buffer, int keep_history) {
+  char *buffer = NULL;
 
   // rl_terminal_name should be set before each call so that TERM env var
   // changes take effect.  Also, a failure to set this at all will cause
@@ -325,7 +363,8 @@ void C_readline( char *term, char *prompt, char **ada_buffer, int keep_history) 
 
   rl_terminal_name = term;
 
-  // Command line?  Otherwise, program input.
+  // If we are keeping history, we are the command prompt.  At the
+  // prompt, enable completion and blinking parenthesis matching.
 
   if (keep_history) {
      // Blink the matching parenthesis
@@ -339,15 +378,23 @@ void C_readline( char *term, char *prompt, char **ada_buffer, int keep_history) 
      rl_variable_bind( "disable-completion", "on" );
   }
 
+  // Read. Add non-empty lines to gnu readline's history
+
   buffer = readline( prompt );
   if (buffer) {
      *ada_buffer = buffer;
-     // add non-empty lines to gnu readline's history
      if ( strlen(buffer) > 0 ) {
         add_history( buffer );
      }
   }
 }
+
+
+/**
+ *  C FREE READLINE (called from Ada)
+ *
+ * Deallocate the string in the ada_buffer.
+ */
 
 void C_free_readline(char *ada_buffer) {
   free( ada_buffer);

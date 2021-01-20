@@ -80,6 +80,9 @@ pragma export( C, Ada_executable_word_generator, "Ada_executable_word_generator"
 function Ada_assignment_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_assignment_word_generator, "Ada_assignment_word_generator" );
 
+function Ada_variable_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_variable_word_generator, "Ada_variable_word_generator" );
+
 function Ada_parameter_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_parameter_word_generator, "Ada_parameter_word_generator" );
 
