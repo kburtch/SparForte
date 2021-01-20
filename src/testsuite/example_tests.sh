@@ -22,13 +22,17 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+# For user input, the GNU readline library may output control
+# characters, depending on the terminal emulation.
 EXAMPLE="aplusb.sp"
-RESULT=`echo "1 2" | src/spar --test examples/$EXAMPLE`
-EXPECTED="1 2
- 3"
-if [ "$RESULT" != "$EXPECTED" ] ; then
+RESULT=`echo "1 2" | src/spar --test examples/$EXAMPLE | tr -d '\r\n'`
+EXPECTED="1 2 3"
+TMP=`echo "$RESULT" | fgrep "$EXPECTED"`
+if [ -z "$TMP" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -43,6 +47,8 @@ bin=1011"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -54,6 +60,8 @@ EXPECTED=" 1 2 3 4 5 6"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -65,6 +73,8 @@ EXPECTED=" 1 2 3 4 5 6"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -78,6 +88,8 @@ cC3"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -90,6 +102,8 @@ EXPECTED=" 55
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -102,6 +116,8 @@ EXPECTED=" 55
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -121,6 +137,8 @@ A rotr B =  64"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -133,6 +151,8 @@ EXPECTED="Take one down, pass it around
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -144,6 +164,8 @@ EXPECTED=" 6.2048"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -156,6 +178,8 @@ character a = character code 97"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -176,6 +200,8 @@ EXPECTED=" 0 1 2
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -210,6 +236,8 @@ EXPECTED=" 99 is Closed
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -221,6 +249,8 @@ EXPECTED=" 3"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -233,6 +263,8 @@ EXPECTED="Content-type: text/cssbody {  margin: 0;  padding: 0;  background-colo
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -244,6 +276,8 @@ EXPECTED=" 120"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -255,6 +289,8 @@ EXPECTED=" 8"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -268,6 +304,8 @@ Buzz"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -281,6 +319,8 @@ EXPECTED="    29 2#11101# 2#10011#      29
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -297,6 +337,8 @@ EXPECTED=" 3
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -308,6 +350,8 @@ EXPECTED="12346"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -327,6 +371,8 @@ EXPECTED=" 0
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -341,6 +387,8 @@ EXPECTED=" 9.00000000000000E+00 maps to: -1.00000000000000E-01
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -358,6 +406,8 @@ EXPECTED=" 2
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -369,6 +419,8 @@ EXPECTED="  1_000_000: 3.1"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -381,6 +433,8 @@ Switch"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -392,6 +446,8 @@ EXPECTED="It's"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -403,6 +459,8 @@ EXPECTED=" 2 3 5 6 7 8 10 11 12 13 14 15 17 18 19 20 21 22 23 24 26 27"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -415,6 +473,8 @@ ablewasiereisawelba : true"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -428,6 +488,8 @@ EXPECTED=" 6 : true
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -441,6 +503,8 @@ EXPECTED=" 6 : false
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -455,6 +519,8 @@ Argument 3 is '3'"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -469,6 +535,8 @@ EXPECTED=" 180154659
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -493,6 +561,8 @@ WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -504,6 +574,8 @@ EXPECTED="Ovt swbeqf irk dhvpx jnygm alzcu!"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -522,6 +594,8 @@ EXPECTED=" 2
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -536,6 +610,8 @@ Awake!"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -549,6 +625,8 @@ Alphabeta"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -561,6 +639,8 @@ EXPECTED="Sum of F(x) from 1 to 1000 is 1.64393456668165E+00"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -574,6 +654,8 @@ EXPECTED=" 0
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -585,6 +667,8 @@ EXPECTED="27"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -596,6 +680,8 @@ EXPECTED="sum(4)"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -610,6 +696,8 @@ Discarding a temporary file"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -628,6 +716,8 @@ Arccot 45 7.85398163397449E-01"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -639,6 +729,8 @@ EXPECTED="114"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"
@@ -651,6 +743,8 @@ EXPECTED="Your answer? (Y/N) Y"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
    exit 192
 else
    echo "OK - $EXAMPLE"

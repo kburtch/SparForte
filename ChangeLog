@@ -1,9 +1,10 @@
 For the latest news, visit the SparForte web site.
 
+Objective: Shell and Command Line Improvements
+
 CHANGES SINCE 2.3.1
 
-1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.
-
+1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.  
 CHANGES SINCE 2.3
 
 2. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
@@ -69,3 +70,8 @@ CHANGES SINCE 2.3
 28. New: pragma suppress( no_empty_command_substitutions ).
 
 29. Fix: s := `` no longer gives a trailing whitespace error message.
+
+30. Change: new support for GNU readline library (third-party areadline library removed).
+
+31. Change: new command line completion capabilities (assignment completion, executable command completion, subcommand completion for certain Linux commands).
+
