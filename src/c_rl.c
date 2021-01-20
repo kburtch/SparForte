@@ -302,7 +302,7 @@ void C_init_readline() {
 
   rl_variable_bind( "comment-begin", "--" );
 
-  // Tilde expansion
+  // Tilde expansion (not sure if this is necessary)
   rl_variable_bind( "expand-tilde", "on" );
 }
 
@@ -339,13 +339,10 @@ void C_readline( char *term, char *prompt, char **ada_buffer, int keep_history) 
      rl_variable_bind( "disable-completion", "on" );
   }
 
-  // RL_PROMPT_START_IGNORE (001) and RL_PROMPT_END_IGNORE (002)
-
   buffer = readline( prompt );
   if (buffer) {
-     // printf("You entered: %s\n", buffer);
      *ada_buffer = buffer;
-     // add non-empty lines to history
+     // add non-empty lines to gnu readline's history
      if ( strlen(buffer) > 0 ) {
         add_history( buffer );
      }
