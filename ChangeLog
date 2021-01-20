@@ -75,3 +75,5 @@ CHANGES SINCE 2.3
 
 31. Change: new command line completion capabilities (assignment completion, executable command completion, subcommand completion for certain Linux commands).
 
+32. Fix: Updated Git prompt script example for GNU readline.
+

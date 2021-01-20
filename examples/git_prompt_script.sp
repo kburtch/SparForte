@@ -13,6 +13,9 @@ pragma unchecked_import( shell, LOGNAME );
 
 HOSTNAME : constant profile_string := `hostname`;
 
+GNU_READLINE : constant boolean := true;
+-- set this to true for GNU readline
+
 pwd_tmp : string;
 git_changes : string;
 git_changes_staged : string;
@@ -67,7 +70,23 @@ new_line;
 
 -- Identity and big arrow
 
-put(LOGNAME) @ ('@') @ (HOSTNAME) @ (" => ");
+put(LOGNAME) @ ('@') @ (HOSTNAME) @ (" ");
+if GNU_READLINE then
+   put( ASCII.SOH );
+   tput bold;
+   put( ASCII.STX );
+else
+   tput bold;
+end if;
+put( "=>");
+if GNU_READLINE then
+   put( ASCII.SOH );
+   tput sgr0;
+   put( ASCII.STX );
+else
+   tput sgr0;
+end if;
+put( " ");
 
 -- VIM editor formatting instructions
 -- vim: ft=spar

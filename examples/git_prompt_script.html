@@ -42,6 +42,9 @@ LOGNAME : <b>constant</b> profile_string := "unknown";
 
 HOSTNAME : <b>constant</b> profile_string := `hostname`;
 
+GNU_READLINE : <b>constant</b> boolean := true;
+<FONT COLOR=green><EM>-- set this to true for GNU readline</EM></FONT>
+
 pwd_tmp : string;
 git_changes : string;
 git_changes_staged : string;
@@ -96,7 +99,23 @@ new_line;
 
 <FONT COLOR=green><EM>-- Identity and big arrow</EM></FONT>
 
-put(LOGNAME) @ ('@') @ (HOSTNAME) @ (" =&gt; ");
+put(LOGNAME) @ ('@') @ (HOSTNAME) @ (" ");
+<b>if</b> GNU_READLINE <b>then</b>
+   put( ASCII.SOH );
+   tput bold;
+   put( ASCII.STX );
+<b>else</b>
+   tput bold;
+<b>end</b> <b>if</b>;
+put( "=&gt;");
+<b>if</b> GNU_READLINE <b>then</b>
+   put( ASCII.SOH );
+   tput sgr0;
+   put( ASCII.STX );
+<b>else</b>
+   tput sgr0;
+<b>end</b> <b>if</b>;
+put( " ");
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
