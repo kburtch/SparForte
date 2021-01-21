@@ -120,12 +120,6 @@ begin
     -- then use (or fall back to) the default prompt.
 
     if length( prompt ) = 0 then
-       if released then
-          prompt := defaultPrompt;
-       else
-          prompt := "spar-" & version & '-' & buildDate & ' ' & defaultPrompt;
-       end if;
-       -- set the xterm window title
        if terminalWindowNaming then
           put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  );
        end if;

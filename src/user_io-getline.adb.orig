@@ -871,20 +871,23 @@ begin
      termEmu := New_String( "xterm" );
   end if;
 
-  -- TODO: the prompt is always the bold prompt - this should be cleaned up
-  if prompt /= null_unbounded_string then
-     bold_prompt := prompt;
-  --else
-  --   -- by default
-  --   -- [# 1][# 27][1m[# 2]=> [# 1][# 27](B[# 27][m[# 2]
-  --   bold_prompt :=
-  --      RL_PROMPT_START_IGNORE &
-  --      term( bold ) &
-  --      RL_PROMPT_END_IGNORE &
-   ----     to_string( defaultPrompt ) &
-  --      RL_PROMPT_START_IGNORE &
-  --      term( normal ) &
-  --      RL_PROMPT_END_IGNORE;
+  -- The default prompt
+  -- For GNU readline, include the escape characters around the
+  -- bold sequences
+
+  if keepHistory then
+     if prompt = null_unbounded_string then
+        if released then
+           bold_prompt := ASCII.SOH & term(bold) & ASCII.STX &
+              defaultPrompt &
+              ASCII.SOH & term(normal) & ASCII.STX;
+        else
+           bold_prompt := "spar-" & version & '-' & buildDate & ' ' &
+              ASCII.SOH & term(bold) & ASCII.STX &
+              defaultPrompt &
+              ASCII.SOH & term( normal ) & ASCII.STX;
+        end if;
+     end if;
   end if;
 
   declare
@@ -1171,9 +1174,17 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
   justCompleted : boolean := false;
 begin
 
-  -- if a prompt, show it in bold first
-  if length( prompt ) > 0 then
-     put( bold( to_string( prompt ) ) );
+  if keepHistory then
+     if prompt = null_unbounded_string then
+        if released then
+           put( bold( to_string( defaultPrompt ) ) );
+        else
+           put( "spar-" & version & '-' & buildDate & ' ' &
+              bold( to_string( defaultPrompt ) ) );
+        end if;
+     else
+        put( to_string( prompt ) );
+     end if;
   end if;
 
   line     := null_unbounded_string;
@@ -1552,6 +1563,11 @@ function Ada_assignment_word_generator(text : chars_ptr; state : int ) return ch
 begin
   return Null_Ptr;
 end Ada_assignment_word_generator;
+
+function Ada_variable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_variable_word_generator;
 
 function Ada_parameter_word_generator(text : chars_ptr; state : int ) return chars_ptr is
 begin
