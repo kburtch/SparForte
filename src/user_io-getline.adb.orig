@@ -887,6 +887,8 @@ begin
               defaultPrompt &
               ASCII.SOH & term( normal ) & ASCII.STX;
         end if;
+     else
+        bold_prompt := prompt;
      end if;
   end if;
 
@@ -973,7 +975,16 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
     end loop;
     -- draw new line
     if keepHistory then
-       put( bold( to_string( prompt ) ) );
+       if prompt = null_unbounded_string then
+          if released then
+             put( bold( to_string( defaultPrompt ) ) );
+          else
+             put( "spar-" & version & '-' & buildDate & ' ' &
+                bold( to_string( defaultPrompt ) ) );
+          end if;
+       else
+          put( to_string( prompt ) );
+       end if;
     end if;
     put( line );
     -- the final character on the bottom-right of the screen has special
