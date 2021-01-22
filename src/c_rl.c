@@ -74,7 +74,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     in_backslash = 0;
 
     // Count the number of words on the line
-    // TODO: process substitution not included
+    // Note: process substitution not included in word counting
 
     if ( !((start == 0) && (end == 0)) ) {
       while ( text_idx < start ) {
@@ -186,6 +186,12 @@ char ** sparforte_completion( const char *text, int start, int end ) {
             completion_type = completion_type_variable;
          }
       }
+    } else if ( rl_line_buffer[text_idx] == '(' ) {
+      if (text_idx > 0) {
+         if ( rl_line_buffer[text_idx-1] == '$' ) {
+            completion_type = completion_type_command;
+         }
+      }
     }
 
     // Git subcommand completion: a special case.
@@ -255,17 +261,14 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        }
     } // word count 2
 
-    // If no choice was made, fall back to GNU readline default.
+    // If no choice was made, fall back to some kind of parameter.
+    // Note: this does not distinguish between an AdaScript
+    // or Bourne shell command so anything that might apply
+    // will be shown.
 
     if (completion_type == completion_type_none) {
-       completion_type = completion_type_default;
+       completion_type = completion_type_parameter;
     }
-
-    // Debug
-
-    //if ( (matches == 0) && (is_command) ) {
-    //   printf( "[command?]\n");
-    //}
 
     // Perform completion match search
     // By default, do not attempt default file matching.
@@ -291,7 +294,9 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        matches = rl_completion_matches(text, Ada_apt_word_generator);
     } else if (completion_type == completion_type_variable) {
        matches = rl_completion_matches(text, Ada_variable_word_generator);
-    } else { // case completion_type_default:
+    } else {
+       // if something goes wrong, case completion_type_default will
+       // trigger the GNU readline built-in completion.
        matches = ( (char **) NULL );
        rl_attempted_completion_over = 0;
     }
