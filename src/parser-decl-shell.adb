@@ -49,7 +49,7 @@ package body parser.decl.shell is
 type whitespaceOptions is ( keep, trim );
 -- during an expansion, should leading/trailing whitespace be kept or not
 
-type defaultModes is (none, minus, plus, question );
+type defaultModes is (none, minus, plus, question, substring_slice );
 -- ${..} modes for default values
 
 -----------------------------------------------------------------------------
@@ -778,6 +778,7 @@ procedure doVariableExpansion(
    subword      : unbounded_string;
    globSubword  : aGlobShellWord;
    expandedWord : anExpandedShellWord;
+   pos : natural;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
 
@@ -804,6 +805,22 @@ begin
             err_shell( toProtectedValue( expansionVar ) & " " & to_string( defaultValue ), wordPos );
          end if;
       end if;
+   when substring_slice =>
+      declare
+        tmp : unbounded_string;
+      begin
+        tmp := Ada.Strings.Unbounded.trim(
+            defaultValue, Ada.Strings.Both );
+        pos := natural'value( " " & to_string( tmp ) ) + 1;
+        begin
+           subword := unbounded_slice( subword, pos, length( subword ) );
+        exception when Ada.Strings.INDEX_ERROR =>
+          -- In Bourne shell, this is not actually an error.
+           subword := null_unbounded_string;
+        end;
+      exception when others =>
+        err_shell( "slice position is not a natural", wordPos );
+      end;
    when others =>
       null;
    end case;
@@ -1035,9 +1052,6 @@ begin
 
    if endOfShellWord then
       -- forced error: otherwise, we'll get a no expansion name error.
-if error_found then
-   put_line("B - ERROR"); -- DEBUG
-end if;
       expectChar( '}', rawWordValue, wordLen, wordPos  );
    else
 
@@ -1088,7 +1102,9 @@ end if;
          elsif element( rawWordValue, wordPos ) = '=' then
             err_shell( "assignment in curly braces not supported", wordPos );
          else
-            err_shell( "unexpected symbol after colon", wordPos );
+            -- substring slice
+            defaultMode := substring_slice;
+            getBraceOperatorDefaultValue;
          end if;
       elsif element( rawWordValue, wordPos ) = '-' or
             element( rawWordValue, wordPos ) = '+' or

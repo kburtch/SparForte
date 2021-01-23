@@ -11,7 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- completion
+  - backslash for a file with a space in the name.  Backslashed space now
+    sent to completion function.  Backslash must be removed, and result
+    escaped with backslashes.
 - shell parser rewrite
+  - substring ${::}
   - fix all todos
     - compiler todos
     - shell parser todos

@@ -319,6 +319,22 @@ char *C_strdup( const char *s ) {
 
 
 /**
+ *  BACKSLASH CHECK
+ *
+ * Taken from article on tab completion.  The solution must be recursive
+ * as backslashes can escape other backslashes.
+ */
+
+int backslash_check( char *line, int index ) {
+    return (
+        index > 0 &&
+        line[index - 1] == '\\' &&
+        !backslash_check(line, index - 1)
+    );
+}
+
+
+/**
  *  C INIT READLINE (called from Ada)
  *
  * Initialize the GNU readline library.
@@ -349,6 +365,12 @@ void C_init_readline() {
   // completion.
 
   rl_attempted_completion_function = sparforte_completion;
+
+  // Detecting a backslash escape
+  // Remove backslash from word break characters.
+
+  rl_completer_word_break_characters = " ";
+  rl_char_is_quoted_p = &backslash_check;
 }
 
 

@@ -715,6 +715,8 @@ begin
      end;
   end if;
 
+--put_line( "needle = " & needle ); -- DEBUG
+
   -- Search the remaining PATH values for a valid directory.
   -- Open that directory.
 

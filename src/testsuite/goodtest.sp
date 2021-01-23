@@ -3245,6 +3245,16 @@ rm "t.tmp.$$" ;
 pragma assert( s = `pwd` );
 
 s  := "foo";
+s1 := `echo ${s:0}`;
+pragma assert( s1 = "foo" );
+
+s1 := `echo ${s:1}`;
+pragma assert( s1 = "oo" );
+
+s1 := `echo ${s:4}`;
+pragma assert( s1 = "" );
+
+s  := "foo";
 s1 := `echo ${s:-bar}`;
 pragma assert( s1 = "foo" );
 
