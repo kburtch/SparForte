@@ -40,6 +40,11 @@ procedure FixSpacing( s : in out unbounded_string; inside : boolean := true );
 -- remove leading and trailing spaces, as well as any double-spaces inside
 -- inside = true to remove inside
 
+function escapeSpacesWithBackslashes( original : unbounded_string ) return unbounded_string;
+function escapeSpacesWithBackslashes( original : string ) return string;
+
+function unescapeWithBackslashes( original : unbounded_string ) return unbounded_string;
+function unescapeWithBackslashes( s : string ) return string;
 
 ------------------------------------------------------------------------------
 -- Basic String Testing
@@ -166,7 +171,7 @@ function basename( s : unbounded_string ) return unbounded_string;
 -- return the file portion of a pathname string (OS dependant!)
 
 ------------------------------------------------------------------------------
--- Operating System String Handling
+-- Security String Handling
 ------------------------------------------------------------------------------
 
 function toSecureData( s : string ) return string;

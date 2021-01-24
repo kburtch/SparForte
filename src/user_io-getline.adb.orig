@@ -29,6 +29,7 @@ with ada.text_io,
      ada.containers.vectors,
      spar_os.tty,
      spar_os.readline,
+     string_util,
      world;
 use  ada.text_io,
      ada.strings.unbounded.text_io,
@@ -37,6 +38,7 @@ use  ada.text_io,
      spar_os,
      spar_os.tty,
      spar_os.readline,
+     string_util,
      world;
 
 #if not READLINE
@@ -597,8 +599,8 @@ function Ada_command_word_generator(text : chars_ptr; state : int ) return chars
   path_id : identifier;
   completionFileLen : integer;
   completionFile : string(1..1024); -- TODO: file length limit
-  needle    : constant string := To_Ada( Value( text ) );
-  needleLen : constant size_t := Strlen( text );
+  needle    : constant string := unescapeWithBackslashes( To_Ada( Value( text ) ) );
+  needleLen : constant size_t := needle'length;
   firstColon : natural;
 begin
   if state = 0 then
@@ -627,8 +629,8 @@ begin
              exit when completionFileLen <= 0;
              if needle = completionFile( 1..integer( needleLen ) ) then
                 declare
-                   completionFileAsC : aliased char_array := To_C(
-                      completionFile(1..completionFileLen ) );
+                completionFileAsC : aliased char_array := To_C(
+                   escapeSpacesWithBackslashes( completionFile(1..completionFileLen ) ) );
                    testpath : constant string := to_string( currentCmdPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
                 begin
 -- TODO: messy.  too many string conversions
@@ -698,8 +700,8 @@ currentFileDir : dir_type;
 function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   completionFileLen : integer;
   completionFile : string(1..1024);
-  needle    : constant string := To_Ada( Value( text ) );
-  needleLen : constant size_t := Strlen( text );
+  needle    : constant string := unescapeWithBackslashes( To_Ada( Value( text ) ) );
+  needleLen : constant size_t := needle'length;
 begin
   if state = 0 then
      begin
@@ -714,8 +716,6 @@ begin
        null;
      end;
   end if;
-
---put_line( "needle = " & needle ); -- DEBUG
 
   -- Search the remaining PATH values for a valid directory.
   -- Open that directory.
@@ -734,7 +734,7 @@ begin
           if needle = completionFile( 1..integer( needleLen ) ) then
              declare
                 completionFileAsC : aliased char_array := To_C(
-                   completionFile(1..completionFileLen ) );
+                   escapeSpacesWithBackslashes( completionFile(1..completionFileLen ) ) );
                 --testpath : constant string := to_string( currentPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
              begin
 -- TODO: messy.  too many string conversions

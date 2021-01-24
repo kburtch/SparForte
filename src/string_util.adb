@@ -38,8 +38,14 @@ package body string_util is
 -- Misc String Handling
 ------------------------------------------------------------------------------
 
+
+------------------------------------------------------------------------------
+--  FIX SPACKING
+--
+-- Remove leading and trailing spaces, as well as any double-spaces inside
+------------------------------------------------------------------------------
+
 procedure FixSpacing( s : in out unbounded_string; inside : boolean := true ) is
--- remove leading and trailing spaces, as well as any double-spaces inside
    i  : integer;
 begin
   while length(s) > 0 loop
@@ -62,8 +68,75 @@ begin
   end if;
 end FixSpacing;
 
-function TypoOf( BadString, GoodString : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  ESCAPE SPACES WITH BACKSLASHES
+--
+-- Place backslashes in front of spaces (or backslashes).
+------------------------------------------------------------------------------
+
+function escapeSpacesWithBackslashes( original : unbounded_string ) return unbounded_string is
+  i : natural := 1;
+  inBackslash : boolean := false;
+  s : unbounded_string := original;
+begin
+  while i <= length( s ) loop
+    if not inBackslash and element( s, i ) = ' ' then
+       inBackslash := true;
+       insert( s, i, "\" );
+    elsif not inBackslash and element( s, i ) = '\' then
+       inBackslash := true;
+       insert( s, i, "\" );
+    elsif inBackslash then
+       inBackslash := false;
+    end if;
+    i := i + 1;
+  end loop;
+  return s;
+end escapeSpacesWithBackslashes;
+
+function escapeSpacesWithBackslashes( original : string ) return string is
+begin
+  return to_string( escapeSpacesWithBackslashes( to_unbounded_string( original ) ) );
+end escapeSpacesWithBackslashes;
+
+------------------------------------------------------------------------------
+--  UNESCAPE WITH BACKSLASHES
+--
+-- Remove escaping backslashes.  If there is a trailing backslash, it is
+-- left in.
+------------------------------------------------------------------------------
+
+function unescapeWithBackslashes( original : unbounded_string ) return unbounded_string is
+  i : natural := 1;
+  inBackslash : boolean := false;
+  s : unbounded_string := original;
+begin
+  while i < length( s ) loop
+    if not inBackslash and element( s, i ) = '\' then
+       inBackslash := true;
+       delete( s, i, i );
+    elsif inBackslash then
+       inBackslash := false;
+    end if;
+    i := i + 1;
+  end loop;
+  return s;
+end unescapeWithBackslashes;
+
+function unescapeWithBackslashes( s : string ) return string is
+begin
+  return to_string( unescapeWithBackslashes( to_unbounded_string( s ) ) );
+end unescapeWithBackslashes;
+
+
+------------------------------------------------------------------------------
+--  TYPO OF
+--
 -- 80% of all typos are single insertions, deletions, exchanges, or subs.
+------------------------------------------------------------------------------
+
+function TypoOf( BadString, GoodString : unbounded_string ) return boolean is
   TempStr : unbounded_string;
   BadLen  : integer;
   GoodLen : integer;
