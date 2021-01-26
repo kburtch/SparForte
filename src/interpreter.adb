@@ -86,6 +86,7 @@ package body interpreter is
 procedure interactiveSession is
   command : unbounded_string;
   result : aFileDescriptor;
+  suppressPromptChars : boolean;
 begin
   loop                                        -- repeatedly
     -- A control-c will abort the prompt script, so we need to handle it first.
@@ -97,6 +98,7 @@ begin
 
     -- Try to run the prompt script
 
+    suppressPromptChars := false;
     if length( promptScript ) /= 0 then
        CompileRunAndCaptureOutput( promptScript, prompt );
        if error_found then
@@ -106,10 +108,21 @@ begin
           -- set the xterm window title
           put( ASCII.ESC & "]2;" );
           for i in 1..length( prompt ) loop
-              if is_graphic( element( prompt, i ) ) then
-                 put( element( prompt, i  ) );
-              elsif element( prompt, i ) = ASCII.LF then -- and CR?
-                 put( ' ' );
+              -- these are the readline codes to ignore the length
+              -- of non-printable characters, such as terminal formatting
+              -- codes.  Suppress these in the window title.
+              if user_io.getline.has_readline then
+                 if element( prompt, i ) = ASCII.SOH then
+                    suppressPromptChars := true;
+                 elsif element( prompt, i ) = ASCII.STX then
+                    suppressPromptChars := false;
+                 elsif not suppressPromptChars then
+                    if is_graphic( element( prompt, i ) ) then
+                       put( element( prompt, i  ) );
+                    elsif element( prompt, i ) = ASCII.LF then -- and CR?
+                       put( ' ' );
+                    end if;
+                 end if;
               end if;
           end loop;
           put( ASCII.BEL  );

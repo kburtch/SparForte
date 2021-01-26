@@ -54,15 +54,23 @@ if $? = 0 then
   git_changes_staged := git_changes & `git status | fgrep "to be committed";`;
   put( " [" );
   if git_changes /= "" then
+     put( ASCII.SOH );
      tput smso;
+     put( ASCII.STX );
   elsif git_changes_staged /= "" then
+     put( ASCII.SOH );
      tput bold;
+     put( ASCII.STX );
   end if;
   put( git_branch );
   if git_changes /= "" then
+     put( ASCII.SOH );
      tput rmso;
+     put( ASCII.STX );
   elsif git_changes_staged /= "" then
+     put( ASCII.SOH );
      tput sgr0;
+     put( ASCII.STX );
   end if;
   put( "]" );
 end if;

@@ -83,15 +83,23 @@ git_branch := `git branch 2&gt;&amp;1`;
   git_changes_staged := git_changes &amp; `git status | fgrep "to be committed";`;
   put( " [" );
   <b>if</b> git_changes /= "" <b>then</b>
+     put( ASCII.SOH );
      tput smso;
+     put( ASCII.STX );
   <b>elsif</b> git_changes_staged /= "" <b>then</b>
+     put( ASCII.SOH );
      tput bold;
+     put( ASCII.STX );
   <b>end</b> <b>if</b>;
   put( git_branch );
   <b>if</b> git_changes /= "" <b>then</b>
+     put( ASCII.SOH );
      tput rmso;
+     put( ASCII.STX );
   <b>elsif</b> git_changes_staged /= "" <b>then</b>
+     put( ASCII.SOH );
      tput sgr0;
+     put( ASCII.STX );
   <b>end</b> <b>if</b>;
   put( "]" );
 <b>end</b> <b>if</b>;
