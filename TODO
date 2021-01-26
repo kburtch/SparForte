@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- completion
-  - do not complete identifier names s with spaces
 - shell parser rewrite
   - slice length ${::}
   - substring ${#}, ${%}
