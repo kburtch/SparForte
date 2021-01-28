@@ -49,7 +49,7 @@ package body parser.decl.shell is
 type whitespaceOptions is ( keep, trim );
 -- during an expansion, should leading/trailing whitespace be kept or not
 
-type defaultModes is (none, minus, plus, question, substring_slice );
+type defaultModes is (none, minus, plus, question, var_slice );
 -- ${..} modes for default values
 
 -----------------------------------------------------------------------------
@@ -778,7 +778,9 @@ procedure doVariableExpansion(
    subword      : unbounded_string;
    globSubword  : aGlobShellWord;
    expandedWord : anExpandedShellWord;
-   pos : natural;
+   slicePos : natural;
+   sliceEnd : integer;
+   colonPos : natural;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
 
@@ -805,21 +807,70 @@ begin
             err_shell( toProtectedValue( expansionVar ) & " " & to_string( defaultValue ), wordPos );
          end if;
       end if;
-   when substring_slice =>
+   when var_slice =>
       declare
         tmp : unbounded_string;
+        tmp2: unbounded_string;
       begin
+        sliceEnd := length( subword ); -- To avoid exception undefined val
+        -- currently no spaces allowed but maybe one day will be...
         tmp := Ada.Strings.Unbounded.trim(
             defaultValue, Ada.Strings.Both );
-        pos := natural'value( " " & to_string( tmp ) ) + 1;
+        -- a slice may have an optional length value
+        -- in ada, slice needs a last position not a length
+        colonPos := index( tmp, ":" );
+        -- these do not happen
+        if length(defaultValue) > 1 and colonPos = length(defaultValue) then
+            err_shell( "slice length is missing", wordPos );
+        elsif colonPos = 1 then
+            err_shell( "slice position is missing", wordPos );
+        elsif colonPos > 0 then
+           -- a negative position is not possible, it ends up :-
+           begin
+              tmp2 := unbounded_slice( tmp, 1, colonPos-1);
+              slicePos := natural'value( " " & to_string( tmp2 ) ) + 1;
+           exception when others =>
+              err_shell( "slice position is not a natural", wordPos );
+           end;
+           begin
+              tmp2 := unbounded_slice( tmp, colonPos+1, length(tmp) );
+              if element( tmp2, 1 ) = '-' then
+                 sliceEnd := integer'value( to_string( tmp2 ) );
+                 sliceEnd := length( subword ) + sliceEnd;
+                 if sliceEnd < 1 then
+                    sliceEnd := length( subword );
+                    err_shell( "negative slice length is less that start position", wordPos );
+                 end if;
+              else
+                sliceEnd := integer'value( " " & to_string( tmp2 ) );
+                sliceEnd := slicePos + sliceEnd - 1;
+              end if;
+           exception when others =>
+              err_shell( "slice length is not a integer", wordPos );
+           end;
+           -- Ada will error of end is out-of-range but shell doesn't care
+           if sliceEnd > length( subword ) then
+              sliceEnd := length( subword );
+           end if;
+        else
+           begin
+              slicePos := natural'value( " " & to_string( tmp ) ) + 1;
+              sliceEnd := length( subword );
+           exception when others =>
+              err_shell( "slice position is not a natural", wordPos );
+           end;
+        end if;
         begin
-           subword := unbounded_slice( subword, pos, length( subword ) );
+           if not error_found then
+              subword := unbounded_slice( subword, slicePos, sliceEnd );
+           end if;
         exception when Ada.Strings.INDEX_ERROR =>
           -- In Bourne shell, this is not actually an error.
            subword := null_unbounded_string;
+        when CONSTRAINT_ERROR =>
+           -- should not happen
+           err_shell( "slice position or length out of range", wordPos );
         end;
-      exception when others =>
-        err_shell( "slice position is not a natural", wordPos );
       end;
    when others =>
       null;
@@ -1103,7 +1154,7 @@ begin
             err_shell( "assignment in curly braces not supported", wordPos );
          else
             -- substring slice
-            defaultMode := substring_slice;
+            defaultMode := var_slice;
             getBraceOperatorDefaultValue;
          end if;
       elsif element( rawWordValue, wordPos ) = '-' or

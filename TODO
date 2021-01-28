@@ -12,8 +12,8 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
-  - slice length ${::}
-  - substring ${#}, ${%}
+  - git add src/x(tab,tab) failed
+  - substring ${#}, ${%}, ${/}
   - fix all todos
     - compiler todos
     - shell parser todos

@@ -42,9 +42,12 @@ procedure FixSpacing( s : in out unbounded_string; inside : boolean := true );
 
 function escapeSpacesWithBackslashes( original : unbounded_string ) return unbounded_string;
 function escapeSpacesWithBackslashes( original : string ) return string;
+-- Place backslashes in front of spaces (or backslashes).
 
 function unescapeWithBackslashes( original : unbounded_string ) return unbounded_string;
 function unescapeWithBackslashes( s : string ) return string;
+-- Remove escaping backslashes.  If there is a trailing backslash, it is
+-- left in.
 
 ------------------------------------------------------------------------------
 -- Basic String Testing

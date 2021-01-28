@@ -3254,6 +3254,18 @@ pragma assert( s1 = "oo" );
 s1 := `echo ${s:4}`;
 pragma assert( s1 = "" );
 
+s1 := `echo ${s:0:3}`;
+pragma assert( s1 = "foo" );
+
+s1 := `echo ${s:0:1}`;
+pragma assert( s1 = "f" );
+
+s1 := `echo ${s:1:99}`;
+pragma assert( s1 = "oo" );
+
+s1 := `echo ${s:0:-1}`;
+pragma assert( s1 = "fo" );
+
 s  := "foo";
 s1 := `echo ${s:-bar}`;
 pragma assert( s1 = "foo" );
