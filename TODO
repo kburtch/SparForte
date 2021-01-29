@@ -11,9 +11,12 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- completions
+  - git add src/x(tab,tab) failed?
 - shell parser rewrite
-  - git add src/x(tab,tab) failed
-  - substring ${#}, ${%}, ${/}
+  - substring ${#}, ${%}
+  - whitespacing around :-, etc.
+  - ls //ken matches top-level directories but should not
   - fix all todos
     - compiler todos
     - shell parser todos

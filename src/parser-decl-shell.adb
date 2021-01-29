@@ -49,7 +49,7 @@ package body parser.decl.shell is
 type whitespaceOptions is ( keep, trim );
 -- during an expansion, should leading/trailing whitespace be kept or not
 
-type defaultModes is (none, minus, plus, question, var_slice );
+type defaultModes is (none, minus, plus, question, var_slice, var_replace );
 -- ${..} modes for default values
 
 -----------------------------------------------------------------------------
@@ -819,7 +819,6 @@ begin
         -- a slice may have an optional length value
         -- in ada, slice needs a last position not a length
         colonPos := index( tmp, ":" );
-        -- these do not happen
         if length(defaultValue) > 1 and colonPos = length(defaultValue) then
             err_shell( "slice length is missing", wordPos );
         elsif colonPos = 1 then
@@ -871,6 +870,37 @@ begin
            -- should not happen
            err_shell( "slice position or length out of range", wordPos );
         end;
+      end;
+   when var_replace =>
+-- TODO: breakout
+      declare
+        slashPos   : natural;
+        searchStr  : unbounded_string;
+        replaceStr : unbounded_string;
+        searchPos  : natural;
+      begin
+        slashPos := ada.strings.unbounded.index( defaultValue, "/" );
+        --if length(defaultValue) > 1 and colonPos = length(defaultValue) then
+        --   err_shell( "slice length is missing", wordPos );
+        if slashPos <= 1 then
+            err_shell( "search string is missing", wordPos );
+        else
+            searchStr := unbounded_slice( defaultValue, 1, slashPos-1);
+            replaceStr := unbounded_slice( defaultValue, slashPos+1, length( defaultValue ) );
+            searchPos := ada.strings.unbounded.index( subword, to_string( searchStr ) );
+            if searchPos > 0 then
+               if length( replaceStr ) > 0 then
+                  Replace_Slice( subword,
+                     searchPos,
+                     searchPos + length( searchStr ) - 1,
+                     to_string( replaceStr ) );
+               else
+                  Delete( subword,
+                     searchPos,
+                     searchPos + length( searchStr ) - 1 );
+               end if;
+            end if;
+        end if;
       end;
    when others =>
       null;
@@ -1157,6 +1187,11 @@ begin
             defaultMode := var_slice;
             getBraceOperatorDefaultValue;
          end if;
+      elsif element( rawWordValue, wordPos ) = '/' then
+         -- substring slice
+         defaultMode := var_replace;
+         expectChar( '/', rawWordValue, wordLen, wordPos  );
+         getBraceOperatorDefaultValue;
       elsif element( rawWordValue, wordPos ) = '-' or
             element( rawWordValue, wordPos ) = '+' or
             element( rawWordValue, wordPos ) = '?' then

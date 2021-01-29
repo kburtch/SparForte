@@ -210,6 +210,66 @@ in SparForte.</p>
 
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Substring Delete</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME#/home}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/ken</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Substring Delete Reverse</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME%/}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Longest Substring Delete</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME##/home}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/ken</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Longest Substring Delete Reverse</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME%%/k}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Brace Substring Search and Replace</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME/ken/john}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home/john</tt><br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
       <td style="vertical-align: top;"><span>Command Substitution</span><br>
 
       </td>
@@ -229,7 +289,7 @@ in SparForte.</p>
       </td>
       <td style="vertical-align: top;"><tt>a.txt</tt><br>
       </td>
-      <td style="vertical-align: top;"><span>OK</span><br>
+      <td style="vertical-align: top;"><span>OK (no nesting)</span><br>
       </td>
 
     </tr>
