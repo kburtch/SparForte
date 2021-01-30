@@ -77,3 +77,5 @@ CHANGES SINCE 2.3
 
 32. Fix: Updated Git prompt script example for GNU readline.
 
+33. Fix: Files.Is_Directory no longer appends an unnecessary ASCII.NUL to the path.
+

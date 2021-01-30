@@ -115,7 +115,7 @@ end ParseIsAbsolutePath;
 
 procedure ParseIsRegularFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_regular_file( path );
-  -- Source: GNAT.IO_Aux.Is_Regular_File
+  -- Source: GNAT.OS_Lib.Is_Regular_File
   file_val  : unbounded_string;
   file_type : identifier;
 begin
@@ -133,7 +133,7 @@ end ParseIsRegularFile;
 
 procedure ParseIsDirectory( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_directory( path );
-  -- Source: GNAT.IO_Aux.Is_Directory
+  -- Source: GNAT.OS_Lib.Is_Directory
   file_val  : unbounded_string;
   file_type : identifier;
 begin
@@ -145,13 +145,13 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( Is_Directory( to_string( file_val ) & ASCII.NUL ) );
+     f := to_bush_boolean( Is_Directory( to_string( file_val ) ) );
   end if;
 end ParseIsDirectory;
 
 procedure ParseIsWritableFile( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_writable_file( path );
-  -- Source: GNAT.IO_Aux.Is_Writable_File + Is_Regular_File
+  -- Source: GNAT.OS_Lib.Is_Writable_File + Is_Regular_File
   file_val  : unbounded_string;
   file_type : identifier;
 begin
@@ -170,7 +170,7 @@ end ParseIsWritableFile;
 
 procedure ParseIsWritable( f : out unbounded_string; kind : out identifier ) is
   -- Syntax: files.is_writable( path );
-  -- Source: GNAT.IO_Aux.Is_Writable_File
+  -- Source: GNAT.OS_Lib.Is_Writable_File
   file_val  : unbounded_string;
   file_type : identifier;
 begin

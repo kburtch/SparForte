@@ -24,6 +24,7 @@
 with ada.text_io,
      ada.strings.unbounded.text_io,
      ada.calendar,
+     gnat.os_lib,
      gnat.directory_operations,
      gnat.source_info,
      ada.containers.vectors,
@@ -599,7 +600,8 @@ function Ada_command_word_generator(text : chars_ptr; state : int ) return chars
   path_id : identifier;
   completionFileLen : integer;
   completionFile : string(1..1024); -- TODO: file length limit
-  needle    : constant string := unescapeWithBackslashes( To_Ada( Value( text ) ) );
+  needleDir : constant string := Dir_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
+  needle    : constant string := File_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
   needleLen : constant size_t := needle'length;
   firstColon : natural;
 begin
@@ -630,7 +632,7 @@ begin
              if needle = completionFile( 1..integer( needleLen ) ) then
                 declare
                 completionFileAsC : aliased char_array := To_C(
-                   escapeSpacesWithBackslashes( completionFile(1..completionFileLen ) ) );
+                   escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
                    testpath : constant string := to_string( currentCmdPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
                 begin
 -- TODO: messy.  too many string conversions
@@ -666,7 +668,7 @@ begin
           if is_open( currentCmdDir ) then
              close( currentCmdDir );
           end if;
-          open( currentCmdDir, to_string( currentCmdPathDir ) );
+          open( currentCmdDir, to_string( currentCmdPathDir ) & Directory_Delimiter & needleDir );
           exit;
         exception when DIRECTORY_ERROR =>
           null;
@@ -700,7 +702,8 @@ currentFileDir : dir_type;
 function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   completionFileLen : integer;
   completionFile : string(1..1024);
-  needle    : constant string := unescapeWithBackslashes( To_Ada( Value( text ) ) );
+  needleDir : constant string := Dir_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
+  needle    : constant string := File_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
   needleLen : constant size_t := needle'length;
 begin
   if state = 0 then
@@ -708,7 +711,7 @@ begin
        if is_open( currentFileDir ) then
           close( currentFileDir );
        end if;
-       open( currentFileDir, Dir_Name( needle ) );
+       open( currentFileDir, needleDir );
      exception when DIRECTORY_ERROR =>
        null;
      when others =>
@@ -732,15 +735,26 @@ begin
           read( currentFileDir, completionFile, completionFileLen );
           exit when completionFileLen <= 0;
           if needle = completionFile( 1..integer( needleLen ) ) then
-             declare
-                completionFileAsC : aliased char_array := To_C(
-                   escapeSpacesWithBackslashes( completionFile(1..completionFileLen ) ) );
-                --testpath : constant string := to_string( currentPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
-             begin
+             -- when completing a directory, we need to add the delimiter to the end
+             if gnat.os_lib.is_directory( needleDir & completionFile(1..completionFileLen ) ) then
+                declare
+                   completionFileAsC : aliased char_array := To_C(
+                      escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) & directory_delimiter );
+                begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
-                return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
-             end;
+                   return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                end;
+             else
+                declare
+                   completionFileAsC : aliased char_array := To_C(
+                      escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
+                begin
+-- TODO: messy.  too many string conversions
+-- TODO: does not follow links
+                   return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                end;
+             end if;
           end if;
         exception when DIRECTORY_ERROR =>
           null;
