@@ -215,7 +215,7 @@ function Ada_ipset_word_generator(text : chars_ptr; state : int ) return chars_p
   needle : constant string := To_Ada( Value( text ) );
   completionCandidate : string :=
      nextCompletionSubcommand( ipsetWords, needle, state );
-  subcommandPtr : char_array := To_C( completionCandidate );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
 
   -- Get the next completion, empty strings if none.  Return the candidate word
@@ -223,7 +223,7 @@ begin
   -- GNU readline.
 
   if completionCandidate /= "" then
-     return C_strdup( To_Char_Ptr( subcommandPtr ) );
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
   end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
@@ -291,7 +291,7 @@ function Ada_svn_word_generator(text : chars_ptr; state : int ) return chars_ptr
   needle : constant string := To_Ada( Value( text ) );
   completionCandidate : string :=
      nextCompletionSubcommand( svnWords, needle, state );
-  subcommandPtr : char_array := To_C( completionCandidate );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
 
   -- Get the next completion, empty strings if none.  Return the candidate word
@@ -299,7 +299,7 @@ begin
   -- GNU readline.
 
   if completionCandidate /= "" then
-     return C_strdup( To_Char_Ptr( subcommandPtr ) );
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
   end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
@@ -478,7 +478,7 @@ function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr
   needle : constant string := To_Ada( Value( text ) );
   completionCandidate : string :=
      nextCompletionSubcommand( gitWords, needle, state );
-  subcommandPtr : char_array := To_C( completionCandidate );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
 
   -- Get the next completion, empty strings if none.  Return the candidate word
@@ -486,7 +486,7 @@ begin
   -- GNU readline.
 
   if completionCandidate /= "" then
-     return C_strdup( To_Char_Ptr( subcommandPtr ) );
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
   end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
@@ -554,7 +554,7 @@ function Ada_yum_word_generator(text : chars_ptr; state : int ) return chars_ptr
   needle : constant string := To_Ada( Value( text ) );
   completionCandidate : string :=
      nextCompletionSubcommand( yumWords, needle, state );
-  subcommandPtr : char_array := To_C( completionCandidate );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
 
   -- Get the next completion, empty strings if none.  Return the candidate word
@@ -562,7 +562,7 @@ begin
   -- GNU readline.
 
   if completionCandidate /= "" then
-     return C_strdup( To_Char_Ptr( subcommandPtr ) );
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
   end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
@@ -634,7 +634,7 @@ function Ada_apt_word_generator(text : chars_ptr; state : int ) return chars_ptr
   needle : constant string := To_Ada( Value( text ) );
   completionCandidate : string :=
      nextCompletionSubcommand( aptWords, needle, state );
-  subcommandPtr : char_array := To_C( completionCandidate );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
 
   -- Get the next completion, empty strings if none.  Return the candidate word
@@ -642,7 +642,7 @@ begin
   -- GNU readline.
 
   if completionCandidate /= "" then
-     return C_strdup( To_Char_Ptr( subcommandPtr ) );
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
   end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
@@ -706,7 +706,7 @@ function Ada_docker_word_generator(text : chars_ptr; state : int ) return chars_
   needle : constant string := To_Ada( Value( text ) );
   completionCandidate : string :=
      nextCompletionSubcommand( dockerWords, needle, state );
-  subcommandPtr : char_array := To_C( completionCandidate );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
 
   -- Get the next completion, empty strings if none.  Return the candidate word
@@ -714,7 +714,7 @@ begin
   -- GNU readline.
 
   if completionCandidate /= "" then
-     return C_strdup( To_Char_Ptr( subcommandPtr ) );
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
   end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
