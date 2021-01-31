@@ -14,20 +14,22 @@ extern char * Ada_ipset_word_generator(const char *text, int state);
 extern char * Ada_svn_word_generator(const char *text, int state);
 extern char * Ada_yum_word_generator(const char *text, int state);
 extern char * Ada_apt_word_generator(const char *text, int state);
+extern char * Ada_docker_word_generator(const char *text, int state);
 
 // types of completions
 
 const int completion_type_none       = -1;
-const int completion_type_default    = 0;
-const int completion_type_command    = 1;
-const int completion_type_assignment = 2;
-const int completion_type_parameter  = 3;
-const int completion_type_git        = 4;
-const int completion_type_svn        = 5;
-const int completion_type_ipset      = 6;
-const int completion_type_yum        = 7;
-const int completion_type_apt        = 8;
-const int completion_type_variable   = 9;
+const int completion_type_default    =  0;
+const int completion_type_command    =  1;
+const int completion_type_assignment =  2;
+const int completion_type_parameter  =  3;
+const int completion_type_variable   =  4;
+const int completion_type_git        =  5;
+const int completion_type_svn        =  6;
+const int completion_type_ipset      =  7;
+const int completion_type_yum        =  8;
+const int completion_type_apt        =  9;
+const int completion_type_docker     = 10;
 
 /**
  *  SPARFORTE COMPLETION
@@ -50,11 +52,12 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     int  in_backslash  = -9999;
     char ch;
     // Commands with autocomplete of subcommands
-    const char git_str[5]   = "git ";
-    const char ipset_str[7] = "ipset ";
-    const char svn_str[5]   = "svn ";
-    const char yum_str[5]   = "yum ";
-    const char apt_str[5]   = "apt ";
+    const char git_str[5]    = "git ";
+    const char ipset_str[7]  = "ipset ";
+    const char svn_str[5]    = "svn ";
+    const char yum_str[5]    = "yum ";
+    const char apt_str[5]    = "apt ";
+    const char docker_str[8] = "docker ";
 
     int completion_type = completion_type_none;
 
@@ -259,7 +262,21 @@ char ** sparforte_completion( const char *text, int start, int end ) {
              completion_type = completion_type_apt;
           }
        }
-    } // word count 2
+
+       // Docker subcommand completion: a special case.
+
+       if (completion_type == completion_type_none) {
+          cmd_idx = 0;
+          while ( (cmd_idx<strlen(docker_str) ) &&
+             ( rl_line_buffer[cmd_idx] == docker_str[cmd_idx]) ) {
+               cmd_idx++;
+          }
+          if (cmd_idx==strlen(docker_str)) {
+             completion_type = completion_type_docker;
+          }
+       }
+
+	} // word count 2
 
     // If no choice was made, fall back to some kind of parameter.
     // Note: this does not distinguish between an AdaScript
@@ -294,6 +311,8 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        matches = rl_completion_matches(text, Ada_apt_word_generator);
     } else if (completion_type == completion_type_variable) {
        matches = rl_completion_matches(text, Ada_variable_word_generator);
+    } else if (completion_type == completion_type_docker) {
+       matches = rl_completion_matches(text, Ada_docker_word_generator);
     } else {
        // if something goes wrong, case completion_type_default will
        // trigger the GNU readline built-in completion.

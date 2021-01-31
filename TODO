@@ -12,7 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - completions
-  - git add src/x(tab,tab) failed?
+  - completions of directories have an extra space
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
@@ -31,7 +31,6 @@ Priority Issues (Fix These First)
 - "literal" & custom-string is an error, but custom-string & "literal" is
   not?  Check this.  Encountered with imported shell variable.
 - first word handling, including executable program glob
-- daniel - command completion should auto-fill simple directory levels
 - pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
 - manual test cases -  can HTML be embedded as CDATA in junit xml?

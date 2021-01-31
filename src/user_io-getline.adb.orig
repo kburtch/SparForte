@@ -22,8 +22,10 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
+     ada.strings.fixed,
      ada.strings.unbounded.text_io,
      ada.calendar,
+     gnat.os_lib,
      gnat.directory_operations,
      gnat.source_info,
      ada.containers.vectors,
@@ -122,12 +124,84 @@ memoryLeakCnt : integer := 0;
 
 -----------------------------------------------------------------------------
 --
+-- SUBCOMMAND COMPLETION
+--
+-----------------------------------------------------------------------------
+
+subcommandHaystackFirst : natural;
+
+
+-----------------------------------------------------------------------------
+--  NEXT COMPLETION SUBCOMMAND
+--
+-- Search for needle in haystack.  state is the GNU readline state (0 means
+-- starting the search).  The haystack is ASCII.NUL delimited and the NUL
+-- is returned with the candidate.
+-----------------------------------------------------------------------------
+
+function nextCompletionSubcommand( haystack : string; needle : string; state : int ) return string is
+  subcommandHaystackLast : natural;
+begin
+  -- If this is a new search, move the cursor to the front of the reserved
+  -- words.  Otherwise, continue advancing through the list.
+
+  if state = 0 then
+     subcommandHaystackFirst := haystack'first;
+  elsif subcommandHaystackFirst < haystack'last then
+     subcommandHaystackFirst := subcommandHaystackFirst + 1;
+  end if;
+
+  while subcommandHaystackFirst < haystack'last loop
+      -- "from" requires Ada 2005.  This will be zero is nothing is found.
+      subcommandHaystackFirst := ada.strings.fixed.index(
+         source => haystack,
+         pattern => ASCII.NUL & needle,
+         from => subcommandHaystackFirst );
+
+      -- find the ending ASCII.NUL.  return the string slice (minus the NUL).
+
+      if subcommandHaystackFirst > 0 then
+         subcommandHaystackLast := ada.strings.fixed.index(
+               haystack, "" & ASCII.NUL, subcommandHaystackFirst+1 );
+         declare
+           completionCandidate : constant string := haystack(
+               subcommandHaystackFirst+1..subcommandHaystackLast-1 );
+         begin
+           return completionCandidate;
+         end;
+      else
+         -- If there's no (or no more) matches, we're not at position zero.
+         -- We are at the end of the list.
+         subcommandHaystackFirst := haystack'last;
+      end if;
+
+      subcommandHaystackFirst := subcommandHaystackFirst + 1;
+  end loop;
+
+  return "";
+end nextCompletionSubcommand;
+
+
+-----------------------------------------------------------------------------
+--
 -- IPSET WORD COMPLETION
 --
 -----------------------------------------------------------------------------
 
-ipsetWords  : completionLists.Vector;
-ipsetCursor : completionLists.Cursor;
+  ipsetWords  : constant string :=
+    ASCII.NUL & "create" &
+    ASCII.NUL & "add" &
+    ASCII.NUL & "del" &
+    ASCII.NUL & "test" &
+    ASCII.NUL & "destroy" &
+    ASCII.NUL & "list" &
+    ASCII.NUL & "save" &
+    ASCII.NUL & "restore" &
+    ASCII.NUL & "flush" &
+    ASCII.NUL & "rename" &
+    ASCII.NUL & "swap" &
+    ASCII.NUL & "help" &
+    ASCII.NUL & "version";
 
 -----------------------------------------------------------------------------
 --  IPSET WORD GENERATOR (C language callback to Ada)
@@ -138,37 +212,19 @@ ipsetCursor : completionLists.Cursor;
 -----------------------------------------------------------------------------
 
 function Ada_ipset_word_generator(text : chars_ptr; state : int ) return chars_ptr is
-  use completionLists;
-  needle   : constant string := To_Ada( Value( text ) );
-  ptr : chars_ptr;
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( ipsetWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
-  -- If this is a new search, move the cursor to the front of the reserved
-  -- words.  Otherwise, continue advancing through the list.
 
-  if state = 0 then
-     ipsetCursor := completionLists.First( ipsetWords );
-  elsif ipsetCursor /= completionLists.No_Element then
-     ipsetCursor := completionLists.Next( ipsetCursor );
-  end if;
-
-  -- From the current position in the list, if the text matches the leading
-  -- characters of the candidate word, then return the candidate word to C.
-  -- Use strdup() to create a new C string which will be deallocated by
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
   -- GNU readline.
 
-  while ipsetCursor /= completionLists.No_Element loop
-     ptr := completionLists.Element( ipsetCursor );
-     if Strlen( text ) <= Strlen( ptr ) then
-        declare
-           haystack : constant string := To_Ada( Value( ptr ) );
-        begin
-           if needle = haystack(1..needle'last) then
-              return C_strdup( ptr );
-           end if;
-        end;
-     end if;
-     ipsetCursor := completionLists.Next( ipsetCursor );
-  end loop;
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
   -- there are no more possibilities.
@@ -183,8 +239,45 @@ end Ada_ipset_word_generator;
 --
 -----------------------------------------------------------------------------
 
-svnWords  : completionLists.Vector;
-svnCursor : completionLists.Cursor;
+  svnWords  : constant string :=
+    ASCII.NUL & "blame" &
+    ASCII.NUL & "praise" &
+    ASCII.NUL & "annotate" &
+    ASCII.NUL & "cat" &
+    ASCII.NUL & "changelist" &
+    ASCII.NUL & "checkout" &
+    ASCII.NUL & "cleanup" &
+    ASCII.NUL & "commit" &
+    ASCII.NUL & "copy" &
+    ASCII.NUL & "delete" &
+    ASCII.NUL & "remove" &
+    ASCII.NUL & "diff" &
+    ASCII.NUL & "export" &
+    ASCII.NUL & "help" &
+    ASCII.NUL & "import" &
+    ASCII.NUL & "info" &
+    ASCII.NUL & "list" &
+    ASCII.NUL & "lock" &
+    ASCII.NUL & "log" &
+    ASCII.NUL & "merge" &
+    ASCII.NUL & "mergeinfo" &
+    ASCII.NUL & "mkdir" &
+    ASCII.NUL & "move" &
+    ASCII.NUL & "patch" &
+    ASCII.NUL & "propdel" &
+    ASCII.NUL & "propedit" &
+    ASCII.NUL & "propget" &
+    ASCII.NUL & "proplist" &
+    ASCII.NUL & "propset" &
+    ASCII.NUL & "relocate" &
+    ASCII.NUL & "resolve" &
+    ASCII.NUL & "resolved" &
+    ASCII.NUL & "revert" &
+    ASCII.NUL & "status" &
+    ASCII.NUL & "switch" &
+    ASCII.NUL & "unlock" &
+    ASCII.NUL & "update" &
+    ASCII.NUL & "upgrade";
 
 -----------------------------------------------------------------------------
 --  SVN WORD GENERATOR (C language callback to Ada)
@@ -195,37 +288,19 @@ svnCursor : completionLists.Cursor;
 -----------------------------------------------------------------------------
 
 function Ada_svn_word_generator(text : chars_ptr; state : int ) return chars_ptr is
-  use completionLists;
-  needle   : constant string := To_Ada( Value( text ) );
-  ptr : chars_ptr;
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( svnWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
-  -- If this is a new search, move the cursor to the front of the reserved
-  -- words.  Otherwise, continue advancing through the list.
 
-  if state = 0 then
-     svnCursor := completionLists.First( svnWords );
-  elsif svnCursor /= completionLists.No_Element then
-     svnCursor := completionLists.Next( svnCursor );
-  end if;
-
-  -- From the current position in the list, if the text matches the leading
-  -- characters of the candidate word, then return the candidate word to C.
-  -- Use strdup() to create a new C string which will be deallocated by
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
   -- GNU readline.
 
-  while svnCursor /= completionLists.No_Element loop
-     ptr := completionLists.Element( svnCursor );
-     if Strlen( text ) <= Strlen( ptr ) then
-        declare
-           haystack : constant string := To_Ada( Value( ptr ) );
-        begin
-           if needle = haystack(1..needle'last) then
-              return C_strdup( ptr );
-           end if;
-        end;
-     end if;
-     svnCursor := completionLists.Next( svnCursor );
-  end loop;
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
   -- there are no more possibilities.
@@ -240,8 +315,156 @@ end Ada_svn_word_generator;
 --
 -----------------------------------------------------------------------------
 
-gitWords  : completionLists.Vector;
-gitCursor : completionLists.Cursor;
+  gitWords  : constant string :=
+    ASCII.NUL & "add" &
+    ASCII.NUL & "add--interactive" &
+    ASCII.NUL & "am" &
+    ASCII.NUL & "annotate" &
+    ASCII.NUL & "apply" &
+    ASCII.NUL & "archive" &
+    ASCII.NUL & "bisect" &
+    ASCII.NUL & "bisect--helper" &
+    ASCII.NUL & "blame" &
+    ASCII.NUL & "branch" &
+    ASCII.NUL & "bundle" &
+    ASCII.NUL & "cat-file" &
+    ASCII.NUL & "check-attr" &
+    ASCII.NUL & "check-ignore" &
+    ASCII.NUL & "check-mailmap" &
+    ASCII.NUL & "check-ref-format" &
+    ASCII.NUL & "checkout" &
+    ASCII.NUL & "checkout-index" &
+    ASCII.NUL & "cherry" &
+    ASCII.NUL & "cherry-pick" &
+    ASCII.NUL & "clean" &
+    ASCII.NUL & "clone" &
+    ASCII.NUL & "column" &
+    ASCII.NUL & "commit" &
+    ASCII.NUL & "commit-tree" &
+    ASCII.NUL & "config" &
+    ASCII.NUL & "count-objects" &
+    ASCII.NUL & "credential" &
+    ASCII.NUL & "credential-cache" &
+    ASCII.NUL & "credential-cache--daemon" &
+    ASCII.NUL & "credential-store" &
+    ASCII.NUL & "daemon" &
+    ASCII.NUL & "describe" &
+    ASCII.NUL & "diff" &
+    ASCII.NUL & "diff-files" &
+    ASCII.NUL & "diff-index" &
+    ASCII.NUL & "diff-tree" &
+    ASCII.NUL & "difftool" &
+    ASCII.NUL & "difftool--helper" &
+    ASCII.NUL & "fast-export" &
+    ASCII.NUL & "fast-import" &
+    ASCII.NUL & "fetch" &
+    ASCII.NUL & "fetch-pack" &
+    ASCII.NUL & "filter-branch" &
+    ASCII.NUL & "fmt-merge-msg" &
+    ASCII.NUL & "for-each-ref" &
+    ASCII.NUL & "format-patch" &
+    ASCII.NUL & "fsck" &
+    ASCII.NUL & "fsck-objects" &
+    ASCII.NUL & "gc" &
+    ASCII.NUL & "get-tar-commit-id" &
+    ASCII.NUL & "grep" &
+    ASCII.NUL & "hash-object" &
+    ASCII.NUL & "help" &
+    ASCII.NUL & "http-backend" &
+    ASCII.NUL & "http-fetch" &
+    ASCII.NUL & "http-push" &
+    ASCII.NUL & "imap-send" &
+    ASCII.NUL & "index-pack" &
+    ASCII.NUL & "init" &
+    ASCII.NUL & "init-db" &
+    ASCII.NUL & "instaweb" &
+    ASCII.NUL & "interpret-trailers" &
+    ASCII.NUL & "log" &
+    ASCII.NUL & "ls-files" &
+    ASCII.NUL & "ls-remote" &
+    ASCII.NUL & "ls-tree" &
+    ASCII.NUL & "mailinfo" &
+    ASCII.NUL & "mailsplit" &
+    ASCII.NUL & "merge" &
+    ASCII.NUL & "merge-base" &
+    ASCII.NUL & "merge-file" &
+    ASCII.NUL & "merge-index" &
+    ASCII.NUL & "merge-octopus" &
+    ASCII.NUL & "merge-one-file" &
+    ASCII.NUL & "merge-ours" &
+    ASCII.NUL & "merge-recursive" &
+    ASCII.NUL & "merge-resolve" &
+    ASCII.NUL & "merge-subtree" &
+    ASCII.NUL & "merge-tree" &
+    ASCII.NUL & "mergetool" &
+    ASCII.NUL & "mktag" &
+    ASCII.NUL & "mktree" &
+    ASCII.NUL & "mv" &
+    ASCII.NUL & "name-rev" &
+    ASCII.NUL & "notes" &
+    ASCII.NUL & "pack-objects" &
+    ASCII.NUL & "pack-redundant" &
+    ASCII.NUL & "pack-refs" &
+    ASCII.NUL & "patch-id" &
+    ASCII.NUL & "prune" &
+    ASCII.NUL & "prune-packed" &
+    ASCII.NUL & "pull" &
+    ASCII.NUL & "push" &
+    ASCII.NUL & "quiltimport" &
+    ASCII.NUL & "read-tree" &
+    ASCII.NUL & "rebase" &
+    ASCII.NUL & "rebase--helper" &
+    ASCII.NUL & "receive-pack" &
+    ASCII.NUL & "reflog" &
+    ASCII.NUL & "remote" &
+    ASCII.NUL & "remote-ext" &
+    ASCII.NUL & "remote-fd" &
+    ASCII.NUL & "remote-ftp" &
+    ASCII.NUL & "remote-ftps" &
+    ASCII.NUL & "remote-http" &
+    ASCII.NUL & "remote-https" &
+    ASCII.NUL & "remote-testsvn" &
+    ASCII.NUL & "repack" &
+    ASCII.NUL & "replace" &
+    ASCII.NUL & "request-pull" &
+    ASCII.NUL & "rerere" &
+    ASCII.NUL & "reset" &
+    ASCII.NUL & "rev-list" &
+    ASCII.NUL & "rev-parse" &
+    ASCII.NUL & "revert" &
+    ASCII.NUL & "rm" &
+    ASCII.NUL & "send-pack" &
+    ASCII.NUL & "sh-i18n--envsubst" &
+    ASCII.NUL & "shell" &
+    ASCII.NUL & "shortlog" &
+    ASCII.NUL & "show" &
+    ASCII.NUL & "show-branch" &
+    ASCII.NUL & "show-index" &
+    ASCII.NUL & "show-ref" &
+    ASCII.NUL & "submodule" &
+    ASCII.NUL & "stage" &
+    ASCII.NUL & "stash" &
+    ASCII.NUL & "status" &
+    ASCII.NUL & "stripspace" &
+    ASCII.NUL & "submodule--helper" &
+    ASCII.NUL & "subtree" &
+    ASCII.NUL & "symbolic-ref" &
+    ASCII.NUL & "tag" &
+    ASCII.NUL & "unpack-file" &
+    ASCII.NUL & "unpack-objects" &
+    ASCII.NUL & "update-index" &
+    ASCII.NUL & "update-ref" &
+    ASCII.NUL & "update-server-info" &
+    ASCII.NUL & "upload-archive" &
+    ASCII.NUL & "upload-pack" &
+    ASCII.NUL & "var" &
+    ASCII.NUL & "verify-commit" &
+    ASCII.NUL & "verify-pack" &
+    ASCII.NUL & "verify-tag" &
+    ASCII.NUL & "web--browse" &
+    ASCII.NUL & "whatchanged" &
+    ASCII.NUL & "worktree" &
+    ASCII.NUL & "write-tree";
 
 -----------------------------------------------------------------------------
 --  RESERVED WORD GENERATOR (C language callback to Ada)
@@ -252,37 +475,19 @@ gitCursor : completionLists.Cursor;
 -----------------------------------------------------------------------------
 
 function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr is
-  use completionLists;
-  needle   : constant string := To_Ada( Value( text ) );
-  ptr : chars_ptr;
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( gitWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
-  -- If this is a new search, move the cursor to the front of the reserved
-  -- words.  Otherwise, continue advancing through the list.
 
-  if state = 0 then
-     gitCursor := completionLists.First( gitWords );
-  elsif gitCursor /= completionLists.No_Element then
-     gitCursor := completionLists.Next( gitCursor );
-  end if;
-
-  -- From the current position in the list, if the text matches the leading
-  -- characters of the candidate word, then return the candidate word to C.
-  -- Use strdup() to create a new C string which will be deallocated by
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
   -- GNU readline.
 
-  while gitCursor /= completionLists.No_Element loop
-     ptr := completionLists.Element( gitCursor );
-     if Strlen( text ) <= Strlen( ptr ) then
-        declare
-           haystack : constant string := To_Ada( Value( ptr ) );
-        begin
-           if needle = haystack(1..needle'last) then
-              return C_strdup( ptr );
-           end if;
-        end;
-     end if;
-     gitCursor := completionLists.Next( gitCursor );
-  end loop;
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
   -- there are no more possibilities.
@@ -297,8 +502,45 @@ end Ada_git_word_generator;
 --
 -----------------------------------------------------------------------------
 
-yumWords  : completionLists.Vector;
-yumCursor : completionLists.Cursor;
+  yumWords  : constant string :=
+    ASCII.NUL & "add" &
+    ASCII.NUL & "install" &
+    ASCII.NUL & "update" &
+    ASCII.NUL & "update-to" &
+    ASCII.NUL & "update-minimal" &
+    ASCII.NUL & "check-update" &
+    ASCII.NUL & "upgrade" &
+    ASCII.NUL & "upgrade-to" &
+    ASCII.NUL & "distribution-synchronization" &
+    ASCII.NUL & "remove" &
+    ASCII.NUL & "erase" &
+    ASCII.NUL & "autoremove" &
+    ASCII.NUL & "list" &
+    ASCII.NUL & "info" &
+    ASCII.NUL & "provides" &
+    ASCII.NUL & "whatprovides" &
+    ASCII.NUL & "clean" &
+    ASCII.NUL & "makecache" &
+    ASCII.NUL & "groups" &
+    ASCII.NUL & "search" &
+    ASCII.NUL & "shell" &
+    ASCII.NUL & "resolvedep" &
+    ASCII.NUL & "localinstall" &
+    ASCII.NUL & "localupdate" &
+    ASCII.NUL & "reinstall" &
+    ASCII.NUL & "downgrade" &
+    ASCII.NUL & "deplist" &
+    ASCII.NUL & "repolist" &
+    ASCII.NUL & "repoinfo" &
+    ASCII.NUL & "repository-packages" &
+    ASCII.NUL & "version" &
+    ASCII.NUL & "history" &
+    ASCII.NUL & "load-transaction" &
+    ASCII.NUL & "updateinfo" &
+    ASCII.NUL & "fssnapshot" &
+    ASCII.NUL & "fs" &
+    ASCII.NUL & "check" &
+    ASCII.NUL & "help";
 
 -----------------------------------------------------------------------------
 --  YUM WORD GENERATOR (C language callback to Ada)
@@ -309,37 +551,19 @@ yumCursor : completionLists.Cursor;
 -----------------------------------------------------------------------------
 
 function Ada_yum_word_generator(text : chars_ptr; state : int ) return chars_ptr is
-  use completionLists;
-  needle   : constant string := To_Ada( Value( text ) );
-  ptr : chars_ptr;
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( yumWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
-  -- If this is a new search, move the cursor to the front of the reserved
-  -- words.  Otherwise, continue advancing through the list.
 
-  if state = 0 then
-     yumCursor := completionLists.First( yumWords );
-  elsif yumCursor /= completionLists.No_Element then
-     yumCursor := completionLists.Next( yumCursor );
-  end if;
-
-  -- From the current position in the list, if the text matches the leading
-  -- characters of the candidate word, then return the candidate word to C.
-  -- Use strdup() to create a new C string which will be deallocated by
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
   -- GNU readline.
 
-  while yumCursor /= completionLists.No_Element loop
-     ptr := completionLists.Element( yumCursor );
-     if Strlen( text ) <= Strlen( ptr ) then
-        declare
-           haystack : constant string := To_Ada( Value( ptr ) );
-        begin
-           if needle = haystack(1..needle'last) then
-              return C_strdup( ptr );
-           end if;
-        end;
-     end if;
-     yumCursor := completionLists.Next( yumCursor );
-  end loop;
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
   -- there are no more possibilities.
@@ -354,8 +578,49 @@ end Ada_yum_word_generator;
 --
 -----------------------------------------------------------------------------
 
-aptWords  : completionLists.Vector;
-aptCursor : completionLists.Cursor;
+  aptWords  : constant string :=
+    ASCII.NUL & "add" &
+    ASCII.NUL & "add-repository" &
+    ASCII.NUL & "autoclean" &
+    ASCII.NUL & "autoremove" &
+    ASCII.NUL & "build" &
+    ASCII.NUL & "build-dep" &
+    ASCII.NUL & "changelog" &
+    ASCII.NUL & "check" &
+    ASCII.NUL & "clean" &
+    ASCII.NUL & "contains" &
+    ASCII.NUL & "content" &
+    ASCII.NUL & "deb" &
+    ASCII.NUL & "depends" &
+    ASCII.NUL & "dist-upgrade" &
+    ASCII.NUL & "download" &
+    ASCII.NUL & "edit-sources" &
+    ASCII.NUL & "dselect-upgrade" &
+    ASCII.NUL & "full-upgrade" &
+    ASCII.NUL & "held" &
+    ASCII.NUL & "help" &
+    ASCII.NUL & "hold" &
+    ASCII.NUL & "install" &
+    ASCII.NUL & "help" &
+    ASCII.NUL & "hold" &
+    ASCII.NUL & "install" &
+    ASCII.NUL & "list" &
+    ASCII.NUL & "policy" &
+    ASCII.NUL & "purge" &
+    ASCII.NUL & "recommends" &
+    ASCII.NUL & "rdepends" &
+    ASCII.NUL & "reinstall" &
+    ASCII.NUL & "remove" &
+    ASCII.NUL & "search" &
+    ASCII.NUL & "show" &
+    ASCII.NUL & "showhold" &
+    ASCII.NUL & "showsrc" &
+    ASCII.NUL & "source" &
+    ASCII.NUL & "sources" &
+    ASCII.NUL & "unhold" &
+    ASCII.NUL & "update" &
+    ASCII.NUL & "upgrade" &
+    ASCII.NUL & "version";
 
 -----------------------------------------------------------------------------
 --  APT WORD GENERATOR (C language callback to Ada)
@@ -366,43 +631,97 @@ aptCursor : completionLists.Cursor;
 -----------------------------------------------------------------------------
 
 function Ada_apt_word_generator(text : chars_ptr; state : int ) return chars_ptr is
-  use completionLists;
-  needle   : constant string := To_Ada( Value( text ) );
-  ptr : chars_ptr;
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( aptWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
 begin
-  -- If this is a new search, move the cursor to the front of the reserved
-  -- words.  Otherwise, continue advancing through the list.
 
-  if state = 0 then
-     aptCursor := completionLists.First( aptWords );
-  elsif aptCursor /= completionLists.No_Element then
-     aptCursor := completionLists.Next( aptCursor );
-  end if;
-
-  -- From the current position in the list, if the text matches the leading
-  -- characters of the candidate word, then return the candidate word to C.
-  -- Use strdup() to create a new C string which will be deallocated by
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
   -- GNU readline.
 
-  while aptCursor /= completionLists.No_Element loop
-     ptr := completionLists.Element( aptCursor );
-     if Strlen( text ) <= Strlen( ptr ) then
-        declare
-           haystack : constant string := To_Ada( Value( ptr ) );
-        begin
-           if needle = haystack(1..needle'last) then
-              return C_strdup( ptr );
-           end if;
-        end;
-     end if;
-     aptCursor := completionLists.Next( aptCursor );
-  end loop;
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
 
   -- If there are no more reserved words, return a C NULL pointer to indicate
   -- there are no more possibilities.
 
   return Null_Ptr;
 end Ada_apt_word_generator;
+
+
+-----------------------------------------------------------------------------
+--
+-- DOCKER WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+dockerWords : constant string :=
+  ASCII.NUL & "builder" &
+  ASCII.NUL & "config" &
+  ASCII.NUL & "container" &
+  ASCII.NUL & "context" &
+  ASCII.NUL & "engine" &
+  ASCII.NUL & "image" &
+  ASCII.NUL & "network" &
+  ASCII.NUL & "node" &
+  ASCII.NUL & "plugin" &
+  ASCII.NUL & "secret" &
+  ASCII.NUL & "service" &
+  ASCII.NUL & "stack" &
+  ASCII.NUL & "swarm" &
+  ASCII.NUL & "system" &
+  ASCII.NUL & "trust" &
+  ASCII.NUL & "volume" &
+  ASCII.NUL & "pull" &
+  ASCII.NUL & "push" &
+  ASCII.NUL & "rename" &
+  ASCII.NUL & "restart" &
+  ASCII.NUL & "rm" &
+  ASCII.NUL & "rmi" &
+  ASCII.NUL & "run" &
+  ASCII.NUL & "save" &
+  ASCII.NUL & "search" &
+  ASCII.NUL & "start" &
+  ASCII.NUL & "stats" &
+  ASCII.NUL & "stop" &
+  ASCII.NUL & "tag" &
+  ASCII.NUL & "top" &
+  ASCII.NUL & "unpause" &
+  ASCII.NUL & "update" &
+  ASCII.NUL & "version" &
+  ASCII.NUL & "wait";
+
+-----------------------------------------------------------------------------
+--  DOCKER WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_docker_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( dockerWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
+begin
+
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_docker_word_generator;
 
 
 -----------------------------------------------------------------------------
@@ -599,7 +918,8 @@ function Ada_command_word_generator(text : chars_ptr; state : int ) return chars
   path_id : identifier;
   completionFileLen : integer;
   completionFile : string(1..1024); -- TODO: file length limit
-  needle    : constant string := unescapeWithBackslashes( To_Ada( Value( text ) ) );
+  needleDir : constant string := Dir_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
+  needle    : constant string := File_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
   needleLen : constant size_t := needle'length;
   firstColon : natural;
 begin
@@ -630,7 +950,7 @@ begin
              if needle = completionFile( 1..integer( needleLen ) ) then
                 declare
                 completionFileAsC : aliased char_array := To_C(
-                   escapeSpacesWithBackslashes( completionFile(1..completionFileLen ) ) );
+                   escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
                    testpath : constant string := to_string( currentCmdPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
                 begin
 -- TODO: messy.  too many string conversions
@@ -666,7 +986,7 @@ begin
           if is_open( currentCmdDir ) then
              close( currentCmdDir );
           end if;
-          open( currentCmdDir, to_string( currentCmdPathDir ) );
+          open( currentCmdDir, to_string( currentCmdPathDir ) & Directory_Delimiter & needleDir );
           exit;
         exception when DIRECTORY_ERROR =>
           null;
@@ -700,7 +1020,8 @@ currentFileDir : dir_type;
 function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   completionFileLen : integer;
   completionFile : string(1..1024);
-  needle    : constant string := unescapeWithBackslashes( To_Ada( Value( text ) ) );
+  needleDir : constant string := Dir_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
+  needle    : constant string := File_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
   needleLen : constant size_t := needle'length;
 begin
   if state = 0 then
@@ -708,7 +1029,7 @@ begin
        if is_open( currentFileDir ) then
           close( currentFileDir );
        end if;
-       open( currentFileDir, Dir_Name( needle ) );
+       open( currentFileDir, needleDir );
      exception when DIRECTORY_ERROR =>
        null;
      when others =>
@@ -732,15 +1053,26 @@ begin
           read( currentFileDir, completionFile, completionFileLen );
           exit when completionFileLen <= 0;
           if needle = completionFile( 1..integer( needleLen ) ) then
-             declare
-                completionFileAsC : aliased char_array := To_C(
-                   escapeSpacesWithBackslashes( completionFile(1..completionFileLen ) ) );
-                --testpath : constant string := to_string( currentPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
-             begin
+             -- when completing a directory, we need to add the delimiter to the end
+             if gnat.os_lib.is_directory( needleDir & completionFile(1..completionFileLen ) ) then
+                declare
+                   completionFileAsC : aliased char_array := To_C(
+                      escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) & directory_delimiter );
+                begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
-                return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
-             end;
+                   return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                end;
+             else
+                declare
+                   completionFileAsC : aliased char_array := To_C(
+                      escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
+                begin
+-- TODO: messy.  too many string conversions
+-- TODO: does not follow links
+                   return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                end;
+             end if;
           end if;
         exception when DIRECTORY_ERROR =>
           null;
@@ -1567,6 +1899,11 @@ begin
   return Null_Ptr;
 end Ada_yum_word_generator;
 
+function Ada_docker_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_docker_word_generator;
+
 function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
 begin
   return Null_Ptr;
@@ -1622,318 +1959,8 @@ end has_readline;
 
 #if READLINE
 procedure startupGetline is
-
-  procedure git_add( s : string ) is
-  begin
-    completionLists.append( gitWords, New_String( s ) );
-    memoryLeakCnt := memoryLeakCnt + 1;
-  end git_add;
-
-  procedure svn_add( s : string ) is
-  begin
-    completionLists.append( svnWords, New_String( s ) );
-    memoryLeakCnt := memoryLeakCnt + 1;
-  end svn_add;
-
-  procedure ipset_add( s : string ) is
-  begin
-    completionLists.append( ipsetWords, New_String( s ) );
-    memoryLeakCnt := memoryLeakCnt + 1;
-  end ipset_add;
-
-  procedure yum_add( s : string ) is
-  begin
-    completionLists.append( yumWords, New_String( s ) );
-    memoryLeakCnt := memoryLeakCnt + 1;
-  end yum_add;
-
-  procedure apt_add( s : string ) is
-  begin
-    completionLists.append( aptWords, New_String( s ) );
-    memoryLeakCnt := memoryLeakCnt + 1;
-  end apt_add;
-
 begin
   C_init_readline;
--- TODO: maybe better options for looking up words quickly
-  apt_add("add-repository");
-  apt_add("autoclean");
-  apt_add("autoremove");
-  apt_add("build");
-  apt_add("build-dep");
-  apt_add("changelog");
-  apt_add("check");
-  apt_add("clean");
-  apt_add("contains");
-  apt_add("content");
-  apt_add("deb");
-  apt_add("depends");
-  apt_add("dist-upgrade");
-  apt_add("download");
-  apt_add("edit-sources");
-  apt_add("dselect-upgrade");
-  apt_add("full-upgrade");
-  apt_add("held");
-  apt_add("help");
-  apt_add("hold");
-  apt_add("install");
-  apt_add("help");
-  apt_add("hold");
-  apt_add("install");
-  apt_add("list");
-  apt_add("policy");
-  apt_add("purge");
-  apt_add("recommends");
-  apt_add("rdepends");
-  apt_add("reinstall");
-  apt_add("remove");
-  apt_add("search");
-  apt_add("show");
-  apt_add("showhold");
-  apt_add("showsrc");
-  apt_add("source");
-  apt_add("sources");
-  apt_add("unhold");
-  apt_add("update");
-  apt_add("upgrade");
-  apt_add("version");
-  git_add("add");
-  git_add("add--interactive");
-  git_add("am");
-  git_add("annotate");
-  git_add("apply");
-  git_add("archive");
-  git_add("bisect");
-  git_add("bisect--helper");
-  git_add("blame");
-  git_add("branch");
-  git_add("bundle");
-  git_add("cat-file");
-  git_add("check-attr");
-  git_add("check-ignore");
-  git_add("check-mailmap");
-  git_add("check-ref-format");
-  git_add("checkout");
-  git_add("checkout-index");
-  git_add("cherry");
-  git_add("cherry-pick");
-  git_add("clean");
-  git_add("clone");
-  git_add("column");
-  git_add("commit");
-  git_add("commit-tree");
-  git_add("config");
-  git_add("count-objects");
-  git_add("credential");
-  git_add("credential-cache");
-  git_add("credential-cache--daemon");
-  git_add("credential-store");
-  git_add("daemon");
-  git_add("describe");
-  git_add("diff");
-  git_add("diff-files");
-  git_add("diff-index");
-  git_add("diff-tree");
-  git_add("difftool");
-  git_add("difftool--helper");
-  git_add("fast-export");
-  git_add("fast-import");
-  git_add("fetch");
-  git_add("fetch-pack");
-  git_add("filter-branch");
-  git_add("fmt-merge-msg");
-  git_add("for-each-ref");
-  git_add("format-patch");
-  git_add("fsck");
-  git_add("fsck-objects");
-  git_add("gc");
-  git_add("get-tar-commit-id");
-  git_add("grep");
-  git_add("hash-object");
-  git_add("help");
-  git_add("http-backend");
-  git_add("http-fetch");
-  git_add("http-push");
-  git_add("imap-send");
-  git_add("index-pack");
-  git_add("init");
-  git_add("init-db");
-  git_add("instaweb");
-  git_add("interpret-trailers");
-  git_add("log");
-  git_add("ls-files");
-  git_add("ls-remote");
-  git_add("ls-tree");
-  git_add("mailinfo");
-  git_add("mailsplit");
-  git_add("merge");
-  git_add("merge-base");
-  git_add("merge-file");
-  git_add("merge-index");
-  git_add("merge-octopus");
-  git_add("merge-one-file");
-  git_add("merge-ours");
-  git_add("merge-recursive");
-  git_add("merge-resolve");
-  git_add("merge-subtree");
-  git_add("merge-tree");
-  git_add("mergetool");
-  git_add("mktag");
-  git_add("mktree");
-  git_add("mv");
-  git_add("name-rev");
-  git_add("notes");
-  git_add("pack-objects");
-  git_add("pack-redundant");
-  git_add("pack-refs");
-  git_add("patch-id");
-  git_add("prune");
-  git_add("prune-packed");
-  git_add("pull");
-  git_add("push");
-  git_add("quiltimport");
-  git_add("read-tree");
-  git_add("rebase");
-  git_add("rebase--helper");
-  git_add("receive-pack");
-  git_add("reflog");
-  git_add("remote");
-  git_add("remote-ext");
-  git_add("remote-fd");
-  git_add("remote-ftp");
-  git_add("remote-ftps");
-  git_add("remote-http");
-  git_add("remote-https");
-  git_add("remote-testsvn");
-  git_add("repack");
-  git_add("replace");
-  git_add("request-pull");
-  git_add("rerere");
-  git_add("reset");
-  git_add("rev-list");
-  git_add("rev-parse");
-  git_add("revert");
-  git_add("rm");
-  git_add("send-pack");
-  git_add("sh-i18n--envsubst");
-  git_add("shell");
-  git_add("shortlog");
-  git_add("show");
-  git_add("show-branch");
-  git_add("show-index");
-  git_add("show-ref");
-  git_add("submodule");
-  git_add("stage");
-  git_add("stash");
-  git_add("status");
-  git_add("stripspace");
-  git_add("submodule--helper");
-  git_add("subtree");
-  git_add("symbolic-ref");
-  git_add("tag");
-  git_add("unpack-file");
-  git_add("unpack-objects");
-  git_add("update-index");
-  git_add("update-ref");
-  git_add("update-server-info");
-  git_add("upload-archive");
-  git_add("upload-pack");
-  git_add("var");
-  git_add("verify-commit");
-  git_add("verify-pack");
-  git_add("verify-tag");
-  git_add("web--browse");
-  git_add("whatchanged");
-  git_add("worktree");
-  git_add("write-tree");
-  svn_add("blame");
-  svn_add("praise");
-  svn_add("annotate");
-  svn_add("cat");
-  svn_add("changelist");
-  svn_add("checkout");
-  svn_add("cleanup");
-  svn_add("commit");
-  svn_add("copy");
-  svn_add("delete");
-  svn_add("remove");
-  svn_add("diff");
-  svn_add("export");
-  svn_add("help");
-  svn_add("import");
-  svn_add("info");
-  svn_add("list");
-  svn_add("lock");
-  svn_add("log");
-  svn_add("merge");
-  svn_add("mergeinfo");
-  svn_add("mkdir");
-  svn_add("move");
-  svn_add("patch");
-  svn_add("propdel");
-  svn_add("propedit");
-  svn_add("propget");
-  svn_add("proplist");
-  svn_add("propset");
-  svn_add("relocate");
-  svn_add("resolve");
-  svn_add("resolved");
-  svn_add("revert");
-  svn_add("status");
-  svn_add("switch");
-  svn_add("unlock");
-  svn_add("update");
-  svn_add("upgrade");
-  ipset_add("create");
-  ipset_add("add");
-  ipset_add("del");
-  ipset_add("test");
-  ipset_add("destroy");
-  ipset_add("list");
-  ipset_add("save");
-  ipset_add("restore");
-  ipset_add("flush");
-  ipset_add("rename");
-  ipset_add("swap");
-  ipset_add("help");
-  ipset_add("version");
-  yum_add("install");
-  yum_add("update");
-  yum_add("update-to");
-  yum_add("update-minimal");
-  yum_add("check-update");
-  yum_add("upgrade");
-  yum_add("upgrade-to");
-  yum_add("distribution-synchronization");
-  yum_add("remove");
-  yum_add("erase");
-  yum_add("autoremove");
-  yum_add("list");
-  yum_add("info");
-  yum_add("provides");
-  yum_add("whatprovides");
-  yum_add("clean");
-  yum_add("makecache");
-  yum_add("groups");
-  yum_add("search");
-  yum_add("shell");
-  yum_add("resolvedep");
-  yum_add("localinstall");
-  yum_add("localupdate");
-  yum_add("reinstall");
-  yum_add("downgrade");
-  yum_add("deplist");
-  yum_add("repolist");
-  yum_add("repoinfo");
-  yum_add("repository-packages");
-  yum_add("version");
-  yum_add("history");
-  yum_add("load-transaction");
-  yum_add("updateinfo");
-  yum_add("fssnapshot");
-  yum_add("fs");
-  yum_add("check");
-  yum_add("help");
 end startupGetline;
 #else
 procedure startupGetline is
@@ -1953,36 +1980,8 @@ end startupGetline;
 
 #if READLINE
 procedure shutdownGetline is
-  wordPtr : chars_ptr;
 begin
-  for i in completionLists.First_Index( gitWords )..completionLists.Last_Index( gitWords ) loop
-      wordPtr := completionLists.Element( gitWords, i );
-      Free( wordPtr );
-      memoryLeakCnt := memoryLeakCnt - 1;
-  end loop;
-  for i in completionLists.First_Index( svnWords )..completionLists.Last_Index( svnWords ) loop
-      wordPtr := completionLists.Element( svnWords, i );
-      Free( wordPtr );
-      memoryLeakCnt := memoryLeakCnt - 1;
-  end loop;
-  for i in completionLists.First_Index( ipsetWords )..completionLists.Last_Index( ipsetWords ) loop
-      wordPtr := completionLists.Element( ipsetWords, i );
-      Free( wordPtr );
-      memoryLeakCnt := memoryLeakCnt - 1;
-  end loop;
-  for i in completionLists.First_Index( yumWords )..completionLists.Last_Index( yumWords ) loop
-      wordPtr := completionLists.Element( yumWords, i );
-      Free( wordPtr );
-      memoryLeakCnt := memoryLeakCnt - 1;
-  end loop;
-  for i in completionLists.First_Index( aptWords )..completionLists.Last_Index( aptWords ) loop
-      wordPtr := completionLists.Element( aptWords, i );
-      Free( wordPtr );
-      memoryLeakCnt := memoryLeakCnt - 1;
-  end loop;
-  if memoryLeakCnt /= 0 then
-     raise COMPLETION_MEMORY_LEAK with "items" & memoryLeakCnt'img;
-  end if;
+  null;
 end shutdownGetline;
 #else
 procedure shutdownGetline is

@@ -729,9 +729,6 @@ begin
         if isLocal( token ) then
            err( "already declared " &
                 optional_bold( to_string( identifiers( token ).name ) ) );
-        elsif element( identifiers( token ).name,
-            length( identifiers( token ).name ) ) = '_' then
-               err( "trailing underscores not allowed in identifiers" );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
@@ -751,7 +748,9 @@ begin
               err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
            end if;
         end if;
-        if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
+        if element( nameAsLower, length( nameAsLower)-1 ) = '_' then
+               err( "trailing underscores not allowed in identifiers" );
+        elsif index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
            err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
             err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
