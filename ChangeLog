@@ -5,6 +5,7 @@ Objective: Shell and Command Line Improvements
 CHANGES SINCE 2.3.1
 
 1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.  
+
 CHANGES SINCE 2.3
 
 2. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
@@ -15,11 +16,11 @@ CHANGES SINCE 2.3
 
 5. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
 
-5. New: Bourne shell dollar brace ${...} variable substitutions. [Docs needed, tests needed]
+5. New: Bourne shell dollar brace ${...} variable substitutions.
 
-6. New: Bourne shell dollar parenthesis $(...) command substitution. [Docs needed, tests needed]
+6. New: Bourne shell dollar parenthesis $(...) command substitution.
 
-7. New: Bourne shell length expansion ${#VAR}.  [Docs needed, tests needed]
+7. New: Bourne shell length expansion ${#VAR}.
 
 8. New: Bourne shell ~user is equivalent to /home/user.
 
