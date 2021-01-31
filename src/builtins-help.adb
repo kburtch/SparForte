@@ -2341,7 +2341,9 @@ begin
      content( e, "${X:-Y} - replace with X.  Use Y if X is empty" );
      content( e, "${X:+Y} - replace with X.  Use Y if X is not empty" );
      content( e, "${X:?Y} - replace with X or show error if X is not empty.  Y is optional error message" );
-     content( e, "$(X) - replace with output of commands X.  Recursive." );
+     content( e, "${X:P} or ${X:P:L} - substring from position P in X length L.  First index is 0." );
+     content( e, "${X/S/R} - search for S in X replace with R.  Then replace with the result." );
+     content( e, "$(X) - replace with output of commands X.  Not recursive." );
      section( e, "Positional Parameters and Special Variables" );
      content( e, "$0 or ${0} - the script path" );
      content( e, "$1..$9 or ${1}..$(9} - the first 9 parameters" );
