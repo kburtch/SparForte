@@ -12,7 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - completions
-  - git add src/x(tab,tab) failed?
+  - completions of directories have an extra space
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
