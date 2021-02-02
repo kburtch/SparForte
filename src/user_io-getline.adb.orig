@@ -725,6 +725,87 @@ end Ada_docker_word_generator;
 
 
 -----------------------------------------------------------------------------
+--
+-- KUBERNETES WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+kubernetesWords : constant string :=
+    ASCII.NUL & "create" &
+    ASCII.NUL & "get" &
+    ASCII.NUL & "run" &
+    ASCII.NUL & "expose" &
+    ASCII.NUL & "delete" &
+    ASCII.NUL & "apply" &
+    ASCII.NUL & "annotate" &
+    ASCII.NUL & "autoscale" &
+    ASCII.NUL & "debug" &
+    ASCII.NUL & "diff" &
+    ASCII.NUL & "edit" &
+    ASCII.NUL & "kustomize" &
+    ASCII.NUL & "label" &
+    ASCII.NUL & "patch" &
+    ASCII.NUL & "replace" &
+    ASCII.NUL & "rollout" &
+    ASCII.NUL & "scale" &
+    ASCII.NUL & "set" &
+    ASCII.NUL & "wait" &
+    ASCII.NUL & "attach" &
+    ASCII.NUL & "auth" &
+    ASCII.NUL & "cp" &
+    ASCII.NUL & "describe" &
+    ASCII.NUL & "exec" &
+    ASCII.NUL & "logs" &
+    ASCII.NUL & "port-forward" &
+    ASCII.NUL & "proxy" &
+    ASCII.NUL & "top" &
+    ASCII.NUL & "api-versions" &
+    ASCII.NUL & "certificate" &
+    ASCII.NUL & "cluster-info" &
+    ASCII.NUL & "cordon" &
+    ASCII.NUL & "drain" &
+    ASCII.NUL & "taint" &
+    ASCII.NUL & "uncordon" &
+    ASCII.NUL & "alpha" &
+    ASCII.NUL & "api-resources" &
+    ASCII.NUL & "completion" &
+    ASCII.NUL & "config" &
+    ASCII.NUL & "explain" &
+    ASCII.NUL & "options" &
+    ASCII.NUL & "plugin" &
+    ASCII.NUL & "version";
+
+-----------------------------------------------------------------------------
+--  KUBERNETES WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_k8s_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( kubernetesWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
+begin
+
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_k8s_word_generator;
+
+
+-----------------------------------------------------------------------------
 --  ASSIGNMENT WORD GENERATOR (C language callback to Ada)
 --
 -- Return candidate words for assignment substitutions from the symbol table.

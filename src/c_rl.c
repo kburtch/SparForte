@@ -15,6 +15,7 @@ extern char * Ada_svn_word_generator(const char *text, int state);
 extern char * Ada_yum_word_generator(const char *text, int state);
 extern char * Ada_apt_word_generator(const char *text, int state);
 extern char * Ada_docker_word_generator(const char *text, int state);
+extern char * Ada_k8s_word_generator(const char *text, int state);
 
 // types of completions
 
@@ -30,6 +31,7 @@ const int completion_type_ipset      =  7;
 const int completion_type_yum        =  8;
 const int completion_type_apt        =  9;
 const int completion_type_docker     = 10;
+const int completion_type_k8s        = 11;
 
 /**
  *  SPARFORTE COMPLETION
@@ -42,7 +44,6 @@ const int completion_type_docker     = 10;
 char ** sparforte_completion( const char *text, int start, int end ) {
     char **matches;
     int  text_idx      = -9999;
-    int  cmd_idx;
     int  text_word_cnt = -9999;
     //int  text_first    = -9999;
     int  in_squote     = -9999;
@@ -58,6 +59,8 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     const char yum_str[5]    = "yum ";
     const char apt_str[5]    = "apt ";
     const char docker_str[8] = "docker ";
+    const char kubernetes_str[9] = "kubectl ";
+    const char oc_str[4]     = "oc ";
 
     int completion_type = completion_type_none;
 
@@ -201,12 +204,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
 
     if (text_word_cnt == 2) {
        if (completion_type == completion_type_none) {
-          cmd_idx = 0;
-          while ( (cmd_idx<strlen(git_str) ) &&
-             ( rl_line_buffer[cmd_idx] == git_str[cmd_idx]) ) {
-               cmd_idx++;
-          }
-          if (cmd_idx==strlen(git_str)) {
+          if ( strncmp( rl_line_buffer, git_str, strlen(git_str) ) == 0 ) {
              completion_type = completion_type_git;
           }
        }
@@ -214,12 +212,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        // Svn subcommand completion: a special case.
 
        if (completion_type == completion_type_none) {
-          cmd_idx = 0;
-          while ( (cmd_idx<strlen(svn_str) ) &&
-             ( rl_line_buffer[cmd_idx] == svn_str[cmd_idx]) ) {
-               cmd_idx++;
-          }
-          if (cmd_idx==strlen(svn_str)) {
+          if ( strncmp( rl_line_buffer, svn_str, strlen(svn_str) ) == 0 ) {
              completion_type = completion_type_svn;
           }
        }
@@ -227,12 +220,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        // Ipset subcommand completion: a special case.
 
        if (completion_type == completion_type_none) {
-          cmd_idx = 0;
-          while ( (cmd_idx<strlen(ipset_str) ) &&
-             ( rl_line_buffer[cmd_idx] == ipset_str[cmd_idx]) ) {
-               cmd_idx++;
-          }
-          if (cmd_idx==strlen(ipset_str)) {
+          if ( strncmp( rl_line_buffer, ipset_str, strlen(ipset_str) ) == 0 ) {
              completion_type = completion_type_ipset;
           }
        }
@@ -240,12 +228,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        // Yum subcommand completion: a special case.
 
        if (completion_type == completion_type_none) {
-          cmd_idx = 0;
-          while ( (cmd_idx<strlen(yum_str) ) &&
-             ( rl_line_buffer[cmd_idx] == yum_str[cmd_idx]) ) {
-               cmd_idx++;
-          }
-          if (cmd_idx==strlen(yum_str)) {
+          if ( strncmp( rl_line_buffer, yum_str, strlen(yum_str) ) == 0 ) {
              completion_type = completion_type_yum;
           }
        }
@@ -253,12 +236,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        // Apt subcommand completion: a special case.
 
        if (completion_type == completion_type_none) {
-          cmd_idx = 0;
-          while ( (cmd_idx<strlen(apt_str) ) &&
-             ( rl_line_buffer[cmd_idx] == apt_str[cmd_idx]) ) {
-               cmd_idx++;
-          }
-          if (cmd_idx==strlen(apt_str)) {
+          if ( strncmp( rl_line_buffer, apt_str, strlen(apt_str) ) == 0 ) {
              completion_type = completion_type_apt;
           }
        }
@@ -266,13 +244,24 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        // Docker subcommand completion: a special case.
 
        if (completion_type == completion_type_none) {
-          cmd_idx = 0;
-          while ( (cmd_idx<strlen(docker_str) ) &&
-             ( rl_line_buffer[cmd_idx] == docker_str[cmd_idx]) ) {
-               cmd_idx++;
-          }
-          if (cmd_idx==strlen(docker_str)) {
+          if ( strncmp( rl_line_buffer, docker_str, strlen(docker_str) ) == 0 ) {
              completion_type = completion_type_docker;
+          }
+       }
+
+       // Kubernetes subcommand completion: a special case.
+
+       if (completion_type == completion_type_none) {
+          if ( strncmp( rl_line_buffer, kubernetes_str, strlen(kubernetes_str) ) == 0 ) {
+             completion_type = completion_type_k8s;
+          }
+       }
+
+       // Openshift subcommand completion: a special case.
+
+       if (completion_type == completion_type_none) {
+          if ( strncmp( rl_line_buffer, oc_str, strlen(oc_str) ) == 0 ) {
+             completion_type = completion_type_k8s;
           }
        }
 
@@ -313,6 +302,8 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        matches = rl_completion_matches(text, Ada_variable_word_generator);
     } else if (completion_type == completion_type_docker) {
        matches = rl_completion_matches(text, Ada_docker_word_generator);
+    } else if (completion_type == completion_type_k8s) {
+       matches = rl_completion_matches(text, Ada_k8s_word_generator);
     } else {
        // if something goes wrong, case completion_type_default will
        // trigger the GNU readline built-in completion.

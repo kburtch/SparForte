@@ -95,4 +95,7 @@ pragma export( C, Ada_apt_word_generator, "Ada_apt_word_generator" );
 function Ada_docker_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_docker_word_generator, "Ada_docker_word_generator" );
 
+function Ada_k8s_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_k8s_word_generator, "Ada_k8s_word_generator" );
+
 end user_io.getline;
