@@ -370,7 +370,7 @@ begin
 
    if restriction_no_external_commands then
       err( "typing mistake or external command (not allowed with " &
-           optional_bold( "restriction( no_external_commands )" ) );
+           optional_yellow( "restriction( no_external_commands )" ) );
       return;
    end if;
      C_reset_errno;                                             -- assume OK

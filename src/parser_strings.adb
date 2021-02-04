@@ -798,7 +798,7 @@ begin
   elsif identifiers( getBaseType( expr_type ) ).kind = root_enumerated_t then
      isEnum := true;
   elsif getUniType( expr_type ) /= uni_numeric_t then
-     err( optional_bold( to_string( identifiers(expr_type).name ) ) &
+     err( optional_yellow( to_string( identifiers(expr_type).name ) ) &
           " is not an enumerated or numeric type" );
   end if;
 

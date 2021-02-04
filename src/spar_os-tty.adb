@@ -25,6 +25,7 @@ pragma ada_2005;
 
 with unchecked_deallocation,
      ada.text_io,
+     ada.strings.fixed,
      gnat.source_info,
      spar_os.exec,
      signal_flags,
@@ -39,33 +40,47 @@ package body spar_os.tty is
 
 -- tput terminfo codes (ie. Linux)
 
-tinfo_normal : aliased string := "sgr0"  & ASCII.NUL;
-tinfo_bold   : aliased string := "bold"  & ASCII.NUL;
-tinfo_inverse: aliased string := "smso"  & ASCII.NUL;
-tinfo_cleop  : aliased string := "ed"    & ASCII.NUL;
-tinfo_cleol  : aliased string := "el"    & ASCII.NUL;
-tinfo_up     : aliased string := "cuu1"  & ASCII.NUL;
-tinfo_right  : aliased string := "cuf1"  & ASCII.NUL;
-tinfo_bel    : aliased string := "bel"   & ASCII.NUL;
-tinfo_reset  : aliased string := "reset" & ASCII.NUL;
-tinfo_clear  : aliased string := "clear" & ASCII.NUL;
-tinfo_lines  : aliased string := "lines" & ASCII.NUL;
-tinfo_cols   : aliased string := "cols"  & ASCII.NUL;
+type tinfo_array is array(termAttributes ) of aliased unbounded_string;
+tinfo : tinfo_array := (
+  normal  => to_unbounded_string( "sgr0"  & ASCII.NUL ),
+  bold    => to_unbounded_string( "bold"  & ASCII.NUL ),
+  inverse => to_unbounded_string( "smso"  & ASCII.NUL ),
+  cleop   => to_unbounded_string( "ed"    & ASCII.NUL ),
+  cleol   => to_unbounded_string( "el"    & ASCII.NUL ),
+  up      => to_unbounded_string( "cuu1"  & ASCII.NUL ),
+  right   => to_unbounded_string( "cuf1"  & ASCII.NUL ),
+  bel     => to_unbounded_string( "bel"   & ASCII.NUL ),
+  reset   => to_unbounded_string( "reset" & ASCII.NUL ),
+  clear   => to_unbounded_string( "clear" & ASCII.NUL ),
+  lines   => to_unbounded_string( "lines" & ASCII.NUL ),
+  cols    => to_unbounded_string( "cols"  & ASCII.NUL ),
+  red     => to_unbounded_string( "setaf 1" & ASCII.NUL ),
+  green   => to_unbounded_string( "setaf 2" & ASCII.NUL ),
+  yellow  => to_unbounded_string( "setaf 3" & ASCII.NUL ),
+  white   => to_unbounded_string( "setaf 7" & ASCII.NUL )
+);
 
 -- tput termcap codes (ie. FreeBSD)
 
-tcap_normal : aliased string := "me"    & ASCII.NUL;
-tcap_bold   : aliased string := "md"    & ASCII.NUL;
-tcap_inverse: aliased string := "so"    & ASCII.NUL;
-tcap_cleop  : aliased string := "cd"    & ASCII.NUL;
-tcap_cleol  : aliased string := "ce"    & ASCII.NUL;
-tcap_up     : aliased string := "up"    & ASCII.NUL;
-tcap_right  : aliased string := "nd"    & ASCII.NUL;
-tcap_bel    : aliased string := "bl"    & ASCII.NUL;
-tcap_reset  : aliased string := "reset" & ASCII.NUL;
-tcap_clear  : aliased string := "clear" & ASCII.NUL;
-tcap_lines  : aliased string := "li"    & ASCII.NUL;
-tcap_cols   : aliased string := "co"    & ASCII.NUL;
+type tcap_array is array(termAttributes ) of aliased unbounded_string;
+tcap : tcap_array := (
+  normal  => to_unbounded_string( "me"    & ASCII.NUL ),
+  bold    => to_unbounded_string( "md"    & ASCII.NUL ),
+  inverse => to_unbounded_string( "so"    & ASCII.NUL ),
+  cleop   => to_unbounded_string( "cd"    & ASCII.NUL ),
+  cleol   => to_unbounded_string( "ce"    & ASCII.NUL ),
+  up      => to_unbounded_string( "up"    & ASCII.NUL ),
+  right   => to_unbounded_string( "nd"    & ASCII.NUL ),
+  bel     => to_unbounded_string( "bl"    & ASCII.NUL ),
+  reset   => to_unbounded_string( "reset" & ASCII.NUL ),
+  clear   => to_unbounded_string( "clear" & ASCII.NUL ),
+  lines   => to_unbounded_string( "li"    & ASCII.NUL ),
+  cols    => to_unbounded_string( "co"    & ASCII.NUL ),
+  red     => to_unbounded_string( "md" & ASCII.NUL ), -- termcap may not have color
+  green   => to_unbounded_string( "md" & ASCII.NUL ),
+  yellow  => to_unbounded_string( "md" & ASCII.NUL ),
+  white   => to_unbounded_string( "me" & ASCII.NUL )
+);
 
 lastTerm    : unbounded_string := to_unbounded_string( "<undefined>" );
 -- type of terminal as of last attribute update
@@ -83,109 +98,34 @@ function tput( attr : termAttributes ) return unbounded_string is
 -- the terminfo database.  Return the resulting code.  To do
 -- this, we mimic the system() command by redirecting stdout to
 -- a temp file and calling spawm to run the comand.
-  tputResults   : string := "/tmp/bushXXXXXX" & ASCII.NUL;
-  result        : aFileDescriptor;
-  tputResultsFD : aFileDescriptor;
-  oldStdout     : aFileDescriptor;
-  ap            : argumentListPtr;
-  ttyCode       : unbounded_string := null_unbounded_string;
-  amountRead    : size_t;
-  ch            : character := ASCII.NUL;
-  -- NUL to stop compiler warning
-  term_id       : identifier;
-  intResult     : integer;
-  closeResult   : int;
-begin
 
-  -- Redirect standard output to a temp file
+     tputResults   : string := "/tmp/sparXXXXXX" & ASCII.NUL;
+     tputResultsFD : aFileDescriptor;
+     oldStdout     : aFileDescriptor;
+     closeResult   : int;
+     result        : aFileDescriptor;
 
-  mkstemp( tputResultsFD, tputResults );
-  if tputResultsFD < 0 then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to make temp file" );
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
-     return null_unbounded_string;
-  end if;
+  function runTput( originalFirstParam, originalExtraParam : string ) return unbounded_string is
+     ap            : argumentListPtr;
+     ttyCode       : unbounded_string := null_unbounded_string;
+     amountRead    : size_t;
+     ch            : character := ASCII.NUL;
+     -- NUL to stop compiler warning
+     term_id       : identifier;
+     intResult     : integer;
+     firstParam    : aliased string := originalFirstParam;
+     extraParam    : aliased string := originalExtraParam;
+  begin
 
-  <<retry1>> oldstdout := dup( stdout );
-  if oldstdout < 0 then
-     if C_errno = EINTR then
-        goto retry1;
-     end if;
-     <<retry2>> closeResult := close( tputResultsFD );
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry2;
-        end if;
-     end if;
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to save stdout" );
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
-     return null_unbounded_string;
-  end if;
+  -- Setup parameters
 
-  <<retry3>> result := dup2( tputResultsFD, stdout );
-  if result < 0 then
-     if C_errno = EINTR then
-        goto retry3;
-     end if;
-     <<retry4>> closeResult := close( tputResultsFD );
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry4;
-        end if;
-     end if;
-    <<retry5>> closeResult := close( oldstdout );
-     if closeResult < 0 then
-        if C_errno = EINTR then
-           goto retry5;
-        end if;
-     end if;
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to redirect stdout" );
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
-     return null_unbounded_string;
-  end if;
-
-  -- Create the argument list for tput command
-
-  ap := new ArgumentList( 1..1 );
-
-  if tput_style = "terminfo" then
-     case attr is
-     when normal =>  ap( 1 ) := tinfo_normal'access;
-     when bold =>    ap( 1 ) := tinfo_bold'access;
-     when inverse => ap( 1 ) := tinfo_inverse'access;
-     when cleop =>   ap( 1 ) := tinfo_cleop'access;
-     when cleol =>   ap( 1 ) := tinfo_cleol'access;
-     when up =>      ap( 1 ) := tinfo_up'access;
-     when right =>   ap( 1 ) := tinfo_right'access;
-     when bel =>     ap( 1 ) := tinfo_bel'access;
-     when reset =>   ap( 1 ) := tinfo_reset'access;
-     when clear =>   ap( 1 ) := tinfo_clear'access;
-     when lines =>   ap( 1 ) := tinfo_lines'access;
-     when cols =>    ap( 1 ) := tinfo_cols'access;
-     when others =>
-       put_line( standard_output, Gnat.Source_Info.Source_Location & "Internal error: no such tcap code" );
-     end case;
-  elsif tput_style = "termcap" then
-     case attr is
-     when normal =>  ap( 1 ) := tcap_normal'access;
-     when bold =>    ap( 1 ) := tcap_bold'access;
-     when inverse => ap( 1 ) := tcap_inverse'access;
-     when cleop =>   ap( 1 ) := tcap_cleop'access;
-     when cleol =>   ap( 1 ) := tcap_cleol'access;
-     when up =>      ap( 1 ) := tcap_up'access;
-     when right =>   ap( 1 ) := tcap_right'access;
-     when bel =>     ap( 1 ) := tcap_bel'access;
-     when reset =>   ap( 1 ) := tcap_reset'access;
-     when clear =>   ap( 1 ) := tcap_clear'access;
-     when lines =>   ap( 1 ) := tcap_lines'access;
-     when cols =>    ap( 1 ) := tcap_cols'access;
-     when others =>
-       put_line( standard_output, "Internal error: no such tcap code" );
-       ap( 1 ) := tcap_normal'access; -- prevent exception
-     end case;
+  if extraParam = "" then
+     ap := new ArgumentList( 1..1 );
+     ap(1) := firstParam'unchecked_access;
   else
-       put_line( standard_output, "Internal error: unknown tput_style" );
-       ap( 1 ) := tcap_normal'access; -- prevent exception
+     ap := new ArgumentList( 1..2 );
+     ap(1) := firstParam'unchecked_access;
+     ap(2) := extraParam'unchecked_access;
   end if;
 
   -- Export TERM variable
@@ -285,6 +225,94 @@ begin
        put( standard_error, Gnat.Source_Info.Source_Location & ": Contraint thrown for " );
        put_line( standard_error, attr'img );
        return ttyCode;
+  end runTput;
+
+  spacePos      : natural;
+  firstParam    : unbounded_string;
+  extraParam    : unbounded_string;
+begin
+
+  -- Redirect standard output to a temp file
+
+  mkstemp( tputResultsFD, tputResults );
+  if tputResultsFD < 0 then
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to make temp file" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
+     return null_unbounded_string;
+  end if;
+
+  <<retry1>> oldstdout := dup( stdout );
+  if oldstdout < 0 then
+     if C_errno = EINTR then
+        goto retry1;
+     end if;
+     <<retry2>> closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry2;
+        end if;
+     end if;
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to save stdout" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
+     return null_unbounded_string;
+  end if;
+
+  <<retry3>> result := dup2( tputResultsFD, stdout );
+  if result < 0 then
+     if C_errno = EINTR then
+        goto retry3;
+     end if;
+     <<retry4>> closeResult := close( tputResultsFD );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry4;
+        end if;
+     end if;
+    <<retry5>> closeResult := close( oldstdout );
+     if closeResult < 0 then
+        if C_errno = EINTR then
+           goto retry5;
+        end if;
+     end if;
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Unable to redirect stdout" );
+     put_line( standard_error, Gnat.Source_Info.Source_Location & ": Error # " & C_errno'img );
+     return null_unbounded_string;
+  end if;
+
+  -- Create the argument list for tput command
+
+
+  if tput_style = "terminfo" then
+     spacePos := ada.strings.unbounded.index( tinfo(attr), " " );
+     if spacePos = 0 then
+        firstParam := 
+           ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, length( tinfo(attr)) );
+        return runTput( to_string( firstParam & ASCII.NUL), "" );
+     else
+        firstParam := 
+           ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, spacePos-1 );
+        extraParam :=
+           ada.strings.unbounded.unbounded_slice( tinfo(attr), spacePos+1, length( tinfo(attr)) );
+        return runTput( to_string( firstParam & ASCII.NUL), to_string( extraParam & ASCII.NUL ) );
+     end if;
+  elsif tput_style = "termcap" then
+     spacePos := ada.strings.unbounded.index( tcap(attr), " " );
+     if spacePos = 0 then
+        firstParam := 
+           ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, length( tinfo(attr)) );
+        return runTput( to_string( firstParam & ASCII.NUL ), "" );
+     else
+        firstParam := 
+           ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, spacePos-1 );
+        extraParam :=
+           ada.strings.unbounded.unbounded_slice( tcap(attr), spacePos+1, length( tcap(attr)) );
+        return runTput( to_string( firstParam & ASCII.NUL), to_string( extraParam & ASCII.NUL ) );
+     end if;
+  else
+       put_line( standard_output, "Internal error: unknown tput_style" );
+  end if;
+  return null_unbounded_string;
+
 end tput;
 
 

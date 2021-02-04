@@ -329,9 +329,9 @@ procedure CheckHomonyms( id : identifier ) is
           );
           findIdent( temp, tempId );
           if tempId /= eof_t then
-             err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) &
+             err( "style issue: name " & optional_yellow( to_string( identifiers(id).name ) ) &
                   " is similar to another visible name " &
-                  optional_bold( to_string( temp ) ) &
+                  optional_yellow( to_string( temp ) ) &
                   " and may cause confusion" );
           end if;
       end if;
@@ -391,31 +391,31 @@ function isTokenValidIdentifier return boolean is
 begin
   valid := false;
   if token = number_t then
-     err( optional_bold( "identifier") & " expected, not a " &
-          optional_bold( "number" ) );
+     err( optional_yellow( "identifier") & " expected, not a " &
+          optional_yellow( "number" ) );
   elsif token = strlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "string literal" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "string literal" ) );
   elsif token = backlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "backquoted literal" ) );
   elsif token = charlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "character literal" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "character literal" ) );
   elsif token = word_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "(shell immediate) word" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "(shell immediate) word" ) );
   elsif token = eof_t then
-     err( optional_bold( "identifier" ) & " expected" );
+     err( optional_yellow( "identifier" ) & " expected" );
   elsif is_keyword( token ) and token /= eof_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "keyword" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "keyword" ) );
   elsif token = symbol_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "symbol" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "symbol" ) );
   elsif token = shell_symbol_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "shell symbol" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "shell symbol" ) );
   else
      valid := true;
   end if;
@@ -443,15 +443,15 @@ begin
   if identifiers( token ).kind /= new_t then
      if isTokenValidIdentifier then
         if identifiers( token ).field_of /= eof_t then
-           err( optional_bold( "identifier" ) & " expected, not a " &
-                optional_bold( "field of a record type" ) );
+           err( optional_yellow( "identifier" ) & " expected, not a " &
+                optional_yellow( "field of a record type" ) );
         else
            -- an existing token name
            fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
            findIdent( fieldName, temp_id );
            if temp_id /= eof_t then
               err( "already declared " &
-                   optional_bold( to_string( fieldName ) ) );
+                   optional_yellow( to_string( fieldName ) ) );
            else                                                     -- declare it
               declareIdent( id, fieldName, new_t, varClass );
            end if;
@@ -464,7 +464,7 @@ begin
      findIdent( fieldName, temp_id );
      if temp_id /= eof_t then
         err( "already declared " &
-             optional_bold( to_string( fieldName ) ) );
+             optional_yellow( to_string( fieldName ) ) );
      else                                                     -- declare it
         discardUnusedIdentifier( token );
         declareIdent( id, fieldName, new_t, varClass );
@@ -472,7 +472,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseFieldIdentifier;
@@ -495,8 +495,8 @@ begin
   if identifiers( token ).kind /= new_t then
      if isTokenValidIdentifier then
         if identifiers( token ).field_of /= eof_t then
-           err( optional_bold( "identifier" ) & " expected, not a " &
-                optional_bold( "field of a record type" ) );
+           err( optional_yellow( "identifier" ) & " expected, not a " &
+                optional_yellow( "field of a record type" ) );
         -- if old, don't redeclare if it was a forward declaration
         elsif identifiers( token ).class = userProcClass or         -- a proc?
               identifiers( token ).class = userFuncClass then       -- or func?
@@ -505,7 +505,7 @@ begin
                  id := token;                                       -- then it's
               else                                                  -- not fwd?
                  err( "already declared " &
-                      optional_bold( to_string( identifiers( token ).name ) ) );
+                      optional_yellow( to_string( identifiers( token ).name ) ) );
               end if;                                               -- not local?
            else                                                     -- declare it
               declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
@@ -513,7 +513,7 @@ begin
            end if;                                                  -- otherwise
         elsif isLocal( token ) then
            err( "already declared " &
-                optional_bold( to_string( identifiers( token ).name ) ) );
+                optional_yellow( to_string( identifiers( token ).name ) ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
@@ -527,7 +527,7 @@ begin
      -- Procedure / Function style checks
 
      if length( identifiers(id).name ) < 3 then
-        err( optional_bold( "style issue: " & to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
+        err( "style issue: " & optional_yellow( to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
         elsif length( identifiers(id).name ) > 32 then
             if index( identifiers(id).name, "_" ) = 0 then
                err( "style issue: long names are more readable when underscores are used" );
@@ -543,7 +543,7 @@ begin
 
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseProcedureIdentifier;
@@ -570,7 +570,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParsePragmaIdentifier;
@@ -606,7 +606,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaConstraintIdentifier;
@@ -636,7 +636,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaAffinityIdentifier;
@@ -666,7 +666,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaModeIdentifier;
@@ -697,7 +697,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaAffinityModeIdentifier;
@@ -718,7 +718,7 @@ begin
   if identifiers( token ).specAt /= noSpec and isLocal( token ) then
      if identifiers( token ).usage /= constantUsage or
         identifiers( token ).class /= varClass then
-        err( optional_bold( "constant" ) & " expected for a " &
+        err( optional_yellow( "constant" ) & " expected for a " &
              "earlier specification" );
      end if;
      id := token;
@@ -728,7 +728,7 @@ begin
      if isTokenValidIdentifier then
         if isLocal( token ) then
            err( "already declared " &
-                optional_bold( to_string( identifiers( token ).name ) ) );
+                optional_yellow( to_string( identifiers( token ).name ) ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
@@ -743,17 +743,17 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err( "style issue: name lowercase " & optional_bold( "l" ) & " can be confused with the number one" );
+              err( "style issue: name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
            elsif identifiers( id ).name = uppercase_o then
-              err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
+              err( "style issue: name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
            end if;
         end if;
         if element( nameAsLower, length( nameAsLower)-1 ) = '_' then
                err( "trailing underscores not allowed in identifiers" );
         elsif index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+           err( "style issue:  name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-            err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+            err( "style issue: name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
         elsif length( nameAsLower ) > 32 then
             if index( nameAsLower, "_" ) = 0 then
                err( "style issue: long names are more readable when underscores are used" );
@@ -768,7 +768,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseVariableIdentifier;
@@ -789,7 +789,7 @@ begin
      if isTokenValidIdentifier then
         if isLocal( token ) then
            err( "already declared " &
-                optional_bold( to_string( identifiers( token ).name ) ) );
+                optional_yellow( to_string( identifiers( token ).name ) ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
@@ -804,15 +804,15 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err( "style issue: name lowercase " & optional_bold( "l" ) & " can be confused with the number one" );
+              err( "style issue: name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
            elsif identifiers( id ).name = uppercase_o then
-              err( "style issue: name uppercase " & optional_bold( "O" ) & " can be confused with the number zero" );
+              err( "style issue: name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
            end if;
         end if;
         if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err( "style issue:  name " & optional_bold( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+           err( "style issue:  name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-            err( "style issue: name " & optional_bold( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+            err( "style issue: name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
         elsif element( identifiers(id).name,
             length( identifiers(id).name ) ) = '_' then
                err( "trailing underscores not allowed in identifiers" );
@@ -830,7 +830,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseNewIdentifier;
@@ -855,9 +855,9 @@ begin
                if i /= token and not identifiers(i).deleted then
                   if typoOf( identifiers(i).name, identifiers(token).name ) then
                      discardUnusedIdentifier( token );
-                     err( optional_bold( to_string( identifiers(token).name ) ) &
+                     err( optional_yellow( to_string( identifiers(token).name ) ) &
                      " is a possible typo of " &
-                     optional_bold( to_string( identifiers(i).name ) ) );
+                     optional_yellow( to_string( identifiers(i).name ) ) );
                      exit;
                   end if;
               end if;
@@ -868,7 +868,7 @@ begin
              -- help for common mistakes
              -- php/shell - checking for echo/print doesn't work since these
              -- are Linux commands anyway and will be found.  Code removed.
-             err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared" );
+             err( optional_yellow( to_string( identifiers( token ).name ) ) & " not declared" );
           end if;
         end if;
         -- this only appears if err in typo loop didn't occur
@@ -901,7 +901,7 @@ begin
   end if;
   getNextToken;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseIdentifier;
@@ -917,29 +917,29 @@ procedure ParseStaticIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- assume failure
   if token = number_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "number" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "number" ) );
   elsif token = strlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "string literal" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "string literal" ) );
   elsif token = backlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "backquoted literal" ) );
   elsif token = charlit_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "character literal" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "character literal" ) );
   elsif token = word_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "(shell immediate) word" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "(shell immediate) word" ) );
   elsif is_keyword( token ) and token /= eof_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "keyword" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "keyword" ) );
   elsif token = symbol_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "symbol" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "symbol" ) );
   elsif token = shell_symbol_t then
-     err( optional_bold( "identifier" ) & " expected, not a " &
-          optional_bold( "shell symbol" ) );
+     err( optional_yellow( "identifier" ) & " expected, not a " &
+          optional_yellow( "shell symbol" ) );
   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
      -- if we're skipping a block, it doesn't matter if the identifier is
      -- declared, but it does if we're executing a block or checking syntax
@@ -948,9 +948,9 @@ begin
             if i /= token and not identifiers(i).deleted then
                if typoOf( identifiers(i).name, identifiers(token).name ) then
                   discardUnusedIdentifier( token );
-                  err( optional_bold( to_string( identifiers(token).name ) ) &
+                  err( optional_yellow( to_string( identifiers(token).name ) ) &
                   " is a possible typo of " &
-                  optional_bold( to_string( identifiers(i).name ) ) );
+                  optional_yellow( to_string( identifiers(i).name ) ) );
                   exit;
                end if;
            end if;
@@ -958,7 +958,7 @@ begin
        if not error_found then
           -- token will be eof_t if error has already occurred
           discardUnusedIdentifier( token );
-          err( optional_bold( to_string( identifiers( token ).name ) ) & " not declared or is not static" );
+          err( optional_yellow( to_string( identifiers( token ).name ) ) & " not declared or is not static" );
        end if;
      end if;
      -- this only appears if err in typo loop didn't occur
@@ -977,7 +977,7 @@ begin
   end if;
   getNextToken;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( optional_red( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseStaticIdentifier;
@@ -995,7 +995,7 @@ begin
   -- style check: no dangerous program names
   if syntax_check then
      if index( confusingprogram_words, to_string( " " & identifiers( program_id ).name & " " ) ) > 0 then
-        err( "style issue: " & optional_bold( to_string( identifiers( program_id ).name ) ) & " is a built-in command in some shells" );
+        err( "style issue: " & optional_yellow( to_string( identifiers( program_id ).name ) ) & " is a built-in command in some shells" );
      end if;
   end if;
   identifiers( program_id ).kind := identifiers'first;
@@ -1134,7 +1134,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
     kind := eof_t;
     ParseIdentifier( t );
     if identifiers( t ).volatile = checked then    -- volatile user identifier
-       err( to_string( identifiers( t ).name ) & " is " & optional_bold( "volatile" ) &
+       err( to_string( identifiers( t ).name ) & " is " & optional_yellow( "volatile" ) &
           " and not allowed in expressions because it may cause side-effects" );
        --refreshVolatile( t );
        --f := identifiers( t ).value.all;
@@ -1156,7 +1156,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        identifiers( t ).class = typeClass then
        -- this will change when arrays can have derived types.
        if identifiers( getBaseType( t ) ).list then
-          err( optional_bold( to_string( identifiers( t ).name ) ) & " is an array type" );
+          err( optional_yellow( to_string( identifiers( t ).name ) ) & " is an array type" );
        end if;                               -- represent array types
        castType := t;                        -- in expressiosn (yet)
        expect( symbol_t, "(" );
@@ -1241,7 +1241,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        end if;
     -- regular variable with an array index?
        if token = symbol_t and then identifiers( token ).value.all = "(" then
-         err( optional_bold( to_string( identifiers( t ).name ) ) &
+         err( optional_yellow( to_string( identifiers( t ).name ) ) &
              " has an array index but is not an array" );
        end if;
        -- parse factor identifier: scalar or record
@@ -1306,7 +1306,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
         if onlyAda95 then
-           err( "$# not allowed with " & optional_bold( "pragma ada_95" ) &
+           err( "$# not allowed with " & optional_yellow( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
         if isExecutingCommand then
@@ -1318,7 +1318,7 @@ begin
         identifiers( Token ).value.all <= "$9" then
         -- this could be done a little tighter (ie length check)
         if onlyAda95 then
-           err( "$1..$9 not allowed with " & optional_bold( "pragma ada_95" ) &
+           err( "$1..$9 not allowed with " & optional_yellow( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
         kind := uni_string_t;
@@ -1339,7 +1339,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$0" then
         if onlyAda95 then
-           err( "$0 not allowed with " & optional_bold( "pragma ada_95" ) &
+           err( "$0 not allowed with " & optional_yellow( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
         if isExecutingCommand then
@@ -1349,7 +1349,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
@@ -1366,7 +1366,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
         if onlyAda95 then
-           err( "% is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "% is not allowed with " & optional_yellow( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif syntax_check then             -- % depends on run-time
@@ -1437,7 +1437,7 @@ begin
         getNextToken;
         if onlyAda95 then
            err( "symbol_table_size is not allowed with " &
-              optional_bold( "pragma ada_95" ) );
+              optional_yellow( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         else
@@ -1466,7 +1466,7 @@ begin
         kind := string_t;
         getNextToken;
      elsif identifiers( token ).procCB /= null then         -- a built-in procedure?
-        err( optional_bold( to_string( identifiers( token ).name ) ) &
+        err( optional_yellow( to_string( identifiers( token ).name ) ) &
            " is a built-in procedure not a function" );
         kind := eof_t;
      else
@@ -2262,7 +2262,7 @@ begin
      ParseExpressionOperator( operator );
      if onlyAda95 and then last_op /= eof_t and then last_op /= operator then
         err( "mixed boolean operators in expression not allowed with " &
-              optional_bold( "pragam ada_95" ) & " - use parantheses" );
+              optional_yellow( "pragam ada_95" ) & " - use parantheses" );
      end if;
      ParseRelation( re2, kind2 );
      if type_checks_done or else baseTypesOK( kind1, kind2 ) then
@@ -2417,7 +2417,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
         if onlyAda95 then
-           err( "$# not allowed with " & optional_bold( "pragma ada_95" ) &
+           err( "$# not allowed with " & optional_yellow( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
         if isExecutingStaticCommand then
@@ -2429,7 +2429,7 @@ begin
         identifiers( Token ).value.all <= "$9" then
         -- this could be done a little tighter (ie length check)
         if onlyAda95 then
-           err( "$1..$9 not allowed with " & optional_bold( "pragma ada_95" ) &
+           err( "$1..$9 not allowed with " & optional_yellow( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
         kind := uni_string_t;
@@ -2450,7 +2450,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$0" then
         if onlyAda95 then
-           err( "$0 not allowed with " & optional_bold( "pragma ada_95" ) &
+           err( "$0 not allowed with " & optional_yellow( "pragma ada_95" ) &
            " -- use command_line package" );
         end if;
         if isExecutingStaticCommand then
@@ -2460,7 +2460,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
@@ -2476,7 +2476,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
         if onlyAda95 then
-           err( "% is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "% is not allowed with " & optional_yellow( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif syntax_check then             -- % depends on run-time
@@ -2646,7 +2646,7 @@ begin
         -- regular variable with an array index?
         else
           if token = symbol_t and identifiers( token ).value.all = "(" then
-             err( optional_bold( to_string( identifiers( t ).name ) ) &
+             err( optional_yellow( to_string( identifiers( t ).name ) ) &
                  " has an array index but is not an array" );
            end if;
            f := identifiers( t ).value.all;
@@ -3400,7 +3400,7 @@ begin
      ParseStaticExpressionOperator( operator );
      if onlyAda95 and then last_op /= eof_t and then last_op /= operator then
         err( "mixed boolean operators in expression not allowed with " &
-              optional_bold( "pragam ada_95" ) & " - use parantheses" );
+              optional_yellow( "pragam ada_95" ) & " - use parantheses" );
      end if;
      ParseStaticRelation( re2, kind2 );
      if type_checks_done or else baseTypesOK( kind1, kind2 ) then

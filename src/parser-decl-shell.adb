@@ -645,7 +645,7 @@ begin
       if var_id = eof_t then
          -- TODO: this check takes place after the token is read, so token
          -- following the one in question is highlighted
-         err_shell( "identifier " & optional_bold( to_string( toEscaped( expansionVar ) ) ) & " not declared", wordPos );
+         err_shell( "identifier " & optional_yellow( to_string( toEscaped( expansionVar ) ) ) & " not declared", wordPos );
 
       -- For an enumerated item, the value is the item name
 
@@ -664,9 +664,9 @@ begin
          -- and will be the record name.
 
          if identifiers( var_id ).list then
-            err_shell( optional_bold( to_string( expansionVar ) ) & " is an array", wordPos);
+            err_shell( optional_yellow( to_string( expansionVar ) ) & " is an array", wordPos);
          elsif getUniType( identifiers( var_id ).kind ) = root_record_t then
-            err_shell( optional_bold( to_string( expansionVar ) ) & " is a record", wordPos);
+            err_shell( optional_yellow( to_string( expansionVar ) ) & " is a record", wordPos);
          elsif syntax_check then
             identifiers( var_id ).wasReferenced := true;
             --identifiers( id ).referencedByThread := getThreadName;
@@ -692,7 +692,7 @@ begin
             end if;
          end if;
       else
-         err_shell( optional_bold( to_string( expansionVar ) ) & " is not a variable", wordPos );
+         err_shell( optional_yellow( to_string( expansionVar ) ) & " is not a variable", wordPos );
       end if;
    end if;
 end getExpansionValue;
@@ -1732,24 +1732,24 @@ begin
    -- The following may never happen...but are included here to catch the unexpected.
    -- These follow the same pattern as expected identifiers.
    elsif token = number_t then
-     err( optional_bold( "shell word") & " expected, not a " &
-          optional_bold( "number" ) );
+     err( optional_yellow( "shell word") & " expected, not a " &
+          optional_yellow( "number" ) );
    elsif token = strlit_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "string literal" ) );
+     err( optional_yellow( "shell word" ) & " expected, not a " &
+          optional_yellow( "string literal" ) );
    elsif token = backlit_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "backquoted literal" ) );
+     err( optional_yellow( "shell word" ) & " expected, not a " &
+          optional_yellow( "backquoted literal" ) );
    elsif token = charlit_t then
-     err( optional_bold( "shell word" ) & " expected, not a " &
-          optional_bold( "character literal" ) );
+     err( optional_yellow( "shell word" ) & " expected, not a " &
+          optional_yellow( "character literal" ) );
    --elsif token = eof_t then
-   --   err( optional_bold( "shell word" ) & " expected" );
+   --   err( optional_yellow( "shell word" ) & " expected" );
    elsif is_keyword( token ) and token /= eof_t then
-      err( optional_bold( "shell word" ) & " expected, not a " &
-           optional_bold( "keyword" ) );
+      err( optional_yellow( "shell word" ) & " expected, not a " &
+           optional_yellow( "keyword" ) );
    else -- including EOF
-      err( optional_bold( "shell word" ) & " expected" );
+      err( optional_yellow( "shell word" ) & " expected" );
       -- TODO: are there other types of shell words?
       -- TODO: probably should be an error and not null.
       --null;

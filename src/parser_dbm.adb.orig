@@ -133,7 +133,7 @@ dbm_append_for_update_t : identifier;
 procedure findConnection( connectExpr : unbounded_string; connection : in out resPtr ) is
 begin
   if length( connectExpr ) = 0 then
-     err( optional_bold( "new_connnection" ) & " has not been called to initialize the connection" );
+     err( optional_yellow( "new_connnection" ) & " has not been called to initialize the connection" );
   else
      findResource( to_resource_id( connectExpr ), connection );
   end if;
@@ -142,7 +142,7 @@ end findConnection;
 procedure findQuery( queryExpr : unbounded_string; query : in out resPtr ) is
 begin
   if length( queryExpr ) = 0 then
-     err( optional_bold( "new_query" ) & " has not been called to initialize the query" );
+     err( optional_yellow( "new_query" ) & " has not been called to initialize the query" );
   else
      findResource( to_resource_id( queryExpr ), query );
   end if;
@@ -2162,7 +2162,7 @@ begin
 
         if end_of_query( Q ) then
            err( "Did not find any relation named " &
-              optional_bold( to_string( exprVal ) ) );
+              optional_yellow( to_string( exprVal ) ) );
            return;
         end if;
 
@@ -2975,7 +2975,7 @@ begin
                  end if;
              end loop;
              if not found then
-                err( optional_bold( to_string( searchName ) ) & " does not exist" );
+                err( optional_yellow( to_string( searchName ) ) & " does not exist" );
              end if;
           end loop;
        end if;

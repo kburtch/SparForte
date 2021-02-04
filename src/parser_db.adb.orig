@@ -1881,7 +1881,7 @@ begin
 
         if end_of_query( Q ) then
            err( "Did not find any relation named " &
-              optional_bold( to_string( exprVal ) ) );
+              optional_yellow( to_string( exprVal ) ) );
            return;
         end if;
 

@@ -86,7 +86,7 @@ begin
   if isExecutingCommand then
      if file_kind = file_type_t then
         if identifier'value( to_string( stringField( file_ref, mode_field ) ) ) /= in_file_t then
-           err( "end_of_file only applies to " & optional_bold( "in_mode" ) & " files" );
+           err( "end_of_file only applies to " & optional_yellow( "in_mode" ) & " files" );
         end if;
      end if;
   end if;
@@ -735,7 +735,7 @@ procedure ParseOpen( create : boolean := false ) is
 begin
   if create then
      if rshOpt then
-        err( "create not allowed in a " & optional_bold( "restricted shell" ) );
+        err( "create not allowed in a " & optional_yellow( "restricted shell" ) );
      end if;
      expect( create_t );
      expect( symbol_t, "(" );
@@ -776,7 +776,7 @@ begin
         ParseIdentifier( mode );
         if baseTypesOk( identifiers( mode ).kind, file_mode_t ) then
            if boolean(rshOpt) and mode = out_file_t then
-              err( "out_file mode not allowed in a " & optional_bold( "restricted shell" ) );
+              err( "out_file mode not allowed in a " & optional_yellow( "restricted shell" ) );
            end if;
         end if;
      end if;
@@ -842,7 +842,7 @@ begin
         mode := token;
         getNextToken;
         if boolean(rshOpt) and mode = out_file_t then
-           err( "out_file mode not allowed in a " & optional_bold( "restricted shell" ) );
+           err( "out_file mode not allowed in a " & optional_yellow( "restricted shell" ) );
         end if;
      end if;
   end if;
@@ -923,7 +923,7 @@ begin
   ParseOpenFile( file_ref );
   expect( symbol_t, ")" );
   if rshOpt then
-     err( "delete is not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "delete is not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   if isExecutingCommand then
      fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
@@ -1214,7 +1214,7 @@ procedure ParseQuestion is
 begin
   expect( symbol_t );
   if onlyAda95 then
-      err( optional_bold( "pragma ada_95" ) & " doesn't allow ?" );
+      err( optional_yellow( "pragma ada_95" ) & " doesn't allow ?" );
       return;
   end if;
   ParseExpression( expr_val, expr_type );
@@ -1524,11 +1524,11 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if file_ref.id = standard_output_t then
-     err( optional_bold( "standard_output" ) & " cannot be assigned for " &
-          optional_bold( "input" ) );
+     err( optional_yellow( "standard_output" ) & " cannot be assigned for " &
+          optional_yellow( "input" ) );
   elsif file_ref.id = standard_error_t then
-     err( optional_bold( "standard_error" ) & " cannot be assigned for " &
-          optional_bold( "input" ) );
+     err( optional_yellow( "standard_error" ) & " cannot be assigned for " &
+          optional_yellow( "input" ) );
   elsif not syntax_check then
     if to_string(stringField(file_ref, mode_field)) /= in_file_t'img then
        err( "not an in_file file" );
@@ -1563,8 +1563,8 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if file_ref.id = standard_input_t then
-     err( optional_bold( "standard_input" ) & " cannot be assigned for " &
-          optional_bold( "output" ) );
+     err( optional_yellow( "standard_input" ) & " cannot be assigned for " &
+          optional_yellow( "output" ) );
   elsif not syntax_check then
      if to_string(stringField(file_ref.id, mode_field)) = in_file_t'img then
         err( "not an out_file or append_file file" );
@@ -1599,8 +1599,8 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if file_ref.id = standard_input_t then
-     err( optional_bold( "standard_input" ) & " cannot be assigned for " &
-          optional_bold( " standard error" ) );
+     err( optional_yellow( "standard_input" ) & " cannot be assigned for " &
+          optional_yellow( " standard error" ) );
   elsif not syntax_check then
      if to_string(stringField(file_ref, mode_field)) = in_file_t'img then
         err( "not an out_file or append_file file" );

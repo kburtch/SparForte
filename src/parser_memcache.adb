@@ -196,7 +196,7 @@ end checkMemcacheRestriction;
 procedure checkRestrictedShell is
 begin
   if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
 end checkRestrictedShell;
 

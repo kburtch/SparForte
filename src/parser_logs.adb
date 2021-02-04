@@ -343,7 +343,7 @@ begin
            open( log_file, append_file, to_string( log_path ) );
         exception when others =>
            if rshOpt then
-              err( "creating new logs is not allowed in a " & optional_bold( "restricted shell" ) );
+              err( "creating new logs is not allowed in a " & optional_yellow( "restricted shell" ) );
               unlock_file( to_string( lock_file_path ) );
               return; -- must abort
            else

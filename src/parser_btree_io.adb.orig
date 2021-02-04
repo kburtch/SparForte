@@ -167,7 +167,7 @@ function isVerifiedOpenFile( fileId : identifier; theFile : resPtr ) return bool
 begin
    if not theFile.btree.isOpen then
       err( "file " &
-      optional_bold( to_string( identifiers( fileId ).name ) ) &
+      optional_yellow( to_string( identifiers( fileId ).name ) ) &
       " is not open" );
       result := false;
    end if;
@@ -294,7 +294,7 @@ procedure ParseBTreeCreate is
   valLenType : identifier;
 begin
   if rshOpt then
-     err( "create not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "create not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_create_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
@@ -378,7 +378,7 @@ begin
 
         if theFile.btree.isOpen then
            err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              optional_yellow( to_string( identifiers( fileId ).name ) ) &
               "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
               " is already open" );
         else
@@ -459,7 +459,7 @@ begin
            theFile.btree.isOpen := false;
         else
            err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              optional_yellow( to_string( identifiers( fileId ).name ) ) &
               "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
                " is not open" );
         end if;
@@ -537,7 +537,7 @@ begin
            dirname2 := null_unbounded_string;
         elsif rshOpt then
            -- TODO: probably could be in directories in current PATH as well
-           err( "file must be in current directory in a " & optional_bold( "restricted shell" ) );
+           err( "file must be in current directory in a " & optional_yellow( "restricted shell" ) );
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
            dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
@@ -580,7 +580,7 @@ begin
 
         if theFile.btree.isOpen then
            err( "file " &
-              optional_bold( to_string( identifiers( fileId ).name ) ) &
+              optional_yellow( to_string( identifiers( fileId ).name ) ) &
               "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
               " is already open" );
         else
@@ -699,7 +699,7 @@ procedure ParseBTreeDelete is
   dirname2 : unbounded_string;
 begin
   if rshOpt then
-     err( "delete not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "delete not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_delete_t );
   ParseSingleFileParameter( fileId );
@@ -736,7 +736,7 @@ begin
               dirname2 := null_unbounded_string;
            elsif rshOpt then
               -- TODO: probably could be in directories in current PATH as well
-              err( "file must be in current directory in a " & optional_bold( "restricted shell" ) );
+              err( "file must be in current directory in a " & optional_yellow( "restricted shell" ) );
            elsif element( dirname2, 1 ) /= '/' then
               findIdent( to_unbounded_string( "PWD" ), pwdId );
               dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
@@ -847,7 +847,7 @@ procedure ParseBTreeSet is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "set not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "set not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_set_t );
   ParseFirstFileParameter( fileId );
@@ -1110,7 +1110,7 @@ procedure ParseBTreeRemove is
   keyType    : identifier;
 begin
   if rshOpt then
-     err( "remove not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "remove not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_remove_t );
   ParseFirstFileParameter( fileId );
@@ -1176,7 +1176,7 @@ procedure ParseBtreeIncrement is
   oldItemValue : long_float;
 begin
   if rshOpt then
-     err( "increment not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "increment not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_increment_t );
   ParseFirstFileParameter( fileId );
@@ -1247,7 +1247,7 @@ procedure ParseBtreeDecrement is
   oldItemValue : long_float;
 begin
   if rshOpt then
-     err( "decrement not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "decrement not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_decrement_t );
   ParseFirstFileParameter( fileId );
@@ -1319,7 +1319,7 @@ procedure ParseBtreeAdd is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "add not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "add not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_add_t );
   ParseFirstFileParameter( fileId );
@@ -1442,7 +1442,7 @@ procedure ParseBtreeReplace is
   theCurs  : resPtr;
 begin
   if rshOpt then
-     err( "replace not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "replace not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_replace_t );
   ParseFirstFileParameter( fileId );
@@ -1643,7 +1643,7 @@ procedure ParseBtreeAppend is
   oldItem  : unbounded_string;
 begin
   if rshOpt then
-     err( "append not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "append not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_append_t );
   ParseFirstFileParameter( fileId );
@@ -1695,7 +1695,7 @@ procedure ParseBtreePrepend is
   oldItem  : unbounded_string;
 begin
   if rshOpt then
-     err( "prepend not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "prepend not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_prepend_t );
   ParseFirstFileParameter( fileId );
@@ -1774,7 +1774,7 @@ procedure ParseBTreeTruncate is
   theFile    : resPtr;
 begin
   if rshOpt then
-     err( "truncate not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "truncate not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_truncate_t );
   ParseSingleFileParameter( fileId );
@@ -1864,7 +1864,7 @@ begin
         findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
         if theCurs.btree_cur.isOpen then
            err( "cursor " &
-              optional_bold( to_string( identifiers( cursId ).name ) ) &
+              optional_yellow( to_string( identifiers( cursId ).name ) ) &
               " is already open" );
         else
            new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur.cursor );
@@ -1905,7 +1905,7 @@ begin
            findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            if not theCurs.btree_cur.isOpen then
               err( "cursor " &
-                 optional_bold( to_string( identifiers( cursId ).name ) ) &
+                 optional_yellow( to_string( identifiers( cursId ).name ) ) &
                 " is not open" );
            else
               close( theFile.btree.session, theCurs.btree_cur.cursor );
@@ -1946,7 +1946,7 @@ procedure ParseBTreeGetFirst is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_first not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "get_first not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_first_t );
   ParseFirstFileParameter( fileId );
@@ -1993,7 +1993,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                    " is not open" );
               else
                  get( theFile.btree.session,
@@ -2022,7 +2022,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                    " is not open" );
               else
                  get( theFile.btree.session,
@@ -2051,7 +2051,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                    " is not open" );
               else
                  get( theFile.btree.session,
@@ -2102,7 +2102,7 @@ procedure ParseBTreeGetNext is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_next not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "get_next not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_next_t );
   ParseFirstFileParameter( fileId );
@@ -2149,7 +2149,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2178,7 +2178,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2207,7 +2207,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2258,7 +2258,7 @@ procedure ParseBTreeGetLast is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_last not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "get_last not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_last_t );
   ParseFirstFileParameter( fileId );
@@ -2305,7 +2305,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2334,7 +2334,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2363,7 +2363,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2414,7 +2414,7 @@ procedure ParseBTreeGetPrevious is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_previous not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "get_previous not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_previous_t );
   ParseFirstFileParameter( fileId );
@@ -2461,7 +2461,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2490,7 +2490,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,
@@ -2519,7 +2519,7 @@ begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( "cursor " &
-                    optional_bold( to_string( identifiers( cursId ).name ) ) &
+                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
                     " is not open" );
               else
                  get( theFile.btree.session,

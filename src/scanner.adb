@@ -1238,7 +1238,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace( "error: " & msg );
+     put_trace_error( "error: " & msg );
   end if;
 end err_shell;
 
@@ -1287,14 +1287,14 @@ begin
   end loop;
   if identifiers( ident ).renamed_count = 1 then
      err( "renaming " &
-          optional_bold( to_string( identifiers( renaming_id ).name ) ) &
+          optional_yellow( to_string( identifiers( renaming_id ).name ) ) &
           " still refers to " &
-          optional_bold( to_string( identifiers( ident ).name ) ) );
+          optional_yellow( to_string( identifiers( ident ).name ) ) );
   else
      err( "renaming " &
-          optional_bold( to_string( identifiers( renaming_id ).name ) ) &
+          optional_yellow( to_string( identifiers( renaming_id ).name ) ) &
           " (and others) still refer to " &
-          optional_bold( to_string( identifiers( ident ).name ) ) );
+          optional_yellow( to_string( identifiers( ident ).name ) ) );
   end if;
 end err_renaming;
 
@@ -1484,7 +1484,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace( "exception: " & msg );
+     put_trace_error( "exception: " & msg );
   end if;
 end raise_exception;
 
@@ -1776,9 +1776,9 @@ begin
                if boolean( designOpt ) or boolean( testOpt ) then
                   if not identifiers( i ).wasApplied then
                      if identifiers( i ).field_of = eof_t then -- not a field of a record
-                        err( optional_bold( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_bold( "concrete type" ) &
-                           " but expected an " & optional_bold( "abstract type" ) &
+                        err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_yellow( "concrete type" ) &
+                           " but expected an " & optional_yellow( "abstract type" ) &
                            ".  It is not used in declarations." );
                      end if;
                   end if;
@@ -1789,9 +1789,9 @@ begin
                --   if boolean( designOpt ) or boolean( testOpt ) then
                --      if not identifiers( i ).wasReferenced then
                --         if not identifiers( i ).noVar then
-               --            err( optional_bold( to_string( identifiers( i ).name ) ) &
-               --               " is a " & optional_bold( "concrete subprogram" ) &
-               --               " but expected an " & optional_bold( "abstract subprogram" ) &
+               --            err( optional_yellow( to_string( identifiers( i ).name ) ) &
+               --               " is a " & optional_yellow( "concrete subprogram" ) &
+               --               " but expected an " & optional_yellow( "abstract subprogram" ) &
                --               ".  It is never run." );
                --         end if;
                --      end if;
@@ -1807,9 +1807,9 @@ begin
                         if identifiers( i ).field_of /= eof_t then
                            if identifiers( i ).usage /= limitedUsage then
                               if identifiers( i ).name /= "return value" then
-                                 err( optional_bold( to_string( identifiers( i ).name ) ) &
-                                    " is a " & optional_bold( "not-limited variable" ) &
-                                    " but expected a " & optional_bold( "limited" ) &
+                                 err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                                    " is a " & optional_yellow( "not-limited variable" ) &
+                                    " but expected a " & optional_yellow( "limited" ) &
                                     ".  It (or its elements) are not used in expressions nor is assigned to." );
                               end if;
                            end if;
@@ -1828,9 +1828,9 @@ begin
                if testOpt then
                   if identifiers( i ).class = varClass then
                      if identifiers( i ).field_of /= eof_t then
-                        err( optional_bold( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_bold( "variable" ) &
-                           " but expected a " & optional_bold( "constant" ) &
+                        err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_yellow( "variable" ) &
+                           " but expected a " & optional_yellow( "constant" ) &
                            " (or in mode parameter).  It (or its elements) are never written to." );
                      end if;
                   end if;
@@ -1843,7 +1843,7 @@ begin
             if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
-                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                  err( optional_yellow( to_string( identifiers( i ).name ) ) &
                        " has a specification but is not implemented (at " &
                        to_string( identifiers( i ).specFile) & ":" &
                        identifiers( i ).specAt'img & ");" );
@@ -1874,15 +1874,15 @@ begin
                   if identifiers( i ).class = typeClass or
                      identifiers( i ).class = subClass or
                      identifiers( i ).class = genericTypeClass then
-                     err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                     err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                   end if;
                   -- when testing or maintenance, check all identifiers, even
                   -- variables
                elsif testOpt or maintenanceOpt then
-                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                   -- in development, only check variables
                elsif identifiers( i ).class = varClass then
-                  err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
                end if;
             end if;
          end if; -- not deleted
@@ -1922,9 +1922,9 @@ begin
                if boolean( designOpt ) or boolean( testOpt ) then
                   if not identifiers( i ).wasApplied then
                      if identifiers( i ).field_of = eof_t then -- not a field of a record
-                        err( optional_bold( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_bold( "concrete type" ) &
-                           " but expected an " & optional_bold( "abstract type" ) &
+                        err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                           " is a " & optional_yellow( "concrete type" ) &
+                           " but expected an " & optional_yellow( "abstract type" ) &
                            ".  It is not used in declarations." );
                      end if;
                   end if;
@@ -1935,9 +1935,9 @@ begin
             --   if boolean( designOpt ) or boolean( testOpt ) then
             --      if not identifiers( i ).wasReferenced then
             --         if not identifiers( i ).noVar then
-            --            err( optional_bold( to_string( identifiers( i ).name ) ) &
-            --               " is a " & optional_bold( "concrete subprogram" ) &
-            --               " but expected an " & optional_bold( "abstract subprogram" ) &
+            --            err( optional_yellow( to_string( identifiers( i ).name ) ) &
+            --               " is a " & optional_yellow( "concrete subprogram" ) &
+            --               " but expected an " & optional_yellow( "abstract subprogram" ) &
             --               ".  It is never run." );
             --         end if;
             --      end if;
@@ -1955,9 +1955,9 @@ begin
 --put_line( "not ada_95" ); -- DEBUGME
                         if identifiers( i ).usage /= limitedUsage then
                            if identifiers( i ).name /= "return value" then
-                              err( optional_bold( to_string( identifiers( i ).name ) ) &
-                                 " is a " & optional_bold( "not-limited variable" ) &
-                                 " but expected a " & optional_bold( "limited" ) &
+                              err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                                 " is a " & optional_yellow( "not-limited variable" ) &
+                                 " but expected a " & optional_yellow( "limited" ) &
                                  ".  It (or its elements) are not used in expressions nor is assigned to." );
                            end if;
                         end if;
@@ -1975,9 +1975,9 @@ begin
             --   if testOpt then
             --      if identifiers( i ).class = varClass then
             --         if identifiers( i ).field_of /= eof_t then
-            --            err( optional_bold( to_string( identifiers( i ).name ) ) &
-            --               " is a " & optional_bold( "variable" ) &
-            --               " but expected a " & optional_bold( "constant" ) &
+            --            err( optional_yellow( to_string( identifiers( i ).name ) ) &
+            --               " is a " & optional_yellow( "variable" ) &
+            --               " but expected a " & optional_yellow( "constant" ) &
             --               " (or in mode parameter).  It (or its elements) are never written to." );
             --         end if;
             --      end if;
@@ -1991,7 +1991,7 @@ begin
             if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
-                  err( optional_bold( to_string( identifiers( i ).name ) ) &
+                  err( optional_yellow( to_string( identifiers( i ).name ) ) &
                        " has a specification but is not implemented (at " &
                        to_string( identifiers( i ).specFile) & ":" &
                        identifiers( i ).specAt'img & ");" );
@@ -2012,7 +2012,7 @@ begin
 --put_line( standard_error, "HERE 2 - not a field" ); -- DEBUG
 --put( standard_error, " id:" ); put( i'img ); -- DEBUG
 --put_line( standard_error, " " & to_string( identifiers( i ).name ) ); -- DEBUG
-                 err( optional_bold( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                 err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
 --           end if;
             end if;
          end if; -- not deleted
@@ -3535,7 +3535,7 @@ begin
      end if;
      if not refreshed then
         err( "unable to find volatile " &
-             optional_bold( to_string( identifiers( id ).name ) ) &
+             optional_yellow( to_string( identifiers( id ).name ) ) &
              "in the O/S environment" );
      end if;
   else
@@ -3606,7 +3606,7 @@ begin
 
   elsif identifiers( original ).kind = keyword_t then
         err( "type expected, not the keyword " &
-           optional_bold( to_string( identifiers( original ).name ) ) );
+           optional_yellow( to_string( identifiers( original ).name ) ) );
         return universal_t;
   end if;
 
@@ -3666,7 +3666,7 @@ begin
 
   elsif identifiers( original ).kind = keyword_t then
         err( "type expected, not the keyword " &
-           optional_bold( to_string( identifiers( original ).name ) ) );
+           optional_yellow( to_string( identifiers( original ).name ) ) );
         return universal_t;
   end if;
 
@@ -4330,7 +4330,7 @@ begin
               identifiers( derefed_id ).renamed_count - 1;
           else
               err( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
-                 "unexpectedly zero  for "  & optional_bold( to_string( identifiers( derefed_id ).name ) ) );
+                 "unexpectedly zero  for "  & optional_yellow( to_string( identifiers( derefed_id ).name ) ) );
           end if;
         end;
      end if;
@@ -4380,7 +4380,7 @@ begin
              identifiers( derefed_id ).renamed_count - 1;
        else
            err( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
-                "unexpectedly zero  for "  & optional_bold( to_string( identifiers( derefed_id ).name ) ) );
+                "unexpectedly zero  for "  & optional_yellow( to_string( identifiers( derefed_id ).name ) ) );
        end if;
      end;
   end if;
@@ -4661,7 +4661,7 @@ begin
      end if;
   end if;
   if not ok then
-     err( optional_bold( "JSON string value" ) & " expected in string """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" );
+     err( optional_yellow( "JSON string value" ) & " expected in string """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" );
      return;
   end if;
   i := i + 1;
@@ -4839,7 +4839,7 @@ begin
           if ch = '{' then
             err( "JSON array expected but found object" );
           elsif ch /= '[' then
-             err( optional_bold( "JSON array expected" ) & " but found string """ & toSecureData( to_string( toEscaped( source_val ) ) ) & '"' );
+             err( optional_yellow( "JSON array expected" ) & " but found string """ & toSecureData( to_string( toEscaped( source_val ) ) ) & '"' );
           elsif element( source_val, length( source_val ) ) /= ']' then
              err( "expected trailing ]" );
           end if;
@@ -4925,7 +4925,7 @@ begin
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   else
-                     err( optional_bold( toSecureData( to_string( item ) ) ) & " is neither JSON true nor false" );
+                     err( optional_yellow( toSecureData( to_string( item ) ) ) & " is neither JSON true nor false" );
                   end if;
                else
                   item := item & ch;
@@ -4962,9 +4962,9 @@ begin
                      enumVal := integer'value( ' ' & to_string( item ) );
                      if enumVal < 0 or enumVal > maxEnum then
                         err( "enumerated position " &
-                             optional_bold( to_string( item ) ) &
+                             optional_yellow( to_string( item ) ) &
                              " is out of range for " &
-                             optional_bold( to_string( identifiers( elementKind ).name ) ) );
+                             optional_yellow( to_string( identifiers( elementKind ).name ) ) );
                      else
                         -- assignElement( targetArrayId, arrayElement, ' ' & item );
                         identifiers( target_var_id ).avalue( arrayElement ) := ' ' & item;
@@ -5100,7 +5100,7 @@ begin
                exception when others => null;
                end;
                if not ok then
-                  err( optional_bold( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( item ) ) ) & """" );
+                  err( optional_yellow( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( item ) ) ) & """" );
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).avalue( arrayElement ) := item;
@@ -5166,7 +5166,7 @@ begin
                       findIdent( fieldName, field_t );
                       if field_t = eof_t then
                          err( "unable to find record field " &
-                            optional_bold( to_string( fieldName ) ) );
+                            optional_yellow( to_string( fieldName ) ) );
                       else
                          if firstField then
                             firstField := false;
@@ -5205,7 +5205,7 @@ begin
                          else
                             -- private types are unique types extending variable_t
                             err( "private type fields like " &
-                                optional_bold( to_string( fieldName ) ) &
+                                optional_yellow( to_string( fieldName ) ) &
                                 " cannot be encoded as JSON" );
                          end if;
                       end if;
@@ -5252,7 +5252,7 @@ begin
           if ch = '[' then
             err( "JSON object expected but found array" );
           elsif ch /= '{' then
-             err( optional_bold( "JSON object expected" ) & " but found string """ & toSecureData( to_string( toEscaped( item ) ) ) & '"' );
+             err( optional_yellow( "JSON object expected" ) & " but found string """ & toSecureData( to_string( toEscaped( item ) ) ) & '"' );
           elsif element( item, length( item ) ) /= '}' then
              err( "expected trailing }" );
           end if;
@@ -5352,7 +5352,7 @@ begin
                        elsif decodedItemValue = "false" then
                           identifiers( j ).value.all :=  to_unbounded_string( "0" );
                        else
-                          err( optional_bold( to_string( toEscaped( decodedItemName ) ) ) & " has a value of " & optional_bold( toSecureData( to_string( toEscaped( decodedItemValue ) ) ) ) & " but expected JSON true or false" );
+                          err( optional_yellow( to_string( toEscaped( decodedItemName ) ) ) & " has a value of " & optional_yellow( toSecureData( to_string( toEscaped( decodedItemValue ) ) ) ) & " but expected JSON true or false" );
                        end if;
 
 -- range check the valuse for enumerateds
@@ -5377,9 +5377,9 @@ begin
                         enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
                         if enumVal < 0 or enumVal > maxEnum then
                            err( "enumerated position " &
-                                optional_bold( to_string( toEscaped( decodedItemValue ) ) ) &
+                                optional_yellow( to_string( toEscaped( decodedItemValue ) ) ) &
                                 " is out of range for " &
-                                optional_bold( to_string( identifiers( elementKind ).name ) ) );
+                                optional_yellow( to_string( identifiers( elementKind ).name ) ) );
                         end if;
                         -- Space is required for findEnumImage.  Values are
                         -- stored with leading space.
@@ -5393,7 +5393,7 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( optional_bold( "JSON string value" ) & " expected for " & toSecureData( to_string( ToEscaped( searchName ) ) ) );
+                            err( optional_yellow( "JSON string value" ) & " expected for " & toSecureData( to_string( ToEscaped( searchName ) ) ) );
                          end if;
                          -- strip of quotes and un-escape any characters.
                          if length( decodedItemValue ) > 0 then
@@ -5412,14 +5412,14 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( optional_bold( "JSON number value" ) & " expected in """ & toSecureData( to_string( toEscaped( searchName ) ) ) & """" );
+                         err( optional_yellow( "JSON number value" ) & " expected in """ & toSecureData( to_string( toEscaped( searchName ) ) ) & """" );
                       end if;
                       identifiers( j ).value.all := castToType( decodedItemValue,
                          identifiers( j ).kind );
                     else
                        -- private types are unique types extending variable_t
                        err( "private type fields like " &
-                             optional_bold( to_string( identifiers( j ).name ) ) &
+                             optional_yellow( to_string( identifiers( j ).name ) ) &
                              " cannot store JSON data" );
                     end if;
                  end if;
@@ -5507,7 +5507,7 @@ begin
   if ok then
      expr_val := jsonString;
   else
-     err( optional_bold( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( jsonString ) ) ) & """" );
+     err( optional_yellow( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( jsonString ) ) ) & """" );
   end if;
 end DoJsonToNumber;
 
@@ -6324,7 +6324,7 @@ begin
      end if;
   elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
      -- 255 is one byte minus 0, which is reserved
-     err( optional_inverse( "too many include files and subunits" ) );
+     err( optional_red( "too many include files and subunits" ) );
   else                                                     -- new file
 
      includeFileGood := true;
@@ -6358,7 +6358,7 @@ begin
           close( include_file );
         exception
             when STATUS_ERROR =>
-              err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
+              err( "cannot open include file" & optional_yellow( to_string( toEscaped( includeName ) ) ) &
                  " - file may be locked" );
               return;
             when NAME_ERROR =>
@@ -6366,13 +6366,13 @@ begin
                    put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
                 end if;
             when MODE_ERROR =>
-                err( "interal error: mode error on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+                err( "interal error: mode error on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
                  return;
             when END_ERROR =>
-              err( "interal error: end of file reached on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+              err( "interal error: end of file reached on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
             return;
             when others =>
-               err( "interal error: unexpected error reading " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+               err( "interal error: unexpected error reading " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
                return;
         end;
 
@@ -6436,7 +6436,7 @@ begin
              end if;
            exception
                when STATUS_ERROR =>
-                 err( "cannot open include file" & optional_bold( to_string( toEscaped( includeName ) ) ) &
+                 err( "cannot open include file" & optional_yellow( to_string( toEscaped( includeName ) ) ) &
                     " - file may be locked" );
                  return;
                when NAME_ERROR =>
@@ -6444,13 +6444,13 @@ begin
                       put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
                    end if;
                when MODE_ERROR =>
-                   err( "interal error: mode error on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+                   err( "interal error: mode error on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
                     return;
                when END_ERROR =>
-                 err( "interal error: end of file reached on include file " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+                 err( "interal error: end of file reached on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
                return;
                when others =>
-                  err( "interal error: unexpected error reading " & optional_bold( to_string( toEscaped( includeName ) ) ) );
+                  err( "interal error: unexpected error reading " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
                   return;
            end;
            libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
@@ -6462,13 +6462,13 @@ begin
      -- existing file.
 
      if not includeFileGood then
-        err( "with separate file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
+        err( "with separate file " & optional_yellow( to_string( toEscaped( includeName ) ) ) &
              " is not readable, is world writable, is not a file or is empty" );
      elsif not includeDirGood then
-        err( "with separate file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
+        err( "with separate file " & optional_yellow( to_string( toEscaped( includeName ) ) ) &
              " is in a directory that not readable, is world writable, or is not a directory" );
      elsif not includeFileOpened then
-        err( "with separate file " & optional_bold( to_string( toEscaped( includeName ) ) ) &
+        err( "with separate file " & optional_yellow( to_string( toEscaped( includeName ) ) ) &
              " doesn't exist or is not readable" );
         fileLocation := SourceFilesList.aListIndex'last;
      end if;

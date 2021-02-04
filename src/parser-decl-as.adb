@@ -100,7 +100,7 @@ begin
 
   expect( if_t );                                          -- "if"
   if token = if_t then                                     -- this error is
-     err( "redundant " & optional_bold( "if" ) );          -- from GNAT
+     err( "redundant " & optional_yellow( "if" ) );          -- from GNAT
   end if;
   ParseExpression( expr_val, expr_type );                  -- expression
   if type_checks_done then
@@ -112,7 +112,7 @@ begin
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
-     err( "redundant " & optional_bold( "then" ) );        -- from GNAT
+     err( "redundant " & optional_yellow( "then" ) );        -- from GNAT
   end if;
   if b then                                                -- was true?
      ParseBlock( elsif_t, else_t );                        -- handle if block
@@ -133,7 +133,7 @@ begin
      end if;
      expect( elsif_t );                                    -- "elsif"
      if token = elsif_t then                               -- this error is
-        err( "redundant " & optional_bold( "elsif" ) );    -- from GNAT
+        err( "redundant " & optional_yellow( "elsif" ) );    -- from GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
      if type_checks_done then
@@ -148,7 +148,7 @@ begin
      end if;                                               -- for SkipBlock
      expect( then_t );                                     -- "then"
      if token = then_t then                                -- this is from
-        err( "redundant " & optional_bold( "then" ) );     -- GNAT
+        err( "redundant " & optional_yellow( "then" ) );     -- GNAT
      end if;
      if b and not handled then                             -- true (and not previously done)
         ParseBlock( elsif_t, else_t );                     -- handle the elsif block
@@ -172,7 +172,7 @@ begin
         syntax_check := backup_sc;                         -- restore flag
      end if;                                               -- for SkipBlock
      if token = else_t then                                -- this is from
-        err( "redundant " & optional_bold( "else" ) );     -- GNAT
+        err( "redundant " & optional_yellow( "else" ) );     -- GNAT
      end if;
      if not handled then                                   -- nothing handled yet?
         ParseBlock;                                        -- handle else block
@@ -279,7 +279,7 @@ begin
 
   expect( if_t );                                          -- "if"
   if token = if_t then                                     -- this error is
-     err( "redundant " & optional_bold( "if" ) );          -- from GNAT
+     err( "redundant " & optional_yellow( "if" ) );          -- from GNAT
   end if;
   ParseStaticExpression( expr_val, expr_type );            -- expression
   if type_checks_done then
@@ -291,7 +291,7 @@ begin
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
-     err( "redundant " & optional_bold( "then" ) );        -- from GNAT
+     err( "redundant " & optional_yellow( "then" ) );        -- from GNAT
   end if;
   if b then                                                -- was true?
      ParseStaticBlock( elsif_t, else_t );                  -- handle if block
@@ -312,7 +312,7 @@ begin
      end if;
      expect( elsif_t );                                    -- "elsif"
      if token = elsif_t then                               -- this error is
-        err( "redundant " & optional_bold( "elsif" ) );    -- from GNAT
+        err( "redundant " & optional_yellow( "elsif" ) );    -- from GNAT
      end if;
      ParseStaticExpression( expr_val, expr_type );         -- expression
      if type_checks_done then
@@ -327,7 +327,7 @@ begin
      end if;                                               -- for SkipBlock
      expect( then_t );                                     -- "then"
      if token = then_t then                                -- this is from
-        err( "redundant " & optional_bold( "then" ) );     -- GNAT
+        err( "redundant " & optional_yellow( "then" ) );     -- GNAT
      end if;
      if b and not handled then                             -- true (and not previously done)
         ParseStaticBlock( elsif_t, else_t );               -- handle the elsif block
@@ -351,7 +351,7 @@ begin
         syntax_check := backup_sc;                         -- restore flag
      end if;                                               -- for SkipBlock
      if token = else_t then                                -- this is from
-        err( "redundant " & optional_bold( "else" ) );     -- GNAT
+        err( "redundant " & optional_yellow( "else" ) );     -- GNAT
      end if;
      if not handled then                                   -- nothing handled yet?
         ParseStaticBlock;                                  -- handle else block
@@ -633,7 +633,7 @@ begin
   if syntax_check or exit_block then
      expect( while_t );                                    -- "while"
      if token = while_t then                               -- this is from
-        err( "redundant " & optional_bold( "while" ) );    -- GNAT
+        err( "redundant " & optional_yellow( "while" ) );    -- GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
@@ -711,23 +711,23 @@ begin
      expect( for_t );                                   -- "for"
      for_name := identifiers( token ).name;             -- save var name
      if token = number_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "number" ) );
+        err( optional_yellow( "identifier" ) & " expected, not a " &
+             optional_yellow( "number" ) );
      elsif token = strlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "string literal" ) );
+        err( optional_yellow( "identifier" ) & " expected, not a " &
+             optional_yellow( "string literal" ) );
      elsif token = backlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "backquoted literal" ) );
+        err( optional_yellow( "identifier" ) & " expected, not a " &
+             optional_yellow( "backquoted literal" ) );
      elsif token = charlit_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "character literal" ) );
+        err( optional_yellow( "identifier" ) & " expected, not a " &
+             optional_yellow( "character literal" ) );
      elsif is_keyword( token ) and token /= eof_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "keyword" ) );
+        err( optional_yellow( "identifier" ) & " expected, not a " &
+             optional_yellow( "keyword" ) );
      elsif token = symbol_t then
-        err( optional_bold( "identifier" ) & " expected, not a " &
-             optional_bold( "symbol" ) );
+        err( optional_yellow( "identifier" ) & " expected, not a " &
+             optional_yellow( "symbol" ) );
      elsif identifiers( token ).kind = new_t then          -- for var
         discardUnusedIdentifier( token );               -- brand new? toss it
      end if;                                            -- we'll declare it
@@ -941,7 +941,7 @@ begin
    expect( typeset_t );
    if onlyAda95 then
       discardUnusedIdentifier( token );
-      err( "typeset is not allowed with " & optional_bold( "pragma ada_95" ) );
+      err( "typeset is not allowed with " & optional_yellow( "pragma ada_95" ) );
       return;
    elsif inputMode /= interactive and inputMode /= breakout then
       discardUnusedIdentifier( token );
@@ -1036,7 +1036,7 @@ begin
   if token = strlit_t then
      if syntax_check then
         if rshOpt then
-           err( "subscripts are not allowed in a " & optional_bold( "restricted shell" ) );
+           err( "subscripts are not allowed in a " & optional_yellow( "restricted shell" ) );
         else
            insertInclude( identifiers( token ).value.all );
         end if;
@@ -1189,12 +1189,12 @@ begin
      -- Normal raise of an explicit exception
 
      if identifiers( token ).class /= exceptionClass and identifiers( token ).kind /= new_t then
-        err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
+        err( optional_yellow( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
      else
         ParseIdentifier( id );
         if token = with_t then
            if onlyAda95 then
-              err( "with not allowed with " & optional_bold( "pragma ada_95" ) );
+              err( "with not allowed with " & optional_yellow( "pragma ada_95" ) );
            end if;
            expect( with_t );
            ParseExpression( with_text, withTextType );
@@ -1202,7 +1202,7 @@ begin
               null;
            end if;
            if token = use_t then
-              err( optional_bold( "use" ) & " may only be used in exception declaration" );
+              err( optional_yellow( "use" ) & " may only be used in exception declaration" );
            end if;
         elsif token /= when_t and token /= symbol_t and identifiers( token ).value.all /= ";" then
            err( "when, with or ';' expected" );
@@ -1230,13 +1230,13 @@ begin
            err_exception.value := err_exception.svalue'access;
            if length( with_text ) > 0 then
               raise_exception( "raised " &
-                   optional_bold( to_string( identifiers( id ).name ) ) &
+                   optional_yellow( to_string( identifiers( id ).name ) ) &
                    ": " &
                    to_string( with_text )
               );
            else
               raise_exception( "raised " &
-                   optional_bold( to_string( identifiers( id ).name ) )
+                   optional_yellow( to_string( identifiers( id ).name ) )
               );
            end if;
            -- set the exit status
@@ -1417,7 +1417,7 @@ begin
              end if;
           end if;
        else
-          err( optional_bold( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
+          err( optional_yellow( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
           exit;
        end if;
     else
@@ -1609,7 +1609,7 @@ begin
    if passingMode = in_out_mode then
       if isFunction and onlyAda95 then
          err( "in out mode parameters not allowed in functions with " &
-             optional_bold( "pragma ada_95" ) );
+             optional_yellow( "pragma ada_95" ) );
       end if;
    end if;
   if passingMode = in_mode then
@@ -1905,7 +1905,7 @@ begin
     -- Too few parameters, ran into closing parenthesis early
 
     elsif token = symbol_t and identifiers( token ).value.all = ")" then
-       err( "missing parameter " & optional_bold( to_string(specParamName) ) &
+       err( "missing parameter " & optional_yellow( to_string(specParamName) ) &
             " from earlier specification (at " &
             to_string( identifiers( specId ).specFile) & ":" &
             identifiers( specId ).specAt'img & ")");
@@ -1928,8 +1928,8 @@ begin
 
        if specParamName /= identifiers( bodyParamId ).name then
           err("parameter name " &
-              optional_bold( to_string( identifiers( bodyParamId ).name )) &
-              " was " & optional_bold( to_string( specParamName )) &
+              optional_yellow( to_string( identifiers( bodyParamId ).name )) &
+              " was " & optional_yellow( to_string( specParamName )) &
               " in the earlier specification (at " &
               to_string( identifiers( specId ).specFile) & ":" &
               identifiers( specId ).specAt'img & ")");
@@ -1939,8 +1939,8 @@ begin
 
        if identifiers( specParamId ).kind /= bodyParamKind then
           err("parameter type " &
-             optional_bold( to_string( identifiers( bodyParamKind ).name ) ) &
-             " was " & optional_bold( to_string( identifiers( identifiers( specParamId ).kind ).name )) &
+             optional_yellow( to_string( identifiers( bodyParamKind ).name ) ) &
+             " was " & optional_yellow( to_string( identifiers( identifiers( specParamId ).kind ).name )) &
              " in the earlier specification (at " &
              to_string( identifiers( specId ).specFile) & ":" &
              identifiers( specId ).specAt'img & ")");
@@ -1952,8 +1952,8 @@ begin
 
        if identifiers( specParamId ).passingMode /= bodyPassingMode then
           err("parameter mode " &
-              optional_bold( to_string( bodyPassingMode ) ) &
-              " was " & optional_bold( to_string( identifiers( specParamId ).passingMode ) ) &
+              optional_yellow( to_string( bodyPassingMode ) ) &
+              " was " & optional_yellow( to_string( identifiers( specParamId ).passingMode ) ) &
               " in the earlier specification (at " &
               to_string( identifiers( specId ).specFile) & ":" &
               identifiers( specId ).specAt'img & ")");
@@ -1994,8 +1994,8 @@ begin
    );
   if resultKind /= identifiers( func_id ).kind then
      err("function return type " &
-         optional_bold( to_string( identifiers( resultKind ).name ) ) &
-         " was " & optional_bold( to_string( identifiers( identifiers( func_id ).kind ).name )) &
+         optional_yellow( to_string( identifiers( resultKind ).name ) ) &
+         " was " & optional_yellow( to_string( identifiers( identifiers( func_id ).kind ).name )) &
                 " in the earlier specification (at " &
                 to_string( identifiers( func_id ).specFile) & ":" &
                 identifiers( func_id ).specAt'img & ")");
@@ -2040,7 +2040,7 @@ begin
    if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
          err( "parent unit should be a subprogram" );
    elsif identifiers( parent_id ).name /= pu then
-         err( "expected parent unit " & optional_bold( to_string( pu ) ) );
+         err( "expected parent unit " & optional_yellow( to_string( pu ) ) );
    end if;
    expect( symbol_t, ")");
    expectSemicolon;
@@ -2054,7 +2054,7 @@ begin
       -- names match?  OK, discard.  proc is stored under original ident
       b := deleteIdent( separate_proc_id );
    else
-      err( optional_bold( to_string( identifiers( separate_proc_id ).name ) ) & " is different from parent file's " & optional_bold( to_string( identifiers( proc_id  ).name ) ) );
+      err( optional_yellow( to_string( identifiers( separate_proc_id ).name ) ) & " is different from parent file's " & optional_yellow( to_string( identifiers( proc_id  ).name ) ) );
    end if;
    -- check for forward declarations not yet written so minimal checking here
    -- flush this out if i have time to walk the identifiers list if available
@@ -2123,7 +2123,7 @@ begin
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( proc_id ).specAt /= noSpec then
-        err( "already declared specification for " & optional_bold( to_string( identifiers( proc_id ).name ) ) & " (at " &
+        err( "already declared specification for " & optional_yellow( to_string( identifiers( proc_id ).name ) ) & " (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
                 identifiers( proc_id ).specAt'img & ")");
      end if;
@@ -2152,7 +2152,7 @@ begin
      else
         if token = separate_t then
            if rshOpt then
-              err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+              err( "subunits are not allowed in a " & optional_yellow( "restricted shell" ) );
            end if;
            expect( separate_t );
            -- "is separate" is effectively an include
@@ -2170,7 +2170,7 @@ begin
            end if;
         elsif abstract_parameter /= eof_t then
            err( "procedure must be abstract because parameter type " &
-              optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
+              optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
               " is abstract" );
         end if;
         ParseDeclarations;
@@ -2656,7 +2656,7 @@ begin
    if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
          err( "parent should be a subprogram" );
    elsif identifiers( parent_id ).name /= pu then
-         err( "expected parent unit " & optional_bold( to_string( pu ) ) );
+         err( "expected parent unit " & optional_yellow( to_string( pu ) ) );
    end if;
    expect( symbol_t, ")");
    expectSemicolon;
@@ -2670,7 +2670,7 @@ begin
       -- names match?  OK, discard.  proc is stored under original ident
       b := deleteIdent( separate_func_id );
    else
-      err( optional_bold( to_string( identifiers( separate_func_id ).name ) ) & " is different from parent file's " & optional_bold( to_string( identifiers( func_id  ).name ) ) );
+      err( optional_yellow( to_string( identifiers( separate_func_id ).name ) ) & " is different from parent file's " & optional_yellow( to_string( identifiers( func_id  ).name ) ) );
    end if;
    -- check for forward declarations not yet written so minimal checking here
    -- flush this out if i have time to walk the identifiers list if available
@@ -2684,7 +2684,7 @@ begin
    expect( return_t );
    ParseIdentifier( type_token ); -- don't really care
    if identifiers( func_id ).kind /= type_token then
-      err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is different from parent file's " & optional_bold( to_string( identifiers( identifiers( func_id ).kind  ).name ) ) );
+      err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " is different from parent file's " & optional_yellow( to_string( identifiers( identifiers( func_id ).kind  ).name ) ) );
    end if;
    expect( is_t );
 end ParseSeparateFuncHeader;
@@ -2771,7 +2771,7 @@ begin
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( func_id ).specAt /= noSpec then
-        err( "already declared specification for " & optional_bold( to_string( identifiers( func_id ).name ) ) & " (at " &
+        err( "already declared specification for " & optional_yellow( to_string( identifiers( func_id ).name ) ) & " (at " &
                 to_string( identifiers( func_id ).specFile) & ":" &
                 identifiers( func_id ).specAt'img & ")");
      end if;
@@ -2800,7 +2800,7 @@ begin
      else
         if token = separate_t then
            if rshOpt then
-              err( "subunits are not allowed in a " & optional_bold( "restricted shell" ) );
+              err( "subunits are not allowed in a " & optional_yellow( "restricted shell" ) );
            end if;
             expect( separate_t );
            -- "is separate" is effectively an include
@@ -2818,11 +2818,11 @@ begin
            end if;
         elsif abstract_parameter /= eof_t then
            err( "function must be abstract because parameter type " &
-              optional_bold( to_string( identifiers( abstract_parameter ).name ) ) &
+              optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
               " is abstract" );
         elsif abstract_return /= eof_t then
            err( "function must be abstract because return type " &
-              optional_bold( to_string( identifiers( abstract_return ).name ) ) &
+              optional_yellow( to_string( identifiers( abstract_return ).name ) ) &
               " is abstract" );
         end if;
         ParseDeclarations;
@@ -2875,7 +2875,7 @@ begin
      identifiers( proc_id ).wasReferenced := true;
      --identifiers( proc_id ).referencedByThread := getThreadName;
      if identifiers( proc_id ).usage = abstractUsage then
-        err( optional_bold( to_string( identifiers( proc_id ).name ) ) &
+        err( optional_yellow( to_string( identifiers( proc_id ).name ) ) &
           " is abstract and cannot be run" );
      end if;
   end if;
@@ -3066,7 +3066,7 @@ begin
      identifiers( func_id ).wasReferenced := true;
      --identifiers( func_id ).referencedByThread := getThreadName;
      if identifiers( func_id ).usage = abstractUsage then
-        err( optional_bold( to_string( identifiers( func_id ).name ) ) &
+        err( optional_yellow( to_string( identifiers( func_id ).name ) ) &
           " is abstract and cannot be run" );
      end if;
   end if;
@@ -3190,7 +3190,7 @@ procedure ParseShellCommand is
               exportList( exportPos ) := new string( 1..length( tempStr )+1 );
               exportList( exportPos ).all := to_string( tempStr ) & ASCII.NUL;
               if putenv( exportList( exportPos ).all ) /= 0 then
-                 err( "unable to export " & optional_bold( to_string( identifiers( id ).name) ) );
+                 err( "unable to export " & optional_yellow( to_string( identifiers( id ).name) ) );
               end if;
               exportPos := exportPos + 1;
            end if;
@@ -3218,7 +3218,7 @@ procedure ParseShellCommand is
            result := unsetenv( exportList( i )( 1..equalsPos-1 ) & ASCII.NUL );
            if result /= 0 and C_errno /= 0 then
               err( "unable to remove " &
-                   optional_bold( exportList( i )( 1..equalsPos-1 ) ) &
+                   optional_yellow( exportList( i )( 1..equalsPos-1 ) ) &
                    "from the O/S environment" );
            end if;
        end loop;
@@ -3348,7 +3348,7 @@ procedure ParseShellCommand is
   begin
      if onlyAda95 then
         err( "command line redirection not allowed with " &
-             optional_bold( "pragma ada_95" ) & ".  Use set_output/input/error instead" );
+             optional_yellow( "pragma ada_95" ) & ".  Use set_output/input/error instead" );
      end if;
   end checkAda95Redirects;
 
@@ -3364,7 +3364,7 @@ begin
   if redirectedAppendFD > 0 then
      err( "cannot redirect using both > and >>" );
   elsif rshOpt then
-     err( "cannot redirect > in a " & optional_bold( "restricted shell" ) );
+     err( "cannot redirect > in a " & optional_yellow( "restricted shell" ) );
   elsif pipe2Next then
      err( "> file should only be after the last pipeline command" );
   elsif isExecutingCommand then
@@ -3495,7 +3495,7 @@ begin
         end if;
         err( "Unable to open 2> file: " & OSerror( C_errno ) );
      elsif rshOpt then
-        err( "cannot redirect 2> in a " & optional_bold( "restricted shell" ) );
+        err( "cannot redirect 2> in a " & optional_yellow( "restricted shell" ) );
      else
 <<retry13>> result := dup2( redirectedErrOutputFd, stderr );
         if result < 0 then
@@ -3702,7 +3702,7 @@ begin
         getNextToken;
      end if;
      if pipe2Next and onlyAda95 then
-        err( "pipelines are not allowed with " & optional_bold( "pragma ada_95" ) );
+        err( "pipelines are not allowed with " & optional_yellow( "pragma ada_95" ) );
      end if;
      if token = symbol_t and identifiers(token).value.all = "&" then
         inbackground := true;
@@ -3757,7 +3757,7 @@ begin
                 -- if these exist, then the individual command is ended.
                 if token_value = "|" then
                    if onlyAda95 then
-                      err( "pipelines not allowed with " & optional_bold( "pragma ada_95" ) );
+                      err( "pipelines not allowed with " & optional_yellow( "pragma ada_95" ) );
                    end if;
                    pipe2next := true;
                    haveAllParameters := true;
@@ -3765,7 +3765,7 @@ begin
                    exit;
                 elsif token_value = "@" then
                    if onlyAda95 then
-                      err( "@ not allowed with " & optional_bold( "pragma ada_95" ) );
+                      err( "@ not allowed with " & optional_yellow( "pragma ada_95" ) );
                    end if;
                    itselfNext := true;
                    haveAllParameters := true;
@@ -3838,7 +3838,7 @@ begin
   if bourneShellWordLists.length( wordList ) > 0 then
      if onlyAda95 then
         err( "Bourne shell parameters not allowed with " &
-             optional_bold( "pragma ada_95" ) );
+             optional_yellow( "pragma ada_95" ) );
      end if;
    end if;
 
@@ -3865,7 +3865,7 @@ end if;
 
      if boolean(rshOpt) and then Element( cmdName, 1 ) = '/' then -- rsh & cmd path
         err( "absolute paths to commands not allowed in " &
-             optional_bold( "restricted shells" ) );
+             optional_yellow( "restricted shells" ) );
      elsif not pipeFromLast and pipe2next then              -- first in pipeln?
         run_inpipe( cmdName, ap, Success,                   -- pipe output
            background => true,
@@ -4216,7 +4216,7 @@ begin
   elsif inputMode = interactive then
      if isLoginShell then
         err( "warning: This is a login shell.  Use " &
-             optional_bold( "logout" ) & " to quit." );
+             optional_yellow( "logout" ) & " to quit." );
      else
         expect( return_t );
         expectSemicolon;
@@ -4833,7 +4833,7 @@ begin
      ParseStep;
   elsif token = logout_t then
      if not isLoginShell and inputMode /= breakout then
-        err( "warning: this is not a login shell: use " & optional_bold( "return" ) &
+        err( "warning: this is not a login shell: use " & optional_yellow( "return" ) &
              " to quit" );
      end if;
      getNextToken;
@@ -4993,7 +4993,7 @@ begin
         -- new_t check because a command will produce an varClass with no type
         elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
-              err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
+              err( "use " & optional_yellow( ":= true " ) & " with " & optional_yellow( "pragma ada_95" ) );
            end if;
            if syntax_check and then not error_found then
               identifiers( startToken ).wasWritten := true;
@@ -5029,7 +5029,7 @@ begin
      -- external command at compile time.
      if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
            -- move to next token or inifinite loop if done = true
            getNextToken;
         elsif itself_type = new_t then
@@ -5221,7 +5221,7 @@ begin
      --if not isLoginShell and inputMode /= interactive and inputMode /= breakout then
      -- ^--not as restrictive
      if not isLoginShell and inputMode /= breakout then
-        err( "warning: this is not a login shell: use " & optional_bold( "return" ) &
+        err( "warning: this is not a login shell: use " & optional_yellow( "return" ) &
              " to quit" );
      end if;
      getNextToken;
@@ -5386,7 +5386,7 @@ begin
         -- new_t check because a command will produce an varClass with no type
         elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
-              err( "use " & optional_bold( ":= true " ) & " with " & optional_bold( "pragma ada_95" ) );
+              err( "use " & optional_yellow( ":= true " ) & " with " & optional_yellow( "pragma ada_95" ) );
            end if;
            if syntax_check and then not error_found then
               identifiers( startToken ).wasWritten := true;
@@ -5421,7 +5421,7 @@ begin
      -- external command at compile time.
      if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
            -- move to next token or inifinite loop if done = true
            getNextToken;
         elsif itself_type = new_t then
@@ -5636,9 +5636,9 @@ begin
         err( "there were no commands to run" );
      elsif token = separate_t then
         err( "this is a " &
-             optional_bold( "separate file" ) &
+             optional_yellow( "separate file" ) &
              " not a runnable " &
-             optional_bold( "script" ) );
+             optional_yellow( "script" ) );
      end if;
 
      -- Prior to a main program (or a simple script), a script may have

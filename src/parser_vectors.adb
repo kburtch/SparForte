@@ -668,9 +668,9 @@ begin
      ParseExpression( idxExpr, idxType );
      res := baseTypesOK( idxType, identifiers( vectorId ).genKind2 );
   else
-     err( optional_bold( "vectors.vector" ) &
+     err( optional_yellow( "vectors.vector" ) &
           " or " &
-          optional_bold( "vectors.cursor" ) &
+          optional_yellow( "vectors.cursor" ) &
           " expected" );
   end if;
   expect( symbol_t, ")" );
