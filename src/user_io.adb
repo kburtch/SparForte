@@ -365,5 +365,134 @@ begin
   end if;
 end displayCopyrightSplash;
 
+
+-----------------------------------------------------------------------------
+--  UTF-8 icons
+--
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  UTF BALLOT
+--
+-- Output the bytes for a UTF-8 "x" ballot symbol.
+-----------------------------------------------------------------------------
+
+function utf_ballot return string is
+begin
+  if iconsOpt then
+     -- if colourOpt then
+     --    return character'val( 226 ) & character'val( 157 ) & character'val( 140 );
+     -- else
+     return character'val( 226 ) & character'val( 156 ) & character'val( 151 );
+     -- end if;
+  end if;
+  return "";
+end utf_ballot;
+
+
+-----------------------------------------------------------------------------
+--  UTF CHECKMARK
+--
+-- Output the bytes for a UTF-8 checkmark symbol.
+-----------------------------------------------------------------------------
+function utf_checkmark return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 156 ) & character'val( 147 );
+  end if;
+  return "";
+end utf_checkmark;
+
+
+-----------------------------------------------------------------------------
+--  UTF WARNING SIGN
+--
+-- Output the bytes for a UTF-8 warning sign symbol.
+-----------------------------------------------------------------------------
+
+function utf_warning_sign return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 154 ) & character'val( 160 );
+  end if;
+  return "";
+end utf_warning_sign;
+
+
+-----------------------------------------------------------------------------
+--  UTF WRISTWATCH
+--
+-- Output the bytes for a UTF-8 watch symbol.
+-----------------------------------------------------------------------------
+
+function utf_wristwatch return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 140 ) & character'val( 154 );
+  end if;
+  return "";
+end utf_wristwatch;
+
+
+-----------------------------------------------------------------------------
+--  UTF LEFT
+--
+-- Output the bytes for a UTF-8 watch symbol.
+-----------------------------------------------------------------------------
+
+function utf_left return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 148 ) & character'val( 148 );
+  end if;
+  return "";
+end utf_left;
+
+
+-----------------------------------------------------------------------------
+--  UTF RIGHT
+--
+-- Output the bytes for a UTF-8 watch symbol.
+-----------------------------------------------------------------------------
+
+function utf_right return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 148 ) & character'val( 152 );
+  end if;
+  return "";
+end utf_right;
+
+
+-----------------------------------------------------------------------------
+--  UTF TRIANGLE
+--
+-- Output the bytes for a UTF-8 triangle.
+-----------------------------------------------------------------------------
+
+function utf_triangle return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 150 ) & character'val( 179 );
+  end if;
+  return "";
+end utf_triangle;
+
+
+-----------------------------------------------------------------------------
+--  UTF HORIZONTAL LINE
+--
+-- Output the bytes for a UTF-8 watch symbol.
+-----------------------------------------------------------------------------
+
+function utf_horizontalLine return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 148 ) & character'val( 128 );
+  end if;
+  return "";
+end utf_horizontalLine;
+
 end user_io;
 

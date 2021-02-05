@@ -11,8 +11,11 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- shell prompt
+  - inconsistent stripping of control characters...what's going on?
 - completions
-  - completions of directories have an extra space
+  - completions of a single directory have an extra space / doesn't allow deeper
+    drill-down
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.

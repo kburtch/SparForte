@@ -83,6 +83,7 @@ begin
         Put_Line( "  --exec or -e        - script is a string containing SparForte commands" );
         Put_Line( "  --gcc-errors or -g  - simple GCC-style errors (good for IDEs)" );
         Put_Line( "  --help or -h        - show this help" );
+        Put_Line( "  --icons             - enable UTF-8 icons in messages" );
         Put_Line( "  --import-all or -i  - import all environment variables" );
         Put_Line( "  -Ld or -L d         - add directory d to the separate files search list" );
         Put_Line( "                        (may be repeated)" );
@@ -148,6 +149,8 @@ begin
             Put_Line( standard_error, Command_Name & ": --help should appear by itself" );
             Set_Exit_Status( 192 );
             return;
+         elsif Argument(i) = "--icons" then
+            iconsOpt := true;
          elsif Argument(i) = "--import-all" then
             importOpt := true;
          elsif Argument(i) = "--login" then

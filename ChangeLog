@@ -82,3 +82,7 @@ CHANGES SINCE 2.3
 
 34. New: shell history saved as ~/.sparforte_history.
 
+35. New: --color or --colour option to enable coloured messages.
+
+36. New: --icons to enable UTF-8 icons in messages.
+

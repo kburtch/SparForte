@@ -1027,7 +1027,7 @@ end get_script_execution_position;
 
 
 -----------------------------------------------------------------------------
---  ERR
+--  ERR SHELL
 --
 -- Stop execution and record an compile-time or run-time error.  Format the
 -- error according to the user's preferences and set the error_found flag.
@@ -1168,15 +1168,32 @@ begin
         outLine := outLine & to_unbounded_string( (wordOffset-1) * " " );
         outLine := outLine & '^';
      else
-        outLine := outLine & '^';                               -- token start
         if lastpos > firstpos then                              -- multi chars?
-           outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * "-" );
-           outLine := outLine & '^';                            -- token end
+           if iconsOpt then
+              outLine := outLine & utf_left;                         -- token start
+              outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * utf_horizontalLine );
+              outLine := outLine & utf_right;                       -- token end
+           else
+              outLine := outLine & '^';
+              outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * "-" );
+              outLine := outLine & '^';
+           end if;
+        else
+           if iconsOpt then
+              outLine := outLine & utf_triangle;                         -- token start
+           else
+              outLine := outLine & '^';
+           end if;
         end if;
      end if;
      outLine := outLine & ' ';                                  -- token start
   end if;
-  outLine := outLine & msg;
+
+  if iconsOpt then
+     outLine := outLine & utf_ballot & " " & msg;
+  else
+     outLine := outLine & msg;
+  end if;
 
   -- Even for a template, if the user selected gccOpt specifically,
   -- use it.

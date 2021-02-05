@@ -123,6 +123,12 @@ begin
                        put( ' ' );
                     end if;
                  end if;
+              else
+                 if is_graphic( element( prompt, i ) ) then
+                    put( element( prompt, i  ) );
+                 elsif element( prompt, i ) = ASCII.LF then -- and CR?
+                    put( ' ' );
+                 end if;
               end if;
           end loop;
           put( ASCII.BEL  );
