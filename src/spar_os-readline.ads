@@ -65,5 +65,14 @@ pragma import( C, C_free_readline, "C_free_readline" );
 function C_strdup( s : chars_ptr ) return chars_ptr;
 pragma import( C,C_strdup, "C_strdup" );
 
+-----------------------------------------------------------------------------
+--  C ADD HISTORY
+--
+-- Add a string to GNU readline's history.  Used when reading SparForte's
+-- history file.  String ust be NUL terminated.
+-----------------------------------------------------------------------------
+procedure add_history( s : string );
+pragma import( C, add_history, "add_history" );
+
 end spar_os.readline;
 

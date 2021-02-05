@@ -50,7 +50,7 @@ CHANGES SINCE 2.3
 
 18. New: long names ought to have underscores. [type tests needed]
 
-19. Fix: trailing underscores not allowed in variable names. [test needed]
+19. Fix: trailing underscores not allowed in variable names.
 
 20. Fix: fixed constraint error on certain text_io subprocedures.
 
@@ -79,4 +79,6 @@ CHANGES SINCE 2.3
 32. Fix: Updated Git prompt script example for GNU readline.
 
 33. Fix: Files.Is_Directory no longer appends an unnecessary ASCII.NUL to the path.
+
+34. New: shell history saved as ~/.sparforte_history.
 

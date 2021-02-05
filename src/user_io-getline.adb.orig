@@ -22,8 +22,8 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
+     ada.text_io.unbounded_io,-- Ada 2005
      ada.strings.fixed,
-     ada.strings.unbounded.text_io,
      ada.calendar,
      gnat.os_lib,
      gnat.directory_operations,
@@ -34,7 +34,7 @@ with ada.text_io,
      string_util,
      world;
 use  ada.text_io,
-     ada.strings.unbounded.text_io,
+     ada.text_io.unbounded_io,-- Ada 2005
      ada.calendar,
      gnat.directory_operations,
      spar_os,
@@ -2045,13 +2045,71 @@ end has_readline;
 --  STARTUP READLINE
 --
 -- Startup this package and GNU Readline library, performing any setup
--- tasks.
+-- tasks.  The inputMode should be set before running.
 -----------------------------------------------------------------------------
 
 #if READLINE
-procedure startupGetline is
+procedure startupGetline( optionOffset : natural) is
+  historyPath : unbounded_string;
+  historyFile : file_type;
+  temp        : unbounded_string;
+  home_id     : identifier;
+  year        : year_number;
+  month       : month_number;
+  day         : day_number;
+  seconds     : day_duration;
 begin
   C_init_readline;
+  --if inputMode = interactive then
+  -- We do not know if this is interactive or not when this is called.
+  -- inputMode is not yet set and optionOffset is defined in the scanner.
+  -- optionOffset must be passed in as a parameter.
+  if optionOffset = 0 then
+     findIdent( to_unbounded_string( "HOME" ), home_id );
+     if home_id /= eof_t then
+        historyPath := identifiers( home_id ).value.all & directory_delimiter &
+           ".sparforte_history.txt";
+        if C_is_includable_file( to_string( historyPath ) & ASCII.NUL ) then
+           open( historyFile, in_file, to_string( historyPath ) );
+           for i in history'first..history'last loop
+               -- TODO date conversion
+               -- ada 2005
+               get_line( historyFile, temp );
+               year := year_number'value( to_string( temp ) );
+               get_line( historyFile, temp );
+               month := month_number'value( to_string( temp ) );
+               get_line( historyFile, temp );
+               day := day_number'value( to_string( temp ) );
+               get_line( historyFile, temp );
+               seconds := day_duration'value( to_string( temp ) );
+               history(i).time := time_of( year, month, day, seconds );
+               get_line( historyFile, history(i).pwd );
+               get_line( historyFile, history(i).line );
+           end loop;
+           get_line( historyFile, temp );
+           historyNext := natural'value( to_string( temp ) );
+           close( historyFile );
+
+           -- To Add the history to GNU readline, add only non-blank lines.
+           -- historyNext is the last line and so is the first to be added.
+           for i in historyNext..history'last loop
+               if history(i).line /= null_unbounded_string then
+                  add_history( to_string( history(i).line ) & ASCII.NUL );
+               end if;
+           end loop;
+           for i in 1..historyNext-1 loop
+               if history(i).line /= null_unbounded_string then
+                  add_history( to_string( history(i).line ) & ASCII.NUL );
+               end if;
+           end loop;
+        end if;
+     end if;
+  end if;
+exception when name_error => -- no file
+  historyNext := 1;
+when others => -- end_error = out of data
+  close( historyFile );
+  historyNext := 1;
 end startupGetline;
 #else
 procedure startupGetline is
@@ -2071,8 +2129,34 @@ end startupGetline;
 
 #if READLINE
 procedure shutdownGetline is
+  historyPath : unbounded_string;
+  historyFile : file_type;
+  home_id     : identifier;
+  year        : year_number;
+  month       : month_number;
+  day         : day_number;
+  seconds     : day_duration;
 begin
-  null;
+  if inputMode = interactive then
+     findIdent( to_unbounded_string( "HOME" ), home_id );
+     if home_id /= eof_t then
+        historyPath := identifiers( home_id ).value.all & directory_delimiter &
+           ".sparforte_history.txt";
+        create( historyFile, out_file, to_string( historyPath ) );
+        for i in history'first..history'last loop
+            -- TODO date conversion
+            split( history(i).time, year, month, day, seconds );
+            put_line( historyFile, year'img );
+            put_line( historyFile, month'img );
+            put_line( historyFile, day'img );
+            put_line( historyFile, seconds'img );
+            put_line( historyFile, to_string( history(i).pwd ) );
+            put_line( historyFile, to_string( history(i).line ) );
+        end loop;
+        put_line( historyFile, historyNext'img);
+        close( historyFile );
+     end if;
+  end if;
 end shutdownGetline;
 #else
 procedure shutdownGetline is

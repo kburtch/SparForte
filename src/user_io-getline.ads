@@ -57,7 +57,7 @@ RL_PROMPT_END_IGNORE   : constant character := ASCII.STX; -- Ctrl-B
 -----------------------------------------------------------------------------
 
 
-procedure startupGetLine;
+procedure startupGetLine(optionOffset : natural);
 
 procedure shutdownGetLine;
 

@@ -1159,7 +1159,7 @@ begin
   if pwd /= eof_t then
      identifiers( pwd ).value.all := current_working_directory;
   end if;
-  user_io.getline.startupGetline;
+  user_io.getline.startupGetline( optionOffset );
 end startInterpreter;
 
 
