@@ -248,9 +248,13 @@ end toProtectedValue;
 -- "trace true" is used.  This does not check the tracing flag.
 -----------------------------------------------------------------------------
 
-procedure put_trace( msg : string ) is
+procedure put_trace( msg : string; icon : string := "" ) is
 begin
-  put_line( standard_error, optional_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  if icon /= "" and boolean(iconsOpt) then
+     put_line( standard_error, optional_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  else
+     put_line( standard_error, optional_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  end if;
 end put_trace;
 
 -----------------------------------------------------------------------------
@@ -260,9 +264,13 @@ end put_trace;
 -- "trace true" is used.  This does not check the tracing flag.
 -----------------------------------------------------------------------------
 
-procedure put_trace_error( msg : string ) is
+procedure put_trace_error( msg : string; icon : string := "" ) is
 begin
-  put_line( standard_error, optional_red( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  if icon /= "" and boolean(iconsOpt) then
+     put_line( standard_error, optional_red( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  else
+     put_line( standard_error, optional_red( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  end if;
 end put_trace_error;
 
 

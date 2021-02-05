@@ -367,7 +367,7 @@ package body reports.help is
     s : unbounded_string;
   begin
      -- display the help topic and the header if there is one
-     put( r.outputfile, optional_bold( to_string( e.topic ) ) );
+     put( r.outputfile, optional_green( to_string( e.topic ) ) );
      if length( e.summary ) > 0 then
         put( r.outputfile, " - " & to_string( e.summary ) );
      end if;

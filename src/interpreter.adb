@@ -26,6 +26,7 @@ pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
 with ada.text_io,
+    ada.calendar,
     ada.command_line,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
@@ -49,6 +50,7 @@ with ada.text_io,
     parser.decl.as,
     parser_tio;
 use ada.text_io,
+    ada.calendar,
     ada.command_line,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
@@ -493,23 +495,25 @@ procedure interpretScript( scriptPath : string ) is
   firstLine : aliased unbounded_string;
   res : int;
   scriptDir : unbounded_string;
+  startTime : Time;
+  endTime   : Time;
+  realTime  : duration;
 begin
-  case interpreterPhase is
-  when checking =>
-     if verboseOpt then
-        Put_Trace( "Checking Syntax" );
-     end if;
-  when executing =>
-     if verboseOpt then
-        Put_Trace( "Executing Commands" );
-     end if;
-  when others =>
-     err( "internal error: unexpected interpreter phase" );
-  end case;
+  if verboseOpt then
+     case interpreterPhase is
+     when checking =>
+        startTime := Clock;
+        Put_Trace( "Checking Syntax", utf_wristwatch );
+     when executing =>
+        Put_Trace( "Executing Commands", utf_checkmark );
+     when others =>
+        err( "internal error: unexpected interpreter phase" );
+     end case;
+  end if;
   inputMode := fromScriptFile;                     -- running a script
   if execOpt then                                  -- -e?
      if verboseOpt then
-        Put_Trace( "Compiling Byte Code" );
+        Put_Trace( "Compiling Byte Code", utf_wristwatch );
      end if;
      sourceFilesList.Clear( SourceFiles );
      sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
@@ -567,7 +571,7 @@ begin
        -- is called twice with different files (e.g. loading profiles).
        --if script = null then
           if verboseOpt then
-             Put_Trace( "Compiling Byte Code" );
+             Put_Trace( "Compiling Byte Code", utf_wristwatch );
           end if;
           compileScript( firstline );
        --end if;
@@ -618,6 +622,19 @@ begin
   if not execOpt then                              -- not -e?
      res := close( scriptFile );              -- close the script file
      -- close EINTR is a diagnostic message.  Do not handle.
+  end if;
+
+  if verboseOpt then
+     case interpreterPhase is
+     when checking =>
+        endTime := Clock;
+        realTime := endTime - startTime;
+        Put_Trace( "Done checking syntax in" & realTime'img & " sec", utf_checkmark );
+     when executing =>
+        null; -- Put_Trace( "Done executing Commands", utf_checkmark );
+     when others =>
+        err( "internal error: unexpected interpreter phase" );
+     end case;
   end if;
 end interpretScript;
 

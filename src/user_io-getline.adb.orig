@@ -806,6 +806,118 @@ end Ada_k8s_word_generator;
 
 
 -----------------------------------------------------------------------------
+--
+-- NPM WORD COMPLETION
+--
+-----------------------------------------------------------------------------
+
+npmWords : constant string :=
+  ASCII.NUL & "access" &
+  ASCII.NUL & "adduser" &
+  ASCII.NUL & "audit" &
+  ASCII.NUL & "bin" &
+  ASCII.NUL & "bugs" &
+  ASCII.NUL & "cache" &
+  ASCII.NUL & "ci" &
+  ASCII.NUL & "cit" &
+  ASCII.NUL & "clean-install" &
+  ASCII.NUL & "clean-install-test" &
+  ASCII.NUL & "completion" &
+  ASCII.NUL & "config" &
+  ASCII.NUL & "create" &
+  ASCII.NUL & "ddp" &
+  ASCII.NUL & "dedupe" &
+  ASCII.NUL & "deprecate" &
+  ASCII.NUL & "dist-tag" &
+  ASCII.NUL & "docs" &
+  ASCII.NUL & "doctor" &
+  ASCII.NUL & "edit" &
+  ASCII.NUL & "explore" &
+  ASCII.NUL & "fund" &
+  ASCII.NUL & "get" &
+  ASCII.NUL & "help" &
+  ASCII.NUL & "help-search" &
+  ASCII.NUL & "hook" &
+  ASCII.NUL & "init" &
+  ASCII.NUL & "install" &
+  ASCII.NUL & "install-ci-test" &
+  ASCII.NUL & "install-test" &
+  ASCII.NUL & "it" &
+  ASCII.NUL & "link" &
+  ASCII.NUL & "list" &
+  ASCII.NUL & "ln" &
+  ASCII.NUL & "login" &
+  ASCII.NUL & "logout" &
+  ASCII.NUL & "ls" &
+  ASCII.NUL & "org" &
+  ASCII.NUL & "outdated" &
+  ASCII.NUL & "owner" &
+  ASCII.NUL & "pack" &
+  ASCII.NUL & "ping" &
+  ASCII.NUL & "prefix" &
+  ASCII.NUL & "profile" &
+  ASCII.NUL & "prune" &
+  ASCII.NUL & "publish" &
+  ASCII.NUL & "rb" &
+  ASCII.NUL & "rebuild" &
+  ASCII.NUL & "repo" &
+  ASCII.NUL & "restart" &
+  ASCII.NUL & "root" &
+  ASCII.NUL & "run" &
+  ASCII.NUL & "run-script" &
+  ASCII.NUL & "se" &
+  ASCII.NUL & "search" &
+  ASCII.NUL & "set" &
+  ASCII.NUL & "shrinkwrap" &
+  ASCII.NUL & "star" &
+  ASCII.NUL & "stars" &
+  ASCII.NUL & "start" &
+  ASCII.NUL & "stop" &
+  ASCII.NUL & "team" &
+  ASCII.NUL & "test" &
+  ASCII.NUL & "token" &
+  ASCII.NUL & "tst" &
+  ASCII.NUL & "un" &
+  ASCII.NUL & "uninstall" &
+  ASCII.NUL & "unpublish" &
+  ASCII.NUL & "unstar" &
+  ASCII.NUL & "up" &
+  ASCII.NUL & "update" &
+  ASCII.NUL & "version" &
+  ASCII.NUL & "view" &
+  ASCII.NUL & "whoami";
+
+-----------------------------------------------------------------------------
+--  NPM WORD GENERATOR (C language callback to Ada)
+--
+-- C calls this Ada function to generate a list of acceptable completions
+-- for the given text fragment.  A C null pointer is returned if there are
+-- no more matches.
+-----------------------------------------------------------------------------
+
+function Ada_npm_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+  needle : constant string := To_Ada( Value( text ) );
+  completionCandidate : string :=
+     nextCompletionSubcommand( npmWords, needle, state );
+  subcommand : aliased char_array := To_C( completionCandidate );
+begin
+
+  -- Get the next completion, empty strings if none.  Return the candidate word
+  -- to C.  Use strdup() to create a new C string which will be deallocated by
+  -- GNU readline.
+
+  if completionCandidate /= "" then
+     return C_strdup( To_Chars_Ptr( subcommand'unchecked_access ) );
+  end if;
+
+  -- If there are no more reserved words, return a C NULL pointer to indicate
+  -- there are no more possibilities.
+
+  return Null_Ptr;
+end Ada_npm_word_generator;
+
+
+-----------------------------------------------------------------------------
 --  ASSIGNMENT WORD GENERATOR (C language callback to Ada)
 --
 -- Return candidate words for assignment substitutions from the symbol table.
@@ -1994,6 +2106,16 @@ function Ada_docker_word_generator(text : chars_ptr; state : int ) return chars_
 begin
   return Null_Ptr;
 end Ada_docker_word_generator;
+
+function Ada_k8s_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_k8s_word_generator;
+
+function Ada_npm_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_npm_word_generator;
 
 function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr is
 begin

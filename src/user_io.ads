@@ -111,10 +111,10 @@ function inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in inverse characters
 
-procedure put_trace( msg : string );
+procedure put_trace( msg : string; icon : string := "" );
 -- display a trace message to standard error
 
-procedure put_trace_error( msg : string );
+procedure put_trace_error( msg : string; icon : string := "" );
 -- display a trace error message to standard error
 
 procedure displayVersionSplash;
