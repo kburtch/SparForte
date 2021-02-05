@@ -285,11 +285,11 @@ begin
   if tput_style = "terminfo" then
      spacePos := ada.strings.unbounded.index( tinfo(attr), " " );
      if spacePos = 0 then
-        firstParam := 
+        firstParam :=
            ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, length( tinfo(attr)) );
         return runTput( to_string( firstParam & ASCII.NUL), "" );
      else
-        firstParam := 
+        firstParam :=
            ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, spacePos-1 );
         extraParam :=
            ada.strings.unbounded.unbounded_slice( tinfo(attr), spacePos+1, length( tinfo(attr)) );
@@ -298,11 +298,11 @@ begin
   elsif tput_style = "termcap" then
      spacePos := ada.strings.unbounded.index( tcap(attr), " " );
      if spacePos = 0 then
-        firstParam := 
+        firstParam :=
            ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, length( tinfo(attr)) );
         return runTput( to_string( firstParam & ASCII.NUL ), "" );
      else
-        firstParam := 
+        firstParam :=
            ada.strings.unbounded.unbounded_slice( tinfo(attr), 1, spacePos-1 );
         extraParam :=
            ada.strings.unbounded.unbounded_slice( tcap(attr), spacePos+1, length( tcap(attr)) );
