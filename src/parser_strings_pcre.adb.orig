@@ -57,7 +57,7 @@ begin
   result := null_unbounded_string;
   expect( perl_match_t );
   if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow perl_match" );
+     err( optional_yellow( "pragma ada_95" ) & " doesn't allow perl_match" );
   end if;
   ParseFirstStringParameter( pat_val, pat_type );
   ParseLastStringParameter( expr_val, expr_type );

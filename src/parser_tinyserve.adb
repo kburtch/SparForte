@@ -75,7 +75,7 @@ end ParseFirstServerParameter;
 procedure findServer( serverExpr : unbounded_string; server : in out resPtr ) is
 begin
   if length( serverExpr ) = 0 then
-     err( optional_bold( "new_socket_server" ) & " has not been called to initialize the connection" );
+     err( optional_yellow( "new_socket_server" ) & " has not been called to initialize the connection" );
   else
      findResource( to_resource_id( serverExpr ), server );
   end if;
@@ -128,8 +128,8 @@ procedure ParseTSStartUp is
   server     : resPtr := null;
 begin
   if rshOpt then
-     err( optional_bold( "tinyserve.startup" ) & " is not permitted in a " &
-        optional_bold( "restricted shell" ) );
+     err( optional_yellow( "tinyserve.startup" ) & " is not permitted in a " &
+        optional_yellow( "restricted shell" ) );
   else
      expect( tinyserve_startup_t );
      ParseFirstServerParameter( serverId );

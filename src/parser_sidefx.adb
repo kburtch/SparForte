@@ -238,9 +238,9 @@ begin
               -- Unless it is volatile, it is an error.
               if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
                  err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
-                      " (in " & optional_bold( to_string( getThreadName ) ) &
+                      " (in " & optional_yellow( to_string( getThreadName ) ) &
                       ") is not unchecked_volatile but is also changed by " &
-                      optional_bold( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
+                      optional_yellow( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
                       ".  Perhaps refactor so one source is a procedure or break up the expression." );
               end if;
            end if;
@@ -258,9 +258,9 @@ begin
               -- Unless it is volatile, it is an error.
               if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
                  err( "side-effects: " & to_string( identifiers( id ).name &
-                      " (in " & optional_bold( to_string( getThreadName ) ) &
+                      " (in " & optional_yellow( to_string( getThreadName ) ) &
                       ") is not unchecked_volatile but is also changed by " &
-                      optional_bold( to_string( identifiers( id ).writtenByThread ) ) ) &
+                      optional_yellow( to_string( identifiers( id ).writtenByThread ) ) ) &
                       ".  Perhaps refactor so one source is a procedure or break up the expression." );
               end if;
            end if;

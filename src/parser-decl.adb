@@ -80,7 +80,7 @@ begin
    if token = abstract_t then
       if onlyAda95 then
         err( "abstract types not allowed with " &
-            optional_bold( "pragam ada_95" ) );
+            optional_yellow( "pragam ada_95" ) );
       end if;
       identifiers( newtype_id ).usage := abstractUsage; -- vars not allowed
       identifiers( newtype_id ).wasReferenced := true;  -- treat as used
@@ -94,7 +94,7 @@ begin
 
    elsif token = limited_t then
       if onlyAda95 then
-         err( "limited types are not allowed with " & optional_bold( "pragma ada_95" ) );
+         err( "limited types are not allowed with " & optional_yellow( "pragma ada_95" ) );
       end if;
       identifiers( newtype_id ).usage := limitedUsage;  -- assign not allowed
       expect( limited_t );
@@ -106,7 +106,7 @@ begin
 
    elsif token = constant_t then
       if onlyAda95 then
-         err( "constant types are not allowed with " & optional_bold( "pragma ada_95" ) );
+         err( "constant types are not allowed with " & optional_yellow( "pragma ada_95" ) );
       end if;
       identifiers( newtype_id ).usage := constantUsage;  -- read-only
       expect( constant_t );
@@ -149,7 +149,7 @@ begin
      end if;
 
   elsif token = abstract_t then                        -- abstract only makes sense
-     err( optional_bold( "abstract" ) &                -- in type declarations since
+     err( optional_yellow( "abstract" ) &                -- in type declarations since
         " can only be used in type declarations" );    -- it's a no-use quality.
 
   elsif token = limited_t then                         -- limited access?
@@ -386,7 +386,7 @@ begin
              begin
                identifiers( array_id ).avalue( arrayIndex ) := expr_value;
              exception when CONSTRAINT_ERROR =>
-               err( "assigning " & optional_bold( arrayIndex'img ) &
+               err( "assigning " & optional_yellow( arrayIndex'img ) &
                     " elements but the array is range " &
                     identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
              when STORAGE_ERROR =>
@@ -411,7 +411,7 @@ begin
      end if;
      if isExecutingCommand then                                -- not on synchk
         if arrayIndex < lastIndex then                         -- check sizes
-           err( "assigning only " & optional_bold( arrayIndex'img ) &
+           err( "assigning only " & optional_yellow( arrayIndex'img ) &
                 " elements but the array is range " &
                 identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
         end if;
@@ -494,15 +494,15 @@ begin
   -- should really be a constant expression but we can't handle that
   if getUniType( kind1 ) = uni_string_t then                 -- must be scalar
      err( "array indexes cannot be a string or character type like " &
-          optional_bold( to_string( identifiers( kind1 ).name ) ) );
+          optional_yellow( to_string( identifiers( kind1 ).name ) ) );
   elsif getUniType( kind1 ) = root_record_t then                 -- must be scalar
      err( "array indexes cannot be a record type like " &
-          optional_bold( to_string( identifiers( kind1 ).name ) ) );
+          optional_yellow( to_string( identifiers( kind1 ).name ) ) );
   -- this is currently impossible: parseExpression will demand an
   -- array element, not the whole array
   -- elsif identifiers( getBaseType( kind1 ) ).list then
   --    err( "array indexes cannot be an array type like " &
-  --         optional_bold( to_string( identifiers( kind1 ).name ) ) );
+  --         optional_yellow( to_string( identifiers( kind1 ).name ) ) );
   else
      expect( symbol_t, ".." );
      ParseExpression( ab2, kind2 );                            -- high bound
@@ -678,7 +678,7 @@ begin
        -- in the assignment list.
         ParseArrayAssignPart( id );
      elsif token = symbol_t and identifiers( token ).svalue = "(" then
-         err( optional_bold( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
+         err( optional_yellow( to_string( identifiers( arrayType ).name ) ) & " is not a generic type but has parameters" );
      end if;
 
      -- The element type of the array has been used.  Check for an error
@@ -753,7 +753,7 @@ begin
                     findIdent( fieldName, field_t );
                     if field_t = eof_t then
                        err( "unable to find record field " &
-                          optional_bold( to_string( fieldName ) ) );
+                          optional_yellow( to_string( fieldName ) ) );
                     else
                        if type_checks_done or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
                           if isExecutingCommand then
@@ -771,8 +771,8 @@ begin
        end if;
        end loop; -- for
        if not found then
-          err( "assigning" & optional_bold( field_no'img ) &
-               " fields but the record has only" & optional_bold( expected_fields'img ) );
+          err( "assigning" & optional_yellow( field_no'img ) &
+               " fields but the record has only" & optional_yellow( expected_fields'img ) );
        end if;
        exit when error_found or identifiers( token ).value.all /= ","; -- more?
        expect( symbol_t, "," );
@@ -780,8 +780,8 @@ begin
      end loop;
      expect( symbol_t, ")" );
      if expected_fields /= field_no then
-        err( "assigning only" & optional_bold( field_no'img ) &
-             " fields but the record has" & optional_bold( expected_fields'img ) );
+        err( "assigning only" & optional_yellow( field_no'img ) &
+             " fields but the record has" & optional_yellow( expected_fields'img ) );
      end if;
   else
      ParseIdentifier( second_record_id );                      -- second rec?
@@ -884,8 +884,8 @@ begin
      exception when constraint_error =>
        err( gnat.source_info.source_location &
           ": internal error: unable to determine number of fields in record " &
-          "type " & optional_bold( to_string( identifiers( recType ).name ) ) &
-          " for " & optional_bold( to_string( identifiers( id ).name ) ) );
+          "type " & optional_yellow( to_string( identifiers( recType ).name ) ) &
+          " for " & optional_yellow( to_string( identifiers( id ).name ) ) );
        numFields := 0;
      end;
 
@@ -996,7 +996,7 @@ begin
   -- Paranthesis?  It looks like a Generic type.  Show an error.
 
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
-     err( optional_bold( to_string( identifiers( recType ).name ) ) & " is not a generic type but has parameters" );
+     err( optional_yellow( to_string( identifiers( recType ).name ) ) & " is not a generic type but has parameters" );
 
   -- No Assignment?  If the new record variable is a constant, than
   -- it's a constant specification.
@@ -1034,7 +1034,7 @@ begin
    if token = with_t then
       if onlyAda95 then
          err( "exception with not allowed with " &
-            optional_bold( "pragam ada_95" ) );
+            optional_yellow( "pragam ada_95" ) );
       end if;
       expect( with_t );
       if token = use_t then
@@ -1053,7 +1053,7 @@ begin
          begin
            exception_status_code := anExceptionStatusCode'value( to_string( exception_status ) );
          exception when others =>
-           err( "exception status code " & optional_bold( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
+           err( "exception status code " & optional_yellow( to_string( trim( exception_status, ada.strings.both ) ) ) & " is out-of-range 0..255" );
          end;
       end if;
    elsif token = renames_t then
@@ -1071,7 +1071,7 @@ begin
       if id = eof_t then
          declareException( id, var_name, default_message, exception_status_code ); -- declare var
       else
-         err( "exception " & optional_bold( to_string( var_name ) ) &
+         err( "exception " & optional_yellow( to_string( var_name ) ) &
               " already exists in a greater scope" );
       end if;
    end if;
@@ -1100,7 +1100,7 @@ procedure CheckGenericParameterType( id, type_token : identifier ) is
 begin
    if uniType = doubly_list_t then
       if identifiers( id ).genKind2 /= eof_t then
-         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
       else
          declare
             genKindId : identifier renames identifiers( id ).genKind;
@@ -1116,23 +1116,23 @@ begin
       end if;
    elsif uniType = doubly_cursor_t then
       if identifiers( id ).genKind2 /= eof_t then
-         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
       end if;
    elsif uniType = btree_file_t then
       if identifiers( id ).genKind2 /= eof_t then
-         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
       end if;
    elsif uniType = btree_cursor_t then
       if identifiers( id ).genKind2 /= eof_t then
-         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
       end if;
    elsif uniType = hash_file_t then
       if identifiers( id ).genKind2 /= eof_t then
-         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
       end if;
    elsif uniType = hash_cursor_t then
       if identifiers( id ).genKind2 /= eof_t then
-         err( optional_bold( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );
       end if;
    elsif uniType = dht_table_t then
       declare
@@ -1202,9 +1202,9 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
         declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
      else
         -- TODO: implement generic types
-        err( optional_bold( to_string( identifiers( type_token ).name ) ) &
+        err( optional_yellow( to_string( identifiers( type_token ).name ) ) &
              " is derived from " &
-             optional_bold( to_string( identifiers( uniType ).name ) ) &
+             optional_yellow( to_string( identifiers( uniType ).name ) ) &
              " which is not a generic type" );
      end if;
      if isExecutingCommand then
@@ -1238,8 +1238,8 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     begin
        if identifiers( const_id ).kind /= type_token then
           err( "constant type " &
-              optional_bold( to_string( identifiers( type_token ).name ) ) &
-              " was " & optional_bold( to_string( identifiers( identifiers( const_id ).kind ).name )) &
+              optional_yellow( to_string( identifiers( type_token ).name ) ) &
+              " was " & optional_yellow( to_string( identifiers( identifiers( const_id ).kind ).name )) &
               " in the earlier specification (at " &
                to_string( identifiers( const_id ).specFile) & ":" &
           identifiers( const_id ).specAt'img & ")" );
@@ -1279,10 +1279,10 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        -- get here.
        if identifiers( type_token ).usage /= constantUsage then
           err( "fulfilling the constant specification " &
-               optional_bold( to_string( identifiers( const_id ).name ) ) &
+               optional_yellow( to_string( identifiers( const_id ).name ) ) &
                " requires a variable of constant usage " &
                "but type " &
-               optional_bold( to_string( identifiers( type_token ).name ) ) &
+               optional_yellow( to_string( identifiers( type_token ).name ) ) &
                " is not constant usage nor is the variable " &
                "declared as constant" );
        end if;
@@ -1404,16 +1404,16 @@ begin
   --if syntax_check then
   --   if token /= overriding_t then
   --      if identifiers( id ).kind /= new_t then
-  --         err( optional_bold( "overriding" ) &
+  --         err( optional_yellow( "overriding" ) &
   --              " expected because " &
-  --              optional_bold( to_string( identifiers( id ).name ) ) &
+  --              optional_yellow( to_string( identifiers( id ).name ) ) &
   --              " exists at a different scope" );
   --      end if;
   --   else
   --      if identifiers( id ).kind = new_t then
-  --         err( optional_bold( "overriding" ) &
+  --         err( optional_yellow( "overriding" ) &
   --              " not expected because " &
-  --              optional_bold( to_string( identifiers( id ).name ) ) &
+  --              optional_yellow( to_string( identifiers( id ).name ) ) &
   --              " does not exist at a different scope" );
   --      end if;
   --   end if;
@@ -1475,15 +1475,15 @@ begin
            identifiers( id ).usage := limitedUsage;
         when abstractUsage =>
            err( "variables cannot be declared as type " &
-              optional_bold( to_string( identifiers( type_token ).name ) ) &
-              " because it is " & optional_bold( "abstract" ) );
+              optional_yellow( to_string( identifiers( type_token ).name ) ) &
+              " because it is " & optional_yellow( "abstract" ) );
         when others =>
            err( gnat.source_info.source_location &
                 "internal error: unknown var qualifier" );
         end case;
   when constantUsage =>
        if identifiers( type_token ).usage = limitedUsage then
-          err( "constant is less restrictive than " & optional_bold( "limited" ) );
+          err( "constant is less restrictive than " & optional_yellow( "limited" ) );
        end if;
   when limitedUsage =>
        null; -- this is the most constrained
@@ -1517,8 +1517,8 @@ begin
         err( "nested records not yet supported" );
      --elsif identifiers( type_token ).usage = abstractUsage then
      --   err( "constants and variables cannot be declared as " &
-     --     optional_bold( to_string( identifiers( type_token ).name ) ) &
-     --     " because it is " & optional_bold( "abstract" ) );
+     --     optional_yellow( to_string( identifiers( type_token ).name ) ) &
+     --     " because it is " & optional_yellow( "abstract" ) );
      else
         ParseRecordDeclaration( id, type_token );          -- handle it
      end if;
@@ -1537,14 +1537,14 @@ begin
      elsif onlyAda95 and (type_token = uni_string_t or type_token =
         uni_numeric_t or type_token = universal_t) then
         err( "universal/typeless types not allowed with " &
-             optional_bold( "pragam ada_95" ) );
+             optional_yellow( "pragam ada_95" ) );
      elsif getBaseType( type_token ) = command_t then
         if onlyAda95 then
-           err( "command types not allowed with " & optional_bold( "pragma ada_95" ) );
+           err( "command types not allowed with " & optional_yellow( "pragma ada_95" ) );
         -- Special case: command type qualifiers
         elsif identifiers( id ).usage /= limitedUsage and
            identifiers( id ).usage /= constantUsage then
-           err( "command variables must be " & optional_bold( "limited" ) & " or " & optional_bold( "constant" ) );
+           err( "command variables must be " & optional_yellow( "limited" ) & " or " & optional_yellow( "constant" ) );
         end if;
      end if;
   end if;
@@ -1573,7 +1573,7 @@ begin
      identifiers( id ).usage := identifiers( type_token ).usage;
 
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
-     err( optional_bold( to_string( identifiers( type_token ).name ) ) & " is not a generic type but has parameters" );
+     err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " is not a generic type but has parameters" );
 
    -- We need to attach a resource for the generic-based type
    -- (i.e. type x is generic(...), this will be x)
@@ -1604,13 +1604,13 @@ begin
         -- It must be renamed as a constant or a limited.
         if identifiers( canonicalRef.id).usage = constantUsage and
            not wasConstant and not wasLimited then
-           err( "a " & optional_bold( "constant" ) & " must be renamed by a constant or a limited" );
+           err( "a " & optional_yellow( "constant" ) & " must be renamed by a constant or a limited" );
         elsif identifiers( canonicalRef.id ).class = enumClass then
            -- TODO: I could probably get this to work but it's a weird edge
            -- case.
            err( "enumerated items cannot be renamed" );
         elsif identifiers( canonicalRef.id ).usage = limitedUsage and not wasLimited then
-           err( "a " & optional_bold( "limited" ) & " must be renamed by a limited" );
+           err( "a " & optional_yellow( "limited" ) & " must be renamed by a limited" );
         elsif identifiers( canonicalRef.id ).field_of /= eof_t then
            if identifiers( identifiers( canonicalRef.id ).field_of ).usage = limitedUsage and not wasLimited then
               err( "limited record fields must be renamed by a limited identifier" );
@@ -1658,13 +1658,13 @@ begin
         -- It must be renamed as a constant or a limited.
         if identifiers( canonicalRef.id).usage = constantUsage and
            not wasConstant and not wasLimited then
-           err( "a " & optional_bold( "constant" ) & " must be copied by a constant or a limited" );
+           err( "a " & optional_yellow( "constant" ) & " must be copied by a constant or a limited" );
         elsif identifiers( canonicalRef.id ).class = enumClass then
            -- TODO: I could probably get this to work but it's a weird edge
            -- case.
            err( "enumerated items cannot be copied" );
         elsif identifiers( canonicalRef.id ).usage = limitedUsage and not wasLimited then
-           err( "a " & optional_bold( "limited" ) & " must be copied by a limited" );
+           err( "a " & optional_yellow( "limited" ) & " must be copied by a limited" );
         elsif identifiers( canonicalRef.id ).field_of /= eof_t then
            if identifiers( identifiers( canonicalRef.id ).field_of ).usage = limitedUsage and not wasLimited then
               err( "limited record fields must be copied by a limited identifier" );
@@ -1892,12 +1892,12 @@ begin
       if not onlyAda95 then
          expect( newtype_id );
       else
-         err( "end record required with " & optional_bold( "pragma ada_95" ) );
+         err( "end record required with " & optional_yellow( "pragma ada_95" ) );
       end if;
   else
-      err( optional_bold( "end record" ) &
+      err( optional_yellow( "end record" ) &
           " or " &
-              optional_bold( "end " & to_string( identifiers( newtype_id ).name ) ) &
+              optional_yellow( "end " & to_string( identifiers( newtype_id ).name ) ) &
               " expected" );
    end if;
    -- if isExecutingCommand then
@@ -2045,7 +2045,7 @@ procedure ParseAffirmClause( newtype_id : identifier ) is
 begin
    -- declare type_value
    if onlyAda95 then
-      err( "affirm clauses are not allowed with " & optional_bold( "pragma ada_95" ) );
+      err( "affirm clauses are not allowed with " & optional_yellow( "pragma ada_95" ) );
    else
       pushBlock(
         newScope => true,
@@ -2157,12 +2157,12 @@ begin
       elsif token = record_t then
          ParseRecordTypePart( newtype_id );
       elsif token = new_t then
-        err( optional_bold( "abstract" ) & " or " &
-             optional_bold( "constant" ) & " or " &
-             optional_bold( "limited" ) &  " goes after " &
-             optional_bold( "new" ) );
+        err( optional_yellow( "abstract" ) & " or " &
+             optional_yellow( "constant" ) & " or " &
+             optional_yellow( "limited" ) &  " goes after " &
+             optional_yellow( "new" ) );
       else
-        err( "without " & optional_bold("new") & " a record or array is expected" );
+        err( "without " & optional_yellow("new") & " a record or array is expected" );
       end if;
 
    -- type ... is array...
@@ -2190,9 +2190,9 @@ begin
      -- "new" be appropriate?
 
      if token = array_t then
-        err( "omit " & optional_bold( "new" ) & " since array is not derived from another type" );
+        err( "omit " & optional_yellow( "new" ) & " since array is not derived from another type" );
      elsif token = record_t then
-        err( "omit " & optional_bold( "new" ) & " since record is not derived from another type" );
+        err( "omit " & optional_yellow( "new" ) & " since record is not derived from another type" );
      end if;
 
      ParseIdentifier( parent_id );                         -- parent type name
@@ -2216,9 +2216,9 @@ begin
         if identifiers( newtype_id ).usage /= abstractUsage and
            identifiers( newtype_id ).usage /= limitedUsage then
            err("types that represent resources must always be " &
-               optional_bold( "abstract" ) &
+               optional_yellow( "abstract" ) &
                " or " &
-               optional_bold( "limited" ) );
+               optional_yellow( "limited" ) );
         end if;
         identifiers( newtype_id ).resource := true;
      end if;
@@ -2245,7 +2245,7 @@ begin
         identifiers( newtype_id ).usage := identifiers( parent_id ).usage;
      elsif token = symbol_t and identifiers( token ).value.all = "(" then
         err( "parameters were supplied but " &
-             optional_bold( to_string( identifiers( parent_id ).name ) ) &
+             optional_yellow( to_string( identifiers( parent_id ).name ) ) &
              " is not a generic type" );
      end if;
 
@@ -2330,20 +2330,20 @@ begin
         if identifiers( newtype_id ).usage /= abstractUsage and
            identifiers( newtype_id ).usage /= limitedUsage then
            err("types that represent resources must always be " &
-               optional_bold( "abstract" ) &
+               optional_yellow( "abstract" ) &
                " or " &
-               optional_bold( "limited" ) );
+               optional_yellow( "limited" ) );
         end if;
         identifiers( newtype_id ).resource := true;
      end if;
 
    if identifiers( parent_id ).class = genericTypeClass then
       err( "subtypes require an instantiated generic type but " &
-           optional_bold( to_string( identifiers( parent_id ).name ) ) &
+           optional_yellow( to_string( identifiers( parent_id ).name ) ) &
            " is not instantiated" );
    elsif token = symbol_t and identifiers( token ).value.all = "(" then
       err( "parameters were supplied but " &
-           optional_bold( to_string( identifiers( parent_id ).name ) ) &
+           optional_yellow( to_string( identifiers( parent_id ).name ) ) &
            " is not a generic type" );
    elsif type_checks_done or else class_ok( parent_id, typeClass,
                subClass ) then                             -- not a type?

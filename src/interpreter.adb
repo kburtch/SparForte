@@ -535,10 +535,10 @@ begin
     if scriptFile > 0 then
        scriptDir := dirname( scriptFilePath );
        if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-         err( "the script directory " & optional_bold( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
+         err( "the script directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
          goto error;
        elsif not C_is_includable_file( to_string( scriptFilePath ) & ASCII.NUL ) then
-         err( "the script file " & optional_bold( to_string( scriptFilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+         err( "the script file " & optional_yellow( to_string( scriptFilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
          goto error;
        end if;
     end if;
@@ -760,10 +760,10 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( path ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( "the global policy directory " & optional_bold( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global policy directory " & optional_bold( path ) & " is either not readable, is world writable, is not a directory";
+          err( "the global policy directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
+          raise BAD_PROFILE with "global policy directory " & optional_yellow( path ) & " is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( path & ASCII.NUL ) then
-          err( "global policy file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          err( "global policy file " & optional_yellow( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
           raise BAD_PROFILE with "global policy file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
@@ -812,10 +812,10 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( path ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( "the global config directory " & optional_bold( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global config directory " & optional_bold( path ) & " is either not readable, is world writable, is not a directory";
+          err( "the global config directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
+          raise BAD_PROFILE with "global config directory " & optional_yellow( path ) & " is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( path & ASCII.NUL ) then
-          err( "global config file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          err( "global config file " & optional_yellow( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
           raise BAD_PROFILE with "global config file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
@@ -858,10 +858,10 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( path ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( "the global profile directory " & optional_bold( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global profile directory " & optional_bold( path ) & " is either not readable, is world writable, is not a directory";
+          err( "the global profile directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
+          raise BAD_PROFILE with "global profile directory " & optional_yellow( path ) & " is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( path & ASCII.NUL ) then
-          err( "global profile file " & optional_bold( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          err( "global profile file " & optional_yellow( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
           raise BAD_PROFILE with "global profile file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
@@ -912,10 +912,10 @@ begin
         if C_errno = 0 then
            scriptDir := dirname( profilePath );
            if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-             err( "the local profile directory " & optional_bold( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-             raise BAD_PROFILE with "local profile directory " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a directory";
+             err( "the local profile directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
+             raise BAD_PROFILE with "local profile directory " & optional_yellow( to_string( profilePath ) ) & " is either not readable, is world writable, is not a directory";
            elsif not C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then
-             err( "the local profile file " & optional_bold( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+             err( "the local profile file " & optional_yellow( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
              raise BAD_PROFILE with "local profile file '" & to_string( profilePath ) & "' is either not readable, is world writable, is not a regular file or is empty";
            end if;
            sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( profilePath ) ) );
@@ -1023,19 +1023,19 @@ begin
            processTemplate;
         exception
         when STATUS_ERROR =>
-           err( "cannot open template " & optional_bold( to_string( templatePath ) ) &
+           err( "cannot open template " & optional_yellow( to_string( templatePath ) ) &
                " - file may be locked" );
         when NAME_ERROR =>
-           err( "template " & optional_bold( to_string( templatePath ) ) &
+           err( "template " & optional_yellow( to_string( templatePath ) ) &
                " doesn't exist or is not readable" );
         when MODE_ERROR =>
            err( gnat.source_info.source_location &
-                ": internal error: mode error on template " & optional_bold( to_string( templatePath ) ) );
+                ": internal error: mode error on template " & optional_yellow( to_string( templatePath ) ) );
         when END_ERROR =>
            err( gnat.source_info.source_location &
-                ": internal error: end of file reached on template " & optional_bold( to_string( templatePath ) ) );
+                ": internal error: end of file reached on template " & optional_yellow( to_string( templatePath ) ) );
         -- when others =>
-       --  err( "unable to open template " & optional_bold( to_string( templatePath ) ) );
+       --  err( "unable to open template " & optional_yellow( to_string( templatePath ) ) );
         end;
         -- Not sure this makes sense in a template, but we'll include it here.
         if testOpt then

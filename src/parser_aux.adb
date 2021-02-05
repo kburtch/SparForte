@@ -704,8 +704,8 @@ begin
                 "cannot find field in the renaming record; " &
                 "Identifier" & canonicalField'img &
                 ": Canonical field " &
-                optional_bold( to_string( identifiers( canonicalField ).name ) ) & "/" &
-                "Renaming Field " & optional_bold( to_string( fieldName ) ) );
+                optional_yellow( to_string( identifiers( canonicalField ).name ) ) & "/" &
+                "Renaming Field " & optional_yellow( to_string( fieldName ) ) );
         else
            -- The renaming is created by copying data.  Correct
            -- the fields to be owned

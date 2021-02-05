@@ -842,7 +842,7 @@ end run_test_case;
 procedure record_test_result( result_status : boolean; test_message : unbounded_string ) is
 begin
   if not isJunitStarted then
-     err( optional_bold( "pragma test" ) & " must be used before pragma test_result" );
+     err( optional_yellow( "pragma test" ) & " must be used before pragma test_result" );
   elsif result_status then
      if usingTextTestReport then
         testCaseFailure( myTextTestReport, test_message );
@@ -878,7 +878,7 @@ begin
   -- Weight must be non-zero
 
   if weight < 0.0 then
-     err( "weight " & optional_bold( weight'img ) & " is less than zero" );
+     err( "weight " & optional_yellow( weight'img ) & " is less than zero" );
      return;
   end if;
   if name = "" then
@@ -895,9 +895,9 @@ begin
   DesignConstraintLists.Find( designConstraintList, dc, foundAt => dcPos  );
   if dcPos = 0 then
      err( "constraint " &
-          optional_bold( to_string( constraint ) ) &
+          optional_yellow( to_string( constraint ) ) &
           ", " &
-          optional_bold( to_string( name ) ) &
+          optional_yellow( to_string( name ) ) &
           " is not declared" );
     return;
   end if;
@@ -964,11 +964,11 @@ begin
         -- have two unique constraints.
 
         err( "unique constraint " &
-              optional_bold( to_string( edc.constraint ) ) &
+              optional_yellow( to_string( edc.constraint ) ) &
               " value " &
-              optional_bold( to_string( name ) ) &
+              optional_yellow( to_string( name ) ) &
               " conflicts with " &
-              optional_bold( to_string( edc.name ) ) &
+              optional_yellow( to_string( edc.name ) ) &
               " (at " &
                 to_string( edc.enforcedFile ) & ":" &
               edc.enforcedAt'img & ")" );
@@ -986,22 +986,22 @@ begin
         --if edc.constraint = constraint and edc.name /= name then
         if edc.name /= name then
            err( "file constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " value " &
-                optional_bold( to_string( name ) ) &
+                optional_yellow( to_string( name ) ) &
                 " conflicts with " &
-                optional_bold( to_string( edc.name ) ) &
+                optional_yellow( to_string( edc.name ) ) &
                 " (at " &
                   to_string( edc.enforcedFile ) & ":" &
                 edc.enforcedAt'img & ")" );
         --elsif edc.constraint = constraint and edc.name = name and
         elsif edc.weight > dc.limit then
            err( "file constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " accumulated weight" &
-                optional_bold( edc.weight'img ) &
+                optional_yellow( edc.weight'img ) &
                 " exceeds the limit of" &
-                optional_bold( dc.limit'img ) );
+                optional_yellow( dc.limit'img ) );
         elsif edc.weight /= weight then
            EnforcedDesignConstraintLists.Replace( enforcedDesignConstraintList, edcPos, edc );
         end if;
@@ -1017,24 +1017,24 @@ begin
         edc.weight := edc.weight + weight;
 
         if edc.name /= name then
-           err( -- optional_bold( to_string( edc.enforcedUnit ) ) &
+           err( -- optional_yellow( to_string( edc.enforcedUnit ) ) &
                 -- " local constraint " &
                 "local constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " value " &
-                optional_bold( to_string( name ) ) &
+                optional_yellow( to_string( name ) ) &
                 " conflicts with " &
-                optional_bold( to_string( edc.name ) ) &
+                optional_yellow( to_string( edc.name ) ) &
                 " (at " &
                   to_string( edc.enforcedFile ) & ":" &
                 edc.enforcedAt'img & ")" );
         elsif edc.weight > dc.limit then
            err( "local constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " accumulated weight" &
-                optional_bold( edc.weight'img ) &
+                optional_yellow( edc.weight'img ) &
                 " exceeds the limit of" &
-                optional_bold( dc.limit'img ) );
+                optional_yellow( dc.limit'img ) );
         elsif edc.weight /= weight then
            EnforcedLocalDesignConstraintLists.Replace( enforcedLocalDesignConstraintList, edcPos, edc );
         end if;
@@ -1062,33 +1062,33 @@ begin
         -- have a weight too high on their first use.
         if edc.weight > dc.limit then
            err( "unique constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " weight" &
-                optional_bold( weight'img ) &
+                optional_yellow( weight'img ) &
                 " exceeds limit of" &
-                optional_bold( dc.limit'img ) );
+                optional_yellow( dc.limit'img ) );
         else
            EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
         end if;
      when file =>
         if edc.weight > dc.limit then
            err( "file constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " weight" &
-                optional_bold( weight'img ) &
+                optional_yellow( weight'img ) &
                 " exceeds limit of" &
-                optional_bold( dc.limit'img ) );
+                optional_yellow( dc.limit'img ) );
         else
            EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
         end if;
      when subprogram =>
         if edc.weight > dc.limit then
            err( "file constraint " &
-                optional_bold( to_string( edc.constraint ) ) &
+                optional_yellow( to_string( edc.constraint ) ) &
                 " weight" &
-                optional_bold( weight'img ) &
+                optional_yellow( weight'img ) &
                 " exceeds limit of" &
-                optional_bold( dc.limit'img ) );
+                optional_yellow( dc.limit'img ) );
         else
            edc.enforcedUnit := fullUnitName;
            EnforcedLocalDesignConstraintLists.Queue( enforcedLocalDesignConstraintList, edc );
@@ -1126,7 +1126,7 @@ procedure declareConstraint( mode : designConstraintModes; constraint, name : un
   pos : DesignConstraintLists.aListIndex := 0;
 begin
   if limit < 0.0 then
-     err( "limit " & optional_bold( limit'img ) & " is less than zero" );
+     err( "limit " & optional_yellow( limit'img ) & " is less than zero" );
   else
      dc.mode := mode;
      dc.constraint := constraint;
@@ -1135,9 +1135,9 @@ begin
      DesignConstraintLists.Find( designConstraintList, dc, foundAt => pos  );
      if pos > 0 then
         err( "constraint " &
-             optional_bold( to_string( constraint ) ) &
+             optional_yellow( to_string( constraint ) ) &
              ", " &
-             optional_bold( to_string( name ) ) &
+             optional_yellow( to_string( name ) ) &
              " is already declared" );
      else
         DesignConstraintLists.Queue( designConstraintList, dc );
@@ -1165,7 +1165,7 @@ begin
   -- Weight must be non-zero
 
   if weight < 0.0 then
-     err( "weight " & optional_bold( weight'img ) & " is less than zero" );
+     err( "weight " & optional_yellow( weight'img ) & " is less than zero" );
      return;
   end if;
 
@@ -1177,7 +1177,7 @@ begin
   DesignAffinityLists.Find( designAffinityList, da, foundAt => daPos  );
   if daPos = 0 then
      err( "affinity " &
-          optional_bold( to_string( affinity ) ) &
+          optional_yellow( to_string( affinity ) ) &
           " is not declared" );
     return;
   end if;
@@ -1226,17 +1226,17 @@ begin
 
         if eda.enforcedFile /= getSourceFileName then
            err( "file affinity " &
-                optional_bold( to_string( eda.affinity ) ) &
+                optional_yellow( to_string( eda.affinity ) ) &
                 " is enforced in at least two files (at " &
                   to_string( eda.enforcedFile ) & ":" &
                 eda.enforcedAt'img & ")" );
         elsif eda.weight > da.limit then
            err( "file affinity " &
-                optional_bold( to_string( eda.affinity ) ) &
+                optional_yellow( to_string( eda.affinity ) ) &
                 " accumulated weight" &
-                optional_bold( eda.weight'img ) &
+                optional_yellow( eda.weight'img ) &
                 " exceeds the limit of" &
-                optional_bold( da.limit'img ) );
+                optional_yellow( da.limit'img ) );
         elsif eda.weight /= weight then
            EnforcedDesignAffinityLists.Replace( enforcedDesignAffinityList, edaPos, eda );
         end if;
@@ -1249,17 +1249,17 @@ begin
 
         if eda.enforcedUnit /= fullUnitName then
            err( "subprogram affinity " &
-                optional_bold( to_string( eda.affinity ) ) &
+                optional_yellow( to_string( eda.affinity ) ) &
                 " is enforced in at least two subprograms (at " &
                   to_string( eda.enforcedFile ) & ":" &
                 eda.enforcedAt'img & ")" );
         elsif eda.weight > da.limit then
            err( "local affinity " &
-                optional_bold( to_string( eda.affinity ) ) &
+                optional_yellow( to_string( eda.affinity ) ) &
                 " accumulated weight" &
-                optional_bold( eda.weight'img ) &
+                optional_yellow( eda.weight'img ) &
                 " exceeds the limit of" &
-                optional_bold( da.limit'img ) );
+                optional_yellow( da.limit'img ) );
         elsif eda.weight /= weight then
            EnforcedLocalDesignAffinityLists.Replace( enforcedLocalDesignAffinityList, edaPos, eda );
         end if;
@@ -1284,22 +1284,22 @@ begin
      when file =>
         if eda.weight > da.limit then
            err( "file affinity " &
-                optional_bold( to_string( eda.affinity ) ) &
+                optional_yellow( to_string( eda.affinity ) ) &
                 " weight" &
-                optional_bold( weight'img ) &
+                optional_yellow( weight'img ) &
                 " exceeds limit of" &
-                optional_bold( da.limit'img ) );
+                optional_yellow( da.limit'img ) );
         else
            EnforcedDesignAffinityLists.Queue( enforcedDesignAffinityList, eda );
         end if;
      when subprogram =>
         if eda.weight > da.limit then
            err( "subprogram affinity " &
-                optional_bold( to_string( eda.affinity ) ) &
+                optional_yellow( to_string( eda.affinity ) ) &
                 " weight" &
-                optional_bold( weight'img ) &
+                optional_yellow( weight'img ) &
                 " exceeds limit of" &
-                optional_bold( da.limit'img ) );
+                optional_yellow( da.limit'img ) );
         else
            eda.enforcedUnit := fullUnitName;
            EnforcedLocalDesignAffinityLists.Queue( enforcedLocalDesignAffinityList, eda );
@@ -1323,7 +1323,7 @@ procedure declareAffinity( mode : designAffinityModes; affinity : unbounded_stri
   pos : DesignAffinityLists.aListIndex := 0;
 begin
   if limit < 0.0 then
-     err( "limit " & optional_bold( limit'img ) & " is less than zero" );
+     err( "limit " & optional_yellow( limit'img ) & " is less than zero" );
   else
      da.mode := mode;
      da.affinity := affinity;
@@ -1331,7 +1331,7 @@ begin
      DesignAffinityLists.Find( designAffinityList, da, foundAt => pos  );
      if pos > 0 then
         err( "affinity " &
-             optional_bold( to_string( affinity ) ) &
+             optional_yellow( to_string( affinity ) ) &
              " is already declared" );
      else
         DesignAffinityLists.Queue( designAffinityList, da );
@@ -1679,13 +1679,13 @@ begin
      ParseSoftwareModelName( expr_val );
   when session_export_script =>              -- pragma session_export_script
      if rshOpt then                          -- security precaution
-        err( "session scripts cannot be defined in a " & optional_bold( "restricted shell" ) );
+        err( "session scripts cannot be defined in a " & optional_yellow( "restricted shell" ) );
      end if;
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when session_import_script =>              -- pragma session_import_script
      if rshOpt then                          -- security precaution
-        err( "session scripts cannot be defined in a " & optional_bold( "restricted shell" ) );
+        err( "session scripts cannot be defined in a " & optional_yellow( "restricted shell" ) );
      end if;
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
@@ -2081,7 +2081,7 @@ begin
               err( "variable is already imported" );
            -- KLUDGE: there are so many standard types...
            elsif getBaseType( identifiers( var_id ).kind ) <= complex_imaginary_t then
-              err( "security issue: import variable " & optional_bold( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_bold( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
+              err( "security issue: import variable " & optional_yellow( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_yellow( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
            end if;
         else
            identifiers( var_id ).mapping := none;
@@ -2101,7 +2101,7 @@ begin
            -- tracking imported untrusted data.
            elsif getBaseType( identifiers( var_id ).kind ) = string_t or
                  getBaseType( identifiers( var_id ).kind ) = unbounded_string_t then
-              err( "security issue: import variable " & optional_bold( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_bold( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
+              err( "security issue: import variable " & optional_yellow( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_yellow( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
            end if;
         end if;
         -- All clear? Get the value
@@ -2591,7 +2591,7 @@ begin
   expect( pragma_t );
   if token = is_t then
      if onlyAda95 then
-        err( "pragma block cannot be used with " & optional_bold( "pragma ada_95" ) );
+        err( "pragma block cannot be used with " & optional_yellow( "pragma ada_95" ) );
      end if;
      -- a pragma block
      expect( is_t );
@@ -2609,7 +2609,7 @@ begin
         ParsePragmaStatement( pragmaKind );
         if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
            if onlyAda95 then
-              err( "@ cannot be used with " & optional_bold( "pragma ada_95" ) );
+              err( "@ cannot be used with " & optional_yellow( "pragma ada_95" ) );
            end if;
            expect( symbol_t, "@" );
         elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
@@ -2638,7 +2638,7 @@ begin
         end if;
         exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
         if onlyAda95 then
-           err( "@cannot be used with " & optional_bold( "pragma ada_95" ) );
+           err( "@cannot be used with " & optional_yellow( "pragma ada_95" ) );
         end if;
         expect( symbol_t, "@" );
      end loop;

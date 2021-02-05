@@ -79,6 +79,18 @@ procedure getKey( ch : out character; nonblock : boolean := false );
 -- Special terminal control
 ------------------------------------------------------
 
+function optional_red( s : string ) return string;
+-- return a string with terminal codes to draw the string
+-- in red characters if -g not used
+
+function optional_yellow( s : string ) return string;
+-- return a string with terminal codes to draw the string
+-- in yellow characters if -g not used
+
+function optional_green( s : string ) return string;
+-- return a string with terminal codes to draw the string
+-- in green characters if -g not used
+
 function optional_bold( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in bold characters if -g not used
@@ -101,6 +113,9 @@ function inverse( s : string ) return string;
 
 procedure put_trace( msg : string );
 -- display a trace message to standard error
+
+procedure put_trace_error( msg : string );
+-- display a trace error message to standard error
 
 procedure displayVersionSplash;
 -- show --version version message

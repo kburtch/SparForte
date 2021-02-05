@@ -3,7 +3,7 @@
 spar \- SparForte, the Business Shell
 .SH SYNOPSIS
 .B spar
-[\-bcCdDeghilLmpPrtvVx] [\-\-break] [\-\-check] [\-\-debug] [\-\-exec]
+[\-bcCdDeghilLmpPrtvVx] [\-\-break] [\-\-check] [\-\-color|\-\-colour] [\-\-debug] [\-\-exec]
 [\-\-gcc-errors] [\-\-login|\-\-profile] [\-\-verbose] [\-\-version]
 [\-\-restricted] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test][\-\-trace]
 [\-\-] [script [param1 ...] ]
@@ -33,6 +33,10 @@ syntax check the script but do not run
 .TP
 \fB\-C\fR, \fB\-\-coding\fR
 development phase mode
+.TP
+\fB\-\-color\fR, \fB\-\-colour\fR
+enable colour messages
+.TP
 \fB\-d\fR, \fB\-\-debug\fR
 enable pragma assert and pragma debug
 .TP

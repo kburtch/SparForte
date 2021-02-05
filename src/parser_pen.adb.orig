@@ -1148,7 +1148,7 @@ procedure ParsePenSaveCanvas is
   canvas_id   : identifier;
 begin
   if rshOpt then
-     err( "not allowed in a " & optional_bold( "restricted shell" ) );
+     err( "not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( pen_save_canvas_t );
   expect( symbol_t, "(" );

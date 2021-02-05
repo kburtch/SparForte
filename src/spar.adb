@@ -77,6 +77,7 @@ begin
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
+        Put_Line( "  --color or --colour - enable coloured messages" );
         Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );
         Put_Line( "  --design or -D      - design phase mode" );
         Put_Line( "  --exec or -e        - script is a string containing SparForte commands" );
@@ -129,6 +130,10 @@ begin
          elsif Argument(i) = "--coding" then
             testOpt := false;
             wasCoding := true;
+         elsif Argument(i) = "--color" then
+            colourOpt := true;
+         elsif Argument(i) = "--colour" then
+            colourOpt := true;
          elsif Argument(i) = "--debug" then
             debugOpt := true;
          elsif Argument(i) = "--design" then

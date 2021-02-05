@@ -34,7 +34,7 @@ package spar_os.tty is
 -- screen, move the cursor, etc.
 
 type termAttributes is (normal, bold, inverse, cleop, cleol, up,
-     right, bel, reset, clear, lines, cols);
+     right, bel, reset, clear, lines, cols, red, yellow, green, white);
 
 type termAttributesArray is array (termAttributes) of unbounded_string;
 

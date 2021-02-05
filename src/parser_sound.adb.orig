@@ -96,13 +96,13 @@ begin
        end;
      exception
        when NAME_ERROR =>
-         err( "file " & optional_bold( path ) & " does not exist or is not readable" );
+         err( "file " & optional_yellow( path ) & " does not exist or is not readable" );
        when STATUS_ERROR =>
-         err( "file " & optional_bold( path ) & " may be locked" );
+         err( "file " & optional_yellow( path ) & " may be locked" );
        when MODE_ERROR =>
          err( gnat.source_info.source_location & ": internal error: mode error on file open" );
        when others =>
-         err( "exception when opening sound file " & optional_bold( path ) );
+         err( "exception when opening sound file " & optional_yellow( path ) );
      end;
 #else
       err( "sound support not installed" );
