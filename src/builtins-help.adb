@@ -1211,6 +1211,7 @@ begin
   content( e, "pragma assumption( written, var ) - assume a variable was written" );
   content( e, "pragma blocked( from, message ) - announce programmer progress blocked" );
   content( e, "pragma clarify( from, to, message ) - request programmer clarification" );
+  content( e, "pragma colour_messages | color_messages - same as --colour/--color" );
   content( e, "pragma constraint( constraint, value [, weight] ) - enforce a design constraint" );
   content( e, "pragma debug( `commands` ) - with --debug, execute debug commands" );
   content( e, "pragma declare_affinity( mode, affinity [, limit] ) - create a design affinity" );
@@ -2333,6 +2334,7 @@ begin
   elsif helpTopic = "shell" then
      startHelp( e, "shell" );
      summary( e, "Bourne shell feature syntax" );
+     category( e, "reference" );
      description( e, "Bourne shell features." );
      section( e, "Variable Substitution" );
      content( e, "$X - replace with value of X" );

@@ -169,4 +169,10 @@ function utf_triangle return string;
 function utf_horizontalLine return string;
 -- Return the bytes for a UTF-8 horizontal line
 
+function utf_bullet return string;
+-- Return the bytes for a UTF-8 bullet, otherwise asterisk
+
+function utf_diamond return string;
+-- Return the bytes for a UTF-8 diamond, otherwise a minus sign
+
 end user_io;

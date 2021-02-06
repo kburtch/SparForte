@@ -284,7 +284,7 @@ package body reports is
            end if;
             if not contentList.isEmpty( l ) then
                contentList.Pull( l, s );
-               put_line( r.outputfile, to_string( s ) );
+               put_line( r.outputfile, optional_yellow( to_string( s ) ) );
                new_line( r.outputfile );
             end if;
             r.lineWidth := 0;
@@ -336,7 +336,7 @@ package body reports is
          new_line( r.outputfile );
          while not contentList.isEmpty( l ) loop
             contentList.Pull( l, s );
-            put_line( r.outputfile, " * " & to_string( s ) );
+            put_line( r.outputfile, " " & utf_bullet & " " & to_string( s ) );
          end loop;
       end if;
    end if;

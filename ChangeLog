@@ -86,3 +86,7 @@ CHANGES SINCE 2.3
 
 36. New: --icons to enable UTF-8 icons in messages.
 
+37. Fix: --gcc-errors no longer use bold on type errors.
+
+38. Fix: --gcc-errors now takes effect for syntax checking, not just execution.
+

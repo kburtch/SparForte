@@ -502,5 +502,26 @@ begin
   return "";
 end utf_horizontalLine;
 
+-- Return the bytes for a UTF-8 bullet, otherwise asterisk
+
+function utf_bullet return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 128 ) & character'val( 162 );
+  end if;
+  return "*";
+end utf_bullet;
+
+-- Return the bytes for a UTF-8 diamond, otherwise a minus sign
+
+function utf_diamond return string is
+begin
+  if iconsOpt then
+     return character'val( 226 ) & character'val( 151 ) & character'val( 134 );
+  end if;
+  return "-";
+end utf_diamond;
+
+
 end user_io;
 

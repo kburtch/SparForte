@@ -369,10 +369,10 @@ package body reports.help is
      -- display the help topic and the header if there is one
      put( r.outputfile, optional_green( to_string( e.topic ) ) );
      if length( e.summary ) > 0 then
-        put( r.outputfile, " - " & to_string( e.summary ) );
+        put( r.outputfile, " " & utf_diamond & " " & to_string( e.summary ) );
      end if;
      if length( e.category ) > 0 then
-        put( r.outputfile, " - " & to_string( e.category ) );
+        put( r.outputfile, " " & utf_diamond & " " & optional_red( to_string( e.category ) ) );
      end if;
      new_line( r.outputfile );
 

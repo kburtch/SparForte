@@ -3721,15 +3721,15 @@ begin
      if id = eof_t then
         err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(1)" );
      elsif id = exception_t then
-        err_previous( "an " & bold( "exception" ) &
+        err_previous( "an " & optional_yellow( "exception" ) &
            " is not a " &
            getIdentifierClassImage( class ) );
      elsif id < reserved_top then
-        err_previous( "a " & bold( "keyword" ) &
+        err_previous( "a " & optional_yellow( "keyword" ) &
            " is not a " &
            getIdentifierClassImage( class ) );
      else
-        err_previous( bold( to_string( identifiers( id ).name ) ) &
+        err_previous( optional_yellow( to_string( identifiers( id ).name ) ) &
            " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
@@ -3756,19 +3756,19 @@ begin
      if id = eof_t then
         err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(2)" );
      elsif id = exception_t then
-        err_previous( "an " & bold( "exception" ) &
+        err_previous( "an " & optional_yellow( "exception" ) &
            " is not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
            getIdentifierClassImage( c2 ) );
      elsif id < reserved_top then
-        err_previous( "a " & bold( "keyword" ) &
+        err_previous( "a " & optional_yellow( "keyword" ) &
            " is not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
            getIdentifierClassImage( c2 ) );
      else
-        err_previous( bold( to_string( identifiers( id ).name ) ) &
+        err_previous( optional_yellow( to_string( identifiers( id ).name ) ) &
            " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
@@ -3797,7 +3797,7 @@ begin
      if id = eof_t then
         err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(3)" );
      elsif id = exception_t then
-        err_previous( "an " & bold( "exception" ) &
+        err_previous( "an " & optional_yellow( "exception" ) &
            " is not a " &
            getIdentifierClassImage( c1 ) &
            ", " &
@@ -3805,7 +3805,7 @@ begin
            " or a " &
            getIdentifierClassImage( c3 ) );
      elsif id < reserved_top then
-        err_previous( "a " & bold( "keyword" ) &
+        err_previous( "a " & optional_yellow( "keyword" ) &
            " is not a " &
            getIdentifierClassImage( c1 ) &
            ", " &
@@ -3813,7 +3813,7 @@ begin
            " or a " &
            getIdentifierClassImage( c3 ) );
      else
-        err_previous( bold( to_string( identifiers( id ).name ) ) &
+        err_previous( optional_yellow( to_string( identifiers( id ).name ) ) &
            " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
@@ -3870,17 +3870,17 @@ begin
   -- the type as well as the root type.
 
   if identifiers( leftType ).list and not identifiers( rightType ).list then
-    msg := "type " & bold( to_string( identifiers( leftType ).name ) ) &
+    msg := "type " & optional_yellow( to_string( identifiers( leftType ).name ) ) &
            "is an array but type " & to_unbounded_string(
-           bold( to_string( identifiers( rightType ).name ) ) &
+           optional_yellow( to_string( identifiers( rightType ).name ) ) &
            " is not an array" );
   elsif not identifiers( leftType ).list and identifiers( rightType ).list then
-    msg := "type " & bold( to_string( identifiers( leftType ).name ) ) &
+    msg := "type " & optional_yellow( to_string( identifiers( leftType ).name ) ) &
            "is not an array but type " & to_unbounded_string(
-           bold( to_string( identifiers( rightType ).name ) ) &
+           optional_yellow( to_string( identifiers( rightType ).name ) ) &
            " is an array" );
   elsif effectiveLeftType /= effectiveRightType then
-    msg := to_unbounded_string( "type " & bold( to_string( identifiers(
+    msg := to_unbounded_string( "type " & optional_yellow( to_string( identifiers(
       leftType ).name ) ) );
     if effectiveLeftType = root_enumerated_t then
        msg := msg & " (an enumerated type)";
@@ -3890,7 +3890,7 @@ begin
           & ")";
     end if;
     msg := msg & " is inherently different from " &
-        bold( to_string( AorAN( identifiers( rightType ).name ) ) );
+        optional_yellow( to_string( AorAN( identifiers( rightType ).name ) ) );
     if effectiveRightType = root_enumerated_t then
        msg := msg & " (an enumerated type)";
     elsif identifiers( rightType ).kind /= variable_t then
@@ -3950,9 +3950,9 @@ begin
   -- Otherwise, the types must be identical.
 
   if effectiveLeftType /= effectiveRightType then
-     err_previous( "type " & bold( to_string( identifiers( leftType ).name) ) &
+     err_previous( "type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
           " is not compatible with type " &
-          bold( to_string( identifiers( rightType ).name ) ) );
+          optional_yellow( to_string( identifiers( rightType ).name ) ) );
      return false;
   end if;
   return true;
@@ -4022,9 +4022,9 @@ begin
   -- Otherwise, the types must be identical.
 
   if effectiveLeftType /= effectiveRightType then
-     err_previous( "item type " & bold( to_string( identifiers( leftType ).name) ) &
+     err_previous( "item type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
           " is not compatible with item type " &
-          bold( to_string( identifiers( rightType ).name ) ) );
+          optional_yellow( to_string( identifiers( rightType ).name ) ) );
      return false;
   end if;
   return true;
@@ -4072,9 +4072,9 @@ begin
   -- not represent.
 
   if effectiveRenamingType /= effectiveCanonicalType then
-     err_previous( "renaming or copying type " & bold( to_string( identifiers( renamingType ).name) ) &
+     err_previous( "renaming or copying type " & optional_yellow( to_string( identifiers( renamingType ).name) ) &
           " is not equivalent to canonical identifier's type " &
-          bold( to_string( identifiers( canonicalType ).name ) ) );
+          optional_yellow( to_string( identifiers( canonicalType ).name ) ) );
      return false;
   end if;
   return true;

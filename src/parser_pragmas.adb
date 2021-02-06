@@ -77,6 +77,7 @@ type aPragmaKind is (
      annotate,
      blocked,
      clarify,
+     colour_messages,
      constraint,
      debug,
      debug_on,
@@ -181,6 +182,10 @@ begin
      pragmaKind :=  blocked;
   elsif name = "clarify" then
      pragmaKind :=  clarify;
+  elsif name = "color_messages" then
+     pragmaKind := colour_messages;
+  elsif name = "colour_messages" then
+     pragmaKind := colour_messages;
   elsif name = "deprecated" then
      pragmaKind :=  depreciated;
   elsif name = "depreciated" then
@@ -1368,7 +1373,8 @@ begin
   -- Parse the pragma parameters (if any)
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
-     noCommandHash and pragmaKind /= peek and pragmaKind /= gcc_errors then
+     noCommandHash and pragmaKind /= peek and pragmaKind /= gcc_errors and
+     pragmaKind /= colour_messages then
      if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value.all /= "(") then
         pragmaKind := debug_on;
      else
@@ -1427,6 +1433,8 @@ begin
            baseTypesOK( var_id, uni_string_t );
         end if;
      end if;
+  when colour_messages =>
+     null;
   when constraint =>                         -- pragma constraint
      ParseDesignPragmaConstraintIdentifier( expr_val );
      expect( symbol_t, "," );
@@ -1845,7 +1853,7 @@ begin
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
      noCommandHash and pragmaKind /= debug_on and pragmaKind /= peek and
-     pragmaKind /= gcc_errors then
+     pragmaKind /= gcc_errors and pragmaKind /= colour_messages then
      expect( symbol_t, ")" );
   end if;
 
@@ -1894,6 +1902,8 @@ begin
         else
            identifiers( var_id ).wasFactor := true;
         end if;
+     elsif pragmaKind = colour_messages then
+           colourOpt := true;
      elsif pragmaKind = constraint then
         if not maintenanceOpt then
            if isExecutingStaticCommand then
@@ -1931,6 +1941,8 @@ begin
               end;
            end if;
         end if;
+     elsif pragmaKind = gcc_errors then
+        gccOpt := true;
      elsif pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
      elsif pragmaKind = suppress_word_quoting then
@@ -1981,6 +1993,8 @@ begin
         null;
      when clarify =>
         null;
+     when colour_messages =>
+        null; -- colourOpt := true;
      when constraint =>                            -- pragma constraint
         if inputMode = interactive or inputMode = breakout then
             err( "pragma constraint cannot be used in an interactive session" );
@@ -2068,7 +2082,7 @@ begin
            end if;
         end if;
      when gcc_errors =>
-        gccOpt := true;
+        null; --gccOpt := true;
      when import | import_json =>
         -- Check for a reasonable identifier type
         if pragmaKind = import_json then
