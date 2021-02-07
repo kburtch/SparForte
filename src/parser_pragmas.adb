@@ -1994,7 +1994,9 @@ begin
      when clarify =>
         null;
      when colour_messages =>
-        null; -- colourOpt := true;
+        -- this executes when the profile loads because there is no syntax
+        -- check phase for that.
+        colourOpt := true;
      when constraint =>                            -- pragma constraint
         if inputMode = interactive or inputMode = breakout then
             err( "pragma constraint cannot be used in an interactive session" );
@@ -2082,7 +2084,9 @@ begin
            end if;
         end if;
      when gcc_errors =>
-        null; --gccOpt := true;
+        -- this executes when the profile loads because there is no syntax
+        -- check phase for that.
+        gccOpt := true;
      when import | import_json =>
         -- Check for a reasonable identifier type
         if pragmaKind = import_json then

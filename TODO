@@ -13,6 +13,7 @@ Priority Issues (Fix These First)
 
 - shell prompt
   - inconsistent stripping of control characters...what's going on?
+  - colour might mess up HTML error messages
 - completions
   - completions of a single directory have an extra space / doesn't allow deeper
     drill-down
