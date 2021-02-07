@@ -348,7 +348,6 @@ verboseOpt   : commandLineOption := false;           -- true if -v
 designOpt    : commandLineOption := false;           -- true if -t
 traceOpt     : commandLineOption := false;           -- true if -x
 colourOpt    : commandLineOption := false;           -- true if --colour/--color
-iconsOpt     : commandLineOption := false;           -- true if --icons
 
 --optionOffset : natural := 0;     -- character offset to script parameters
 

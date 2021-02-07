@@ -1169,7 +1169,7 @@ begin
         outLine := outLine & '^';
      else
         if lastpos > firstpos then                              -- multi chars?
-           if iconsOpt then
+           if colourOpt then
               outLine := outLine & utf_left;                         -- token start
               outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * utf_horizontalLine );
               outLine := outLine & utf_right;                       -- token end
@@ -1179,7 +1179,7 @@ begin
               outLine := outLine & '^';
            end if;
         else
-           if iconsOpt then
+           if colourOpt then
               outLine := outLine & utf_triangle;                         -- token start
            else
               outLine := outLine & '^';
@@ -1189,7 +1189,7 @@ begin
      outLine := outLine & ' ';                                  -- token start
   end if;
 
-  if iconsOpt then
+  if colourOpt then
      outLine := outLine & utf_ballot & " " & msg;
   else
      outLine := outLine & msg;

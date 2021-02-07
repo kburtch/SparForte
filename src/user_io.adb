@@ -250,7 +250,7 @@ end toProtectedValue;
 
 procedure put_trace( msg : string; icon : string := "" ) is
 begin
-  if icon /= "" and boolean(iconsOpt) then
+  if icon /= "" and boolean(colourOpt) then
      put_line( standard_error, optional_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
   else
      put_line( standard_error, optional_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
@@ -266,7 +266,7 @@ end put_trace;
 
 procedure put_trace_error( msg : string; icon : string := "" ) is
 begin
-  if icon /= "" and boolean(iconsOpt) then
+  if icon /= "" and boolean(colourOpt) then
      put_line( standard_error, optional_red( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
   else
      put_line( standard_error, optional_red( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
@@ -388,7 +388,7 @@ end displayCopyrightSplash;
 
 function utf_ballot return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      -- if colourOpt then
      --    return character'val( 226 ) & character'val( 157 ) & character'val( 140 );
      -- else
@@ -406,7 +406,7 @@ end utf_ballot;
 -----------------------------------------------------------------------------
 function utf_checkmark return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 156 ) & character'val( 147 );
   end if;
   return "";
@@ -421,7 +421,7 @@ end utf_checkmark;
 
 function utf_warning_sign return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 154 ) & character'val( 160 );
   end if;
   return "";
@@ -436,7 +436,7 @@ end utf_warning_sign;
 
 function utf_wristwatch return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 140 ) & character'val( 154 );
   end if;
   return "";
@@ -451,7 +451,7 @@ end utf_wristwatch;
 
 function utf_left return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 148 ) & character'val( 148 );
   end if;
   return "";
@@ -466,7 +466,7 @@ end utf_left;
 
 function utf_right return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 148 ) & character'val( 152 );
   end if;
   return "";
@@ -481,7 +481,7 @@ end utf_right;
 
 function utf_triangle return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 150 ) & character'val( 179 );
   end if;
   return "";
@@ -496,7 +496,7 @@ end utf_triangle;
 
 function utf_horizontalLine return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 148 ) & character'val( 128 );
   end if;
   return "";
@@ -506,7 +506,7 @@ end utf_horizontalLine;
 
 function utf_bullet return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 128 ) & character'val( 162 );
   end if;
   return "*";
@@ -516,7 +516,7 @@ end utf_bullet;
 
 function utf_diamond return string is
 begin
-  if iconsOpt then
+  if colourOpt then
      return character'val( 226 ) & character'val( 151 ) & character'val( 134 );
   end if;
   return "-";

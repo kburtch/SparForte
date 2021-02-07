@@ -12,8 +12,8 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell prompt
-  - inconsistent stripping of control characters...what's going on?
-  - colour might mess up HTML error messages
+  - pragma colour_messages not taken effect at login??
+  - colour might mess up web template error messages
 - completions
   - completions of a single directory have an extra space / doesn't allow deeper
     drill-down
@@ -28,6 +28,7 @@ Priority Issues (Fix These First)
   - see also "Bourne shell issues" below
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
+  - test sparforte as a login shell
 - interpreterPhase - is it set correctly in all places?
 - missing a case "when" keyword can cause string exception
 - updating adascript shell commands to correspond with bourne shell changes
