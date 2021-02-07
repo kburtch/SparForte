@@ -12,7 +12,6 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell prompt
-  - pragma colour_messages not taken effect at login??
   - colour might mess up web template error messages
 - completions
   - completions of a single directory have an extra space / doesn't allow deeper

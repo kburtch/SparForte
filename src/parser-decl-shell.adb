@@ -144,6 +144,7 @@ procedure doPathnameExpansion(
     ch  : character;
     inBackslash : boolean := false;
   begin
+<<retry_next_segment>>
     pos := start;
     nextSegment := nullGlobShellWord;
 
@@ -167,6 +168,12 @@ procedure doPathnameExpansion(
        ch := element( originalGlobPattern, pos );
        if not inBackslash then
           if ch = directory_delimiter then
+             -- empty slash in path like /x//y? skip it and try the following
+             -- character
+             if pos = start then
+                splitNextGlobSegment( nextSegment, start+1, finish );
+                return;
+             end if;
              exit;
           elsif ch = '\' then
              inBackslash := true;
@@ -208,16 +215,18 @@ procedure doPathnameExpansion(
      isOpen          : boolean := false;
      segmentFound    : boolean := false;
   begin
-  -- put_line( "Walking '" & to_string( candidateParentPath ) & "'"); -- DEBUG
+  --put_line( "Walking '" & to_string( candidateParentPath ) & "'"); -- DEBUG
      if start > originalGlobPatternLen then
         bourneShellWordLists.Queue( bourneShellWordList, candidateParentPath );
         return;
      end if;
 
+     -- handling multiple ///foo///bar in a path
+
      splitNextGlobSegment( nextSegment, start, finish );
-     -- if trace then
-     --    put_trace( "next path segment is '" & toSecureData( to_string( nextSegment ) ) & "'" );
-     -- end if;
+      if trace then -- DEBUG
+         put_trace( "next path segment is '" & toSecureData( to_string( nextSegment ) ) & "'" );
+      end if;
 
      -- A leading slash is an absolute path.  There's no need to check
      -- the slash.  Just make it the parent and go continue walking.

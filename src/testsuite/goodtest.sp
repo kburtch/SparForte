@@ -1076,6 +1076,9 @@ cd( "~" );
 pragma assert( PWD = HOME );
 pragma assert( OLDPWD = s1 );
 cd( "-" );
+-- edge case
+cd .//cdtest;
+cd -;
 
 -- basic text_io and % (last output)
 
