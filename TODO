@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- shell prompt
-  - colour might mess up web template error messages
 - completions
   - completions of a single directory have an extra space / doesn't allow deeper
     drill-down

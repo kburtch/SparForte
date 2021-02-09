@@ -724,7 +724,23 @@ templateErrorHeader : constant unbounded_string := to_unbounded_string( "SparFor
 function convertToHTML( oldString : unbounded_string ) return unbounded_string is
    s : unbounded_string := oldString;
    p : natural;
-   timeout : natural;
+
+   procedure stripTerminalChars(
+         s : in out unbounded_string;
+         controlSeq : unbounded_string;
+         replacementHTML : string ) is
+      timeout : natural;
+   begin
+      timeout := 0;
+      loop
+         p := index( s, to_string( controlSeq ) );
+      exit when p = 0 or timeout = 10;
+         delete( s, p, p - 1 + length( controlSeq ) );
+         insert( s, p, replacementHTML );
+         timeout := timeout + 1;
+      end loop;
+   end stripTerminalChars;
+
 begin
 
    -- replace end-of-lines / spaces
@@ -742,38 +758,19 @@ begin
       p := p + 1;
    end loop;
 
-   -- replace boldface on
+   -- Replace boldface on
 
-   timeout := 0;
-   loop
-      p := index( s, to_string( term( bold ) ) );
-   exit when p = 0 or timeout = 10;
-      delete( s, p, p - 1 + length( term( bold ) ) );
-      insert( s, p, "<span style=""font-weight:bold"">" );
-      timeout := timeout + 1;
-   end loop;
+   stripTerminalChars(  s, term( bold ), "<span style=""font-weight:bold"">" );
+   stripTerminalChars(  s, term( inverse ), "<span style=""font-style:italic"">" );
+   stripTerminalChars(  s, term( normal ), "</span>" );
 
-   -- replace inverse on
+   -- Colour sequences: convert to bold and italic.  Green does nothing.
+   -- White is treated as closing a colour.
 
-   timeout := 0;
-   loop
-      p := index( s, to_string( term( inverse ) ) );
-   exit when p = 0 or timeout = 10;
-      delete( s, p, p - 1 + length( term( inverse ) ) );
-      insert( s, p, "<span style=""font-style:italic"">" );
-      timeout := timeout + 1;
-   end loop;
-
-   -- replace boldface/inverse off
-
-   timeout := 0;
-   loop
-       p := index( s, to_string( term( normal ) ) );
-   exit when p = 0 or timeout = 10;
-      delete( s, p, p - 1 + length( term( normal ) ) );
-      insert( s, p, "</span>" );
-      timeout := timeout + 1;
-   end loop;
+   stripTerminalChars(  s, term( green ), "<span>" );
+   stripTerminalChars(  s, term( yellow ), "<span style=""font-weight:bold"">" );
+   stripTerminalChars(  s, term( red ), "<span style=""font-style:italic"">" );
+   stripTerminalChars(  s, term( white ), "</span>" );
 
    return s;
 end convertToHTML;
