@@ -725,12 +725,22 @@ function convertToHTML( oldString : unbounded_string ) return unbounded_string i
    s : unbounded_string := oldString;
    p : natural;
 
+   --  STRIP TERMINAL CHARS
+   --
+   -- Search for and remove occurrences of terminal control sequences.  If
+   -- the control sequence is nothing, then do nothing.  A timeout prevents
+   -- infinite loops.  The string s is updated with the changes.
+   --------------------------------------------------------------------------
+
    procedure stripTerminalChars(
          s : in out unbounded_string;
          controlSeq : unbounded_string;
          replacementHTML : string ) is
       timeout : natural;
    begin
+      if controlSeq = "" then
+         return;
+      end if;
       timeout := 0;
       loop
          p := index( s, to_string( controlSeq ) );

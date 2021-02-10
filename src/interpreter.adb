@@ -279,7 +279,7 @@ begin
   inputMode := fromScriptFile;                     -- running a script
   if execOpt then                                  -- -e?
      if verboseOpt then
-        Put_Trace( "Compiling Byte Code" );
+        Put_Trace( "Compiling Byte Code", utf_wristwatch );
      end if;
      sourceFilesList.Clear( SourceFiles );
      sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
@@ -313,7 +313,7 @@ begin
        -- is called twice with different files (e.g. loading profiles).
        --if script = null then
           if verboseOpt then
-             Put_Trace( "Compiling Byte Code" );
+             Put_Trace( "Compiling Byte Code", utf_wristwatch );
           end if;
           compileScript( firstline );
        --end if;
@@ -382,7 +382,7 @@ begin
   inputMode := fromScriptFile;                     -- running a script
   if execOpt then                                  -- -e?
      if verboseOpt then
-        Put_Trace( "Compiling Byte Code" );
+        Put_Trace( "Compiling Byte Code", utf_wristwatch );
      end if;
      sourceFilesList.Clear( SourceFiles );
      sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
@@ -416,7 +416,7 @@ begin
        -- is called twice with different files (e.g. loading profiles).
        --if script = null then
           if verboseOpt then
-             Put_Trace( "Compiling Byte Code" );
+             Put_Trace( "Compiling Byte Code", utf_wristwatch );
           end if;
           compileScript( firstline );
        --end if;
@@ -518,7 +518,11 @@ begin
      sourceFilesList.Clear( SourceFiles );
      sourceFilesList.Queue( SourceFiles, aSourceFile'(pos => 0, name => to_unbounded_string (commandLineSource) ) );
      scriptFilePath := to_unbounded_string( commandLineSource ); -- script name
-     compileCommand( to_unbounded_string( ScriptPath ) ); -- path is really script
+     if scriptPath(scriptPath'last) /= ';' then -- the path is really commands for -e
+        compileCommand( to_unbounded_string( scriptPath ) & ';' );
+     else
+        compileCommand( to_unbounded_string( scriptPath ) );
+     end if;
   else                                             -- else path is a path
     oldScriptFilePath := scriptFilePath;
     scriptFilePath := to_unbounded_string( scriptPath ); -- script name
@@ -648,8 +652,6 @@ end interpretScript;
 -- This will output error messages.
 -- This is used when SparForte is called as a library.  It is not used by
 -- the spar command.
---
--- commandString: a string of uncompressed commands (e.g. from -e).
 ------------------------------------------------------------------------------
 
 procedure interpretCommands( commandString : unbounded_string ) is
@@ -657,11 +659,11 @@ begin
   case interpreterPhase is
   when checking =>
      if verboseOpt then
-        Put_Trace( "Checking Syntax" );
+        Put_Trace( "Checking Syntax", utf_wristwatch );
      end if;
   when executing =>
      if verboseOpt then
-        Put_Trace( "Executing Commands" );
+        Put_Trace( "Executing Commands", utf_checkmark );
      end if;
   when others =>
      err( "internal error: unexpected interpreter phase" );
@@ -670,7 +672,7 @@ begin
   sourceFilesList.Clear( SourceFiles );
   sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( scriptFilePath ) ) );
   if verboseOpt then
-     Put_Trace( "Compiling Byte Code" );
+     Put_Trace( "Compiling Byte Code", utf_wristwatch );
   end if;
   compileCommand( commandString );
   parse;

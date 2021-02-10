@@ -17,7 +17,6 @@ Priority Issues (Fix These First)
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
-  - ls //ken matches top-level directories but should not
   - fix all todos
     - compiler todos
     - shell parser todos
@@ -39,7 +38,6 @@ Priority Issues (Fix These First)
 - improving shell features
 - incomplete casting tests
 - Linux supplies a umask, but no umask command in shell. - discuss
-- optional ; on spar -e
 - Research: for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
 - Verify: generic/parameterized types
