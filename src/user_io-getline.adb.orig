@@ -962,9 +962,6 @@ begin
                        identifiers( assignmentIdx ).class = typeClass or
                        identifiers( assignmentIdx ).class = subClass or
                        identifiers( assignmentIdx ).class = enumClass ) then
-                       -- many reserved words do not apply.  those that do
-                       -- are often very short.
-                       --assignmentIdx <= reserved_top ) then
                 return C_strdup( To_Chars_Ptr( haystack_cstr'unchecked_access ) );
               end if;
            end if;
@@ -1220,6 +1217,9 @@ end Ada_command_word_generator;
 
 currentFileDir : dir_type;
 
+fileDirectoryCount : natural :=  0;
+lastDirectory : unbounded_string;
+
 function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   completionFileLen : integer;
   completionFile : string(1..1024);
@@ -1228,6 +1228,7 @@ function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_pt
   needleLen : constant size_t := needle'length;
 begin
   if state = 0 then
+     fileDirectoryCount := 0;
      begin
        if is_open( currentFileDir ) then
           close( currentFileDir );
@@ -1237,7 +1238,6 @@ begin
        null;
      when others =>
        put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
-       null;
      end;
   end if;
 
@@ -1264,6 +1264,10 @@ begin
                 begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
+--put_line(" Found dir" ); -- DEBUG
+--put_line( To_Ada( completionFileAsc ) );
+                   fileDirectoryCount:=fileDirectoryCount+1; -- DEBUG
+                   lastDirectory := to_unbounded_string( needleDir & completionFile(1..completionFileLen ) );
                    return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
                 end;
              else
@@ -1289,13 +1293,47 @@ begin
      -- the directory, try the next directory.  Stop searching
      -- when a directory is found or When no paths remain.
 
-
   end if;
 
   -- Close off the directory search.  Initiate the identifier search.
 
   if is_open( currentFileDir ) then
      close( currentFileDir );
+  end if;
+
+  -- If we only found one directory, we cannot return that because
+  -- completion will follow it with a space.  Instead open that
+  -- directory, and pull at least one more completion, if there is
+  -- one.
+
+  if fileDirectoryCount = 1 then
+     --loop
+        declare
+           lastCandidate : unbounded_string := lastDirectory;
+           candidate : unbounded_string := lastDirectory;
+        begin
+--put_line( "trying " & to_string( candidate ) ); -- DEBUG
+           open( currentFileDir, to_string( candidate ) );
+           read( currentFileDir, completionFile, completionFileLen );
+           if is_open( currentFileDir ) then
+              close( currentFileDir );
+           end if;
+           if completionFileLen > 0 then
+              candidate := candidate & directory_delimiter & 
+                 completionFile(1..completionFileLen );
+              fileDirectoryCount := 0;
+--put_line( "returning " & to_string( candidate ) ); -- DEBUG
+              return New_String( to_string( lastCandidate ) );
+           end if;
+        exception when DIRECTORY_ERROR =>
+           null;
+        when others =>
+           put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
+        end;
+      --  exit when completionFileLen <= 0;
+        -- lastCandidate := candidate;
+      --  candidate := candidate & directory_delimiter & 
+     --end loop;
   end if;
 
   return Null_Ptr;
@@ -1879,7 +1917,6 @@ begin
              file := null_unbounded_string;
           end if;
           file := file & "*";
---put_line( "BREAKDOWN = '" & path & "' => " & dir & "'+'" & file & "'" ); -- DEBUG
           if listFiles then
              completePathname( dir, file, path, list => true );
           else

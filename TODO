@@ -11,9 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- completions
-  - completions of a single directory have an extra space / doesn't allow deeper
-    drill-down
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
@@ -32,6 +29,9 @@ Priority Issues (Fix These First)
 - "literal" & custom-string is an error, but custom-string & "literal" is
   not?  Check this.  Encountered with imported shell variable.
 - first word handling, including executable program glob
+- completions
+  - a single matching directory lacks a trailing / - perhaps a GNU readline config issue
+  - drill-down on empty directories probably not working
 - pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
