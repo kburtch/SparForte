@@ -353,7 +353,35 @@ compatibility with the Bourne shell.</p>
 
 <p><b>Ada 95</b>: Bourne shell features are not available with
 pragma ada_95, the Ada compatibility mode.</p>
-<br>&nbsp;
+
+<h3>Assignments and SparForte Process Substitution</h3>
+
+<p>There is a case where SparForte differs from a Bourne shell: assigning commands to a variable.</p>
+
+<p>In the following, X is assigned a string value with the characters "`date`" in the string.</p>
+
+<center>
+   <div class="code">
+        <p class="code">
+   X := "echo `date`";<br>
+   echo $($X);</p>
+</div>
+</center>
+
+<p>SparForte displays the date when echo is run.  X is a simple string assignment.</p>
+
+<p>In a Bourne shell, X is assigned a string with the result of running `date`.  The date command is run during the assignment.</p>
+
+<center>
+   <div class="code">
+        <p class="code">
+   X="echo `date`"<br>
+   echo $($X)</p>
+</div>
+</center>
+
+<p>A Bourne shell displays the date when X was assigned.</p>
+
 
 
 <h3>Spaces and Dollar Expansions</h3>

@@ -11,12 +11,14 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- not everything in colour needs to be bold or inverse when not in colour
+- can I address dash shell compatibility?
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
   - fix all todos
     - compiler todos
-    - shell parser todos
+    - shell parser todos (some left)
   - leaving a ; off the end of a command gives an internal error in goodtests.sp
   - see also "Bourne shell issues" below
   - ls("-l") | wc -l does not work (legacy compiler issue) but the

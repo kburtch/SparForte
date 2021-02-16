@@ -693,6 +693,7 @@ begin
    content( e, "gnat.cgi" );
    content( e, "gnat.crc32" );
    content( e, "hash_io" );
+   content( e, "help" );
    content( e, "history" );
    content( e, "if" );
    content( e, "inkey" );

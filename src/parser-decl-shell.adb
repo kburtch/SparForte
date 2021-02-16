@@ -404,8 +404,10 @@ end doPathnameExpansion;
 --
 -- The globbing does not happen on the word token but on the expanded word
 -- after quote handling and substitution.
+--
+-- Nothing special is done for globbing the first word.  In Bash, this
+-- matches files in the current directory like any other glob.
 -----------------------------------------------------------------------------
--- TODO: globbing first word
 
 procedure doGlobPattern(
    originalGlobPattern: aGlobShellWord;
@@ -652,8 +654,6 @@ begin
       findIdent( expansionVar, var_id );
 
       if var_id = eof_t then
-         -- TODO: this check takes place after the token is read, so token
-         -- following the one in question is highlighted
          err_shell( "identifier " & optional_yellow( to_string( toEscaped( expansionVar ) ) ) & " not declared", wordPos );
 
       -- For an enumerated item, the value is the item name
@@ -784,12 +784,117 @@ procedure doVariableExpansion(
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
       whitespaceOption : whitespaceOptions ) is
+
+
+   --  DO VAR SLICE EXPANSION (DO VARIABLE EXPANSION)
+   --
+   -- ${s:a} or ${s:a:b} string slice
+   --------------------------------------------------------------------------
+
+   procedure doVarSliceExpansion( subword : in out unbounded_string ) is
+      colonPos : natural;
+      slicePos : natural;
+      sliceEnd : integer;
+      tmp : unbounded_string;
+      tmp2: unbounded_string;
+   begin
+      sliceEnd := length( subword ); -- To avoid exception undefined val
+      -- currently no spaces allowed but maybe one day will be...
+      tmp := Ada.Strings.Unbounded.trim(
+          defaultValue, Ada.Strings.Both );
+      -- a slice may have an optional length value
+      -- in ada, slice needs a last position not a length
+      colonPos := index( tmp, ":" );
+      if length(defaultValue) > 1 and colonPos = length(defaultValue) then
+          err_shell( "slice length is missing", wordPos );
+      elsif colonPos = 1 then
+          err_shell( "slice position is missing", wordPos );
+      elsif colonPos > 0 then
+         -- a negative position is not possible, it ends up :-
+         begin
+            tmp2 := unbounded_slice( tmp, 1, colonPos-1);
+            slicePos := natural'value( " " & to_string( tmp2 ) ) + 1;
+         exception when others =>
+            err_shell( "slice position is not a natural", wordPos );
+         end;
+         begin
+            tmp2 := unbounded_slice( tmp, colonPos+1, length(tmp) );
+            if element( tmp2, 1 ) = '-' then
+               sliceEnd := integer'value( to_string( tmp2 ) );
+               sliceEnd := length( subword ) + sliceEnd;
+               if sliceEnd < 1 then
+                  sliceEnd := length( subword );
+                  err_shell( "negative slice length is less that start position", wordPos );
+               end if;
+            else
+              sliceEnd := integer'value( " " & to_string( tmp2 ) );
+              sliceEnd := slicePos + sliceEnd - 1;
+            end if;
+         exception when others =>
+            err_shell( "slice length is not a integer", wordPos );
+         end;
+         -- Ada will error of end is out-of-range but shell doesn't care
+         if sliceEnd > length( subword ) then
+            sliceEnd := length( subword );
+         end if;
+      else
+         begin
+            slicePos := natural'value( " " & to_string( tmp ) ) + 1;
+            sliceEnd := length( subword );
+         exception when others =>
+            err_shell( "slice position is not a natural", wordPos );
+         end;
+      end if;
+      begin
+         if not error_found then
+            subword := unbounded_slice( subword, slicePos, sliceEnd );
+         end if;
+      exception when Ada.Strings.INDEX_ERROR =>
+        -- In Bourne shell, this is not actually an error.
+         subword := null_unbounded_string;
+      when CONSTRAINT_ERROR =>
+         -- should not happen
+         err_shell( "slice position or length out of range", wordPos );
+      end;
+   end doVarSliceExpansion;
+
+
+   --  DO VAR REPLACE EXPANSION (DO VARIABLE EXPANSION)
+   --
+   -- ${s/a/b} string replacement
+   --------------------------------------------------------------------------
+
+   procedure doVarReplaceExpansion( subword : in out unbounded_string ) is
+      slashPos   : natural;
+      searchStr  : unbounded_string;
+      replaceStr : unbounded_string;
+      searchPos  : natural;
+   begin
+      slashPos := ada.strings.unbounded.index( defaultValue, "/" );
+      if slashPos <= 1 then
+          err_shell( "search string is missing", wordPos );
+      else
+          searchStr := unbounded_slice( defaultValue, 1, slashPos-1);
+          replaceStr := unbounded_slice( defaultValue, slashPos+1, length( defaultValue ) );
+          searchPos := ada.strings.unbounded.index( subword, to_string( searchStr ) );
+          if searchPos > 0 then
+             if length( replaceStr ) > 0 then
+                Replace_Slice( subword,
+                   searchPos,
+                   searchPos + length( searchStr ) - 1,
+                   to_string( replaceStr ) );
+             else
+                Delete( subword,
+                   searchPos,
+                   searchPos + length( searchStr ) - 1 );
+             end if;
+          end if;
+      end if;
+   end doVarReplaceExpansion;
+
    subword      : unbounded_string;
    globSubword  : aGlobShellWord;
    expandedWord : anExpandedShellWord;
-   slicePos : natural;
-   sliceEnd : integer;
-   colonPos : natural;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
 
@@ -817,100 +922,9 @@ begin
          end if;
       end if;
    when var_slice =>
-      declare
-        tmp : unbounded_string;
-        tmp2: unbounded_string;
-      begin
-        sliceEnd := length( subword ); -- To avoid exception undefined val
-        -- currently no spaces allowed but maybe one day will be...
-        tmp := Ada.Strings.Unbounded.trim(
-            defaultValue, Ada.Strings.Both );
-        -- a slice may have an optional length value
-        -- in ada, slice needs a last position not a length
-        colonPos := index( tmp, ":" );
-        if length(defaultValue) > 1 and colonPos = length(defaultValue) then
-            err_shell( "slice length is missing", wordPos );
-        elsif colonPos = 1 then
-            err_shell( "slice position is missing", wordPos );
-        elsif colonPos > 0 then
-           -- a negative position is not possible, it ends up :-
-           begin
-              tmp2 := unbounded_slice( tmp, 1, colonPos-1);
-              slicePos := natural'value( " " & to_string( tmp2 ) ) + 1;
-           exception when others =>
-              err_shell( "slice position is not a natural", wordPos );
-           end;
-           begin
-              tmp2 := unbounded_slice( tmp, colonPos+1, length(tmp) );
-              if element( tmp2, 1 ) = '-' then
-                 sliceEnd := integer'value( to_string( tmp2 ) );
-                 sliceEnd := length( subword ) + sliceEnd;
-                 if sliceEnd < 1 then
-                    sliceEnd := length( subword );
-                    err_shell( "negative slice length is less that start position", wordPos );
-                 end if;
-              else
-                sliceEnd := integer'value( " " & to_string( tmp2 ) );
-                sliceEnd := slicePos + sliceEnd - 1;
-              end if;
-           exception when others =>
-              err_shell( "slice length is not a integer", wordPos );
-           end;
-           -- Ada will error of end is out-of-range but shell doesn't care
-           if sliceEnd > length( subword ) then
-              sliceEnd := length( subword );
-           end if;
-        else
-           begin
-              slicePos := natural'value( " " & to_string( tmp ) ) + 1;
-              sliceEnd := length( subword );
-           exception when others =>
-              err_shell( "slice position is not a natural", wordPos );
-           end;
-        end if;
-        begin
-           if not error_found then
-              subword := unbounded_slice( subword, slicePos, sliceEnd );
-           end if;
-        exception when Ada.Strings.INDEX_ERROR =>
-          -- In Bourne shell, this is not actually an error.
-           subword := null_unbounded_string;
-        when CONSTRAINT_ERROR =>
-           -- should not happen
-           err_shell( "slice position or length out of range", wordPos );
-        end;
-      end;
+      doVarSliceExpansion( subword );
    when var_replace =>
--- TODO: breakout
-      declare
-        slashPos   : natural;
-        searchStr  : unbounded_string;
-        replaceStr : unbounded_string;
-        searchPos  : natural;
-      begin
-        slashPos := ada.strings.unbounded.index( defaultValue, "/" );
-        --if length(defaultValue) > 1 and colonPos = length(defaultValue) then
-        --   err_shell( "slice length is missing", wordPos );
-        if slashPos <= 1 then
-            err_shell( "search string is missing", wordPos );
-        else
-            searchStr := unbounded_slice( defaultValue, 1, slashPos-1);
-            replaceStr := unbounded_slice( defaultValue, slashPos+1, length( defaultValue ) );
-            searchPos := ada.strings.unbounded.index( subword, to_string( searchStr ) );
-            if searchPos > 0 then
-               if length( replaceStr ) > 0 then
-                  Replace_Slice( subword,
-                     searchPos,
-                     searchPos + length( searchStr ) - 1,
-                     to_string( replaceStr ) );
-               else
-                  Delete( subword,
-                     searchPos,
-                     searchPos + length( searchStr ) - 1 );
-               end if;
-            end if;
-        end if;
-      end;
+      doVarReplaceExpansion( subword );
    when others =>
       null;
    end case;
@@ -1239,6 +1253,18 @@ procedure parseDollarExpansion(
 --
 -- Syntax: $(...)
 -- Handle a dollar round bracket process output expansion.
+--
+-- Where SparForte differs from BASH:
+--
+--   X := "echo `date`";
+--   echo $($X) - prints the date when echo is run
+--   X is assigned a string
+--
+--  But in Bash:
+--
+--   X="echo `date`"
+--   echo $($X) - prints the date when X was assigned
+--   X is assigned the result of running the command
 -----------------------------------------------------------------------------
 
 procedure parseDollarProcessExpansion(
@@ -1257,13 +1283,6 @@ begin
    -- Extract the variable name
    -- wordPos is always one position ahead.
 
-   -- TODO: the compiler can break up the command into whitespace deliniated
-   -- shell words which must be reassembled into a command to run.
-
-   -- TODO: should dollar expansions run now or later when the command is run.
-   -- The timing may give different results.
-
-
     expectChar( '(', rawWordValue, wordLen, wordPos );
 
       while wordPos <= wordLen loop
@@ -1281,7 +1300,6 @@ begin
      end loop;
 
    expectChar( ')', rawWordValue, wordLen, wordPos );
--- TODO: is executing commands?
 
    -- The string returned may have special characters that need to be escaped
    -- for a glob pattern (such as a \).
