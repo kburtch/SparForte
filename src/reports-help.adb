@@ -372,7 +372,7 @@ package body reports.help is
         put( r.outputfile, " " & utf_diamond & " " & to_string( e.summary ) );
      end if;
      if length( e.category ) > 0 then
-        put( r.outputfile, " " & utf_diamond & " " & optional_red( to_string( e.category ) ) );
+        put( r.outputfile, " " & utf_diamond & " " & adorn_red( to_string( e.category ) ) );
      end if;
      new_line( r.outputfile );
 

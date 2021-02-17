@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- not everything in colour needs to be bold or inverse when not in colour
-- can I address dash shell compatibility?
 - shell parser rewrite
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
@@ -25,6 +23,7 @@ Priority Issues (Fix These First)
     opposite works.
   - test sparforte as a login shell
 - interpreterPhase - is it set correctly in all places?
+- can I address dash shell compatibility?
 - missing a case "when" keyword can cause string exception
 - updating adascript shell commands to correspond with bourne shell changes
 - renamings on expansions

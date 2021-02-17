@@ -80,8 +80,13 @@ procedure getKey( ch : out character; nonblock : boolean := false );
 ------------------------------------------------------
 
 function optional_red( s : string ) return string;
--- return a string with terminal codes to draw the string
--- in red characters if -g not used
+-- Return a string with terminal codes to draw the string
+-- in red characters --colour is used, else inverse.
+-- Return the string as-is if -g is used
+
+function adorn_red( s : string ) return string;
+-- Return a string with terminal codes to draw the string
+-- in red characters --colour is used, else normal.
 
 function optional_yellow( s : string ) return string;
 -- return a string with terminal codes to draw the string
@@ -90,6 +95,10 @@ function optional_yellow( s : string ) return string;
 function optional_green( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in green characters if -g not used
+
+function adorn_green( s : string ) return string;
+-- Return a string with terminal codes to draw the string
+-- in green characters --colour is used, else normal.
 
 function optional_bold( s : string ) return string;
 -- return a string with terminal codes to draw the string

@@ -147,8 +147,9 @@ end optional_bold;
 -----------------------------------------------------------------------------
 --  OPTIONAL RED
 --
--- return a string with terminal codes to draw the string
--- in red characters if -g not used
+-- Return a string with terminal codes to draw the string
+-- in red characters --colour is used, else inverse.
+-- Return the string as-is if -g is used
 -----------------------------------------------------------------------------
 
 function optional_red( s : string ) return string is
@@ -160,6 +161,21 @@ begin
   end if;
   return to_string( term( red ) ) & s & to_string( term( white ) );
 end optional_red;
+
+-----------------------------------------------------------------------------
+--  ADORN RED
+--
+-- Return a string with terminal codes to draw the string
+-- in red characters --colour is used, else normal.
+-----------------------------------------------------------------------------
+
+function adorn_red( s : string ) return string is
+begin
+  if not colourOpt then
+     return s;
+  end if;
+  return to_string( term( red ) ) & s & to_string( term( white ) );
+end adorn_red;
 
 -----------------------------------------------------------------------------
 --  OPTIONAL YELLOW
@@ -184,6 +200,7 @@ end optional_yellow;
 -- return a string with terminal codes to draw the string
 -- in green characters if -g not used
 -----------------------------------------------------------------------------
+
 function optional_green( s : string ) return string is
 begin
   if gccOpt then
@@ -193,6 +210,21 @@ begin
   end if;
   return to_string( term( green ) ) & s & to_string( term( white ) );
 end optional_green;
+
+-----------------------------------------------------------------------------
+--  ADORN GREEN
+--
+-- Return a string with terminal codes to draw the string
+-- in green characters --colour is used, else normal.
+-----------------------------------------------------------------------------
+
+function adorn_green( s : string ) return string is
+begin
+  if not colourOpt then
+     return s;
+  end if;
+  return to_string( term( green ) ) & s & to_string( term( white ) );
+end adorn_green;
 
 
 -----------------------------------------------------------------------------
@@ -251,9 +283,9 @@ end toProtectedValue;
 procedure put_trace( msg : string; icon : string := "" ) is
 begin
   if icon /= "" and boolean(colourOpt) then
-     put_line( standard_error, optional_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+     put_line( standard_error, adorn_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
   else
-     put_line( standard_error, optional_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+     put_line( standard_error, adorn_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
   end if;
 end put_trace;
 

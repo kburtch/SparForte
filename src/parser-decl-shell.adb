@@ -1325,14 +1325,20 @@ procedure parseDollarExpansion(
       whitespaceOption : whitespaceOptions ) is
    firstPos     : natural;
    expansionVar : unbounded_string;
+   ch : character;
 begin
    --put_line( "parseDollarExpansion" ); -- DEBUG
    expectChar( '$', rawWordValue, wordLen, wordPos );
 
-   if element( rawWordValue, wordPos ) = '{' then  -- TODO: exception possible
+   ch := ASCII.NUL;
+   if length( rawWordvalue ) >= wordPos then
+      ch := element( rawWordvalue, wordPos );
+   end if;
+
+   if ch = '{' then
       parseDollarBraceExpansion( rawWordValue, wordLen, wordPos,
          globPattern, bourneShellWordList, whitespaceOption );
-   elsif element( rawWordValue, wordPos ) = '(' then  -- TODO: exception possible
+   elsif ch = '(' then
       parseDollarProcessExpansion( rawWordValue, wordLen, wordPos,
          globPattern, bourneShellWordList, whitespaceOption );
    else
@@ -1375,7 +1381,7 @@ procedure parseBackslash(
    rawWordValue : aRawShellWord;
    wordLen : natural;
    wordPos : in out natural;
-   globPattern : in out aGlobShellWord;  -- TODO: used?
+   globPattern : in out aGlobShellWord;
    bourneShellWordList : in out bourneShellWordLists.List ) is
 begin
    --put_line( "parseBackslash" ); -- DEBUG
@@ -1537,7 +1543,6 @@ begin
             rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
       when '$' =>                                     -- an expansion
          parseDollarExpansion( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList, keep );
-         -- TODO: must escape dollar expansion value
       when '`' =>
          -- This is permitted in double quotes in a Bourne shell
          parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
