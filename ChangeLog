@@ -90,3 +90,5 @@ CHANGES SINCE 2.3
 
 38. Fix: --gcc-errors now takes effect for syntax checking, not just execution.
 
+39. Fix: -e commands no longer require a trailing semi-colon.
+

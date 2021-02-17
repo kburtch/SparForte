@@ -75,6 +75,90 @@ package body interpreter is
 
 
 ------------------------------------------------------------------------------
+--  PUT COMMAND PROMPT
+--
+-- Process the command prompt script if necessary.  Show the command prompt.
+-- Update the xterm terminal title if necessary.
+------------------------------------------------------------------------------
+
+procedure putCommandPrompt is
+  suppressPromptChars : boolean;
+  bigArrowIndex : natural;
+  termTitle : unbounded_string;
+begin
+
+    -- Try to run the prompt script
+
+    suppressPromptChars := false;
+    if length( promptScript ) /= 0 then
+       CompileRunAndCaptureOutput( promptScript, prompt );
+       if error_found then
+          put_line( current_error, fullErrorMessage );
+          prompt := null_unbounded_string;
+       elsif terminalWindowNaming then
+          -- set the xterm window title
+          termTitle := ASCII.ESC & ada.strings.unbounded.to_unbounded_string( "]2;" );
+          for i in 1..length( prompt ) loop
+              -- these are the readline codes to ignore the length
+              -- of non-printable characters, such as terminal formatting
+              -- codes.  Suppress these in the window title.
+              if user_io.getline.has_readline then
+                 if element( prompt, i ) = ASCII.SOH then
+                    suppressPromptChars := true;
+                 elsif element( prompt, i ) = ASCII.STX then
+                    suppressPromptChars := false;
+                 elsif not suppressPromptChars then
+                    if is_graphic( element( prompt, i ) ) then
+                       termTitle := termTitle & element( prompt, i  );
+                    elsif element( prompt, i ) = ASCII.LF then
+                       termTitle := termTitle & ' ';
+                    elsif element( prompt, i ) = ASCII.CR then
+                       termTitle := termTitle & ' ';
+                    end if;
+                 end if;
+              else
+                 if is_graphic( element( prompt, i ) ) then
+                    termTitle := termTitle & element( prompt, i  );
+                 elsif element( prompt, i ) = ASCII.LF then
+                    termTitle := termTitle & ' ';
+                 elsif element( prompt, i ) = ASCII.CR then
+                    termTitle := termTitle & ' ';
+                 end if;
+              end if;
+          end loop;
+
+          -- Drop the big arrow from the xterm title, if a prompt ends with one.
+
+          bigArrowIndex := index( termTitle, "=> " );
+          if bigArrowIndex = length( termTitle ) - 2 then
+             termTitle := unbounded_slice( termTitle, 1, bigArrowIndex -1 );
+          end if;
+
+          -- Strip any trailing spaces
+
+          termTitle := trim( termTitle, ada.strings.right );
+
+          -- Finish the xterm window title
+
+          termTitle := termTitle & ASCII.BEL;
+
+          -- Apply the xterm window title
+          put( termTitle );
+       end if;
+    end if;
+
+    -- If we have no prompt script or if the result was empty
+    -- then use (or fall back to) the default prompt.
+
+    if length( prompt ) = 0 then
+       if terminalWindowNaming then
+          put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  );
+       end if;
+    end if;
+end putCommandPrompt;
+
+
+------------------------------------------------------------------------------
 --  INTERACTIVE SESSION
 --
 -- Begin an interactive session, processing a set of commands typed in by the
@@ -88,7 +172,6 @@ package body interpreter is
 procedure interactiveSession is
   command : unbounded_string;
   result : aFileDescriptor;
-  suppressPromptChars : boolean;
 begin
   loop                                        -- repeatedly
     -- A control-c will abort the prompt script, so we need to handle it first.
@@ -98,53 +181,7 @@ begin
     error_found := false;                     -- no err for prompt
     prompt := null_unbounded_string;
 
-    -- Try to run the prompt script
-
-    suppressPromptChars := false;
-    if length( promptScript ) /= 0 then
-       CompileRunAndCaptureOutput( promptScript, prompt );
-       if error_found then
-          put_line( current_error, fullErrorMessage );
-          prompt := null_unbounded_string;
-       elsif terminalWindowNaming then
-          -- set the xterm window title
-          put( ASCII.ESC & "]2;" );
-          for i in 1..length( prompt ) loop
-              -- these are the readline codes to ignore the length
-              -- of non-printable characters, such as terminal formatting
-              -- codes.  Suppress these in the window title.
-              if user_io.getline.has_readline then
-                 if element( prompt, i ) = ASCII.SOH then
-                    suppressPromptChars := true;
-                 elsif element( prompt, i ) = ASCII.STX then
-                    suppressPromptChars := false;
-                 elsif not suppressPromptChars then
-                    if is_graphic( element( prompt, i ) ) then
-                       put( element( prompt, i  ) );
-                    elsif element( prompt, i ) = ASCII.LF then -- and CR?
-                       put( ' ' );
-                    end if;
-                 end if;
-              else
-                 if is_graphic( element( prompt, i ) ) then
-                    put( element( prompt, i  ) );
-                 elsif element( prompt, i ) = ASCII.LF then -- and CR?
-                    put( ' ' );
-                 end if;
-              end if;
-          end loop;
-          put( ASCII.BEL  );
-       end if;
-    end if;
-
-    -- If we have no prompt script or if the result was empty
-    -- then use (or fall back to) the default prompt.
-
-    if length( prompt ) = 0 then
-       if terminalWindowNaming then
-          put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  );
-       end if;
-    end if;
+    putCommandPrompt;
 
     -- Show the command prompt and get the user's input
 
