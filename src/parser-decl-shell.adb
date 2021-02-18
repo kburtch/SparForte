@@ -1724,7 +1724,8 @@ begin
          end if;
       end if;
    elsif token = sql_word_t then
-      -- TODO: review this
+      -- An SQL word is a shell word with spaces in it containing the
+      -- SQL command except for the first keywrod.
       shellWord := aRawShellWord( identifiers( token ).value.all );
       len := length( shellWord );
       if len > 0 then
@@ -1734,6 +1735,12 @@ begin
                parseDoubleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             elsif first_ch = ''' then
                parseSingleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+            elsif first_ch = '`' then
+               parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, trim, bourneShellWordList );
+            elsif first_ch = ' ' or first_ch = ASCII.HT then
+               -- unlike shell words, sql words have whitespace in them
+               globPattern := globPattern & first_ch;
+               getNextChar( shellWord, len, wordPos );
             else
                parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             end if;
@@ -1745,12 +1752,7 @@ begin
       end if;
    elsif token = symbol_t then
       -- This is primarily for "&"
-      -- TODO: should symbols be processed outside of here? & could be a file name.
       err_shell( "internal error: unexpected symbol", wordPos );
-      -- shellWord := aRawShellWord( identifiers( token ).value.all );
-      -- len := length( shellWord );
-      -- parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
-      -- doGlobPattern( globPattern, bourneShellWordList );
    elsif identifiers( token ).kind = new_t then
       -- If there's any kind of quotation, it will be a word not an identifier.
       -- This will always be a bareword.
@@ -1775,16 +1777,11 @@ begin
    elsif token = charlit_t then
      err( optional_yellow( "shell word" ) & " expected, not a " &
           optional_yellow( "character literal" ) );
-   --elsif token = eof_t then
-   --   err( optional_yellow( "shell word" ) & " expected" );
    elsif is_keyword( token ) and token /= eof_t then
       err( optional_yellow( "shell word" ) & " expected, not a " &
            optional_yellow( "keyword" ) );
    else -- including EOF
       err( optional_yellow( "shell word" ) & " expected" );
-      -- TODO: are there other types of shell words?
-      -- TODO: probably should be an error and not null.
-      --null;
    end if;
 
    if trace then
