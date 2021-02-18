@@ -1319,7 +1319,7 @@ begin
               close( currentFileDir );
            end if;
            if completionFileLen > 0 then
-              candidate := candidate & directory_delimiter & 
+              candidate := candidate & directory_delimiter &
                  completionFile(1..completionFileLen );
               fileDirectoryCount := 0;
 --put_line( "returning " & to_string( candidate ) ); -- DEBUG
@@ -1332,7 +1332,7 @@ begin
         end;
       --  exit when completionFileLen <= 0;
         -- lastCandidate := candidate;
-      --  candidate := candidate & directory_delimiter & 
+      --  candidate := candidate & directory_delimiter &
      --end loop;
   end if;
 
