@@ -22,6 +22,9 @@ Priority Issues (Fix These First)
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
   - test sparforte as a login shell
+  - sql words
+    - sql escaping on dollar substitutions
+    - embedded sql - returning sql select in % (as JSON?) or by `..`?
 - interpreterPhase - is it set correctly in all places?
 - can I address dash shell compatibility?
 - missing a case "when" keyword can cause string exception
@@ -29,14 +32,14 @@ Priority Issues (Fix These First)
 - renamings on expansions
 - "literal" & custom-string is an error, but custom-string & "literal" is
   not?  Check this.  Encountered with imported shell variable.
-- first word handling, including executable program glob
 - completions
   - a single matching directory lacks a trailing / - perhaps a GNU readline config issue
   - drill-down on empty directories probably not working
+- improving shell features
+  - ctrl-z to stop a running script and get a shell
 - pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
-- improving shell features
 - incomplete casting tests
 - Linux supplies a umask, but no umask command in shell. - discuss
 - Research: for web to be secure, you can output raw strings to the console.
