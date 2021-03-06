@@ -1376,17 +1376,17 @@ begin
                   )
                );
                if i /= columns( Q ) then
-                  put( " | " );
+                  put( " " & utf_verticalLine & " " );
                end if;
            end loop;
            new_line;
-           put( "-" );
+           put( utf_horizontalLine );
            for i in 1..columns( Q ) loop
-               put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
+               put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                if i /= columns( Q ) then
-                  put( "-+-" );
+                  put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                else
-                  put( "-" );
+                  put( utf_horizontalLine );
                end if;
            end loop;
            new_line;
@@ -1408,7 +1408,7 @@ begin
                       put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
                    if i /= columns( Q ) then
-                      put( " | " );
+                      put( " " & utf_verticalLine & " " );
                    end if;
                 else
                    put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
@@ -1587,17 +1587,17 @@ begin
                   )
                );
                if i /= columns( Q ) then
-                  put( " | " );
+                  put( " " & utf_verticalLine & " " );
                end if;
            end loop;
            new_line;
-           put( "-" );
+           put( utf_horizontalLine );
            for i in 1..columns( Q ) loop
-               put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
+               put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                if i /= columns( Q ) then
-                  put( "-+-" );
+                  put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                else
-                  put( "-" );
+                  put( utf_horizontalLine );
                end if;
            end loop;
            new_line;
@@ -1623,7 +1623,7 @@ begin
                       put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
                    if i /= columns( Q ) then
-                      put( " | " );
+                      put( " " & utf_verticalLine & " " );
                    end if;
                 else
                    put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
@@ -1822,19 +1822,19 @@ begin
                      )
                   );
                   if i /= columns( Q ) then
-                     put( " | " );
+                     put( " " & utf_verticalLine & " " );
                   end if;
                end if;
            end loop;
            new_line;
-           put( "-" );
+           put( utf_horizontalLine );
            for i in 1..columns( Q ) loop
                if i /= 3 then -- column 3 is type length (not shown)
-                  put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
+                  put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                   if i /= columns( Q ) then
-                     put( "-+-" );
+                     put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                   else
-                     put( "-" );
+                     put( utf_horizontalLine );
                   end if;
                end if;
            end loop;
@@ -1864,7 +1864,7 @@ begin
                          put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       end if;
                       if i /= columns( Q ) then
-                         put( " | " );
+                         put( " " & utf_verticalLine & " " );
                       end if;
                    else
                       put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
@@ -2060,19 +2060,19 @@ begin
                      )
                   );
                   if i /= 3 then
-                     put( " | " );
+                     put( " " & utf_verticalLine & " " );
                   end if;
                end if;
            end loop;
            new_line;
-           put( "-" );
+           put( utf_horizontalLine );
            for i in 1..columns( Q ) loop
                if i /= 4 then
-                  put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
+                  put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                   if i /= 3 then
-                     put( "-+-" );
+                     put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                   else
-                     put( "-" );
+                     put( utf_horizontalLine );
                   end if;
                end if;
            end loop;
@@ -2100,7 +2100,7 @@ begin
                          put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       end if;
                       if i /= 3 then
-                         put( " | " );
+                         put( " " & utf_verticalLine & " " );
                       end if;
                    else
                       put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
@@ -2263,17 +2263,17 @@ begin
                   )
                );
                if i /= columns( Q ) then
-                  put( " | " );
+                  put( " " & utf_verticalLine & " " );
                end if;
            end loop;
            new_line;
-           put( "-" );
+           put( utf_horizontalLine );
            for i in 1..columns( Q ) loop
-               put( ada.strings.unbounded.to_string( columnWidths( i ) * "-" ) );
+               put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                if i /= columns( Q ) then
-                  put( "-+-" );
+                  put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                else
-                  put( "-" );
+                  put( utf_horizontalLine );
                end if;
            end loop;
            new_line;
@@ -2297,7 +2297,7 @@ begin
                       put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
                    if i /= columns( Q ) then
-                      put( " | " );
+                      put( " " & utf_verticalLine & " " );
                    end if;
                 else
                    put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );

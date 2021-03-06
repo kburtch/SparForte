@@ -49,8 +49,12 @@ package body parser.decl.shell is
 type whitespaceOptions is ( keep, trim );
 -- during an expansion, should leading/trailing whitespace be kept or not
 
+type globOptions is ( normalGlob, sqlDoubleNoGlob, sqlSingleNoGlob );
+-- For SQL words,there's no globbing and special escaping
+
 type defaultModes is (none, minus, plus, question, var_slice, var_replace );
 -- ${..} modes for default values
+
 
 -----------------------------------------------------------------------------
 --
@@ -750,23 +754,71 @@ begin
    return escapedWord;
 end globBackslashEscape;
 
---   if endOfShellWord then
---      err_shell( "missing character after backslash", wordPos );
---   elsif ch = '"' then
---     globPattern := globPattern & "\" & ch;
---     getNextChar( rawWordValue, wordLen, wordPos );
---   elsif ch = '$' then
---     globPattern := globPattern & "\" & ch;
---     getNextChar( rawWordValue, wordLen, wordPos );
---   elsif ch = '`' then
---     globPattern := globPattern & "\" & ch;
---     getNextChar( rawWordValue, wordLen, wordPos );
---   elsif ch = '\' then
---     globPattern := globPattern & "\" & ch;
---     getNextChar( rawWordValue, wordLen, wordPos );
---   else
---     globPattern := globPattern & "\\";
---   end if;
+
+-----------------------------------------------------------------------------
+--  SQL DOUBLE BACKSLASH ESCAPE
+--
+-- Convert an unbounded string to a SQL string word by escaping the special
+-- characters.
+-----------------------------------------------------------------------------
+
+function sqlDoubleBackslashEscape( unescapedWord : unbounded_string ) return aGlobShellWord is
+   escapedWord : aGlobShellWord;
+   ch : character;
+   p  : natural := 1;
+   l  : constant natural := length( unescapedWord );
+begin
+   while p <= l loop
+     ch := element( unescapedWord, p );
+     case ch is
+     -- when '*' =>
+     --   -- in a bareword, * is not escaped.  In double quotes, it is.
+     --   if whitespaceOption = keep then
+     --      escapedWord := escapedWord & '\' & ch;
+     --   else
+     --      escapedWord := escapedWord & ch;
+     --   end if;
+     when '\' =>
+        escapedWord := escapedWord & '\' & ch;
+     when '"' =>
+        escapedWord := escapedWord & '\' & ch;
+     when others =>
+        escapedWord := escapedWord & ch;
+     end case;
+     p := p + 1;
+   end loop;
+   return escapedWord;
+end sqlDoubleBackslashEscape;
+
+
+-----------------------------------------------------------------------------
+--  SQL SINGLE BACKSLASH ESCAPE
+--
+-- Convert an unbounded string to a SQL string word by escaping the special
+-- characters.
+-----------------------------------------------------------------------------
+
+function sqlSingleBackslashEscape( unescapedWord : unbounded_string ) return aGlobShellWord is
+   escapedWord : aGlobShellWord;
+   ch : character;
+   p  : natural := 1;
+   l  : constant natural := length( unescapedWord );
+begin
+   while p <= l loop
+     ch := element( unescapedWord, p );
+     case ch is
+     when '\' =>
+        escapedWord := escapedWord & '\' & ch;
+     when ''' =>
+        escapedWord := escapedWord & '\' & ch;
+     when others =>
+        escapedWord := escapedWord & ch;
+     end case;
+     p := p + 1;
+   end loop;
+   return escapedWord;
+end sqlSingleBackslashEscape;
+
 
 -----------------------------------------------------------------------------
 --  DO VARIABLE EXPANSION
@@ -783,7 +835,8 @@ procedure doVariableExpansion(
       wordPos : in out natural;
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
-      whitespaceOption : whitespaceOptions ) is
+      whitespaceOption : whitespaceOptions;
+      globOption : globOptions ) is
 
 
    --  DO VAR SLICE EXPANSION (DO VARIABLE EXPANSION)
@@ -930,9 +983,16 @@ begin
    end case;
 
    -- The string returned may have special characters that need to be escaped
-   -- for a glob pattern (such as a \).
+   -- for a glob pattern (such as a \).  However, the escaping is different
+   -- for SQL than for Bourne shell globbing.
 
-   globSubword := globBackslashEscape( subword, whitespaceOption );
+   if globOption = sqlDoubleNoGlob then
+      globPattern := globPattern & sqlDoubleBackslashEscape( subword );
+   elsif globOption = sqlSingleNoGlob then
+      globPattern := globPattern & sqlSingleBackslashEscape( subword );
+   else
+      globSubword := globBackslashEscape( subword, whitespaceOption );
+   end if;
 
    -- if trimming, then it's a bareword.  Even a bareword escapes a leading
    -- tilde.
@@ -1070,7 +1130,8 @@ procedure parseDollarBraceExpansion(
       wordPos : in out natural;
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
-      whitespaceOption : whitespaceOptions ) is
+      whitespaceOption : whitespaceOptions;
+      globOption : globOptions ) is
    firstPos     : natural;
    expansionVar : unbounded_string;
    defaultValue : unbounded_string;
@@ -1229,7 +1290,8 @@ begin
          expansionVar, globPattern, whitespaceOption, wordPos );
    else
       doVariableExpansion( rawWordValue, expansionVar, defaultValue, defaultMode,
-         wordLen, wordPos, globPattern, bourneShellWordList, whitespaceOption );
+         wordLen, wordPos, globPattern, bourneShellWordList, whitespaceOption,
+         globOption );
    end if;
 
    expectChar( '}', rawWordValue, wordLen, wordPos );
@@ -1273,7 +1335,8 @@ procedure parseDollarProcessExpansion(
       wordPos : in out natural;
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
-   whitespaceOption : whitespaceOptions ) is
+      whitespaceOption : whitespaceOptions;
+      globOption : globOptions ) is
    commands     : unbounded_string;
    expansionResult : aGlobShellWord;
    ch           : character;
@@ -1290,7 +1353,8 @@ begin
         exit when ch = ')';
         if ch = '$' then
            expansionResult := nullGlobShellWord;
-           parseDollarExpansion( rawWordValue, wordLen, wordPos, expansionResult, bourneShellWordList, keep );
+           parseDollarExpansion( rawWordValue, wordLen, wordPos,
+              expansionResult, bourneShellWordList, keep );
            commands := commands & unbounded_string( expansionResult );
         else
           commands := commands & ch;
@@ -1337,10 +1401,11 @@ begin
 
    if ch = '{' then
       parseDollarBraceExpansion( rawWordValue, wordLen, wordPos,
-         globPattern, bourneShellWordList, whitespaceOption );
+         globPattern, bourneShellWordList, whitespaceOption,
+         normalGlob );
    elsif ch = '(' then
       parseDollarProcessExpansion( rawWordValue, wordLen, wordPos,
-         globPattern, bourneShellWordList, whitespaceOption );
+         globPattern, bourneShellWordList, whitespaceOption, normalGlob );
    else
 
       -- Simple Dollar Expansion: it's just $ and the name
@@ -1361,9 +1426,68 @@ begin
       --put_line( "expansionVar = " & to_string( expansionVar ) ); -- DEBUG
 
       doVariableExpansion( rawWordValue, expansionVar, null_unbounded_string, none,
-         wordLen, wordPos, globPattern, bourneShellWordList, whitespaceOption );
+         wordLen, wordPos, globPattern, bourneShellWordList, whitespaceOption,
+         normalGlob );
    end if;
 end parseDollarExpansion;
+
+
+-----------------------------------------------------------------------------
+--  PARSE SQL DOLLAR EXPANSION
+--
+-- Syntax: $...
+-- Redirects to the appropriate type of expansion.
+-----------------------------------------------------------------------------
+
+procedure parseSQLDollarExpansion(
+      rawWordValue : aRawShellWord;
+      wordLen : natural;
+      wordPos : in out natural;
+      globPattern : in out aGlobShellWord;
+      bourneShellWordList : in out bourneShellWordLists.List;
+      whitespaceOption : whitespaceOptions;
+      globOption : globOptions ) is
+   firstPos     : natural;
+   expansionVar : unbounded_string;
+   ch : character;
+begin
+   --put_line( "parseSQLDollarExpansion" ); -- DEBUG
+   expectChar( '$', rawWordValue, wordLen, wordPos );
+
+   ch := ASCII.NUL;
+   if length( rawWordvalue ) >= wordPos then
+      ch := element( rawWordvalue, wordPos );
+   end if;
+
+   if ch = '{' then
+      parseDollarBraceExpansion( rawWordValue, wordLen, wordPos,
+         globPattern, bourneShellWordList, whitespaceOption, globOption );
+   elsif ch = '(' then
+      parseDollarProcessExpansion( rawWordValue, wordLen, wordPos,
+         globPattern, bourneShellWordList, whitespaceOption, globOption );
+   else
+
+      -- Simple Dollar Expansion: it's just $ and the name
+
+      firstPos := wordPos;
+      parseShellExpansionName( rawWordValue, wordLen, wordPos );
+
+      -- Extract the variable name
+      -- wordPos is always one position ahead.
+
+      if endOfShellWord then
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos );
+      elsif firstPos < wordPos then
+         expansionVar := unbounded_slice( unbounded_string( rawWordValue ), firstPos, wordPos-1 );
+      else
+         expansionVar := null_unbounded_string;
+      end if;
+      --put_line( "expansionVar = " & to_string( expansionVar ) ); -- DEBUG
+
+      doVariableExpansion( rawWordValue, expansionVar, null_unbounded_string, none,
+         wordLen, wordPos, globPattern, bourneShellWordList, whitespaceOption, globOption );
+   end if;
+end parseSQLDollarExpansion;
 
 
 -----------------------------------------------------------------------------
@@ -1475,7 +1599,6 @@ begin
 end parseSingleQuotedShellSubword;
 
 
-
 -----------------------------------------------------------------------------
 --  PARSE DOUBLE QUOTED BACKSLASH
 --
@@ -1563,6 +1686,102 @@ begin
 
    expectChar( '"', rawWordValue, wordLen, wordPos );
 end parseDoubleQuotedShellSubword;
+
+
+-----------------------------------------------------------------------------
+--  PARSE DOUBLE QUOTED SQL WORD
+--
+-- Syntax: "word"
+-- Handle a double quoted section of a sql word
+-----------------------------------------------------------------------------
+
+procedure parseDoubleQuotedSQLSubword(
+   rawWordValue : aRawShellWord;
+   wordLen : natural;
+   wordPos : in out natural;
+   globPattern : in out aGlobShellWord;
+   bourneShellWordList : in out bourneShellWordLists.List ) is
+   ch : character;
+begin
+   expectChar( '"', rawWordValue, wordLen, wordPos );
+   globPattern := globPattern & '"';
+
+   while wordPos <= wordLen and not error_found and not endOfShellWord loop
+      ch := element( rawWordValue, wordPos );
+
+      -- However, we have to escape characters for the globbing pattern.
+
+      case ch is
+      when '"' =>
+         exit;
+      when '\' =>                                     -- a backslash?
+         parseDoubleQuotedBackslash(
+            rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
+      when '$' =>                                     -- an expansion
+         parseSQLDollarExpansion( rawWordValue, wordLen, wordPos, globPattern,
+            bourneShellWordList, keep, sqlDoubleNoGlob );
+         globPattern := globPattern;
+      -- when '`' =>
+      --    -- This is permitted in double quotes in a Bourne shell
+      --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
+      --       keep, bourneShellWordList );
+      when others => globPattern := globPattern & ch; -- others? no esc
+         getNextChar( rawWordValue, wordLen, wordPos );
+      end case;
+   end loop;
+
+   expectChar( '"', rawWordValue, wordLen, wordPos );
+   globPattern := globPattern & '"';
+end parseDoubleQuotedSQLSubword;
+
+
+-----------------------------------------------------------------------------
+--  PARSE SINGLE QUOTED SQL WORD
+--
+-- Syntax: "word"
+-- Handle a single quoted section of a sql word.  The behaviour is the same
+-- as a double quoted sql word.
+-----------------------------------------------------------------------------
+
+procedure parseSingleQuotedSQLSubword(
+   rawWordValue : aRawShellWord;
+   wordLen : natural;
+   wordPos : in out natural;
+   globPattern : in out aGlobShellWord;
+   bourneShellWordList : in out bourneShellWordLists.List ) is
+   ch : character;
+begin
+   expectChar( ''', rawWordValue, wordLen, wordPos );
+   globPattern := globPattern & ''';
+
+   while wordPos <= wordLen and not error_found and not endOfShellWord loop
+      ch := element( rawWordValue, wordPos );
+
+      -- However, we have to escape characters for the globbing pattern.
+
+      case ch is
+      when ''' =>
+         exit;
+      when '\' =>                                     -- a backslash?
+         parseDoubleQuotedBackslash(
+            rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
+      when '$' =>                                     -- an expansion
+         parseSQLDollarExpansion( rawWordValue, wordLen, wordPos, globPattern,
+            bourneShellWordList, keep, sqlSingleNoGlob );
+         globPattern := globPattern;
+      -- when '`' =>
+      --    -- This is permitted in double quotes in a Bourne shell
+      --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
+      --       keep, bourneShellWordList );
+      when others => globPattern := globPattern & ch; -- others? no esc
+         getNextChar( rawWordValue, wordLen, wordPos );
+      end case;
+   end loop;
+
+   expectChar( ''', rawWordValue, wordLen, wordPos );
+   globPattern := globPattern & ''';
+end parseSingleQuotedSQLSubword;
+
 
 
 procedure parseBareShellSubword(
@@ -1732,9 +1951,9 @@ begin
          while wordPos <= len and not error_found and not endOfShellWord loop
             first_ch := element( shellWord, wordPos );
             if first_ch = '"' then
-               parseDoubleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+               parseDoubleQuotedSQLSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             elsif first_ch = ''' then
-               parseSingleQuotedShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
+               parseSingleQuotedSQLSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             elsif first_ch = '`' then
                parseBackQuotedShellSubword( shellWord, len, wordPos, globPattern, trim, bourneShellWordList );
             elsif first_ch = ' ' or first_ch = ASCII.HT then

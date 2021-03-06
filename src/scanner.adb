@@ -1178,7 +1178,7 @@ begin
         if lastpos > firstpos then                              -- multi chars?
            if colourOpt then
               outLine := outLine & utf_left;                         -- token start
-              outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * utf_horizontalLine );
+              outLine := outLine & to_unbounded_string( (lastpos-firstPos-1) * utf_horizontalLineOnly );
               outLine := outLine & utf_right;                       -- token end
            else
               outLine := outLine & '^';

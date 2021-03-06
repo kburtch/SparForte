@@ -478,7 +478,7 @@ end utf_wristwatch;
 -----------------------------------------------------------------------------
 --  UTF LEFT
 --
--- Output the bytes for a UTF-8 watch symbol.
+-- Output the bytes for a UTF-8 left upturn line.
 -----------------------------------------------------------------------------
 
 function utf_left return string is
@@ -493,7 +493,7 @@ end utf_left;
 -----------------------------------------------------------------------------
 --  UTF RIGHT
 --
--- Output the bytes for a UTF-8 watch symbol.
+-- Output the bytes for a UTF-8 right upturn line.
 -----------------------------------------------------------------------------
 
 function utf_right return string is
@@ -523,7 +523,7 @@ end utf_triangle;
 -----------------------------------------------------------------------------
 --  UTF HORIZONTAL LINE
 --
--- Output the bytes for a UTF-8 watch symbol.
+-- Output the bytes for a horizontal line symbol or a minus.
 -----------------------------------------------------------------------------
 
 function utf_horizontalLine return string is
@@ -531,10 +531,53 @@ begin
   if colourOpt then
      return character'val( 226 ) & character'val( 148 ) & character'val( 128 );
   end if;
-  return "";
+  return "-";
 end utf_horizontalLine;
 
+function utf_horizontalLineOnly return string is
+begin
+  if colourOpt then
+     return character'val( 226 ) & character'val( 148 ) & character'val( 128 );
+  end if;
+  return "";
+end utf_horizontalLineOnly;
+
+
+-----------------------------------------------------------------------------
+--  UTF CROSSED LINES
+--
+-- Return the bytes for a UTF-8 crossed lines, otherwise a plus sign.
+-----------------------------------------------------------------------------
+
+function utf_crossedLines return string is
+begin
+  if colourOpt then
+     return character'val( 226 ) & character'val( 148 ) & character'val( 188 );
+  end if;
+  return "+";
+end utf_crossedLines;
+
+
+-----------------------------------------------------------------------------
+--  UTF VERTICAL LINE
+--
+-- Return the bytes for a UTF-8 vertical line, otherwise a vertical bar.
+-----------------------------------------------------------------------------
+
+function utf_verticalLine return string is
+begin
+  if colourOpt then
+     return character'val( 226 ) & character'val( 148 ) & character'val( 130 );
+  end if;
+  return "|";
+end utf_verticalLine;
+
+
+-----------------------------------------------------------------------------
+--  UTF BULLET
+--
 -- Return the bytes for a UTF-8 bullet, otherwise asterisk
+-----------------------------------------------------------------------------
 
 function utf_bullet return string is
 begin
@@ -544,7 +587,12 @@ begin
   return "*";
 end utf_bullet;
 
+
+-----------------------------------------------------------------------------
+--  UTF DIAMOND
+--
 -- Return the bytes for a UTF-8 diamond, otherwise a minus sign
+-----------------------------------------------------------------------------
 
 function utf_diamond return string is
 begin
