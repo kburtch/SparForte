@@ -92,3 +92,5 @@ CHANGES SINCE 2.3
 
 39. Fix: -e commands no longer require a trailing semi-colon.
 
+40. New: strings.null_unbounded_string.
+
