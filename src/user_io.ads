@@ -176,7 +176,16 @@ function utf_triangle return string;
 -- Return the bytes for a UTF-8 triangle
 
 function utf_horizontalLine return string;
+-- Return the bytes for a UTF-8 horizontal line, otherwise a minus sign.
+
+function utf_horizontalLineOnly return string;
 -- Return the bytes for a UTF-8 horizontal line
+
+function utf_crossedLines return string;
+-- Return the bytes for a UTF-8 crossed lines, otherwise a plus sign.
+
+function utf_verticalLine return string;
+-- Return the bytes for a UTF-8 vertical line, otherwise a vertical bar.
 
 function utf_bullet return string;
 -- Return the bytes for a UTF-8 bullet, otherwise asterisk
