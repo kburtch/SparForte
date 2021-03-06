@@ -34,6 +34,7 @@ const int completion_type_apt        =  9;
 const int completion_type_docker     = 10;
 const int completion_type_k8s        = 11;
 const int completion_type_npm        = 12;
+const int completion_type_dnf        = 13;
 
 /**
  *  SPARFORTE COMPLETION
@@ -64,6 +65,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     const char kubernetes_str[9] = "kubectl ";
     const char oc_str[4]     = "oc ";
     const char npm_str[5]    = "npm ";
+    const char dnf_str[5]    = "dnf ";
 
     int completion_type = completion_type_none;
 
@@ -236,6 +238,14 @@ char ** sparforte_completion( const char *text, int start, int end ) {
           }
        }
 
+       // Dnf subcommand completion: a special case.
+
+       if (completion_type == completion_type_none) {
+          if ( strncmp( rl_line_buffer, dnf_str, strlen(dnf_str) ) == 0 ) {
+             completion_type = completion_type_dnf;
+          }
+       }
+
        // Apt subcommand completion: a special case.
 
        if (completion_type == completion_type_none) {
@@ -317,6 +327,8 @@ char ** sparforte_completion( const char *text, int start, int end ) {
        matches = rl_completion_matches(text, Ada_k8s_word_generator);
     } else if (completion_type == completion_type_npm) {
        matches = rl_completion_matches(text, Ada_npm_word_generator);
+    } else if (completion_type == completion_type_dnf) {
+       matches = rl_completion_matches(text, Ada_yum_word_generator);
     } else {
        // if something goes wrong, case completion_type_default will
        // trigger the GNU readline built-in completion.
