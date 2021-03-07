@@ -50,7 +50,7 @@ apq-mysql.ads: apq-mysql.ads-in mysql_generr.c mysql_xcr2 mysql_xcr3
 	$(CC) $(COPTS) $(MY_INCL) mysql_gentyp.c -o mysql_gentyp
 	$(CC) $(COPTS) $(MY_INCL) mysqlopts.c -o mysql_opts
 	./mysql_opts >opts.tmp
-	./mysql_generr | sort -k1,1n | sed '/ER_ERROR_FIRST/d;/CR_UNKNOWN_ERROR/d;/ER_ERROR_LAST/d;/CR_ERROR_LAST/d'  | ./mysql_xcr2 >gen.tmp
+	./mysql_generr | sort -k1,1n | sed '/ER_ERROR_FIRST/d;/CR_UNKNOWN_ERROR/d;/ER_ERROR_LAST/d;/CR_ERROR_LAST/d;/CR_MARIADB_LAST_ERROR/d;/CR_MYSQL_LAST_ERROR/d'  | ./mysql_xcr2 >gen.tmp
 	./mysql_gentyp | sort -k1,1n | ./mysql_xcr3
 	#KB
 	rm -f mysql_generr mysql_errmsg.h mysql_gentyp mysql_type_codes.h gen.tmp opts.tmp mysql_opts

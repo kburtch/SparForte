@@ -152,6 +152,7 @@ debian )
    sudo -u root apt-get -q -y install bc
    sudo -u root apt-get -q -y install memcached
    sudo -u root apt-get -q -y install libssl1.1
+   sudo -u root apt-get -q -y install libreadline-dev
    set +e
    ;;
 *)
