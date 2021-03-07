@@ -91,6 +91,7 @@ redhat )
       sudo -u root yum install -q -y SDL_image-devel
       sudo -u root yum install -q -y bc
       sudo -u root yum install -q -y memcached
+      sudo -u root yum install -q -y readline-devel
       set +e
    fi
    ;;
