@@ -122,12 +122,14 @@ ubuntu )
    sudo -u root apt-get -q -y install locate
    sudo -u root apt-get -q -y install postgresql-client
    sudo -u root apt-get -q -y install postgresql-server-dev-all
-   sudo -u root apt-get -q -y install libgstreamer0.10-dev
+   #sudo -u root apt-get -q -y install libgstreamer0.10-dev
+   sudo -u root apt-get -q -y install libgstreamer1.0-dev
    sudo -u root apt-get -q -y install libsdl1.2-dev
    sudo -u root apt-get -q -y install libsdl-image1.2-dev
    sudo -u root apt-get -q -y install wget
    sudo -u root apt-get -q -y install bc
    sudo -u root apt-get -q -y install memcached
+   sudo -u root apt-get -q -y install libreadline-dev
    set +e
    ;;
 debian )

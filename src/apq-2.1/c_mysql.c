@@ -21,11 +21,12 @@
  */
 
 #include <stdio.h>
-#include <my_global.h>
-#include <my_sys.h>
-#ifdef _WINDOWS
-#include <my_global.h>
-#endif
+// KB: 21/03/06 these are no longer included.
+// #include <my_global.h>
+// #include <my_sys.h>
+// #ifdef _WINDOWS
+// #include <my_global.h>
+// #endif
 #include <mysql.h>
 #include <errmsg.h>
 #include <string.h>
@@ -326,7 +327,16 @@ c_mysql_free_result(MYSQL_RES *result) {
 
 EXPORT void
 c_my_init(void) {
-	my_init();
+    // KB: 21/03/06: my_init() has been removed
+	// my_init();
+    mysql_library_init( 0, NULL, NULL );
+}
+
+EXPORT void
+c_my_end(void) {
+    // KB: 21/03/06: my_init() has been removed
+	// mysql_library_init() requires mysql_library_end();
+    mysql_library_end();
 }
 
 EXPORT my_ulonglong

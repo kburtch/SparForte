@@ -19,7 +19,8 @@ fi
 # New location (binary_log_types.h)
 
 if [ -z "$TMP" ] ; then
-   HDRFILE=$(mysql_incl)/binary_log_types.h
+   #KB: 21/03/06: HDRFILE=$(mysql_incl)/binary_log_types.h
+   HDRFILE=$(mysql_incl)/field_types.h
    TMP=`fgrep  'enum enum_field_types' < "$HDRFILE"`
    if [ -n "$TMP" ] ; then
 cpp -P $HDRFILE | sed -n '/enum_field_types/,/};/p;/}/q' | sed 's|typedef||;s|enum||;s|enum_field_types||;s|[{};]||g;s|,|\

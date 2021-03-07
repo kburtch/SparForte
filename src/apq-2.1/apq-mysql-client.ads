@@ -113,6 +113,8 @@ package APQ.MySQL.Client is
    function Is_Duplicate_Key(Query : Query_Type) return Boolean;
    function Engine_Of(Q : Query_Type) return Database_Type;
 
+   procedure shutdown; -- KB: 21/03/06 - added
+
 private
 
    type Connection_Type is new APQ.Root_Connection_Type with

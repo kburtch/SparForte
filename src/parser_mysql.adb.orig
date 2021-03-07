@@ -2504,7 +2504,7 @@ end StartupMySQL;
 
 procedure ShutdownMySQL is
 begin
-  null;
+  APQ.MySQL.Client.Shutdown;
 end ShutdownMySQL;
 
 end parser_mysql;
