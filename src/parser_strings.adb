@@ -67,6 +67,7 @@ defaultDelimiter : constant character := ASCII.CR;
 ------------------------------------------------------------------------------
 
 base64_string_t  : identifier;
+null_unbounded_string_t : identifier;
 
 strings_alignment_t        : identifier; -- strings.alignment enumerated
 strings_alignment_left_t   : identifier;
@@ -890,14 +891,14 @@ begin
 end ParseStringsToString;
 
 procedure ParseStringsToUString( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_unbounded_string( x );
+  -- Syntax: strings.to_unbounded_string( x ); or strings.to_unbounded_string( n );
   -- Source: Ada.Strings.Unbounded.To_Unbounded_String
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
   kind := unbounded_string_t;
   expect( to_u_string_t );
-  ParseSingleStringParameter( expr_val, expr_type, String_T );
+  ParseSingleStringParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := expr_val;
@@ -1456,6 +1457,7 @@ end ParseStringsUnboundedSlice;
 procedure ParseStringsSetUnboundedString is
   -- Syntax: strings.set_unbounded_string( u, s );
   -- Source: ada.strings.unbounded.set_unbounded_string
+  -- Ada 2005
   src_ref  : reference;
   str_val  : unbounded_string;
   str_type : identifier;
@@ -1504,6 +1506,8 @@ procedure StartupStrings is
 begin
   declareNamespace( "strings" );
   declareIdent( base64_string_t, "strings.base64_string", string_t, typeClass );
+  declareIdent( null_unbounded_string_t, "strings.null_unbounded_string", string_t, varClass );
+  identifiers( null_unbounded_string_t ).usage := constantUsage;
 
   declareFunction( glob_t, "strings.glob", ParseStringsGlob'access );
   declareFunction( match_t, "strings.match", ParseStringsMatch'access );

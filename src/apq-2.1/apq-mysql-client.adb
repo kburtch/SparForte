@@ -33,6 +33,10 @@ package body APQ.MySQL.Client is
    procedure my_init;
    pragma import(C,my_init,"c_my_init");
 
+   procedure my_end;
+   pragma import(C, my_end, "c_my_end" );
+   -- KB: 21/03/06
+
    function mysql_init return MYSQL;
    pragma import(C,mysql_init,"c_mysql_init");
 
@@ -1211,6 +1215,11 @@ package body APQ.MySQL.Client is
       end if;
 
    end Set_Options;
+
+   procedure shutdown is
+   begin
+      my_end;
+   end shutdown;
 
 begin
    my_init;

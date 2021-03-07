@@ -3141,7 +3141,7 @@ end StartupMySQLM;
 
 procedure ShutdownMySQLM is
 begin
-  null;
+  APQ.MySQL.Client.Shutdown;
 end ShutdownMySQLM;
 
 end parser_mysqlm;

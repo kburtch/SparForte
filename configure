@@ -1571,7 +1571,12 @@ else
    # On Raspberry Pi, I confirmed pam and edit weren't necessary to link
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g;s/\ \-lpgport//g;s/\ \-lreadline//g'`
    # On Raspberry Pi 4, libpgcommon isn't in the path
-   PGLIBSSUB="/usr/lib/postgresql/11/lib -L""$PGLIBSSUB"
+   # TODO: these should not be hard-coded.
+   if [ -d "/usr/lib/postgresql/11" ] ; then
+      PGLIBSSUB="/usr/lib/postgresql/11/lib -L""$PGLIBSSUB"
+   elif [ -d "/usr/lib/postgresql/12" ] ; then
+      PGLIBSSUB="/usr/lib/postgresql/12/lib -L""$PGLIBSSUB"
+   fi
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 fi
 if [ -z "$HAS_MYSQL" ] ; then
