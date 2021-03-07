@@ -2504,7 +2504,11 @@ end StartupMySQL;
 
 procedure ShutdownMySQL is
 begin
+#if MYSQL
   APQ.MySQL.Client.Shutdown;
+#else
+  null;
+#end if;
 end ShutdownMySQL;
 
 end parser_mysql;
