@@ -19,11 +19,23 @@ fi
 # New location (binary_log_types.h)
 
 if [ -z "$TMP" ] ; then
-   #KB: 21/03/06: HDRFILE=$(mysql_incl)/binary_log_types.h
-   HDRFILE=$(mysql_incl)/field_types.h
+   #KB: 21/03/06: HDRFILE=$(mysql_incl)/binary_log_types.h no longer exists
+   #KB: 21/03/07: no MariaDB, it is in a different file.
+   HDRFILE=$(mysql_incl)/binary_log_types.h
+   if [ ! -f "$HDRFILE" ] ; then
+      HDRFILE=$(mysql_incl)/field_types.h
+   fi
+   if [ ! -f "$HDRFILE" ] ; then
+      HDRFILE=$(mysql_incl)/mariadb_com.h
+   fi
    TMP=`fgrep  'enum enum_field_types' < "$HDRFILE"`
    if [ -n "$TMP" ] ; then
-cpp -P $HDRFILE | sed -n '/enum_field_types/,/};/p;/}/q' | sed 's|typedef||;s|enum||;s|enum_field_types||;s|[{};]||g;s|,|\
+      # KB: 21/03/07: MariaDB is slightly different
+      TMP=`cpp -P $HDRFILE | sed -n '/enum_field_types/,/};/p;/}/q'`
+      if [ -z "$TMP" ] ; then
+         TMP=`cpp -P $HDRFILE | sed -n '/enum_field_types/,/};/p'`
+      fi
+      echo "$TMP" | sed 's|typedef||;s|enum||;s|enum_field_types||;s|[{};]||g;s|,|\
 |g;s|[ 	]*||g' | sed '/^$/d;s|=[0-9]*||g;' \
         | while read NAME ; do
 #KB: kludge - having difficulty getting the right sed...

@@ -1,7 +1,10 @@
 #
 
 if [ ! -f config.win32 ] ; then
-	echo $(mysql_config --include) | sed 's|^-I||'
+	INCLPATH=`echo $(mysql_config --include) | sed 's|^-I||'`
+    # MariaDB has multiple include paths
+    INCLPATH=`echo "$INCLPATH" | cut -d' ' -f1`
+    echo "$INCLPATH"
 else
 	sed -n '/^MY_UINCL/p' <config.win32 | sed 's|^.*=||;s| *$||'
 fi
