@@ -31,6 +31,10 @@ if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
 fi
 
+if test -f "/etc/SUSE-brand" ; then
+   DISTRO="suse"
+fi
+
 # Mint/Ubuntu
 
 TMP=`fgrep Ubuntu /etc/issue`
@@ -91,23 +95,24 @@ redhat )
       sudo -u root yum install -q -y SDL_image-devel
       sudo -u root yum install -q -y bc
       sudo -u root yum install -q -y memcached
+      sudo -u root yum install -q -y readline-devel
       set +e
    fi
    ;;
 suse)
    set -e
-   sudo -u root zypper "--non-interactive" install mlocate
-   sudo -u root zypper "--non-interactive" install gcc-ada
-   sudo -u root zypper "--non-interactive" install git
-   sudo -u root zypper "--non-interactive" install gstreamer-0_10-devel
-   sudo -u root zypper "--non-interactive" install libopenssl-devel
-   sudo -u root zypper "--non-interactive" install libSDL-devel
-   sudo -u root zypper "--non-interactive" install libSDL_image-devel
-   sudo -u root zypper "--non-interactive" install libmysqlclient-devel
-   sudo -u root zypper "--non-interactive" install postgresql
-   sudo -u root zypper "--non-interactive" install postgresql-devel
-   sudo -u root zypper "--non-interactive" install rpmlint
-   sudo -u root zypper "--non-interactive" install memcached
+   sudo -u root zypper "--quiet" "--non-interactive" install mlocate
+   sudo -u root zypper "--quiet" "--non-interactive" install gcc-ada
+   sudo -u root zypper "--quiet" "--non-interactive" install git
+   sudo -u root zypper "--quiet" "--non-interactive" install gstreamer-devel
+   sudo -u root zypper "--quiet" "--non-interactive" install libopenssl-devel
+   sudo -u root zypper "--quiet" "--non-interactive" install libSDL-devel
+   sudo -u root zypper "--quiet" "--non-interactive" install libSDL_image-devel
+   sudo -u root zypper "--quiet" "--non-interactive" install libmariadb-devel 
+   sudo -u root zypper "--quiet" "--non-interactive" install postgresql
+   sudo -u root zypper "--quiet" "--non-interactive" install postgresql-devel
+   sudo -u root zypper "--quiet" "--non-interactive" install rpmlint
+   sudo -u root zypper "--quiet" "--non-interactive" install memcached
    set +e
    ;;
 ubuntu )
@@ -152,6 +157,7 @@ debian )
    sudo -u root apt-get -q -y install bc
    sudo -u root apt-get -q -y install memcached
    sudo -u root apt-get -q -y install libssl1.1
+   sudo -u root apt-get -q -y install libreadline-dev
    set +e
    ;;
 *)
