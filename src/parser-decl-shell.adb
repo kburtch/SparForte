@@ -639,7 +639,7 @@ begin
          end loop;
       end if;
    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
-      if syntax_check and then not suppress_word_quoting and then whitespaceOption = keep then
+      if not suppress_word_quoting and then whitespaceOption = trim then
          err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
       end if;
       if isExecutingCommand then
@@ -655,6 +655,9 @@ begin
          end;
       end if;
    else
+      if not suppress_word_quoting and then whitespaceOption = trim then
+         err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+      end if;
       findIdent( expansionVar, var_id );
 
       if var_id = eof_t then
@@ -1864,6 +1867,9 @@ begin
       if ch = '\' then
          parseBackslash( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
       elsif ch = '$' then
+         --if not suppress_word_quoting then
+         --   err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+         --end if;
          parseDollarExpansion( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList, trim );
       else
          globPattern := globPattern & ch;

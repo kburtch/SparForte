@@ -13,11 +13,13 @@ Priority Issues (Fix These First)
 
 - shell parser rewrite
   - sql handling
+    - check bareword handling - sql and shell
+    - check % handling in SQL
     - double quoted string substitution - testing
     - single quoted string substitution - testing
       - escape single quote substitution in a single quote string
-    - bareword subtitution - testing
     - redirection and piplines - verify and testing
+    - update docs
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
   - fix all todos

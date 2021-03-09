@@ -68,17 +68,6 @@ marks indicate strings or table names, not how to expand dollar
 variables.&nbsp; Your database documentation will explain how to use
 your version of SQL.</p>
 
-<p>SparForte submits the SQL command to the database with only one
-change.&nbsp; Bush will search command for variables and will
-substitute values using a dollar sign ($) and escape characters with a
-backslash.&nbsp; Single and double
-quotes have no effect on how the variable is substituted since quote
-marks used for a different purpose in SQL.</p>
-
-<p>Like a shell command, the output from the database commands can be
-redirected or captured using backquotes.&nbsp; The commands can be
-intermixed with the db package database commands.</p>
-
 <p>For example,</p>
 
         <center>
@@ -146,6 +135,75 @@ intermixed with the db package database commands.</p>
 
 <p>The format of select statements is the same as db.show in the db
 package.</p>
+
+<p>Like a shell command, the output from the database commands can be
+redirected or captured using backquotes.&nbsp; The commands can be
+intermixed with the db package database commands.</p>
+
+<h2>Database Substitutions and Escaping</h2>
+
+<p>SparForte submits the SQL command to the database with only one
+change.&nbsp; Bush will search command for variables and will
+substitute values using a dollar sign ($) and escape characters with a
+backslash.</p>
+
+<p>Single and double quotes in SQL commands do not have the same
+effect as shell commands.  In shell commands, single quotes have
+strong character escaping and double quotes have weak escaping.
+In SQL, both single quotes and double quotes will escape
+characters.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<span style="font-family: monospace;">=&gt; ? mysql.is_connected</span><br>
+<span style="font-family: monospace;">true<br>
+<span style="font-family: monospace;">=&gt; select * from customer;</span><br>
+<br>
+<span style="font-family: monospace;">&nbsp;first_name | last_name</span><br>
+<span style="font-family: monospace;">------------+-----------</span><br>
+<span style="font-family: monospace;">ken&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | burtch   </span><br>
+<span style="font-family: monospace;">=&gt; select "*" from customer;</span><br>
+<br>
+<span style="font-family: monospace;">*   </span><br>
+<span style="font-family: monospace;">------</span><br>
+<span style="font-family: monospace;">* </span></p>
+        </div>
+        </center>
+
+<p>The second select will select an asterisk character instead of
+matching all columns.</p>
+
+<p>The result is the same with a variable substitution.  All dollar
+substitutions must occur within quotes unless <b>pragma suppress</b> is
+used.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<span style="font-family: monospace;">=&gt; STAR : constant string := "*"</span></br>
+<span style="font-family: monospace;">=&gt; select $STAR from customer</span></br>
+<span style="font-family: monospace;">select $STAR from customer;</span><br>
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^-----------------^ style issue: expected double quoted word parameters in shell or SQL command to stop word splitting</span></br>
+<span style="font-family: monospace;">=&gt; pragma suppress( word_quoting )</span><br>
+<span style="font-family: monospace;">=&gt; select $STAR from customer</span></br>
+
+<span style="font-family: monospace;">&nbsp;first_name | last_name</span><br>
+<span style="font-family: monospace;">------------+-----------</span><br>
+<span style="font-family: monospace;">ken&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | burtch   </span><br>
+<span style="font-family: monospace;">=&gt; select "$STAR" from customer</span<br>
+<br>
+<span style="font-family: monospace;">*   </span><br>
+<span style="font-family: monospace;">------</span><br>
+<span style="font-family: monospace;">* </span></p>
+        </div>
+        </center>
+
+
+<p>To protect from injection attacks and unexpected word splitting, always
+use quotes.</p>
+
+
 
 <p>Some limitations on database commands:</p>
 
