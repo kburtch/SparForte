@@ -1,5 +1,5 @@
 // FREEBSD possibly should be __FreeBSD__
-#ifdef FREEBSD
+#ifdef __FreeBSD__
 #include <SDL.h>
 #include <SDL_video.h>
 #endif

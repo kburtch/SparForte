@@ -35,15 +35,25 @@ if test -f "/etc/SUSE-brand" ; then
    DISTRO="suse"
 fi
 
+if test -f "/etc/freebsd-update.conf" ; then
+   DISTRO="freebsd"
+fi
+
 # Mint/Ubuntu
 
-TMP=`fgrep Ubuntu /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="ubuntu"
-fi
-TMP=`fgrep Mint /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="ubuntu"
+if [ -f "/etc/issue" ] ; then
+   TMP=`fgrep Ubuntu /etc/issue`
+   if [ "$TMP" != "" ] ; then
+      DISTRO="ubuntu"
+   fi
+   TMP=`fgrep Mint /etc/issue`
+   if [ "$TMP" != "" ] ; then
+      DISTRO="ubuntu"
+   fi
+   TMP=`fgrep SUSE /etc/issue`
+   if [ "$TMP" != "" ] ; then
+      DISTRO="suse"
+   fi
 fi
 
 # Debian
@@ -57,13 +67,6 @@ if [ -z "$DISTRO" ] ; then
       read TMP
       DISTRO="debian"
    fi
-fi
-
-# SuSE
-
-TMP=`fgrep SUSE /etc/issue`
-if [ "$TMP" != "" ] ; then
-   DISTRO="suse"
 fi
 
 
@@ -160,6 +163,30 @@ debian )
    sudo -u root apt-get -q -y install libreadline-dev
    set +e
    ;;
+freebsd )
+   set -e
+   echo "y" | pkg install bash
+   echo "y" | pkg install mysql57-client
+   echo "y" | pkg install bzip2
+   echo "y" | pkg install gcc6-aux
+   echo "y" | pkg install xmlada
+   echo "y" | pkg install git
+   # echo "y" | pkg install libdb-dev
+   # echo "y" | pkg install libmysqlclient-dev
+   echo "y" | pkg install mysql57-server
+   echo "y" | pkg install postgresql12-client
+   echo "y" | pkg install postgresql12-server
+   # echo "y" | pkg install postgresql-server-dev-all
+   echo "y" | pkg install gstreamer
+   echo "y" | pkg install sdl # libsdl1.2-dev
+   echo "y" | pkg install sdl_image # libsdl-image1.2-dev
+   echo "y" | pkg install wget
+   echo "y" | pkg install memcached
+   echo "y" | pkg install readline
+   echo "y" | pkg install db18
+   set +x
+   set +e
+   ;;
 *)
    echo "I don't know how to provision this distro"
    exit 192
@@ -171,8 +198,15 @@ echo "Dependencies installed"
 # ----------------------------------------------------------------------------
 
 echo "Updating locate database..."
-sudo -u root updatedb
-
+if [ "$DISTRO" = "freebsd" ];then
+   if [ "$LOGNAME" != "root" ] ; then
+      echo "run /usr/libexec/locate.updatedb if you have not already"
+   else
+      /usr/libexec/locate.updatedb
+   fi
+else
+   sudo -u root updatedb
+fi
 
 # Done
 # ----------------------------------------------------------------------------

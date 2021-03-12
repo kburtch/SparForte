@@ -138,10 +138,11 @@ else
 endif
 
 # GStreamer binding is optional
+# -Werror cannot be used on FreeBSD because gstreamer header files have errors
 
 c_gstreamer.o: c_gstreamer.c
 ifneq ($(strip $(GSTREAMERFLAG)),)
-	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_gstreamer.c
+	$(CC) $(CFLAGS) $(GSTREAMERFLAG) $(GSTREAMERLIBS) -Wall -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_gstreamer.c
 else
 	@echo "GStreamer disabled"
 endif

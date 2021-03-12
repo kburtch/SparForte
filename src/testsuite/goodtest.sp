@@ -4852,7 +4852,7 @@ end;
 -- commands
 
 declare
-  x : limited command := "/bin/true";
+  x : limited command := "/bin/ls";
   x2 : limited command renames x;
 begin
   x;

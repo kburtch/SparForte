@@ -212,10 +212,14 @@ sleep 1
 echo
 
 # As per Fedja B, use Git version for build date, if available.
+# Git describe may fail if no git repo exiss
 
 (exec git --version >/dev/null 2>/dev/null)
 if [ $? -eq 0 ] ; then
-   CONFIGBUILDDATE=`git describe`
+   TMP=`git describe 2>/dev/null`
+   if [ $? -eq 0 ] ; then
+      CONFIGBUILDDATE="$TMP"
+   fi
    echo "Using Git version for build date string... $CONFIGBUILDDATE"
 else
    echo "Using current date for build date string... $CONFIGBUILDDATE"
@@ -553,6 +557,9 @@ if [ $? -eq 0 ] ; then
    echo "yes"
 else
    echo "no"
+   echo
+   echo "On FreeBSD, you many need to include the gcc-aux/bin path"
+   echo "in your PATH variable to make gcc visible."
    exit 1
 fi
 echo -n "checking for gcc w/Ada (with gcc)... "
@@ -620,8 +627,8 @@ if [ -z "$TMP" ] ; then
       echo "no"
       # Some FreeBSD put libgnat under /usr/local/lib but doesn't show
       # up in ldconfig -r
-      echo -n "checking in /usr/local/lib (e.g. some FreeBSD)... "
-      TMP=`find /usr/local/lib -type f -name "libgnat*"`
+      echo -n "checking under /usr/local (e.g. some FreeBSD)... "
+      TMP=`find /usr/local -type f -name "libgnat*"`
       if [ ! -z "$TMP" ] ; then
          echo "yes"
       else
@@ -785,12 +792,19 @@ if [ -z "$TMP" ] ; then
            echo "yes"
        else
            echo "no"
-           echo
-           echo "If you have libssl, it may be version specific"
-           echo "Please make a general symbol link libssl.so to the "
-           echo "correct version and run ldconfig to update the"
-           echo "shared library list."
-           exit 1
+           echo -n "checking for libssl (FreeBSD)..."
+           TMP=`$LDCONFIG_SUDO /sbin/ldconfig -r 2>/dev/null | fgrep libssl.so.`
+           if [ ! -z "$TMP" ] ; then
+               echo "yes"
+           else
+               echo "no"
+               echo
+               echo "If you have libssl, it may be version specific"
+               echo "Please make a general symbol link libssl.so to the "
+               echo "correct version and run ldconfig to update the"
+               echo "shared library list."
+               exit 1
+           fi
        fi
    fi
 else
@@ -1156,8 +1170,9 @@ if [ -z "$NO_READLINE" ] ; then
       if [ -z "$TMP" ] ; then
          echo "no"
       else
+         # KB: 21/03/11: hard-coded to version 8 for FreeBSD
          HAS_READLINE=1
-         READLINE_VERSION=6
+         READLINE_VERSION=8
          echo "yes"
       fi
    fi
@@ -1619,9 +1634,18 @@ if [ -z "$NO_SOUND" ] ; then
 fi
 
 if [ -z "$NO_BDB" ] ; then
-   BDBINCL='\-I\.\/bdb\/'
-   #BDBLIBS="\-L\.\/bdb\/\ \-ldb\ bdb\/bdb_constants.o\ bdb\/bdb.o\ bdb\/c_bdb.o"
-   BDBLIBS="\-ldb\ bdb\/c_bdb.o"
+   # FreeBSD 12.2: newer versions are not the default
+   if [ -d "/usr/local/include/db18" ] ;then
+      BDBINCL='\-I\/usr\/local\/include\/db5\ \-I\.\/bdb\/'
+      BDBLIBS="\-L\/usr\/local\/lib\ \-ldb-5\ bdb\/c_bdb.o"
+      BDBBASEINCL="\-I\/usr\/local\/include\/db5"
+      BDBBASELIBS="\-L\/usr\/local\/lib\ \-ldb-5"
+   else
+      BDBINCL='\-I\.\/bdb\/'
+      BDBLIBS="\-ldb\ bdb\/c_bdb.o"
+      BDBBASEINCL=""
+      BDBBASELIBS="\-ldb"
+   fi
 else
    BDBLIBS=
 fi
@@ -1655,7 +1679,14 @@ touch c_gstreamer.c
 
 # Create the makefiles
 #
-# A very long sed to substitute all the values into the top of the make file.
+# A very long sed to substitute all the values into the top of the make files.
+
+echo "Creating...src/bdb/GNUmakefile"
+
+cd bdb
+sed "s/BDBBASEINCLSUB/$BDBBASEINCL/g;s/BDBBASELIBSSUB/$BDBBASELIBS/g" < GNUmakefile.orig > GNUmakefile
+
+cd ..
 
 echo "Creating...src/GNUmakefile"
 
