@@ -22,5 +22,5 @@ clean:
 	rm -f __db* txn/__db* nbs
 
 distclean: clean
-	rm  -f *~ *.tmp *.bak
+	rm  -f *~ *.tmp *.bak GNUmakefile
 

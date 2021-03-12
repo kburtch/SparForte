@@ -221,6 +221,7 @@ distclean:
 	#$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
 	$(MAKE) -C pegasock clean
+	$(MAKE) -C bdb distclean
 	-rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	-rm -f *.gcda *.gcno *.gcov coverage.info
 	-rm -rf coverage/ testsuite/junit_result.xml
