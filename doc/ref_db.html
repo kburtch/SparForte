@@ -140,7 +140,24 @@ package.</p>
 redirected or captured using backquotes.&nbsp; The commands can be
 intermixed with the db package database commands.</p>
 
-<h2>Database Substitutions and Escaping</h2>
+<p>Some limitations on database commands:</p>
+
+<ul>
+  <li>SparForte interprets &lt;, &gt;, &gt;&gt;, $, quotes and other symbols as Bourne shell features (escape them when necessary using \)</li>
+
+  <li>Database commands cannot be used with pragma ada_95 (use the db
+library instead)<br>
+  </li>
+</ul>
+
+<h2>Database Commands and Pipes</h2>
+
+<p>The output of database commands cannot be redirect using a pipe (|).
+A pipe creates a separate process for the SQL command. This new process
+does not inherit the database connection: a "database has gone away" error
+will occur. (A fix will be made when a workaround is found.)</p>
+
+<h2>Database Substitutions and Escaping Characters</h2>
 
 <p>SparForte submits the SQL command to the database with only one
 change.&nbsp; Bush will search command for variables and will
@@ -199,26 +216,34 @@ used.</p>
         </div>
         </center>
 
-
 <p>To protect from injection attacks and unexpected word splitting, always
 use quotes.</p>
 
+<p>Single and double quotes are automatically escaped on variable substitution within quotation marks.</p>
 
+        <center>
+        <div class="code">
+                <p class="code">
+<span style="font-family: monospace;">=&gt; single_quote : constant character := ''';</span><br>
+<span style="font-family: monospace;">=&gt; select '$single_quote';</span><br>
 
-<p>Some limitations on database commands:</p>
-
-<ul>
-  <li>Database commands cannot (yet) be used in a pipeline<br>
-  </li>
-  <li>SparForte interprets &lt;, &gt;, &gt;&gt;, $, quotes and other symbols
-(escape them when necessary using \)</li>
-
-  <li>Database commands cannot be used with pragma ada_95 (use the db
-library instead)<br>
-  </li>
-</ul>
-<span style="font-family: monospace;"></span>
+<span style="font-family: monospace;">&nbsp;'   </span><br>
+<span style="font-family: monospace;">------</span><br>
+<span style="font-family: monospace;">&nbsp;'  </span><br>
+<span style="font-family: monospace;">=&gt; attack : constant string := ASCII.Quotation &amp; "; drop table foo; --"</span><br>
+<span style="font-family: monospace;">=&gt; select "$attack"; -- safe, the double quote will be escaped</span><br>
 <br>
+<span style="font-family: monospace;">&nbsp;"; drop table foo; --</span><br>
+<span style="font-family: monospace;">-------------------</span><br>
+<span style="font-family: monospace;">&nbsp;"; drop table foo; --</span><br>
+        </div>
+        </center>
+
+<p>If you need to disable escaping, try building queries with the database packages.</p>
+
+<p>Special characters in SQL LIKE clauses are not yet escaped.  For example,
+characters like percent (%) are not yet escaped.  These may be escaped
+in a future release.</p>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

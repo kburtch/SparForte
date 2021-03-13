@@ -100,3 +100,7 @@ CHANGES SINCE 2.3.1
 
 43. Fix: fixes in third-party directory database tests.  tests are now passing.
 
+44. New: pragma restriction( no_declarations_in_executable_statements ).
+
+45. [Pascal] Change: declarations once again allowed in the executable part of a block, provided pragma ada_95 or pragma restriction( no_declarations_in_executable_statements ) are not used.
+

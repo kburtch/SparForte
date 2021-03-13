@@ -1237,6 +1237,7 @@ begin
   content( e, "pragma restriction( no_annotate_todos ) - must not have annotate/todo" );
   content( e, "pragma restriction( annotations_not_optional ) - must have pragma annotate" );
   content( e, "pragma restriction( no_auto_declarations ) - no auto command line declarations" );
+  content( e, "pragma restriction( no_declarations_in_executable_statements) - declarations must be in declaration part of blocks" );
   content( e, "pragma restriction( no_external_commands ) - disable operating system commands" );
   content( e, "pragma restriction( no_memcache ) - disable connections to memcache" );
   content( e, "pragma restriction( no_mysql_database ) - disable connections to mysql" );

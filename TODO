@@ -12,11 +12,7 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
-  - sql handling
-    - redirection and pipelines - verify and testing
-    - update docs
-  - substring ${#}, ${%}
-  - whitespacing around :-, etc.
+  - whitespacing around :-, etc. is permitted in Bourne shell but is an error in SparForte
   - fix all todos
     - compiler todos
     - shell parser todos (some left)
@@ -229,30 +225,11 @@ Annoyances / Bugs with Workarounds / Updates
     - business shell, though, only imports variables right now
 
 - shell
+    - substring substitutions not imlemented yet: ${#}, ${%}
     - windows size change is not refreshing the terminal settings?
-    - escaping unprintable characters not working with readline prompt
-    - backquotes and redirections (e.g. `x 2>&1 ;`)  raises an exception
     - s := `set_error( current_output ); date -d "foo" '+%s'; set_error( standard_error );` does not work as expected (error output shoud be captured)
-    - improve bareword IFS processing
-      - the second round of IFS processing should only apply to a bareword
-        dollar expansion.  However, barewords can occur in situations
-        like "x"$y"z". A patch is in place for simple cases like $y.
-        - pathnameExpansionWithIFS always runs for every shell word because the shell
-          word could be multiple words from a dollar expansion.  However, in other
-          cases, we've already split the words.  This means the function does not
-          know if a IFS character (space or tab) in a shell word needs to be escaped
-          or not.  As a result, the command "pwd\ ;" should fail but actually runs:
-          while the space is escaped in ParseShellWord, it is treated as an IFS
-          character in pathnameExpansionWithIFS, discarded, and "pwd" is returned.
-          This issue only affects spaces and tabs: other characters are fine.
-          This issue probably requires a major review/refactor for handling the
-          shell words and the process is quite complicated.
-
 - unsorted/misc
     - err_tokenize doesn't indent properly (e.g. s := `xxx - missing backquote)
-    - the first word needs command completion.  This includes a command,
-      exported variable, or statement.  It should not be a filename.  requested
-      by user
     - spitbol support
       - http://www.dmitry-kazakov.de/match/match.htm
     - text_io's get requires a file but shouldn't, or docs should be updated

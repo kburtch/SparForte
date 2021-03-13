@@ -52,7 +52,9 @@ development model.</p>
 
 <p>Bourne shell arguments consist of groups of characters called
 "words".&nbsp; Each word is separated by spaces.&nbsp; SparForte does not
-implement the Bourne shell IFS variable.</p>
+implement the Bourne shell IFS (internal field separators) variable:
+if a variable named IFS exists, it has no effect on how characters
+are grouped into words.</p>
 
 <p>Argument expansion is the process of performing substitutions on a
 Bourne shell word.&nbsp; Argument expansion occurs at run-time since it

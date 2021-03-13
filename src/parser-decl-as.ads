@@ -46,6 +46,7 @@ package parser.decl.as is
 
 --    procedure SkipBlock( termid1, termid2 : identifier := keyword_t );
    procedure ParseBlock( termid1, termid2 : identifier := keyword_t );
+   procedure ParseBlockExecutablePartStatement;
    procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded_string; fragment : boolean := true );
    procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string );
 

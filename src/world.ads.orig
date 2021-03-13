@@ -182,6 +182,7 @@ BAD_SCRIPT : exception;
 onlyAda95                        : boolean := false; -- pragma ada_95
 restriction_annotations_not_optional : boolean := false; -- pragma restriction
 restriction_no_annotate_todos    : boolean := false; -- pragma restriction
+restriction_no_declarations      : boolean := false; -- pragma restriction
 restriction_no_auto_declarations : boolean := false; -- pragma restriction
 restriction_no_unused_identifiers: boolean := false; -- pragma restriction
 restriction_no_external_commands : boolean := false; -- pragma restriction

@@ -244,7 +244,7 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
-      ParseExecutableStatement;         -- step through context
+      ParseBlockExecutablePartStatement; -- step through context
   end loop;
   syntax_check := old_error;
   skipping_block := old_skipping;
@@ -1274,7 +1274,7 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
-      ParseExecutableStatement;         -- step through context
+      ParseBlockExecutablePartStatement; -- step through context
   end loop;
   --error_found := old_error;          -- ignore any error while skipping
   syntax_check := old_error;
@@ -1295,9 +1295,30 @@ begin
      err( "missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
-     ParseExecutableStatement;
+      ParseBlockExecutablePartStatement;
   end loop;
 end ParseBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE BLOCK EXECUTABLE PART STATEMENT
+--
+-- Handle the executable part of a block.
+-- I was asked to allow declarations by a user.  I was going to allow this
+-- when pragma ada_95 is not used but thought it better to make it a
+-- suppress until I reviewed impacts on loops and conditional statements.
+-----------------------------------------------------------------------------
+
+procedure ParseBlockExecutablePartStatement is
+begin
+   -- Probably a more efficient way to do this than checking
+   -- every statement.
+   if onlyAda95 or restriction_no_declarations then
+     ParseExecutableStatement;
+   else
+     ParseGeneralStatement;
+   end if;
+end ParseBlockExecutablePartStatement;
 
 
 -----------------------------------------------------------------------------
@@ -1314,8 +1335,7 @@ begin
      err( "missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t  loop
-     -- TODO: Really ParseBlockStatement but I haven't written it yet.
-     ParseExecutableStatement;
+     ParseBlockExecutablePartStatement;
   end loop;
   if token = exception_t then
      err( "already in an exception handler" );
@@ -1349,7 +1369,7 @@ begin
   skipping_block := true;
   -- if an error happens in the block, we were skipping it anyway...
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t loop
-      ParseExecutableStatement;         -- step through context
+     ParseBlockExecutablePartStatement; -- skip content
   end loop;
   syntax_check := old_error;
   skipping_block := old_skipping;

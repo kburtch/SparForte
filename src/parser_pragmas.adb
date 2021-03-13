@@ -106,6 +106,7 @@ type aPragmaKind is (
      restriction_annotations,
      restriction_auto,
      restriction_unused,
+     restriction_declarations,
      restriction_external,
      restriction_memcache,
      restriction_mysql,
@@ -1669,6 +1670,8 @@ begin
         pragmaKind := restriction_unused;
      elsif expr_val = "no_volatiles" then
         pragmaKind := restriction_volatiles;
+     elsif expr_val = "no_declarations_in_executable_statements" then
+        pragmaKind := restriction_declarations;
      else
         err( "unknown restriction" );
         return;
@@ -1945,6 +1948,8 @@ begin
         gccOpt := true;
      elsif pragmaKind = restriction_unused then
         restriction_no_unused_identifiers := true;
+     elsif pragmaKind = restriction_declarations then
+        restriction_no_declarations := true;
      elsif pragmaKind = suppress_word_quoting then
         world.suppress_word_quoting := true;
      elsif pragmaKind = suppress_low_priority_todos then
@@ -1953,7 +1958,7 @@ begin
         allowAllTodosForRelease := true;
      elsif pragmaKind = suppress_all_todos then
         allowAllTodosForRelease := true;
-     elsif expr_val = "no_empty_command_substitutions" then
+     elsif pragmaKind = suppress_no_empty_command_subs then
         world.suppress_no_empty_command_subs := true;
      -- Pragma volatile is checked at syntax check time because volatiles
      -- must be exempt from limited testing.  They will also be applied
@@ -2336,7 +2341,9 @@ begin
      when restriction_annotations =>
         restriction_annotations_not_optional := true;
      when restriction_unused =>
-        null; -- only applies in syntax check
+        null; -- only applies to script in syntax check
+     when restriction_declarations =>
+        restriction_no_declarations := true;
      when restriction_external =>
         restriction_no_external_commands := true;
      when restriction_memcache =>
@@ -2386,11 +2393,11 @@ begin
            end;
         end if;
      when suppress_word_quoting =>
-        null; -- only applies in syntax check
+        world.suppress_word_quoting := true;
      when suppress_low_priority_todos =>
-        null; -- only applies in syntax check
+        null; -- only applies to script in syntax check
      when suppress_all_todos =>
-        null; -- only applies in syntax check
+        null; -- only applies to script in syntax check
      when suppress_no_empty_command_subs =>
         world.suppress_no_empty_command_subs := true;
      when template | unrestricted_template =>
