@@ -130,28 +130,29 @@ mysqlm_append_for_update_t : identifier;
 -- findConnection and findQuery are to avoid throwing exceptions
 -- on uninitialized resources, giving a meaningful error instead.
 
-procedure findConnection( connectExpr : unbounded_string; connection : in out resPtr ) is
+procedure findConnection( connectId : identifier; connection : in out resPtr ) is
+  expr : constant unbounded_string := identifiers( connectId ).value.all;
 begin
-  if length( connectExpr ) = 0 then
+  if length( expr ) = 0 then
      err( optional_bold( "new_connnection" ) & " has not been called to initialize the connection" );
   else
-     findResource( to_resource_id( connectExpr ), connection );
+     findResource( to_resource_id( expr ), connection );
   end if;
 end findConnection;
 
-procedure findQuery( queryExpr : unbounded_string; query : in out resPtr ) is
+procedure findQuery( queryId : identifier; query : in out resPtr ) is
+  expr : constant unbounded_string := identifiers( queryId ).value.all;
 begin
-  if length( queryExpr ) = 0 then
+  if length( expr ) = 0 then
      err( optional_bold( "new_query" ) & " has not been called to initialize the query" );
   else
-     findResource( to_resource_id( queryExpr ), query );
+     findResource( to_resource_id( expr ), query );
   end if;
 end findQuery;
 
 procedure ParseMySQLMConnect is
   -- Syntax: mysqlm.connect( C, dbname [,user ,passwd [,host [,port ] ] ] );
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   dbnameExpr : unbounded_string;
   dbnameType : identifier;
   userExpr : unbounded_string;
@@ -168,7 +169,7 @@ procedure ParseMySQLMConnect is
   connection : resPtr;
 begin
   expect( mysqlm_connect_t );
-  ParseFirstStringParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
   ParseNextStringParameter( dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( userExpr, userType, string_t );
@@ -191,7 +192,7 @@ begin
         err( "not allowed with " & bold( "pragma restriction( no_mysql_database )" ) );
      end if;
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        begin
          Set_DB_Name( connection.C, to_string( dbnameExpr ) );
        exception when others =>
@@ -266,16 +267,15 @@ procedure ParseMySQLMConnect renames not_configured;
 procedure ParseMySQLMEngineOf( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := mysqlm.engine_of( C );
   -- Source: APQ.Engine_Of
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   kind := db_database_type_t;
   expect( mysqlm_engine_of_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_unbounded_string( integer'image( Database_Type'pos( Engine_Of( connection.C ) ) ) );
        if length( result ) > 0 then
           if element( result, 1 ) = ' ' then
@@ -350,12 +350,11 @@ procedure ParseMySQLMPrepare is
   afterExpr : unbounded_string;
   afterType : identifier;
   hasAfter  : boolean := false;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_prepare_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
@@ -364,7 +363,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        if hasAfter then
           Prepare( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
        else
@@ -390,12 +389,11 @@ procedure ParseMySQLMAppend is
   afterExpr : unbounded_string;
   afterType : identifier;
   hasAfter  : boolean := false;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_append_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
@@ -404,7 +402,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        if hasAfter then
           Append( query.Q, to_string( sqlExpr ), to_string( afterExpr ) );
        else
@@ -427,16 +425,15 @@ procedure ParseMySQLMAppendLine is
   -- Syntax: mysqlm.append_line( query, sqlstmt );
   sqlExpr   : unbounded_string;
   sqlType   : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_append_line_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseLastStringParameter( sqlExpr, sqlType, string_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        Append_Line( query.Q, to_string( sqlExpr ) );
      exception when others =>
        err_exception_raised;
@@ -458,16 +455,14 @@ procedure ParseMySQLMAppendQuoted is
   afterExpr : unbounded_string;
   afterType : identifier;
   hasAfter  : boolean := false;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_append_quoted_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseNextNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseNextInOutParameter( connectId, mysqlm_connection_t );
   ParseNextStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( afterExpr, afterType, string_t );
@@ -476,8 +471,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectId, connection );
+       findQuery( queryId, query );
        if hasAfter then
           Append_Quoted( query.Q, connection.C, to_string( sqlExpr ), to_string( afterExpr ) );
        else
@@ -498,20 +493,18 @@ procedure ParseMySQLMAppendQuoted renames not_configured;
 
 procedure ParseMySQLMExecute is
   -- execute( Q, C );
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_execute_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseLastInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectId, connection );
+       findQuery( queryId, query );
        Execute( query.Q, connection.C );
      exception when not_connected =>
        err( "not connected" );
@@ -537,16 +530,14 @@ procedure ParseMySQLMExecuteChecked is
   msgExpr   : unbounded_string;
   msgType   : identifier;
   hasMsg    : boolean := false;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_execute_checked_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseNextNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseNextInOutParameter( connectId, mysqlm_connection_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( msgExpr, msgType, string_t );
      hasMsg := true;
@@ -554,8 +545,8 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
-       findConnection( connectExpr, connection );
+       findQuery( queryId, query );
+       findConnection( connectId, connection );
        if hasMsg then
           Execute_Checked( query.Q, connection.C, to_string( msgExpr ) );
        else
@@ -594,15 +585,14 @@ procedure ParseMySQLMExecuteChecked renames not_configured;
 
 procedure ParseMySQLMDisconnect is
   -- Syntax: mysqlm.disconnect;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_disconnect_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-        findConnection( connectExpr, connection );
+        findConnection( connectId, connection );
         Disconnect( connection.C );
      exception when not_connected =>
         err( "no database connection" );
@@ -623,16 +613,15 @@ procedure ParseMySQLMDisconnect renames not_configured;
 
 procedure ParseMySQLMIsConnected( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.is_connected
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( mysqlm_is_connected_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_bush_boolean( is_connected( connection.C ) );
      exception when others =>
        result := to_bush_boolean( false );
@@ -650,15 +639,14 @@ procedure ParseMySQLMIsConnected( result : out unbounded_string; kind : out iden
 procedure ParseMySQLMReset is
   -- Syntax: mysqlm.reset( c )
   -- Source: APQ.Reset
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_reset_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        Reset( connection.C );
      exception when others =>
        err_exception_raised;
@@ -676,16 +664,15 @@ procedure ParseMySQLMReset renames not_configured;
 procedure ParseMySQLMErrorMessage( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.error_message
   -- Source: APQ.Error_Message
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId : identifier;
   connection : resPtr;
 begin
   kind := string_t;
   expect( mysqlm_error_message_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_unbounded_string( Error_Message( connection.C ) );
      exception when others =>
        err_exception_raised;
@@ -717,16 +704,15 @@ procedure ParseMySQLMErrorMessage( result : out unbounded_string; kind : out ide
 procedure ParseMySQLMInAbortState( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.in_abort_state( c )
   -- Source: APQ.In_Abort_State
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId : identifier;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( mysqlm_in_abort_state_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_bush_boolean( In_Abort_State( connection.C ) );
      exception when not_connected =>
        err( "not connected" );
@@ -746,16 +732,15 @@ procedure ParseMySQLMInAbortState( result : out unbounded_string; kind : out ide
 procedure ParseMySQLMOptions( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: mysqlm.options( c )
   -- Source: APQ.Options
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   kind := string_t;
   expect( mysqlm_options_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_unbounded_string( Options( connection.C ) );
      exception when others =>
        err_exception_raised;
@@ -775,18 +760,17 @@ procedure ParseMySQLMSetRollbackOnFinalize is
   -- Source: APQ.Set_Rollback_On_Finalize
   rollExpr : unbounded_string;
   rollType : identifier;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_set_rollback_on_finalize_t );
-  ParseFirstNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
   ParseLastEnumParameter( rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        Set_Rollback_On_Finalize( connection.C, rollback );
      exception when others =>
        err_exception_raised;
@@ -804,16 +788,15 @@ procedure ParseMySQLMSetRollbackOnFinalize renames not_configured;
 procedure ParseMySQLMWillRollbackOnFinalize( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysqlm.will_rollback_on_finalize( C );
   -- Source: APQ.Will_Rollback_On_Finalize
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( mysqlm_will_rollback_on_finalize_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_bush_boolean( Will_Rollback_On_Finalize( connection.C ) );
      exception when others =>
        err_exception_raised;
@@ -837,12 +820,11 @@ procedure ParseMySQLMOpenDBTrace is
   modeType  : identifier;
   traceMode : trace_mode_type;
   hasMode  : boolean := false;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_open_db_trace_t );
-  ParseFirstNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
   ParseNextStringParameter( fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
@@ -852,7 +834,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        if hasMode then
           Open_DB_Trace( connection.C, to_string( fnameExpr ), traceMode );
        else
@@ -880,15 +862,14 @@ procedure ParseMySQLMOpenDBTrace renames not_configured;
 procedure ParseMySQLMCloseDBTrace is
   -- Syntax: mysqlm.close_db_trace( C );
   -- Source: APQ.Close_DB_Trace
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_close_db_trace_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        Close_DB_Trace( connection.C );
      exception when others =>
        err_exception_raised;
@@ -908,18 +889,17 @@ procedure ParseMySQLMSetTrace is
   -- Source: APQ.Set_Trace
   traceExpr : unbounded_string;
   traceType : identifier;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_set_trace_t );
-  ParseFirstNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
   ParseLastEnumParameter( traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        Set_Trace( connection.C, traceback );
      exception when others =>
        err_exception_raised;
@@ -937,16 +917,15 @@ procedure ParseMySQLMSetTrace renames not_configured;
 procedure ParseMySQLMIsTrace( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysqlm.is_trace( C );
   -- Source: APQ.Is_Trace
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   kind := boolean_t;
   expect( mysqlm_is_trace_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        result := to_bush_boolean( Is_Trace( connection.C ) );
      exception when others =>
        err_exception_raised;
@@ -964,15 +943,14 @@ procedure ParseMySQLMIsTrace( result : out unbounded_string; kind : out identifi
 procedure ParseMySQLMClear is
   -- Syntax: mysql.clear( Q );
   -- Source: APQ.Clear
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_clear_t );
-  ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseSingleInOutParameter( queryId, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        Clear( query.Q );
      exception when CONSTRAINT_ERROR =>
        err( "constraint error exception" );
@@ -994,12 +972,11 @@ procedure ParseMySQLMRaiseExceptions is
   -- Source: APQ.Raise_Exceptions
   raiseExpr : unbounded_string;
   raiseType : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_raise_exceptions_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( raiseExpr, raiseType, boolean_t );
   else
@@ -1010,7 +987,7 @@ begin
      declare
        raise_them : constant boolean := raiseExpr = to_unbounded_string( "1" );
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        Raise_Exceptions( query.Q, raise_them );
      exception when others =>
        err_exception_raised;
@@ -1030,12 +1007,11 @@ procedure ParseMySQLMReportErrors is
   -- Source: APQ.Report_Errors
   reportExpr : unbounded_string;
   reportType : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_report_errors_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( reportExpr, reportType, boolean_t );
   else
@@ -1046,7 +1022,7 @@ begin
      declare
        report_them : constant boolean := reportExpr = to_unbounded_string( "1" );
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        Report_Errors( query.Q, report_them );
      exception when others =>
        err_exception_raised;
@@ -1064,20 +1040,18 @@ procedure ParseMySQLMReportErrors renames not_configured;
 procedure ParseMySQLMBeginWork is
   -- Syntax: mysqlm.begin_work(Q, C );
   -- Source: APQ.Begin_Work
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_begin_work_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseLastInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
-       findConnection( connectExpr, connection );
+       findQuery( queryId, query );
+       findConnection( connectId, connection );
        Begin_Work( query.Q, connection.C );
      exception when abort_state =>
        err( "in abort state" );
@@ -1099,20 +1073,18 @@ procedure ParseMySQLMBeginWork renames not_configured;
 procedure ParseMySQLMRollbackWork is
   -- Syntax: mysqlm.rollback_work( Q, C );
   -- Source: APQ.Rollback_Work
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_rollback_work_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseLastInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectId, connection );
+       findQuery( queryId, query );
        Rollback_Work( query.Q, connection.C );
      exception when abort_state =>
        err( "in abort state" );
@@ -1134,20 +1106,18 @@ procedure ParseMySQLMRollbackWork renames not_configured;
 procedure ParseMySQLMCommitWork is
   -- Syntax: mysqlm.commit_work( Q, C );
   -- Source: APQ.Commit_Work
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_commit_work_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseLastNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseLastInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectId, connection );
+       findQuery( queryId, query );
        Commit_Work( query.Q, connection.C );
      exception when abort_state =>
        err( "in abort state" );
@@ -1169,15 +1139,14 @@ procedure ParseMySQLMCommitWork renames not_configured;
 procedure ParseMySQLMRewind is
   -- Syntax: mysqlm.rewind( Q );
   -- Source: APQ.Rewind
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_rewind_t );
-  ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseSingleInOutParameter( queryId, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        Rewind( query.Q );
      exception when others =>
        err_exception_raised;
@@ -1198,12 +1167,11 @@ procedure ParseMySQLMFetch is
   expr_val : unbounded_string;
   expr_type : identifier;
   haveIndex : boolean := false;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId   : identifier;
   query : resPtr;
 begin
   expect( mysqlm_fetch_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextNumericParameter( expr_val, expr_type, mysqlm_tuple_index_type_t );
      haveIndex := true;
@@ -1211,7 +1179,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        if haveIndex then
           Fetch( query.Q, Tuple_Index_Type( to_numeric( expr_val ) ) );
        else
@@ -1237,16 +1205,15 @@ procedure ParseMySQLMFetch renames not_configured;
 procedure ParseMySQLMEndOfQuery( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: b := mysqlm.end_of_query( Q );
   -- Source: APQ.End_Of_Query
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := boolean_t;
   expect( mysqlm_end_of_query_t );
-  ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseSingleInOutParameter( queryId, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_bush_boolean( End_Of_Query( query.Q ) );
      exception when others =>
        err_exception_raised;
@@ -1264,16 +1231,15 @@ procedure ParseMySQLMEndOfQuery( result : out unbounded_string; kind : out ident
 procedure ParseMySQLMTuple( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: t := mysql.tuple( Q );
   -- Source: APQ.Tuple
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := mysqlm_tuple_index_type_t;
   expect( mysqlm_tuple_t );
-  ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseSingleInOutParameter( queryId, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_unbounded_string( Tuple_Index_Type'image( Tuple( query.Q ) ) );
      exception when no_tuple =>
        err( "no tuple" );
@@ -1293,16 +1259,15 @@ procedure ParseMySQLMTuple( result : out unbounded_string; kind : out identifier
 procedure ParseMySQLMTuples( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.tuples( Q );
   -- Source: APQ.Tuples
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := mysqlm_tuple_count_type_t;
   expect( mysqlm_tuples_t );
-  ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseSingleInOutParameter( queryId, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_unbounded_string( Tuple_Count_Type'image( Tuples( query.Q ) ) );
      exception when no_result =>
        err( "no result" );
@@ -1322,16 +1287,15 @@ procedure ParseMySQLMTuples( result : out unbounded_string; kind : out identifie
 procedure ParseMySQLMColumns( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: n := mysqlm.columns( Q );
   -- Source: APQ.Columns
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := natural_t;
   expect( mysqlm_columns_t );
-  ParseSingleNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseSingleInOutParameter( queryId, mysqlm_query_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_unbounded_string( Natural'image( Columns( query.Q ) ) );
      exception when no_result =>
        err( "no result" );
@@ -1353,17 +1317,16 @@ procedure ParseMySQLMColumnName( result : out unbounded_string; kind : out ident
   -- Source: APQ.Column_Name;
   exprVal : unbounded_string;
   exprType : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := string_t;
   expect( mysqlm_column_name_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseLastNumericParameter( exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_unbounded_string(
           Column_Name( query.Q, Column_Index_Type( to_numeric( exprVal ) ) )
        );
@@ -1387,17 +1350,16 @@ procedure ParseMySQLMColumnIndex( result : out unbounded_string; kind : out iden
   -- Source: APQ.Column_Index
   exprVal : unbounded_string;
   exprType : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := mysqlm_column_index_type_t;
   expect( mysqlm_column_index_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseLastStringParameter( exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_unbounded_string( Column_Index_Type'image(
            Column_Index( query.Q, to_string( exprVal ) )
        ) );
@@ -1449,17 +1411,16 @@ procedure ParseMySQLMIsNull( result : out unbounded_string; kind : out identifie
   -- Source: APQ.Is_Null;
   exprVal : unbounded_string;
   exprType : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
 begin
   kind := boolean_t;
   expect( mysqlm_is_null_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseLastNumericParameter( exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := to_bush_boolean(
           Is_Null( query.Q,
           Column_Index_Type( to_numeric( exprVal ) ) )
@@ -1486,17 +1447,16 @@ procedure ParseMySQLMValue( result : out unbounded_string; kind : out identifier
   -- Source: APQ.Value;
   exprVal  : unbounded_string;
   exprType : identifier;
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId  : identifier;
   query : resPtr;
 begin
   kind := universal_t;
   expect( mysqlm_value_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
   ParseLastNumericParameter( exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
-       findQuery( queryExpr, query );
+       findQuery( queryId, query );
        result := Value( query.Q, Column_Index_Type( to_numeric( exprVal ) ) );
      exception when no_tuple =>
        err( "no tuple" );
@@ -1688,19 +1648,17 @@ end MySQLMShowIt;
 procedure ParseMySQLMShow is
   -- Syntax: mysqlm.show( Q, C );
   -- Source: N/A
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
-  connectionExpr : unbounded_string;
-  connectionType : identifier;
+  connectionId : identifier;
   connection : resPtr;
 begin
   expect( mysqlm_show_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseLastNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseLastInOutParameter( connectionId, mysqlm_connection_t );
   if isExecutingCommand then
-     findConnection( connectionExpr, connection );
-     findQuery( queryExpr, query );
+     findConnection( connectionId, connection );
+     findQuery( queryId, query );
      MySQLMShowIt( Q => query.Q, C => connection );
   end if;
 end ParseMySQLMShow;
@@ -1721,16 +1679,15 @@ procedure ParseMySQLMList is
   columnWidths   : array( 1..32 ) of integer;
   totalWidth     : integer;
   width          : integer;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
   Q : APQ.MySQL.Client.Query_Type;
 begin
   expect( mysqlm_list_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
        --dbname := to_unbounded_string( DB_Name( connection.C ) );
      if is_connected( connection.C ) then
         -- Show tablename and kind, lookup owner from another table.
@@ -1940,17 +1897,16 @@ procedure ParseMySQLMSchema is
   width          : integer;
   exprType       : identifier;
   exprVal        : unbounded_string;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
   Q : APQ.MySQL.Client.Query_Type;
 begin
   expect( mysqlm_schema_t );
-  ParseFirstNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
   ParseLastStringParameter( exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
      if is_connected( connection.C ) then
         -- Find column name, type, type length, not null and default flags
         -- Don't show dropped columns, columns with system types (oid, etc).
@@ -2215,16 +2171,15 @@ procedure ParseMySQLMUsers is
   columnWidths   : array( 1..32 ) of integer;
   totalWidth     : integer;
   width          : integer;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
   Q : APQ.MySQL.Client.Query_Type;
 begin
   expect( mysqlm_users_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
      if is_connected( connection.C ) then
 
         -- Privileges are unique to a particular database engine
@@ -2421,16 +2376,15 @@ procedure ParseMySQLMDatabases is
   columnWidths   : array( 1..32 ) of integer;
   totalWidth     : integer;
   width          : integer;
-  connectExpr : unbounded_string;
-  connectType : identifier;
+  connectId   : identifier;
   connection : resPtr;
   Q : APQ.MySQL.Client.Query_Type;
 begin
   expect( mysqlm_databases_t );
-  ParseSingleNumericParameter( connectExpr, connectType, mysqlm_connection_t );
+  ParseSingleInOutParameter( connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
-       findConnection( connectExpr, connection );
+       findConnection( connectId, connection );
      if is_connected( connection.C ) then
         -- Show tablename and kind, lookup owner from another table.
         -- Don't show tables owned by postgres (user 1), TOAST tables or indexes
@@ -2700,18 +2654,16 @@ procedure ParseMySQLMFetchValues is
 -- Fetch a row, reading all values into record r.  The column names must match
 -- the fields in the record (the record fields need not be in the same order
 -- as the query results).
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
-  connectionExpr : unbounded_string;
-  connectionType : identifier;
+  connectionId : identifier;
   connection : resPtr;
   id : identifier;
   --ref : reference;
 begin
   expect( mysqlm_fetch_values_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseNextInOutParameter( connectionId, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( id  );
 -- TODO: is kind in the reference?
@@ -2727,8 +2679,8 @@ begin
        elementKind : identifier;
      begin
        -- get the resources
-       findConnection( connectionExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectionId, connection );
+       findQuery( queryId, query );
 
        -- fetch the next row
        Fetch( query.q );
@@ -2837,17 +2789,15 @@ procedure ParseMySQLMAppendForInsert is
 -- mysqlm.append_for_insert( Q, C, r );
 -- append the fields of record r to the query in the format of an ANSI SQL insert
 -- " ( a, b, ... ) VALUES ( 'a', 'b', ... )"
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
-  connectionExpr : unbounded_string;
-  connectionType : identifier;
+  connectionId : identifier;
   connection : resPtr;
   id : identifier;
 begin
   expect( mysqlm_append_for_insert_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseNextInOutParameter( connectionId, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( id  );
 -- TODO: is kind in the reference?
@@ -2865,8 +2815,8 @@ begin
        firstField : boolean := true;
      begin
        -- get the resources
-       findConnection( connectionExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectionId, connection );
+       findQuery( queryId, query );
 
        append( query.Q, " (" );
 
@@ -2958,17 +2908,15 @@ procedure ParseMySQLMAppendForUpdate is
 -- mysqlm.append_for_update( Q, C, r );
 -- append the fields of record r to the query in the format of an ANSI SQL update
 -- " SET a = 'a', b = 'b', ..."
-  queryExpr : unbounded_string;
-  queryType : identifier;
+  queryId : identifier;
   query : resPtr;
-  connectionExpr : unbounded_string;
-  connectionType : identifier;
+  connectionId : identifier;
   connection : resPtr;
   id : identifier;
 begin
   expect( mysqlm_append_for_update_t );
-  ParseFirstNumericParameter( queryExpr, queryType, mysqlm_query_t );
-  ParseNextNumericParameter( connectionExpr, connectionType, mysqlm_connection_t );
+  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseNextInOutParameter( connectionId, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( id  );
 -- TODO: is kind in the reference?
@@ -2986,8 +2934,8 @@ begin
        firstField : boolean := true;
      begin
        -- get the resources
-       findConnection( connectionExpr, connection );
-       findQuery( queryExpr, query );
+       findConnection( connectionId, connection );
+       findQuery( queryId, query );
 
        Append( query.Q, " SET " );
        -- The basic logic is copied from DoRecordToJson()

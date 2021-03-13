@@ -155,7 +155,7 @@ begin
 
      mysqlm.prepare( Q, "UPDATE foobar" );
      mysqlm.append_for_update( Q, C, r );
-     mysqlm.append( Q, "WHERE i = 1" );
+     mysqlm.append( Q, "WHERE i = 15" );
      mysqlm.execute( Q, C );
 
      mysqlm.prepare( Q, "select b, i, s from foobar" );
@@ -166,13 +166,13 @@ begin
      pragma assert( r.i = 7 );
      pragma assert( r.s = "cart" );
 
-     mysqlm.prepare( Q, "INSERT INTO foobar" );
-     mysqlm.append_for_insert( Q, C, r );
-     mysqlm.execute( Q, C );
-
      r.i := 2;
      r.s := "horse";
      r.b := true;
+
+     mysqlm.prepare( Q, "INSERT INTO foobar" );
+     mysqlm.append_for_insert( Q, C, r );
+     mysqlm.execute( Q, C );
 
      mysqlm.prepare( Q, "select b, i, s from foobar order by i" );
      mysqlm.execute( Q, C );

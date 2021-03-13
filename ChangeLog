@@ -2,11 +2,11 @@ For the latest news, visit the SparForte web site.
 
 Objective: Shell and Command Line Improvements
 
-CHANGES SINCE 2.3.1
+CHANGES SINCE 2.3
 
 1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.  
 
-CHANGES SINCE 2.3
+CHANGES SINCE 2.3.1
 
 2. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
 
@@ -80,17 +80,23 @@ CHANGES SINCE 2.3
 
 33. Fix: Files.Is_Directory no longer appends an unnecessary ASCII.NUL to the path.
 
-34. New: shell history saved as ~/.sparforte_history.
+34. New: shell history saved as file ~/.sparforte_history.
 
-35. New: --color or --colour option to enable coloured messages.
+35. New: --color or --colour option to enable coloured messages and UTF-8 icons.
 
-36. New: --icons to enable UTF-8 icons in messages.
+36. Fix: --gcc-errors no longer use bold on type errors.
 
-37. Fix: --gcc-errors no longer use bold on type errors.
+37. Fix: --gcc-errors now takes effect for syntax checking, not just execution.
 
-38. Fix: --gcc-errors now takes effect for syntax checking, not just execution.
+38. Fix: -e commands no longer require a trailing semi-colon.
 
-39. Fix: -e commands no longer require a trailing semi-colon.
+39. New: strings.null_unbounded_string.
 
-40. New: strings.null_unbounded_string.
+40. New: Support for FreeBSD 12.2 and the latest Raspian Linux.
+
+41. Fix: mysqlm package no longer shows limited variable errors for connections and queries.  (mysql package unaffected)
+
+42. Fix: dbm package no longer shows limited variable errors for connections and queries.  (db package unaffected)
+
+43. Fix: fixes in third-party directory database tests.  tests are now passing.
 

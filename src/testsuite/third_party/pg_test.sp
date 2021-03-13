@@ -155,7 +155,7 @@ begin
 
      dbm.prepare( Q, "UPDATE foobar" );
      dbm.append_for_update( Q, C, r );
-     dbm.append( Q, "WHERE i = 1" );
+     dbm.append( Q, "WHERE i = 15" );
      dbm.execute( Q, C );
 
      dbm.prepare( Q, "select b, i, s from foobar" );
@@ -166,13 +166,13 @@ begin
      pragma assert( r.i = 7 );
      pragma assert( r.s = "cart" );
 
-     dbm.prepare( Q, "INSERT INTO foobar" );
-     dbm.append_for_insert( Q, C, r );
-     dbm.execute( Q, C );
-
      r.i := 2;
      r.s := "horse";
      r.b := true;
+
+     dbm.prepare( Q, "INSERT INTO foobar" );
+     dbm.append_for_insert( Q, C, r );
+     dbm.execute( Q, C );
 
      dbm.prepare( Q, "select b, i, s from foobar order by i" );
      dbm.execute( Q, C );
