@@ -13,16 +13,7 @@ Priority Issues (Fix These First)
 
 - shell parser rewrite
   - sql handling
-    - check bareword handling - sql and shell
-    - LIKE requires special handling
-      - check %, \, _, [ must be escaped, but it depends on the engine
-      - postgresql is more complicated
-        - has "SIMILAR TO" (regex)
-        - has ~ regex operators
-    - double quoted string substitution - testing
-    - single quoted string substitution - testing
-      - escape single quote substitution in a single quote string
-    - redirection and piplines - verify and testing
+    - redirection and pipelines - verify and testing
     - update docs
   - substring ${#}, ${%}
   - whitespacing around :-, etc.
@@ -34,9 +25,7 @@ Priority Issues (Fix These First)
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
   - test sparforte as a login shell
-  - sql words
-    - sql escaping on dollar substitutions
-    - embedded sql - returning sql select in % (as JSON?) or by `..`?
+- why are in out parameters not references?
 - interpreterPhase - is it set correctly in all places?
 - can I address dash shell compatibility?
 - missing a case "when" keyword can cause string exception
@@ -56,6 +45,13 @@ Priority Issues (Fix These First)
 - Linux supplies a umask, but no umask command in shell. - discuss
 - Research: for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
+- SQL security
+    - LIKE requires parsing to understand the quote context.  A quoted
+      string following a LIKE must be escaped differently.
+      - check %, \, _, [ must be escaped, but it depends on the engine
+      - postgresql is more complicated
+        - has "SIMILAR TO" (regex)
+        - has ~ regex operators
 - Verify: generic/parameterized types
   - test renaming and copying generic types
   - is copying done for in mode parameters
@@ -125,6 +121,7 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- embedded sql - returning sql select in % (as JSON?) or by `..`?
 - constant spec negative tests
   - array constant specifications
     - array foo referencing another foo during initialization (confirm)

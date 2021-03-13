@@ -280,5 +280,40 @@ begin
   mysql.execute;
   mysql.show; -- exception thrown
 
+  -- embedded SQL (MySQL)
+
+  declare
+     single_quote : constant character := ''';
+     double_quote : constant character := '"';
+     s : string;
+
+     function strip_formatting( original : string ) return string is
+        s : string := original;
+     begin
+        if strings.element( s, 1 ) = ASCII.CR then
+           s := strings.delete( s, 1, 1 );
+        end if;
+        if strings.element( s, 1 ) = ASCII.LF then
+           s := strings.delete( s, 1, 1 );
+        end if;
+        s := strings.trim( s );
+        return s;
+     end strip_formatting;
+
+   begin
+     s := `select "$single_quote";`;
+     s := strip_formatting( s );
+     pragma assert( strings.element( s, 1 ) = ''' );
+     s := `select "$double_quote";`;
+     s := strip_formatting( s );
+     pragma assert( strings.element( s, 1 ) = '"' );
+     s := `select '$single_quote';`;
+     s := strip_formatting( s );
+     pragma assert( strings.element( s, 1 ) = ''' );
+     s := `select '$double_quote';`;
+     s := strip_formatting( s );
+     pragma assert( strings.element( s, 1 ) = '"' );
+  end;
+
 end mysql_test;
 
