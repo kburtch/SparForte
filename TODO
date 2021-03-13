@@ -831,8 +831,7 @@ ISSUES (Bourne Shell)
     - SIGHUP handler: SIGHUP should be broadcast to all children like BASH
 
   - other shell issues (Shell Issues)
-    - SHELL variable doesn't always initialize to spar command path
-    - pragma to disable emacs or vi mode
+    - SHELL variable doesn't always initialize to spar command path.  It doesn't handle ../
     - collating order with file globbing and locales
     - remove dependency on Ada.Command_Line.Environment -- not supported in Windows GNAT
     - an error terminates all commands in an interactive semi-colon list, but
@@ -846,11 +845,6 @@ ISSUES (Bourne Shell)
     - insert sometimes inserts characters wrong in the command line.  Backing
       up, deleting and retyping is OK, but cursoring over and changing
       sometimes doesn't keep line position properly. Still an issue?
-    - @ works with procedures (but not with shell commands yet): the shell
-      command identifiers might be a path "/bin/ls" or if command is an
-      identifier($command if) will it still work?
-      - should be its own identifier...maybe comma, too, to simplify code
-      - document
    - environment problems: using putenv removes the variable from the
      environment but GNAT's command_line package still looks for it and
      returns a garbage value for that environment entry (as if it caches the

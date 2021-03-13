@@ -3161,6 +3161,11 @@ procedure resetScanner is
   end importEnvironment;
 
   temp_id : identifier;                                         -- unused id
+  path_id : identifier;
+  pwd_id  : identifier;
+  shell_id: identifier;
+
+  fname : unbounded_string := basename( to_unbounded_string( Ada.Command_line.Command_Name ) );
 
 begin
 
@@ -3297,16 +3302,16 @@ begin
   -- yet declared.  PATH, PWD, OLDPWD, HOME are necessary for SparForte
   -- to function: if they weren't imported, declare them locally.
 
-  findIdent( to_unbounded_string( "PATH" ), temp_id );        -- PATH
-  if temp_id = eof_t then                                     -- still missing?
-     declareIdent( temp_id, "PATH", uni_string_t );           -- declare it
+  findIdent( to_unbounded_string( "PATH" ), path_id );        -- PATH
+  if path_id = eof_t then                                     -- still missing?
+     declareIdent( path_id, "PATH", uni_string_t );           -- declare it
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).usage := constantUsage;            -- PATH is a
+     identifiers( path_id).usage := constantUsage;            -- PATH is a
   end if;                                                     -- constant
-  findIdent( to_unbounded_string( "PWD" ), temp_id );         -- PWD
-  if temp_id = eof_t then                                     -- missing?
-     declareIdent( temp_id, "PWD", uni_string_t );            -- declare it
+  findIdent( to_unbounded_string( "PWD" ), pwd_id );          -- PWD
+  if pwd_id = eof_t then                                      -- missing?
+     declareIdent( pwd_id, "PWD", uni_string_t );             -- declare it
   end if;
   -- Always set the value.  PWD could be defined in the environment
   -- by something else
@@ -3319,12 +3324,12 @@ begin
     C_reset_errno;
     getcwd( buffer, buffer'length );
     if C_errno = 0 then
-       identifiers( temp_id ).value.all := to_unbounded_string(
+       identifiers( pwd_id ).value.all := to_unbounded_string(
            buffer( 1..index( buffer, ASCII.NUL & "" ) - 1 ) ) ;
     end if;
   end;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).usage := constantUsage;            -- PWD is a
+     identifiers( pwd_id).usage := constantUsage;             -- PWD is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "OLDPWD" ), temp_id );      -- OLDPWD
   if temp_id = eof_t then                                     -- missing?
@@ -3340,19 +3345,51 @@ begin
   if rshOpt then                                              -- restricted sh?
      identifiers( temp_id).usage := constantUsage;            -- HOME is a
   end if;                                                     -- constant
-  findIdent( to_unbounded_string( "SHELL" ), temp_id );       -- SHELL
-  if temp_id = eof_t then                                     -- missing?
-     declareIdent( temp_id, "SHELL", uni_string_t );          -- declare it
-     identifiers( temp_id ).export := true;
-     -- not exactly right, but works...
-     if C_is_executable_file( "/usr/local/bin/spar" & ASCII.NUL ) then
-        identifiers( temp_id ).value.all := to_unbounded_string( "/usr/local/bin/spar" );
-     elsif C_is_executable_file( "/bin/spar" & ASCII.NUL ) then
-        identifiers( temp_id ).value.all := to_unbounded_string( "/bin/spar" );
-     end if;
+  -- For the SHELL variable, we need to overwrite it.
+  findIdent( to_unbounded_string( "SHELL" ), shell_id );      -- SHELL
+  if shell_id = eof_t then                                    -- missing?
+     declareIdent( shell_id, "SHELL", uni_string_t );         -- declare it
+  end if;
+  identifiers( shell_id ).export := true;
+  -- A reasonable default
+  identifiers( shell_id ).value.all := to_unbounded_string( Ada.Command_Line.Command_Name );
+  -- There could be multiple SparForte's installed on a system.
+  -- I have to walk the path directories to find it.
+  if identifiers( shell_id ).value.all = fname then
+     declare
+        remainingCmdPathDirs : unbounded_string := identifiers( path_id ).value.all;
+        candidateCmdPathDir : unbounded_string;
+        pos : natural;
+        candidate : unbounded_string;
+     begin
+        while remainingCmdPathDirs /= null_unbounded_string loop
+           pos := index( remainingCmdPathDirs, ":" );
+           if pos > 0 then
+              candidateCmdPathDir := unbounded_slice( remainingCmdPathDirs, 1, pos-1 );
+              remainingCmdPathDirs := delete( remainingCmdPathDirs, 1, pos );
+           else
+              candidateCmdPathDir := remainingCmdPathDirs;
+              remainingCmdPathDirs := null_unbounded_string;
+           end if;
+           candidate := candidateCmdPathDir & "/" & fname;
+           if C_is_executable_file( to_string( candidate & ASCII.NUL ) ) then
+              identifiers( shell_id ).value.all := candidate;
+              exit;
+           end if;
+        end loop;
+     exception when others => null;
+     end;
+  elsif head( identifiers( shell_id ).value.all, 2 ) = "./" then
+     declare
+        candidate : unbounded_string := identifiers( temp_id ).value.all;
+     begin
+        candidate := delete( candidate, 1, 1 );
+        candidate := identifiers( pwd_id ).value.all & "/" & fname;
+        identifiers( shell_id ).value.all := candidate;
+     end;
   end if;
   if rshOpt then                                              -- restricted sh?
-     identifiers( temp_id).usage := constantUsage;            -- SHELL is a
+     identifiers( shell_id).usage := constantUsage;           -- SHELL is a
   end if;                                                     -- constant
   findIdent( to_unbounded_string( "TERM" ), temp_id );        -- TERM
   if temp_id = eof_t then                                     -- missing?

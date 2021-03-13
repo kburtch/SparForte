@@ -2545,6 +2545,13 @@ echo '"';
 echo '\';
 echo is;
 -- ^ compressed token ('is' is a reserved word)
+
+-- shell itself
+
+echo @ echo;
+echo "a" @ "b";
+echo ("c") @ ("d");
+
 -- command echo;
 
 -- Path globbing tests

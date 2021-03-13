@@ -3724,6 +3724,9 @@ begin
      if pipe2Next and onlyAda95 then
         err( "pipelines are not allowed with " & optional_yellow( "pragma ada_95" ) );
      end if;
+
+     -- Running in the background
+
      if token = symbol_t and identifiers(token).value.all = "&" then
         inbackground := true;
         expect( symbol_t, "&" );
@@ -3732,6 +3735,19 @@ begin
         elsif pipeFromLast then
            err( "no & - final piped command always runs in the foreground" );
         end if;
+        if token /= symbol_t or identifiers( token ).value.all /= ";" then
+           err( "unexpected arguments after &" );
+        end if;
+     end if;
+
+     -- Chaining with at-sign
+
+     if token = symbol_t and identifiers(token).value.all = "@" then
+        if onlyAda95 then
+           err( "@ not allowed with " & optional_yellow( "pragma ada_95" ) );
+        end if;
+        itselfNext := true;
+        expect( symbol_t, "@" );
      end if;
 
   else
