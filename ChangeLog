@@ -104,3 +104,5 @@ CHANGES SINCE 2.3.1
 
 45. [Pascal] Change: declarations once again allowed in the executable part of a block, provided pragma ada_95 or pragma restriction( no_declarations_in_executable_statements ) are not used.
 
+46. Fix: set_error( current_output ) within AdaScript `..` now works as expected, with the backqoutes capturing error output.
+

@@ -4074,6 +4074,7 @@ procedure RunAndCaptureOutput( s : unbounded_string; results : out
   scriptState : aScriptState;
   --command     : unbounded_string := s;
   oldStandardOutput : aFileDescriptor;
+  oldCurrentOutput : aFileDescriptor;
   resultFile  : aFileDescriptor := -1;
   resultName  : unbounded_string;
   result      : aFileDescriptor;
@@ -4088,7 +4089,7 @@ begin
   if isExecutingCommand then                               -- only for real
      makeTempFile( resultName );                           -- results filename
      resultFile := open( to_string( resultName ) & ASCII.NUL, -- open results
-        O_WRONLY+O_TRUNC, 8#644# );                        -- for writing
+        O_WRONLY+O_TRUNC, 8#640# );                        -- for writing
      if resultFile < 0 then                                -- failed?
         err( "RunAndCaptureOutput: unable to open file: "&
            OSerror( C_errno ));
@@ -4108,6 +4109,14 @@ begin
      elsif not error_found then                            -- no error?
         currentStandardOutput := resultFile;               -- track fd
      end if;
+
+     -- SparForte's current output (fd 4) has changed
+     oldCurrentOutput := dup( 4 );                         -- backup
+     result := dup2( resultFile, 4 );                      -- redirect curout
+     if result < 0 then                                    -- error?
+        err( "unable to set output *current output): " & OSerror( C_errno ) );
+     end if;
+
   end if;
   if isExecutingCommand or Syntax_Check then               -- for real or check
      loop                                                  -- run commands
@@ -4124,6 +4133,17 @@ begin
   -- If this is one of the pipeline commands, we'll be exiting
   -- so check to see that we are still executing something.
   if not done and resultFile > 0 then                   -- redirecting?
+
+     -- Recover current_output
+
+     result := dup2( oldCurrentOutput, 4 );                -- redirect curout
+     if result < 0 then                                    -- error?
+        err( "unable to restore output (current output): " & OSerror( C_errno ) );
+     end if;
+     closeResult := close( oldCurrentOutput );             -- free mem
+
+     -- Recover standard_output
+
      result := dup2( oldStandardOutput, stdout );       -- to original
      if result < 0 then                                 -- error?
         err( "unable to restore stdout: " & OSerror( C_errno ) );
