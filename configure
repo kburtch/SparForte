@@ -19,7 +19,10 @@ CONFIGRELEASED="false"
 PREFIX="/usr/local"
 
 # Default man page installation prefix
-MANPREFIX="/usr/local"
+MANPREFIX="/usr/share"
+if [ ! -d "$MANPREFIX""/man" ] ; then
+   MANPREFIX="/usr/local"
+fi
 
 # This will have "sudo" if required for ldconfig
 LDCONFIG_SUDO=
