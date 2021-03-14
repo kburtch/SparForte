@@ -1620,6 +1620,11 @@ begin
         err( "prompt scripts cannot be used in a restricted shell" );
      else
         expr_val := identifiers( token ).value.all;
+        if expr_val /= null_unbounded_string then
+           if tail( expr_val, 1 ) /= ";" then
+              expr_val := expr_val & ";";
+           end if;
+        end if;
         expect( backlit_t );
      end if;
   when propose =>                           -- pragma refactor

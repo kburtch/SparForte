@@ -805,25 +805,8 @@ ISSUES (AdaScript)
 
 ISSUES (Bourne Shell)
 
-  - x/y command name relative paths
-    - ./foobar works as expected
-    - dir/foobar doesn't work - it must be quoted
-    - foo-bar also doesn't work - it must be quoted
-    - the byte code compiler could handle this, creating a shell word...but not break
-      other things
-
   - redirections (Shell Issues)
     - advanced job control (control-Z, fg, bg, etc.)
-    - 2>&1 doesn't work...2>, 2>>, >, >> work OK (is this still true?)
-    - pipelines not allowed after 2>&1
-      - 2>&1 is only allowed at the end of the pipeline. unlike the
-        other redirections, this one can occur on a per-command basis
-        and must not affect the next command in the pipeline.
-    - errors in `..` backquotes don't terminate script - may be fixed
-    - errors in `..` don't show outer script line number
-    - line numbers and procedures: if an error occurs, the line number is not
-      the line number of the procedure but where the procedure was called plus
-      the offset into the procedure
 
   - job control (Shell Issues)
     - check sig child flag after every general statement (already done?)

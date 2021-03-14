@@ -108,3 +108,5 @@ CHANGES SINCE 2.3.1
 
 47. Fix: SHELL environment variable more accurately reflects the absolute path of the shell, though there's still some cases that are not handled.
 
+48. Change: pragma prompt_script - the script need not end in a semi-colon.
+
