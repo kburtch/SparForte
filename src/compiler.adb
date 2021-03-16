@@ -1260,18 +1260,18 @@ begin
      return;
   elsif ch = '>' then
      -- TODO: error redirect
-     -- TODO: should probably have a handle redirect subroutine
+     -- TODO: should probably have a handle redirect recursive subroutine
      inRedirect := true;
      redirectAmpersand := true;
      word := word & ch;
      cmdpos := cmdpos + 1;
   elsif ch = '<' then
-     -- TODO: should probably have a handle redirect subroutine
+     -- TODO: should probably have a handle redirect recursive subroutine
      inRedirect := true;
      word := word & ch;
      cmdpos := cmdpos + 1;
   elsif ch = '2' then
-     -- TODO: should probably have a handle redirect subroutine
+     -- TODO: should probably have a handle redirect recursive subroutine
      maybeStdErrRedirect := true;
      word := word & ch;
      cmdpos := cmdpos + 1;

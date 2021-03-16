@@ -1513,8 +1513,7 @@ procedure parseBackslash(
 begin
    --put_line( "parseBackslash" ); -- DEBUG
    expectChar( '\', rawWordValue, wordLen, wordPos );
-   -- TODO: implicit backslash on command line may fool this by adding
-   -- a semi-colon after the backslash.
+   -- This may never happen because the compiler may fail before we get here.
    if endOfShellWord then
       err_shell( "missing character after backslash", wordPos );
    else

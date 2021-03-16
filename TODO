@@ -12,19 +12,13 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - shell parser rewrite
-  - whitespacing around :-, etc. is permitted in Bourne shell but is an error in SparForte
-  - fix all todos
-    - compiler todos
-    - shell parser todos (some left)
-  - leaving a ; off the end of a command gives an internal error in goodtests.sp
-  - see also "Bourne shell issues" below
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
   - test sparforte as a login shell
-- why are in out parameters not references? e.g. in mysqlm and dbm, should
-  arrays of database connections be possible?
 - interpreterPhase - is it set correctly in all places?
 - can I address dash shell compatibility?
+- why are in out parameters not references? e.g. in mysqlm and dbm, should
+  arrays of database connections be possible?
 - missing a case "when" keyword can cause string exception
 - updating adascript shell commands to correspond with bourne shell changes
 - renamings on expansions
@@ -33,8 +27,6 @@ Priority Issues (Fix These First)
 - completions
   - a single matching directory lacks a trailing / - perhaps a GNU readline config issue
   - drill-down on empty directories probably not working
-- improving shell features
-  - ctrl-z to stop a running script and get a shell
 - pack - script is not exiting on a return, but was working before
   the recent changes for enhanced Ada checking
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
@@ -263,10 +255,6 @@ Nice to Haves / Missing Functionality
 
 - foreach
   - in PHP, foreach returns a pointer to the items, not a copy.
-- design
-  - pragma restriction( io_bound );  (cpu_bound);  no execution
-    thread can have both at once.  Helps to design the application.
-    How could this be implemented?
 - Java-style monitor
   - a restricted shell should prohibit certain Linux command names like "nc"
     (netcat) due to security, reading /etc/passwd, etc.
@@ -814,6 +802,7 @@ ISSUES (Bourne Shell)
     - SIGHUP handler: SIGHUP should be broadcast to all children like BASH
 
   - other shell issues (Shell Issues)
+    - whitespacing after :-, etc. is permitted in Bourne shell but is an error in SparForte - e.g. ${HOME:- x } is permitted in Bash
     - SHELL variable doesn't always initialize to spar command path.  It doesn't handle ../
     - collating order with file globbing and locales
     - remove dependency on Ada.Command_Line.Environment -- not supported in Windows GNAT
