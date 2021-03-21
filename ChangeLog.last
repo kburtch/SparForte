@@ -1,102 +1,96 @@
 For the latest news, visit the SparForte web site.
 
-CHANGES SINCE 2.2
+Objective: Shell and Command Line Improvements
 
-1. Fix: The PWD variable value is always revised when SparForte (or, at least, the scanner) starts.  This prevents an exported PWD variable from another shell confusion SparForte.
+CHANGES SINCE 2.3.1
 
-2. Fix: The job control messages now only display in interactive or breakout sessions (unless hidden for another reason).
+1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.  
 
-3. Fix: The strings.csv_field function is more in line with RFC 4180.  CR+LF line ending no longer returned on the last field.  Single quotes flag.
+CHANGES SINCE 2.3
 
-4. Fix: using equals for assignment gives an error message to use := instead.
+2. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
 
-5. Fix: get_line no longer reports an end-of-file when reading the last line of a file that doesn't have a newline.
+3. New: new example scripts: git_prompt_script,
 
-6. Fix: --break once again shows the line where the execution stopped.
+4. Fix: missing files with 2> and 2>> now reported as an error.  (<, > and >> were working properly).
 
-7. (Cameron Y) Change: test phase mode (--test) replaces development phase mode as the default.  Use development phase mode (--coding) to change to development phase.
+5. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
 
-8. New: strings.perl_match() performs PCRE library regular expressions.  PCRE now required for building SparForte. [tests needed]
+5. New: Bourne shell dollar brace ${...} variable substitutions.
 
-CHANGES SINCE 2.2.1
+6. New: Bourne shell dollar parenthesis $(...) command substitution.
 
-9. Fix: using a built-in procedure as a function shows an appropriate error message rather than raising an exception.
+7. New: Bourne shell length expansion ${#VAR}.
 
-10. Fix: using a built-in function as a shell command shows an appropriate error message rather than saying it's a field of a record type.
+8. New: Bourne shell ~user is equivalent to /home/user.
 
-11. Fix: strings.perl_match() now works correctly.
+9. Refactor: Bourne shell parsing completely rewritten to provide the foundation for certain new features.
 
-12. Fix: removed "sourceFiles:" debugging statement from breakout prompt.
+10. Fix: (shell rewrite) high-ascii characters in SQL commands. [testing needed]
 
-CHANGES SINCE 2.2.2
+11. Fix: (shell rewrite) "Word" can be used as a variable name.
 
-13. New: parameterized (generic) types can now be extended as types and subtypes or passed as parameters to user subprograms
+12. Fix: (shell rewrite) 2>&1 fixed to redirect in a pipeline.
 
-14. New: parameterized (generic) types can now be defined as types and subtypes.  These types and subtypes can be passed as parameters to user subprograms.  Types extending resource types must be limited.
+13. Fix: (shell rewrite) 2>&1 no longer redirects output for all commands in the pipeline, to match Bourne shell behaviour.
 
-15. Change: record declarations may end with "end <type-name>" instead of "end record", but only if pragma ada_95 is not used. [tests needed]
+14. New: (shell rewrite) ${:-}, ${:+} and ${:?}.
 
-16. New: function and procedure forward specifications. [docs needed].
+15. New: (shell rewrite) Glob patterns are allowed in directories in a path (e.g. ls /home/k*/*.txt is now possible).
 
-17. Fix: multiple library paths (-L option) now work correctly.
+16. Change: cd, env and unset no longer show the variable name in maintenance mode.  Because these are shell commands, an accidental use of a variable expansion could reveal values in production.
 
-18. Fix: trying to run a "with separate" file now produces an appropriate error message.
+14. New: (shell rewrite) $* and $@.
 
-19. Fix: -p option now showing functions, procedures, blocks correctly.
+15. New: pragma annotate( accounts ...).
 
-20: New: -p option shows number of comments and comments/block statistics. (may be fooled by -- in strings).
+16. New (shell rewrite) AdaScript `` may have backslash escapes.
 
-21. New: -p option shows number of branches and branches/block statistics.
+17. New: variable declaration names are checked for common mispellings (e.g. "hi" vs. "high") should the similar variable exist and be visible. [types, etc. too]
 
-22. Change: As a security precaution, the trace command, and pragma inspect, inspection_peek and inspection_point are no longer allowed in testing or maintenance phases unless at the breakout prompt.  Tracing can be invoked by the command line options.
+18. New: long names ought to have underscores. [type tests needed]
 
-23. Change: As a security precaution, JSON error message have values do not appear when in maintenance mode.
+19. Fix: trailing underscores not allowed in variable names.
 
-24. New: --without-pcre configuration option will disable PCRE library support.
+20. Fix: fixed constraint error on certain text_io subprocedures.
 
-25. Change: a script will not run for the same permission issues as an include file.
+21. Fix: shell statements in a case statement now parsed properly.
 
-26. Fix: script file name fix if the error messages where it was appending file suffixes.
+22. New: pragma declare_constraint and pragma constraint for design constraints.
 
-27. New: constant specifications (i.e. forward constants).
+23. Fix: pragma restriction, suppress, software_model, license now checked for an identifier name (rather than a string, number or some other token).
 
-28. Fix: tests for now ignore deleted identifiers within the symbol table.  Before, only deleted identifiers on the top of the symbol table were ignored.
+24. Fix: pragma license and software_model show the names in the error message for unknown value.
 
-29. Change: strings.image handles enumerated items.
+25. Fix: updated man page to version 2.4.  Updated version to 2.4.
 
-30. Fix: failed assignments to array variables or anonymous array variables during declaration will delete the half-declared variable.
+26. Fix: static expressions, such as used in pragmas, are now being evaluated.
 
-31. Fix: backquotes handled correctly in a shell word when the backquotes are not the first item in the word.
+27. New: pragma declare_affinity and pragma affinity for design affinities.
 
-32. [Fedja B] Change: If Git exists, configure will use Git to create the build version string attached to the development command prompt.  Otherwise, the current date is used as before.
+28. New: pragma suppress( no_empty_command_substitutions ).
 
-33. [Marek K] New: New directory function.
+29. Fix: s := `` no longer gives a trailing whitespace error message.
 
-34. [Marek K] Change: Changes to support Ubuntu 19.10.
+30. Change: new support for GNU readline library (third-party areadline library removed).
 
-35. New: help command now supports -h and -m to produce HTML and Groff (man page) output for internal help topics.
+31. Change: new command line completion capabilities (assignment completion, executable command completion, subcommand completion for certain Linux commands).
 
-36. Fix: certain checks for readable and executable files now handle root and gid groups better.
+32. Fix: Updated Git prompt script example for GNU readline.
 
-37. Change: help for scripts now rendered with the same report class as the built-in topics.
+33. Fix: Files.Is_Directory no longer appends an unnecessary ASCII.NUL to the path.
 
-38. New: New annotations: content, examples, exceptions, footer.
+34. New: shell history saved as ~/.sparforte_history.
 
-39. New: pragma manual_test, pragma manual_test_result for manual testing.
+35. New: --color or --colour option to enable coloured messages.
 
-40. Change: For security, the directory containing the current script, with separate files, local profile, global profile, global policy or global config file must be readable and not world writable.  This follows Perl and Ruby (taint mode).
+36. New: --icons to enable UTF-8 icons in messages.
 
-41. Fix: concrete vs abstract error on a type of array elements but is never otherwise used is fixed.
+37. Fix: --gcc-errors no longer use bold on type errors.
 
-42. [Pascal B] Fix: Additional error checking enabled on Ada compiler.  Several new errors, mostly harmless and related to static code analysis, have been fixed.
+38. Fix: --gcc-errors now takes effect for syntax checking, not just execution.
 
-43. [Pascal B] Fix: Fixed various static code analysis errors on sample programs as a part of testing item 42.
+39. Fix: -e commands no longer require a trailing semi-colon.
 
-44. Fix: Copying volatiles no longer results in conflicting error messages.
-
-45. Fix: Pragma ada_95 wasn't being enforced during syntax checking but at run-time.  Now is enforced for both.
-
-46. Fix: resourcing using types must be limited (or abstract).
-
-47. Fix: "not an executable command" error now escapes the command.
+40. New: strings.null_unbounded_string.
 

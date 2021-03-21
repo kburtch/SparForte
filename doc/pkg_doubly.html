@@ -67,6 +67,7 @@ to create and manage ordered, unindexed, linked lists.</p>
   <a href="#doubly_linked_lists.is_empty">b := is_empty( l )</a>
   <a href="#doubly_linked_lists.last_element">e := last_element( l )</a>                                 <a href="#doubly_linked_lists.length">n := length( l )</a>
   <a href="#doubly_linked_lists.move">move( l1, l2 )</a>                                         <a href="#doubly_linked_lists.next">next( c )</a>
+  <a href="#doubly_linked_lists.parcel">parcel( s, w, l )</a>
   <a href="#doubly_linked_lists.prepend">prepend( l, e )</a>                                        <a href="#doubly_linked_lists.previous">previous( c )</a>
   <a href="#doubly_linked_lists.replace_element">replace_element( l, c, e )</a>                             <a href="#doubly_linked_lists.reverse_elements">reverse_elements( l )</a>
   <a href="#doubly_linked_lists.reverse_find">reverse_find( l, e, c )</a>
@@ -218,7 +219,8 @@ separated by delimiter string d and ending with optional string f.  An list will
 <td><p>doubly_linked_lists.disassemble</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p>
+<p>PHP: implode</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>-</p></td>
@@ -552,7 +554,8 @@ An exception is raised if out of memory</p></td>
 <td><p>doubly_linked_lists.disassemble</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p>
+<p>PHP: explode</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>-</p></td>
@@ -1262,6 +1265,61 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada version is a function.</p></td>
+</tr>
+</table>
+
+<a name="doubly_linked_lists.parcel"></a><h3>doubly_linked_lists.parcel( s, w, l )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Convert ("parcel out") the string to a list of strings.  Each string is length w except for the final string that has the remaining characters.  An empty string will result in an unchanged list.  If the list is not empty, the new strings will be appended.  The list can be converted to a string with doubly_linked_lists.assemble.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">doubly_linked_lists.parcel( long_string, 72, parcel_list) );<br>-- a list of 72 character strings</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>universal_string</i></span></td>
+<td><span>required</span></td>
+<td><span>the string</span></td>
+</tr><tr>
+<td><span>w</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>required</span></td>
+<td><span>the parcel width</span></td>
+</tr><tr>
+<td><span>l</span></td>
+<td><span>in out</span></td>
+<td><span>doubly_linked_lists.list</span></td>
+<td><span>required</span></td>
+<td><span>the list with the fixed-width strings</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>SparForte 2.4</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>doubly_linked_lists.disassemble</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p>
+<p>PHP: chunk_split</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 

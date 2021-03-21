@@ -4587,6 +4587,41 @@ begin
   pragma assert( doubly_linked_lists.element( c1 ) = "banana" );
 end;
 
+-- parcel
+
+declare
+  chunks : doubly_linked_lists.list( string );
+  original : constant string := "What a wonderful world it would be";
+  original2: constant string := "12345678901234567890";
+  recovered : string;
+  empty : constant string := "";
+begin
+  doubly_linked_lists.parcel( original, 9, chunks );
+  recovered := doubly_linked_lists.assemble( chunks, "" );
+  pragma assert( original = recovered );
+  pragma assert( doubly_linked_lists.length( chunks ) = 4 );
+
+  -- non-empty list
+
+  doubly_linked_lists.parcel( original, 9, chunks );
+  pragma assert( doubly_linked_lists.length( chunks ) = 8 );
+
+  -- empty test
+
+  doubly_linked_lists.clear( chunks );
+  doubly_linked_lists.parcel( empty, 9, chunks );
+  pragma assert( doubly_linked_lists.length( chunks ) = 0 );
+
+  -- exact length test
+
+  doubly_linked_lists.clear( chunks );
+  doubly_linked_lists.parcel( original2, 10, chunks );
+  recovered := doubly_linked_lists.assemble( chunks, "" );
+  pragma assert( original2 = recovered );
+  pragma assert( doubly_linked_lists.length( chunks ) = 2 );
+
+end;
+
 -- dynamic hash tables
 
 declare
