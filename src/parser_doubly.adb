@@ -26,6 +26,7 @@
 with
     Ada.Containers,
     ada.strings.unbounded,
+    user_io,
     world,
     scanner,
     scanner_res,
@@ -36,6 +37,7 @@ with
 use
     ada.strings.unbounded,
     world,
+    user_io,
     scanner,
     scanner_res,
     scanner_restypes,
@@ -88,6 +90,7 @@ doubly_has_element_t   : identifier;
 
 doubly_assemble_t      : identifier;
 doubly_disassemble_t   : identifier;
+doubly_parcel_t        : identifier;
 
 ------------------------------------------------------------------------------
 -- Utility subprograms
@@ -1450,6 +1453,54 @@ begin
   end if;
 end ParseDoublyDisassemble;
 
+procedure ParseDoublyParcel is
+  -- Syntax: doubly_linked_lists.package( s, l );
+  -- Ada:    N/A
+  -- Divide a long string into a list of fixed-size strings.
+  strExpr   : unbounded_string;
+  strType   : identifier;
+  widthExpr : unbounded_string;
+  widthType : identifier;
+  listId    : identifier;
+
+  strLen   : natural;
+  firstPos : positive;
+  lastPos  : natural;
+  width    : natural;
+  tempStr  : unbounded_string;
+  theList  : resPtr;
+begin
+  if onlyAda95 then
+     err( "subprogram not available with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( doubly_parcel_t );
+  ParseFirstStringParameter( strExpr, strType, uni_string_t );
+  ParseNextNumericParameter( widthExpr, widthType, positive_t );
+  ParseLastListParameter( listId );
+  if isExecutingCommand then
+     -- generate the list items
+     findResource( to_resource_id( identifiers( listId ).value.all ), theList );
+     begin
+        width := positive'value( " " & to_string( widthExpr ) );
+     exception when others =>
+        err( "width is not a positive value" );
+     end;
+     firstPos := 1;
+     strLen := length( strExpr );
+     while firstPos < strLen loop
+        lastPos := firstPos + width - 1;
+        if lastPos > strLen then
+           lastPos := strLen;
+        end if;
+        tempStr := unbounded_slice( strExpr, firstPos, lastPos );
+        if length( tempStr ) > 0 then
+           Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
+        end if;
+        firstPos := lastPos + 1;
+     end loop;
+  end if;
+end ParseDoublyParcel;
+
 -----------------------------------------------------------------------------
 
 procedure StartupDoubly is
@@ -1500,6 +1551,7 @@ begin
 
   declareFunction(  doubly_assemble_t, "doubly_linked_lists.assemble", ParseDoublyAssemble'access );
   declareProcedure( doubly_disassemble_t, "doubly_linked_lists.disassemble", ParseDoublyDisassemble'access );
+  declareProcedure( doubly_parcel_t, "doubly_linked_lists.parcel", ParseDoublyParcel'access );
 
   declareNamespaceClosed( "doubly_linked_lists" );
 

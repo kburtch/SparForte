@@ -1634,7 +1634,7 @@ begin
      content( e, "b := is_empty( l )" );
      content( e, "e := last_element( l )","n := length( l )" );
      content( e, "move( l1, l2 )","next( c )" );
-     content( e, "prepend( l, e )","previous( c )" );
+     content( e, "parcel( s, w, l )","prepend( l, e )","previous( c )" );
      content( e, "replace_element( l, c, e )","reverse_elements( l )" );
      content( e, "reverse_find( l, e, c )" );
      content( e, "splice( l1, c, l2 [,c2] ) | ( l1, c, c2 )" );
@@ -2625,7 +2625,7 @@ begin
      content( e, "n := count( s, p )","r := csv_field( s, c [, d [, q]] )","r := csv_replace( s, f, t, [, d] )" );
      content( e, "r := delete( s, l, h )","c := element( s, p )","r := field( s, c [, d] )" );
      content( e, "b := glob( e, s )","r := head( s, c [, p] )" );
-     content( e, "r := strings.image( n )","n := index( s, p [, d] )","n := index_non_blank( s [,d] )" );
+     content( e, "r := image( n )","n := index( s, p [, d] )","n := index_non_blank( s [,d] )" );
      content( e, "r := insert( s, b, n )","r := is_alphanumeric( s )","r := is_basic( s )" );
      content( e, "r := is_control( s )","r := is_digit( s )","r := is_fixed( s )" );
      content( e, "r := is_graphic( s )","r := is_hexadecimal_digit(s)","r := is_letter( s )" );
@@ -2634,7 +2634,7 @@ begin
      content( e, "r := lookup( s, k [, d] )","b := match( e, s )","r := mktemp( p )" );
      content( e, "r := overwrite( s, p, n )","replace( s, f, t [, d] )","r := replace_slice( s, l, h, b )" );
      content( e, "set_unbounded_string( u, s )","r := slice( s, l, h )","split( s, l, r , p )" );
-     content( e, "r := tail( s, c [, p] )","r := strings.to_base64( s )","r := to_basic( s )" );
+     content( e, "r := tail( s, c [, p] )","r := to_base64( s )","r := to_basic( s )" );
      content( e, "r := to_escaped( s )","r := to_json( s )","r := to_lower( s )" );
      content( e, "r := to_proper( s )","r := to_string( s )","r := to_upper( s )" );
      content( e, "u := to_unbounded_string( s )","r := trim( s [, e] )","r := unbounded_slice(s, l, h)" );
