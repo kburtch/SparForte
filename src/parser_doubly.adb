@@ -1469,6 +1469,7 @@ procedure ParseDoublyParcel is
   width    : natural;
   tempStr  : unbounded_string;
   theList  : resPtr;
+  elemType : identifier;
 begin
   if onlyAda95 then
      err( "subprogram not available with " & optional_yellow( "pragma ada_95" ) );
@@ -1477,27 +1478,32 @@ begin
   ParseFirstStringParameter( strExpr, strType, uni_string_t );
   ParseNextNumericParameter( widthExpr, widthType, positive_t );
   ParseLastListParameter( listId );
+  elemType := getUniType( identifiers( listId ).genKind );
+  if elemType /= uni_string_t and elemType /= universal_t then
+     err( "list elements should be strings or typeless" );
+  end if;
   if isExecutingCommand then
-     -- generate the list items
-     findResource( to_resource_id( identifiers( listId ).value.all ), theList );
      begin
+        -- generate the list items
+        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
         width := positive'value( " " & to_string( widthExpr ) );
-     exception when others =>
-        err( "width is not a positive value" );
+        -- width should be positive by this point
+        firstPos := 1;
+        strLen := length( strExpr );
+        while firstPos < strLen loop
+           lastPos := firstPos + width - 1;
+           if lastPos > strLen then
+              lastPos := strLen;
+           end if;
+           tempStr := unbounded_slice( strExpr, firstPos, lastPos );
+           if length( tempStr ) > 0 then
+              Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
+           end if;
+           firstPos := lastPos + 1;
+        end loop;
+     exception when storage_error =>
+       err( "storage error raised" );
      end;
-     firstPos := 1;
-     strLen := length( strExpr );
-     while firstPos < strLen loop
-        lastPos := firstPos + width - 1;
-        if lastPos > strLen then
-           lastPos := strLen;
-        end if;
-        tempStr := unbounded_slice( strExpr, firstPos, lastPos );
-        if length( tempStr ) > 0 then
-           Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
-        end if;
-        firstPos := lastPos + 1;
-     end loop;
   end if;
 end ParseDoublyParcel;
 

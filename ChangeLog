@@ -6,3 +6,5 @@ CHANGES SINCE 2.4
 
 1. New: doubly_linked_lists.parcel.
 
+2. Fix: fixed "positive value is less than zero" error for a zero.
+

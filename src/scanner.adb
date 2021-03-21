@@ -4163,7 +4163,7 @@ begin
   elsif kind = positive_t then
      roundedVal := long_long_integer( val );
      if roundedVal <= 0 then
-        err( "positive value is less than zero" );
+        err( "positive value is less than one" );
      end if;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's anything else, including universals, don't do anything

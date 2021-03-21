@@ -4595,6 +4595,7 @@ declare
   original2: constant string := "12345678901234567890";
   recovered : string;
   empty : constant string := "";
+  typeless_chunks : doubly_linked_lists.list( universal_typeless );
 begin
   doubly_linked_lists.parcel( original, 9, chunks );
   recovered := doubly_linked_lists.assemble( chunks, "" );
@@ -4620,6 +4621,9 @@ begin
   pragma assert( original2 = recovered );
   pragma assert( doubly_linked_lists.length( chunks ) = 2 );
 
+  -- typeless list
+
+  doubly_linked_lists.parcel( original, 9, typeless_chunks );
 end;
 
 -- dynamic hash tables
