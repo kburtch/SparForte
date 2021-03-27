@@ -4916,6 +4916,23 @@ begin
   pragma assert( f = g );
 end;
 
+-- renaming a resource type
+
+declare
+  type string_list is new limited doubly_linked_lists.list( string );
+  l1 : string_list;
+  l2 : string_list renames l1; -- error here
+begin
+  doubly_linked_lists.clear( l1 );
+  doubly_linked_lists.clear( l2 );
+  doubly_linked_lists.append( l1, "apple" );
+  pragma assert( doubly_linked_lists.length( l1 ) = 1 );
+  pragma assert( doubly_linked_lists.length( l2 ) = 1 );
+  doubly_linked_lists.clear( l1 );
+  pragma assert( doubly_linked_lists.length( l1 ) = 0 );
+  pragma assert( doubly_linked_lists.length( l2 ) = 0 );
+end;
+
 end; -- renaming tests
 
 -- copying tests

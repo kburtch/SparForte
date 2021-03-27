@@ -52,8 +52,8 @@ use spar_os,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
 
---with ada.text_io;
---use ada.text_io;
+with ada.text_io;
+use ada.text_io;
 
 package body parser.decl is
 
@@ -1580,12 +1580,23 @@ begin
    -- on an error, the token may not be something with a gen type
 
   elsif (type_token /= eof_t and not error_found ) and then identifiers( type_token ).genKind /= eof_t then
-      if isExecutingCommand then
-         AttachGenericParameterResource( id, type_token );
+
+      if token /= renames_t then
+         if isExecutingCommand then
+            AttachGenericParameterResource( id, type_token );
+         end if;
+         identifiers( id ).genKind := identifiers( type_token ).genKind;
+         identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
+         identifiers( id ).kind := type_token;
+      else
+        -- identifiers( id ).svalue := to_unbounded_string( resId );
+        -- identifiers( id ).value := identifiers( id ).svalue'access;
+        -- identifiers( id ).resource := true;
+         ParseRenamesPart( canonicalRef, id, type_token );
+         identifiers( id ).genKind := identifiers( type_token ).genKind;
+         identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
+         identifiers( id ).kind := type_token;
       end if;
-      identifiers( id ).genKind := identifiers( type_token ).genKind;
-      identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
-      identifiers( id ).kind := type_token;
 
   -- Renames clause
   -- if it appears, one can only rename...cannot assign.

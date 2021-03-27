@@ -8,3 +8,5 @@ CHANGES SINCE 2.4
 
 2. Fix: fixed "positive value is less than zero" error for a zero.
 
+3. New: renaming a generic type.
+
