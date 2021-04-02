@@ -4931,6 +4931,10 @@ begin
   doubly_linked_lists.clear( l1 );
   pragma assert( doubly_linked_lists.length( l1 ) = 0 );
   pragma assert( doubly_linked_lists.length( l2 ) = 0 );
+  doubly_linked_lists.append( l2, "apple" );
+  doubly_linked_lists.clear( l2 );
+  pragma assert( doubly_linked_lists.length( l1 ) = 0 );
+  pragma assert( doubly_linked_lists.length( l2 ) = 0 );
 end;
 
 end; -- renaming tests

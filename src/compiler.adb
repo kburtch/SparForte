@@ -1238,6 +1238,16 @@ begin
   maybeStdErrRedirect := false;
 
   ch := Element( command, cmdpos );
+
+  -- a special case: a missing when can make a line look like a shell command
+  if ch = '=' then
+     if cmdpos < length( command ) then
+        if element( command, cmdpos+1) = '>' then
+           err_tokenize( "unexpected => in shell command...is there a missing when?", to_string( command ) );
+        end if;
+     end if;
+  end if;
+
   if ch = ';' then
      ci.context := startOfStatement;
      ci.compressedScript := ci.compressedScript & ch;
@@ -1265,16 +1275,28 @@ begin
      redirectAmpersand := true;
      word := word & ch;
      cmdpos := cmdpos + 1;
+     if cmdpos > length( command ) then
+        err_tokenize( "filename expected for shell command redirect", to_string( command ) );
+	return;
+     end if;
   elsif ch = '<' then
      -- TODO: should probably have a handle redirect recursive subroutine
      inRedirect := true;
      word := word & ch;
      cmdpos := cmdpos + 1;
+     if cmdpos > length( command ) then
+        err_tokenize( "filename expected for shell command redirect", to_string( command ) );
+	return;
+     end if;
   elsif ch = '2' then
      -- TODO: should probably have a handle redirect recursive subroutine
      maybeStdErrRedirect := true;
      word := word & ch;
      cmdpos := cmdpos + 1;
+     if cmdpos > length( command ) then
+        err_tokenize( "filename expected for shell command redirect", to_string( command ) );
+	return;
+     end if;
   end if;
 
   -- Check for an Ada-style comment
@@ -1362,7 +1384,11 @@ begin
           return;
        end if;
        if redirectAmpersand then
-          err_tokenize( "missing end of redirect", to_string( command ) );
+          err_tokenize( "missing end of shell command redirect", to_string( command ) );
+          return;
+       end if;
+       if inRedirect then
+          err_tokenize( "filename expected for shell command redirect", to_string( command ) );
           return;
        end if;
        lastpos := cmdpos - 1;
@@ -1371,7 +1397,7 @@ begin
     end if;
 
     ch := Element( command, cmdpos );                       -- next character
-     --put_line( "ch = " & ch & " at" & cmdpos'img & " quotes = " & inDoubleQuotes'img ); -- DEBUG
+--put_line( "ch = " & ch & " at" & cmdpos'img & " quotes = " & inDoubleQuotes'img ); -- DEBUG
 
     -- Second, check for characters that will interfere with the compressed
     -- tokens.

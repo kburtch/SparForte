@@ -10,3 +10,7 @@ CHANGES SINCE 2.4
 
 3. New: renaming a generic type.
 
+4. Fix: missing filename at end-of-line for >, 2>, < no longer produce an
+exception.  forgetting a "when" in a case statement with strings, which looks
+like a shell command, is an error due to the big arrow.
+
