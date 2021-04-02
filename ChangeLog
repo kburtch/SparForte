@@ -11,6 +11,12 @@ CHANGES SINCE 2.4
 3. New: renaming a generic type.
 
 4. Fix: missing filename at end-of-line for >, 2>, < no longer produce an
-exception.  forgetting a "when" in a case statement with strings, which looks
-like a shell command, is an error due to the big arrow.
+exception.
+
+5. Change: forgetting a "when" in a case statement with strings, which looks
+like a shell command, is now an error, detected by the presence of the big arrow
+(=>).
+
+6. Fix: out mode formal parameters that are not written to will have a
+"declared but not written to" error.
 
