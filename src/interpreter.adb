@@ -523,6 +523,8 @@ end interpretConfig;
 
 procedure SPAR_interpretScript( C_scriptPath : C_path ) is
 begin
+  -- TODO: incomplete, no syntax check checking
+  interpreterPhase := executing;
   interpretScript( To_Ada( C_scriptPath ) );
 end SPAR_interpretScript;
 
@@ -1140,9 +1142,9 @@ end checkAndInterpretScript;
 --
 -- Begin executing things.  Specifically, set up the environmental flags based
 -- on the command line options, run the .profile script(s) and then interpret
--- commands or start an interactive session.  After the script is run and
--- templates have been specified, run the templates.  If a script has been
--- marked as depreciated, show the appropriate warning.
+-- commands or start an interactive session.
+--
+-- This is the procedure executed by the spar command.
 ------------------------------------------------------------------------------
 
 procedure interpret is

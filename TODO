@@ -17,17 +17,17 @@ Priority Issues (Fix These First)
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
   - test sparforte as a login shell
-- interpreterPhase - is it set correctly in all places?
-- can I address dash shell compatibility?
-- updating adascript shell commands to correspond with bourne shell changes
+- updating adascript shell commands to correspond with bourne shell changes.
+  - anything to be done?
 - completions
   - a single matching directory lacks a trailing / - perhaps a GNU readline config issue
   - drill-down on empty directories probably not working
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
 - incomplete casting tests
-- Linux supplies a umask, but no umask command in shell. - discuss
+- Research: Linux supplies a umask, but no umask command in shell. does it matter?
 - Research: for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
+- can I address dash shell compatibility?
 - SQL security
     - LIKE requires parsing to understand the quote context.  A quoted
       string following a LIKE must be escaped differently.
