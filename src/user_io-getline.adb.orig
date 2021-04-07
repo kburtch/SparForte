@@ -1255,7 +1255,11 @@ begin
         begin
           read( currentFileDir, completionFile, completionFileLen );
           exit when completionFileLen <= 0;
-          if needle = completionFile( 1..integer( needleLen ) ) then
+	  if completionFileLen = 1 and then completionFile(1) = '.' then
+             null;
+	  elsif completionFileLen = 2 and then completionFile(1) = '.' and then completionFile(2) = '.' then
+             null;
+          elsif needle = completionFile( 1..integer( needleLen ) ) then
              -- when completing a directory, we need to add the delimiter to the end
              if gnat.os_lib.is_directory( needleDir & completionFile(1..completionFileLen ) ) then
                 declare
@@ -1264,8 +1268,8 @@ begin
                 begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
---put_line(" Found dir" ); -- DEBUG
---put_line( To_Ada( completionFileAsc ) );
+-- put_line(" Found dir" ); -- DEBUG
+-- put_line( To_Ada( completionFileAsc ) );
                    fileDirectoryCount:=fileDirectoryCount+1; -- DEBUG
                    lastDirectory := to_unbounded_string( needleDir & completionFile(1..completionFileLen ) );
                    return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
@@ -1312,7 +1316,7 @@ begin
            lastCandidate : unbounded_string := lastDirectory;
            candidate : unbounded_string := lastDirectory;
         begin
---put_line( "trying " & to_string( candidate ) ); -- DEBUG
+-- put_line( "trying " & to_string( candidate ) ); -- DEBUG
            open( currentFileDir, to_string( candidate ) );
            read( currentFileDir, completionFile, completionFileLen );
            if is_open( currentFileDir ) then
@@ -1322,7 +1326,7 @@ begin
               candidate := candidate & directory_delimiter &
                  completionFile(1..completionFileLen );
               fileDirectoryCount := 0;
---put_line( "returning " & to_string( candidate ) ); -- DEBUG
+-- put_line( "returning " & to_string( candidate ) ); -- DEBUG
               return New_String( to_string( lastCandidate ) );
            end if;
         exception when DIRECTORY_ERROR =>

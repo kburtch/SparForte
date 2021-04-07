@@ -20,3 +20,5 @@ like a shell command, is now an error, detected by the presence of the big arrow
 6. Fix: out mode formal parameters that are not written to will have a
 "declared but not written to" error.
 
+7. Fix: . and .. directories ignored on file completions ending with a /.
+
