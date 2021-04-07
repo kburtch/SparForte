@@ -665,6 +665,7 @@ begin
    content( e, "clear" );
    content( e, "close" );
    content( e, "command_line" );
+   content( e, "configuration" );
    content( e, "create" );
    content( e, "db" );
    content( e, "dbm" );
@@ -715,6 +716,7 @@ begin
    content( e, "os" );
    content( e, "pen" );
    content( e, "pen.gl" );
+   content( e, "policy" );
    content( e, "pragma" );
    content( e, "procedure" );
    content( e, "put" );
@@ -1488,6 +1490,16 @@ begin
      content( e, "set_exit_status( n )");
      seeAlso( e, "doc/pkg_cmdline.html" );
      endHelp( e );
+  elsif helpTopic = "configure" then
+     startHelp( e, "configure" );
+     summary( e, "configuration block" );
+     categoryKeyword( e );
+     description( e, "Begin a new configuration block.  It contains declarations by system administrators.  Configuration blocks can automatically load from a global file (/etc/sparforte_config), which is done after a global policy file." );
+     content( e, ( "configuration name is ... end name;" ) );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
+     authorKen( e );
+     categoryPackage( e );
   elsif helpTopic = "create" then
      startHelp( e, "create" );
      summary( e, "create (text_io package)" );
@@ -1510,7 +1522,6 @@ begin
      authorKen( e );
      categoryKeyword( e );
      description( e, "Begin a new unnamed block of source code within a procedure or function." );
-     Put_Line( "declare - begin a new block" );
      content( e, ( "[declare declarations] begin executable-commands exception handlers end;" ) );
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
@@ -2609,6 +2620,16 @@ begin
      seeAlso( e, "doc/pkg_pengl.html" );
      footer( e, "* - not finished" );
      endHelp( e );
+  elsif helpTopic = "policy" then
+     startHelp( e, "policy" );
+     summary( e, "policy block" );
+     categoryKeyword( e );
+     description( e, "Begin a new architecture block.  It may only contain pragmas and static if or case statements.  Policy blocks can automatically load from a global file (/etc/sparforte_policy), which is done before a global configuration file." );
+     content( e, ( "policy name is ... end name;" ) );
+     seeAlso( e, "doc/ref_subprograms.html" );
+     endHelp( e );
+     authorKen( e );
+     categoryPackage( e );
   elsif helpTopic = "step" then
      startHelp( e, "step" );
      summary( e, "step" );
@@ -2639,7 +2660,7 @@ begin
      content( e, "r := to_escaped( s )","r := to_json( s )","r := to_lower( s )" );
      content( e, "r := to_proper( s )","r := to_string( s )","r := to_upper( s )" );
      content( e, "u := to_unbounded_string( s )","r := trim( s [, e] )","r := unbounded_slice(s, l, h)" );
-     content( e, "c := val( n ) " );
+     content( e, "s := to_hexadecimal_digits( n )", "c := val( n ) " );
      discardUnusedIdentifier( token ); -- TODO: should this always be done automatically?
      seeAlso( e, "doc/pkg_strings.html" );
      endHelp( e );

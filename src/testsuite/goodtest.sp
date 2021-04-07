@@ -880,6 +880,16 @@ unbs := strings.unbounded_slice( "foobar", 2, 4 );
 pragma assert( unbs = "oob" );
 s := strings.mktemp( "test" );
 pragma assert( s /= "./test" );
+s := strings.to_hexadecimal_digits(0);
+pragma assert( s = "0" );
+s := strings.to_hexadecimal_digits(1);
+pragma assert( s = "1" );
+s := strings.to_hexadecimal_digits(15);
+pragma assert( s = "F" );
+s := strings.to_hexadecimal_digits(16);
+pragma assert( s = "10" );
+s := strings.to_hexadecimal_digits(255);
+pragma assert( s = "FF" );
 
 sb64 : strings.base64_string;
 sb64 := strings.to_base64( "foobar" );

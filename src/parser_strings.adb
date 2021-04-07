@@ -136,6 +136,7 @@ set_unbounded_string_t  : identifier;
 unbounded_slice_t  : identifier;
 strings_to_json_t : identifier;
 to_base64_t  : identifier;
+to_hex_digits_t : identifier;
 
 procedure ParseSingleStringExpression ( Expr_Val : out unbounded_string;
   expr_type : out identifier ) is
@@ -1502,6 +1503,46 @@ begin
   parser_strings_pcre.ParseStringsPerlMatch( result, kind );
 end ParseStringsPerlMatch;
 
+procedure ParseStringsToHexDigits( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: to_hexadecimal_digits( n )
+  -- Source: N/A
+  expr_val   : unbounded_string;
+  expr_type  : identifier;
+begin
+  kind := uni_string_t;
+  expect( to_hex_digits_t );
+  ParseSingleNumericParameter( expr_val, expr_type );
+  if baseTypesOK( expr_type, natural_t ) then
+     declare
+       expr  : natural;
+       digit : natural;
+     begin
+       begin
+          expr  := natural'value( to_string( expr_val ) );
+       exception when constraint_error =>
+          err( "natural value is less than zero" );
+       end;
+       if isExecutingCommand then
+          if expr = 0 then
+             result := to_unbounded_string( "0" );
+          else
+             while expr > 0 loop
+                digit := expr mod 16;
+                if digit < 10 then
+                   result := character'val( 48 + digit ) & result;
+                else
+                   result := character'val( 65 + digit - 10 ) & result;
+                end if;
+                expr  := expr / 16;
+             end loop;
+          end if;
+       end if;
+     exception when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseStringsToHexDigits;
+
 procedure StartupStrings is
 begin
   declareNamespace( "strings" );
@@ -1558,6 +1599,7 @@ begin
   declareFunction( strings_to_json_t, "strings.to_json", ParseStringsToJSON'access );
   declareFunction( to_base64_t, "strings.to_base64", ParseStringsToBase64'access );
   declareFunction( parser_strings_pcre.perl_match_t, "strings.perl_match", ParseStringsPerlMatch'access );
+  declareFunction( to_hex_digits_t, "strings.to_hexadecimal_digits", ParseStringsToHexDigits'access );
 
   -- enumerateds - values defined below
   declareIdent( strings_alignment_t, "strings.alignment",

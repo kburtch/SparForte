@@ -22,3 +22,7 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 7. Fix: . and .. directories ignored on file completions ending with a /.
 
+8. New: strings.to_hexadecimal_digits
+
+9. Fix: added policy and configuration to built-in help.
+
