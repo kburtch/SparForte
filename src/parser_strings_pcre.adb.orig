@@ -55,10 +55,10 @@ procedure ParseStringsPerlMatch( result : out unbounded_string; kind : out ident
 begin
   kind := boolean_t;
   result := null_unbounded_string;
-  expect( perl_match_t );
   if onlyAda95 then
      err( optional_yellow( "pragma ada_95" ) & " doesn't allow perl_match" );
   end if;
+  expect( perl_match_t );
   ParseFirstStringParameter( pat_val, pat_type );
   ParseLastStringParameter( expr_val, expr_type );
   if isExecutingCommand then

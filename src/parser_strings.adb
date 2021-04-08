@@ -644,6 +644,9 @@ procedure ParseStringsField( result : out unbounded_string; kind : out identifie
   delim    : character := defaultDelimiter;
 begin
   kind := uni_string_t;
+  if onlyAda95 then
+     err( "field cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
@@ -683,6 +686,9 @@ procedure ParseStringsCSVField( result : out unbounded_string; kind : out identi
   squotes : boolean := false;
 begin
   kind := uni_string_t;
+  if onlyAda95 then
+     err( "csv_field cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( csv_field_t );
   ParseFirstStringParameter( str_val, str_type );
   ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
@@ -730,6 +736,9 @@ procedure ParseStringsMkTemp( result : out unbounded_string; kind : out identifi
   closeResult : int;
 begin
   kind := uni_string_t;
+  if onlyAda95 then
+     err( "mktemp cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( mktemp_t );
   ParseSingleStringParameter( str_val, str_type );
   if isExecutingCommand then
@@ -1004,6 +1013,9 @@ procedure ParseStringsCSVReplace is
   delim    : character := ',';
   tempStr  : unbounded_string;
 begin
+  if onlyAda95 then
+     err( "csv_replace cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( csv_replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
@@ -1099,6 +1111,9 @@ procedure ParseStringsToEscaped( result : out unbounded_string; kind : out ident
   src_val  : unbounded_string;
   src_type : identifier;
 begin
+  if onlyAda95 then
+     err( "to_escaped cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( to_escaped_t );
   ParseSingleStringParameter( src_val, src_type );
   kind := src_type;
@@ -1123,6 +1138,9 @@ procedure ParseStringsSplit is
   leftStr  : unbounded_string;
   rightStr : unbounded_string;
 begin
+  if onlyAda95 then
+     err( "split cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( split_t );
   ParseFirstStringParameter( src_val, src_type );
   ParseNextOutParameter( left_ref, Uni_String_T );
@@ -1327,6 +1345,9 @@ procedure ParseStringsIsSlashedDate( result : out unbounded_string; kind : out i
   expr_type  : identifier;
 begin
   kind := boolean_t;
+  if onlyAda95 then
+     err( "is_slashed_date cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( is_slashed_date_t );
   ParseSingleStringParameter( expr_val, expr_type );
   begin
@@ -1364,6 +1385,9 @@ procedure ParseStringsToBase64( result : out unbounded_string; kind : out identi
   expr_val : unbounded_string;
   expr_type : identifier;
 begin
+  if onlyAda95 then
+     err( "to_base64 cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( to_base64_t );
   kind := base64_string_t;
   ParseSingleStringExpression( expr_val, expr_type );
@@ -1415,6 +1439,9 @@ procedure ParseStringsIsTypoOf( result : out unbounded_string; kind : out identi
   expr2_type  : identifier;
 begin
   kind := boolean_t;
+  if onlyAda95 then
+     err( "is_typo_of cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( is_typo_of_t );
   ParseFirstStringParameter( expr1_val, expr1_type );
   ParseLastStringParameter( expr2_val, expr2_type );
@@ -1485,6 +1512,9 @@ procedure ParseStringsToJSON( result : out unbounded_string; kind : out identifi
   expr_type  : identifier;
 begin
   kind := json_string_t;
+  if onlyAda95 then
+     err( "to_json cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( strings_to_json_t );
   ParseSingleStringParameter( expr_val, expr_type );
   begin
@@ -1510,6 +1540,9 @@ procedure ParseStringsToHexDigits( result : out unbounded_string; kind : out ide
   expr_type  : identifier;
 begin
   kind := uni_string_t;
+  if onlyAda95 then
+     err( "to_hexadecimal_digits cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
   expect( to_hex_digits_t );
   ParseSingleNumericParameter( expr_val, expr_type );
   if baseTypesOK( expr_type, natural_t ) then

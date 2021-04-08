@@ -665,7 +665,7 @@ begin
    content( e, "clear" );
    content( e, "close" );
    content( e, "command_line" );
-   content( e, "configuration" );
+   content( e, "configure" );
    content( e, "create" );
    content( e, "db" );
    content( e, "dbm" );
@@ -1499,7 +1499,6 @@ begin
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
      authorKen( e );
-     categoryPackage( e );
   elsif helpTopic = "create" then
      startHelp( e, "create" );
      summary( e, "create (text_io package)" );
@@ -2629,7 +2628,6 @@ begin
      seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
      authorKen( e );
-     categoryPackage( e );
   elsif helpTopic = "step" then
      startHelp( e, "step" );
      summary( e, "step" );

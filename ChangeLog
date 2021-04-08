@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective:
+Objective: Bug fixes following 2.4 and continue command line improvements.
 
 CHANGES SINCE 2.4
 
@@ -25,4 +25,6 @@ like a shell command, is now an error, detected by the presence of the big arrow
 8. New: strings.to_hexadecimal_digits
 
 9. Fix: added policy and configuration to built-in help.
+
+10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously. [tests needed]
 
