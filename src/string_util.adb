@@ -591,6 +591,89 @@ begin
   right := to_unbounded_string( slice( s, i+1, length( s ) ) );
 end Split;
 
+function Levenshtein_Distance (S, T : String) return Natural is
+-- Taken from Rosetta Code website, May 28/2021.
+   D : array (0 .. S'Length, 0 .. T'Length) of Natural;
+begin
+   for I in D'Range (1) loop
+      D (I, 0) := I;
+   end loop;
+   for I in D'Range (2) loop
+      D (0, I) := I;
+   end loop;
+   for J in T'Range loop
+      for I in S'Range loop
+         if S (I) = T (J) then
+            D (I, J) := D (I - 1, J - 1);
+         else
+            D (I, J) :=
+               Natural'Min
+                 (Natural'Min (D (I - 1, J) + 1, D (I, J - 1) + 1),
+                  D (I - 1, J - 1) + 1);
+         end if;
+      end loop;
+   end loop;
+   return D (S'Length, T'Length);
+end Levenshtein_Distance;
+
+function Soundex (instr : String) return String is
+-- Taken from Rosetta Code website, May 29/2021.
+-- Modified for bugs.
+   str  : String := To_Upper(instr);
+   output : String := "0000";
+   spos : Integer := str'First+1;  opos : Positive := 2;
+   map  : array(0..255) of Character := (others => ' ');
+   last : Integer := str'First;
+begin
+   if instr'length = 0 then
+      return "";
+   end if;
+   map(65..90) := " 123 12- 22455 12623 1-2 2";
+   for i in str'Range loop
+      str(i) := map(Character'Pos(to_basic(str(i))));
+   end loop;
+   output(1) := str(str'First);
+   while (opos <= 4 and spos <= str'Last) loop
+      if str(spos) /= '-' and str(spos) /= ' ' then
+         if (str(spos-1) = '-' and last = spos-2) and then
+           (str(spos) = str(spos-2)) then
+            null;
+         elsif (str(spos) = output(opos-1) and last = spos-1) then
+            last := spos;
+         else
+            output(opos) := str(spos);
+            opos := opos + 1;
+            last := spos;
+         end if;
+      end if;
+      spos := spos + 1;
+   end loop;
+   output(1) := To_Upper(instr(instr'First));
+   return output;
+end Soundex;
+
+function WordCount(instr : unbounded_string) return natural is
+  -- count the number of "words"
+  str    : constant unbounded_string := ToBasic( instr );
+  inWord : boolean := false;
+  wcount : natural := 0;
+  ch     : character;
+begin
+  for i in 1..length( str ) loop
+      ch := element( str, i );
+      if not inWord and is_letter( ch ) then
+         inWord := true;
+      elsif inWord and not is_letter( ch ) then
+         inWord := false;
+         wcount := wcount + 1;
+      end if;
+  end loop;
+  if inWord then
+     wcount := wcount + 1;
+  end if;
+  return wcount;
+end WordCount;
+
 function ToCSV( s : unbounded_string ) return unbounded_string is
 -- convert s to CSV.  For our purposes, only all numbers will not be quoted.
   csv : unbounded_string;
@@ -856,6 +939,52 @@ begin
   end loop;
   return null_unbounded_string;
 end stringLookup;
+
+function replaceAll( str_val, needle_val, newstr_val : unbounded_string; sensitive : boolean ) return unbounded_string is
+  result : unbounded_string;
+begin
+  result := str_val;
+  if sensitive then
+     -- case sensitive
+      declare
+        needle     : constant string  := to_string( needle_val );
+        needle_len : constant natural := length( needle_val );
+        newstr     : constant string  := to_string( newstr_val );
+        newstr_len : constant natural := length( newstr_val );
+        first : positive;
+        pos   : natural;
+      begin
+        first := 1;
+        loop
+           pos := index( str_val, needle, first );
+        exit when pos = 0;
+           replace_slice( result, pos, pos + needle_len - 1, newstr );
+           first := pos + newstr_len;
+        end loop;
+      end;
+  else
+      -- case insensitive
+      declare
+        needle     : constant string  := to_string( ToLower( needle_val ) );
+        needle_len : constant natural := length( needle_val );
+        newstr     : constant string  := to_string( newstr_val );
+        newstr_len : constant natural := length( newstr_val );
+        searchstr  : constant unbounded_string  := ToLower( str_val );
+        first : positive;
+        pos   : natural;
+      begin
+        first := 1;
+        loop
+           pos := index( searchstr, needle, first );
+        exit when pos = 0;
+           replace_slice( result, pos, pos + needle_len - 1, newstr );
+           first := pos + newstr_len;
+        end loop;
+      end;
+  end if;
+  return result;
+end replaceAll;
+
 
 ------------------------------------------------------------------------------
 -- GET DATE STRING

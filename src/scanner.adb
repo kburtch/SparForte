@@ -681,7 +681,7 @@ begin
               -- additional rounds is blank space in name column
               put( head( " ", maxNameWidth ) );
            end if;
-           put( " | " );
+           put( " " & utf_verticalLine & " " );
            if length( escapedValue ) > 0 then
               firstChar := (round-1)*maxValueWidth+1;
               lastChar  := round*maxValueWidth;
@@ -692,7 +692,7 @@ begin
            else
               put( to_unbounded_string( integer( maxValueWidth ) * " ") );
            end if;
-           put( " | " );
+           put( " " & utf_verticalLine & " " );
            if round = 1 then
               put_identifier_attributes( i );
            end if;

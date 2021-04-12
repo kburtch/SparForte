@@ -127,6 +127,15 @@ procedure Split( s : unbounded_string; left, right : out unbounded_string;
 width : natural );
 -- gracefully split s into left and right near split position width
 
+function Levenshtein_Distance (S, T : String) return Natural;
+-- edit distance between two strings
+
+function Soundex (instr : String) return String;
+-- return Soundex code
+
+function WordCount(instr : unbounded_string) return natural;
+-- return number of "words"
+
 function ToCSV( s : unbounded_string ) return unbounded_string;
 -- convert s to CSV
 
@@ -157,6 +166,9 @@ return unbounded_string;
 -- Treat s (source) as a series of field pairs.  Return the right-hand pair
 -- member associated with t (target), or a null string if none exists.  If
 -- source or target is a null string, a null string is also returned.
+
+
+function replaceAll( str_val, needle_val, newstr_val : unbounded_string; sensitive : boolean ) return unbounded_string;
 
 function getDateString( ct : ada.calendar.time ) return unbounded_string;
 -- Convert the calendar time to a human readable string in the format

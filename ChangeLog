@@ -52,7 +52,11 @@ CHANGES SINCE 2.4.1
 
 21. New: btree_io.recover, hash_io.recover.
 
-22. New: opengl_third, opengl_fourth examples.
+22. New: pragma volatile can have a timeout duration in seconds.
 
-23. New: pragma volatile can have a timeout duration in seconds.
+23. New: opengl_third, opengl_fourth examples.
+
+24. New: strings.levenshtein, strings.soundex, strings.replace_all, strings.starts, strings.ends, strings.word_count, strings.compare, strings.index_set. [negative tests, docs - strings summary]
+
+25. Fix: to_hexadecimal_digits no longer allowed with pragma ada_95.
 

@@ -24,6 +24,7 @@
 --with text_io;
 
 with interfaces.c,
+    ada.strings.maps,
     ada.strings.unbounded.text_io,
     ada.streams.stream_io,
     ada.text_io,
@@ -40,6 +41,7 @@ with interfaces.c,
     parser,
     parser_strings_pcre;
 use interfaces.c,
+    ada.strings.maps,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.streams.stream_io,
@@ -87,6 +89,9 @@ strings_trim_end_t         : identifier; -- strings.trim_end enumerated
 strings_trim_end_left_t    : identifier;
 strings_trim_end_right_t   : identifier;
 strings_trim_end_both_t    : identifier;
+strings_sensitivity_t      : identifier;
+strings_sensitivity_insensitive_t      : identifier;
+strings_sensitivity_sensitive_t      : identifier;
 
 val_t        : identifier;
 image_t      : identifier;
@@ -135,8 +140,16 @@ is_typo_of_t : identifier;
 set_unbounded_string_t  : identifier;
 unbounded_slice_t  : identifier;
 strings_to_json_t : identifier;
-to_base64_t  : identifier;
+to_base64_t     : identifier;
 to_hex_digits_t : identifier;
+levenshtein_t   : identifier;
+soundex_t       : identifier;
+replace_all_t   : identifier;
+starts_with_t   : identifier;
+ends_with_t     : identifier;
+word_count_t    : identifier;
+compare_t       : identifier;
+index_set_t     : identifier;
 
 procedure ParseSingleStringExpression ( Expr_Val : out unbounded_string;
   expr_type : out identifier ) is
@@ -370,6 +383,67 @@ begin
   end;
 end ParseStringsIndexNonBlank;
 
+procedure ParseStringsIndexSet( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: strings.index_set( s, t [, f [, m [, d]]] )
+  -- Source: Ada.Strings.Unbounded.Index
+  use ada.strings;
+  str_val    : unbounded_string;
+  str_type   : identifier;
+  set_val    : unbounded_string;
+  set_type   : identifier;
+  first_val  : unbounded_string;
+  first_type : identifier;
+  test_val   : unbounded_string;
+  test_type  : identifier;
+  test       : membership := inside;
+  dir_val    : unbounded_string;
+  dir_type   : identifier;
+  dir        : direction := forward;
+begin
+  kind := natural_t;
+  expect( index_set_t );
+  ParseFirstStringParameter( str_val, str_type );
+  ParseNextStringParameter( set_val, set_type, uni_string_t );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseNextStringParameter( first_val, first_type, positive_t );
+  else
+     first_val := to_unbounded_string("1" );
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseNextStringParameter( test_val, test_type, strings_membership_t );
+     if isExecutingCommand then
+        if to_string( test_val ) = "1" then -- 1 is outside; TODO: cleaner way?
+           test := outside;
+        end if;
+     end if;
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
+     if isExecutingCommand then
+        case natural( to_numeric( dir_val ) ) is
+        when 0 => dir := forward;
+        when 1 => dir := backward;
+        when others =>
+             err_exception_raised;
+        end case;
+     end if;
+  else
+    expect( symbol_t, ")" );
+  end if;
+  declare
+     map : character_set;
+     first : positive;
+  begin
+     map := to_set( to_string( set_val ) );
+     first := positive( to_numeric( first_val ) );
+     if isExecutingCommand then
+        result := to_unbounded_string( Index( str_val, map, first, test, Going => dir )'img );
+     end if;
+  exception when others =>
+     err_exception_raised;
+  end;
+end ParseStringsIndexSet;
+
 procedure ParseStringsCount( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.count( s, p )
   -- Source: Ada.Strings.Unbounded.Count
@@ -422,6 +496,45 @@ begin
      err_exception_raised;
   end;
 end ParseStringsReplaceSlice;
+
+procedure ParseStringsReplaceAll( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: strings.replace_all( s, n, r, b )
+  -- Source: N/A
+  str_val : unbounded_string;
+  str_type : identifier;
+  needle_val : unbounded_string;
+  needle_type : identifier;
+  newstr_val : unbounded_string;
+  newstr_type : identifier;
+  sensitivity_val : unbounded_string;
+  sensitivity_type : identifier;
+begin
+  kind := uni_string_t;
+  if onlyAda95 then
+     err( "replace_all cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( replace_all_t );
+  ParseFirstStringParameter( str_val, str_type );
+  ParseNextStringParameter( needle_val, needle_type );
+  ParseNextStringParameter( newstr_val, newstr_type );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseLastEnumParameter(  sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+  else
+    expect( symbol_t, ")" );
+    sensitivity_val := to_unbounded_string( "1" );
+  end if;
+  begin
+     if isExecutingCommand then
+        if length( needle_val ) = 0 then
+           err( "search substring is an empty string" );
+        else
+           result := replaceAll( str_val, needle_val, newstr_val, sensitivity_val = "1" );
+        end if;
+     end if;
+  exception when others =>
+     err_exception_raised;
+  end;
+end ParseStringsReplaceAll;
 
 procedure ParseStringsInsert( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.insert( s, b, n )
@@ -631,6 +744,86 @@ begin
      err_exception_raised;
   end;
 end ParseStringsTail;
+
+procedure ParseStringsStartsWith( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: strings.starts_with( s, t [,c] )
+  -- Source: N/A
+  str_val   : unbounded_string;
+  str_type  : identifier;
+  head_val  : unbounded_string;
+  head_type : identifier;
+  sensitivity_val  : unbounded_string;
+  sensitivity_type : identifier;
+begin
+  kind := boolean_t;
+  if onlyAda95 then
+     err( "starts_with cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( starts_with_t );
+  ParseFirstStringParameter( str_val, str_type );
+  ParseNextStringParameter( head_val, head_type );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseLastEnumParameter( sensitivity_val, sensitivity_type, strings_sensitivity_t );
+  else
+    expect( symbol_t, ")" );
+    sensitivity_val := to_unbounded_string( "1" );
+  end if;
+  begin
+     if isExecutingCommand then
+        if length( head_val ) = 0 then
+           err( "head substring is an empty string" );
+        else
+           if sensitivity_val = "1"  then
+              result := to_bush_boolean( head( str_val, length( head_val ) ) = head_val );
+           else
+              result := to_bush_boolean( head( ToUpper( str_val ), length( head_val ) ) = ToUpper( head_val ) );
+           end if;
+        end if;
+     end if;
+  exception when others =>
+     err_exception_raised;
+  end;
+end ParseStringsStartsWith;
+
+procedure ParseStringsEndsWith( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: strings.ends_with( s, t [,c] )
+  -- Source: N/A
+  str_val   : unbounded_string;
+  str_type  : identifier;
+  tail_val  : unbounded_string;
+  tail_type : identifier;
+  sensitivity_val  : unbounded_string;
+  sensitivity_type : identifier;
+begin
+  kind := boolean_t;
+  if onlyAda95 then
+     err( "ends_with cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( ends_with_t );
+  ParseFirstStringParameter( str_val, str_type );
+  ParseNextStringParameter( tail_val, tail_type );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseLastEnumParameter( sensitivity_val, sensitivity_type, strings_sensitivity_t );
+  else
+    expect( symbol_t, ")" );
+    sensitivity_val := to_unbounded_string( "1" );
+  end if;
+  begin
+     if isExecutingCommand then
+        if length( tail_val ) = 0 then
+           err( "tail substring is an empty string" );
+        else
+           if sensitivity_val = "1"  then
+              result := to_bush_boolean( tail( str_val, length( tail_val ) ) = tail_val );
+           else
+              result := to_bush_boolean( tail( ToUpper( str_val ), length( tail_val ) ) = ToUpper( tail_val ) );
+           end if;
+        end if;
+     end if;
+  exception when others =>
+     err_exception_raised;
+  end;
+end ParseStringsEndsWith;
 
 procedure ParseStringsField( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: strings.field( s, c [, d] )
@@ -1556,7 +1749,7 @@ procedure ParseStringsToHexDigits( result : out unbounded_string; kind : out ide
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
-  kind := uni_string_t;
+  kind := string_t;
   if onlyAda95 then
      err( "to_hexadecimal_digits cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
@@ -1592,6 +1785,112 @@ begin
      end;
   end if;
 end ParseStringsToHexDigits;
+
+procedure ParseStringsLevenshtein( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: levenshtein( s1, s2 )
+  -- Source: N/A
+   str1_val  : unbounded_string;
+   str1_type : identifier;
+   str2_val  : unbounded_string;
+   str2_type : identifier;
+begin
+  kind := natural_t;
+  if onlyAda95 then
+     err( "levenshtein cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( levenshtein_t );
+  ParseFirstStringParameter( str1_val, str1_type );
+  ParseLastStringParameter( str2_val, str2_type );
+  if baseTypesOK( str1_type, str2_type ) then
+     if isExecutingCommand then
+        begin
+           result := to_unbounded_string( natural'image( Levenshtein_Distance( to_string( str1_val ), to_string( str2_val ) ) ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
+  end if;
+end ParseStringsLevenshtein;
+
+procedure ParseStringsSoundex( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: soundex( s )
+  -- Source: N/A
+   str_val  : unbounded_string;
+   str_type : identifier;
+begin
+  kind := string_t;
+  if onlyAda95 then
+     err( "soundex cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( soundex_t );
+  ParseSingleStringParameter( str_val, str_type );
+  if isExecutingCommand then
+     begin
+        result := to_unbounded_string( Soundex( to_string( str_val ) ) );
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
+end ParseStringsSoundex;
+
+procedure ParseStringsWordCount( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: word_count( s )
+  -- Source: N/A
+   str_val  : unbounded_string;
+   str_type : identifier;
+begin
+  kind := natural_t;
+  if onlyAda95 then
+     err( "word_count cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( word_count_t );
+  ParseSingleStringParameter( str_val, str_type );
+  if isExecutingCommand then
+     begin
+        result := to_unbounded_string( WordCount( str_val )'img );
+     exception when others =>
+        err_exception_raised;
+     end;
+  end if;
+end ParseStringsWordCount;
+
+procedure ParseStringsCompare( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: i := compare( s, t [,c] )
+  -- Source: N/A
+  first_val  : unbounded_string;
+  first_type : identifier;
+  last_val   : unbounded_string;
+  last_type  : identifier;
+  sensitivity_val  : unbounded_string;
+  sensitivity_type : identifier;
+begin
+  kind := integer_t;
+  if onlyAda95 then
+     err( "compare cannot be used with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( compare_t );
+  ParseFirstStringParameter( first_val, first_type );
+  ParseNextStringParameter( last_val, last_type );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseLastEnumParameter(  sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+  else
+    expect( symbol_t, ")" );
+    sensitivity_val := to_unbounded_string( "1" );
+  end if;
+  if isExecutingCommand then
+     if sensitivity_val = to_unbounded_string( "1" ) then
+        first_val := ToLower( first_val );
+        last_val := ToLower( last_val );
+     end if;
+     if first_val < last_val then
+        result := to_unbounded_string( "-1" );
+     elsif first_val > last_val then
+        result := to_unbounded_string( " 1" );
+     else
+        result := to_unbounded_string( " 0" );
+     end if;
+  end if;
+end ParseStringsCompare;
 
 procedure StartupStrings is
 begin
@@ -1650,6 +1949,14 @@ begin
   declareFunction( to_base64_t, "strings.to_base64", ParseStringsToBase64'access );
   declareFunction( parser_strings_pcre.perl_match_t, "strings.perl_match", ParseStringsPerlMatch'access );
   declareFunction( to_hex_digits_t, "strings.to_hexadecimal_digits", ParseStringsToHexDigits'access );
+  declareFunction( levenshtein_t, "strings.levenshtein", ParseStringsLevenshtein'access );
+  declareFunction( soundex_t, "strings.soundex", ParseStringsSoundex'access );
+  declareFunction( replace_all_t, "strings.replace_all", ParseStringsReplaceAll'access );
+  declareFunction( starts_with_t, "strings.starts_with", ParseStringsStartsWith'access );
+  declareFunction( ends_with_t, "strings.ends_with", ParseStringsEndsWith'access );
+  declareFunction( word_count_t, "strings.word_count", ParseStringsWordCount'access );
+  declareFunction( compare_t, "strings.compare", ParseStringsCompare'access );
+  declareFunction( index_set_t, "strings.index_set", ParseStringsIndexSet'access );
 
   -- enumerateds - values defined below
   declareIdent( strings_alignment_t, "strings.alignment",
@@ -1661,6 +1968,8 @@ begin
   declareIdent( strings_direction_t, "strings.direction",
     root_enumerated_t, typeClass );
   declareIdent( strings_trim_end_t, "strings.trim_end",
+    root_enumerated_t, typeClass );
+  declareIdent( strings_sensitivity_t, "strings.sensitivity",
     root_enumerated_t, typeClass );
 
   declareNamespaceClosed( "strings" );
@@ -1705,6 +2014,13 @@ begin
   declareStandardConstant( strings_trim_end_both_t, "trim_end.both",
     strings_trim_end_t, "2" );
   declareNamespaceClosed( "trim_end" );
+
+  declareNamespace( "sensitivity" );
+  declareStandardConstant( strings_sensitivity_insensitive_t, "sensitivity.insensitive",
+    strings_sensitivity_t, "0" );
+  declareStandardConstant( strings_sensitivity_sensitive_t, "sensitivity.sensitive",
+    strings_sensitivity_t, "1" );
+  declareNamespaceClosed( "sensitivity" );
 
 end StartupStrings;
 

@@ -396,9 +396,9 @@ begin
           put( i'img );
           put( ": " );
           put( getDateString( history( i ).time ) );
-          put( " | " );
+          put( " " & utf_verticalLine & " " );
           put( history( i ).pwd );
-          put( " | " );
+          put( " " & utf_verticalLine & " " );
           put_line( history( i ).line );
        end if;
     end if;

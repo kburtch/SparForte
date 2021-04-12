@@ -2694,7 +2694,10 @@ begin
      content( e, "r := to_escaped( s )","r := to_json( s )","r := to_lower( s )" );
      content( e, "r := to_proper( s )","r := to_string( s )","r := to_upper( s )" );
      content( e, "u := to_unbounded_string( s )","r := trim( s [, e] )","r := unbounded_slice(s, l, h)" );
-     content( e, "s := to_hexadecimal_digits( n )", "c := val( n ) " );
+     content( e, "s := to_hexadecimal_digits( n )", "c := val( n )","n := levenshtein( s1, s2 )" );
+     content( e, "r := soundex( s )", "r := replace_all( s, n, t [, c] )", "b := starts_with( s, t [, c] )" );
+     content( e, "b := ends_with( s, t [,c] )", "n := word_count( s )", "i := compare( s, t [,c] )" );
+     content( e, "n := index_set( s, t [, f [, m [, d] ] ] )" );
      discardUnusedIdentifier( token ); -- TODO: should this always be done automatically?
      seeAlso( e, "doc/pkg_strings.html" );
      endHelp( e );
