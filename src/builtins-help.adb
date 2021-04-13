@@ -2642,7 +2642,7 @@ begin
      authorKen( e );
      categoryPackage( e );
      description( e, "A collection of common routines using strings." );
-     content( e, "n := count( s, p )","r := csv_field( s, c [, d [, q]] )","r := csv_replace( s, f, t, [, d] )" );
+     content( e, "n := count( s, p )","r := csv_field( s, c [, d [, q]] )","r := csv_replace( s, f, t, [, d [, q]] )" );
      content( e, "r := delete( s, l, h )","c := element( s, p )","r := field( s, c [, d] )" );
      content( e, "b := glob( e, s )","r := head( s, c [, p] )" );
      content( e, "r := image( n )","n := index( s, p [, d] )","n := index_non_blank( s [,d] )" );

@@ -148,7 +148,7 @@ f : natural; field : string );
 -- replace the fth field delimited by delimiter with field
 
 procedure replaceCSVField( s : in out unbounded_string; delimiter : character;
-f : natural; field : string );
+f : natural; field : string; allowSingleQuotes : boolean:= false );
 -- replace the fth field delimited by delimiter (typically a comma) with field
 -- allow the delimiter to be escaped by double quote marks
 

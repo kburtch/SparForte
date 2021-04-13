@@ -758,7 +758,7 @@ begin
 end replaceField;
 
 procedure replaceCSVField( s : in out unbounded_string; delimiter : character;
-f : natural; field : string ) is
+f : natural; field : string; allowSingleQuotes : boolean:= false ) is
   firstPos    : natural := 1;
   lastPos     : natural := 1;
   delimCnt    : natural := 0;
@@ -766,8 +766,12 @@ f : natural; field : string ) is
 
   function attachQuotes( s : unbounded_string ) return string is
   begin
-    if index( s, ""&delimiter ) > 0 then
-       return to_string(ASCII.Quotation & s) & ASCII.Quotation;
+    if index( s, "" & delimiter ) > 0 then
+       if allowSingleQuotes then
+          return to_string("'" & s) & "'";
+       else
+          return to_string(ASCII.Quotation & s) & ASCII.Quotation;
+       end if;
     else
        return to_string( s );
     end if;
@@ -786,7 +790,13 @@ begin
          end if;
          firstPos := i+1;
       elsif Element( s, i ) = '"' then
-         inQuotes := not inQuotes;
+         if not allowSingleQuotes then
+            inQuotes := not inQuotes;
+	 end if;
+      elsif Element( s, i ) = ''' then
+         if allowSingleQuotes then
+            inQuotes := not inQuotes;
+	 end if;
       end if;
   end loop;
   if delimCnt+1 < f then

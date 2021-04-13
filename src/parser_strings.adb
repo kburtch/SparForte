@@ -1001,7 +1001,7 @@ begin
 end ParseStringsReplace;
 
 procedure ParseStringsCSVReplace is
-  -- Syntax: strings.csv_replace( s, f, t, [,d] );
+  -- Syntax: strings.csv_replace( s, f, t, [,d] [,q] );
   -- Source: N/A
   src_ref  : reference;
   tar_val  : unbounded_string;
@@ -1011,6 +1011,9 @@ procedure ParseStringsCSVReplace is
   del_val  : unbounded_string;
   del_type : identifier;
   delim    : character := ',';
+  squotes_val  : unbounded_string;
+  squotes_type : identifier;
+  squotes : boolean := false;
   tempStr  : unbounded_string;
 begin
   if onlyAda95 then
@@ -1019,17 +1022,30 @@ begin
   expect( csv_replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
-  if uniTypesOk( src_ref.kind, Uni_String_T ) then
+  if uniTypesOk( src_ref.kind, Uni_String_t ) then
      ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
      ParseNextStringParameter( tar_val, tar_type );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastStringParameter( del_val, del_type, character_t );
+        ParseNextStringParameter( del_val, del_type, character_t );
         if isExecutingCommand then
            begin
              delim := element( del_val, 1 );
            exception when others =>
              err_exception_raised;
            end;
+        end if;
+        -- Optional single quotes flag
+        if token = symbol_t and identifiers( token ).value.all = "," then
+           ParseLastEnumParameter( squotes_val, squotes_type, boolean_t );
+           if isExecutingCommand then
+              begin
+                squotes := to_string( squotes_val ) = "1";
+              exception when others =>
+                err_exception_raised;
+              end;
+           end if;
+        else
+           expect( symbol_t, ")" );
         end if;
      else
         expect( symbol_t, ")" );
@@ -1041,7 +1057,8 @@ begin
         replaceCSVField( tempStr,
            delim,
            natural( to_numeric( cnt_val ) ),
-           to_string( tar_val ) );
+           to_string( tar_val ),
+	   squotes );
         assignParameter( src_ref, tempStr );
      end if;
   exception when others =>
