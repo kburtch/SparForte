@@ -28,3 +28,5 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously. [tests needed]
 
+11. Fix: structured scripts no longer auto-declare variables.  unstructured scripts will still auto-declare variables.
+

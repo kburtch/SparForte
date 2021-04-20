@@ -5435,7 +5435,7 @@ begin
            expect( symbol_t, ":=" );
         elsif Token = symbol_t and to_string( identifiers( token ).value.all ) = ":=" then
            resumeScanning( cmdStart );
-           ParseAssignment( autoDeclareAllowed => true );
+           ParseAssignment( autoDeclareAllowed => (scriptType = unstructured) );
            itself_type := new_t;
 
         -- Boolean true shortcut (boolean assertions)
@@ -5633,11 +5633,14 @@ end parseConfig;
 
 ------------------------------------------------------------------------------
 -- PARSE MAIN PROGRAM
+--
+-- Parse the main program of a formal, structured script.
 ------------------------------------------------------------------------------
 
 procedure ParseMainProgram is
   program_id : identifier;
 begin
+  scriptType := structured;
   expect( procedure_t );
   ParseProgramName( program_id );
   pushBlock( newScope => true,
@@ -5659,6 +5662,7 @@ begin
   expect( end_t );
   expect( program_id );
 end ParseMainProgram;
+
 
 ------------------------------------------------------------------------------
 -- PARSE
@@ -5696,6 +5700,11 @@ begin
              " not a runnable " &
              optional_yellow( "script" ) );
      end if;
+
+     -- Begin by treating a script as unstructured.  We only know it's
+     -- structured when a main program is encountered.
+
+     scriptType := unstructured;
 
      -- Prior to a main program (or a simple script), a script may have
      -- pragmas, policies, configurations, withs, trace.  A procedure

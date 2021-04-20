@@ -92,7 +92,6 @@ type identifier is new integer range 1..30_000;
 subtype reservedWordRange is identifier range 1..8192;
 -- The limit of how many reserved words can be stored in the identifiers
 
-
 ------------------------------------------------------------------------------
 -- Interpreting and Parsing
 ------------------------------------------------------------------------------
@@ -113,6 +112,12 @@ isTesting        : boolean := false;      -- true if running a pragma test
 
 type interpreterPhases is ( initializing, compiling, checking, executing );
 interpreterPhase : interpreterPhases := initializing;
+
+type scriptTypes is ( unstructured, structured );
+-- scripts may be unstructured or structured.  This becomes structured
+-- when a main program is encountered.
+
+scriptType : ScriptTypes := unstructured;
 
 ------------------------------------------------------------------------------
 -- Scanning

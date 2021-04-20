@@ -11,8 +11,8 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- declarations should be required in formal programs but are not
 - tab completion not working with ~
+- tab completion has an extra match with leading ./ (i think)
 - similarity tests should probably not apply to unformal scripts...check
   this
 - shell parser rewrite
