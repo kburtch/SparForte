@@ -1224,15 +1224,20 @@ function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_pt
   completionFileLen : integer;
   completionFile : string(1..1024);
 
-  -- TODO: other homes
-
   function expandTilde( s : string ) return string is
     home_id: identifier;
   begin
-    if s'length > 0 then
+    if s'length = 1 then
+       if s(s'first) = '~' then
+          findIdent( to_unbounded_string( "HOME" ), home_id );
+          return to_string( identifiers( home_id ).value.all ) & "/";
+       end if;
+    elsif s'length > 1 then
        if s(s'first..s'first+1) = "~/" then
           findIdent( to_unbounded_string( "HOME" ), home_id );
           return to_string( identifiers( home_id ).value.all ) & s( s'first+1..s'last );
+       elsif s(s'first) = '~' then
+          return "/home/" & s( s'first+1..s'last ) & "/";
        end if;
     end if;
     return s;
