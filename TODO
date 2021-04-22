@@ -11,7 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- tab completion not working with ~
+- tab completion not working with ~user
 - tab completion has an extra match with leading ./ (i think)
 - similarity tests should probably not apply to unformal scripts...check
   this

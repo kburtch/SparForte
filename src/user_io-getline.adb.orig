@@ -1223,7 +1223,22 @@ lastDirectory : unbounded_string;
 function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   completionFileLen : integer;
   completionFile : string(1..1024);
-  needleDir : constant string := Dir_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
+
+  -- TODO: other homes
+
+  function expandTilde( s : string ) return string is
+    home_id: identifier;
+  begin
+    if s'length > 0 then
+       if s(s'first..s'first+1) = "~/" then
+          findIdent( to_unbounded_string( "HOME" ), home_id );
+          return to_string( identifiers( home_id ).value.all ) & s( s'first+1..s'last );
+       end if;
+    end if;
+    return s;
+  end expandTilde;
+
+  needleDir : constant string := Dir_Name( expandTilde( unescapeWithBackslashes( To_Ada( Value( text ) ) ) ) );
   needle    : constant string := File_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );
   needleLen : constant size_t := needle'length;
 begin
