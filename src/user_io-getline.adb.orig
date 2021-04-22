@@ -1270,9 +1270,9 @@ begin
         begin
           read( currentFileDir, completionFile, completionFileLen );
           exit when completionFileLen <= 0;
-	  if completionFileLen = 1 and then completionFile(1) = '.' then
+      if completionFileLen = 1 and then completionFile(1) = '.' then
              null;
-	  elsif completionFileLen = 2 and then completionFile(1) = '.' and then completionFile(2) = '.' then
+      elsif completionFileLen = 2 and then completionFile(1) = '.' and then completionFile(2) = '.' then
              null;
           elsif needle = completionFile( 1..integer( needleLen ) ) then
              -- when completing a directory, we need to add the delimiter to the end

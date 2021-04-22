@@ -1277,7 +1277,7 @@ begin
      cmdpos := cmdpos + 1;
      if cmdpos > length( command ) then
         err_tokenize( "filename expected for shell command redirect", to_string( command ) );
-	return;
+        return;
      end if;
   elsif ch = '<' then
      -- TODO: should probably have a handle redirect recursive subroutine
@@ -1286,7 +1286,7 @@ begin
      cmdpos := cmdpos + 1;
      if cmdpos > length( command ) then
         err_tokenize( "filename expected for shell command redirect", to_string( command ) );
-	return;
+        return;
      end if;
   elsif ch = '2' then
      -- TODO: should probably have a handle redirect recursive subroutine
@@ -1295,7 +1295,7 @@ begin
      cmdpos := cmdpos + 1;
      if cmdpos > length( command ) then
         err_tokenize( "filename expected for shell command redirect", to_string( command ) );
-	return;
+        return;
      end if;
   end if;
 
