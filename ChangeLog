@@ -32,3 +32,5 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 12. New: tilde works with tab completions.
 
+13. Fix: tab completion of a single directory now works correctly.
+

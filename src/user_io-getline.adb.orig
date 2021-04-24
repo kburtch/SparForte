@@ -1224,6 +1224,11 @@ function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_pt
   completionFileLen : integer;
   completionFile : string(1..1024);
 
+  -- EXPAND TILDE
+  --
+  -- Handle a leading tilde in a file path
+  ---------------------------------------------------------------------------
+
   function expandTilde( s : string ) return string is
     home_id: identifier;
   begin
@@ -1275,36 +1280,41 @@ begin
         begin
           read( currentFileDir, completionFile, completionFileLen );
           exit when completionFileLen <= 0;
-      if completionFileLen = 1 and then completionFile(1) = '.' then
-             null;
-      elsif completionFileLen = 2 and then completionFile(1) = '.' and then completionFile(2) = '.' then
-             null;
+          if completionFileLen = 1 and then completionFile(1) = '.' then
+              null;
+          elsif completionFileLen = 2 and then completionFile(1) = '.' and then completionFile(2) = '.' then
+              null;
           elsif needle = completionFile( 1..integer( needleLen ) ) then
-             -- when completing a directory, we need to add the delimiter to the end
-             if gnat.os_lib.is_directory( needleDir & completionFile(1..completionFileLen ) ) then
-                declare
-                   completionFileAsC : aliased char_array := To_C(
-                      escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) & directory_delimiter );
-                begin
+              -- For a directory, we need to add the delimiter to the end of
+              -- the path, which is the diretory being searched plus the
+              -- new directory.
+              if gnat.os_lib.is_directory( needleDir & completionFile(1..completionFileLen ) ) then
+                 declare
+                    completionFileAsC : aliased char_array := To_C(
+                       escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) & directory_delimiter );
+                 begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
 -- put_line(" Found dir" ); -- DEBUG
 -- put_line( To_Ada( completionFileAsc ) );
-                   fileDirectoryCount:=fileDirectoryCount+1; -- DEBUG
-                   lastDirectory := to_unbounded_string( needleDir & completionFile(1..completionFileLen ) );
-                   return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
-                end;
-             else
-                declare
-                   completionFileAsC : aliased char_array := To_C(
-                      escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
-                begin
+                    fileDirectoryCount:=fileDirectoryCount+1; -- DEBUG
+                    lastDirectory := to_unbounded_string( needleDir & completionFile(1..completionFileLen ) );
+                    return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                 end;
+              else
+                 -- For a non-directory, the path is directory being searched plus
+                 -- the file found.
+                 declare
+                    completionFileAsC : aliased char_array := To_C(
+                       escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
+                 begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
-                   return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
-                end;
-             end if;
+                    return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+                 end;
+              end if;
           end if;
+
         exception when DIRECTORY_ERROR =>
           null;
         when others =>
@@ -1344,10 +1354,10 @@ begin
            end if;
            if completionFileLen > 0 then
               candidate := candidate & directory_delimiter &
-                 completionFile(1..completionFileLen );
+                 completionFile(1..completionFileLen ) & "/";
               fileDirectoryCount := 0;
--- put_line( "returning " & to_string( candidate ) ); -- DEBUG
-              return New_String( to_string( lastCandidate ) );
+--put_line( "returning " & to_string( candidate ) ); -- DEBUG
+              return New_String( to_string( candidate ) );
            end if;
         exception when DIRECTORY_ERROR =>
            null;
