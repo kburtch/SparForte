@@ -1359,33 +1359,8 @@ begin
   -- one.
 
   if fileDirectoryCount = 1 then
-     --loop
-        declare
-           lastCandidate : unbounded_string := lastDirectory;
-           candidate : unbounded_string := lastDirectory;
-        begin
--- put_line( "trying " & to_string( candidate ) ); -- DEBUG
-           open( currentFileDir, to_string( candidate ) );
-           read( currentFileDir, completionFile, completionFileLen );
-           if is_open( currentFileDir ) then
-              close( currentFileDir );
-           end if;
-           if completionFileLen > 0 then
-              candidate := candidate & directory_delimiter &
-                 completionFile(1..completionFileLen ) & "/";
-              fileDirectoryCount := 0;
---put_line( "returning " & to_string( candidate ) ); -- DEBUG
-              return New_String( to_string( candidate ) );
-           end if;
-        exception when DIRECTORY_ERROR =>
-           null;
-        when others =>
-           put_line( standard_error, gnat.source_info.source_location & ": internal error: unexcepted exception on tab completion" );
-        end;
-      --  exit when completionFileLen <= 0;
-        -- lastCandidate := candidate;
-      --  candidate := candidate & directory_delimiter &
-     --end loop;
+     fileDirectoryCount := 0;
+     return New_String( to_string( lastDirectory ) & "/./" );
   end if;
 
   return Null_Ptr;
