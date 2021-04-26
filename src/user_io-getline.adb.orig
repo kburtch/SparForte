@@ -1109,16 +1109,31 @@ function Ada_command_word_generator(text : chars_ptr; state : int ) return chars
   completionFileLen : integer;
   completionFile : string(1..1024); -- TODO: file length limit
   needleRaw : constant string := To_Ada( Value( text ) );
-  needleDir : constant string := Dir_Name( unescapeWithBackslashes( needleRaw ) );
+  needleDir : unbounded_string := to_unbounded_string( Dir_Name( unescapeWithBackslashes( needleRaw ) ) );
   needle    : constant string := File_Name( unescapeWithBackslashes( needleRaw ) );
   needleLen : constant size_t := needle'length;
   firstColon : natural;
 begin
+
+   -- If there is no directory, Dir_Name defaults to "./", the current
+   -- directory, which is not necessarily correct.
+
+   if needleDir = "." & directory_delimiter then
+     if needleRaw'length < 3 then
+        needleDir := null_unbounded_string;
+     elsif needleRaw(needleRaw'first..needleRaw'first+1) /= "." & directory_delimiter then
+        needleDir := null_unbounded_string;
+     end if;
+  end if;
+
+--put_line( "[NeedleRaw '" & needleRaw & "']" ); -- DEBUG
+--put_line( "[NeedleDir '" & to_string( needleDir ) & "']" ); -- DEBUG
   if state = 0 then
      -- if the user specifies an absolute or relative directory, use that
      -- directory.  Otherwise, use the directories in the PATH variable.
      if ada.strings.fixed.index( needleRaw, "" & directory_delimiter ) > 0 then
-        remainingCmdPathDirs := to_unbounded_string( needleDir );
+        -- remainingCmdPathDirs := to_unbounded_string( needleDir );
+        remainingCmdPathDirs := needleDir;
      else
         findIdent( to_unbounded_string( "PATH" ), path_id );
         if path_id /= eof_t then
@@ -1145,16 +1160,18 @@ begin
              read( currentCmdDir, completionFile, completionFileLen );
              exit when completionFileLen <= 0;
              if needle = completionFile( 1..integer( needleLen ) ) then
+--put( "[matched '" & to_string( needleDir ) & "']" ); -- DEBUG
                 declare
                 completionFileAsC : aliased char_array := To_C(
-                   escapeSpacesWithBackslashes( needleDir & completionFile(1..completionFileLen ) ) );
+                   escapeSpacesWithBackslashes( to_string( needleDir ) & completionFile(1..completionFileLen ) ) );
                    testpath : constant string := to_string( currentCmdPathDir ) & directory_delimiter & completionFile(1..completionFileLen) & ASCII.NUL;
                 begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
--- put_line( "needle = " & needle ); -- DEBUG
---put_line( "test path=" & testpath ); -- DEBUG
+--put( "[testing '" & testpath & "']" ); -- DEBUG
                    if C_is_executable( testpath ) then
+--put( "['" & To_Ada( completionFileAsC ) & "']" ); -- DEBUG
+--put( "[executable]" ); --DEBUG
                       return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
                    end if;
                 end;
@@ -1186,6 +1203,7 @@ begin
              close( currentCmdDir );
           end if;
           -- open( currentCmdDir, to_string( currentCmdPathDir ) & Directory_Delimiter & needleDir );
+--put( "[trying '" & to_string( currentCmdPathDir ) & "']" ); -- DEBUG
           open( currentCmdDir, to_string( currentCmdPathDir ) );
           exit;
         exception when DIRECTORY_ERROR =>

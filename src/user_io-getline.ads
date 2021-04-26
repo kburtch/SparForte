@@ -74,6 +74,9 @@ pragma export( C, Ada_git_word_generator, "Ada_git_word_generator" );
 function Ada_svn_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_svn_word_generator, "Ada_svn_word_generator" );
 
+function Ada_command_word_generator(text : chars_ptr; state : int ) return chars_ptr;
+pragma export( C, Ada_command_word_generator, "Ada_command_word_generator" );
+
 function Ada_executable_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_executable_word_generator, "Ada_executable_word_generator" );
 

@@ -6,6 +6,7 @@
 // completion functions (as defined in Ada)
 
 extern char * Ada_executable_word_generator(const char *text, int state);
+extern char * Ada_command_word_generator(const char *text, int state);
 extern char * Ada_assignment_word_generator(const char *text, int state);
 extern char * Ada_variable_word_generator(const char *text, int state);
 extern char * Ada_parameter_word_generator(const char *text, int state);
@@ -35,6 +36,7 @@ const int completion_type_docker     = 10;
 const int completion_type_k8s        = 11;
 const int completion_type_npm        = 12;
 const int completion_type_dnf        = 13;
+const int completion_type_executable = 14;
 
 /**
  *  SPARFORTE COMPLETION
@@ -66,6 +68,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     const char oc_str[4]     = "oc ";
     const char npm_str[5]    = "npm ";
     const char dnf_str[5]    = "dnf ";
+    const char sudo_str[6]    = "sudo ";
 
     int completion_type = completion_type_none;
 
@@ -186,9 +189,9 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     // treat it as a command (though it could be an assignment).
 
     if (text_idx < 0) {
-       completion_type = completion_type_command;
+       completion_type = completion_type_executable;
     } else if ( rl_line_buffer[text_idx] == '|' ) {
-       completion_type = completion_type_command;
+       completion_type = completion_type_executable;
     } else if ( rl_line_buffer[text_idx] == '$' ) {
        completion_type = completion_type_variable;
     } else if ( rl_line_buffer[text_idx] == '{' ) {
@@ -200,7 +203,7 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     } else if ( rl_line_buffer[text_idx] == '(' ) {
       if (text_idx > 0) {
          if ( rl_line_buffer[text_idx-1] == '$' ) {
-            completion_type = completion_type_command;
+            completion_type = completion_type_executable;
          }
       }
     }
@@ -286,6 +289,15 @@ char ** sparforte_completion( const char *text, int start, int end ) {
           }
        }
 
+       // Sudo command completion: sudo is usually followed by a command.
+
+       if (completion_type == completion_type_none) {
+          if ( strncmp( rl_line_buffer, sudo_str, strlen(sudo_str) ) == 0 ) {
+             //completion_type = completion_type_command;
+             completion_type = completion_type_executable;
+          }
+       }
+
 	} // word count 2
 
     // If no choice was made, fall back to some kind of parameter.
@@ -304,6 +316,8 @@ char ** sparforte_completion( const char *text, int start, int end ) {
     rl_attempted_completion_over = 1;
 
     if (completion_type == completion_type_command) {
+       matches = rl_completion_matches(text, Ada_command_word_generator);
+    } else if (completion_type == completion_type_executable) {
        matches = rl_completion_matches(text, Ada_executable_word_generator);
     } else if (completion_type == completion_type_assignment) {
        matches = rl_completion_matches(text, Ada_assignment_word_generator);

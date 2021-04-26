@@ -34,3 +34,8 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 13. Fix: tab completion of a single directory now works correctly.
 
+14. New: basic sudo tab completion handling.
+
+15. Fix: tab completion of a command no longer adds "./" where there is none.
+
+
