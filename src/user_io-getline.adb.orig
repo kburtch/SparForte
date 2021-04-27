@@ -1090,6 +1090,31 @@ end Ada_first_word_generator;
 
 
 -----------------------------------------------------------------------------
+-- EXPAND TILDE
+--
+-- Handle a leading tilde in a file path
+-----------------------------------------------------------------------------
+
+function expandTilde( s : string ) return string is
+  home_id: identifier;
+begin
+  if s'length = 1 then
+     if s(s'first) = '~' then
+        findIdent( to_unbounded_string( "HOME" ), home_id );
+        return to_string( identifiers( home_id ).value.all ) & "/";
+     end if;
+  elsif s'length > 1 then
+     if s(s'first..s'first+1) = "~/" then
+        findIdent( to_unbounded_string( "HOME" ), home_id );
+        return to_string( identifiers( home_id ).value.all ) & s( s'first+1..s'last );
+     elsif s(s'first) = '~' then
+        return "/home/" & s( s'first+1..s'last ) & "/";
+     end if;
+  end if;
+  return s;
+end expandTilde;
+
+-----------------------------------------------------------------------------
 --  COMMAND WORD GENERATOR (C language callback to Ada)
 --
 -- Return candidate commands for first word substitutions from PATH dirs.
@@ -1109,7 +1134,7 @@ function Ada_command_word_generator(text : chars_ptr; state : int ) return chars
   completionFileLen : integer;
   completionFile : string(1..1024); -- TODO: file length limit
   needleRaw : constant string := To_Ada( Value( text ) );
-  needleDir : unbounded_string := to_unbounded_string( Dir_Name( unescapeWithBackslashes( needleRaw ) ) );
+  needleDir : unbounded_string := to_unbounded_string( Dir_Name( expandTilde( unescapeWithBackslashes( needleRaw ) ) ) );
   needle    : constant string := File_Name( unescapeWithBackslashes( needleRaw ) );
   needleLen : constant size_t := needle'length;
   firstColon : natural;
@@ -1241,30 +1266,6 @@ lastDirectory : unbounded_string;
 function Ada_file_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   completionFileLen : integer;
   completionFile : string(1..1024);
-
-  -- EXPAND TILDE
-  --
-  -- Handle a leading tilde in a file path
-  ---------------------------------------------------------------------------
-
-  function expandTilde( s : string ) return string is
-    home_id: identifier;
-  begin
-    if s'length = 1 then
-       if s(s'first) = '~' then
-          findIdent( to_unbounded_string( "HOME" ), home_id );
-          return to_string( identifiers( home_id ).value.all ) & "/";
-       end if;
-    elsif s'length > 1 then
-       if s(s'first..s'first+1) = "~/" then
-          findIdent( to_unbounded_string( "HOME" ), home_id );
-          return to_string( identifiers( home_id ).value.all ) & s( s'first+1..s'last );
-       elsif s(s'first) = '~' then
-          return "/home/" & s( s'first+1..s'last ) & "/";
-       end if;
-    end if;
-    return s;
-  end expandTilde;
 
   needleDir : constant string := Dir_Name( expandTilde( unescapeWithBackslashes( To_Ada( Value( text ) ) ) ) );
   needle    : constant string := File_Name( unescapeWithBackslashes( To_Ada( Value( text ) ) ) );

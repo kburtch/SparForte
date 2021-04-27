@@ -30,7 +30,7 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 11. Fix: structured scripts no longer auto-declare variables.  unstructured scripts will still auto-declare variables.
 
-12. New: tilde works with tab completions.
+12. New: tilde works with tab completions on files and commands..
 
 13. Fix: tab completion of a single directory now works correctly.
 
