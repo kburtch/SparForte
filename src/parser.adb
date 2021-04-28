@@ -535,8 +535,10 @@ begin
      elsif not type_checks_done and then not boolean( maintenanceOpt ) then
         -- for performance, don't check in maintenance phase.  Also, only
         -- need to check the names once (i.e. during type checking) and
-        -- not on execution.
-        checkHomonyms( id );
+        -- not on execution.  Also, don't bother on unstructured scripts.
+        if scriptType /= unstructured then
+           checkHomonyms( id );
+        end if;
      end if;
 
      getNextToken;
@@ -761,8 +763,10 @@ begin
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
             -- for performance, don't check in maintenance phase.  Also, only
             -- need to check the names once (i.e. during type checking) and
-            -- not on execution.
-            checkHomonyms( id );
+            -- not on execution.  Also, don't bother on unstructured scripts.
+            if scriptType /= unstructured then
+               checkHomonyms( id );
+            end if;
         end if;
      end;
      getNextToken;
@@ -823,8 +827,10 @@ begin
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
            -- for performance, don't check in maintenance phase.  Also, only
            -- need to check the names once (i.e. during type checking) and
-           -- not on execution.
-           checkHomonyms( id );
+            -- not on execution.  Also, don't bother on unstructured scripts.
+            if scriptType /= unstructured then
+               checkHomonyms( id );
+            end if;
         end if;
      end;
      getNextToken;

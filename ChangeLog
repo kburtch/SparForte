@@ -38,4 +38,5 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 15. Fix: tab completion of a command no longer adds "./" where there is none.
 
+16. Change: homonymn checking no longer applies to unstructured scripts. [test needed]
 
