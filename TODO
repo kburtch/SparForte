@@ -13,8 +13,6 @@ Priority Issues (Fix These First)
 
 - tab on an executable command is putting a "./" in front of it but should not
 - command word generator should probably support ~
-- similarity tests should probably not apply to unformal scripts...check
-  this
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
