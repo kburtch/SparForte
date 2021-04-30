@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- tab on an executable command is putting a "./" in front of it but should not
-- command word generator should probably support ~
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
@@ -20,7 +18,6 @@ Priority Issues (Fix These First)
 - updating adascript shell commands to correspond with bourne shell changes.
   - anything to be done?
 - completions
-  - a single matching directory lacks a trailing / - perhaps a GNU readline config issue
   - drill-down on empty directories probably not working
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
 - incomplete casting tests

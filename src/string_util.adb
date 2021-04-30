@@ -792,11 +792,11 @@ begin
       elsif Element( s, i ) = '"' then
          if not allowSingleQuotes then
             inQuotes := not inQuotes;
-	 end if;
+         end if;
       elsif Element( s, i ) = ''' then
          if allowSingleQuotes then
             inQuotes := not inQuotes;
-	 end if;
+         end if;
       end if;
   end loop;
   if delimCnt+1 < f then

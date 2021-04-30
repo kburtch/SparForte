@@ -1,7 +1,9 @@
 -- This should fail
 
-x1   : integer;
-xone : constant integer := 1;
-x1 := xone;
-? x1;
-
+procedure t is
+   x1   : integer;
+   xone : constant integer := 1;
+begin
+   x1 := xone;
+   ? x1;
+end t;

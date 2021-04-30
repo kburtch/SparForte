@@ -1058,7 +1058,7 @@ begin
            delim,
            natural( to_numeric( cnt_val ) ),
            to_string( tar_val ),
-	   squotes );
+           squotes );
         assignParameter( src_ref, tempStr );
      end if;
   exception when others =>

@@ -1,7 +1,10 @@
 -- This should fail
 
-x1   : integer;
-xOne : constant integer := 1;
-x1 := xOne;
-? x1;
+procedure t is
+  x1   : integer;
+  xOne : constant integer := 1;
+begin
+  x1 := xOne;
+  ? x1;
+end t;
 
