@@ -6169,6 +6169,41 @@ begin
   pragma assert( c12.i = 12 );
 end;
 
+-- Homonym tests
+-- homonyms are allowed in simple scripts
+
+declare
+  xone : constant integer := 1;
+  x1   : integer;
+begin
+  x1 := xone;
+  pragma assert( x1 = xone );
+end;
+
+declare
+   x1   : integer;
+   xone : constant integer := 1;
+begin
+  x1 := xone;
+  pragma assert( x1 = xone );
+end;
+
+declare
+  xOne : constant integer := 1;
+  x1   : integer;
+begin
+  x1 := xOne;
+  pragma assert( x1 = xOne );
+end;
+
+declare
+  x1   : integer;
+  xOne : constant integer := 1;
+begin
+  x1 := xOne;
+  pragma assert( x1 = xOne );
+end;
+
 -- Pragma ada_95 tests
 
 pragma ada_95;
