@@ -268,11 +268,9 @@ begin
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
-put_line( to_string( tempStr ) ); -- DEBUG
      begin
         newMask := mode_t'value( to_string( tempStr ) );
         discard := spar_os.umask( newMask );
-put_line( newMask'img ); -- DEBUG
      exception when constraint_error =>
         err( "bad value");
      when others =>

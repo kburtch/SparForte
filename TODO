@@ -13,7 +13,9 @@ Priority Issues (Fix These First)
 
 - umask
   - octal values
-  - literal 2 treated as a number not a shell word, but 1 and 3 are ok
+  - literal 2 treated as a number not a shell word, but 1 and 3 are ok.
+    probably to do with 2>, etc.
+  - tests
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
