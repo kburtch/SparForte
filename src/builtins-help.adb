@@ -744,6 +744,7 @@ begin
    content( e, "types" );
    content( e, "typeset" );
    content( e, "units" );
+   content( e, "umask" );
    content( e, "unset" );
    content( e, "variables" );
    content( e, "wait" );
@@ -2520,6 +2521,17 @@ begin
      endHelp( e );
   elsif helpTopic = "units" then
      helpUnits;
+  elsif helpTopic = "umask" then
+     startHelp( e, "umask" );
+     summary( e, "file mode mask" );
+     categoryBuiltin( e );
+     authorKen( e );
+     description( e,
+         "Display or set the file mode mask." &
+         " Supports AdaScript parameters." );
+     errors( e, "An exception is raised if pragma ada_95 is enforced" );
+     seeAlsoShellCmds( e );
+     endHelp( e );
   elsif helpTopic = "unset" then
      startHelp( e, "unset" );
      summary( e, "unset ident" );

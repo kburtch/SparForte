@@ -79,6 +79,9 @@ procedure step( ap : argumentListPtr );
 procedure do_trace( ap : argumentListPtr );
 -- trace: command tracing
 
+procedure umask( ap : argumentListPtr );
+-- unset: remove an identifier
+
 procedure unset( ap : argumentListPtr );
 -- unset: remove an identifier
 

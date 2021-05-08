@@ -734,6 +734,7 @@ policy_t   : identifier;
 
 env_t      : identifier;
 typeset_t  : identifier;
+umask_t    : identifier;
 unset_t    : identifier;
 trace_t    : identifier;
 help_t     : identifier;

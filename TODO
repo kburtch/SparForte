@@ -11,17 +11,18 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- umask
+  - octal values
+  - literal 2 treated as a number not a shell word, but 1 and 3 are ok
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
-  - test sparforte as a login shell
 - updating adascript shell commands to correspond with bourne shell changes.
   - anything to be done?
 - completions
   - drill-down on empty directories probably not working
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
 - incomplete casting tests
-- Research: Linux supplies a umask, but no umask command in shell. does it matter?
 - Research: for web to be secure, you can output raw strings to the console.
   Can this be enforced in templates?
 - can I address dash shell compatibility?

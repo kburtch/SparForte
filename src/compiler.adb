@@ -2137,6 +2137,8 @@ begin
           ci.context := StartOfParameters;                 -- Shell or Ada
        elsif id = typeset_t then                           -- typeset?
           ci.context := adaScriptStatement;                -- treat as Ada
+       elsif id = umask_t then                             -- umask?
+          ci.context := StartOfParameters;                 -- Shell or Ada
        elsif id = unset_t then                             -- unset?
           ci.context := StartOfParameters;                 -- Shell or Ada
        elsif id = trace_t then                             -- trace?
@@ -3058,6 +3060,7 @@ begin
 
   declareProcedure( env_t, "env" );
   declareProcedure( typeset_t, "typeset" );
+  declareProcedure( umask_t, "umask" );
   declareProcedure( unset_t, "unset" );
   declareProcedure( trace_t, "trace" );
   declareProcedure( help_t, "help" );

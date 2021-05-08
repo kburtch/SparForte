@@ -42,3 +42,5 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 CHANGES SINCE 2.4.1
 
+17. New: umask built-in command (not octal values).
+

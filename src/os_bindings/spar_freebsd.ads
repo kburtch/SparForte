@@ -128,6 +128,11 @@ pragma import( C, dup );
 function dup2( oldfd, newfd : aFileDescriptor ) return aFileDescriptor;
 pragma import( C, dup2 );
 
+type mode_t is unsigned_long;
+
+function umask( mask :mode_t ) return mode_t;
+pragma import( C, umask );
+
 
 ------------------------------------------------------------------------------
 -- Terminal Control  

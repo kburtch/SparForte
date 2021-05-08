@@ -252,6 +252,8 @@ begin
       null_unbounded_string, true );
   addCommandHash( to_unbounded_string( "trace" ),
       null_unbounded_string, true );
+  addCommandHash( to_unbounded_string( "umask" ),
+      null_unbounded_string, true );
   addCommandHash( to_unbounded_string( "unset" ),
       null_unbounded_string, true );
   addCommandHash( to_unbounded_string( "wait" ),
@@ -357,6 +359,7 @@ begin
   elsif cmd = "pwd" then     builtins.pwd( ap );           noReturnForBuiltin;
   elsif cmd = "step" then    builtins.step( ap );          noReturnForBuiltin;
   elsif cmd = "trace" then   builtins.do_trace( ap );      noReturnForBuiltin;
+  elsif cmd = "umask" then   builtins.umask( ap );         noReturnForBuiltin;
   elsif cmd = "unset" then   builtins.unset( ap );         noReturnForBuiltin;
   elsif cmd = "wait" then    builtins.wait( ap );          noReturnForBuiltin;
   elsif cmd = "alter" then   builtins.alter( ap );         noReturnForBuiltin;

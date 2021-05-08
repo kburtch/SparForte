@@ -32,6 +32,7 @@ with ada.text_io,
      APQ,
 #end if;
 #end if;
+     spar_os,
      string_util,
      user_io,
      world,
@@ -239,6 +240,46 @@ begin
      terminalClear( identifiers( term_id ).value.all );
   end if;
 end clear;
+
+
+-----------------------------------------------------------------------------
+--  UMASK (POSIX SHELL COMMAND)
+--
+-- umask : set the umask
+-- Syntax: umask
+-----------------------------------------------------------------------------
+
+procedure umask( ap : argumentListPtr ) is
+  tempStr  : unbounded_string;
+  newMask  : mode_t;
+  oldMask  : mode_t;
+  discard  : mode_t;
+begin
+  if rshOpt then
+     err( "umask is not allowed in a " & optional_bold( "restricted shell" ) );
+  elsif ap'length > 1 then
+     err( "zero or one argument expected" );
+  elsif ap'length = 0 then
+     if isExecutingCommand then
+        oldMask := spar_os.umask( 0 );
+        discard := spar_os.umask( oldMask );
+        put_line( oldMask'img ); -- TODO: not put_line
+     end if;
+  elsif isExecutingCommand then
+     tempStr := to_unbounded_string( ap( 1 ).all );
+     delete( tempStr, length( tempStr ), length( tempStr ) );
+put_line( to_string( tempStr ) ); -- DEBUG
+     begin
+        newMask := mode_t'value( to_string( tempStr ) );
+        discard := spar_os.umask( newMask );
+put_line( newMask'img ); -- DEBUG
+     exception when constraint_error =>
+        err( "bad value");
+     when others =>
+        err( "exception raised" );
+     end;
+  end if;
+end umask;
 
 
 -----------------------------------------------------------------------------
