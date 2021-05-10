@@ -3413,6 +3413,21 @@ pragma assert( s = "" );
 s := `echo /tmp ;`;
 pragma assert( s = "/tmp" );
 
+-- umask
+
+s := `umask;`;
+umask 511;
+-- we cannot test 511 because the capture file would be unreadable
+umask "56";
+us := `umask;`;
+pragma assert( us = " 56" );
+umask( 66 );
+us := `umask;`;
+pragma assert( us = " 66" );
+umask "$s";
+us := `umask;`;
+pragma assert( us = s );
+
 -- advanced text_io
 
 create( ft, out_file, "./__testfile" );
