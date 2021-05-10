@@ -261,20 +261,30 @@ begin
      err( "zero or one argument expected" );
   elsif ap'length = 0 then
      if isExecutingCommand then
+        -- umask never fails
         oldMask := spar_os.umask( 0 );
         discard := spar_os.umask( oldMask );
-        put_line( oldMask'img ); -- TODO: not put_line
+        put_line( oldMask'img );
+        -- TODO: we cannot guarantee that put_line will handle redirection
+        -- properly.
      end if;
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      begin
         newMask := mode_t'value( to_string( tempStr ) );
-        discard := spar_os.umask( newMask );
+        -- At least in Linux,the umask can only be the file
+        -- permission bits (0777 = 511).
+        if newMask > 511 then
+           err( "value should be in range 0..511" );
+        else
+           -- umask never fails
+           discard := spar_os.umask( newMask );
+        end if;
      exception when constraint_error =>
-        err( "bad value");
+        err( toSecureData( to_string( tempstr ) ) & " is not numeric");
      when others =>
-        err( "exception raised" );
+        err_exception_raised;
      end;
   end if;
 end umask;

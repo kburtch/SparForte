@@ -2523,13 +2523,15 @@ begin
      helpUnits;
   elsif helpTopic = "umask" then
      startHelp( e, "umask" );
-     summary( e, "file mode mask" );
+     summary( e, "unset [mask]" );
      categoryBuiltin( e );
      authorKen( e );
      description( e,
-         "Display or set the file mode mask." &
+         "Display or set the operating system file mode creation mask." &
+         " Unlike traditional Bourne shells, the value is decimal." &
          " Supports AdaScript parameters." );
-     errors( e, "An exception is raised if pragma ada_95 is enforced" );
+     errors( e, "An exception is raised if used in a restricted shell" );
+     errors( e, "An exception is raised the value is not range 0..511" );
      seeAlsoShellCmds( e );
      endHelp( e );
   elsif helpTopic = "unset" then
