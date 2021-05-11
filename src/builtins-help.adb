@@ -656,6 +656,7 @@ begin
      "scripts, operating system commands and other topics.  Enter 'help' and " &
      "a topic to get advice.  For example, 'help arrays' briefly explains " &
      "the arrays package. These are the internal topics:" );
+   content( e, "affirm" );
    content( e, "arrays" );
    content( e, "calendar" );
    content( e, "case" );
@@ -1359,7 +1360,23 @@ begin
      helpMain;
      return;
   end if;
-  if helpTopic = "arrays" then
+  if helpTopic = "affirm" then
+     startHelp( e, "affirm" );
+     summary( e, "affirm clause" );
+     authorKen( e );
+     categoryKeyword( e );
+     description( e, "An affirm is block attached to a type (or a subtype)" &
+       " that will test or alter a value being typecast to the type." &
+       "  It is sometimes called a 'contract'.  Within the block, the type" &
+       " name refers to the value being typecast.  If the parent of the type" &
+       " has an affirm clause, it will also run.  If the value is altered," &
+       " recursion will occur." );
+     examples( e, "affirm / raise validation_error when customer_id not in 100000..999999; / end affirm;" );
+     examples( e, "affirm / if mod_256 not in 0..255 then / mod_256 := @ mod 256; / end if; / end affirm;" );
+     content( e, ( "affirm ... end affirm;" ) );
+     seeAlso( e, "doc/pkg_typedecl.html" );
+     endHelp( e );
+  elsif helpTopic = "arrays" then
      startHelp( e, "arrays" );
      summary( e, "arrays package" );
      authorKen( e );
@@ -2450,6 +2467,8 @@ begin
      content( e, "System.Max_Mantissa","System.Login_Shell" );
      content( e, "System.Restricted_Shell","System.Script_License" );
      content( e, "System.Script_Software_Model","System.System_Version" );
+     content( e, "System.Design_Phase", "System.Maintenance_Phase" );
+     content( e, "System.Testing_Phase", "System.Development_Phase" );
      seeAlso( e, "doc/pkg_system.html" );
      endHelp( e );
   elsif helpTopic = "teams" then
@@ -2527,9 +2546,11 @@ begin
      categoryBuiltin( e );
      authorKen( e );
      description( e,
-         "Display or set the operating system file mode creation mask." &
+         "Set the operating system file mode creation mask." &
+         " With no mask, it writes the mask value to current output." &
          " Unlike traditional Bourne shells, the value is decimal." &
          " Supports AdaScript parameters." );
+     params( e, "mask - the mode bits to turn off, in range 0..511" );
      errors( e, "An exception is raised if used in a restricted shell" );
      errors( e, "An exception is raised the value is not range 0..511" );
      seeAlsoShellCmds( e );
@@ -2542,6 +2563,7 @@ begin
      description( e,
          "Delete a variable, data type or other identifier.  Keywords " &
          "cannot be unset.  Supports AdaScript parameters." );
+     params( e, "ident - the identifier to delete" );
      errors( e, "An exception is raised if pragma ada_95 is enforced" );
      errors( e, "An exception is raised if not used in an interactive session" );
      seeAlsoShellCmds( e );
