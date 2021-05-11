@@ -2523,7 +2523,7 @@ begin
      helpUnits;
   elsif helpTopic = "umask" then
      startHelp( e, "umask" );
-     summary( e, "unset [mask]" );
+     summary( e, "umask [mask]" );
      categoryBuiltin( e );
      authorKen( e );
      description( e,
