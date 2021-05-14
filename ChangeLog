@@ -44,3 +44,5 @@ CHANGES SINCE 2.4.1
 
 17. New: umask built-in command (not octal values).
 
+18. Fix: issue with the number "2" in shell words treated as a number fixed.
+

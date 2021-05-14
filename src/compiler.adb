@@ -1337,6 +1337,7 @@ begin
   inBackQuotes      := false;
   inBackslash       := false;
   processExpansionLevel := 0;
+
   -- Check for special single-character shell words
   --
   -- A semi-colon is the last word of the shell statement.  Return control
@@ -1348,7 +1349,24 @@ begin
   ch := Element( command, cmdpos );                       -- next character
   if ch = ';' then -- really, an AdaScript statement but we're not ready...
      ci.context := startOfStatement;
-     ci.compressedScript := ci.compressedScript & slice( command, firstpos, lastpos );
+
+     -- Anything to save?
+
+     if length( word ) > 0 then
+        if isSymbolNotWord then
+           ci.compressedScript := ci.compressedScript & toByteCode( imm_symbol_delim_t ) &
+              word & toByteCode( imm_symbol_delim_t );
+        else
+           ci.compressedScript := ci.compressedScript & toByteCode( imm_delim_t ) &
+              word & toByteCode( imm_delim_t );
+        end if;
+     else
+        ci.compressedScript := ci.compressedScript & slice( command, firstpos, lastpos );
+     end if;
+
+     -- Record the semi-colon
+
+     ci.compressedScript := ci.compressedScript & ';';
      cmdpos := cmdpos + 1;
      return;
   elsif ch = '|' then
