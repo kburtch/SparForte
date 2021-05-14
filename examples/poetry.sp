@@ -1,5 +1,4 @@
 #!/usr/local/bin/spar
-pragma ada_95;
 pragma restriction( no_external_commands );
 
 procedure poetry is

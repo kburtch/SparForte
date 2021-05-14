@@ -29,7 +29,7 @@ procedure aligncols is
    Column : positive := 1;
    Start : positive := 1;
    type Alignment is ( Left, Center, Right );
-   str : string;
+   s : string;
    padding : natural;
 begin
    -- Zero Widths
@@ -61,24 +61,24 @@ begin
           ch := strings.element( Text, I );
           case ch is
              when '$' | ASCII.NUL =>
-                str := strings.slice( Text, Start, I-1 );
-                padding := (Width( Column ) - strings.length(str));
+                s := strings.slice( Text, Start, I-1 );
+                padding := (Width( Column ) - strings.length(s));
                 case Align is
                 when Left =>
-                  str := @ & (padding * ' ');
+                  s := @ & (padding * ' ');
                 when Center =>
                   declare
                      left_padding : natural := padding/2;
                      right_padding : natural := padding - left_padding;
                   begin
-                     str := (left_padding * ' ') & @ & (right_padding * ' ');
+                     s := (left_padding * ' ') & @ & (right_padding * ' ');
                   end;
                 when Right =>
-                  str := (padding * ' ') & @;
+                  s := (padding * ' ') & @;
                 when others =>
                     null;
                 end case;
-                put( File, str );
+                put( File, s );
                 Start := I+1;
                 if ch = ASCII.NUL then
                    new_line( File );

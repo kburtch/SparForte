@@ -41,7 +41,7 @@ procedure draco_ii is
   type an_attribute is new float;               -- attributes are a unique type
 
   dex : an_attribute;                           -- player dexterity
-  str : an_attribute;                           -- player strength
+  strength : an_attribute;                      -- player strength
 
   hit_points     : integer;                     -- hit points
   level_distance : integer;                     -- total level distance
@@ -100,7 +100,7 @@ procedure draco_ii is
   high_name  : string := "nobody";      -- high score player
   high_score : integer := 0;            -- high score (HS)
   high_level : integer := 0;            -- high score level
-  cmd        : character;               -- player's last command (CM)
+  player_cmd : character;               -- player's last command (CM)
 
 
   -- get high score: retrieve high score from file (if the file exists).
@@ -137,11 +137,11 @@ procedure draco_ii is
 
   procedure set_attributes is
   begin
-    str := -3;
+    strength := -3;
     dex := -3;
-    while dex < -2 and str < -2 loop
+    while dex < -2 and strength < -2 loop
       dex := (9.5 - numerics.rnd(14)+2 ) / 2;
-      str := (9.5 - numerics.rnd(14)+2 ) / 2;
+      strength := (9.5 - numerics.rnd(14)+2 ) / 2;
     end loop;
   end set_attributes;
 
@@ -152,7 +152,7 @@ procedure draco_ii is
   procedure choose_weapon is
     ch : character;
   begin
-    put_line( "Strength  =" & strings.image( numerics.rounding( str*2 ) ) );
+    put_line( "Strength  =" & strings.image( numerics.rounding( strength*2 ) ) );
     put_line( "Dexterity =" & strings.image( numerics.rounding( dex*2 ) ) );
     new_line;
     put_line( "Chose a weapon:" );
@@ -169,11 +169,11 @@ procedure draco_ii is
       when 'm'|'M' =>
          weapon := mace;
          weapon_name := "mace";
-         weapon_damage := 6+ (str + dex)/2;
+         weapon_damage := 6+ (strength + dex)/2;
       when 's'|'S' =>
          weapon := sword;
          weapon_name := "sword";
-         weapon_damage := 8 + str;
+         weapon_damage := 8 + strength;
       when others =>
          put_line( "Pardon?" );
       end case;
@@ -274,7 +274,7 @@ procedure draco_ii is
   procedure show_status is
   begin
     put_line( "You have:" );
-    put_line( strings.image( numerics.rounding( str * 2 ) ) & " points of strength" );
+    put_line( strings.image( numerics.rounding( strength * 2 ) ) & " points of strength" );
     put_line( strings.image( numerics.rounding( dex * 2 ) ) & " points of dexterity" );
     put_line( " carrying a " & weapon_name );
     new_line;
@@ -501,7 +501,7 @@ begin
                     if ch /= "1" then
                        put_line( "Fine, you gutless swine." );
                     else
-                       door := integer(numerics.rnd(15))+hit_points/8+(str+dex)/2;
+                       door := integer(numerics.rnd(15))+hit_points/8+(strength+dex)/2;
                        if door < 10 then
                           new_line;
                           put_line( "The evil lord of the castle feeds you to his pet tiger!" );
@@ -624,7 +624,7 @@ begin
                    has_item( ring ) := true;
                 end if;
               when 12 =>
-                if cmd = '3' then
+                if player_cmd = '3' then
                    water := water + 3;
                 end if;
                 put_line( "You swim a peaceful river." );
@@ -663,7 +663,7 @@ begin
                   put_line( "You follow a trail through the mountains." );
                   distance := distance - 3;
                when 16 =>
-                  if cmd = '3' and maybe then
+                  if player_cmd = '3' and maybe then
                      put_line( "The spring from which you drink is poison." );
                      status := dead;
                   else
@@ -749,12 +749,12 @@ begin
        loop
          new_line;
          put( "What will you do? *" & ASCII.BS );
-         cmd := inkey;
-         put_line( cmd );
+         player_cmd := inkey;
+         put_line( player_cmd );
 
          -- Handle player's command
 
-         case cmd is
+         case player_cmd is
          when '1' =>
            -- evade
            if creature_here then
