@@ -40,12 +40,12 @@ procedure ramcache is
   ----------------------------------------------------------------------------
 
 
-  -- WRITE CACHE
+  -- BASIC WRITE CACHE
   --
   -- Store a key-value pair in the cache, along with the time it was stored.
   ----------------------------------------------------------------------------
 
-  procedure write_cache( key : string; key_value : universal_typeless ) is
+  procedure basic_write_cache( key : string; key_value : universal_typeless ) is
     md5_sig : string;
     subdir  : string;
     f : file_type;
@@ -70,16 +70,16 @@ procedure ramcache is
     create( f, out_file, cache_path & "/" & subdir & "/" & md5_sig );
     put_line( f, json );
     close( f );
-  end write_cache;
+  end basic_write_cache;
 
 
-  -- READ CACHE
+  -- BASIC READ CACHE
   --
   -- Read a key-value pair in the cache, also returning the time of storage.
   -- An empty string is returned if the value is not found.
   ----------------------------------------------------------------------------
 
-  procedure read_cache( key : string; key_value : out universal_typeless; saved_time : out calendar.time ) is
+  procedure basic_read_cache( key : string; key_value : out universal_typeless; saved_time : out calendar.time ) is
     md5_sig : string;
     subdir  : string;
     f : file_type;
@@ -102,16 +102,16 @@ procedure ramcache is
   exception when others =>
     key_value := "";
     saved_time := calendar.clock;
-  end read_cache;
+  end basic_read_cache;
 
 
-  -- REMOvE CACHE
+  -- BASIC REMOVE CACHE
   --
   -- Remove an entry from the cache.  Does not remove the parent
   -- subdirectory.
   ----------------------------------------------------------------------------
 
-  procedure remove_cache( key : string ) is
+  procedure basic_remove_cache( key : string ) is
     md5_sig : string;
     subdir  : string;
     f : file_type;
@@ -120,7 +120,7 @@ procedure ramcache is
     subdir := strings.head( md5_sig, 2 );
     open( f, in_file, cache_path & "/" & subdir & "/" & md5_sig );
     delete( f );
-  end remove_cache;
+  end basic_remove_cache;
 
 
   ----------------------------------------------------------------------------
@@ -153,7 +153,7 @@ procedure ramcache is
   begin
     if key /= "" then
        if key_value /= "" then
-          write_cache( key, key_value );
+          basic_write_cache( key, key_value );
        end if;
     end if;
   end put_cache;
@@ -171,7 +171,7 @@ procedure ramcache is
     pragma assumption( used, expires ); -- unfinished
   begin
     if key /= "" then
-       read_cache( key, key_value, saved_time );
+       basic_read_cache( key, key_value, saved_time );
     end if;
   --  if calendar.clock > saved_time + expires then
   --     key_value := "";
@@ -188,7 +188,7 @@ procedure ramcache is
   procedure delete_cache ( key : string ) is
   begin
     if key /= "" then
-       remove_cache( key );
+       basic_remove_cache( key );
     end if;
   end delete_cache;
 

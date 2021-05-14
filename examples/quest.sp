@@ -9,7 +9,6 @@
 -- THIS PROGRAM WAS TAKEN FROM THE JULY 1979 BYTE MAG.
 -- BY LEE DUSBABEK FOR THE FAMOUS SKIP HANSON (WB6YMH)
 
-pragma ada_95;
 pragma restriction( no_external_commands );
 
 

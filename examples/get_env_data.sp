@@ -50,7 +50,6 @@
     procedure
 gen_env_data
 is
-    pragma ada_95 ;
 
     New_Line                    : constant character    := ASCII.LF ;
 

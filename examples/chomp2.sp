@@ -161,7 +161,7 @@ while not end_of_file( inputfile ) loop
    textline := get_line( inputfile );
    if verbose then
       put( standard_error, "<< " );
-      put_line( standard_error, strings.to_escaped( textline ) );
+      put_line( standard_error, textline );
    end if;
    len := strings.length( textline );
    ch := strings.element( textline, positive( len ) );
@@ -198,7 +198,7 @@ while not end_of_file( inputfile ) loop
   end case;
   if verbose then
      put( standard_error, ">> " );
-     put_line( standard_error, strings.to_escaped( textline ) );
+     put_line( standard_error, textline );
   end if;
   len := strings.length( textline );
   out_cnt := out_cnt+len;

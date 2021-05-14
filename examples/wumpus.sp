@@ -11,7 +11,6 @@ pragma annotate( description, "For sound effects, run as superuser" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
-pragma ada_95;                       -- strict programming practices
 pragma restriction( no_external_commands ); -- O/S independent
 
 procedure wumpus is

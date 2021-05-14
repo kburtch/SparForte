@@ -102,7 +102,7 @@ Press any key *
   <b>type</b> an_attribute <b>is</b> <b>new</b> float;               <FONT COLOR=green><EM>-- attributes are a unique type</EM></FONT>
 
   dex : an_attribute;                           <FONT COLOR=green><EM>-- player dexterity</EM></FONT>
-  str : an_attribute;                           <FONT COLOR=green><EM>-- player strength</EM></FONT>
+  strength : an_attribute;                      <FONT COLOR=green><EM>-- player strength</EM></FONT>
 
   hit_points     : integer;                     <FONT COLOR=green><EM>-- hit points</EM></FONT>
   level_distance : integer;                     <FONT COLOR=green><EM>-- total level distance</EM></FONT>
@@ -161,7 +161,7 @@ Press any key *
   high_name  : string := "nobody";      <FONT COLOR=green><EM>-- high score player</EM></FONT>
   high_score : integer := 0;            <FONT COLOR=green><EM>-- high score (HS)</EM></FONT>
   high_level : integer := 0;            <FONT COLOR=green><EM>-- high score level</EM></FONT>
-  cmd        : character;               <FONT COLOR=green><EM>-- player's last command (CM)</EM></FONT>
+  player_cmd : character;               <FONT COLOR=green><EM>-- player's last command (CM)</EM></FONT>
 
 
   <FONT COLOR=green><EM>-- get high score: retrieve high score from file (if the file exists).</EM></FONT>
@@ -198,11 +198,11 @@ Press any key *
 
   <b>procedure</b> set_attributes <b>is</b>
   <b>begin</b>
-    str := -3;
+    strength := -3;
     dex := -3;
-    <b>while</b> dex &lt; -2 <b>and</b> str &lt; -2 <b>loop</b>
+    <b>while</b> dex &lt; -2 <b>and</b> strength &lt; -2 <b>loop</b>
       dex := (9.5 - numerics.rnd(14)+2 ) / 2;
-      str := (9.5 - numerics.rnd(14)+2 ) / 2;
+      strength := (9.5 - numerics.rnd(14)+2 ) / 2;
     <b>end</b> <b>loop</b>;
   <b>end</b> set_attributes;
 
@@ -213,7 +213,7 @@ Press any key *
   <b>procedure</b> choose_weapon <b>is</b>
     ch : character;
   <b>begin</b>
-    put_line( "Strength  =" &amp; strings.image( numerics.rounding( str*2 ) ) );
+    put_line( "Strength  =" &amp; strings.image( numerics.rounding( strength*2 ) ) );
     put_line( "Dexterity =" &amp; strings.image( numerics.rounding( dex*2 ) ) );
     new_line;
     put_line( "Chose a weapon:" );
@@ -230,11 +230,11 @@ Press any key *
       <b>when</b> 'm'|'M' =&gt;
          weapon := mace;
          weapon_name := "mace";
-         weapon_damage := 6+ (str + dex)/2;
+         weapon_damage := 6+ (strength + dex)/2;
       <b>when</b> 's'|'S' =&gt;
          weapon := sword;
          weapon_name := "sword";
-         weapon_damage := 8 + str;
+         weapon_damage := 8 + strength;
       <b>when</b> <b>others</b> =&gt;
          put_line( "Pardon?" );
       <b>end</b> <b>case</b>;
@@ -335,7 +335,7 @@ Press any key *
   <b>procedure</b> show_status <b>is</b>
   <b>begin</b>
     put_line( "You have:" );
-    put_line( strings.image( numerics.rounding( str * 2 ) ) &amp; " points of strength" );
+    put_line( strings.image( numerics.rounding( strength * 2 ) ) &amp; " points of strength" );
     put_line( strings.image( numerics.rounding( dex * 2 ) ) &amp; " points of dexterity" );
     put_line( " carrying a " &amp; weapon_name );
     new_line;
@@ -562,7 +562,7 @@ Press any key *
                     <b>if</b> ch /= "1" <b>then</b>
                        put_line( "Fine, you gutless swine." );
                     <b>else</b>
-                       door := integer(numerics.rnd(15))+hit_points/8+(str+dex)/2;
+                       door := integer(numerics.rnd(15))+hit_points/8+(strength+dex)/2;
                        <b>if</b> door &lt; 10 <b>then</b>
                           new_line;
                           put_line( "The evil lord of the castle feeds you to his pet tiger!" );
@@ -685,7 +685,7 @@ Press any key *
                    has_item( ring ) := true;
                 <b>end</b> <b>if</b>;
               <b>when</b> 12 =&gt;
-                <b>if</b> cmd = '3' <b>then</b>
+                <b>if</b> player_cmd = '3' <b>then</b>
                    water := water + 3;
                 <b>end</b> <b>if</b>;
                 put_line( "You swim a peaceful river." );
@@ -724,7 +724,7 @@ Press any key *
                   put_line( "You follow a trail through the mountains." );
                   distance := distance - 3;
                <b>when</b> 16 =&gt;
-                  <b>if</b> cmd = '3' <b>and</b> maybe <b>then</b>
+                  <b>if</b> player_cmd = '3' <b>and</b> maybe <b>then</b>
                      put_line( "The spring from which you drink is poison." );
                      status := dead;
                   <b>else</b>
@@ -810,12 +810,12 @@ Press any key *
        <b>loop</b>
          new_line;
          put( "What will you do? *" &amp; ASCII.BS );
-         cmd := inkey;
-         put_line( cmd );
+         player_cmd := inkey;
+         put_line( player_cmd );
 
          <FONT COLOR=green><EM>-- Handle player's command</EM></FONT>
 
-         <b>case</b> cmd <b>is</b>
+         <b>case</b> player_cmd <b>is</b>
          <b>when</b> '1' =&gt;
            <FONT COLOR=green><EM>-- evade</EM></FONT>
            <b>if</b> creature_here <b>then</b>

@@ -34,18 +34,18 @@ procedure best_shuffle is
     return t;
   end shuffle;
 
-  stop : boolean := false;
+  must_stop : boolean := false;
 
 begin
 
-  while not stop loop
+  while not must_stop loop
     declare
       original : constant string := get_line;
       shuffled : constant string := shuffle( original );
       score : natural := 0;
    begin
       if original = "" then
-         stop;
+         must_stop;
       end if;
 
       -- determine the score for the shuffled string

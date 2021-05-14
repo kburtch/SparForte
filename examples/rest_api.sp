@@ -37,7 +37,7 @@ end record;
 
 -- API Call Statistics
 
-type call_stats is record
+type call_stats is abstract record
    last_used             : universal_typeless;
    -- response statistics
    total_calls : natural;
