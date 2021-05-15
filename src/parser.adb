@@ -562,7 +562,11 @@ end ParseProcedureIdentifier;
 procedure ParsePragmaIdentifier( name : out unbounded_string ) is
 begin
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     -- for pragmas, keywords can be identifiers
+     if identifiers( token ).kind = keyword_t then
+        name := identifiers( token ).name;
+        getNextToken;
+     elsif isTokenValidIdentifier then
         name := identifiers( token ).name;
         getNextToken;
      end if;

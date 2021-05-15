@@ -11,10 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- umask
-  - octal values
-  - tests
-- return annotation type should be allowed (it's a keyword)
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.

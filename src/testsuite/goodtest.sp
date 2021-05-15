@@ -2575,6 +2575,21 @@ echo '\';
 echo is;
 -- ^ compressed token ('is' is a reserved word)
 
+echo 0;
+echo 1;
+echo 2;
+echo 3;
+echo 4;
+echo 5;
+echo 6;
+echo 7;
+echo 8;
+echo 9;
+echo a;
+echo A;
+echo z;
+echo Z;
+
 -- shell itself
 
 echo @ echo;

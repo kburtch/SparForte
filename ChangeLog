@@ -46,3 +46,5 @@ CHANGES SINCE 2.4.1
 
 18. Fix: issue with the number "2" in shell words treated as a number fixed.
 
+19. Fix: "return" no longer produces an error with pragma annotate.
+
