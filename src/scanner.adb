@@ -1282,6 +1282,20 @@ end err;
 
 
 -----------------------------------------------------------------------------
+-- ERR STYLE
+--
+-- Display a style error.  It is not an error if the script is unstructured.
+-----------------------------------------------------------------------------
+
+procedure err_style( msg : string ) is
+begin
+   if scriptType = structured then
+      err_shell( "style issue: " & msg, 0 );
+   end if;
+end err_style;
+
+
+-----------------------------------------------------------------------------
 --  ERR EXCEPTION RAISED
 --
 -- General message when raising on when others =>

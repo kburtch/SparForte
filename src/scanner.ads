@@ -168,6 +168,9 @@ procedure err( msg : string );
 -- set the token to eof_t to abort the parsing and set the
 -- error_found flag to indicate that an error was encountered
 
+procedure err_style( msg : string );
+-- display a style error.  It is not an error if the script is unstructured.
+
 procedure err_exception_raised;
 -- generic error for when others => exceptions
 

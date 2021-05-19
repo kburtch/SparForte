@@ -48,3 +48,5 @@ CHANGES SINCE 2.4.1
 
 19. Fix: "return" no longer produces an error with pragma annotate.
 
+20. Change: style issues no longer enforced for unstructured scripts.
+

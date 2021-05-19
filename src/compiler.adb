@@ -2272,7 +2272,9 @@ begin
     end loop;
     lastpos := cmdpos-1;            -- actually, first non-whitespace char
     if lastpos+tabAdjust > 80 then
-       err_tokenize( "style issue: large identation can hide text beyond right display margin", to_string( command ) );
+       if scriptType = structured then
+          err_tokenize( "style issue: large identation can hide text beyond right display margin", to_string( command ) );
+       end if;
     end if;
     if lastpos+tabAdjust > 254 then -- hopefully, never, but harmless
        lastpos := 254-tabAdjust;    -- to truncate leading indentation

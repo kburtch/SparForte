@@ -640,7 +640,7 @@ begin
       end if;
    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
       if not suppress_word_quoting and then whitespaceOption = trim then
-         err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+         err_style( "expected double quoted word parameters in shell or SQL command to stop word splitting" );
       end if;
       if isExecutingCommand then
          begin
@@ -656,7 +656,7 @@ begin
       end if;
    else
       if not suppress_word_quoting and then whitespaceOption = trim then
-         err( "style issue: expected double quoted word parameters in shell or SQL command to stop word splitting" );
+         err_style( "expected double quoted word parameters in shell or SQL command to stop word splitting" );
       end if;
       findIdent( expansionVar, var_id );
 

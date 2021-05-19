@@ -527,11 +527,11 @@ begin
      -- Procedure / Function style checks
 
      if length( identifiers(id).name ) < 3 then
-        err( "style issue: " & optional_yellow( to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
-        elsif length( identifiers(id).name ) > 32 then
-            if index( identifiers(id).name, "_" ) = 0 then
-               err( "style issue: long names are more readable when underscores are used" );
-            end if;
+        err_style(optional_yellow( to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
+     elsif length( identifiers(id).name ) > 32 then
+        if index( identifiers(id).name, "_" ) = 0 then
+            err_style( "long names are more readable when underscores are used" );
+        end if;
      elsif not type_checks_done and then not boolean( maintenanceOpt ) then
         -- for performance, don't check in maintenance phase.  Also, only
         -- need to check the names once (i.e. during type checking) and
@@ -749,20 +749,20 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err( "style issue: name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
+              err_style( "name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
            elsif identifiers( id ).name = uppercase_o then
-              err( "style issue: name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
+              err_style( "name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
            end if;
         end if;
         if element( nameAsLower, length( nameAsLower)-1 ) = '_' then
-               err( "trailing underscores not allowed in identifiers" );
+           err( "trailing underscores not allowed in identifiers" );
         elsif index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err( "style issue:  name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+           err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-            err( "style issue: name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+           err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
         elsif length( nameAsLower ) > 32 then
             if index( nameAsLower, "_" ) = 0 then
-               err( "style issue: long names are more readable when underscores are used" );
+               err_style( "long names are more readable when underscores are used" );
             end if;
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
             -- for performance, don't check in maintenance phase.  Also, only
@@ -812,21 +812,21 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err( "style issue: name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
+              err_style( "name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
            elsif identifiers( id ).name = uppercase_o then
-              err( "style issue: name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
+              err_style( "name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
            end if;
         end if;
         if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err( "style issue:  name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+           err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-            err( "style issue: name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+            err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
         elsif element( identifiers(id).name,
             length( identifiers(id).name ) ) = '_' then
                err( "trailing underscores not allowed in identifiers" );
         elsif length( identifiers(id).name ) > 32 then
             if index( identifiers(id).name, "_" ) = 0 then
-               err( "style issue: long names are more readable when underscores are used" );
+               err_style( "long names are more readable when underscores are used" );
             end if;
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
            -- for performance, don't check in maintenance phase.  Also, only
@@ -1005,7 +1005,7 @@ begin
   -- style check: no dangerous program names
   if syntax_check then
      if index( confusingprogram_words, to_string( " " & identifiers( program_id ).name & " " ) ) > 0 then
-        err( "style issue: " & optional_yellow( to_string( identifiers( program_id ).name ) ) & " is a built-in command in some shells" );
+        err_style( optional_yellow( to_string( identifiers( program_id ).name ) ) & " is a built-in command in some shells" );
      end if;
   end if;
   identifiers( program_id ).kind := identifiers'first;
