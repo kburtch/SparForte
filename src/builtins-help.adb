@@ -791,7 +791,7 @@ begin
      content( e, "get_first( f, c, k, v )","replace( f, k, v )" );
      content( e, "get_last( f, c, k, v )","set( f, k, v )" );
      content( e, "get_next( f, c, k, v )","truncate( f )" );
-     content( e, "b := will_raise( f )" );
+     content( e, "recover( f, p )", "b := will_raise( f )" );
      seeAlso( e, "doc/pkg_btree_io.html" );
      endHelp( e );
    if HTMLoutput then
@@ -948,7 +948,7 @@ begin
      content( e, "get_first( f, c, k, v )","replace( f, k, v )" );
      content( e, "get_last( f, c, k, v )","set( f, k, v )" );
      content( e, "get_next( f, c, k, v )","truncate( f )" );
-     content( e, "b := will_raise( f )" );
+     content( e, "recover( f, p )", "b := will_raise( f )" );
      seeAlso( e, "doc/pkg_hash_io.html" );
      endHelp( e );
    if HTMLoutput then

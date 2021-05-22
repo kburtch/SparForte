@@ -151,6 +151,7 @@ pragma assert( not hash_io.is_open( f ) );
 
 -- Clear test
 
+hash_io.recover(f, "btree_test/person.hash" );
 hash_io.create( f, "btree_test/person.hash", 80, 80 );
 hash_io.clear( f );
 hash_io.open( f, "btree_test/person.hash", 80, 80 );

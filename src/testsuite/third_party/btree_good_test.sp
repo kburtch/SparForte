@@ -150,6 +150,7 @@ pragma assert( not btree_io.is_open( f ) );
 
 -- Clear test
 
+btree_io.recover( f, "btree_test/person.btree" );
 btree_io.create( f, "btree_test/person.btree", 80, 80 );
 btree_io.clear( f );
 btree_io.open( f, "btree_test/person.btree", 80, 80 );

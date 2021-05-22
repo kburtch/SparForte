@@ -63,10 +63,6 @@ Priority Issues (Fix These First)
     arrays of database connections be possible?
 - Change: csv support
      - Change: csv_replace - single quote, cr+lf ending
-* Fix: if the system shutdown, BDB locks are left in place
-  - Fix: these need to be recovered using txn_recover and txn_abort, possibly
-    whenever a BDB file is opened.  See
-    https://apps.state.or.us/tech/berkeleyDB/api_c/txn_recover.html
 - Research: enforcing strong types and/or contracts
   - Research: should import require contracts rather than custom type?
 - unsorted/misc

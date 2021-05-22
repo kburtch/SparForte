@@ -24,7 +24,7 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 8. New: strings.to_hexadecimal_digits
 
-9. Fix: added policy and configuration to built-in help.
+9. Fix: added policy and configuration to built-in help. [docs]
 
 10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously. [tests needed]
 
@@ -49,4 +49,6 @@ CHANGES SINCE 2.4.1
 19. Fix: "return" no longer produces an error with pragma annotate.
 
 20. Change: style issues no longer enforced for unstructured scripts.
+
+21. New: btree_io.recover, hash_io.recover.
 

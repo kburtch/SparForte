@@ -81,6 +81,7 @@ btree_will_raise_t    : identifier;
 btree_last_error_t    : identifier;
 btree_raise_exceptions_t : identifier;
 
+btree_recover_t       : identifier;
 btree_create_t        : identifier;
 btree_close_t         : identifier;
 btree_open_t          : identifier;
@@ -173,6 +174,49 @@ begin
    end if;
    return result;
 end isVerifiedOpenFile;
+
+
+-----------------------------------------------------------------------------
+--  CONFIGURE DBD ENV
+--
+-- Berkeley puts the files in the current directory, though you can
+-- move the env because it is shared.  To put the project in a specific
+-- directory, you have you configure it.  A sophisiticated setup would
+-- place all of these in different directories.
+--
+-- For our purposes (simple files), keep everything in one directory
+-----------------------------------------------------------------------------
+
+procedure configureBDBEnv( env : in out bdb.berkeley_environment; dirname : string ) is
+begin
+   if dirname'length > 0 then
+      begin
+         set_data_dir( env, dirname );
+      exception when msg: berkeley_error =>
+         err( exception_message( msg ) & " on setting the data directory" );
+      end;
+      begin
+         set_tmp_dir( env, dirname );
+      exception when msg: berkeley_error =>
+         err( exception_message( msg ) & " on setting the temp directory"  );
+      end;
+      begin
+         set_lg_dir( env, dirname );
+      exception when msg: berkeley_error =>
+         err( exception_message( msg ) & " on setting the logging directory"  );
+      end;
+      begin
+         if verboseOpt then
+            set_verbose( env, DB_VERB_BACKUP, 1 );
+            set_verbose( env, DB_VERB_DEADLOCK, 1 );
+            set_verbose( env, DB_VERB_FILEOPS_ALL, 1 );
+            set_verbose( env, DB_VERB_WAITSFOR, 1 );
+         end if;
+      exception when msg: berkeley_error =>
+         err( exception_message( msg ) & " on changing verbose setting"  );
+      end;
+   end if;
+end configureBDBEnv;
 #end if;
 
 ------------------------------------------------------------------------------
@@ -274,6 +318,78 @@ procedure ParseBTreeClear renames not_configured;
 #if BDB
 
 -----------------------------------------------------------------------------
+--  PARSE BTREE RECOVERY
+--
+-- Syntax: btree.recovery( f, fname );
+-- Ada:    N/A;
+-----------------------------------------------------------------------------
+
+procedure ParseBTreeRecover is
+  fileId     : identifier;
+  theFile    : resPtr;
+  fname_val  : unbounded_string;
+  fname_type : identifier;
+begin
+  if rshOpt then
+     err( "recover not allowed in a " & optional_yellow( "restricted shell" ) );
+  end if;
+  expect( btree_recover_t );
+  ParseFirstFileParameter( fileId );
+  ParseLastStringParameter( fname_val, fname_type, string_t );
+
+  if isExecutingCommand then
+     declare
+        filename : constant string := base_name( to_string( fname_val ) );
+        dirname  : constant string := dir_name( to_string( fname_val ) );
+        dirname2 : unbounded_string;
+        pwdId : identifier;
+     begin
+        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
+        init( theFile.btree.env );
+
+        -- berkeley db paths must be absolute paths when creating (opening
+        -- an exisiting data file is OK for relative paths)
+
+        dirname2 := to_unbounded_string( dirname );
+        if dirname = "." then
+           dirname2 := null_unbounded_string;
+        elsif element( dirname2, 1 ) /= '/' then
+           findIdent( to_unbounded_string( "PWD" ), pwdId );
+           dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
+        end if;
+        if trace then
+           put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+        end if;
+
+        configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
+
+        -- To recover, open a new environment in recovery mode.  Transactions
+        -- must be enabled.  This will recreate the environment files.
+
+        begin
+           create( theFile.btree.env,
+                   to_string( dirname2 ),
+                   DB_E_OPEN_RECOVER OR
+                   DB_E_OPEN_INIT_TXN OR
+                   DB_E_OPEN_INIT_LOCK OR
+                   DB_E_OPEN_INIT_MPOOL,
+                   0 );
+           close( theFile.btree.env );
+        exception when msg: berkeley_error =>
+            err( exception_message( msg ) & " on recovering the environment" );
+        end;
+     end;
+  end if; -- is executing command
+end ParseBTreeRecover;
+
+#else
+
+procedure ParseBTreeRecover renames not_configured;
+
+#end if;
+#if BDB
+
+-----------------------------------------------------------------------------
 --  PARSE BTREE CREATE
 --
 -- Syntax: btree.create( f, path, keyLen, valLen );
@@ -339,40 +455,7 @@ begin
            put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
         end if;
 
-        -- Berkeley puts the files in the current directory, though you can
-        -- move the env because it is shared.  To put the project in a specific
-        -- directory, you have you configure it.  A sophisiticated setup would
-        -- place all of these in different directories.
-        --
-        -- For our purposes (simple files), keep everything in one directory
-
-        if length( dirname2 ) > 0 then
-           begin
-              set_data_dir( theFile.btree.env, to_string( dirname2 ) );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on setting the data directory" );
-           end;
-           begin
-              set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on setting the temp directory"  );
-           end;
-           begin
-              set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on setting the logging directory"  );
-           end;
-           begin
-              if verboseOpt then
-                 set_verbose( theFile.btree.env, DB_VERB_BACKUP, 1 );
-                 set_verbose( theFile.btree.env, DB_VERB_DEADLOCK, 1 );
-                 set_verbose( theFile.btree.env, DB_VERB_FILEOPS_ALL, 1 );
-                 set_verbose( theFile.btree.env, DB_VERB_WAITSFOR, 1 );
-              end if;
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on changing verbose setting"  );
-           end;
-        end if;
+        configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
 
         -- Create an environment
 
@@ -546,37 +629,7 @@ begin
            put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
         end if;
 
-        -- Berkeley puts the files in the current directory, though you can
-        -- move the env because it is shared.  To put the project in a specific
-        -- directory, you have you configure it.  A sophisiticated setup would
-        -- place all of these in different directories.
-        --
-        -- For our purposes (simple files), keep everything in one directory
-
-        if length( dirname2 ) > 0 then
-           begin
-              set_data_dir( theFile.btree.env, to_string( dirname2 ) );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on setting the data directory" );
-           end;
-           begin
-              set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on setting the temp directory"  );
-           end;
-           begin
-              set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on setting the logging directory"  );
-           end;
-           begin
-              if verboseOpt then
-                 set_verbose( theFile.btree.env, 1, 1 );
-              end if;
-           exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on changing verbose setting"  );
-           end;
-        end if;
+        configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
 
         if theFile.btree.isOpen then
            err( "file " &
@@ -2668,6 +2721,7 @@ begin
   --declareProcedure( btree_new_file_t,  "btree_io.new_file", ParseBTreeNewFile'access );
   declareProcedure( btree_clear_t,     "btree_io.clear",    ParseBTreeClear'access );
 
+  declareProcedure( btree_recover_t,   "btree_io.recover",  ParseBTreeRecover'access );
   declareProcedure( btree_create_t,    "btree_io.create",   ParseBTreeCreate'access );
   declareProcedure( btree_close_t,     "btree_io.close",    ParseBTreeClose'access );
   declareProcedure( btree_open_t,      "btree_io.open",     ParseBTreeOpen'access );
