@@ -88,6 +88,9 @@ Priority Issues (Fix These First)
     - Verify: a variable not declared is said to be declared but not used (this_run_on in
       ssds project) - could not duplicate in simple test
     - Research: is close_on_exec useful?
+- SDL 2.0
+  - requires major rewrites, no backwards compatibility
+  - http://wiki.libsdl.org/MigrationGuide
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
