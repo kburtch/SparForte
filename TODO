@@ -11,6 +11,8 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- pragma todo
+  - these do not appear in help output when in include files
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
@@ -88,6 +90,9 @@ Priority Issues (Fix These First)
     - Verify: a variable not declared is said to be declared but not used (this_run_on in
       ssds project) - could not duplicate in simple test
     - Research: is close_on_exec useful?
+- SDL 2.0
+  - requires major rewrites, no backwards compatibility
+  - http://wiki.libsdl.org/MigrationGuide
 
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
