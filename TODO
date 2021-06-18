@@ -11,6 +11,9 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- pragma TTL - allow variable values to expire after a number of seconds,
+  or control the volatility.  For implementing caches.
+
 - pragma todo
   - these do not appear in help output when in include files
 - shell parser rewrite
