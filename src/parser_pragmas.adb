@@ -26,6 +26,7 @@ with ada.command_line.environment;
 pragma warnings( on );
 with  ada.text_io,
     ada.strings.unbounded.text_io,
+    ada.calendar,
     gnat.source_info,
     cgi,
     pegasock.memcache,
@@ -45,6 +46,7 @@ use ada.text_io,
     ada.command_line.environment,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
+    ada.calendar,
     pegasock.memcache,
     user_io,
     script_io,
@@ -1850,11 +1852,23 @@ begin
         err( "pragma restriction( no_volatiles ) does not allow pragma volatile" );
      end if;
      ParseIdentifier( var_id );
+     expr_val := null_unbounded_string;
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, expr_type );
+        baseTypesOK( expr_type, duration_t );
+     end if;
   when unchecked_volatile =>                 -- pragma volatile
      if restriction_no_volatiles then
         err( "pragma restriction( no_volatiles ) does not allow pragma unchecked_volatile" );
      end if;
      ParseIdentifier( var_id );
+     expr_val := null_unbounded_string;
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseStaticExpression( expr_val, expr_type );
+        baseTypesOK( expr_type, duration_t );
+     end if;
   when others =>
      err( gnat.source_info.source_location & ": Internal error: can't handle pragma" );
   end case;
@@ -1970,8 +1984,32 @@ begin
      -- at run-time.
      elsif pragmaKind = volatile then
         identifiers( var_id ).volatile := checked;
+        if expr_val /= "" then
+           begin
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             if identifiers( var_id ).volatileTTL <= 0.0 then
+                err( "volatile TTL is less than zero" );
+             elsif identifiers( var_id ).volatileTTL > 0.0 then
+                identifiers( var_id ).volatileExpire := clock;
+             end if;
+           exception when others =>
+             err("bad value for volatile TTL" );
+           end;
+        end if;
      elsif pragmaKind = unchecked_volatile then
         identifiers( var_id ).volatile := unchecked;
+        if expr_val /= "" then
+           begin
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             if identifiers( var_id ).volatileTTL <= 0.0 then
+                err( "volatile TTL is less than zero" );
+             elsif identifiers( var_id ).volatileTTL > 0.0 then
+                identifiers( var_id ).volatileExpire := clock;
+             end if;
+           exception when others =>
+             err("bad value for volatile TTL" );
+           end;
+        end if;
      end if;
   end if;
 
@@ -2599,8 +2637,32 @@ begin
         identifiers( var_id ).inspect := false;
      when volatile =>
         identifiers( var_id ).volatile := checked;
+        if expr_val /= "" then
+           begin
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             if identifiers( var_id ).volatileTTL <= 0.0 then
+                err( "volatile TTL is less than zero" );
+             elsif identifiers( var_id ).volatileTTL > 0.0 then
+                identifiers( var_id ).volatileExpire := clock;
+             end if;
+           exception when others =>
+             err("bad value for volatile TTL" );
+           end;
+        end if;
      when unchecked_volatile =>
         identifiers( var_id ).volatile := unchecked;
+        if expr_val /= "" then
+           begin
+             identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
+             if identifiers( var_id ).volatileTTL <= 0.0 then
+                err( "volatile TTL is less than zero" );
+             elsif identifiers( var_id ).volatileTTL > 0.0 then
+                identifiers( var_id ).volatileExpire := clock;
+             end if;
+           exception when others =>
+             err("bad value for volatile TTL" );
+           end;
+        end if;
      when others =>
         err( gnat.source_info.source_location & ": Internal error: unable to execute pragma" );
      end case;

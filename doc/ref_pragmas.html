@@ -101,10 +101,10 @@ environment.</p>
   <b>pragma</b> test_report( text|xml [, "filepath"] )
   <b>pragma</b> test_result( condition )
   <b>pragma</b> unchecked_import( shell | cgi | local_memcache | memcache | session, var )
-  <b>pragma</b> unchecked_volatile( var )
+  <b>pragma</b> unchecked_volatile( var [,ttl] )
   <b>pragma</b> uninspect( var )
   <b>pragma</b> unrestricted_template( css|html|js|json|text|wml|xml [, path] )
-  <b>pragma</b> volatile( var )
+  <b>pragma</b> volatile( var [,ttl] )
 </pre>
                 <br>
         <div class="code_caption">
@@ -932,7 +932,7 @@ the SparForte variable is unchanged.</li>
   <li> <b>pragma unchecked_import_json( shell | cgi | local_memcache | memcache | session, var )</b> - the same as import_json execpt that there is no existence check.
 If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
-  <li><b>pragma unchecked_volatile( var )</b> - like volatile, but
+  <li><b>pragma unchecked_volatile( var [,ttl] )</b> - like volatile, but
 allows the variable to be used in expressions. Side-effects will
 still raise exceptions.</li>
   <li> <b>pragma unrestricted_template( css|html|js|json|text|wml|xml [, template] )</b> -
@@ -940,13 +940,14 @@ SparForte will act like a template processor (like PHP). This pragma is
 the same as pragma template except that the embedded scripts are executed
 in a normal shell with no security restrictions.  The type parameter
 is described under pragma template.</li>
-  <li> <b>pragma volatile( var )</b> - the variable is assumed to be
+  <li> <b>pragma volatile( var [,ttl] )</b> - the variable is assumed to be
 an variable which may change unexpectedly during the script's execution.
 If the variable is imported, the variable's value will be updated each
 time it is referenced. Volatile variable acts like a limited so they are
 not used in an expression.  Otherwise, expressions may have
 "side-effects" as the volatile values can change unexpectedly in the
-middle of a calculation.</li>
+middle of a calculation.  If a TTL duration is given, the volatile variable
+will only be imported every TTL seconds.</li>
 </ul>
 
 <h4>Miscellaneous Pragmas</h4>

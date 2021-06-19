@@ -1261,10 +1261,10 @@ begin
   content( e, "pragma test_result( condition ) - with --test, display warning on condition failure" );
   content( e, "pragma todo( to, message, work, units, priority, units ) - task assignment/estimation" );
   content( e, "pragma unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
-  content( e, "pragma unchecked_volatile( var ) - like volatile, but not an error to use in expressions" );
+  content( e, "pragma unchecked_volatile( var [,ttl] ) - like volatile, but not an error to use in expressions" );
   content( e, "pragma uninspect( var ) - undo pragma inspect" );
   content( e, "pragma unrestricted_template( css|html|js|json|text|wml|xml [, path] ) - run template without a restricted shell" );
-  content( e, "pragma volatile( var ) - load value from environment on every access" );
+  content( e, "pragma volatile( var [,ttl] ) - load value from environment on every access" );
      seeAlso( e, "doc/ref_pragmas.html" );
      endHelp( e );
    if HTMLoutput then

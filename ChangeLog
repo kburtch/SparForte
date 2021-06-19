@@ -54,3 +54,5 @@ CHANGES SINCE 2.4.1
 
 22. New: opengl_third, opengl_fourth examples.
 
+23. New: pragma volatile can have a timeout duration in seconds.
+

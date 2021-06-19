@@ -42,6 +42,8 @@ localMemcacheClusterInitialized : boolean := false;
 distributedMemcacheClusterInitialized : boolean := false;
 -- flag: only initialize the memcache clusters once
 
+defaultVolatileExpire : constant time := clock;
+
 -----------------------------------------------------------------------------
 -- TINY HASH CACHE
 --
@@ -556,6 +558,8 @@ begin
        mapping  => none,
        export   => false,
        volatile => none,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        static   => false,
        usage    => fullUsage,
        list     => false,
@@ -620,6 +624,8 @@ begin
        mapping  => none,
        export   => false,
        volatile => none,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        static   => false,
        usage    => identifiers( kind ).usage,
        list     => false,
@@ -851,6 +857,8 @@ begin
                  mapping  => none,
                  export   => false,
                  volatile => none,
+                 volatileTTL => 0.0,
+                 volatileExpire => defaultVolatileExpire,
                  static   => false,
                  --usage    => constantUsage,
                  usage    => identifiers( i ).usage,
@@ -934,6 +942,8 @@ begin
        mapping  => none,
        export   => false,
        volatile => none,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        static   => false,
        usage    => constantUsage,
        list     => false,
@@ -1026,6 +1036,8 @@ begin
        method   => none,
        mapping  => none,
        export   => false,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        volatile => none,
        static   => false,
        usage    => fullUsage,
@@ -1096,6 +1108,8 @@ begin
        mapping  => none,
        export   => false,
        volatile => none,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        static   => identifiers( canonicalRef.id ).static,
        usage    => identifiers( new_id ).usage,
        list     => identifiers( canonicalRef.id ).list,
@@ -1290,6 +1304,8 @@ begin
        mapping  => none,
        export   => false,
        volatile => none,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        static   => false,
        usage    => fullUsage,
        list     => false,
@@ -1426,6 +1442,8 @@ begin
        mapping  => none,
        export   => false,
        volatile => none,
+       volatileTTL => 0.0,
+       volatileExpire => defaultVolatileExpire,
        static   => false,
        usage    => fullUsage,
        list     => false,

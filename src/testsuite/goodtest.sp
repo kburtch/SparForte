@@ -1152,6 +1152,7 @@ FOOBAR : limited import_string;
 pragma import( shell, FOOBAR );
 pragma export( shell, FOOBAR );
 pragma volatile( FOOBAR );
+pragma volatile( FOOBAR, 1 );
 foo_dummy_variable_123: string := "foo_123";
 pragma unchecked_import( shell, foo_dummy_variable_123 );
 pragma assert( foo_dummy_variable_123 = "foo_123" );

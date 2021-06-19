@@ -32,6 +32,7 @@ with system,
     ada.strings.fixed,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
+    ada.calendar,
     gnat.source_info,
     spar_os.tty,
     pegasock.memcache,
@@ -89,6 +90,7 @@ use ada.text_io,
     ada.strings.fixed,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
+    ada.calendar,
     spar_os,
     spar_os.tty,
     pegasock.memcache,
@@ -3547,6 +3549,22 @@ procedure refreshVolatile( id : identifier ) is
   refreshed : boolean := false;
   importedStringValue : unbounded_string;
 begin
+  -- If the volatile has a time-to-live, then if it has not expired, just
+  -- return and do nothing.  Otherwise update the end-of-life and continue.
+  if identifiers( id ).volatileTTL > 0.0 then
+     declare
+        now : time := clock;
+     begin
+        if identifiers( id ).volatileExpire >= now then
+           if trace then
+              put_trace( "volatile has not expired yet" );
+           end if;
+           return;
+        end if;
+        identifiers( id ).volatileExpire := now + identifiers( id ).volatileTTL;
+     end;
+  end if;
+
   if identifiers( id ).method = local_memcache then
      Get( localMemcacheCluster,
           identifiers( id ).name,

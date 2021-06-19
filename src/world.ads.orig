@@ -27,11 +27,13 @@ with system,
   ada.numerics.float_random,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
+  ada.calendar,
   gen_list,
   software_models,
   pegasock.memcache,
   spar_os;
 use ada.strings.unbounded,
+  ada.calendar,
   software_models,
   pegasock.memcache,
   spar_os;
@@ -46,7 +48,7 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string  := "2.4.1";
+version   : constant string  := "2.4.2";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
 copyright : constant string  :=  " Copyright (c)2001-2021 Free Software Foundation";
@@ -506,6 +508,9 @@ type declaration is record
      export          : boolean := false;        -- marked by pragma export
      volatile        : aVolatileMode := none;   -- marked by pragma volatile
                                                 --   or unchecked_volatile
+     volatileTTL     : duration := 0.0;         -- period assumed safe
+     volatileExpire  : time;                    -- time of next reload
+                                                -- (may be undefined)
      static          : boolean := false;        -- if value is known at syn chk
      usage           : aUsageQualifier := fullUsage; -- limits on use
      list            : boolean := false;        -- array or array type
