@@ -2696,7 +2696,7 @@ begin
      content( e, "u := to_unbounded_string( s )","r := trim( s [, e] )","r := unbounded_slice(s, l, h)" );
      content( e, "s := to_hexadecimal_digits( n )", "c := val( n )","n := levenshtein( s1, s2 )" );
      content( e, "r := soundex( s )", "r := replace_all( s, n, t [, c] )", "b := starts_with( s, t [, c] )" );
-     content( e, "b := ends_with( s, t [,c] )", "n := word_count( s )", "i := compare( s, t [,c] )" );
+     content( e, "b := ends_with( s, t [,c] )", "n := word_count( s )", "i := compare( s, t [, c [, l] ] )" );
      content( e, "n := index_set( s, t [, f [, m [, d] ] ] )" );
      discardUnusedIdentifier( token ); -- TODO: should this always be done automatically?
      seeAlso( e, "doc/pkg_strings.html" );

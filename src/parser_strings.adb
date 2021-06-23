@@ -1855,7 +1855,7 @@ begin
 end ParseStringsWordCount;
 
 procedure ParseStringsCompare( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: i := compare( s, t [,c] )
+  -- Syntax: i := compare( s, t [,c [,l] ] )
   -- Source: N/A
   first_val  : unbounded_string;
   first_type : identifier;
@@ -1863,6 +1863,9 @@ procedure ParseStringsCompare( result : out unbounded_string; kind : out identif
   last_type  : identifier;
   sensitivity_val  : unbounded_string;
   sensitivity_type : identifier;
+  len_val    : unbounded_string;
+  len_type   : identifier;
+  compare_len : natural;
 begin
   kind := integer_t;
   if onlyAda95 then
@@ -1872,16 +1875,33 @@ begin
   ParseFirstStringParameter( first_val, first_type );
   ParseNextStringParameter( last_val, last_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter(  sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+     ParseNextEnumParameter(  sensitivity_val,  sensitivity_type, strings_sensitivity_t );
   else
-    expect( symbol_t, ")" );
     sensitivity_val := to_unbounded_string( "1" );
   end if;
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseLastNumericParameter( len_val, len_type, natural_t );
+     compare_len := natural( to_numeric( len_val ) );
+  else
+    expect( symbol_t, ")" );
+    compare_len := natural'last;
+  end if;
   if isExecutingCommand then
+     -- If there is a maximum length, reduce the two strings to that length
+     if compare_len < natural'last then
+        if length( first_val ) > compare_len then
+           first_val := head( first_val, compare_len );
+        end if;
+        if length( last_val ) > compare_len then
+           last_val := head( last_val, compare_len );
+        end if;
+     end if;
+     -- if the test is insensitive, convert the strings to lower case
      if sensitivity_val = to_unbounded_string( "1" ) then
         first_val := ToLower( first_val );
         last_val := ToLower( last_val );
      end if;
+     -- The compare is less than, greater than or equals test
      if first_val < last_val then
         result := to_unbounded_string( "-1" );
      elsif first_val > last_val then

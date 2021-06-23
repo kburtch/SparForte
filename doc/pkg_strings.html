@@ -128,16 +128,17 @@ Base 64 encoded strings.</p>
 <p>There is a <b>strings.null_unbounded_string</b>, a constant empty string
 for compatibility with Ada.</p>
 
-<a name="strings.compare"></a><h3>i := strings.compare( s, t [,c] )</h3>
+<a name="strings.compare"></a><h3>i := strings.compare( s, t [, c [, l] ] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return less than zero if string s is less than string t, greater than
-zero if t is greater than s or zero if they are equal.  The default sensitivity
+<td><p>Return -1 if string s is less than string t, 1
+if t is greater than s or zero if they are equal.  If length l is given,
+only test the first l characters.  The default sensitivity
 is case-sensitive.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">i := strings.compare( "apples", "oranges" ); -- i is &lt; 0</span><br><span class="code">i := strings.compare( "apples", "apples" ); -- i is 0</span><br><span class="code">i := strings.compare( "oranges", "apples" ); -- i is &gt; 0</td>
+<td><span class="code">i := strings.compare( "apples", "oranges" ); -- i is -1</span><br><span class="code">i := strings.compare( "apples", "apples" ); -- i is 0</span><br><span class="code">i := strings.compare( "oranges", "apples" ); -- i is 1<br> i := strings.compare( "apples", "applesauce", sensitivity.sensitive, 6 ); -- i is 0</td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -168,6 +169,13 @@ is case-sensitive.</p></td>
 <td><span>the case sensitivity</span></td>
 </tr>
 <tr>
+<td><span>l</span></td>
+<td><span>in</span></td>
+<td><span>positive</span></td>
+<td><span>last positive</span></td>
+<td><span>the number of characters to test</span></td>
+</tr>
+<tr>
 <td><span>i</span></td>
 <td><span>return value</span></td>
 <td><span>integer</span></td>
@@ -186,7 +194,7 @@ is case-sensitive.</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>PHP: strcmp, strcasecmp</p></td>
+<td><p>PHP: strcmp, strncmp, strcasecmp, strncasecmp</p></td>
 </tr><tr>
 <td><p class="pkg_label">Introduced</p></td>
 <td><p>SparForte 2.4.2</p></td>
