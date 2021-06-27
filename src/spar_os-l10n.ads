@@ -27,7 +27,7 @@ use  interfaces.C,
      interfaces.C.strings,
      ada.strings.unbounded;
 
-package l8n is
+package spar_os.l10n is
 
 function codeset return unbounded_string;
 
@@ -129,5 +129,5 @@ function pmstr return unbounded_string;
 
 function t_fmt_ampm return unbounded_string;
 
-end l8n;
+end spar_os.l10n;
 

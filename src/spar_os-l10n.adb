@@ -27,11 +27,11 @@ use  interfaces.C,
      interfaces.C.strings,
      ada.strings.unbounded;
 
-package body l8n is
+package body spar_os.l10n is
 
 ------------------------------------------------------------------------------
 --
--- Linux localization functions (from c_l8n.c)
+-- Linux localization functions (from c_l10n.c)
 --
 ------------------------------------------------------------------------------
 
@@ -435,5 +435,5 @@ begin
   return to_unbounded_string( value( langinfo_t_fmt_ampm ) );
 end t_fmt_ampm;
 
-end l8n;
+end spar_os.l10n;
 

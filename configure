@@ -38,7 +38,7 @@ LDCONFIG_SUDO=
 # MANPREFIX   - the man page directory prefix
 # DEV_SHM     - request to use /dev/shm
 # NO_BDB      - request to disable Berkeley DB
-# NO_L8N      - request to disable GNU localization
+# NO_L10N     - request to disable GNU localization
 # NO_MYSQL    - request to disable MySQL
 # NO_OPENGL   - request to disable OpenGL
 # NO_PCRE     - request to disable PCRE library
@@ -77,7 +77,7 @@ while [ $# -gt 0 ] ; do
       echo "  --released            true if not a dev version"
       echo "  --with-gnat-cgi       enable GNAT.CGI support"
       echo "  --without-bdb         disable Berkeley DB support"
-      echo "  --without-l8n         disable GNU localization support"
+      echo "  --without-l10n        disable GNU localization support"
       echo "  --without-mysql       disable MySQL support"
       echo "  --without-opengl      disable OpenGL support"
       echo "  --without-pcre        disable PCRE library support"
@@ -110,8 +110,8 @@ while [ $# -gt 0 ] ; do
   --without-bdb)
       NO_BDB=1
       ;;
-  --without-l8n)
-      NO_L8N=1
+  --without-l10n)
+      NO_L10N=1
       ;;
   --without-mysql)
       NO_MYSQL=1
@@ -1464,10 +1464,10 @@ if [ -n "$HAS_PCRE" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DPCRE=false"
 fi
-if [ -z "$NO_L8N" ] ; then
-   GNATPREP_OPTS="$GNATPREP_OPTS -DL8N=true"
+if [ -z "$NO_L10N" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DL10N=true"
 else
-   GNATPREP_OPTS="$GNATPREP_OPTS -DL8N=false"
+   GNATPREP_OPTS="$GNATPREP_OPTS -DL10N=false"
 fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ -n "$NEEDS_APQ" ] ; then
@@ -1583,11 +1583,11 @@ cp parser_strings_pcre.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_strings_pcre.adb
 chmod 444 parser_strings_pcre.adb
 
-echo "Updating...parser_l8n.adb"
-test -f parser_l8n.adb && chmod 666 parser_l8n.adb
-cp parser_l8n.adb.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb parser_l8n.adb
-chmod 444 parser_l8n.adb
+echo "Updating...parser_l10n.adb"
+test -f parser_l10n.adb && chmod 666 parser_l10n.adb
+cp parser_l10n.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_l10n.adb
+chmod 444 parser_l10n.adb
 
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb
@@ -1694,12 +1694,12 @@ if [ -n "$HAS_PCRE" ] ; then
 else
    PCRELIBS=
 fi
-if [ -z "$NO_L8N" ] ; then
-   L8NLIBS="c_l8n.o"
-   L8NFLAG=1
+if [ -z "$NO_L10N" ] ; then
+   L10NLIBS="c_l10n.o"
+   L10NFLAG=1
 else
-   L8NLIBS=
-   L8NFLAG=
+   L10NLIBS=
+   L10NFLAG=
 fi
 
 PREFIX=`echo "$PREFIX" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
@@ -1723,7 +1723,7 @@ cd ..
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROBJSUB/$GSTREAMEROBJ/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g;s/PCRELIBSSUB/$PCRELIBS/g;s/PCREOBJSUB/$PCREOBJ/g;s/PCREFLAGSUB/$PCREFLAG/g;s/RLFLAGSUB/$RLFLAG/g;s/L8NFLAGSUB/$L8NFLAG/g;s/L8NLIBSSUB/$L8NLIBS/g" < GNUmakefile.orig > GNUmakefile
+sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROBJSUB/$GSTREAMEROBJ/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g;s/PCRELIBSSUB/$PCRELIBS/g;s/PCREOBJSUB/$PCREOBJ/g;s/PCREFLAGSUB/$PCREFLAG/g;s/RLFLAGSUB/$RLFLAG/g;s/L10NFLAGSUB/$L10NFLAG/g;s/L10NLIBSSUB/$L10NLIBS/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"

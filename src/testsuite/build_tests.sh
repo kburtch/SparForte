@@ -149,7 +149,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-l8n
+./configure --without-l10n
 make all
 if [ $? -ne 0 ] ; then
    echo "without-pcre failed"

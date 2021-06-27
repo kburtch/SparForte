@@ -22,90 +22,90 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-#if L8N
-     l8n,
+#if L10N
+     spar_os.l10n,
 #end if;
      world,
      scanner,
      parser_params;
 use  ada.strings.unbounded,
-#if L8N
-     l8n,
+#if L10N
+     spar_os.l10n,
 #end if;
      world,
      scanner,
      parser_params;
 
-package body parser_l8n is
+package body parser_l10n is
 
 ------------------------------------------------------------------------------
 -- Localization package identifiers
 ------------------------------------------------------------------------------
 
-l8n_codeset_t : identifier;
-l8n_d_t_fmt_t : identifier;
-l8n_d_fmt_t   : identifier;
-l8n_t_fmt_t   : identifier;
-l8n_day_t     : identifier;
-l8n_abday_t   : identifier;
-l8n_mon_t     : identifier;
-l8n_abmon_t   : identifier;
-l8n_radixchar_t : identifier;
-l8n_thousep_t : identifier;
-l8n_yesexpr_t : identifier;
-l8n_noexpr_t  : identifier;
-l8n_crncystr_t: identifier;
+l10n_codeset_t : identifier;
+l10n_d_t_fmt_t : identifier;
+l10n_d_fmt_t   : identifier;
+l10n_t_fmt_t   : identifier;
+l10n_day_t     : identifier;
+l10n_abday_t   : identifier;
+l10n_mon_t     : identifier;
+l10n_abmon_t   : identifier;
+l10n_radixchar_t : identifier;
+l10n_thousep_t : identifier;
+l10n_yesexpr_t : identifier;
+l10n_noexpr_t  : identifier;
+l10n_crncystr_t: identifier;
 
 
 ---------------------------------------------------------
 --
--- PARSE THE L8N PACKAGE
+-- PARSE THE L10N PACKAGE
 --
 ---------------------------------------------------------
 
-#if not L8N
+#if not L10N
 procedure not_configured( result : out unbounded_string; kind : out identifier ) is
 begin
   result := null_unbounded_string;
   kind := universal_t;
-  err( "l8n support not configured" );
+  err( "l10n support not configured" );
 end not_configured;
 #end if;
 
 -----------------------------------------------------------------------------
---  PARSE L8N CODESET
+--  PARSE L10N CODESET
 --
--- Syntax: l8n.codeset;
+-- Syntax: l10n.codeset;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NCodeSet( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NCodeSet( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_codeset_t );
+  expect( l10n_codeset_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
   result := codeset;
-end ParseL8NCodeSet;
+end ParseL10NCodeSet;
 #else
-procedure ParseL8NCodeSet( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NCodeSet( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 -----------------------------------------------------------------------------
---  PARSE L8N D T FMT (Date and Time Format)
+--  PARSE L10N D T FMT (Date and Time Format)
 --
--- Syntax: l8n.d_fmt;
+-- Syntax: l10n.d_fmt;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NDTFmt( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NDTFmt( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_d_t_fmt_t );
+  expect( l10n_d_t_fmt_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
@@ -113,24 +113,24 @@ begin
   if isExecutingCommand then
      result := d_t_fmt;
   end if;
-end ParseL8NDTFmt;
+end ParseL10NDTFmt;
 #else
-procedure ParseL8NDTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N D FMT (Date Format)
+--  PARSE L10N D FMT (Date Format)
 --
--- Syntax: l8n.d_fmt;
+-- Syntax: l10n.d_fmt;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NDFmt( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NDFmt( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_d_fmt_t );
+  expect( l10n_d_fmt_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
@@ -138,25 +138,25 @@ begin
   if isExecutingCommand then
      result := d_fmt;
   end if;
-end ParseL8NDFmt;
+end ParseL10NDFmt;
 #else
-procedure ParseL8NDFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N T FMT (Time Format)
+--  PARSE L10N T FMT (Time Format)
 --
--- Syntax: l8n.t_fmt;
+-- Syntax: l10n.t_fmt;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NTFmt( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NTFmt( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_t_fmt_t );
+  expect( l10n_t_fmt_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
@@ -164,27 +164,27 @@ begin
   if isExecutingCommand then
      result := t_fmt;
   end if;
-end ParseL8NTFmt;
+end ParseL10NTFmt;
 #else
-procedure ParseL8NTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N DAY (Day of Week)
+--  PARSE L10N DAY (Day of Week)
 --
--- Syntax: l8n.day( d );
+-- Syntax: l10n.day( d );
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NDay( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NDay( result : out unbounded_string; kind : out identifier ) is
   dayExpr : unbounded_string;
   dayKind : identifier;
   day     : positive;
 begin
   kind := uni_string_t;
-  expect( l8n_day_t );
+  expect( l10n_day_t );
   ParseSingleNumericParameter( dayExpr, dayKind, positive_t );
   if isExecutingCommand then
      begin
@@ -204,27 +204,27 @@ begin
         err_exception_raised;
      end;
   end if;
-end ParseL8NDay;
+end ParseL10NDay;
 #else
-procedure ParseL8NDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N AB DAY (Abbreviated Day of Week)
+--  PARSE L10N AB DAY (Abbreviated Day of Week)
 --
--- Syntax: l8n.abday( d );
+-- Syntax: l10n.abday( d );
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NAbDay( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NAbDay( result : out unbounded_string; kind : out identifier ) is
   dayExpr : unbounded_string;
   dayKind : identifier;
   day     : positive;
 begin
   kind := uni_string_t;
-  expect( l8n_abday_t );
+  expect( l10n_abday_t );
   ParseSingleNumericParameter( dayExpr, dayKind, positive_t );
   if isExecutingCommand then
      begin
@@ -244,27 +244,27 @@ begin
         err_exception_raised;
      end;
   end if;
-end ParseL8NAbDay;
+end ParseL10NAbDay;
 #else
-procedure ParseL8NAbDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NAbDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N MON (Month)
+--  PARSE L10N MON (Month)
 --
--- Syntax: l8n.mon( d );
+-- Syntax: l10n.mon( d );
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NMon( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NMon( result : out unbounded_string; kind : out identifier ) is
   monExpr : unbounded_string;
   monKind : identifier;
   mon     : positive;
 begin
   kind := uni_string_t;
-  expect( l8n_mon_t );
+  expect( l10n_mon_t );
   ParseSingleNumericParameter( monExpr, monKind, positive_t );
   if isExecutingCommand then
      begin
@@ -289,27 +289,27 @@ begin
         err_exception_raised;
      end;
   end if;
-end ParseL8NMon;
+end ParseL10NMon;
 #else
-procedure ParseL8NMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N AB MON (Abbreviated Month)
+--  PARSE L10N AB MON (Abbreviated Month)
 --
--- Syntax: l8n.abmon( d );
+-- Syntax: l10n.abmon( d );
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NAbMon( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NAbMon( result : out unbounded_string; kind : out identifier ) is
   monExpr : unbounded_string;
   monKind : identifier;
   mon     : positive;
 begin
   kind := uni_string_t;
-  expect( l8n_abmon_t );
+  expect( l10n_abmon_t );
   ParseSingleNumericParameter( monExpr, monKind, positive_t );
   if isExecutingCommand then
      begin
@@ -334,124 +334,124 @@ begin
         err_exception_raised;
      end;
   end if;
-end ParseL8NAbMon;
+end ParseL10NAbMon;
 #else
-procedure ParseL8NAbMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NAbMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N RADIX CHAR
+--  PARSE L10N RADIX CHAR
 --
--- Syntax: l8n.radixchar;
+-- Syntax: l10n.radixchar;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NRadixChar( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NRadixChar( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_radixchar_t );
+  expect( l10n_radixchar_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
   result := radixchar;
-end ParseL8NRadixChar;
+end ParseL10NRadixChar;
 #else
-procedure ParseL8NRadixChar( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NRadixChar( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N THOU SEP (Thousands Separator)
+--  PARSE L10N THOU SEP (Thousands Separator)
 --
--- Syntax: l8n.thousep;
+-- Syntax: l10n.thousep;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NThouSep( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NThouSep( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_thousep_t );
+  expect( l10n_thousep_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
   result := thousep;
-end ParseL8NThouSep;
+end ParseL10NThouSep;
 #else
-procedure ParseL8NThouSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NThouSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N YES EXPR (Yes Expression)
+--  PARSE L10N YES EXPR (Yes Expression)
 --
--- Syntax: l8n.yesexpr;
+-- Syntax: l10n.yesexpr;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NYesExpr( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NYesExpr( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_yesexpr_t );
+  expect( l10n_yesexpr_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
   result := yesexpr;
-end ParseL8NYesExpr;
+end ParseL10NYesExpr;
 #else
-procedure ParseL8NYesExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NYesExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N NO EXPR (No Expression)
+--  PARSE L10N NO EXPR (No Expression)
 --
--- Syntax: l8n.noexpr;
+-- Syntax: l10n.noexpr;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NNoExpr( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NNoExpr( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_noexpr_t );
+  expect( l10n_noexpr_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
   result := noexpr;
-end ParseL8NNoExpr;
+end ParseL10NNoExpr;
 #else
-procedure ParseL8NNoExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NNoExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L8N CRNCY STR (Currency String)
+--  PARSE L10N CRNCY STR (Currency String)
 --
--- Syntax: l8n.crncystr;
+-- Syntax: l10n.crncystr;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
-#if L8N
-procedure ParseL8NCrncyStr( result : out unbounded_string; kind : out identifier ) is
+#if L10N
+procedure ParseL10NCrncyStr( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l8n_crncystr_t );
+  expect( l10n_crncystr_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
   result := crncystr;
-end ParseL8NCrncyStr;
+end ParseL10NCrncyStr;
 #else
-procedure ParseL8NCrncyStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NCrncyStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -462,31 +462,31 @@ procedure ParseL8NCrncyStr( result : out unbounded_string; kind : out identifier
 -------------------------------------------------------------------------------
 
 
-procedure StartupL8N is
+procedure StartupL10N is
 begin
-  declareNamespace( "l8n" );
+  declareNamespace( "l10n" );
 
-  declareFunction( l8n_codeset_t, "l8n.codeset", ParseL8NCodeSet'access );
-  declareFunction( l8n_d_t_fmt_t, "l8n.d_t_fmt", ParseL8NDTFmt'access );
-  declareFunction( l8n_d_fmt_t, "l8n.d_fmt", ParseL8NDFmt'access );
-  declareFunction( l8n_t_fmt_t, "l8n.t_fmt", ParseL8NTFmt'access );
-  declareFunction( l8n_day_t, "l8n.day", ParseL8NDay'access );
-  declareFunction( l8n_abday_t, "l8n.abday", ParseL8NAbDay'access );
-  declareFunction( l8n_mon_t, "l8n.mon", ParseL8NMon'access );
-  declareFunction( l8n_abmon_t, "l8n.abmon", ParseL8NAbMon'access );
-  declareFunction( l8n_radixchar_t, "l8n.radixchar", ParseL8NRadixChar'access );
-  declareFunction( l8n_thousep_t, "l8n.thousep", ParseL8NThouSep'access );
-  declareFunction( l8n_yesexpr_t, "l8n.yesexpr", ParseL8NYesExpr'access );
-  declareFunction( l8n_noexpr_t, "l8n.noexpr", ParseL8NNoExpr'access );
-  declareFunction( l8n_crncystr_t, "l8n.crncystr", ParseL8NCrncyStr'access );
+  declareFunction( l10n_codeset_t, "l10n.codeset", ParseL10NCodeSet'access );
+  declareFunction( l10n_d_t_fmt_t, "l10n.d_t_fmt", ParseL10NDTFmt'access );
+  declareFunction( l10n_d_fmt_t, "l10n.d_fmt", ParseL10NDFmt'access );
+  declareFunction( l10n_t_fmt_t, "l10n.t_fmt", ParseL10NTFmt'access );
+  declareFunction( l10n_day_t, "l10n.day", ParseL10NDay'access );
+  declareFunction( l10n_abday_t, "l10n.abday", ParseL10NAbDay'access );
+  declareFunction( l10n_mon_t, "l10n.mon", ParseL10NMon'access );
+  declareFunction( l10n_abmon_t, "l10n.abmon", ParseL10NAbMon'access );
+  declareFunction( l10n_radixchar_t, "l10n.radixchar", ParseL10NRadixChar'access );
+  declareFunction( l10n_thousep_t, "l10n.thousep", ParseL10NThouSep'access );
+  declareFunction( l10n_yesexpr_t, "l10n.yesexpr", ParseL10NYesExpr'access );
+  declareFunction( l10n_noexpr_t, "l10n.noexpr", ParseL10NNoExpr'access );
+  declareFunction( l10n_crncystr_t, "l10n.crncystr", ParseL10NCrncyStr'access );
 
-  declareNamespaceClosed( "l8n" );
+  declareNamespaceClosed( "l10n" );
 
-end StartupL8N;
+end StartupL10N;
 
-procedure ShutdownL8N is
+procedure ShutdownL10N is
 begin
   null;
-end ShutdownL8N;
+end ShutdownL10N;
 
-end parser_l8n;
+end parser_l10n;

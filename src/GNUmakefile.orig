@@ -40,8 +40,8 @@ BDBLIBS=BDBSUB
 RLINCL=RLINCLSUB
 RLLIBS=RLLIBSSUB
 RLFLAG=RLFLAGSUB
-L8NFLAG=L8NFLAGSUB
-L8NLIBS=L8NLIBSSUB
+L10NFLAG=L10NFLAGSUB
+L10NLIBS=L10NLIBSSUB
 #PCREINCL=PCREINCLSUB
 PCRELIBS=PCRELIBSSUB
 PCREOBJ=PCREOBJSUB
@@ -56,12 +56,12 @@ INCLUDE=-I./adacgi-1.6/ ${APQINCL} -I./pegasock/ ${MESAINCL} ${SDLINCL} ${BDBINC
 INCLUDE_BIND=-I./adacgi-1.6/ ${APQINCL} -I./pegasock/ ${BDBINCL} ${RLINCL} #${MESAINCL}
 #LIBS=-L`pg_config --libdir` -L./apq-1.92/ -lpq -lSDL ${PTHREAD_LIBS}
 #LIBS=-L`pg_config --libdir` -L./apq-2.1/ ./apq-2.1/c_mysql.o -l SDL -l SDL_image ${PTHREAD_LIBS}
-LIBS=${PGLIBS} ${MYSQLLIBS} ${APQLIBS} -L./pegasock/ ./pegasock/c_tinyserve.o ./pegasock/c_errno.o ${SDLLIBS} ${MESALIBS} ${BDBLIBS} ${RLLIBS} ${PCRELIBS} ${L8NLIBS}
+LIBS=${PGLIBS} ${MYSQLLIBS} ${APQLIBS} -L./pegasock/ ./pegasock/c_tinyserve.o ./pegasock/c_errno.o ${SDLLIBS} ${MESALIBS} ${BDBLIBS} ${RLLIBS} ${PCRELIBS} ${L10NLIBS}
 # c_mysql.o missing in APQ 2.1 library
 
 # Make Rules Start
 
-all: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l8n.o
+all: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	@echo
 	@echo "==============================================================="
 	@echo "  SparForte - Business Shell"
@@ -139,9 +139,9 @@ else
 	@echo "Readline disabled"
 endif
 
-c_l8n.o: c_l8n.c
-ifneq ($(strip $(L8NFLAG)),)
-	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_l8n.c
+c_l10n.o: c_l10n.c
+ifneq ($(strip $(L10NFLAG)),)
+	$(CC) $(CFLAGS) $(INCLUDE) $(SDLINCL) -Wall -Werror -fstack-protector -O1 -D_FORTIFY_SOURCE=2 -c c_l10n.c
 else
 	@echo "Localization disabled"
 endif
@@ -172,7 +172,7 @@ endif
 #	./apq-2.1/configure
 #	mv -f Makeincl apq-2.1/Makeincl
 
-max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l8n.o
+max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	@echo
 	@echo "---------------------------------------------------------------"
 	@echo "Making AdaCGI"
@@ -243,7 +243,7 @@ test: all
 	@echo "---------------------------------------------------------------"
 	(cd testsuite; sh runtests.sh -f)
 
-coverage: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l8n.o
+coverage: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	@echo
 	@echo "Coverage will require:"
 	@echo

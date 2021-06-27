@@ -24,13 +24,13 @@
 with world;
 use  world;
 
-package parser_l8n is
+package parser_l10n is
 
 -----------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
-procedure StartupL8N;
-procedure ShutdownL8N;
+procedure StartupL10N;
+procedure ShutdownL10N;
 
-end parser_l8n;
+end parser_l10n;
