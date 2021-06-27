@@ -368,7 +368,7 @@ GL_DEPTH_COMPONENT : constant GLdbuffer := 16#1902#; -- GL_DEPTH_COMPONENT 0x190
 
 type GLlighting is new GLenum;
 
-GL_LIGHTING : constant GLlighting := 16#0B50#; -- GL_LIGHTING 0x0B50
+GL_LIGHTING : constant GLenum     := 16#0B50#; -- GL_LIGHTING 0x0B50
 GL_LIGHT0   : constant GLlighting := 16#4000#; -- GL_LIGHT0 0x4000
 GL_LIGHT1   : constant GLlighting := 16#4001#; -- GL_LIGHT1 0x4001
 GL_LIGHT2   : constant GLlighting := 16#4002#; -- GL_LIGHT2 0x4002

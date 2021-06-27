@@ -145,6 +145,17 @@ if [ $? -ne 0 ] ; then
 fi
 # TODO: pcre not checked by running spar.
 
+# Make without L8N
+# ---------------------------------------------------------------------------
+
+make distclean
+./configure --without-l8n
+make all
+if [ $? -ne 0 ] ; then
+   echo "without-pcre failed"
+fi
+# TODO: pcre not checked by running spar.
+
 # Cleanup
 
 make distclean

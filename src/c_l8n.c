@@ -473,3 +473,33 @@ char *langinfo_crncystr() {
    return nl_langinfo( CRNCYSTR );
 }
 
+
+/**
+ *  LANGINFO AM STR
+ *
+ */
+
+char *langinfo_amstr() {
+   return nl_langinfo( AM_STR );
+}
+
+
+/**
+ *  LANGINFO PM STR
+ *
+ */
+
+char *langinfo_pmstr() {
+   return nl_langinfo( PM_STR );
+}
+
+
+/**
+ *  LANGINFO T_FMT_AMPM (12 hour time)
+ *
+ */
+
+char *langinfo_t_fmt_ampm() {
+   return nl_langinfo( T_FMT_AMPM );
+}
+

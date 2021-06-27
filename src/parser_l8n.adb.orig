@@ -22,12 +22,16 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
+#if L8N
      l8n,
+#end if;
      world,
      scanner,
      parser_params;
 use  ada.strings.unbounded,
+#if L8N
      l8n,
+#end if;
      world,
      scanner,
      parser_params;
@@ -59,6 +63,14 @@ l8n_crncystr_t: identifier;
 --
 ---------------------------------------------------------
 
+#if not L8N
+procedure not_configured( result : out unbounded_string; kind : out identifier ) is
+begin
+  result := null_unbounded_string;
+  kind := universal_t;
+  err( "l8n support not configured" );
+end not_configured;
+#end if;
 
 -----------------------------------------------------------------------------
 --  PARSE L8N CODESET
@@ -67,6 +79,7 @@ l8n_crncystr_t: identifier;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NCodeSet( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -77,7 +90,9 @@ begin
   end if;
   result := codeset;
 end ParseL8NCodeSet;
-
+#else
+procedure ParseL8NCodeSet( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 -----------------------------------------------------------------------------
 --  PARSE L8N D T FMT (Date and Time Format)
@@ -86,6 +101,7 @@ end ParseL8NCodeSet;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NDTFmt( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -98,6 +114,9 @@ begin
      result := d_t_fmt;
   end if;
 end ParseL8NDTFmt;
+#else
+procedure ParseL8NDTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -107,6 +126,7 @@ end ParseL8NDTFmt;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NDFmt( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -119,6 +139,10 @@ begin
      result := d_fmt;
   end if;
 end ParseL8NDFmt;
+#else
+procedure ParseL8NDFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
 
 
 -----------------------------------------------------------------------------
@@ -128,6 +152,7 @@ end ParseL8NDFmt;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NTFmt( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -140,6 +165,9 @@ begin
      result := t_fmt;
   end if;
 end ParseL8NTFmt;
+#else
+procedure ParseL8NTFmt( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -149,6 +177,7 @@ end ParseL8NTFmt;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NDay( result : out unbounded_string; kind : out identifier ) is
   dayExpr : unbounded_string;
   dayKind : identifier;
@@ -176,6 +205,9 @@ begin
      end;
   end if;
 end ParseL8NDay;
+#else
+procedure ParseL8NDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -185,6 +217,7 @@ end ParseL8NDay;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NAbDay( result : out unbounded_string; kind : out identifier ) is
   dayExpr : unbounded_string;
   dayKind : identifier;
@@ -212,6 +245,9 @@ begin
      end;
   end if;
 end ParseL8NAbDay;
+#else
+procedure ParseL8NAbDay( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -221,6 +257,7 @@ end ParseL8NAbDay;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NMon( result : out unbounded_string; kind : out identifier ) is
   monExpr : unbounded_string;
   monKind : identifier;
@@ -253,6 +290,9 @@ begin
      end;
   end if;
 end ParseL8NMon;
+#else
+procedure ParseL8NMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -262,6 +302,7 @@ end ParseL8NMon;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NAbMon( result : out unbounded_string; kind : out identifier ) is
   monExpr : unbounded_string;
   monKind : identifier;
@@ -294,6 +335,9 @@ begin
      end;
   end if;
 end ParseL8NAbMon;
+#else
+procedure ParseL8NAbMon( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -303,6 +347,7 @@ end ParseL8NAbMon;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NRadixChar( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -313,6 +358,9 @@ begin
   end if;
   result := radixchar;
 end ParseL8NRadixChar;
+#else
+procedure ParseL8NRadixChar( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -322,6 +370,7 @@ end ParseL8NRadixChar;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NThouSep( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -332,6 +381,9 @@ begin
   end if;
   result := thousep;
 end ParseL8NThouSep;
+#else
+procedure ParseL8NThouSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -341,6 +393,7 @@ end ParseL8NThouSep;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NYesExpr( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -351,6 +404,9 @@ begin
   end if;
   result := yesexpr;
 end ParseL8NYesExpr;
+#else
+procedure ParseL8NYesExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -360,6 +416,7 @@ end ParseL8NYesExpr;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NNoExpr( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -370,6 +427,9 @@ begin
   end if;
   result := noexpr;
 end ParseL8NNoExpr;
+#else
+procedure ParseL8NNoExpr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -----------------------------------------------------------------------------
@@ -379,6 +439,7 @@ end ParseL8NNoExpr;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
+#if L8N
 procedure ParseL8NCrncyStr( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
@@ -389,6 +450,9 @@ begin
   end if;
   result := crncystr;
 end ParseL8NCrncyStr;
+#else
+procedure ParseL8NCrncyStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
 
 
 -------------------------------------------------------------------------------

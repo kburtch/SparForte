@@ -10181,20 +10181,41 @@ procedure ParsePenglLightfv is
   pname_type : identifier;
   params_val  : unbounded_string;
 --  params_type : identifier;
+  value_id  : identifier; -- NEW
+  array_len : natural;
 begin
-  err( "Not yet implemented" );
+  --err( "Not yet implemented" );
   expect( pen_gllightfv_t );
-  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseFirstNumericParameter( light_val, light_type, pen_gllighting_t ); -- light : GLenum
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
   -- TODO: must be a multiple value sparforte array
   --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
+  expect( symbol_t, "," ); -- NEW
+  ParseIdentifier( value_id );
+  --if identifiers( value_id ).class = typeClass or
+  --   identifiers( value_id ).class = subClass then
+  --   kind_id := getBaseType( value_id );
+  --   if not identifiers( kind_id ).list then
+  --      err( "Array or array type expected" );
+  --   end if;
+  if not (class_ok( value_id, varClass ) and identifiers( value_id ).list) then
+     err( "Array or array type expected" );
+  end if;
+  expect( symbol_t, ")" ); -- NEW
   if isExecutingCommand then
+    array_len := identifiers( value_id ).avalue'length; -- NEW
     declare
       -- TODO: this will have to accept arrays of different sizes
-      param_array : GL_Float_Array_Access := new float_array( 0..0 );
+      param_array : GL_Float_Array_Access := new float_array( 0..Interfaces.C.size_t( array_len-1 ) );
       param_ptr   : GL_Float_Array_Ptr := GL_Float_Array_Conv.To_Address( param_array );
+      pai : Interfaces.C.size_t := 0;
     begin
       -- TODO: load sparforte array into the array param_array
+      for i in identifiers( value_id ).avalue'first .. identifiers( value_id ).avalue'last loop -- NEW
+          param_array( pai ) := GLFloat( to_numeric( identifiers( value_id ).avalue( i ) ) ); -- NEW
+put_line( "pos" & pai'img & " = " & param_array( pai )'img ); -- DEBUG
+          pai := pai + 1;
+      end loop; -- NEW
       glLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );
     exception when others =>
       err_exception_raised;
@@ -10266,7 +10287,7 @@ procedure ParsePenglGetLightfv is
 begin
   err( "Not yet implemented" );
   expect( pen_glgetlightfv_t );
-  ParseFirstNumericParameter( light_val, light_type, pen_glenum_t ); -- light : GLenum
+  ParseFirstNumericParameter( light_val, light_type, pen_gl_lighting_t ); -- light : GLenum
   ParseNextNumericParameter( pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
   -- TODO: returns a pointer to a C array, but we don't support that in SparForte
   --ParseLastNumericParameter( params_val, params_type, pen_gl_float_array_ptr_t ); -- params : GL_Float_Array_Ptr
@@ -22764,7 +22785,7 @@ begin
 
   declareIdent( pen_gllighting_t, "pen.gllighting", integer_t, typeClass  );
 
-  declareStandardConstant( pen_gl_lighting_t, "pen.gl_lighting", pen_gllighting_t, float_to_string( GL_LIGHTING ) );
+  declareStandardConstant( pen_gl_lighting_t, "pen.gl_lighting", pen_glenum_t, float_to_string( GL_LIGHTING ) );
   declareStandardConstant( pen_gl_light0_t, "pen.gl_light0", pen_gllighting_t, float_to_string( GL_LIGHT0 ) );
   declareStandardConstant( pen_gl_light1_t, "pen.gl_light1", pen_gllighting_t, float_to_string( GL_LIGHT1 ) );
   declareStandardConstant( pen_gl_light2_t, "pen.gl_light2", pen_gllighting_t, float_to_string( GL_LIGHT2 ) );
@@ -24073,7 +24094,7 @@ begin
   declareProcedure( pen_glshademodel_t, "pen.glshademodel", ParsePenglShadeModel'access );
   declareProcedure( pen_gllightf_t, "pen.gllightf", ParsePenglLightf'access );
   declareProcedure( pen_gllighti_t, "pen.gllighti", ParsePenglLighti'access );
-  declareProcedure( pen_gllightfv_t, "pen.gllightfv" );
+  declareProcedure( pen_gllightfv_t, "pen.gllightfv", ParsePenglLightFv'access );
   declareProcedure( pen_gllightiv_t, "pen.gllightiv" );
   declareProcedure( pen_glgetlightfv_t, "pen.glgetlightfv" );
   declareProcedure( pen_glgetlightiv_t, "pen.glgetlightiv" );

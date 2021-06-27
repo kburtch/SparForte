@@ -123,5 +123,11 @@ function noexpr return unbounded_string;
 
 function crncystr return unbounded_string;
 
+function amstr return unbounded_string;
+
+function pmstr return unbounded_string;
+
+function t_fmt_ampm return unbounded_string;
+
 end l8n;
 

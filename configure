@@ -1464,6 +1464,11 @@ if [ -n "$HAS_PCRE" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DPCRE=false"
 fi
+if [ -z "$NO_L8N" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DL8N=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DL8N=false"
+fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ -n "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
@@ -1577,6 +1582,12 @@ test -f parser_strings_pcre.adb && chmod 666 parser_strings_pcre.adb
 cp parser_strings_pcre.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb parser_strings_pcre.adb
 chmod 444 parser_strings_pcre.adb
+
+echo "Updating...parser_l8n.adb"
+test -f parser_l8n.adb && chmod 666 parser_l8n.adb
+cp parser_l8n.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb parser_l8n.adb
+chmod 444 parser_l8n.adb
 
 test -f temp.ads && rm temp.ads
 test -f temp.adb && rm temp.adb

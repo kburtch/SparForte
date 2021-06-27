@@ -35,8 +35,6 @@ package body l8n is
 --
 ------------------------------------------------------------------------------
 
--- #if L8N
-
 function langinfo_codeset return chars_ptr;
 pragma import( C, langinfo_codeset, "langinfo_codeset" );
 
@@ -178,7 +176,14 @@ pragma import( C, langinfo_noexpr, "langinfo_noexpr" );
 function langinfo_crncystr return chars_ptr;
 pragma import( C, langinfo_crncystr, "langinfo_crncystr" );
 
--- #end if;
+function langinfo_amstr return chars_ptr;
+pragma import( C, langinfo_amstr, "langinfo_amstr" );
+
+function langinfo_pmstr return chars_ptr;
+pragma import( C, langinfo_pmstr, "langinfo_pmstr" );
+
+function langinfo_t_fmt_ampm return chars_ptr;
+pragma import( C, langinfo_t_fmt_ampm, "langinfo_t_fmt_ampm" );
 
 function codeset return unbounded_string is
 begin
@@ -414,6 +419,21 @@ function crncystr return unbounded_string is
 begin
   return to_unbounded_string( value( langinfo_crncystr ) );
 end crncystr;
+
+function amstr return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_amstr ) );
+end amstr;
+
+function pmstr return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_amstr ) );
+end pmstr;
+
+function t_fmt_ampm return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_t_fmt_ampm ) );
+end t_fmt_ampm;
 
 end l8n;
 
