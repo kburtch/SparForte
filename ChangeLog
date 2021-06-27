@@ -60,3 +60,5 @@ CHANGES SINCE 2.4.1
 
 25. Fix: to_hexadecimal_digits no longer allowed with pragma ada_95.
 
+26. New: l8n package.
+

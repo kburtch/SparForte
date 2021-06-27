@@ -702,6 +702,7 @@ begin
    content( e, "is_open" );
    content( e, "jobs" );
    content( e, "keys" );
+   content( e, "l8n" );
    content( e, "line" );
    content( e, "logs" );
    content( e, "loop" );
@@ -1968,6 +1969,21 @@ begin
      description( e,
        "Give the status of commands currently running in the background" );
      seeAlsoShellCmds( e );
+     endHelp( e );
+  elsif helpTopic = "l8n" then
+     startHelp( e, "l8n" );
+     summary( e, "localization package" );
+     authorKen( e );
+     categoryPackage( e );
+     description( e, "A collection of common routines for different languages and countries." );
+     content( e, "s := codeset", "s := d_t_fmt", "s := d_fmt" );
+     content( e, "s := t_fmt", "s := day( p )", "s := abday( p )" );
+     content( e, "s := mon( p )", "s := abmon( p )", "s := radixchar" );
+     content( e, "s := thousep", "s := yesexpr", "s := noexpr" );
+     content( e, "s := crncystr" );
+     authorKen( e );
+     seeAlso( e, "doc/pkg_l8n.html" );
+     footer( e, "This is a binding to the GNU locale functions." );
      endHelp( e );
   elsif helpTopic = "line" then
      startHelp( e, "line" );
