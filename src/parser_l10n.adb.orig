@@ -55,6 +55,10 @@ l10n_thousep_t : identifier;
 l10n_yesexpr_t : identifier;
 l10n_noexpr_t  : identifier;
 l10n_crncystr_t: identifier;
+l10n_amstr_t   : identifier;
+l10n_pmstr_t   : identifier;
+l10n_t_fmt_ampm_t : identifier;
+l10n_era_t     : identifier;
 
 
 ---------------------------------------------------------
@@ -455,6 +459,98 @@ procedure ParseL10NCrncyStr( result : out unbounded_string; kind : out identifie
 #end if;
 
 
+-----------------------------------------------------------------------------
+--  PARSE L10N AM STR
+--
+-- Syntax: l10n.amstr;
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NAmStr( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := uni_string_t;
+  expect( l10n_amstr_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     expect( symbol_t, ")" );
+  end if;
+  result := amstr;
+end ParseL10NAmStr;
+#else
+procedure ParseL10NAmStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
+
+-----------------------------------------------------------------------------
+--  PARSE L10N PM STR
+--
+-- Syntax: l10n.pmstr;
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NPmStr( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := uni_string_t;
+  expect( l10n_pmstr_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     expect( symbol_t, ")" );
+  end if;
+  result := pmstr;
+end ParseL10NPmStr;
+#else
+procedure ParseL10NPmStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
+
+-----------------------------------------------------------------------------
+--  PARSE L10N T FMT AM PM
+--
+-- Syntax: l10n.fmt_ampm
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NTFmtAmPm( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := uni_string_t;
+  expect( l10n_t_fmt_ampm_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     expect( symbol_t, ")" );
+  end if;
+  result := pmstr;
+end ParseL10NTFmtAmPm;
+#else
+procedure ParseL10NTFmtAmPm( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
+
+-----------------------------------------------------------------------------
+--  PARSE L10N ERA
+--
+-- Syntax: l10n.era
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := uni_string_t;
+  expect( l10n_era_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     expect( symbol_t, ")" );
+  end if;
+  result := era;
+end ParseL10NEra;
+#else
+procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
+
 -------------------------------------------------------------------------------
 --
 -- Housekeeping
@@ -479,6 +575,10 @@ begin
   declareFunction( l10n_yesexpr_t, "l10n.yesexpr", ParseL10NYesExpr'access );
   declareFunction( l10n_noexpr_t, "l10n.noexpr", ParseL10NNoExpr'access );
   declareFunction( l10n_crncystr_t, "l10n.crncystr", ParseL10NCrncyStr'access );
+  declareFunction( l10n_amstr_t, "l10n.amstr", ParseL10NAMStr'access );
+  declareFunction( l10n_pmstr_t, "l10n.pmstr", ParseL10NPMStr'access );
+  declareFunction( l10n_t_fmt_ampm_t, "l10n.t_fmt_ampm", ParseL10NTFmtAmPm'access );
+  declareFunction( l10n_era_t, "l10n.era", ParseL10NEra'access );
 
   declareNamespaceClosed( "l10n" );
 

@@ -185,6 +185,9 @@ pragma import( C, langinfo_pmstr, "langinfo_pmstr" );
 function langinfo_t_fmt_ampm return chars_ptr;
 pragma import( C, langinfo_t_fmt_ampm, "langinfo_t_fmt_ampm" );
 
+function langinfo_era return chars_ptr;
+pragma import( C, langinfo_era, "langinfo_era" );
+
 function codeset return unbounded_string is
 begin
   return to_unbounded_string( value( langinfo_codeset ) );
@@ -427,13 +430,18 @@ end amstr;
 
 function pmstr return unbounded_string is
 begin
-  return to_unbounded_string( value( langinfo_amstr ) );
+  return to_unbounded_string( value( langinfo_pmstr ) );
 end pmstr;
 
 function t_fmt_ampm return unbounded_string is
 begin
   return to_unbounded_string( value( langinfo_t_fmt_ampm ) );
 end t_fmt_ampm;
+
+function era return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_era ) );
+end era;
 
 end spar_os.l10n;
 

@@ -503,3 +503,13 @@ char *langinfo_t_fmt_ampm() {
    return nl_langinfo( T_FMT_AMPM );
 }
 
+
+/**
+ *  LANGINFO ERA
+ *
+ */
+
+char *langinfo_era() {
+   return nl_langinfo( ERA );
+}
+

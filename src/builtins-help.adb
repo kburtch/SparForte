@@ -1981,7 +1981,8 @@ begin
      content( e, "s := t_fmt", "s := day( p )", "s := abday( p )" );
      content( e, "s := mon( p )", "s := abmon( p )", "s := radixchar" );
      content( e, "s := thousep", "s := yesexpr", "s := noexpr" );
-     content( e, "s := crncystr" );
+     content( e, "s := crncystr", "s := amstr", "s :=pmstr" );
+     content( e, "s := t_fmt_ampm", "s := era" );
      authorKen( e );
      seeAlso( e, "doc/pkg_l10n.html" );
      endHelp( e );

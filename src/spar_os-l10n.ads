@@ -129,5 +129,7 @@ function pmstr return unbounded_string;
 
 function t_fmt_ampm return unbounded_string;
 
+function era return unbounded_string;
+
 end spar_os.l10n;
 
