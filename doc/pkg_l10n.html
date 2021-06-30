@@ -5,11 +5,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>SparForte - Packages - Directory_Operations</title>
+	<title>SparForte - Packages - l10n</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
-	<link rel="prev" href="pkg_db.html" />
-	<link rel="next" href="pkg_enums.html" />
+	<link rel="prev" href="pkg_dirops.html" />
+	<link rel="next" href="pkg_exceptions.html" />
 </head>
 <body bgcolor="#FFFFFF"><a name="top"></a>
 	<table width="100%" cellspacing="0" cellpadding="0" summary="page layout">
@@ -30,7 +30,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_dbm.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_doubly.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_hash_io.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_lock_files.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -42,57 +42,37 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.21"></a>Directory_Operations Package</h2>
-<p>The directory_operations package provides general functions pertaining to
-directories.</p>
-<p><u>GCC Ada Equivalent</u>: GNAT.Directory_Operations
+<h2><a NAME="4.22"></a>L10N Package</h2>
+
+<p>The SparForte built-in l10n package provides routines for different
+languages and countries.  This is a binding to the GNU locale functions.</p>
 
         <center>
         <div class="code">
 <pre>
-  <a href="#directory_operations.absolute_dir_name">s := absolute_dir_name( d )</a>
-  <a href="#directory_operations.dir_separator">c := dir_separator</a>             <a href="#directory_operations.change_dir">change_dir( p )</a>               <a href="#directory_operations.remove_dir">remove_dir( p [, r] )</a>
-  <a href="#directory_operations.get_current_dir">p := get_current_dir</a>           <a href="#directory_operations.dir_name">s := dir_name( p )</a>            <a href="#directory_operations.base_name">s := base_name( p [, f] )</a>
-  <a href="#directory_operations.file_extension">s := file_extension( p )</a>       <a href="#directory_operations.file_name">s := file_name( p )</a>           <a href="#directory_operations.format_pathname">s := format_pathname( p [,t] )</a>
-  <a href="#directory_operations.expand_path">s := expand_path( p [,t] )</a>     <a href="#directory_operations.make_dir">make_dir( p )</a>                 <a href="#directory_operations.close">close( d )</a>
-  <a href="#directory_operations.is_open">b := is_open( d )</a>              <a href="#directory_operations.open">open( d, p )</a>                  <a href="#directory_operations.read">read( d, s )</a>
+  s := abday( p ) s := abmon( p ) s := amstr      s := codeset
+  s := crncystr   s := day( p )   s := d_fmt      s := d_t_fmt    s := era
+  s := mon( p )   s := noexpr     s := radixchar  s :=pmstr       s := thousep
+  s := t_fmt      s := t_fmt_ampm s := yesexpr
+
+  <a href="#enums.first">e := first( t )</a>            <a href="#enums.last">e := last( t )</a>            <a href="#enums.pred">e := pred( e2 )</a>      
+  <a href="#enums.succ">e := succ( e2 )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the directory_operations package
+        <b>Help Command</b>: Contents of the l10n package
         </div>
         </div>
         </center>
 
-<p>Types in the package include:</p>
-<ul>
-<li><b>directory_operations.dir_name_str</b>: the name of a directory.  A
-subtype used in this package to represent string values that are directory
-names. A directory name is a prefix for files that appear with in the
-directory. This means that for UNIX systems, the string includes a final '/',
-and for DOS-like systems, it includes a final '\' character. It can also
-include drive letters if the operating system provides for this. The final '/'
-or '\' in a Dir_Name_Str is optional when passed as a procedure or function in
-parameter.  On OpenVMS, only Unix style path names are supported, not VMS
-style, but the directory and file names are not case sensitive.</li>
-<li><b>directory_operations.absoute_dir_name_dir</b>: the same as the previous
-item except that it is for absolute directories.</li>
-<li><b>directory_operations.path_name</b>: a pathname. All routines using
-Path_Name handle both styles (UNIX and DOS) of directory separators (either
-slash or back slash).</li>
-<li><b>directory_operations.path_style</b>: the format of a pathname - path_style.unix, path_style.dos, path_style.system_default</li>
-<li><b>directory_operations.environment_style</b>: the format for environment variable substitution - environment_style.unix, environment_style.dos, environment_style.both, environment_style.system_default</li>
-<li><b>directory_operations.dir_type_id</b>: the id number of a dir_type resource, allocated by directory_operations.open</li>
-</ul>
-
-<a name="directory_operations.absolute_dir_name"></a><h3>s := directory_operations.absolute_dir_name( p )</h3>
+<a name="l10n.abday"></a><h3>s := abday( p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the absolute path of the directory portion of the pathname p. Everything after the last directory separator is removed. If there is no directory separator the current working directory is returned. Note that the contents of path is case-sensitive on systems that have case-sensitive file names (like Unix), and non-case-sensitive on systems where the file system is also non-case-sensitive (such as Windows, and OpenVMS).</p></td>
+<td><p>Return the abbreviated day of the week for day number p.  The first day is 1.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.absolute_dir_name( "../myfile.txt" ); -- returns "/tmp/" if myfile is in /tmp</span></td>
+<td><span class="code">s := l10n.abday( 2 ); -- returns "Mon" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -105,89 +85,41 @@ slash or back slash).</li>
 </tr><tr>
 <td><span>p</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>positive (1..7)</span></td>
 <td><span>required</span></td>
-<td><span>the pathname</span></td>
-</tr>
-<tr>
-<td><span>s</span></td>
-<td><span>return value</span></td>
-<td><span>directory_operations.absoute_dir_name_dir</span></td>
-<td><span>required</span></td>
-<td><span>the directory portion of the pathname</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Dir_Name<br>PHP: dirname</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.base_name"></a><h3>s := directory_operations.base_name( p [, f] )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the full file name portion of the pathname p.  If suffix f exists, it is removed.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.base_name( "/tmp/myfile.txt" ); -- returns "myfile.txt"</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname</span></td>
-</tr>
-<tr>
-<td><span>f</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>empty string</span></td>
-<td><span>the suffix to remove</span></td>
+<td><span>the day of week number</span></td>
 </tr>
 <tr>
 <td><span>s</span></td>
 <td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the full file name portion of the pathname</span></td>
+<td><span>the abbreviated day of the week</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
+<td><p>The day number is out-of-range</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#directory_operations.dir_name">directory_operations.dir_name</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Base_Name<br>PHP: basename</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
 </tr>
 </table>
 
-<a name="directory_operations.change_dir"></a><h3>directory_operations.change_dir( p )</h3>
+<a name="l10n.abmon"></a><h3>s := abmon( p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Change the current working directory to path p.</p></td>
+<td><p>Return the abbreviated month for month number p.  The first month is 1.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">directory_operations.change_dir( "/tmp" ); -- moves to "/tmp"</span></td>
+<td><span class="code">s := l10n.abmon( 2 ); -- returns "Feb" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -200,200 +132,41 @@ slash or back slash).</li>
 </tr><tr>
 <td><span>p</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>positive (1..7)</span></td>
 <td><span>required</span></td>
-<td><span>the pathname of the directory</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the directory does not exist or is not accessible.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Change_Dir<br>PHP:chdir</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.close"></a><h3>directory_operations.close( d )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Closes a directory referenced by the dir_type id.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">directory_operations.close( dir );</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>d</span></td>
-<td><span>in</span></td>
-<td><span>dir_type_id</span></td>
-<td><span>required</span></td>
-<td><span>the id of a directory file resource</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the dir_type is not open.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#directory_operations.open">directory_operations.open</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Open</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.dir_separator"></a><h3>c := directory_operations.dir_separator</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the directory separator for the operating system.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">c := directory_operations.dir_separator; -- returns '/' on Linux</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>return value</span></td>
-<td><span>character</span></td>
-<td><span>required</span></td>
-<td><span>the directory separator character</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Dir_Separator<br>PHP: DIRECTORY_SEPARATOR</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.expand_path"></a><h3>s := directory_operations.expand_path( p [,t] )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Expand variables in a pathname, substituting environment variables.  This will not substitute SparForte variables but rather variables that are available for import from the previous environment.  Returns Path with environment variables (or logical names on OpenVMS) replaced by the current environment variable value. For example, $HOME/mydir will be replaced by /home/joe/mydir if $HOME environment variable is set to /home/joe and Mode is UNIX. If an environment variable does not exists the variable will be replaced by the empty string. Two dollar or percent signs are replaced by a single dollar/percent sign. Note that a variable must start with a letter.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.expand_path( "$HOME/tmp", environment_style.unix );</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname of the file</span></td>
-</tr>
-<tr>
-<td><span>t</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>environment_style.system_default</span></td>
-<td><span>the style of operating system substitutions </span></td>
-</tr>
-<tr>
-<td><span>s</span></td>
-<td><span>return value</span></td>
-<td><span>directory_operations.path_name</span></td>
-<td><span>required</span></td>
-<td><span>the new pathname</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Expand_Path</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.file_extension"></a><h3>s := directory_operations.file_extension( p )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the file suffix portion of the pathname p.  The suffix is the string after the last dot, including the dot itself. For example, if the file name is "file1.xyz.adq", then the returned value would be ".adq". If no dot is present in the file name, or the last character of the file name is a dot, then the null string is returned.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.file_extension( "/tmp/myfile.txt" ); -- returns ".txt"</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname</span></td>
+<td><span>the month number</span></td>
 </tr>
 <tr>
 <td><span>s</span></td>
 <td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the file suffix portion of the pathname</span></td>
+<td><span>the abbreviated month name</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
+<td><p>The day number is out-of-range</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.File_Extension<br>PHP: pathinfo</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
 </tr>
 </table>
 
-<a name="directory_operations.file_name"></a><h3>s := directory_operations.file_name( p )</h3>
+<a name="l10n.amstr"></a><h3>s := amstr</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the file name with an extension from the pathname p.  This is equivalent to Base_Name with default extension value.</p></td>
+<td><p>Return the string for AM time.  It is blank if it is not used in this locale.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.dir_name( "/tmp/myfile.txt" ); -- returns "myfile.txt"</span></td>
+<td><span class="code">s := l10n.amstr; -- returns "AM" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -403,19 +176,13 @@ slash or back slash).</li>
 <td><span class="pkg_param">Type</span></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname</span></td>
 </tr>
 <tr>
 <td><span>s</span></td>
 <td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the file name with suffix</span></td>
+<td><span>the string for "AM"</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -426,18 +193,21 @@ slash or back slash).</li>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.File_Name<br>PHP: pathinfo</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
 </tr>
 </table>
 
-<a name="directory_operations.format_pathname"></a><h3>s := directory_operations.format_pathname( p [,t] )</h3>
+<a name="l10n.codeset"></a><h3>s := codeset</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Convert a pathname to an operating system.  If style t is not specified, it uses the default for the system. Removes all double directory separator and converts all '\' to '/' if t is UNIX and converts all '/' to '\' if t is set to DOS. This function will help to provide a consistent naming scheme running for different environments. If t is set to System_Default the routine will use the default directory separator on the running environment.</p></td>
+<td><p>Return the string for the character encoding.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := directory_operations.format_pathname( "/tmp", path_style.dos ); -- returns "tmp"</span></td>
+<td><span class="code">s := l10n.codeset; -- returns "UTF-8" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -447,164 +217,38 @@ slash or back slash).</li>
 <td><span class="pkg_param">Type</span></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname of the file</span></td>
-</tr>
-<tr>
-<td><span>t</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>path_style.system_default</span></td>
-<td><span>the operating system to convert to</span></td>
 </tr>
 <tr>
 <td><span>s</span></td>
 <td><span>return value</span></td>
-<td><span>directory_operations. path_name</span></td>
-<td><span>required</span></td>
-<td><span>the new pathname</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Format_Pathname<br>PHP: realpath</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.get_current_dir"></a><h3>p := directory_operations.get_current_dir</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the current (present) working directory.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">p := directory_operations.get_current_dir;</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>return value</span></td>
-<td><span>directory_operations. dir_name_str</span></td>
-<td><span>required</span></td>
-<td><span>the current working directory</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>
-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#directory_operations.change_dir">directory_operations.change_dir</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Get_Current_Dir<br>PHP: getcwd</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.make_dir"></a><h3>directory_operations.make_dir( p )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Create a new directory specified by path p.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">directory_operations.make_dir( "/foo" ); -- makes "/foo"</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the pathname of the directory</span></td>
+<td><span>the string for the character encoding</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the directory cannot be made.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#directory_operations.remove_dir">directory_operations.remove_dir</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Make_Dir<br>PHP: mkdir</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.is_open"></a><h3>b := directory_operations.is_open( d )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return true if the directory is open.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">b := directory_operations.is_open( dir );</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>b</span></td>
-<td><span>return value</span></td>
-<td><span>boolean</span></td>
-<td><span>required</span></td>
-<td><span>true if directory is open</span></td>
-</tr><tr>
-<td><span>d</span></td>
-<td><span>in</span></td>
-<td><span>dir_type_id</span></td>
-<td><span>required</span></td>
-<td><span>the id of a directory file resource</span></td>
-</tr>
-</table></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Is_Open</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
 </tr>
 </table>
 
-<a name="directory_operations.open"></a><h3>directory_operations.open( d, p )</h3>
+<a name="l10n.crncystr"></a><h3>s := crncystr</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Opens the directory named p and returns a dir_type id and is
-positioned at the first entry in the directory.</p></td>
+<td><p>Return the string for the currency symbol.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">directory_operations.open( dir, "/tmp" );</span></td>
+<td><span class="code">s := l10n.crncystr; -- returns "$" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -614,91 +258,161 @@ positioned at the first entry in the directory.</p></td>
 <td><span class="pkg_param">Type</span></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>d</span></td>
-<td><span>out</span></td>
-<td><span>dir_type_id</span></td>
-<td><span>required</span></td>
-<td><span>the id of a directory file resource</span></td>
-</tr><tr>
-<td><span>p</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the pathname of the directory</span></td>
 </tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the directory does not exist or is not accessible.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>SparForte strings are not arrays so the length of the string is not returned as it is in Ada.</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#directory_operations.close">directory_operations.close</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Open</p></td>
-</tr>
-</table>
-
-<a name="directory_operations.read"></a><h3>directory_operations.read( d, s )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
-<td width="15%">&nbsp;</td>
-<td><p>Reads the next entry from the directory and returns the name
-as s.  This list includes the "." and ".." directory entries.  If s is empty,
-then the end of the directory is reached.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">directory_operations.read( dir, filename );</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>d</span></td>
-<td><span>in</span></td>
-<td><span>dir_type_id</span></td>
-<td><span>required</span></td>
-<td><span>the id of a directory file resource</span></td>
-</tr><tr>
 <td><span>s</span></td>
-<td><span>out</span></td>
+<td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>a directory entry</span></td>
+<td><span>the string for the currency symbol</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the directory does not exist or is not accessible.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>The directory entry is limited to 1024 characters.</p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Read</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
 </tr>
 </table>
 
-<a name="directory_operations.remove_dir"></a><h3>directory_operations.remove_dir( p [, r] )</h3>
+<a name="l10n.d_fmt"></a><h3>s := d_fmt</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Delete directory specified by path p.  Delete recursively if r is true.</p></td>
+<td><p>Return the string for the strftime C function date formatting.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">directory_operations.remove_dir( "/tmp/empty" );</span></td>
+<td><span class="code">s := l10n.d_fmt; -- returns "%m/%d/%y" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for date format</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.d_t_fmt"></a><h3>s := d_t_fmt</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for the strftime C function date and time formatting.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.d_t_fmt; -- returns "%a %b %e %H:%M:%S %Y" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for date and time format</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.era"></a><h3>s := era</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for alternate era.  (e.g. In Japan, the traditional representation of dates includes the name of the era corresponding to the then-emperor’s reign.)</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.era; -- returns "" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for the alternate era</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.day"></a><h3>s := day( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the day of the week for day number p.  The first day is 1.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.day( 2 ); -- returns "Monday" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -711,27 +425,364 @@ then the end of the directory is reached.</p></td>
 </tr><tr>
 <td><span>p</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>positive (1..7)</span></td>
 <td><span>required</span></td>
-<td><span>the pathname of the directory</span></td>
+<td><span>the day of week number</span></td>
 </tr>
 <tr>
-<td><span>r</span></td>
-<td><span>in</span></td>
-<td><span>boolean</span></td>
-<td><span>false</span></td>
-<td><span>true to remove recursively</span></td>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the day of the week</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An error occurs if the directory does not exist or is not accessible.</p></td>
+<td><p>The day number is out-of-range</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#directory_operations.make_dir">directory_operations.make_dir</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: GNAT.Directory_Operations.Remove_Dir<br>PHP: rmdir</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.mon"></a><h3>s := mon( p )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the month for month number p.  The first month is 1.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.mon( 2 ); -- returns "February" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>p</span></td>
+<td><span>in</span></td>
+<td><span>positive (1..7)</span></td>
+<td><span>required</span></td>
+<td><span>the month number</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the month name</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>The day number is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.noexpr"></a><h3>s := noexpr</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the regular expression to recognize a "no" response for a yes/no question.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.noexpr; -- returns "^[nN]" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the regular expression string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.pmstr"></a><h3>s := pmstr</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for PM time.  It is blank if it is not used in this locale.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.pmstr; -- returns "PM" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for "PM"</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.radixchar"></a><h3>s := radixchar</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the decimal point character.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.radixchar; -- returns "." (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the decimal point string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.thousep"></a><h3>s := thousep</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the thousands separator character.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.noexpr; -- returns "," (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the thousands separator string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.t_fmt"></a><h3>s := t_fmt</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for the strftime C function time formatting.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.t_fmt; -- returns "%H:%M:%S" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for date and time format</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.t_fmt_ampm"></a><h3>s := t_fmt_ampm</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for strftime command time formatting for 12-hour time.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.t_fmt_ampm; -- returns "PM" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for date and time format</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.yesexpr"></a><h3>s := yesexpr</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the regular expression to recognize a "yes" response for a yes/no question.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.yesexpr; -- returns "^[yY]" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the regular expression string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
 </tr>
 </table>
 
@@ -748,7 +799,7 @@ then the end of the directory is reached.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_cmdline.html">&nbsp;command_line</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_db.html">&nbsp;db/ postgresql</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dbm.html">&nbsp;dbm</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;<b>directory_operations</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;doubly_linked...</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;dynamic_hash_...</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
@@ -757,7 +808,7 @@ then the end of the directory is reached.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_hash_io.html">&nbsp;hash_io</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_l10n.html">&nbsp;l10n</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_l10n.html">&nbsp;<b>l10n</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_logs.html">&nbsp;logs</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_memcache.html">&nbsp;memcache</a></p>
