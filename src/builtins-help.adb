@@ -1979,10 +1979,11 @@ begin
      " This is a binding to the GNU locale functions." );
      content( e, "s := codeset", "s := d_t_fmt", "s := d_fmt" );
      content( e, "s := t_fmt", "s := day( p )", "s := abday( p )" );
-     content( e, "s := mon( p )", "s := abmon( p )", "s := radixchar" );
-     content( e, "s := thousep", "s := yesexpr", "s := noexpr" );
-     content( e, "s := crncystr", "s := amstr", "s :=pmstr" );
-     content( e, "s := t_fmt_ampm", "s := era" );
+     content( e, "s := mon( p )", "s := abmon( p )", "s := decimal_point" );
+     content( e, "s := thousands_sep", "s := yesexpr", "s := noexpr" );
+     content( e, "s := currency_symbol", "s := amstr", "s := pmstr" );
+     content( e, "s := t_fmt_ampm", "s := negative_sign", "s := positive_sign" );
+     content( e, "s := int_curr_symbol" );
      authorKen( e );
      seeAlso( e, "doc/pkg_l10n.html" );
      endHelp( e );

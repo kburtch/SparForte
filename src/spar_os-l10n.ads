@@ -29,6 +29,28 @@ use  interfaces.C,
 
 package spar_os.l10n is
 
+type locale_type is new int;
+
+LC_ALL : constant locale_type;
+pragma import( C, LC_ALL, "l10n_LC_ALL" );
+
+LC_COLLATE : constant locale_type;
+pragma import( C, LC_COLLATE, "l10n_LC_COLLATE" );
+
+LC_MESSAGES : constant locale_type;
+pragma import( C, LC_MESSAGES, "l10n_LC_MESSAGES" );
+
+LC_MONETARY : constant locale_type;
+pragma import( C, LC_MONETARY, "l10n_LC_MONETARY" );
+
+LC_CTYPE : constant locale_type;
+pragma import( C, LC_CTYPE, "l10n_LC_CTYPE" );
+
+LC_TIME : constant locale_type;
+pragma import( C, LC_TIME, "l10n_LC_TIME" );
+
+procedure setlocale(category : locale_type; locale : string );
+
 function codeset return unbounded_string;
 
 function d_t_fmt return unbounded_string;
@@ -113,15 +135,15 @@ function abmon_11 return unbounded_string;
 
 function abmon_12 return unbounded_string;
 
-function radixchar return unbounded_string;
+function decimal_point return unbounded_string;
 
-function thousep return unbounded_string;
+function thousands_sep return unbounded_string;
 
 function yesexpr return unbounded_string;
 
 function noexpr return unbounded_string;
 
-function crncystr return unbounded_string;
+function currency_symbol return unbounded_string;
 
 function amstr return unbounded_string;
 
@@ -129,7 +151,11 @@ function pmstr return unbounded_string;
 
 function t_fmt_ampm return unbounded_string;
 
-function era return unbounded_string;
+function positive_sign return unbounded_string;
+
+function negative_sign return unbounded_string;
+
+function int_curr_symbol return unbounded_string;
 
 end spar_os.l10n;
 

@@ -30,6 +30,7 @@ with ada.strings.unbounded,
      parser_params;
 use  ada.strings.unbounded,
 #if L10N
+     spar_os,
      spar_os.l10n,
 #end if;
      world,
@@ -42,6 +43,8 @@ package body parser_l10n is
 -- Localization package identifiers
 ------------------------------------------------------------------------------
 
+l10n_setlocale_t : identifier;
+
 l10n_codeset_t : identifier;
 l10n_d_t_fmt_t : identifier;
 l10n_d_fmt_t   : identifier;
@@ -50,15 +53,24 @@ l10n_day_t     : identifier;
 l10n_abday_t   : identifier;
 l10n_mon_t     : identifier;
 l10n_abmon_t   : identifier;
-l10n_radixchar_t : identifier;
-l10n_thousep_t : identifier;
+l10n_decimal_point_t : identifier;
+l10n_thousands_sep_t : identifier;
 l10n_yesexpr_t : identifier;
 l10n_noexpr_t  : identifier;
-l10n_crncystr_t: identifier;
+l10n_currency_symbol_t: identifier;
 l10n_amstr_t   : identifier;
 l10n_pmstr_t   : identifier;
 l10n_t_fmt_ampm_t : identifier;
-l10n_era_t     : identifier;
+l10n_positive_sign_t : identifier;
+l10n_negative_sign_t : identifier;
+l10n_int_curr_symbol_t : identifier;
+l10n_locale_category_t : identifier;
+l10n_lc_all_t : identifier;
+l10n_lc_collate_t : identifier;
+l10n_lc_messages_t : identifier;
+l10n_lc_monetary_t : identifier;
+l10n_lc_ctype_t : identifier;
+l10n_lc_time_t : identifier;
 
 
 ---------------------------------------------------------
@@ -74,6 +86,41 @@ begin
   kind := universal_t;
   err( "l10n support not configured" );
 end not_configured;
+
+procedure not_configured is
+begin
+  err( "l10n support not configured" );
+end not_configured;
+#end if;
+
+
+-----------------------------------------------------------------------------
+--  PARSE L10N SETLOCALE
+--
+-- Syntax: l10n.setlocale;
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NSetLocale is
+  cat_val : unbounded_string;
+  cat_kind :identifier;
+  loc_val : unbounded_string;
+  loc_kind :identifier;
+begin
+  expect( l10n_setlocale_t );
+  ParseFirstNumericParameter( cat_val, cat_kind );
+  ParseLastStringParameter( loc_val,loc_kind );
+  if isExecutingCommand then
+     C_reset_errno;
+     setlocale( locale_type( to_numeric( cat_val ) ), to_string( loc_val ) );
+     if C_errno = 0 then
+        err( "setlocale error, " & "error #" & C_errno'img );
+     end if;
+  end if;
+end ParseL10NSetLocale;
+#else
+procedure ParseL10NSetLocale renames not_configured;
 #end if;
 
 -----------------------------------------------------------------------------
@@ -345,48 +392,48 @@ procedure ParseL10NAbMon( result : out unbounded_string; kind : out identifier )
 
 
 -----------------------------------------------------------------------------
---  PARSE L10N RADIX CHAR
+--  PARSE L10N DECIMAL POINT
 --
--- Syntax: l10n.radixchar;
+-- Syntax: l10n.decimal_point;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NRadixChar( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NDecimalPoint( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l10n_radixchar_t );
+  expect( l10n_decimal_point_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
-  result := radixchar;
-end ParseL10NRadixChar;
+  result := decimal_point;
+end ParseL10NDecimalPoint;
 #else
-procedure ParseL10NRadixChar( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NDecimalPoint( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
 -----------------------------------------------------------------------------
---  PARSE L10N THOU SEP (Thousands Separator)
+--  PARSE L10N THOUSANDS SEP (Thousands Separator)
 --
 -- Syntax: l10n.thousep;
 -- Source: N/A
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NThouSep( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NThousandsSep( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l10n_thousep_t );
+  expect( l10n_thousands_sep_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
-  result := thousep;
-end ParseL10NThouSep;
+  result := thousands_sep;
+end ParseL10NThousandsSep;
 #else
-procedure ParseL10NThouSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NThousandsSep( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -437,25 +484,25 @@ procedure ParseL10NNoExpr( result : out unbounded_string; kind : out identifier 
 
 
 -----------------------------------------------------------------------------
---  PARSE L10N CRNCY STR (Currency String)
+--  PARSE L10N CURRENCY SYMBOL
 --
--- Syntax: l10n.crncystr;
+-- Syntax: l10n.currency_symbol
 -- Source: N/A
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NCrncyStr( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NCurrencySymbol( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l10n_crncystr_t );
+  expect( l10n_currency_symbol_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
-  result := crncystr;
-end ParseL10NCrncyStr;
+  result := currency_symbol;
+end ParseL10NCurrencySymbol;
 #else
-procedure ParseL10NCrncyStr( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NcurrencySymbol( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -529,25 +576,71 @@ procedure ParseL10NTFmtAmPm( result : out unbounded_string; kind : out identifie
 
 
 -----------------------------------------------------------------------------
---  PARSE L10N ERA
+--  PARSE L10N POSITIVE SIGN
 --
--- Syntax: l10n.era
+-- Syntax: l10n.positive_sign
 -- Source: N/A
 -----------------------------------------------------------------------------
 
 #if L10N
-procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) is
+procedure ParseL10NPositiveSign( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := uni_string_t;
-  expect( l10n_era_t );
+  expect( l10n_positive_sign_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
      expect( symbol_t, "(" );
      expect( symbol_t, ")" );
   end if;
-  result := era;
-end ParseL10NEra;
+  result := positive_sign;
+end ParseL10NPositiveSign;
 #else
-procedure ParseL10NEra( result : out unbounded_string; kind : out identifier ) renames not_configured;
+procedure ParseL10NPositiveSign( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
+
+-----------------------------------------------------------------------------
+--  PARSE L10N NEGATIVE SIGN
+--
+-- Syntax: l10n.negative_sign
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NNegativeSign( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := uni_string_t;
+  expect( l10n_negative_sign_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     expect( symbol_t, ")" );
+  end if;
+  result := negative_sign;
+end ParseL10NNegativeSign;
+#else
+procedure ParseL10NNegativeSign( result : out unbounded_string; kind : out identifier ) renames not_configured;
+#end if;
+
+
+-----------------------------------------------------------------------------
+--  PARSE L10N INT CURR SYMBOL
+--
+-- Syntax: l10n.int_curr_symbol
+-- Source: N/A
+-----------------------------------------------------------------------------
+
+#if L10N
+procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out identifier ) is
+begin
+  kind := uni_string_t;
+  expect( l10n_int_curr_symbol_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     expect( symbol_t, ")" );
+  end if;
+  result := negative_sign;
+end ParseL10NIntCurrSymbol;
+#else
+procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out identifier ) renames not_configured;
 #end if;
 
 
@@ -562,6 +655,8 @@ procedure StartupL10N is
 begin
   declareNamespace( "l10n" );
 
+  declareProcedure( l10n_setlocale_t, "l10n.setlocale", ParseL10NSetLocale'access );
+
   declareFunction( l10n_codeset_t, "l10n.codeset", ParseL10NCodeSet'access );
   declareFunction( l10n_d_t_fmt_t, "l10n.d_t_fmt", ParseL10NDTFmt'access );
   declareFunction( l10n_d_fmt_t, "l10n.d_fmt", ParseL10NDFmt'access );
@@ -570,15 +665,27 @@ begin
   declareFunction( l10n_abday_t, "l10n.abday", ParseL10NAbDay'access );
   declareFunction( l10n_mon_t, "l10n.mon", ParseL10NMon'access );
   declareFunction( l10n_abmon_t, "l10n.abmon", ParseL10NAbMon'access );
-  declareFunction( l10n_radixchar_t, "l10n.radixchar", ParseL10NRadixChar'access );
-  declareFunction( l10n_thousep_t, "l10n.thousep", ParseL10NThouSep'access );
+  declareFunction( l10n_decimal_point_t, "l10n.decimal_point", ParseL10NDecimalPoint'access );
+  declareFunction( l10n_thousands_sep_t, "l10n.thousands_sep", ParseL10NThousandsSep'access );
   declareFunction( l10n_yesexpr_t, "l10n.yesexpr", ParseL10NYesExpr'access );
   declareFunction( l10n_noexpr_t, "l10n.noexpr", ParseL10NNoExpr'access );
-  declareFunction( l10n_crncystr_t, "l10n.crncystr", ParseL10NCrncyStr'access );
+  declareFunction( l10n_currency_symbol_t, "l10n.currency_symbol", ParseL10NCurrencySymbol'access );
   declareFunction( l10n_amstr_t, "l10n.amstr", ParseL10NAMStr'access );
   declareFunction( l10n_pmstr_t, "l10n.pmstr", ParseL10NPMStr'access );
   declareFunction( l10n_t_fmt_ampm_t, "l10n.t_fmt_ampm", ParseL10NTFmtAmPm'access );
-  declareFunction( l10n_era_t, "l10n.era", ParseL10NEra'access );
+  declareFunction( l10n_positive_sign_t, "l10n.positive_sign", ParseL10NPositiveSign'access );
+  declareFunction( l10n_negative_sign_t, "l10n.negative_sign", ParseL10NNegativeSign'access );
+  declareFunction( l10n_int_curr_symbol_t, "l10n.int_curr_symbol", ParseL10NIntCurrSymbol'access );
+
+  declareIdent( l10n_locale_category_t, "l10n.locale_category", integer_t, typeClass );
+
+  declareStandardConstant( l10n_lc_all_t, "l10n.lc_all", l10n_locale_category_t,
+LC_ALL'img );
+  declareStandardConstant( l10n_lc_collate_t, "l10n.lc_collate", l10n_locale_category_t, LC_COLLATE'img );
+  declareStandardConstant( l10n_lc_messages_t, "l10n.lc_messages", l10n_locale_category_t, LC_MESSAGES'img );
+  declareStandardConstant( l10n_lc_monetary_t, "l10n.lc_monetary", l10n_locale_category_t, LC_MONETARY'img );
+  declareStandardConstant( l10n_lc_ctype_t, "l10n.lc_ctype", l10n_locale_category_t, LC_CTYPE'img );
+  declareStandardConstant( l10n_lc_time_t, "l10n.lc_time", l10n_locale_category_t, LC_TIME'img );
 
   declareNamespaceClosed( "l10n" );
 

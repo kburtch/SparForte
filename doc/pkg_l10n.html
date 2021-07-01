@@ -50,13 +50,10 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
         <center>
         <div class="code">
 <pre>
-  s := abday( p ) s := abmon( p ) s := amstr      s := codeset
+  <a href="#l10n.abday">s := abday( p )</a> <a href="#l10n.abmon">s := abmon( p )</a> <a href="#l10n.amstr">s := amstr</a>      <a href="#l10n.codeset">s := codeset</a>
   s := crncystr   s := day( p )   s := d_fmt      s := d_t_fmt    s := era
   s := mon( p )   s := noexpr     s := radixchar  s :=pmstr       s := thousep
   s := t_fmt      s := t_fmt_ampm s := yesexpr
-
-  <a href="#enums.first">e := first( t )</a>            <a href="#enums.last">e := last( t )</a>            <a href="#enums.pred">e := pred( e2 )</a>      
-  <a href="#enums.succ">e := succ( e2 )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -241,14 +238,14 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 </tr>
 </table>
 
-<a name="l10n.crncystr"></a><h3>s := crncystr</h3>
+<a name="l10n.currency_symbol"></a><h3>s := currency_symbol</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the string for the currency symbol.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := l10n.crncystr; -- returns "$" (or similar)</span></td>
+<td><span class="code">s := l10n.currency_symbol; -- returns "$" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -452,6 +449,47 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 </tr>
 </table>
 
+<a name="l10n.decimal_point"></a><h3>s := decimal_point</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the decimal point character.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.decimal_point; -- returns "." (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the decimal point string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
 <a name="l10n.mon"></a><h3>s := mon( p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -487,6 +525,47 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>The day number is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Introduced</p></td>
+<td><p>2.4.2</p></td>
+</tr>
+</table>
+
+<a name="l10n.negative_sign"></a><h3>s := negative_sign</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the negative sign for negative values.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.negative_sign; -- returns "-" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the negative sign string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
@@ -581,14 +660,14 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 </tr>
 </table>
 
-<a name="l10n.radixchar"></a><h3>s := radixchar</h3>
+<a name="l10n.positive_sign"></a><h3>s := positive_sign</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the decimal point character.</p></td>
+<td><p>Return the positive sign for positive values.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := l10n.radixchar; -- returns "." (or similar)</span></td>
+<td><span class="code">s := l10n.positive_sign; -- returns "+" (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -604,7 +683,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><span>return value</span></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
-<td><span>the decimal point string</span></td>
+<td><span>the positive sign string</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -622,14 +701,14 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 </tr>
 </table>
 
-<a name="l10n.thousep"></a><h3>s := thousep</h3>
+<a name="l10n.thousands_sep"></a><h3>s := thouands_sep</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Return the thousands separator character.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := l10n.noexpr; -- returns "," (or similar)</span></td>
+<td><span class="code">s := l10n.thousands_sep; -- returns "," (or similar)</span></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >

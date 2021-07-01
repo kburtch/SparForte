@@ -35,6 +35,9 @@ package body spar_os.l10n is
 --
 ------------------------------------------------------------------------------
 
+procedure setlocale( category : int; locale : chars_ptr );
+pragma import( C, setlocale, "setlocale" );
+
 function langinfo_codeset return chars_ptr;
 pragma import( C, langinfo_codeset, "langinfo_codeset" );
 
@@ -161,11 +164,11 @@ pragma import( C, langinfo_abmon_11, "langinfo_abmon_11" );
 function langinfo_abmon_12 return chars_ptr;
 pragma import( C, langinfo_abmon_12, "langinfo_abmon_12" );
 
-function langinfo_radixchar return chars_ptr;
-pragma import( C, langinfo_radixchar, "langinfo_radixchar" );
+function langinfo_decimal_point return chars_ptr;
+pragma import( C, langinfo_decimal_point, "langinfo_decimal_point" );
 
-function langinfo_thousep return chars_ptr;
-pragma import( C, langinfo_thousep, "langinfo_thousep" );
+function langinfo_thousands_sep return chars_ptr;
+pragma import( C, langinfo_thousands_sep, "langinfo_thousands_sep" );
 
 function langinfo_yesexpr return chars_ptr;
 pragma import( C, langinfo_yesexpr, "langinfo_yesexpr" );
@@ -173,8 +176,8 @@ pragma import( C, langinfo_yesexpr, "langinfo_yesexpr" );
 function langinfo_noexpr return chars_ptr;
 pragma import( C, langinfo_noexpr, "langinfo_noexpr" );
 
-function langinfo_crncystr return chars_ptr;
-pragma import( C, langinfo_crncystr, "langinfo_crncystr" );
+function langinfo_currency_symbol return chars_ptr;
+pragma import( C, langinfo_currency_symbol, "langinfo_currency_symbol" );
 
 function langinfo_amstr return chars_ptr;
 pragma import( C, langinfo_amstr, "langinfo_amstr" );
@@ -185,8 +188,22 @@ pragma import( C, langinfo_pmstr, "langinfo_pmstr" );
 function langinfo_t_fmt_ampm return chars_ptr;
 pragma import( C, langinfo_t_fmt_ampm, "langinfo_t_fmt_ampm" );
 
-function langinfo_era return chars_ptr;
-pragma import( C, langinfo_era, "langinfo_era" );
+function langinfo_positive_sign return chars_ptr;
+pragma import( C, langinfo_positive_sign, "langinfo_positive_sign" );
+
+function langinfo_negative_sign return chars_ptr;
+pragma import( C, langinfo_negative_sign, "langinfo_negative_sign" );
+
+function langinfo_int_curr_symbol return chars_ptr;
+pragma import( C, langinfo_int_curr_symbol, "langinfo_int_curr_symbol" );
+
+procedure setlocale(category : locale_type; locale : string ) is
+  locale_ptr : chars_ptr;
+begin
+  locale_ptr := New_String( locale );
+  setlocale( int( category ), locale_ptr );
+  free( locale_ptr );
+end setlocale;
 
 function codeset return unbounded_string is
 begin
@@ -398,15 +415,15 @@ begin
   return to_unbounded_string( value( langinfo_abmon_12 ) );
 end abmon_12;
 
-function radixchar return unbounded_string is
+function decimal_point return unbounded_string is
 begin
-  return to_unbounded_string( value( langinfo_radixchar ) );
-end radixchar;
+  return to_unbounded_string( value( langinfo_decimal_point ) );
+end decimal_point;
 
-function thousep return unbounded_string is
+function thousands_sep return unbounded_string is
 begin
-  return to_unbounded_string( value( langinfo_thousep ) );
-end thousep;
+  return to_unbounded_string( value( langinfo_thousands_sep ) );
+end thousands_sep;
 
 function yesexpr return unbounded_string is
 begin
@@ -418,10 +435,10 @@ begin
   return to_unbounded_string( value( langinfo_noexpr ) );
 end noexpr;
 
-function crncystr return unbounded_string is
+function currency_symbol return unbounded_string is
 begin
-  return to_unbounded_string( value( langinfo_crncystr ) );
-end crncystr;
+  return to_unbounded_string( value( langinfo_currency_symbol ) );
+end currency_symbol;
 
 function amstr return unbounded_string is
 begin
@@ -438,10 +455,20 @@ begin
   return to_unbounded_string( value( langinfo_t_fmt_ampm ) );
 end t_fmt_ampm;
 
-function era return unbounded_string is
+function positive_sign return unbounded_string is
 begin
-  return to_unbounded_string( value( langinfo_era ) );
-end era;
+  return to_unbounded_string( value( langinfo_positive_sign ) );
+end positive_sign;
+
+function negative_sign return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_negative_sign ) );
+end negative_sign;
+
+function int_curr_symbol return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_int_curr_symbol ) );
+end int_curr_symbol;
 
 end spar_os.l10n;
 

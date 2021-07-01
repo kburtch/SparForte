@@ -1,8 +1,37 @@
+#include <locale.h>
 #include <langinfo.h>
 
 /*
  * Localization features
  */
+
+const int l10n_LC_ALL = LC_ALL;            // All of the locale
+const int l10n_LC_COLLATE = LC_COLLATE;    // String collation
+const int l10n_LC_MESSAGES = LC_MESSAGES;  // Localizable natural-language messages
+const int l10n_LC_MONETARY = LC_MONETARY;  // Formatting of monetary values
+const int l10n_LC_CTYPE = LC_CTYPE;        // Character classification
+const int l10n_LC_TIME = LC_TIME;           // Formatting of date and time values
+
+/*
+       LC_ADDRESS          Formatting of addresses and
+                           geography-related items (*)
+       LC_IDENTIFICATION   Metadata describing the locale (*)
+       LC_MEASUREMENT      Settings related to measurements
+                           (metric versus US customary) (*)
+       LC_NAME             Formatting of salutations for persons (*)
+       LC_NUMERIC          Formatting of nonmonetary numeric values
+       LC_PAPER            Settings related to the standard paper size (*)
+       LC_TELEPHONE        Formats to be used with telephone services (*)
+*/
+
+
+/**
+ *  GET LOCAL
+ */
+
+char *getlocale(int lc) {
+  return setlocale( lc, NULL );
+}
 
 /**
  *  LANGINFO CODESET
@@ -425,22 +454,22 @@ char *langinfo_abmon_12() {
 
 
 /**
- *  LANGINFO RADIX CHAR
+ *  LANGINFO DECIMAL POINT
  *
  */
 
-char *langinfo_radixchar() {
-   return nl_langinfo( RADIXCHAR );
+char *langinfo_decimal_point() {
+   return nl_langinfo( DECIMAL_POINT );
 }
 
 
 /**
- *  LANGINFO THOU(sands) SEP(erator)
+ *  LANGINFO THOUSANDS SEP(erator)
  *
  */
 
-char *langinfo_thousep() {
-   return nl_langinfo( THOUSEP );
+char *langinfo_thousands_sep() {
+   return nl_langinfo( THOUSANDS_SEP );
 }
 
 
@@ -465,12 +494,12 @@ char *langinfo_noexpr() {
 
 
 /**
- *  LANGINFO CNCRY (currency) STR(ing)
+ *  LANGINFO CURRENCY SYMBOL
  *
  */
 
-char *langinfo_crncystr() {
-   return nl_langinfo( CRNCYSTR );
+char *langinfo_currency_symbol() {
+   return nl_langinfo( CURRENCY_SYMBOL );
 }
 
 
@@ -505,11 +534,31 @@ char *langinfo_t_fmt_ampm() {
 
 
 /**
- *  LANGINFO ERA
+ *  LANGINFO POSITIVE SIGN
  *
  */
 
-char *langinfo_era() {
-   return nl_langinfo( ERA );
+char *langinfo_positive_sign() {
+   return nl_langinfo( POSITIVE_SIGN );
+}
+
+
+/**
+ *  LANGINFO NEGATIVE SIGN
+ *
+ */
+
+char *langinfo_negative_sign() {
+   return nl_langinfo( NEGATIVE_SIGN );
+}
+
+
+/**
+ *  LANGINFO INT CURR SYMBOL
+ *
+ */
+
+char *langinfo_int_curr_symbol() {
+   return nl_langinfo( INT_CURR_SYMBOL );
 }
 
