@@ -1983,7 +1983,7 @@ begin
      content( e, "s := thousands_sep", "s := yesexpr", "s := noexpr" );
      content( e, "s := currency_symbol", "s := amstr", "s := pmstr" );
      content( e, "s := t_fmt_ampm", "s := negative_sign", "s := positive_sign" );
-     content( e, "s := int_curr_symbol" );
+     content( e, "s := int_curr_symbol","s := getlocale( c )", "setlocale( c, s )" );
      authorKen( e );
      seeAlso( e, "doc/pkg_l10n.html" );
      endHelp( e );

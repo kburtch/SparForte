@@ -47,13 +47,19 @@
 <p>The SparForte built-in l10n package provides routines for different
 languages and countries.  This is a binding to the GNU locale functions.</p>
 
+<p><u>Introduced</u>: SparForte 2.4.2<br>
+
+<p><u>GCC Ada Equivalent</u>: none<br>
+
         <center>
         <div class="code">
 <pre>
   <a href="#l10n.abday">s := abday( p )</a> <a href="#l10n.abmon">s := abmon( p )</a> <a href="#l10n.amstr">s := amstr</a>      <a href="#l10n.codeset">s := codeset</a>
-  s := crncystr   s := day( p )   s := d_fmt      s := d_t_fmt    s := era
-  s := mon( p )   s := noexpr     s := radixchar  s :=pmstr       s := thousep
-  s := t_fmt      s := t_fmt_ampm s := yesexpr
+  s := currency_symbol s := day( p )        s := decimal_point   s := d_fmt
+  s := d_t_fmt         s := getlocale( c )  s := int_curr_symbol s := mon( p )
+  s := negative_sign   s := noexpr          s := pmstr           s := positive_sign
+  setlocale( c, s )    s := thousands_sep   s := t_fmt           s := t_fmt_ampm
+  s := yesexpr
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -61,6 +67,40 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
         </div>
         </div>
         </center>
+
+<p>The type <b>locale_catagory</b> is an enumerated type of the following:</p>
+
+<ul>
+<li>l10n.lc_all - all locale categories</li>
+<li>l10n.lc_collate</li>
+<li>l10n.lc_messages</li>
+<li>l10n.lc_monetary</li>
+<li>l10n.lc_ctype</li>
+<li>l10n.lc_time</li>
+</ul>
+
+<p>The GNU extension catagories are not included.</p>
+
+        <center>
+        <div class="code">
+<pre>
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_all )
+LC_CTYPE=en_CA.UTF-8;LC_NUMERIC=C;LC_TIME=C;LC_COLLATE=C;LC_MONETARY=C;LC_MESSAG
+ES=C;LC_PAPER=C;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=C;LC_IDENTI
+FICATION=C
+<b>=&gt;</b> l10n.setlocale( l10n.lc_ctype, "en_US.UTF-8" )
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_ctype )
+en_US.UTF-8
+<b>=&gt;</b> ? l10n.day(1)
+Sunday
+</pre>
+        &nbsp;<br>
+        <div class="code_caption">
+        <b>Example</b>: Using localization</span>
+        </div>
+        </div>
+        </center>
+
 
 <a name="l10n.abday"></a><h3>s := abday( p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
@@ -102,10 +142,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -149,10 +186,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -190,10 +224,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -231,10 +262,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -272,10 +300,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -313,10 +338,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -354,51 +376,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
-</tr>
-</table>
-
-<a name="l10n.era"></a><h3>s := era</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the string for alternate era.  (e.g. In Japan, the traditional representation of dates includes the name of the era corresponding to the then-emperor’s reign.)</p></td>
-</tr><tr>
-<td><p class="pkg_label">Example</p></td>
-<td><span class="code">s := l10n.era; -- returns "" (or similar)</span></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr>
-<tr>
-<td><span>s</span></td>
-<td><span>return value</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the string for the alternate era</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -442,10 +420,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -483,10 +458,52 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.getlocale"></a><h3>s := getlocale( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the locale namefor the given locale category.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.getlocale(l10n.lc_ctype); -- returns "en_CA.UTF-8" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>l10n.locale_category</span></td>
+<td><span>required</span></td>
+<td><span>the locale category (lc_all for all)</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the locale name</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
 <td><p>-</p></td>
 </tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: setlocale<br>PHP: setlocale</p></td>
 </tr>
 </table>
 
@@ -530,10 +547,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -571,10 +585,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -612,10 +623,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -653,10 +661,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -694,10 +699,52 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.setlocale"></a><h3>s := setlocale( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Assign the locale name for the given locale category.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.setlocale(l10n.lc_ctype, "en_CA.UTF-8");</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>l10n.locale_category</span></td>
+<td><span>required</span></td>
+<td><span>the locale category (lc_all for all)</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the locale category</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
 <td><p>-</p></td>
 </tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: setlocale<br>PHP: setlocale</p></td>
 </tr>
 </table>
 
@@ -735,10 +782,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -776,10 +820,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -817,10 +858,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 
@@ -858,10 +896,7 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Introduced</p></td>
-<td><p>2.4.2</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
 </tr>
 </table>
 

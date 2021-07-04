@@ -29,27 +29,29 @@ use  interfaces.C,
 
 package spar_os.l10n is
 
-type locale_type is new int;
+type locale_category is new int;
 
-LC_ALL : constant locale_type;
+LC_ALL : constant locale_category;
 pragma import( C, LC_ALL, "l10n_LC_ALL" );
 
-LC_COLLATE : constant locale_type;
+LC_COLLATE : constant locale_category;
 pragma import( C, LC_COLLATE, "l10n_LC_COLLATE" );
 
-LC_MESSAGES : constant locale_type;
+LC_MESSAGES : constant locale_category;
 pragma import( C, LC_MESSAGES, "l10n_LC_MESSAGES" );
 
-LC_MONETARY : constant locale_type;
+LC_MONETARY : constant locale_category;
 pragma import( C, LC_MONETARY, "l10n_LC_MONETARY" );
 
-LC_CTYPE : constant locale_type;
+LC_CTYPE : constant locale_category;
 pragma import( C, LC_CTYPE, "l10n_LC_CTYPE" );
 
-LC_TIME : constant locale_type;
+LC_TIME : constant locale_category;
 pragma import( C, LC_TIME, "l10n_LC_TIME" );
 
-procedure setlocale(category : locale_type; locale : string );
+procedure setlocale(category : locale_category; locale : string );
+
+function getlocale(category : locale_category ) return unbounded_string;
 
 function codeset return unbounded_string;
 

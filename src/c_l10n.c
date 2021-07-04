@@ -1,5 +1,6 @@
 #include <locale.h>
 #include <langinfo.h>
+#include <stdio.h>
 
 /*
  * Localization features

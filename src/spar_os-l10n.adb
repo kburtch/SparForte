@@ -38,6 +38,9 @@ package body spar_os.l10n is
 procedure setlocale( category : int; locale : chars_ptr );
 pragma import( C, setlocale, "setlocale" );
 
+function getlocale( category : int ) return chars_ptr;
+pragma import( C, getlocale, "getlocale" );
+
 function langinfo_codeset return chars_ptr;
 pragma import( C, langinfo_codeset, "langinfo_codeset" );
 
@@ -197,13 +200,18 @@ pragma import( C, langinfo_negative_sign, "langinfo_negative_sign" );
 function langinfo_int_curr_symbol return chars_ptr;
 pragma import( C, langinfo_int_curr_symbol, "langinfo_int_curr_symbol" );
 
-procedure setlocale(category : locale_type; locale : string ) is
+procedure setlocale(category : locale_category; locale : string ) is
   locale_ptr : chars_ptr;
 begin
   locale_ptr := New_String( locale );
   setlocale( int( category ), locale_ptr );
   free( locale_ptr );
 end setlocale;
+
+function getlocale(category : locale_category ) return unbounded_string is
+begin
+   return to_unbounded_string( value( getlocale( int( category ) )  ) );
+end getlocale;
 
 function codeset return unbounded_string is
 begin
