@@ -110,14 +110,14 @@ procedure ParseL10NSetLocale is
   loc_kind :identifier;
 begin
   expect( l10n_setlocale_t );
-  ParseFirstNumericParameter( cat_val, cat_kind, locale_category_t );
+  ParseFirstNumericParameter( cat_val, cat_kind, l10n_locale_category_t );
   ParseLastStringParameter( loc_val,loc_kind );
   if isExecutingCommand then
-     C_reset_errno;
+     -- checking errno is not reliable.  On first attempt to use an invalid
+     -- locale, errono will be 2 (file not found), probably because of another
+     -- function called by setlocale.  However, setlocale itself does not
+     -- return an error number.
      setlocale( locale_category( to_numeric( cat_val ) ), to_string( loc_val ) );
-     if C_errno /= 0 then
-        err( "setlocale error, " & "error #" & C_errno'img );
-     end if;
   end if;
 end ParseL10NSetLocale;
 #else
@@ -141,13 +141,10 @@ procedure ParseL10NGetLocale( result : out unbounded_string; kind : out identifi
 begin
   kind := string_t;
   expect( l10n_getlocale_t );
-  ParseSingleNumericParameter( cat_val, cat_kind, locale_category_t );
+  ParseSingleNumericParameter( cat_val, cat_kind, l10n_locale_category_t );
   if isExecutingCommand then
-     C_reset_errno;
+     -- setlocale does not return an error number
      result := getlocale( locale_category( to_numeric( cat_val ) ) );
-     if C_errno /= 0 then
-        err( "setlocale error, " & "error #" & C_errno'img );
-     end if;
   end if;
 end ParseL10NGetLocale;
 #else
@@ -608,7 +605,7 @@ procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out iden
 begin
   kind := uni_string_t;
   expect( l10n_int_curr_symbol_t );
-  result := negative_sign;
+  result := int_curr_symbol;
 end ParseL10NIntCurrSymbol;
 #else
 procedure ParseL10NIntCurrSymbol( result : out unbounded_string; kind : out identifier ) renames not_configured;

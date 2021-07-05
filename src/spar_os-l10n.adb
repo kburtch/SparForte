@@ -35,7 +35,7 @@ package body spar_os.l10n is
 --
 ------------------------------------------------------------------------------
 
-procedure setlocale( category : int; locale : chars_ptr );
+function setlocale( category : int; locale : chars_ptr ) return chars_ptr;
 pragma import( C, setlocale, "setlocale" );
 
 function getlocale( category : int ) return chars_ptr;
@@ -202,9 +202,10 @@ pragma import( C, langinfo_int_curr_symbol, "langinfo_int_curr_symbol" );
 
 procedure setlocale(category : locale_category; locale : string ) is
   locale_ptr : chars_ptr;
+  result_ptr : chars_ptr;
 begin
   locale_ptr := New_String( locale );
-  setlocale( int( category ), locale_ptr );
+  result_ptr := setlocale( int( category ), locale_ptr );
   free( locale_ptr );
 end setlocale;
 

@@ -72,14 +72,18 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 
 <ul>
 <li>l10n.lc_all - all locale categories</li>
-<li>l10n.lc_collate</li>
-<li>l10n.lc_messages</li>
-<li>l10n.lc_monetary</li>
-<li>l10n.lc_ctype</li>
-<li>l10n.lc_time</li>
+<li>l10n.lc_collate - for string comparisons</li>
+<li>l10n.lc_messages - for system messages</li>
+<li>l10n.lc_monetary - for monetary values</li>
+<li>l10n.lc_ctype - for character classes</li>
+<li>l10n.lc_time - for date and time</li>
 </ul>
 
-<p>The GNU extension catagories are not included.</p>
+<p>The GNU extension to locale catagories are not included for portability reasons.</p>
+
+<p>You may need to install additional languages on your operating system to use their locales.  For example, with Ubuntu Linux, with Preferences /Languages.</p>
+
+<p>On Linux, the <b>locale</b> command provides the same information.</p>
 
         <center>
         <div class="code">
@@ -88,11 +92,22 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 LC_CTYPE=en_CA.UTF-8;LC_NUMERIC=C;LC_TIME=C;LC_COLLATE=C;LC_MONETARY=C;LC_MESSAG
 ES=C;LC_PAPER=C;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=C;LC_IDENTI
 FICATION=C
-<b>=&gt;</b> l10n.setlocale( l10n.lc_ctype, "en_US.UTF-8" )
-<b>=&gt;</b> ? l10n.getlocale( l10n.lc_ctype )
+<b>=&gt;</b> ? l10n.currency_symbol
+
+<b>=&gt;</b> l10n.setlocale( l10n.lc_monetary, "en_US.UTF-8" )
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_monetary )
 en_US.UTF-8
+<b>=&gt;</b> ? l10n.currency_symbol
+$
+<b>=&gt;</b> ? l10n.int_curr_symbol
+USD
 <b>=&gt;</b> ? l10n.day(1)
 Sunday
+<b>=&gt;</b> l10n.setlocale( l10n.lc_time, "fr_CA.UTF-8" )
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_time)
+fr_CA.UTF-8
+<b>=&gt;</b> ? l10n.day(1)
+dimanche
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -507,6 +522,47 @@ Sunday
 </tr>
 </table>
 
+<a name="l10n.int_curr_symbol"></a><h3>s := int_curr_symbol</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for the international currency symbol.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.int_curr_symbol; -- returns "USD" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the string for the currency symbol</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.d_fmt"></a><h3>s := d_fmt</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
 <a name="l10n.mon"></a><h3>s := mon( p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -707,7 +763,7 @@ Sunday
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Assign the locale name for the given locale category.</p></td>
+<td><p>Assign the locale name for the given locale category.  If the locale is unknown or not available, nothing is changed.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">s := l10n.setlocale(l10n.lc_ctype, "en_CA.UTF-8");</span></td>
