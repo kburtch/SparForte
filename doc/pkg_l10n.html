@@ -54,12 +54,19 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
         <center>
         <div class="code">
 <pre>
-  <a href="#l10n.abday">s := abday( p )</a> <a href="#l10n.abmon">s := abmon( p )</a> <a href="#l10n.amstr">s := amstr</a>      <a href="#l10n.codeset">s := codeset</a>
-  s := currency_symbol s := day( p )        s := decimal_point   s := d_fmt
-  s := d_t_fmt         s := getlocale( c )  s := int_curr_symbol s := mon( p )
-  s := negative_sign   s := noexpr          s := pmstr           s := positive_sign
-  setlocale( c, s )    s := thousands_sep   s := t_fmt           s := t_fmt_ampm
-  s := yesexpr
+  <a href="#l10n.abday">s := abday( p )</a>        <a href="#l10n.abmon">s := abmon( p )</a>        <a href="#l10n.amstr">s := amstr</a>
+  <a href="#l10n.codeset">s := codeset</a>           <a href="#l10n.currency_symbol">s := currency_symbol</a>   <a href="#l10n.day">s := day( p )</a>
+  <a href="#l10n.decimal_point">s := decimal_point</a>     <a href="#l10n.d_fmt">s := d_fmt</a>             <a href="#l10n.d_t_fmt">s := d_t_fmt</a>
+  <a href="#l10n.era">s := era</a>               <a href="#l10n.era_d_fmt">s := era_d_fmt</a>         <a href="#l10n.era_d_t_fmt">s := era_d_t_fmt</a>
+  <a href="#l10n.t_fmt">s := era_t_fmt</a>         <a href="#l10n.era_year">s := era_year</a>          <a href="#l10n.frac_digits">n := frac_digits</a>
+  <a href="#l10n.getlocale">s := getlocale( c )</a>    <a href="#l10n.grouping">n := grouping</a>          <a href="#l10n.int_curr_symbol">s := int_curr_symbol</a>
+  <a href="#l10n.int_frac_digits">n := int_frac_digits</a>   <a href="#l10n.mon">s := mon( p )</a>          <a href="#l10n.mon_decimal_point">s := mon_decimal_point</a>
+  <a href="#l10n.mon_grouping">n := mon_grouping</a>      <a href="#l10n.mon_thousands_sep">s := mon_thousands_sep</a> <a href="#l10n.negative_sign">s := negative_sign</a>
+  <a href="#l10n.noexpr">s := noexpr</a>            <a href="#l10n.n_cs_precedes">n := n_cs_precedes</a>     <a href="#l10n.n_sep_by_space">n := n_sep_by_space</a>
+  <a href="#l10n.n_sign_posn">n := n_sign_posn</a>       <a href="#l10n.pmstr">s := pmstr</a>             <a href="#l10n.positive_sign">s := positive_sign</a>
+  <a href="#l10n.p_cs_precedes">n := p_cs_precedes</a>     <a href="#l10n.p_sep_by_space">n := p_sep_by_space</a>    <a href="#l10n.p_sign_posn">n := p_sign_posn</a>
+  <a href="#l10n.setlocale">setlocale( c, s )</a>      <a href="#l10n.thousands_sep">s := thousands_sep</a>     <a href="#l10n.t_fmt">s := t_fmt</a>
+  <a href="#l10n.t_fmt_ampm">s := t_fmt_ampm</a>        <a href="#l10n.yesexpr">s := yesexpr</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -477,6 +484,234 @@ dimanche
 </tr>
 </table>
 
+<a name="l10n.era"></a><h3>n := era</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the locale's alternate era (e.g. the name of a king).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.era; -- returns "" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the name of the era</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.era_year"></a><h3>n := era_year</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the locale's alternate era year (e.g. in the year of a king's reign).</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.era_year; -- returns "" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the year</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.era_d_fmt"></a><h3>n := era_d_fmt</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for the strftime C function date formatting in the alternate era.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.era_d_fmt; -- returns "" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the formatting string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.era_d_t_fmt"></a><h3>n := era_d_t_fmt</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for the strftime C function date and time formatting in the alternate era.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.era_d_t_fmt; -- returns "" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the formatting string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.era_t_fmt"></a><h3>n := era_t_fmt</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the string for the strftime C function time formatting in the alternate era.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.era_t_fmt; -- returns "" (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the formatting string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.frac_digits"></a><h3>n := frac_digits</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of digits right of the decimal point in monetary amounts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.frac_digits; -- returns 2 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of digits</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
 <a name="l10n.getlocale"></a><h3>s := getlocale( c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -522,6 +757,44 @@ dimanche
 </tr>
 </table>
 
+<a name="l10n.grouping"></a><h3>n := grouping</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of digits to group in large numbers.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.grouping; -- returns 3 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of digits</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
 <a name="l10n.int_curr_symbol"></a><h3>s := int_curr_symbol</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -560,9 +833,44 @@ dimanche
 </tr>
 </table>
 
-<a name="l10n.d_fmt"></a><h3>s := d_fmt</h3>
+<a name="l10n.int_frac_digits"></a><h3>n := int_frac_digits</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of digits right of the decimal point in international monetary amounts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.int_frac_digits; -- returns 2 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of digits</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
 <a name="l10n.mon"></a><h3>s := mon( p )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -598,6 +906,234 @@ dimanche
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>The day number is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.mon_decimal_point"></a><h3>s := mon_decimal_point</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the decimal point character for monetary amounts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.mon_decimal_point; -- returns "." (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the decimal point string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.mon_grouping"></a><h3>n := mon_grouping</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of digits to group in large monetary amounts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.mon_grouping; -- returns 3 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>the number of digits</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.mon_thousands_sep"></a><h3>s := mon_thouands_sep</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the thousands separator character for monetary amounts.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.mon_thousands_sep; -- returns "," (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>s</span></td>
+<td><span>return value</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the thousands separator string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.n_cs_precedes"></a><h3>n := n_cs_precedes</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return 1 if the currency symbol precedes a negative monetary amount.  Return 0 if the symbol should follow the amount.  Return -1 if unspecified</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.n_cs_precedes; -- returns 1 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>a code representing the positioning</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.n_sep_by_space"></a><h3>n := n_sep_by_space</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return 1 if the currency symbol should be separated from the value of negative monetary amounts.  Return 0 if there should be no space.  Return -1 if unspecified.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.n_sep_by_space; -- returns 0 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>a code representing the spacing</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.n_sign_posn"></a><h3>n := n_sign_posn</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return 0 if parentheses surround the negative monetary quantity, 1 if the sign precedes it, 2 if the sign follows it, 3 if the sign immediately precedes it, 4 if the sign immediately follows it.  Return -1 if unspecified.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.n_sign_posn; -- returns 1 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>a code representing the sign position</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
@@ -669,6 +1205,120 @@ dimanche
 <td><span>string</span></td>
 <td><span>required</span></td>
 <td><span>the regular expression string</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.p_cs_precedes"></a><h3>n := p_cs_precedes</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return 1 if the currency symbol precedes a natural monetary amount.  Return 0 if the symbol should follow the amount.  Return -1 if unspecified</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.p_cs_precedes; -- returns 1 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>a code representing the positioning</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.p_sep_by_space"></a><h3>n := p_sep_by_space</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return 1 if the currency symbol should be separated from the value of natural monetary amounts.  Return 0 if there should be no space.  Return -1 if unspecified.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.p_sep_by_space; -- returns 0 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>a code representing the spacing</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>C: nl_langinfo<br>PHP: nl_langinfo</p></td>
+</tr>
+</table>
+
+<a name="l10n.p_sign_posn"></a><h3>n := p_sign_posn</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return 0 if parentheses surround the natural monetary quantity, 1 if the sign precedes it, 2 if the sign follows it, 3 if the sign immediately precedes it, 4 if the sign immediately follows it.  Return -1 if unspecified.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Example</p></td>
+<td><span class="code">s := l10n.p_sign_posn; -- returns 1 (or similar)</span></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr>
+<tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>natural</span></td>
+<td><span>required</span></td>
+<td><span>a code representing the sign position</span></td>
 </tr>
 </table></td>
 </tr><tr>

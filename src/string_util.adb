@@ -703,6 +703,32 @@ end ToCSV;
 
 
 ------------------------------------------------------------------------------
+--  CHAR INT TO RESULT
+--
+-- Convert the first character of result to an signed byte image
+------------------------------------------------------------------------------
+
+function charIntToResult( result : unbounded_string ) return unbounded_string is
+  type unsigned_byte is mod 256;
+  pos : unsigned_byte;
+  mask_127 : constant unsigned_byte := 127;
+  signedResult : integer;
+begin
+  if result = null_unbounded_string then
+     return to_unbounded_string("0");
+  else
+     pos := character'pos( element( result, 1 ) );
+     if pos > 127 then
+        signedResult := -1 - integer( (pos and mask_127) xor mask_127 );
+        return to_unbounded_string( signedResult'img );
+     else
+        return to_unbounded_string( pos'img );
+     end if;
+  end if;
+end charIntToResult;
+
+
+------------------------------------------------------------------------------
 -- String Field Handling
 ------------------------------------------------------------------------------
 

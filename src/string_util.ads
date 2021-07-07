@@ -139,6 +139,9 @@ function WordCount(instr : unbounded_string) return natural;
 function ToCSV( s : unbounded_string ) return unbounded_string;
 -- convert s to CSV
 
+function charIntToResult( result : unbounded_string ) return unbounded_string;
+-- convert the first character of result to an signed byte image
+
 ------------------------------------------------------------------------------
 -- String Field Handling
 ------------------------------------------------------------------------------

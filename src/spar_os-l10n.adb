@@ -200,6 +200,57 @@ pragma import( C, langinfo_negative_sign, "langinfo_negative_sign" );
 function langinfo_int_curr_symbol return chars_ptr;
 pragma import( C, langinfo_int_curr_symbol, "langinfo_int_curr_symbol" );
 
+function langinfo_grouping return chars_ptr;
+pragma import( C, langinfo_grouping, "langinfo_grouping" );
+
+function langinfo_frac_digits return chars_ptr;
+pragma import( C, langinfo_frac_digits, "langinfo_frac_digits" );
+
+function langinfo_int_frac_digits return chars_ptr;
+pragma import( C, langinfo_int_frac_digits, "langinfo_int_frac_digits" );
+
+function langinfo_p_cs_precedes return chars_ptr;
+pragma import( C, langinfo_p_cs_precedes, "langinfo_p_cs_precedes" );
+
+function langinfo_p_sep_by_space return chars_ptr;
+pragma import( C, langinfo_p_sep_by_space, "langinfo_p_sep_by_space" );
+
+function langinfo_p_sign_posn return chars_ptr;
+pragma import( C, langinfo_p_sign_posn, "langinfo_p_sign_posn" );
+
+function langinfo_n_cs_precedes return chars_ptr;
+pragma import( C, langinfo_n_cs_precedes, "langinfo_n_cs_precedes" );
+
+function langinfo_n_sep_by_space return chars_ptr;
+pragma import( C, langinfo_n_sep_by_space, "langinfo_n_sep_by_space" );
+
+function langinfo_n_sign_posn return chars_ptr;
+pragma import( C, langinfo_n_sign_posn, "langinfo_n_sign_posn" );
+
+function langinfo_mon_decimal_point return chars_ptr;
+pragma import( C, langinfo_mon_decimal_point, "langinfo_mon_decimal_point" );
+
+function langinfo_mon_thousands_sep return chars_ptr;
+pragma import( C, langinfo_mon_thousands_sep, "langinfo_mon_thousands_sep" );
+
+function langinfo_mon_grouping return chars_ptr;
+pragma import( C, langinfo_mon_grouping, "langinfo_mon_grouping" );
+
+function langinfo_era return chars_ptr;
+pragma import( C, langinfo_era, "langinfo_era" );
+
+function langinfo_era_year return chars_ptr;
+pragma import( C, langinfo_era_year, "langinfo_era_year" );
+
+function langinfo_era_d_t_fmt return chars_ptr;
+pragma import( C, langinfo_era_d_t_fmt, "langinfo_era_d_t_fmt" );
+
+function langinfo_era_d_fmt return chars_ptr;
+pragma import( C, langinfo_era_d_fmt, "langinfo_era_d_fmt" );
+
+function langinfo_era_t_fmt return chars_ptr;
+pragma import( C, langinfo_era_t_fmt, "langinfo_era_t_fmt" );
+
 procedure setlocale(category : locale_category; locale : string ) is
   locale_ptr : chars_ptr;
   result_ptr : chars_ptr;
@@ -478,6 +529,91 @@ function int_curr_symbol return unbounded_string is
 begin
   return to_unbounded_string( value( langinfo_int_curr_symbol ) );
 end int_curr_symbol;
+
+function grouping return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_grouping ) );
+end grouping;
+
+function frac_digits return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_frac_digits ) );
+end frac_digits;
+
+function int_frac_digits return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_int_frac_digits ) );
+end int_frac_digits;
+
+function p_cs_precedes return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_p_cs_precedes ) );
+end p_cs_precedes;
+
+function p_sep_by_space return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_p_sep_by_space ) );
+end p_sep_by_space;
+
+function p_sign_posn return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_p_sign_posn ) );
+end p_sign_posn;
+
+function n_cs_precedes return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_n_cs_precedes ) );
+end n_cs_precedes;
+
+function n_sep_by_space return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_n_sep_by_space ) );
+end n_sep_by_space;
+
+function n_sign_posn return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_n_sign_posn ) );
+end n_sign_posn;
+
+function mon_decimal_point return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_mon_decimal_point ) );
+end mon_decimal_point;
+
+function mon_thousands_sep return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_mon_thousands_sep ) );
+end mon_thousands_sep;
+
+function mon_grouping return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_mon_grouping ) );
+end mon_grouping;
+
+function era return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_era ) );
+end era;
+
+function era_year return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_era_year ) );
+end era_year;
+
+function era_d_t_fmt return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_era_d_t_fmt ) );
+end era_d_t_fmt;
+
+function era_d_fmt return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_era_d_fmt ) );
+end era_d_fmt;
+
+function era_t_fmt return unbounded_string is
+begin
+  return to_unbounded_string( value( langinfo_era_t_fmt ) );
+end era_t_fmt;
 
 end spar_os.l10n;
 

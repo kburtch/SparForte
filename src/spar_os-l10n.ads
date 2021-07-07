@@ -159,5 +159,39 @@ function negative_sign return unbounded_string;
 
 function int_curr_symbol return unbounded_string;
 
+function grouping return unbounded_string;
+
+function frac_digits return unbounded_string;
+
+function int_frac_digits return unbounded_string;
+
+function p_cs_precedes return unbounded_string;
+
+function p_sep_by_space return unbounded_string;
+
+function p_sign_posn return unbounded_string;
+
+function n_cs_precedes return unbounded_string;
+
+function n_sep_by_space return unbounded_string;
+
+function n_sign_posn return unbounded_string;
+
+function mon_decimal_point return unbounded_string;
+
+function mon_thousands_sep return unbounded_string;
+
+function mon_grouping return unbounded_string;
+
+function era return unbounded_string;
+
+function era_year return unbounded_string;
+
+function era_d_t_fmt return unbounded_string;
+
+function era_d_fmt return unbounded_string;
+
+function era_t_fmt return unbounded_string;
+
 end spar_os.l10n;
 

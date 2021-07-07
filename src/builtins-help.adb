@@ -1984,6 +1984,12 @@ begin
      content( e, "s := currency_symbol", "s := amstr", "s := pmstr" );
      content( e, "s := t_fmt_ampm", "s := negative_sign", "s := positive_sign" );
      content( e, "s := int_curr_symbol","s := getlocale( c )", "setlocale( c, s )" );
+     content( e, "n := grouping", "n := frac_digits","n := int_frac_digits" );
+     content( e, "n := p_sep_by_space", "n := p_cs_precedes","n := p_sign_posn" );
+     content( e, "n := n_sep_by_space", "n := n_cs_precedes","n := n_sign_posn" );
+     content( e, "s := mon_decimal_point", "s := mon_thousands_sep","n := mon_grouping" );
+     content( e, "s := era", "s := era_year", "s := era_d_t_fmt" );
+     content( e, "s := era_d_fmt", "s := era_t_fmt" );
      authorKen( e );
      seeAlso( e, "doc/pkg_l10n.html" );
      endHelp( e );

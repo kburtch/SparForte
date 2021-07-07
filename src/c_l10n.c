@@ -563,3 +563,160 @@ char *langinfo_int_curr_symbol() {
    return nl_langinfo( INT_CURR_SYMBOL );
 }
 
+
+/**
+ *  LANGINFO GROUPING (number of digits)
+ *
+ */
+
+char *langinfo_grouping() {
+   return nl_langinfo( GROUPING );
+}
+
+/**
+ *  LANGINFO FRAC (tional) DIGITS
+ *
+ */
+
+char *langinfo_frac_digits() {
+   return nl_langinfo( FRAC_DIGITS );
+}
+
+/**
+ *  LANGINFO INT(ternational) FRAC (tional) DIGITS
+ *
+ */
+
+char *langinfo_int_frac_digits() {
+   return nl_langinfo( INT_FRAC_DIGITS );
+}
+
+/**
+ *  LANGINFO P(ositive) CS PRECEDES
+ *
+ */
+
+char *langinfo_p_cs_precedes() {
+   return nl_langinfo( P_CS_PRECEDES );
+}
+
+/**
+ *  LANGINFO P(ositive) SEP BY PRECEDES
+ *
+ */
+
+char *langinfo_p_sep_by_space() {
+   return nl_langinfo( P_SEP_BY_SPACE );
+}
+
+/**
+ *  LANGINFO P(ositive) SIGN POSN (position)
+ *
+ */
+
+char *langinfo_p_sign_posn() {
+   return nl_langinfo( P_SIGN_POSN );
+}
+
+/**
+ *  LANGINFO N(egative) CS PRECEDES
+ *
+ */
+
+char *langinfo_n_cs_precedes() {
+   return nl_langinfo( N_CS_PRECEDES );
+}
+
+/**
+ *  LANGINFO N(egative) SEP BY PRECEDES
+ *
+ */
+
+char *langinfo_n_sep_by_space() {
+   return nl_langinfo( N_SEP_BY_SPACE );
+}
+
+/**
+ *  LANGINFO N(egative) SIGN POSN (position)
+ *
+ */
+
+char *langinfo_n_sign_posn() {
+   return nl_langinfo( N_SIGN_POSN );
+}
+
+/**
+ *  LANGINFO MON(etary) DECIMAL POINT
+ *
+ */
+
+char *langinfo_mon_decimal_point() {
+   return nl_langinfo( MON_DECIMAL_POINT );
+}
+
+
+/**
+ *  LANGINFO MON(etary) THOUSANDS SEP(erator)
+ *
+ */
+
+char *langinfo_mon_thousands_sep() {
+   return nl_langinfo( MON_THOUSANDS_SEP );
+}
+
+/**
+ *  LANGINFO MON(etary) GROUPING
+ *
+ */
+
+char *langinfo_mon_grouping() {
+   return nl_langinfo( MON_GROUPING );
+}
+
+/**
+ *  LANGINFO (Alternate) ERA
+ *
+ */
+
+char *langinfo_era() {
+   return nl_langinfo( ERA );
+}
+
+
+/**
+ *  LANGINFO (Alternate) ERA YEAR
+ *
+ */
+
+char *langinfo_era_year() {
+   return nl_langinfo( ERA_YEAR );
+}
+
+
+/**
+ *  LANGINFO (Alternate) ERA D(ate) T(ime) FMT (Format)
+ *
+ */
+
+char *langinfo_era_d_t_fmt() {
+   return nl_langinfo( ERA_D_T_FMT );
+}
+
+/**
+ *  LANGINFO (Alternate) ERA D(ate) FMT (Format)
+ *
+ */
+
+char *langinfo_era_d_fmt() {
+   return nl_langinfo( ERA_D_FMT );
+}
+
+/**
+ *  LANGINFO (Alternate) ERA T(ime) FMT (Format)
+ *
+ */
+
+char *langinfo_era_t_fmt() {
+   return nl_langinfo( ERA_T_FMT );
+}
+
