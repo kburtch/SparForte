@@ -23,10 +23,9 @@
 
 with ada.text_io; use ada.text_io;
 
-with gen_list,
-    ada.strings.unbounded,
+with ada.strings.unbounded,
     world,
-    user_io,
+    pegasoft.user_io,
     scanner,
     performance_monitoring,
     parser_aux,
@@ -35,7 +34,7 @@ with gen_list,
 use ada.strings,
     ada.strings.unbounded,
     world,
-    user_io,
+    pegasoft.user_io,
     scanner,
     performance_monitoring,
     parser_aux,

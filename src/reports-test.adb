@@ -24,14 +24,14 @@ with Ada.Characters.Latin_1,
      Ada.Strings.Fixed,
      Ada.Strings.Unbounded.Text_IO,
      Ada.Calendar.Arithmetic,
-     string_util,
+     pegasoft.strings,
      world,
      compiler; -- Circular dependency...
 use  Ada.Strings,
      Ada.Strings.Fixed,
      Ada.Strings.Unbounded.Text_IO,
      Ada.Calendar.Arithmetic,
-     string_util,
+     pegasoft.strings,
      world,
      compiler;
 

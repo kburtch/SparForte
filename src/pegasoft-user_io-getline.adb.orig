@@ -31,7 +31,7 @@ with ada.text_io,
      ada.containers.vectors,
      spar_os.tty,
      spar_os.readline,
-     string_util,
+     pegasoft.strings,
      world;
 use  ada.text_io,
      ada.text_io.unbounded_io,-- Ada 2005
@@ -40,7 +40,7 @@ use  ada.text_io,
      spar_os,
      spar_os.tty,
      spar_os.readline,
-     string_util,
+     pegasoft.strings,
      world;
 
 #if not READLINE
@@ -54,7 +54,7 @@ use  gnat.regexp,
      string_util;
 #end if;
 
-package body user_io.getline is
+package body pegasoft.user_io.getline is
 
 #if not READLINE
 
@@ -2352,5 +2352,5 @@ begin
 end shutdownGetline;
 #end if;
 
-end user_io.getline;
+end pegasoft.user_io.getline;
 

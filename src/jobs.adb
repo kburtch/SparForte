@@ -28,16 +28,16 @@ with interfaces.c,
     compiler,
     scanner,
     builtins.help,
-    string_util,
-    user_io,
+    pegasoft.strings,
+    pegasoft.user_io,
     parser_aux, -- for OSError
-    gen_list,
+    pegasoft.gen_list,
     world;
 use interfaces.c,
     ada.text_io,
     ada.strings.unbounded.text_io,
-    user_io,
-    string_util,
+    pegasoft.user_io,
+    pegasoft.strings,
     builtins,
     compiler,
     scanner,
@@ -77,7 +77,7 @@ begin
   return left.pid >= right.pid;
 end ">=";
 
-package jobList is new gen_list( aJob, "=", ">=" );
+package jobList is new pegasoft.gen_list( aJob, "=", ">=" );
 jobs : jobList.List;            -- our list of jobs
 
 

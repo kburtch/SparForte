@@ -26,7 +26,7 @@ with text_io;use text_io;
 with
     Ada.Containers,
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     scanner_res,
@@ -35,7 +35,7 @@ with
     parser_containers;
 use
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     scanner_res,

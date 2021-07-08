@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package body utils_mysql is
+package body pegasoft.mysql is
 
 function mysql_kind_to_string( kind : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
@@ -173,4 +173,4 @@ begin
   return "";
 end mysql_userattributes_to_string;
 
-end utils_mysql;
+end pegasoft.mysql;

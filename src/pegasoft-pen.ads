@@ -27,12 +27,13 @@
 with system,
      ada.strings.unbounded,
      spar_os.sdl;
-with gen_list;
 
 use ada.strings.unbounded,
     spar_os.sdl;
 
-package pen is
+with pegasoft.gen_list;
+
+package pegasoft.pen is
 
 
 ---> Coordinates
@@ -195,7 +196,7 @@ end record;
 
 function ">="( left, right : aCanvas ) return boolean;
 function "="( left, right : aCanvas ) return boolean;
-package canvasList is new gen_list( aCanvas, "=", ">=" );
+package canvasList is new pegasoft.gen_list( aCanvas, "=", ">=" );
 
 canvas : canvasList.List;                              -- list of canvases
 canvasIdTop : natural := 1;                            -- id counter
@@ -1165,5 +1166,5 @@ type plotValues is array(long_integer range <>) of long_float;
 procedure plot( theCanvas : aCanvas; values : plotValues );
 procedure plot( canvas_id : aCanvasID; values : plotValues );
 
-end pen;
+end pegasoft.pen;
 

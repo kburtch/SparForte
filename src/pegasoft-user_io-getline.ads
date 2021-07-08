@@ -27,7 +27,7 @@ use  interfaces.C,
      interfaces.C.strings,
      ada.strings.unbounded;
 
-package user_io.getline is
+package pegasoft.user_io.getline is
 
 --READLINE_EOF : exception;
 COMPLETION_MEMORY_LEAK : exception;
@@ -104,4 +104,4 @@ pragma export( C, Ada_k8s_word_generator, "Ada_k8s_word_generator" );
 function Ada_npm_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_npm_word_generator, "Ada_npm_word_generator" );
 
-end user_io.getline;
+end pegasoft.user_io.getline;

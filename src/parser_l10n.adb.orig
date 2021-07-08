@@ -26,7 +26,7 @@ with ada.strings.unbounded,
      spar_os.l10n,
 #end if;
      world,
-     string_util,
+     pegasoft.strings,
      scanner,
      parser_params;
 use  ada.strings.unbounded,
@@ -35,7 +35,7 @@ use  ada.strings.unbounded,
      spar_os.l10n,
 #end if;
      world,
-     string_util,
+     pegasoft.strings,
      scanner,
      parser_params;
 

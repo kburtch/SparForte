@@ -33,8 +33,8 @@ with ada.text_io,
 #end if;
 #end if;
      spar_os,
-     string_util,
-     user_io,
+     pegasoft.strings,
+     pegasoft.user_io,
      world,
      scanner,
      jobs,
@@ -50,9 +50,9 @@ use  ada.text_io,
      APQ,
 #end if;
 #end if;
-     string_util,
+     pegasoft.strings,
      jobs,
-     user_io,
+     pegasoft.user_io,
      world,
      scanner,
      parser_db,

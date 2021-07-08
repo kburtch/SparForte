@@ -26,9 +26,9 @@ with interfaces.c,
     ada.text_io,
     ada.strings.unbounded.text_io,
     gnat.source_info,
-    string_util,
-    user_io,
-    user_io.getline,
+    pegasoft.strings,
+    pegasoft.user_io,
+    pegasoft.user_io.getline,
     signal_flags,
     scanner.calendar,
     parser_aux,
@@ -39,8 +39,8 @@ use interfaces.c,
     ada.exceptions,
     ada.text_io,
     ada.strings.unbounded.text_io,
-    user_io,
-    string_util,
+    pegasoft.user_io,
+    pegasoft.strings,
     signal_flags,
     scanner,
     scanner.calendar,
@@ -231,7 +231,7 @@ begin
           str := str & ch;
         end loop;
      else
-        user_io.getline.getLine( str );
+        pegasoft.user_io.getline.getLine( str );
         if wasSIGINT then
            new_line;  -- user didn't press enter
            -- wasSIGINT will be cleared later

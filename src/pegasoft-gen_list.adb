@@ -40,7 +40,7 @@
 
 --with Text_IO; use Text_IO; -- for debugging
 
-package body gen_list is
+package body pegasoft.gen_list is
   pragma suppress( all_checks );
 
 NullList : constant List := (null,null,0,null,0,null);
@@ -515,5 +515,5 @@ begin
   end if;
 end Swap;
 
-end gen_list;
+end pegasoft.gen_list;
 

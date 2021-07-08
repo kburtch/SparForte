@@ -39,7 +39,7 @@ generic
   with function "=" (x, y : AListElement ) return boolean is <>;
   with function ">=" (x, y : AListElement ) return boolean is <>;
 
-package gen_list is
+package pegasoft.gen_list is
 
 ---> List Structure
 --
@@ -170,5 +170,5 @@ type List is record
      LastPtr   : AListRecordptr := null; -- last record accessed (or nil)
 end record;
 
-end gen_list;
+end pegasoft.gen_list;
 

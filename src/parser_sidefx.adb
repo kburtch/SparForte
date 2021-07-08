@@ -22,9 +22,9 @@
 ------------------------------------------------------------------------------
 
 with scanner,
-     user_io;
+     pegasoft.user_io;
 use  scanner,
-     user_io;
+     pegasoft.user_io;
 
 --with ada.text_io;
 --use  ada.text_io;

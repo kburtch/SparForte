@@ -25,13 +25,13 @@
 
 with interfaces.c,
     scanner,
-    string_util,
-    user_io,
+    pegasoft.strings,
+    pegasoft.user_io,
     parser_params;
 use interfaces.c,
     scanner,
-    string_util,
-    user_io,
+    pegasoft.strings,
+    pegasoft.user_io,
     parser_params;
 
 package body parser_strings_pcre is

@@ -23,9 +23,9 @@
 
 with ada.text_io; use ada.text_io;
 
-with gen_list,
+with pegasoft.gen_list,
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     parser,
@@ -33,7 +33,7 @@ with gen_list,
     pegasock.http;
 use ada.strings,
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     parser,
@@ -71,7 +71,7 @@ begin
    return left.id >= right.id;
 end "=";
 
-package memcacheClusterList is new gen_list( aMemcacheClusterEntry, "=", ">=" );
+package memcacheClusterList is new pegasoft.gen_list( aMemcacheClusterEntry, "=", ">=" );
 
 memcacheCluster : memcacheClusterList.List;
 memcacheClusterIdTop : aMemcacheClusterID := 1;                   -- id counter
@@ -120,7 +120,7 @@ begin
    return left.id >= right.id;
 end "=";
 
-package memcacheDualClusterList is new gen_list( aMemcacheDualClusterEntry, "=", ">=" );
+package memcacheDualClusterList is new pegasoft.gen_list( aMemcacheDualClusterEntry, "=", ">=" );
 
 memcacheDualCluster : memcacheDualClusterList.List;
 memcacheDualClusterIdTop : aMemcacheDualClusterID := 1;          -- id counter

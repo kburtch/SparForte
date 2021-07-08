@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- STRING UTIL                                                              --
+-- PEGASOFT STRINGS                                                         --
 --                                                                          --
 -- Part of SparForte                                                        --
 -- Designed and Programmed by Ken O. Burtch                                 --
@@ -25,7 +25,7 @@
 with ada.strings.unbounded, ada.calendar;
 use ada.strings.unbounded;
 
-package string_util is
+package pegasoft.strings is
 
 ------------------------------------------------------------------------------
 -- The string util package contains supplimental string handling not included
@@ -196,5 +196,5 @@ function toSecureData( s : string ) return string;
 -- return a string if not running in maintenance mode
 -- (used in securing data shown in error messages)
 
-end string_util;
+end pegasoft.strings;
 

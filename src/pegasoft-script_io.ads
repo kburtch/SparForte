@@ -1,4 +1,5 @@
 ------------------------------------------------------------------------------
+-- PEGASOFT SCRIPT_IO                                                       --
 -- Opening and Reading script files.                                        --
 --                                                                          --
 -- Part of SparForte                                                        --
@@ -21,59 +22,30 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with interfaces.c,
-     ada.text_io,
-     Gnat.Source_Info;
-use  interfaces.c,
-     ada.text_io;
+with ada.strings.unbounded,
+     spar_os;
+use ada.strings.unbounded,
+    spar_os;
 
-package body script_io is
+package pegasoft.script_io is
 
-type aLineReadBuffer is new string(1..80);
 
-function LineRead( lineptr : access unbounded_string ) return boolean is
+------------------------------------------------------
+-- Script File Scanning
+--
+------------------------------------------------------
+
+scriptFile : aFileDescriptor := 0; -- the file we're processing
+scriptFilePath : unbounded_string; -- and its path
+scriptLinestart : long_integer;    -- start of current line
+
+
+------------------------------------------------------
+-- Subprograms
+--
+------------------------------------------------------
+
+function LineRead( lineptr : access unbounded_string ) return boolean;
 -- read a line from the current script file.  return false on eof
-  buffer     : aLineReadBuffer;
-  bufpos     : positive;
-  amountRead : size_t;
-  ch         : character := ASCII.NUL;
-begin
-   buffer(1) := ' '; -- suppress GNAT warning about buffer having no value
-   lineptr.all := null_unbounded_string;
-  scriptLineStart := lseek( scriptFile, 0, 1 );
--- strictly speaking, the start of the current block should not reference
--- an entire line, but this will do for now.  It should really be the
--- start of the current token!
-   bufpos := buffer'first;
-   loop
-<<reread>> readchar( amountRead, scriptFile, ch, 1 );
- -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
-     if (amountRead < 0 or amountRead = size_t'last)
-         and (C_errno = EAGAIN or C_errno = EINTR) then
-        goto reread;
-     end if;
-     exit when amountRead /= 1 or ch = ASCII.LF;
-     if ch = ASCII.CR then -- ignore carriage returns (not Mac friendly)
-        goto reread;
-     end if;
-     if bufpos > buffer'last then
-        lineptr.all := lineptr.all & string( buffer );
-        bufpos := 1;
-     end if;
-     buffer( bufpos ) := ch;
-     bufpos := bufpos + 1;
-  end loop;
-  if bufpos > 1 then
-     lineptr.all := lineptr.all & string( buffer(1..bufpos-1 ) );
-  end if;
-  if amountRead < 0 or amountRead = size_t'last then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": error reading script file: errno " & C_errno'img );
-     return false;
-  elsif amountRead = 0 and length( lineptr.all ) = 0 then
-     return false;
-  else
-     return true;
-  end if;
-end LineRead;
 
-end script_io;
+end pegasoft.script_io;

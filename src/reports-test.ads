@@ -22,7 +22,7 @@
 ------------------------------------------------------------------------------
 
 with ada.calendar,
-     gen_list;
+     pegasoft.gen_list;
 
 package reports.test is
 
@@ -31,8 +31,8 @@ package reports.test is
   type error_natural is new natural;
   type failure_natural is new natural;
 
-  package errorList is new gen_list( unbounded_string, "=", ">=" );
-  package failureList is new gen_list( unbounded_string, "=", ">=" );
+  package errorList is new pegasoft.gen_list( unbounded_string, "=", ">=" );
+  package failureList is new pegasoft.gen_list( unbounded_string, "=", ">=" );
 
   wasTestErrorOrFailure : boolean := false;
 

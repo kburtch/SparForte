@@ -23,13 +23,13 @@
 with ada.strings.unbounded.text_io,
      spar_os.tty,
      cgi,
-     string_util,
-     user_io;
+     pegasoft.strings,
+     pegasoft.user_io;
 use  ada.strings.unbounded.text_io,
      spar_os.tty,
      cgi,
-     string_util,
-     user_io;
+     pegasoft.strings,
+     pegasoft.user_io;
 
 package body reports is
 

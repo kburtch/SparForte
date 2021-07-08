@@ -27,7 +27,7 @@ with ada.text_io,
 use ada.text_io,
     ada.strings.unbounded;
 
-with gen_list;
+with pegasoft.gen_list;
 
 package reports.help is
 
@@ -78,7 +78,7 @@ package reports.help is
 
   function ">="( left, right : aHelpEntry ) return boolean;
 
-  package helpList is new gen_list( aHelpEntry, "=", ">=" );
+  package helpList is new pegasoft.gen_list( aHelpEntry, "=", ">=" );
 
   procedure startHelp( e : in out aHelpEntry; topic : string );
 

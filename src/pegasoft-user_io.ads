@@ -26,7 +26,7 @@ with ada.calendar,
 use  ada.strings.unbounded;
 
 
-package user_io is
+package pegasoft.user_io is
 
 ------------------------------------------------------
 -- Prompt Info
@@ -193,4 +193,4 @@ function utf_bullet return string;
 function utf_diamond return string;
 -- Return the bytes for a UTF-8 diamond, otherwise a minus sign
 
-end user_io;
+end pegasoft.user_io;

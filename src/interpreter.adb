@@ -34,10 +34,10 @@ with ada.text_io,
     ada.calendar,
     gnat.source_info,
     spar_os,
-    string_util,
-    user_io,
-    user_io.getline,
-    script_io,
+    pegasoft.strings,
+    pegasoft.user_io,
+    pegasoft.user_io.getline,
+    pegasoft.script_io,
     world,
     performance_monitoring,
     reports.test,
@@ -55,10 +55,10 @@ use ada.text_io,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
     spar_os,
-    user_io,
-    script_io,
+    pegasoft.user_io,
+    pegasoft.script_io,
     world,
-    string_util,
+    pegasoft.strings,
     performance_monitoring,
     reports.test,
     builtins,
@@ -102,7 +102,7 @@ begin
               -- these are the readline codes to ignore the length
               -- of non-printable characters, such as terminal formatting
               -- codes.  Suppress these in the window title.
-              if user_io.getline.has_readline then
+              if pegasoft.user_io.getline.has_readline then
                  if element( prompt, i ) = ASCII.SOH then
                     suppressPromptChars := true;
                  elsif element( prompt, i ) = ASCII.STX then
@@ -186,7 +186,7 @@ begin
     -- Show the command prompt and get the user's input
 
     --put_bold( prompt );                       -- show prompt in bold
-    user_io.getline.getLine( command, prompt, keepHistory => true );  -- read command from keyboard
+    pegasoft.user_io.getline.getLine( command, prompt, keepHistory => true );  -- read command from keyboard
     if wasSIGINT then                         -- control-c at prompt?
        command := null_unbounded_string;      -- pretend empty command
        wasSIGINT := false;                    -- we handled it
@@ -1223,7 +1223,7 @@ begin
   if pwd /= eof_t then
      identifiers( pwd ).value.all := current_working_directory;
   end if;
-  user_io.getline.startupGetline( optionOffset );
+  pegasoft.user_io.getline.startupGetline( optionOffset );
 end startInterpreter;
 
 
@@ -1235,7 +1235,7 @@ end startInterpreter;
 
 procedure shutdownInterpreter is
 begin
-  user_io.getline.shutdownGetline;
+  pegasoft.user_io.getline.shutdownGetline;
 end shutdownInterpreter;
 
 end interpreter;

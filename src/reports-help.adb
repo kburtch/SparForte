@@ -23,14 +23,14 @@
 with ada.strings.unbounded.text_io,
      ada.calendar,
      cgi,
-     string_util,
-     user_io;
+     pegasoft.strings,
+     pegasoft.user_io;
 use  ada.strings,
      ada.strings.unbounded.text_io,
      ada.calendar,
      cgi,
-     string_util,
-     user_io;
+     pegasoft.strings,
+     pegasoft.user_io;
 
 package body reports.help is
 

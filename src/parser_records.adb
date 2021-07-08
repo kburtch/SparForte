@@ -25,13 +25,13 @@
 
 with ada.strings.unbounded,
      world,
-     string_util,
+     pegasoft.strings,
      scanner,
      parser,
      parser_params;
 use  ada.strings.unbounded,
      world,
-     string_util,
+     pegasoft.strings,
      scanner,
      parser,
      parser_params;

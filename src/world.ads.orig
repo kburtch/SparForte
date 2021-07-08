@@ -28,7 +28,7 @@ with system,
   ada.unchecked_deallocation,
   ada.strings.unbounded,
   ada.calendar,
-  gen_list,
+  pegasoft.gen_list,
   software_models,
   pegasock.memcache,
   spar_os;
@@ -158,7 +158,7 @@ function ">="( left, right : aSourceFile ) return boolean;
 
 function equal( left, right : aSourceFile ) return boolean;
 
-package SourceFilesList is new gen_list( aSourceFile, equal,  ">=" );
+package SourceFilesList is new pegasoft.gen_list( aSourceFile, equal,  ">=" );
 
 sourceFiles : SourceFilesList.List;
 -- the list of source files
@@ -236,7 +236,7 @@ function ">="( left, right : aDesignConstraint ) return boolean;
 
 function equal( left, right : aDesignConstraint ) return boolean;
 
-package DesignConstraintLists is new gen_list( aDesignConstraint, equal,  ">=" );
+package DesignConstraintLists is new pegasoft.gen_list( aDesignConstraint, equal,  ">=" );
 
 -- value indicating asserted constraint exists
 
@@ -256,9 +256,9 @@ function ">="( left, right : anEnforcedDesignConstraint ) return boolean;
 
 function equal( left, right : anEnforcedDesignConstraint ) return boolean;
 
-package EnforcedDesignConstraintLists is new gen_list( anEnforcedDesignConstraint, equal,  ">=" );
+package EnforcedDesignConstraintLists is new pegasoft.gen_list( anEnforcedDesignConstraint, equal,  ">=" );
 
-package EnforcedLocalDesignConstraintLists is new gen_list( anEnforcedDesignConstraint, equal,  ">=" );
+package EnforcedLocalDesignConstraintLists is new pegasoft.gen_list( anEnforcedDesignConstraint, equal,  ">=" );
 
 ------------------------------------------------------------------------------
 -- DESIGN AFFINITIES
@@ -282,7 +282,7 @@ function ">="( left, right : aDesignAffinity ) return boolean;
 
 function equal( left, right : aDesignAffinity ) return boolean;
 
-package DesignAffinityLists is new gen_list( aDesignAffinity, equal,  ">=" );
+package DesignAffinityLists is new pegasoft.gen_list( aDesignAffinity, equal,  ">=" );
 
 -- value indicating asserted constraint exists
 
@@ -301,9 +301,9 @@ function ">="( left, right : anEnforcedDesignAffinity ) return boolean;
 
 function equal( left, right : anEnforcedDesignAffinity ) return boolean;
 
-package EnforcedDesignAffinityLists is new gen_list( anEnforcedDesignAffinity, equal,  ">=" );
+package EnforcedDesignAffinityLists is new pegasoft.gen_list( anEnforcedDesignAffinity, equal,  ">=" );
 
-package EnforcedLocalDesignAffinityLists is new gen_list( anEnforcedDesignAffinity, equal,  ">=" );
+package EnforcedLocalDesignAffinityLists is new pegasoft.gen_list( anEnforcedDesignAffinity, equal,  ">=" );
 
 
 ------------------------------------------------------------------------------
@@ -1084,14 +1084,14 @@ nullShellWord : aShellWord := ( normalWord, null_unbounded_string,
 
 function ">"( left, right : aShellWord ) return boolean;
 
-package shellWordList is new gen_list( aShellWord, ">", "=" );
+package shellWordList is new pegasoft.gen_list( aShellWord, ">", "=" );
 
 -- Enviroment
 --
 -- Since the O/S environment is altered while BUSH is running, save the initial
 -- environment in a linked list when BUSH starts.  This is the list.
 
-package environmentList is new gen_list( unbounded_string, ">", "=" );
+package environmentList is new pegasoft.gen_list( unbounded_string, ">", "=" );
 
 initialEnvironment : environmentList.List;
 

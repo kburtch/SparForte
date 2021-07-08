@@ -27,7 +27,7 @@ with gnat.source_info,
     spar_os.sound,
     world,
     scanner,
-    user_io,
+    pegasoft.user_io,
     parser,
     builtins;
 use ada.strings.unbounded,
@@ -35,7 +35,7 @@ use ada.strings.unbounded,
     spar_os.sound,
     world,
     scanner,
-    user_io,
+    pegasoft.user_io,
     parser,
     builtins;
 

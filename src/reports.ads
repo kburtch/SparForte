@@ -28,7 +28,7 @@ with unchecked_deallocation,
 use ada.text_io,
     ada.strings.unbounded;
 
-with gen_list;
+with pegasoft.gen_list;
 
 package reports is
 
@@ -51,7 +51,7 @@ package reports is
 
   function insensitiveGreaterThan( left, right : unbounded_string ) return boolean;
 
-  package contentList is new gen_list( unbounded_string, "=", insensitiveGreaterThan );
+  package contentList is new pegasoft.gen_list( unbounded_string, "=", insensitiveGreaterThan );
 
   -- ROOT REPORT
   --

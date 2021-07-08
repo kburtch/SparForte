@@ -22,10 +22,11 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     gen_list,
      world;
 use  ada.strings.unbounded,
      world;
+
+with pegasoft.gen_list;
 
 package parser_sidefx is
 
@@ -112,6 +113,6 @@ PRIVATE
 
 function activeExpressionIdSort( left, right : activeExpressionId ) return boolean;
 
-package activeExpressionIdLists is new gen_list( activeExpressionId, activeExpressionIdSort, "=" );
+package activeExpressionIdLists is new pegasoft.gen_list( activeExpressionId, activeExpressionIdSort, "=" );
 
 end parser_sidefx;

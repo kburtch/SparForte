@@ -25,7 +25,7 @@
 
 with
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     scanner_res,
@@ -34,7 +34,7 @@ with
 use
     ada.strings.unbounded,
     world,
-    user_io,
+    pegasoft.user_io,
     scanner,
     scanner_res,
     scanner_restypes,

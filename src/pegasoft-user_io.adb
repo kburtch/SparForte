@@ -27,16 +27,16 @@ with ada.text_io,
     spar_os,
     spar_os.tty,
     world,
-    string_util;
+    pegasoft.strings;
 use ada.text_io,
     ada.strings.unbounded.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
     world,
-    string_util;
+    pegasoft.strings;
 
-package body user_io is
+package body pegasoft.user_io is
 
 -----------------------------------------------------------------------------
 --  BEEP
@@ -603,5 +603,5 @@ begin
 end utf_diamond;
 
 
-end user_io;
+end pegasoft.user_io;
 

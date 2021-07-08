@@ -1,7 +1,8 @@
 ------------------------------------------------------------------------------
--- Opening and Reading script files.                                        --
+-- PEGASOFT parent package                                                --
 --                                                                          --
 -- Part of SparForte                                                        --
+-- Designed and Programmed by Ken O. Burtch                                 --
 ------------------------------------------------------------------------------
 --                                                                          --
 --            Copyright (C) 2001-2021 Free Software Foundation              --
@@ -21,30 +22,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded,
-     spar_os;
-use ada.strings.unbounded,
-    spar_os;
+package pegasoft is
+pragma Pure;
 
-package script_io is
+end pegasoft;
 
-
-------------------------------------------------------
--- Script File Scanning
---
-------------------------------------------------------
-
-scriptFile : aFileDescriptor := 0; -- the file we're processing
-scriptFilePath : unbounded_string; -- and its path
-scriptLinestart : long_integer;    -- start of current line
-
-
-------------------------------------------------------
--- Subprograms
---
-------------------------------------------------------
-
-function LineRead( lineptr : access unbounded_string ) return boolean;
--- read a line from the current script file.  return false on eof
-
-end script_io;

@@ -22,7 +22,7 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     gen_list,
+     pegasoft.gen_list,
      scanner,
      scanner.shell;
 
@@ -34,7 +34,7 @@ package parser.decl.shell is
 
 shellWord : aShellWord;
 
-package bourneShellWordLists is new gen_list( anExpandedShellWord, ">","=" );
+package bourneShellWordLists is new pegasoft.gen_list( anExpandedShellWord, ">","=" );
 
 
 semicolon_string : constant unbounded_string := to_unbounded_string( ";" );

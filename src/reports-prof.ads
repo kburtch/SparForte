@@ -27,7 +27,7 @@ with ada.text_io,
 use ada.text_io,
     ada.strings.unbounded;
 
-with gen_list;
+--with pegasoft.gen_list;
 
 package reports.prof is
 

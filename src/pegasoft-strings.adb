@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- STRING UTIL                                                              --
+-- PEGASOFT STRINGS                                                         --
 --                                                                          --
 -- Part of SparForte                                                        --
 -- Designed and Programmed by Ken O. Burtch                                 --
@@ -32,7 +32,7 @@ with world;
 use  Ada.Characters.Handling,
      world;
 
-package body string_util is
+package body pegasoft.strings is
 
 ------------------------------------------------------------------------------
 -- Misc String Handling
@@ -1120,5 +1120,5 @@ begin
   return "<secured data>";
 end toSecureData;
 
-end string_util;
+end pegasoft.strings;
 

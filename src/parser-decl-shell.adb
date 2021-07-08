@@ -22,14 +22,14 @@
 ------------------------------------------------------------------------------
 with ada.text_io; use ada.text_io;
 
-with gen_list,
+with pegasoft.gen_list,
      ada.command_line,
      gnat.directory_operations,
      gnat.regexp,
      gnat.source_info,
      spar_os,
-     string_util,
-     user_io,
+     pegasoft.strings,
+     pegasoft.user_io,
      world,
      scanner,
      parser.decl.as;
@@ -39,8 +39,8 @@ use  world,
      gnat.directory_operations,
      gnat.regexp,
      spar_os,
-     string_util,
-     user_io,
+     pegasoft.strings,
+     pegasoft.user_io,
      scanner,
      parser.decl.as;
 

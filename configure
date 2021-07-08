@@ -1487,11 +1487,11 @@ cp world.ads.orig temp.ads
 gnatprep $GNATPREP_OPTS temp.ads world.ads
 chmod 444 world.ads
 
-echo "Updating...user_io.getline.adb"
-test -f user_io-getline.adb && chmod 666 user_io-getline.adb
-cp user_io-getline.adb.orig temp.adb
-gnatprep $GNATPREP_OPTS temp.adb user_io-getline.adb
-chmod 444 user_io-getline.adb
+echo "Updating...pegasoft.user_io.getline.adb"
+test -f pegasoft-user_io-getline.adb && chmod 666 pegasoft-user_io-getline.adb
+cp pegasoft-user_io-getline.adb.orig temp.adb
+gnatprep $GNATPREP_OPTS temp.adb pegasoft-user_io-getline.adb
+chmod 444 pegasoft-user_io-getline.adb
 
 echo "Updating...scanner_res.ads"
 test -f scanner_res.ads && chmod 666 scanner_res.ads

@@ -23,17 +23,16 @@
 
 --with ada.text_io; use ada.text_io;
 
-with gen_list,
-    --ada.numerics.float_random,
+with pegasoft.gen_list,
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     parser_params,
     pegasock.memcache.highread;
 use ada.strings,
     ada.strings.unbounded,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     parser_params,
@@ -110,7 +109,7 @@ begin
    return left.id >= right.id;
 end "=";
 
-package memcacheClusterList is new gen_list( aMemcacheClusterEntry, "=", ">=" );
+package memcacheClusterList is new pegasoft.gen_list( aMemcacheClusterEntry, "=", ">=" );
 
 memcacheCluster : memcacheClusterList.List;
 memcacheClusterIdTop : aMemcacheClusterID := 1;                   -- id counter
@@ -161,7 +160,7 @@ end "=";
 
 -- TODO: KB: 17/02/12: rewrite to use resources
 
-package memcacheDualClusterList is new gen_list( aMemcacheDualClusterEntry, "=", ">=" );
+package memcacheDualClusterList is new pegasoft.gen_list( aMemcacheDualClusterEntry, "=", ">=" );
 
 memcacheDualCluster : memcacheDualClusterList.List;
 memcacheDualClusterIdTop : aMemcacheDualClusterID := 1;          -- id counter

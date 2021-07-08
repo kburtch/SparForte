@@ -13,6 +13,13 @@ Priority Issues (Fix These First)
 
 - pragma todo
   - these do not appear in help output when in include files
+- how can design mode be improved to assist with design diagrams?
+- hash map support
+- redesign source code treasury index page
+- update examples with recent changes to SparForte (e.g. affirm clauses)
+- update REPL on website
+- check pascal's changes for supporting graphic environments
+  - unifying the language I/O and do not rely on Ada.Text_IO.
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.

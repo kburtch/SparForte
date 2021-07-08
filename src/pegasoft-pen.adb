@@ -23,17 +23,14 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
--- with system;
 with system.address_to_access_conversions;
 with ada.text_io; use ada.text_io;
--- with ada.strings.unbounded; use ada.strings.unbounded;
 with spar_os.sdl; use spar_os.sdl;
 with interfaces; use interfaces;
 with interfaces.c; use interfaces.c;
 use spar_os.sdl.SDL_Surface_Conv;
--- with gen_list;
 
-package body pen is
+package body pegasoft.pen is
 
 ---> Rectangles
 
@@ -2674,5 +2671,5 @@ begin
   end if;
 end CloseFont;
 
-end pen;
+end pegasoft.pen;
 

@@ -25,30 +25,24 @@ with text_io;use text_io;
 
 with system,
     interfaces.c,
-    pen,
+    pegasoft.pen,
     spar_os.sdl,
     spar_os.opengl,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     scanner_res,
-    --string_util,
-    -- scanner_arrays,
-    --parser_aux,
     parser_params,
     parser;
 use interfaces.c,
-    pen,
+    pegasoft.pen,
     spar_os,
     spar_os.sdl,
     spar_os.opengl,
-    user_io,
+    pegasoft.user_io,
     world,
     scanner,
     scanner_res,
-    --string_util,
-    -- scanner_arrays,
-    --parser_aux,
     parser_params,
     parser,
     spar_os;
@@ -851,7 +845,7 @@ begin
 -- some versions of SDL take control of the screen if video is started so
 -- we'll only start SDL when a canvas is created.
         if not penRunning then
-           pen.startupPen;
+           pegasoft.pen.startupPen;
            penRunning := true;
         end if;
         newScreenCanvas( positive( to_numeric( h_val ) ),
@@ -917,7 +911,7 @@ begin
 -- some versions of SDL take control of the screen if video is started so
 -- we'll only start SDL when a canvas is created.
         if not penRunning then
-           pen.startupPen;
+           pegasoft.pen.startupPen;
            penRunning := true;
         end if;
         newGLScreenCanvas( positive( to_numeric( h_val ) ),
@@ -979,7 +973,7 @@ begin
 -- some versions of SDL take control of the screen if video is started so
 -- we'll only start SDL when a canvas is created.
         if not penRunning then
-           pen.startupPen;
+           pegasoft.pen.startupPen;
            penRunning := true;
         end if;
         newWindowCanvas( positive( to_numeric( h_val ) ),
@@ -1041,7 +1035,7 @@ begin
 -- some versions of SDL take control of the screen if video is started so
 -- we'll only start SDL when a canvas is created.
         if not penRunning then
-           pen.startupPen;
+           pegasoft.pen.startupPen;
            penRunning := true;
         end if;
         newGLWindowCanvas( positive( to_numeric( h_val ) ),
@@ -1110,7 +1104,7 @@ begin
 -- some versions of SDL take control of the screen if video is started so
 -- we'll only start SDL when a canvas is created.
         if not penRunning then
-           pen.startupPen;
+           pegasoft.pen.startupPen;
            penRunning := true;
         end if;
         if loading then
@@ -1909,8 +1903,8 @@ begin
   if isExecutingCommand then
      begin
        closeCanvas( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ) );
-       if canvasList.length( pen.canvas ) = 0 then
-          pen.shutdownPen;
+       if canvasList.length( pegasoft.pen.canvas ) = 0 then
+          pegasoft.pen.shutdownPen;
           penRunning := false;
        end if;
      exception when others =>
@@ -24417,7 +24411,7 @@ end StartupPen;
 procedure ShutdownPen is
 begin
   if penRunning then
-     Pen.ShutdownPen;
+     pegasoft.pen.shutdownPen;
      penRunning := false;
   end if;
 end ShutdownPen;

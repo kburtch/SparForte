@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with gen_list,
+with pegasoft.gen_list,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
      Ada.Containers.Doubly_Linked_Lists,
@@ -319,7 +319,7 @@ procedure pullResourceBlock( blocklvl : block );
 PRIVATE
 
 function resSort( left, right : resPtr ) return boolean;
-package resHandleList is new gen_list( resPtr, resSort, "=" );
+package resHandleList is new pegasoft.gen_list( resPtr, resSort, "=" );
 
 type resHandleID is new resHandleList.AListIndex;
 
