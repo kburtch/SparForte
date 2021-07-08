@@ -6150,6 +6150,100 @@ begin
   pragma assert( not logs.is_rotating );
 end;
 
+-- L10N
+--
+-- We are limted because we don't know the locale.
+-- This will fail of l10n is not enabled.
+
+l10n.setlocale( l10n.lc_monetary, "C" );
+s := l10n.getlocale( l10n.lc_monetary );
+pragma assert( s = "C" );
+l10n.setlocale( l10n.lc_all, "C" );
+s := l10n.getlocale( l10n.lc_collate );
+pragma assert( s = "C" );
+s := l10n.getlocale( l10n.lc_messages );
+pragma assert( s = "C" );
+s := l10n.getlocale( l10n.lc_monetary );
+pragma assert( s = "C" );
+s := l10n.getlocale( l10n.lc_time );
+pragma assert( s = "C" );
+s := l10n.getlocale( l10n.lc_ctype );
+pragma assert( s /= "" );
+s := l10n.getlocale( l10n.lc_all );
+pragma assert( s /= "" );
+s := l10n.abday( 1 );
+pragma assert( s /= "" );
+s := l10n.abmon( 1 );
+pragma assert( s /= "" );
+s := l10n.amstr;
+pragma assert( s /= "" );
+s := l10n.codeset;
+pragma assert( s /= "" );
+s := l10n.currency_symbol;
+pragma assert( s = "" );
+s := l10n.day( 1 );
+pragma assert( s /= "" );
+s := l10n.decimal_point;
+pragma assert( s /= "" );
+s := l10n.d_fmt;
+pragma assert( s /= "" );
+s := l10n.d_t_fmt;
+pragma assert( s /= "" );
+s := l10n.era;
+pragma assert( s = "" );
+s := l10n.era_d_fmt;
+pragma assert( s = "" );
+s := l10n.era_d_t_fmt;
+pragma assert( s = "" );
+s := l10n.era_t_fmt;
+pragma assert( s = "" );
+s := l10n.era_year;
+pragma assert( s = "" );
+i := l10n.frac_digits;
+pragma assert( i = -1 );
+i := l10n.grouping;
+pragma assert( i = 0 );
+s := l10n.int_curr_symbol;
+pragma assert( s = "" );
+i := l10n.int_frac_digits;
+pragma assert( i = -1 );
+s := l10n.mon( 1 );
+pragma assert( s /= "" );
+s := l10n.mon_decimal_point;
+pragma assert( s = "" );
+i := l10n.mon_grouping;
+pragma assert( i = 0 );
+s := l10n.mon_thousands_sep;
+pragma assert( s = "" );
+s := l10n.negative_sign;
+pragma assert( s = "" );
+s := l10n.noexpr;
+pragma assert( s /= "" );
+i := l10n.n_cs_precedes;
+pragma assert( i = -1 );
+i := l10n.n_sep_by_space;
+pragma assert( i = -1 );
+i := l10n.n_sign_posn;
+pragma assert( i = -1 );
+s := l10n.pmstr;
+pragma assert( s /= "" );
+s := l10n.positive_sign;
+pragma assert( s = "" );
+i := l10n.p_cs_precedes;
+pragma assert( i = -1 );
+i := l10n.p_sep_by_space;
+pragma assert( i = -1 );
+i := l10n.p_sign_posn;
+pragma assert( i = -1 );
+s := l10n.thousands_sep;
+pragma assert( s = "" );
+s := l10n.t_fmt;
+pragma assert( s /= "" );
+s := l10n.t_fmt_ampm;
+pragma assert( s /= "" );
+s := l10n.yesexpr;
+pragma assert( s /= "" );
+
 -- Pragmas
 
 pragma assumption( used, i );
