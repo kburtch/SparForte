@@ -151,19 +151,15 @@ word_count_t    : identifier;
 compare_t       : identifier;
 index_set_t     : identifier;
 
-procedure ParseSingleStringExpression ( Expr_Val : out unbounded_string;
-  expr_type : out identifier ) is
-begin
-  expect( symbol_t, "(" );
-  ParseExpression( expr_val, expr_type );
-  if uniTypesOk( expr_type, Uni_String_T ) then
-     expect( symbol_t, ")" );
-  end if;
-end ParseSingleStringExpression;
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS GLOB
+--
+-- Syntax: glob( expr, string )
+-- Source: GNAT.RegExp.Match
+------------------------------------------------------------------------------
 
 procedure ParseStringsGlob( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: glob( expr, string )
-  -- Source: GNAT.RegExp.Match
   expr_val  : unbounded_string;
   expr_type : identifier;
   pat_val   : unbounded_string;
@@ -201,9 +197,15 @@ begin
   end if;
 end ParseStringsGlob;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS MATCH
+--
+-- Syntax: match( pat, expr )
+-- Source: GNAT.RegPat.Match
+------------------------------------------------------------------------------
+
 procedure ParseStringsMatch( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: match( pat, expr )
-  -- Source: GNAT.RegPat.Match
   expr_val  : unbounded_string;
   expr_type : identifier;
   pat_val   : unbounded_string;
@@ -254,9 +256,15 @@ begin
   end if;
 end ParseStringsMatch;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS ELEMENT
+--
+-- Syntax: element( s, i )
+-- Source: Ada.Strings.Unbounded.Element
+------------------------------------------------------------------------------
+
 procedure ParseStringsElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: element( s, i )
-  -- Source: Ada.Strings.Unbounded.Element
   str_val : unbounded_string;
   str_type : identifier;
   index_val : unbounded_string;
@@ -276,9 +284,15 @@ begin
   end;
 end ParseStringsElement;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS SLICE
+--
+-- Syntax: slice( s, l, h )
+-- Source: Ada.Strings.Unbounded.Slice
+------------------------------------------------------------------------------
+
 procedure ParseStringsSlice( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: slice( s, l, h )
-  -- Source: Ada.Strings.Unbounded.Slice
   str_val  : unbounded_string;
   str_type : identifier;
   low_val  : unbounded_string;
@@ -304,9 +318,15 @@ begin
   end;
 end ParseStringsSlice;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS INDEX
+--
+-- Syntax: strings.index( s, p [,d] )
+-- Source: Ada.Strings.Unbounded.Index
+------------------------------------------------------------------------------
+
 procedure ParseStringsIndex( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.index( s, p [,d] )
-  -- Source: Ada.Strings.Unbounded.Index
   use ada.strings;
   str_val : unbounded_string;
   str_type : identifier;
@@ -348,9 +368,15 @@ begin
   end;
 end ParseStringsIndex;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS INDEX NON BLANK
+--
+-- Syntax: strings.index_non_blank( s [, d] )
+-- Source: Ada.Strings.Unbounded.Index_Non_Blank
+------------------------------------------------------------------------------
+
 procedure ParseStringsIndexNonBlank( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.index_non_blank( s [, d] )
-  -- Source: Ada.Strings.Unbounded.Index_Non_Blank
   use ada.strings;
   str_val : unbounded_string;
   str_type : identifier;
@@ -383,9 +409,15 @@ begin
   end;
 end ParseStringsIndexNonBlank;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS INDEX SET
+--
+-- Syntax: strings.index_set( s, t [, f [, m [, d]]] )
+-- Source: Ada.Strings.Unbounded.Index
+------------------------------------------------------------------------------
+
 procedure ParseStringsIndexSet( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.index_set( s, t [, f [, m [, d]]] )
-  -- Source: Ada.Strings.Unbounded.Index
   use ada.strings;
   str_val    : unbounded_string;
   str_type   : identifier;
@@ -444,9 +476,15 @@ begin
   end;
 end ParseStringsIndexSet;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS COUNT
+--
+-- Syntax: strings.count( s, p )
+-- Source: Ada.Strings.Unbounded.Count
+------------------------------------------------------------------------------
+
 procedure ParseStringsCount( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.count( s, p )
-  -- Source: Ada.Strings.Unbounded.Count
   str_val : unbounded_string;
   str_type : identifier;
   pat_val : unbounded_string;
@@ -466,9 +504,15 @@ begin
   end;
 end ParseStringsCount;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS REPLACE SLICE
+--
+-- Syntax: strings.replace_slice( s, l, h, b )
+-- Source: Ada.Strings.Unbounded.Replace_Slice
+------------------------------------------------------------------------------
+
 procedure ParseStringsReplaceSlice( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.replace_slice( s, l, h, b )
-  -- Source: Ada.Strings.Unbounded.Replace_Slice
   str_val : unbounded_string;
   str_type : identifier;
   low_val : unbounded_string;
@@ -497,9 +541,15 @@ begin
   end;
 end ParseStringsReplaceSlice;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS REPLACE SLICE
+--
+-- Syntax: strings.replace_all( s, n, r, b )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsReplaceAll( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.replace_all( s, n, r, b )
-  -- Source: N/A
   str_val : unbounded_string;
   str_type : identifier;
   needle_val : unbounded_string;
@@ -536,9 +586,15 @@ begin
   end;
 end ParseStringsReplaceAll;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS INSERT
+--
+-- Syntax: strings.insert( s, b, n )
+-- Source: Ada.Strings.Unbounded.Replace_Slice
+------------------------------------------------------------------------------
+
 procedure ParseStringsInsert( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.insert( s, b, n )
-  -- Source: Ada.Strings.Unbounded.Replace_Slice
   str_val : unbounded_string;
   str_type : identifier;
   before_val : unbounded_string;
@@ -563,9 +619,15 @@ begin
   end;
 end ParseStringsInsert;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS OVERWRITE
+--
+-- Syntax: strings.overwrite( s, p, n )
+-- Source: Ada.Strings.Unbounded.Overwrite
+------------------------------------------------------------------------------
+
 procedure ParseStringsOverwrite( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.overwrite( s, p, n )
-  -- Source: Ada.Strings.Unbounded.Overwrite
   str_val  : unbounded_string;
   str_type : identifier;
   pos_val  : unbounded_string;
@@ -590,9 +652,15 @@ begin
   end;
 end ParseStringsOverwrite;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS DELETE
+--
+-- Syntax: strings.delete( s, l, h )
+-- Source: Ada.Strings.Unbounded.Delete
+------------------------------------------------------------------------------
+
 procedure ParseStringsDelete( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.delete( s, l, h )
-  -- Source: Ada.Strings.Unbounded.Delete
   str_val  : unbounded_string;
   str_type : identifier;
   low_val  : unbounded_string;
@@ -617,9 +685,15 @@ begin
   end if;
 end ParseStringsDelete;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TRIM
+--
+-- Syntax: strings.trim( s , e )
+-- Source: Ada.Strings.Unbounded.Trim
+------------------------------------------------------------------------------
+
 procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.trim( s , e )
-  -- Source: Ada.Strings.Unbounded.Trim
   use ada.strings;
   str_val : unbounded_string;
   str_type : identifier;
@@ -657,9 +731,15 @@ begin
   end;
 end ParseStringsTrim;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TRIM
+--
+-- Syntax: strings.trim( s )
+-- Source: Ada.Strings.Unbounded.Trim
+------------------------------------------------------------------------------
+
 procedure ParseStringsLength( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.trim( s )
-  -- Source: Ada.Strings.Unbounded.Trim
   str_val : unbounded_string;
   str_type : identifier;
 begin
@@ -675,9 +755,15 @@ begin
   end;
 end ParseStringsLength;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS HEAD
+--
+-- Syntax: strings.head( s, c [,p] )
+-- Source: Ada.Strings.Unbounded.Head
+------------------------------------------------------------------------------
+
 procedure ParseStringsHead( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.head( s, c [,p] )
-  -- Source: Ada.Strings.Unbounded.Head
   str_val  : unbounded_string;
   str_type : identifier;
   cnt_val  : unbounded_string;
@@ -710,9 +796,15 @@ begin
   end;
 end ParseStringsHead;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TAIL
+--
+-- Syntax: strings.tail( s, c [, p] )
+-- Source: Ada.Strings.Unbounded.Tail
+------------------------------------------------------------------------------
+
 procedure ParseStringsTail( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.tail( s, c [, p] )
-  -- Source: Ada.Strings.Unbounded.Tail
   str_val  : unbounded_string;
   str_type : identifier;
   cnt_val  : unbounded_string;
@@ -745,9 +837,15 @@ begin
   end;
 end ParseStringsTail;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS STARTS WITH
+--
+-- Syntax: strings.starts_with( s, t [,c] )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsStartsWith( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.starts_with( s, t [,c] )
-  -- Source: N/A
   str_val   : unbounded_string;
   str_type  : identifier;
   head_val  : unbounded_string;
@@ -785,9 +883,15 @@ begin
   end;
 end ParseStringsStartsWith;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS ENDS WITH
+--
+-- Syntax: strings.ends_with( s, t [,c] )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsEndsWith( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.ends_with( s, t [,c] )
-  -- Source: N/A
   str_val   : unbounded_string;
   str_type  : identifier;
   tail_val  : unbounded_string;
@@ -825,9 +929,15 @@ begin
   end;
 end ParseStringsEndsWith;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS FIELD
+--
+-- Syntax: strings.field( s, c [, d] )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsField( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.field( s, c [, d] )
-  -- Source: N/A
   str_val  : unbounded_string;
   str_type : identifier;
   cnt_val  : unbounded_string;
@@ -864,9 +974,15 @@ begin
   end;
 end ParseStringsField;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS CSV FIELD
+--
+-- Syntax: strings.csv_field( s, c [, d [, q]] )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsCSVField( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.csv_field( s, c [, d [, q]] )
-  -- Source: N/A
   str_val  : unbounded_string;
   str_type : identifier;
   cnt_val  : unbounded_string;
@@ -920,9 +1036,15 @@ begin
   end;
 end ParseStringsCSVField;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS MKTEMP
+--
+-- Syntax: strings.mktemp
+-- Source: SparForte builtin
+------------------------------------------------------------------------------
+
 procedure ParseStringsMkTemp( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.mktemp
-  -- Source: SparForte builtin
   str_val : unbounded_string;
   str_type : identifier;
   mkstemp_result : aFileDescriptor;
@@ -960,9 +1082,15 @@ begin
   end if;
 end ParseStringsMkTemp;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS VAL
+--
+-- Syntax: strings.val( natural );
+-- Source: Ada 'val attribute
+------------------------------------------------------------------------------
+
 procedure ParseStringsVal( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.val( natural );
-  -- Source: Ada 'val attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -978,9 +1106,15 @@ begin
   end;
 end ParseStringsVal;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS VAL
+--
+-- Syntax: strings.image( x );
+-- Source: Ada 'image attribute
+------------------------------------------------------------------------------
+
 procedure ParseStringsImage( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.image( x );
-  -- Source: Ada 'image attribute
   expr_val   : unbounded_string;
   expr_type  : identifier;
   temp       : unbounded_string;
@@ -1023,9 +1157,15 @@ begin
   end;
 end ParseStringsImage;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO STRING
+--
+-- Syntax: strings.to_string( x );
+-- Source: Ada.Strings.Unbounded.To_String
+------------------------------------------------------------------------------
+
 procedure ParseStringsToString( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_string( x );
-  -- Source: Ada.Strings.Unbounded.To_String
   expr_val   : unbounded_string;
   expr_type  : identifier;
   baseType   : identifier;
@@ -1093,9 +1233,15 @@ begin
   end;
 end ParseStringsToString;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO UNBOUNDED STRING
+--
+-- Syntax: strings.to_unbounded_string( x ); or strings.to_unbounded_string( n );
+-- Source: Ada.Strings.Unbounded.To_Unbounded_String
+------------------------------------------------------------------------------
+
 procedure ParseStringsToUString( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_unbounded_string( x ); or strings.to_unbounded_string( n );
-  -- Source: Ada.Strings.Unbounded.To_Unbounded_String
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1111,9 +1257,15 @@ begin
   end;
 end ParseStringsToUString;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS LOOKUP
+--
+-- Syntax: strings.lookup( s, t [, d] );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsLookup( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.lookup( s, t [, d] );
-  -- Source: N/A
   src_val  : unbounded_string;
   src_type : identifier;
   tar_val  : unbounded_string;
@@ -1147,9 +1299,15 @@ begin
   end;
 end ParseStringsLookup;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS LOOKUP
+--
+-- Syntax: strings.replace( s, f, t, [,d] );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsReplace is
-  -- Syntax: strings.replace( s, f, t, [,d] );
-  -- Source: N/A
   src_ref  : reference;
   tar_val  : unbounded_string;
   tar_type : identifier;
@@ -1193,9 +1351,15 @@ begin
   end;
 end ParseStringsReplace;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS CSV REPLACE
+--
+-- Syntax: strings.csv_replace( s, f, t, [,d] [,q] );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsCSVReplace is
-  -- Syntax: strings.csv_replace( s, f, t, [,d] [,q] );
-  -- Source: N/A
   src_ref  : reference;
   tar_val  : unbounded_string;
   tar_type : identifier;
@@ -1259,9 +1423,15 @@ begin
   end;
 end ParseStringsCSVReplace;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO UPPER
+--
+-- Syntax: strings.to_upper( s );
+-- Source: Ada.Characters.Handling.To_Upper
+------------------------------------------------------------------------------
+
 procedure ParseStringsToUpper( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_upper( s );
-  -- Source: Ada.Characters.Handling.To_Upper
   src_val  : unbounded_string;
   src_type : identifier;
 begin
@@ -1273,9 +1443,15 @@ begin
   end if;
 end ParseStringsToUpper;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO LOWER
+--
+-- Syntax: strings.to_lower( s );
+-- Source: Ada.Characters.Handling.To_Lower
+------------------------------------------------------------------------------
+
 procedure ParseStringsToLower( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_lower( s );
-  -- Source: Ada.Characters.Handling.To_Lower
   src_val  : unbounded_string;
   src_type : identifier;
 begin
@@ -1287,9 +1463,15 @@ begin
   end if;
 end ParseStringsToLower;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO PROPER
+--
+-- Syntax: strings.to_proper( s );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsToProper( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_proper( s );
-  -- Source: N/A
   src_val  : unbounded_string;
   src_type : identifier;
 begin
@@ -1301,9 +1483,15 @@ begin
   end if;
 end ParseStringsToProper;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO BASIC
+--
+-- Syntax: strings.to_basic( s );
+-- Source: Ada.Characters.Handling.To_Basic
+------------------------------------------------------------------------------
+
 procedure ParseStringsToBasic( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_basic( s );
-  -- Source: Ada.Characters.Handling.To_Basic
   src_val  : unbounded_string;
   src_type : identifier;
 begin
@@ -1315,9 +1503,15 @@ begin
   end if;
 end ParseStringsToBasic;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO ESCAPED
+--
+-- Syntax: strings.to_escaped( s );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsToEscaped( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_escaped( s );
-  -- Source: N/A
   src_val  : unbounded_string;
   src_type : identifier;
 begin
@@ -1336,9 +1530,15 @@ begin
   end if;
 end ParseStringsToEscaped;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS SPLIT
+--
+-- Syntax: strings.split( s, l, r [,d] )
+-- Source: N/A (GNAT.Case_Util sort of)
+------------------------------------------------------------------------------
+
 procedure ParseStringsSplit is
-  -- Syntax: strings.split( s, l, r [,d] )
-  -- Source: N/A (GNAT.Case_Util sort of)
   src_val  : unbounded_string;
   src_type : identifier;
   left_ref : reference;
@@ -1368,9 +1568,15 @@ begin
   end;
 end ParseStringsSplit;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS CONTROL
+--
+-- Syntax: strings.is_control( x );
+-- Source: Ada.Characters.Handling.Is_Control (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsControl( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_control( x );
-  -- Source: Ada.Characters.Handling.Is_Control (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1386,9 +1592,15 @@ begin
   end;
 end ParseStringsIsControl;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS GRAPHIC
+--
+-- Syntax: strings.is_graphic( x );
+-- Source: Ada.Characters.Handling.Is_Graphic (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsGraphic( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_graphic( x );
-  -- Source: Ada.Characters.Handling.Is_Graphic (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1404,9 +1616,15 @@ begin
   end;
 end ParseStringsIsGraphic;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS LETTER
+--
+-- Syntax: strings.is_letter( x );
+-- Source: Ada.Characters.Handling.Is_Letter (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsLetter( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_letter( x );
-  -- Source: Ada.Characters.Handling.Is_Letter (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1422,9 +1640,15 @@ begin
   end;
 end ParseStringsIsLetter;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS LOWER
+--
+-- Syntax: strings.is_lower( x );
+-- Source: Ada.Characters.Handling.Is_Lower (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsLower( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_lower( x );
-  -- Source: Ada.Characters.Handling.Is_Lower (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1440,9 +1664,15 @@ begin
   end;
 end ParseStringsIsLower;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS LOWER
+--
+-- Syntax: strings.is_upper( x );
+-- Source: Ada.Characters.Handling.Is_Upper (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsUpper( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_upper( x );
-  -- Source: Ada.Characters.Handling.Is_Upper (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1458,9 +1688,15 @@ begin
   end;
 end ParseStringsIsUpper;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS BASIC
+--
+-- Syntax: strings.is_basic( x );
+-- Source: Ada.Characters.Handling.Is_Basic (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsBasic( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_basic( x );
-  -- Source: Ada.Characters.Handling.Is_Basic (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1476,9 +1712,15 @@ begin
   end;
 end ParseStringsIsBasic;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS DIGIT
+--
+-- Syntax: strings.is_digit( x );
+-- Source: Ada.Characters.Handling.Is_Digit (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsDigit( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_digit( x );
-  -- Source: Ada.Characters.Handling.Is_Digit (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1494,9 +1736,15 @@ begin
   end;
 end ParseStringsIsDigit;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS HEXADECIMAL DIGIT
+--
+-- Syntax: strings.is_hexadecimal_digit( x );
+-- Source: Ada.Characters.Handling.Is_Hexadecimal_Digit (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsHexDigit( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_hexadecimal_digit( x );
-  -- Source: Ada.Characters.Handling.Is_Hexadecimal_Digit (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1512,9 +1760,15 @@ begin
   end;
 end ParseStringsIsHexDigit;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS ALPHANUMERIC
+--
+-- Syntax: strings.is_alphanumeric( x );
+-- Source: Ada.Characters.Handling.Is_Alphanumeric (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsAlphanumeric( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_alphanumeric( x );
-  -- Source: Ada.Characters.Handling.Is_Alphanumeric (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1530,9 +1784,15 @@ begin
   end;
 end ParseStringsIsAlphanumeric;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS SPECIAL
+--
+-- Syntax: strings.is_special( x );
+-- Source: Ada.Characters.Handling.Is_Special (except for string)
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsSpecial( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_special( x );
-  -- Source: Ada.Characters.Handling.Is_Special (except for string)
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1548,9 +1808,15 @@ begin
   end;
 end ParseStringsIsSpecial;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS SLASHED DATE
+--
+-- Syntax: strings.is_slashed_date( x );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsSlashedDate( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_slashed_date( x );
-  -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1569,9 +1835,15 @@ begin
   end;
 end ParseStringsIsSlashedDate;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS FIXED
+--
+-- Syntax: strings.is_fixed( x );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsFixed( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_fixed( x );
-  -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1587,9 +1859,15 @@ begin
   end;
 end ParseStringsIsFixed;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO BASE64
+--
+-- Syntax: strings.to_base64( s )
+-- Source: base64.encode_stream
+------------------------------------------------------------------------------
+
 procedure ParseStringsToBase64( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_base64( s )
-  -- Source: base64.encode_stream
   rawFile : ada.streams.stream_io.file_type;
   base64file : ada.text_io.file_type;
   expr_val : unbounded_string;
@@ -1600,7 +1878,7 @@ begin
   end if;
   expect( to_base64_t );
   kind := base64_string_t;
-  ParseSingleStringExpression( expr_val, expr_type );
+  ParseSingleStringParameter( expr_val, expr_type );
   begin
     if isExecutingCommand then
        -- The AdaPower base64 package requires streams and/or files.  It
@@ -1640,9 +1918,15 @@ begin
   end;
 end ParseStringsToBase64;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS IS TYPO OF
+--
+-- Syntax: strings.is_typo_of( x, y );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsIsTypoOf( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.is_typo_of( x, y );
-  -- Source: N/A
   expr1_val   : unbounded_string;
   expr1_type  : identifier;
   expr2_val   : unbounded_string;
@@ -1664,9 +1948,15 @@ begin
   end;
 end ParseStringsIsTypoOf;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS UNBOUNDED SLICE
+--
+-- Syntax: unbounded_slice( s, l, h )
+-- Source: Ada.Strings.Unbounded.Unbounded_Slice
+------------------------------------------------------------------------------
+
 procedure ParseStringsUnboundedSlice( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: unbounded_slice( s, l, h )
-  -- Source: Ada.Strings.Unbounded.Unbounded_Slice
   str_val  : unbounded_string;
   str_type : identifier;
   low_val  : unbounded_string;
@@ -1692,10 +1982,16 @@ begin
   end;
 end ParseStringsUnboundedSlice;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS SET UNBOUNDED STRING
+--
+-- Syntax: strings.set_unbounded_string( u, s );
+-- Source: ada.strings.unbounded.set_unbounded_string
+-- Ada 2005
+------------------------------------------------------------------------------
+
 procedure ParseStringsSetUnboundedString is
-  -- Syntax: strings.set_unbounded_string( u, s );
-  -- Source: ada.strings.unbounded.set_unbounded_string
-  -- Ada 2005
   src_ref  : reference;
   str_val  : unbounded_string;
   str_type : identifier;
@@ -1715,9 +2011,15 @@ begin
   end;
 end ParseStringsSetUnboundedString;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO JSON
+--
+-- Syntax: strings.to_json( x );
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsToJSON( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: strings.to_json( x );
-  -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1736,16 +2038,28 @@ begin
   end;
 end ParseStringsToJSON;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS PERL MATCH
+--
+-- Syntax: perl_match( s, e )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsPerlMatch( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: perl_match( s, e )
-  -- Source: N/A
 begin
   parser_strings_pcre.ParseStringsPerlMatch( result, kind );
 end ParseStringsPerlMatch;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS TO HEX DIGITS
+--
+-- Syntax: to_hexadecimal_digits( n )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsToHexDigits( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: to_hexadecimal_digits( n )
-  -- Source: N/A
   expr_val   : unbounded_string;
   expr_type  : identifier;
 begin
@@ -1786,9 +2100,15 @@ begin
   end if;
 end ParseStringsToHexDigits;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS LEVENSHTEIN
+--
+-- Syntax: levenshtein( s1, s2 )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsLevenshtein( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: levenshtein( s1, s2 )
-  -- Source: N/A
    str1_val  : unbounded_string;
    str1_type : identifier;
    str2_val  : unbounded_string;
@@ -1812,9 +2132,15 @@ begin
   end if;
 end ParseStringsLevenshtein;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS SOUNDEX
+--
+-- Syntax: soundex( s )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsSoundex( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: soundex( s )
-  -- Source: N/A
    str_val  : unbounded_string;
    str_type : identifier;
 begin
@@ -1833,9 +2159,15 @@ begin
   end if;
 end ParseStringsSoundex;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS WORD COUNT
+--
+-- Syntax: word_count( s )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsWordCount( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: word_count( s )
-  -- Source: N/A
    str_val  : unbounded_string;
    str_type : identifier;
 begin
@@ -1854,9 +2186,15 @@ begin
   end if;
 end ParseStringsWordCount;
 
+
+------------------------------------------------------------------------------
+--  PARSE STRINGS COMPARE
+--
+-- Syntax: i := compare( s, t [,c [,l] ] )
+-- Source: N/A
+------------------------------------------------------------------------------
+
 procedure ParseStringsCompare( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: i := compare( s, t [,c [,l] ] )
-  -- Source: N/A
   first_val  : unbounded_string;
   first_type : identifier;
   last_val   : unbounded_string;
@@ -1868,6 +2206,7 @@ procedure ParseStringsCompare( result : out unbounded_string; kind : out identif
   compare_len : natural;
 begin
   kind := integer_t;
+  compare_len := natural'last;
   if onlyAda95 then
      err( "compare cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
@@ -1881,12 +2220,19 @@ begin
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( len_val, len_type, natural_t );
-     compare_len := natural( to_numeric( len_val ) );
   else
     expect( symbol_t, ")" );
     compare_len := natural'last;
   end if;
   if isExecutingCommand then
+     -- get the length, ifthere is one
+     if len_val /= null_unbounded_string then
+        begin
+           compare_len := natural( to_numeric( len_val ) );
+        exception when others =>
+           err_exception_raised;
+        end;
+     end if;
      -- If there is a maximum length, reduce the two strings to that length
      if compare_len < natural'last then
         if length( first_val ) > compare_len then
@@ -1911,6 +2257,18 @@ begin
      end if;
   end if;
 end ParseStringsCompare;
+
+
+------------------------------------------------------------------------------
+--
+-- Housekeeping
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  STARTUP STRINGS
+------------------------------------------------------------------------------
 
 procedure StartupStrings is
 begin
@@ -2043,6 +2401,11 @@ begin
   declareNamespaceClosed( "sensitivity" );
 
 end StartupStrings;
+
+
+------------------------------------------------------------------------------
+--  SHUTDOWN STRINGS
+------------------------------------------------------------------------------
 
 procedure ShutdownStrings is
 begin
