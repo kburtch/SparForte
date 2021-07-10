@@ -56,9 +56,9 @@ CHANGES SINCE 2.4.1
 
 23. New: opengl_third, opengl_fourth examples.
 
-24. New: strings.levenshtein, strings.soundex, strings.replace_all, strings.starts, strings.ends, strings.word_count, strings.compare, strings.index_set. [negative tests, docs - strings summary]
+24. New: strings.levenshtein, strings.soundex, strings.replace_all, strings.starts, strings.ends, strings.word_count, strings.compare, strings.index_set.
 
 25. Fix: to_hexadecimal_digits no longer allowed with pragma ada_95.
 
-26. New: l8n package. [tests needed]
+26. New: l8n package. [negative tests needed]
 

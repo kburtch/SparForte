@@ -2074,12 +2074,12 @@ begin
        expr  : natural;
        digit : natural;
      begin
-       begin
-          expr  := natural'value( to_string( expr_val ) );
-       exception when constraint_error =>
-          err( "natural value is less than zero" );
-       end;
        if isExecutingCommand then
+          begin
+             expr  := natural'value( to_string( expr_val ) );
+          exception when constraint_error =>
+             err_exception_raised;
+          end;
           if expr = 0 then
              result := to_unbounded_string( "0" );
           else
@@ -2225,7 +2225,7 @@ begin
     compare_len := natural'last;
   end if;
   if isExecutingCommand then
-     -- get the length, ifthere is one
+     -- get the length, if there is one
      if len_val /= null_unbounded_string then
         begin
            compare_len := natural( to_numeric( len_val ) );

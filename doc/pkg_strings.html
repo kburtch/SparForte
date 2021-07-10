@@ -51,44 +51,35 @@ and character values. (The character positions are numbered from 1.)</p>
         <center>
         <div class="code">
 <pre>
-  i := compare( s, t [,c] )                n := count( s, p )                r := csv_field( s, c [, d [, q]] )
-  r := csv_replace( s, f, t, [, d [, q]] ) r := delete( s, l, h )            c := element( s, p )
-  b := ends_with( s, t [,c] )              r := field( s, c [, d] )          b := glob( e, s )
-  r := head( s, c [, p] )                  r := image( n )                   n := index( s, p [, d] )
-  n := index_non_blank( s [,d] )           r := insert( s, b, n )            r := is_alphanumeric( s )
-  r := is_basic( s )                       r := is_control( s )              r := is_digit( s )
-  r := is_fixed( s )                       r := is_graphic( s )              r := is_hexadecimal_digit(s)
-  r := is_letter( s )                      r := is_lower( s )                r := is_slashed_date( s )
-  r := is_special( s )                     b := is_typo_of( s1, s2 )         r := is_upper( s )
-  n := length( s )                         n := levenshtein( s1, s2 )        r := lookup( s, k [, d] )
-  b := match( e, s )                       r := mktemp( p )                  r := overwrite( s, p, n )
-  replace( s, f, t [, d] )                 r := replace_all( s, n, t [, c] ) r := replace_slice( s, l, h, b )
-  set_unbounded_string( u, s )             r := slice( s, l, h )             r := soundex( s )
-  split( s, l, r , p )                     b := starts_with( s, t [, c] )    r := tail( s, c [, p] )
-  r := to_base64( s )                      r := to_basic( s )                r := to_escaped( s )
-  s := to_hexadecimal_digits( n )          r := to_json( s )                 r := to_lower( s )
-  r := to_proper( s )                      r := to_string( s )               u := to_unbounded_string( s )
-  r := to_upper( s )                       r := trim( s [, e] )              r := unbounded_slice(s, l, h)
-  c := val( n )                            n := word_count( s )
-
-  <a href="#strings.count">n := count( s, p )</a>             <a href="#strings.csv_field">r := csv_field(s,c[,d[ q]])</a>   <a href="#strings.csv_replace">csv_replace( s, f, t, [, d [, q]] )</a>
-  <a href="#strings.delete">r := delete( s, l, h )</a>         <a href="#strings.element">c := element( s, p )</a>          <a href="#strings.field">r := field( s, c [, d] )</a>
-  <a href="#strings.glob">b := glob( e, s )</a>              <a href="#strings.head">r := head( s, c [, p] )</a>
-  <a href="#strings.image">r := image( n )</a>                <a href="#strings.index">n := index( s, p [, d] )</a>      <a href="#strings.index_non_blank">n := index_non_blank( s [,d] )</a>
-  <a href="#strings.insert">r := insert( s, b, n )</a>         <a href="#strings.is_alphanumeric">r := is_alphanumeric( s )</a>     <a href="#strings.is_basic">r := is_basic( s )</a>
-  <a href="#strings.is_control">r := is_control( s )</a>           <a href="#strings.is_digit">r := is_digit( s )</a>            <a href="#strings.is_fixed">r := is_fixed( s )</a>
-  <a href="#strings.is_graphic">r := is_graphic( s )</a>           <a href="#strings.is_hexadecimal_digit">r := is_hexadecimal_digit(s)</a>  <a href="#strings.is_letter">r := is_letter( s )</a>
-  <a href="#strings.is_lower">r := is_lower( s )</a>             <a href="#strings.is_slashed_date">r := is_slashed_date( s )</a>     <a href="#strings.is_special">r := is_special( s )</a>
-  <a href="#strings.is_typo_of">b := is_typo_of( s1, s2 )</a>      <a href="#strings.is_upper">r := is_upper( s )</a>            <a href="#strings.length">n := length( s )</a>
-  <a href="#strings.lookup">r := lookup( s, k [, d] )</a>      <a href="#strings.match">b := match( e, s )</a>            <a href="#strings.mktemp">r := mktemp( p )</a>
-  <a href="#strings.overwrite">r := overwrite( s, p, n )</a>      <a href="#strings.replace">replace( s, f, t [, d] )</a>      <a href="#strings.replace_slice">r := replace_slice( s, l, h, b )</a>
-  <a href="#strings.set_unbounded_string">set_unbounded_string( u, s )</a>   <a href="#strings.slice">r := slice( s, l, h )</a>         <a href="#strings.split">split( s, l, r , p )</a>
-  <a href="#strings.tail">r := tail( s, c [, p] )</a>        <a href="#strings.to_base64">r := to_base64( s )</a>           <a href="#strings.to_basic">r := to_basic( s )</a>
-  <a href="#strings.to_escaped">r := to_escaped( s )</a>           <a href="#strings.to_hexadecimal_digits">s := to_hexadecimal_digits(n)</a> <a href="#strings.to_json">r := to_json( s )</a>
-  <a href="#strings.to_lower">r := to_lower( s )</a>
-  <a href="#strings.to_proper">r := to_proper( s )</a>            <a href="#strings.to_string">r := to_string( s )</a>           <a href="#strings.to_upper">r := to_upper( s )</a>
-  <a href="#strings.to_unbounded_string">u := to_unbounded_string( s )</a>  <a href="#strings.trim">r := trim( s [, e] )</a>          <a href="#strings.unbounded_slice">r := unbounded_slice(s, l, h)</a>
-  <a href="#strings.val">c := val( n )</a>                  <a href="#strings.perl_match">c := perl_match( e, s )</a> 
+  <a href="#strings.compare">i := compare( s, t [, c [, l] ] )</a>          <a href="#strings.count">n := count( s, p )</a>
+  <a href="#strings.csv_field">r := csv_field( s, c [, d [, q]] )</a>         <a href="#strings.csv_replace">r := csv_replace( s, f, t, [, d [, q]] )</a>
+  <a href="#strings.delete">r := delete( s, l, h )</a>                     <a href="#strings.element">c := element( s, p )</a>
+  <a href="#strings.ends_with">b := ends_with( s, t [,c] )</a>                <a href="#strings.field">r := field( s, c [, d] )</a>
+  <a href="#strings.glob">b := glob( e, s )</a>                          <a href="#strings.head">r := head( s, c [, p] )</a>
+  <a href="#strings.image">r := image( n )</a>                            <a href="#strings.index">n := index( s, p [, d] )</a>
+  <a href="#strings.index_non_blank">n := index_non_blank( s [,d] )</a>             <a href="#strings.index_set">n := index_set( s, t [, f [, m [, d] ] ] )</a>
+  <a href="#strings.insert">r := insert( s, b, n )</a>                     <a href="#strings.is_alphanumeric">r := is_alphanumeric( s )</a>
+  <a href="#strings.is_basic">r := is_basic( s )</a>                         <a href="#strings.is_control">r := is_control( s )</a>
+  <a href="#strings.is_digit">r := is_digit( s )</a>                         <a href="#strings.is_fixed">r := is_fixed( s )</a>
+  <a href="#strings.is_graphic">r := is_graphic( s )</a>                       <a href="#strings.is_hexadecimal_digit">r := is_hexadecimal_digit(s)</a>
+  <a href="#strings.is_letter">r := is_letter( s )</a>                        <a href="#strings.is_lower">r := is_lower( s )</a>
+  <a href="#strings.is_slashed_date">r := is_slashed_date( s )</a>                  <a href="#strings.is_special">r := is_special( s )</a>
+  <a href="#strings.is_typo_of">b := is_typo_of( s1, s2 )</a>                  <a href="#strings.is_upper">r := is_upper( s )</a>
+  <a href="#strings.length">n := length( s )</a>                           <a href="#strings.levenshtein">n := levenshtein( s1, s2 )</a>
+  <a href="#strings.lookup">r := lookup( s, k [, d] )</a>                  <a href="#strings.match">b := match( e, s )</a>
+  <a href="#strings.mktemp">r := mktemp( p )</a>                           <a href="#strings.overwrite">r := overwrite( s, p, n )</a>
+  <a href="#strings.replace">replace( s, f, t [, d] )</a>                   <a href="#strings.replace_all">r := replace_all( s, n, t [, c] )</a>
+  <a href="#strings.replace_slice">r := replace_slice( s, l, h, b )</a>           <a href="#strings.set_unbounded_string">set_unbounded_string( u, s )</a>
+  <a href="#strings.slice">r := slice( s, l, h )</a>                      <a href="#strings.soundex">r := soundex( s )</a>
+  <a href="#strings.split">split( s, l, r , p )</a>                       <a href="#strings.starts_with">b := starts_with( s, t [, c] )</a>
+  <a href="#strings.tail">r := tail( s, c [, p] )</a>                    <a href="#strings.to_base64">r := to_base64( s )</a>
+  <a href="#strings.to_basic">r := to_basic( s )</a>                         <a href="#strings.to_escaped">r := to_escaped( s )</a>
+  <a href="#strings.to_hexadecimal_digits">s := to_hexadecimal_digits( n )</a>            <a href="#strings.to_json">r := to_json( s )</a>
+  <a href="#strings.to_lower">r := to_lower( s )</a>                         <a href="#strings.to_proper">r := to_proper( s )</a>
+  <a href="#strings.to_string">r := to_string( s )</a>                        <a href="#strings.to_unbounded_string">u := to_unbounded_string( s )</a>
+  <a href="#strings.to_upper">r := to_upper( s )</a>                         <a href="#strings.trim">r := trim( s [, e] )</a>
+  <a href="#strings.unbounded_slice">r := unbounded_slice(s, l, h)</a>              <a href="#strings.val">c := val( n )</a>
+  <a href="#strings.word_count">n := word_count( s )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
