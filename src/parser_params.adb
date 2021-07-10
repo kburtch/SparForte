@@ -48,14 +48,23 @@ package body parser_params is
 
 discard_result : boolean;
 
+
 ------------------------------------------------------------------------------
+--
 -- Parameter references
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  ASSIGN PARAMETER
+--
+-- assign a value to the variable or array indicated by ref
+-- assign value to an out or in out parameter
 ------------------------------------------------------------------------------
 
 pragma inline( AssignParameter );
 procedure AssignParameter( ref : in reference; value : unbounded_string ) is
-  -- assign a value to the variable or array indicated by ref
-  -- assign value to an out or in out parameter
 begin
    if ref.index = 0 then
       identifiers( ref.id ).value.all := value;
@@ -67,9 +76,15 @@ exception when storage_error =>
    err( "internal error: storage error raised in AssignParameter" );
 end AssignParameter;
 
+
+------------------------------------------------------------------------------
+--  GET PARAMETER VALUE
+--
+-- return the value of the variable or array indicated by ref
+------------------------------------------------------------------------------
+
 pragma inline( GetParameterValue );
 procedure GetParameterValue( ref : in reference; value : out unbounded_string ) is
--- return the value of the variable or array indicated by ref
 begin
    if ref.index = 0 then
       value := identifiers( ref.id ).value.all;
@@ -81,10 +96,13 @@ end GetParameterValue;
 
 
 ------------------------------------------------------------------------------
+--
 -- Renaming Declarations
+--
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  PARSE RENAMING REFERENCE
 --
 -- Parse a reference used in a "renames" clause in a declaration
@@ -173,11 +191,15 @@ begin
   end if;
 end ParseRenamingReference;
 
+
 ------------------------------------------------------------------------------
+--
 -- Unchecked Parameters
+--
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT GEN ITEM PARAMETER
 --
 -- Expect an "in" parameter.  Don't check the type.  This is used when
@@ -200,6 +222,7 @@ begin
 end ParseNextGenItemParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST GEN ITEM PARAMETER
 --
 -- Expect an "in" parameter.  Don't check the type.  This is used when
@@ -223,6 +246,7 @@ begin
 end ParseLastGenItemParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE GEN ITEM PARAMETER
 --
 -- Expect an "in" parameter.  Don't check the type.  This is used when
@@ -244,6 +268,7 @@ begin
 end ParseGenItemParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE SINGLE STRING PARAMETER
 --
 -- Expect a parameter with a single string expression.  If there is no expected
@@ -266,6 +291,14 @@ begin
 end ParseSingleStringParameter;
 
 
+------------------------------------------------------------------------------
+--
+-- In Out Parameters
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
 --  PARSE FIRST IN OUT PARAMETER
 --
 -- Expect a first parameter that is a numeric expression.  If there is no expected
@@ -289,6 +322,7 @@ begin
 end ParseFirstInOutParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT IN OUT PARAMETER
 --
 -- Expect a next parameter that is a numeric expression.  If there is no expected
@@ -312,6 +346,7 @@ begin
 end ParseNextInOutParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST IN OUT PARAMETER
 --
 -- Expect a last parameter that is an in out identifier.  If there is no expected
@@ -340,6 +375,7 @@ begin
 end ParseLastInOutParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE SINGLE IN OUT PARAMETER
 --
 -- Expect a first parameter that is an identifier.  Check for side-effects.
@@ -363,6 +399,7 @@ begin
 end ParseSingleInOutParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST IN OUT RECORD PARAMETER
 --
 -- Expect a last parameter that is an in out identifier.  It is expected to be
@@ -386,6 +423,7 @@ begin
 end ParseLastInOutRecordParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT IN OUT RECORD PARAMETER
 --
 -- Expect a next parameter that is an in out identifier.  It is expected to be
@@ -409,13 +447,16 @@ end ParseNextInOutRecordParameter;
 
 
 ------------------------------------------------------------------------------
+--
 -- Instantiated Generics Parameters
 --
 -- Currently, all generic types are built-in types.  They are treated as
 -- universal types.
+--
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  PARSE FIRST IN OUT INSTANTIATED PARAMETER
 --
 -- Expect an indentifier that derives from an instantiated generic type.
@@ -442,6 +483,7 @@ begin
 end ParseFirstInOutInstantiatedParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT IN OUT INSTANTIATED PARAMETER
 --
 -- Expect an indentifier that derives from an instantiated generic type.
@@ -465,6 +507,7 @@ begin
 end ParseNextInOutInstantiatedParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST IN OUT INSTANTIATED PARAMETER
 --
 -- Expect an indentifier that derives from an instantiated generic type.
@@ -489,6 +532,7 @@ begin
 end ParseLastInOutInstantiatedParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE SINGLE IN OUT INSTANTIATED PARAMETER
 --
 -- Expect an indentifier that derives from an instantiated generic type.
@@ -513,6 +557,14 @@ begin
 end ParseSingleInOutInstantiatedParameter;
 
 
+------------------------------------------------------------------------------
+--
+-- String Parameters
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
 --  PARSE FIRST STRING PARAMETER
 --
 -- Expect a first parameter that is string expression.  If there is no expected
@@ -534,6 +586,7 @@ begin
 end ParseFirstStringParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT STRING PARAMETER
 --
 -- Expect another parameter that is string expression.  If there is no expected
@@ -555,6 +608,7 @@ begin
 end ParseNextStringParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST STRING PARAMETER
 --
 -- Expect another parameter that is string expression.  If there is no expected
@@ -577,6 +631,14 @@ begin
 end ParseLastStringParameter;
 
 
+------------------------------------------------------------------------------
+--
+-- Enumerated Parameters
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
 --  PARSE SINGLE ENUM PARAMETER
 --
 -- Expect a single parameter that is an enum expression.
@@ -593,6 +655,7 @@ begin
 end ParseSingleEnumParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE FIRST ENUM PARAMETER
 --
 -- Expect a first parameter that is an enum expression.
@@ -608,6 +671,7 @@ begin
 end ParseFirstEnumParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT ENUM PARAMETER
 --
 -- Expect another parameter that is an enum expression.
@@ -623,6 +687,7 @@ begin
 end ParseNextEnumParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST ENUM PARAMETER
 --
 -- Expect a final parameter that is an enum expression.
@@ -640,10 +705,13 @@ end ParseLastEnumParameter;
 
 
 ------------------------------------------------------------------------------
+--
 -- Numeric Parameters
+--
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  PARSE SINGLE NUMERIC PARAMETER
 --
 -- typeTypesOK not yet implemented here
@@ -665,6 +733,7 @@ begin
 end ParseSingleNumericParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE FIRST NUMERIC PARAMETER
 --
 ------------------------------------------------------------------------------
@@ -684,6 +753,7 @@ begin
 end ParseFirstNumericParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NEXT NUMERIC PARAMETER
 --
 ------------------------------------------------------------------------------
@@ -703,6 +773,7 @@ begin
 end ParseNextNumericParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE LAST NUMERIC PARAMETER
 --
 ------------------------------------------------------------------------------
@@ -723,6 +794,7 @@ begin
 end ParseLastNumericParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE NUMERIC PARAMETER
 --
 -- Special case: don't read ( / , / )
@@ -743,10 +815,13 @@ end ParseNumericParameter;
 
 
 ------------------------------------------------------------------------------
+--
 -- Out Parameters
+--
 ------------------------------------------------------------------------------
 
 
+------------------------------------------------------------------------------
 --  PARSE OUT PARAMETER
 --
 -- Parse an "out" parameter for a procedure call.  Return a reference
@@ -881,6 +956,12 @@ begin
   end if;
 end ParseOutParameter;
 
+
+------------------------------------------------------------------------------
+--  PARSE SINGLE OUT PARAMETER
+--
+------------------------------------------------------------------------------
+
 procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier ) is
 begin
   expect( symbol_t, "(" );
@@ -888,17 +969,35 @@ begin
   expect( symbol_t, ")" );
 end ParseSingleOutParameter;
 
+
+------------------------------------------------------------------------------
+--  PARSE FIRST OUT PARAMETER
+--
+------------------------------------------------------------------------------
+
 procedure ParseFirstOutParameter( ref : out reference; defaultType : identifier ) is
 begin
   expect( symbol_t, "(" );
   ParseOutParameter( ref, defaultType );
 end ParseFirstOutParameter;
 
+
+------------------------------------------------------------------------------
+--  PARSE NEXT OUT PARAMETER
+--
+------------------------------------------------------------------------------
+
 procedure ParseNextOutParameter( ref : out reference; defaultType : identifier ) is
 begin
   expect( symbol_t, "," );
   ParseOutParameter( ref, defaultType );
 end ParseNextOutParameter;
+
+
+------------------------------------------------------------------------------
+--  PARSE LAST OUT PARAMETER
+--
+------------------------------------------------------------------------------
 
 procedure ParseLastOutParameter( ref : out reference; defaultType : identifier ) is
 begin
@@ -908,6 +1007,7 @@ begin
 end ParseLastOutParameter;
 
 
+------------------------------------------------------------------------------
 --  PARSE IN OUT PARAMETER
 --
 -- Parse an "in out" parameter for a procedure call.  Return a reference

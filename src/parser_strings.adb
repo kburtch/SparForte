@@ -2068,18 +2068,14 @@ begin
      err( "to_hexadecimal_digits cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( to_hex_digits_t );
-  ParseSingleNumericParameter( expr_val, expr_type );
+  ParseSingleNumericParameter( expr_val, expr_type, natural_t );
   if baseTypesOK( expr_type, natural_t ) then
      declare
        expr  : natural;
        digit : natural;
      begin
        if isExecutingCommand then
-          begin
-             expr  := natural'value( to_string( expr_val ) );
-          exception when constraint_error =>
-             err_exception_raised;
-          end;
+          expr  := natural'value( to_string( expr_val ) );
           if expr = 0 then
              result := to_unbounded_string( "0" );
           else
@@ -2227,11 +2223,7 @@ begin
   if isExecutingCommand then
      -- get the length, if there is one
      if len_val /= null_unbounded_string then
-        begin
-           compare_len := natural( to_numeric( len_val ) );
-        exception when others =>
-           err_exception_raised;
-        end;
+        compare_len := natural( to_numeric( len_val ) );
      end if;
      -- If there is a maximum length, reduce the two strings to that length
      if compare_len < natural'last then
