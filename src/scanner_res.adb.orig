@@ -78,6 +78,11 @@ end String_Hash;
 
 ------------------------------------------------------------------------------
 
+--function String_Hashed_Maps_Hash( key : unbounded_string ) return Ada.Containers.Hash_Type is
+--begin
+--  return Ada.Containers.Hash_Type( String_Hash( key ) );
+--end String_Hashed_Maps_Hash;
+
 ------------------------------------------------------------------------------
 --  DECLARE RESOURCE
 --
@@ -181,6 +186,8 @@ begin
        put_line( "doubly linked list cursor" );
   when dynamic_string_hash_table =>
        put_line( "dynamic hash table" );
+  when string_hashed_map =>
+       put_line( "hashed map" );
   when gl_byte_array  =>
        put_line( "OpenGL byte array" );
   when gl_short_array  =>
@@ -260,6 +267,8 @@ begin
      doubly_linked_string_lists.clear( rp.dlslList );
   elsif rp.rt = dynamic_string_hash_table then
      dynamic_string_hash_tables.reset( rp.dsht );
+  elsif rp.rt = string_hashed_map then
+     string_hashed_maps.clear( rp.shmMap );
   elsif rp.rt = gl_byte_array then
      Free( rp.gl_ba );
   elsif rp.rt = gl_short_array then

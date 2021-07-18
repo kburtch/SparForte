@@ -695,6 +695,7 @@ begin
    content( e, "gnat.cgi" );
    content( e, "gnat.crc32" );
    content( e, "hash_io" );
+   content( e, "hashed_maps" );
    content( e, "help" );
    content( e, "history" );
    content( e, "if" );
@@ -1892,6 +1893,22 @@ begin
      endHelp( e );
   elsif helpTopic = "hash_io" then
      helpHashIo;
+  elsif helpTopic = "hashed_maps" then
+     startHelp( e, "hashed_maps" );
+     summary( e, "hashed maps package" );
+     authorKen( e );
+     categoryPackage( e );
+     description( e, "A collection of common routines for working with key-value tables (such as arrays in PHP, or dictionaries in Python)." );
+     content( e, "clear( m )", "is_empty( m )", "c := capacity( m ) ");
+     content( e, "reserve_capacity( m, c )", "c := length( m )", "insert( m, k, e )" );
+     content( e, "insert( m, k, e )", "set( m, k, e )", "include( m, k, e )" );
+     content( e, "replace( m, k, e )", "exclude( m, k, e )", "remove( m, k, e )" );
+     content( e, "b := contains( m, k, e )", "e := element( m, k )", "add( m, k, e )" );
+     content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );
+     content( e, "decrement( m, k [, n] )", "e := get( m, k )", "e := extract( m, k )" );
+     content( e, "assign( t, s )",  "move( t, s )", "copy( t, s )" );
+     seeAlso( e, "doc/pkg_hashed_maps.html" );
+     endHelp( e );
   elsif helpTopic = "history" then
      startHelp( e, "history command" );
      summary( e, "history [amount|-c]" );

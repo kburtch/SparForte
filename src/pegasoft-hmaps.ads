@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Scanner resource types                                                   --
+-- Hashed Maps and Extensions                                               --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -17,39 +17,29 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with world,
-     scanner;
-use  world,
-     scanner;
+with Ada.Strings.Unbounded,
+     Ada.Containers.Hashed_Maps;
 
-package scanner_restypes is
+use  Ada.Strings.Unbounded;
 
-------------------------------------------------------------------------------
--- Resource Using Types (Temporary)
+package pegasoft.hmaps is
+
+-- Hashed Maps
 --
--- These are temporarily stored here, though they belong to other packages,
--- as they are needed in the main parser for declarations of parameterized
--- generic types.  They are put here to avoid importing the entire package
--- they belong to in the main parser.
-------------------------------------------------------------------------------
+-- A hash map is a hash in Perl or a Python dictionary
 
-btree_file_t          : identifier;
-btree_cursor_t        : identifier;
+function String_Hashed_Maps_Hash( key : unbounded_string ) return Ada.Containers
+.Hash_Type;
 
-dht_table_t           : identifier;
+package string_hashed_maps is
+  new Ada.Containers.Hashed_Maps
+    (Key_Type        => unbounded_string,
+     Element_Type    => unbounded_string,
+     Hash            => String_Hashed_Maps_Hash,
+     Equivalent_Keys => "=");
 
-doubly_list_t         : identifier;
-doubly_cursor_t       : identifier;
-
-hash_file_t          : identifier;
-hash_cursor_t        : identifier;
-
-hashed_maps_map_t    : identifier;
-hashed_maps_cursor_t  : identifier;
-
-end scanner_restypes;
-
+end pegasoft.hmaps;

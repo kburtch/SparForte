@@ -62,3 +62,5 @@ CHANGES SINCE 2.4.1
 
 26. New: l8n package. [negative tests needed]
 
+27. New: hashed_maps package.  [tests, docs needed]
+

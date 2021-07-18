@@ -84,7 +84,8 @@ with system,
     parser_templates,
     parser_tinyserve,
     parser_logs,
-    parser_l10n;
+    parser_l10n,
+    parser_hmaps;
 use ada.text_io,
     ada.command_line,
     ada.command_line.environment,
@@ -142,7 +143,8 @@ use ada.text_io,
     parser_templates,
     parser_tinyserve,
     parser_logs,
-    parser_l10n;
+    parser_l10n,
+    parser_hmaps;
 
 package body scanner is
 
@@ -2486,6 +2488,7 @@ end dumpSymbolTable;
 
 procedure shutdownScanner is
 begin
+  ShutdownHMaps;
   ShutdownL10N;
   ShutdownLogs;
   ShutdownTemplates;
@@ -3309,6 +3312,7 @@ begin
   StartupTemplates;
   StartupLogs;
   StartupL10N;
+  StartupHMaps;
 
   -- Declare all Environment Variables
   --

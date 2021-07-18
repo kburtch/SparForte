@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Scanner resource types                                                   --
+-- Hashed Maps and Extensions                                               --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -17,39 +17,39 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with world,
-     scanner;
-use  world,
-     scanner;
+--with text_io;use text_io;
 
-package scanner_restypes is
+package body pegasoft.hmaps is
+
+type hash_integer is mod 2**32;
 
 ------------------------------------------------------------------------------
--- Resource Using Types (Temporary)
 --
--- These are temporarily stored here, though they belong to other packages,
--- as they are needed in the main parser for declarations of parameterized
--- generic types.  They are put here to avoid importing the entire package
--- they belong to in the main parser.
+-- FVN hash (see parser_numerics)
 ------------------------------------------------------------------------------
 
-btree_file_t          : identifier;
-btree_cursor_t        : identifier;
+function String_Hashed_Maps_Hash( key : unbounded_string ) return Ada.Containers
+.Hash_Type is
 
-dht_table_t           : identifier;
+  hash   : hash_integer := 16#711c9dc5#; -- was 16#8
+  k      : hash_integer;
+  limit  : hash_integer;
+begin
+  limit := hash_integer( Ada.Containers.Hash_Type'last );
+  for data in 1..length(key)-3 loop
+      k := character'pos( element(key, data) ) +
+           character'pos( element(key, data+1) ) * 256 +     -- 8
+           character'pos( element(key, data+2) ) * 65536 +   -- 16
+           character'pos( element(key, data+3) ) * 16777216; -- 24
+       hash := hash xor k;
+       hash := hash * 16#01000193#;
+  end loop;
+  hash := (hash mod limit);
+  return Ada.Containers.Hash_Type( hash );
+end String_Hashed_Maps_Hash;
 
-doubly_list_t         : identifier;
-doubly_cursor_t       : identifier;
-
-hash_file_t          : identifier;
-hash_cursor_t        : identifier;
-
-hashed_maps_map_t    : identifier;
-hashed_maps_cursor_t  : identifier;
-
-end scanner_restypes;
-
+end pegasoft.hmaps;

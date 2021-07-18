@@ -26,10 +26,12 @@ with pegasoft.gen_list,
      Ada.Strings.Unbounded,
      Ada.Containers.Doubly_Linked_Lists,
      Ada.Containers.Vectors,
+     Ada.Containers.Hashed_Maps,
      Unchecked_Deallocation,
      Interfaces.C,
      Gnat.Directory_Operations,
      Gnat.Dynamic_HTables,
+     pegasoft.hmaps,
 #if POSTGRES
      APQ.PostgreSQL.Client,
 #end if;
@@ -42,11 +44,13 @@ with pegasoft.gen_list,
      spar_os.opengl,
      pegasock.tinyserve,
      world;
+
 use  world,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
      Interfaces.C,
      Gnat.Directory_Operations,
+     pegasoft.hmaps,
      spar_os.opengl,
      pegasock.tinyserve;
 
@@ -83,6 +87,7 @@ type aResourceType is (
    vector_string_list,
    vector_string_list_cursor,
    dynamic_string_hash_table,
+   string_hashed_map,
    gl_byte_array,
    gl_short_array,
    gl_int_array,
@@ -128,6 +133,19 @@ package dynamic_string_hash_tables is
       String_Hash,
       "="
 );
+
+-- Hashed Maps
+--
+-- A hash map is a hash table in Perl or a Python dictionary
+
+--function String_Hashed_Maps_Hash( key : unbounded_string ) return Ada.Containers.Hash_Type;
+
+--package string_hashed_maps is
+--  new Ada.Containers.Hashed_Maps
+--    (Key_Type        => unbounded_string,
+--     Element_Type    => unbounded_string,
+--     Hash            => String_Hashed_Maps_Hash,
+--     Equivalent_Keys => "=");
 
 -- Berkeley DB B-Tree File
 
@@ -223,6 +241,8 @@ type resHandle( rt : aResourceType ) is record
           dlslCursor : doubly_linked_string_lists.Cursor;
      when dynamic_string_hash_table =>
           dsht : dynamic_string_hash_tables.Instance;
+     when string_hashed_map =>
+          shmMap : string_hashed_maps.Map;
      when gl_byte_array =>
           gl_ba : GL_Byte_Array_Access;
      when gl_short_array =>

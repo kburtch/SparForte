@@ -14,13 +14,17 @@ Priority Issues (Fix These First)
 - pragma todo
   - these do not appear in help output when in include files
 - how can design mode be improved to assist with design diagrams?
-- hash map support
-- complete complex numbers
+- ada hash map support
+
 - redesign source code treasury index page
 - update examples with recent changes to SparForte (e.g. affirm clauses)
 - update REPL on website
 - check pascal's changes for supporting graphic environments
   - unifying the language I/O and do not rely on Ada.Text_IO.
+- fix some of the issues with opengl support
+- shell source code review
+  - fix signal handling
+  - add ctrl-c to pause / fg / bg commmands to SparForte
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.
@@ -658,6 +662,9 @@ ISSUES (AdaScript)
     - \ at end of line will cause an error on SQL statements
     - a database connection pool
     - use ligda (GNU data access) for portable data needs?
+
+  * numerics
+   - complete complex numbers - depends on complex types in expressions but expressions do not currently return aggregate values. A resource type cannot be used in expressions either because it is a limited type.
 
   * Text_IO package (AdaScript issues)
     - enumerated subtypes - put_line / ? do not print the correct enum item

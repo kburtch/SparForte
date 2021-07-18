@@ -1146,6 +1146,35 @@ begin
             end if;
          end if;
       end;
+   elsif uniType = hashed_maps_map_t then
+      -- hashed map key) must be scalar
+      declare
+         genKindId : identifier renames identifiers( id ).genKind;
+      begin
+         if class_ok( genKindId, typeClass, subClass ) then
+            if identifiers( genKindId ).list then
+               err( "key type should be a scalar type" );
+            elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+               err( "key type should be a scalar type" );
+            end if;
+         end if;
+      end;
+      -- hashed map values (for now) must be scalar
+      if identifiers( id ).genKind2 = eof_t then
+         err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " key type should have an element type for the next parameter" );
+      else
+         declare
+            genKindId : identifier renames identifiers( id ).genKind2;
+         begin
+            if class_ok( genKindId, typeClass, subClass ) then
+               if identifiers( genKindId ).list then
+                  err( "element type should be a scalar type" );
+               elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+                  err( "element type should be a scalar type" );
+               end if;
+            end if;
+         end;
+      end if;
    else
      -- TODO: implement generic types
       err( "expected a generic type" );
@@ -1200,6 +1229,8 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
         declareResource( resId, hash_cursor, getIdentifierBlock( id ) );
      elsif uniType = dht_table_t then
         declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( id ) );
+     elsif uniType = hashed_maps_map_t then
+        declareResource( resId, string_hashed_map, getIdentifierBlock( id ) );
      else
         -- TODO: implement generic types
         err( optional_yellow( to_string( identifiers( type_token ).name ) ) &

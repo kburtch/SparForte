@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with ada.text_io; use ada.text_io;
+with ada.text_io; use ada.text_io;
 
 with ada.numerics.long_elementary_functions,
     ada.numerics.float_random,
@@ -277,7 +277,7 @@ end ParseNumericsASR;
 procedure ParseNumericsSqrt( result : out unbounded_string; kind : out identifier ) is
   -- Syntax: numerics.sqrt( expr );
   -- Source: Ada.Numerics.Long_Elementary_Functions.Sqrt
-  expr_val : unbounded_string;
+  expr_val  : unbounded_string;
   expr_type : identifier;
 begin
   kind := uni_numeric_t;
@@ -1290,6 +1290,7 @@ begin
      end if;
   exception when others =>
      err_exception_raised;
+     raise;
   end;
 end ParseNumericsSetRe;
 

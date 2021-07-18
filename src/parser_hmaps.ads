@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Scanner resource types                                                   --
+-- Hashed Maps Package Parser                                               --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -17,39 +17,17 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with world,
-     scanner;
-use  world,
-     scanner;
-
-package scanner_restypes is
+package parser_hmaps is
 
 ------------------------------------------------------------------------------
--- Resource Using Types (Temporary)
---
--- These are temporarily stored here, though they belong to other packages,
--- as they are needed in the main parser for declarations of parameterized
--- generic types.  They are put here to avoid importing the entire package
--- they belong to in the main parser.
+-- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
-btree_file_t          : identifier;
-btree_cursor_t        : identifier;
+procedure StartupHMaps;
+procedure ShutdownHMaps;
 
-dht_table_t           : identifier;
-
-doubly_list_t         : identifier;
-doubly_cursor_t       : identifier;
-
-hash_file_t          : identifier;
-hash_cursor_t        : identifier;
-
-hashed_maps_map_t    : identifier;
-hashed_maps_cursor_t  : identifier;
-
-end scanner_restypes;
-
+end parser_hmaps;
