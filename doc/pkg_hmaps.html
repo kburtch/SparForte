@@ -5,7 +5,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>SparForte - Packages - Dynamic Hash Tables</title>
+	<title>SparForte - Packages - Hashed Maps</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
 	<link rel="index" href="packages.html" />
 	<link rel="prev" href="pkg_cgi.html" />
@@ -30,7 +30,7 @@
 				<td background="art/menu_border.png" align="center"><span class="menutext">|</span></td>
 				<td width="85" background="art/menu_border.png" align="center"><a class="menutext" href="cont_vision.html">Contributors</a></td>
 				<td background="art/menu_border.png" align="center">&nbsp;</td>
-				<td background="art/menu_border.png" align="right"><a href="pkg_doubly.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_enums.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
+				<td background="art/menu_border.png" align="right"><a href="pkg_hash_io.html"><img src="art/left_arrow.png" width="27" height="24" alt="[Back Page]" border="0"></a><span class="menutext">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="pkg_l10n.html"><img src="art/right_arrow.png" width="27" height="24" alt="[Next Page]" border="0"></a></td>
 				<td background="art/menu_border.png">&nbsp;</td>
 </tr></table></td></tr>
 	</table>
@@ -42,18 +42,28 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.14"></a>Dynamic Hash Tables Package</h2>
+<h2><a NAME="4.14"></a>Hashed Maps Package</h2>
 
-<p>The SparForte built-in dynamic_hash_tables package contains subprograms
-to create and manage simple hash tables.</p>
+<p>A collection of common routines for working with key-value tables (such as
+  arrays in PHP, or dictionaries in Python).</p>
+  
 
-<p><u>Introduced</u>: SparForte 1.5<br>
+<p><u>Introduced</u>: SparForte 2.4.2<br>
 
-<p><u>GCC Ada Equivalent</u>: Gnat.Dynamic_Hash_Tables<br>
+<p><u>GCC Ada Equivalent</u>: Ada.Containers.Hashed_Maps<br>
 
         <center>
         <div class="code">
 <pre>
+  add( m, k, e )           append( m, k, e )        assign( t, s )
+  c := capacity( m )       clear( m )               b := contains( m, k, e )
+  copy( t, s )             decrement( m, k [, n] )  e := element( m, k )
+  exclude( m, k, e )       e := extract( m, k )     e := get( m, k )
+  include( m, k, e )       increment( m, k [, n] )  insert( m, k, e )
+  insert( m, k, e )        is_empty( m )            c := length( m )
+  move( t, s )             prepend( m, k, e )       remove( m, k, e )
+  replace( m, k, e )       reserve_capacity( m, c ) set( m, k, e )
+
 <a href="#dynamic_hash_tables.add">add( t, k, v )</a>                  <a href="#dynamic_hash_tables.append">append( t, k, v )</a>
 <a href="#dynamic_hash_tables.decrement">decrement( t, k [,n] )</a>          <a href="#dynamic_hash_tables.get">v := get( t, k )</a>
 <a href="#dynamic_hash_tables.get_first">get_first( t, v, f )</a>            <a href="#dynamic_hash_tables.get_next">get_next( t, v, f )</a>
@@ -850,14 +860,14 @@ An exception is raised if out of memory</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dbm.html">&nbsp;dbm</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_dirops.html">&nbsp;directory_operations</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_doubly.html">&nbsp;doubly_linked...</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;<b>dynamic_hash_...</b></a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_dht.html">&nbsp;dynamic_hash_...</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_enums.html">&nbsp;enums</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_exceptions.html">&nbsp;exceptions</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_files.html">&nbsp;files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_cgi.html">&nbsp;gnat.cgi</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_gnat_crc32.html">&nbsp;gnat.crc32</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_hash_io.html">&nbsp;hash_io</a></p>
-                                <p class="rmt"><a class="rightmenutext" href="pkg_hmaps.html">&nbsp;hashed_maps</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_hmaps.html"><b>&nbsp;hashed_maps</b></a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_l10n.html">&nbsp;l10n</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_lock_files.html">&nbsp;lock_files</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_logs.html">&nbsp;logs</a></p>
