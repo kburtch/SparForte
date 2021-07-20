@@ -186,6 +186,8 @@ begin
        put_line( "doubly linked list cursor" );
   when dynamic_string_hash_table =>
        put_line( "dynamic hash table" );
+  when string_hashed_map_cursor =>
+       put_line( "hashed map cursor" );
   when string_hashed_map =>
        put_line( "hashed map" );
   when gl_byte_array  =>

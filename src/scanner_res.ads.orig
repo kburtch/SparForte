@@ -88,6 +88,7 @@ type aResourceType is (
    vector_string_list_cursor,
    dynamic_string_hash_table,
    string_hashed_map,
+   string_hashed_map_cursor,
    gl_byte_array,
    gl_short_array,
    gl_int_array,
@@ -133,19 +134,6 @@ package dynamic_string_hash_tables is
       String_Hash,
       "="
 );
-
--- Hashed Maps
---
--- A hash map is a hash table in Perl or a Python dictionary
-
---function String_Hashed_Maps_Hash( key : unbounded_string ) return Ada.Containers.Hash_Type;
-
---package string_hashed_maps is
---  new Ada.Containers.Hashed_Maps
---    (Key_Type        => unbounded_string,
---     Element_Type    => unbounded_string,
---     Hash            => String_Hashed_Maps_Hash,
---     Equivalent_Keys => "=");
 
 -- Berkeley DB B-Tree File
 
@@ -243,6 +231,8 @@ type resHandle( rt : aResourceType ) is record
           dsht : dynamic_string_hash_tables.Instance;
      when string_hashed_map =>
           shmMap : string_hashed_maps.Map;
+     when string_hashed_map_cursor =>
+          shmCursor : string_hashed_maps.Cursor;
      when gl_byte_array =>
           gl_ba : GL_Byte_Array_Access;
      when gl_short_array =>
