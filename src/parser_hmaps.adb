@@ -74,6 +74,9 @@ hashed_maps_extract_t   : identifier;
 hashed_maps_assign_t    : identifier;
 hashed_maps_move_t      : identifier;
 hashed_maps_copy_t      : identifier;
+hashed_maps_first_t     : identifier;
+hashed_maps_next_t      : identifier;
+hashed_maps_key_t       : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -869,6 +872,95 @@ begin
 end ParseHashedMapsCopy;
 
 
+------------------------------------------------------------------------------
+--  FIRST
+--
+-- Syntax: hashed_maps.first( m, c );
+-- Ada:    c := hashed_maps.first( m ); -- cannot return resource types
+------------------------------------------------------------------------------
+
+procedure ParseHashedMapsFirst is
+  mapId : identifier;
+  cursorId : identifier;
+  theMap : resPtr;
+  theCursor : resPtr;
+begin
+  expect( hashed_maps_first_t );
+  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
+  ParseLastInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+  if not error_found then
+     genTypesOk( identifiers( mapId ).genKind, identifiers( cursorId ).genKind );
+     genTypesOk( identifiers( mapId ).genKind2, identifiers( cursorId ).genKind2 );
+  end if;
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       theCursor.shmCursor := String_Hashed_Maps.First( theMap.shmMap );
+     exception when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseHashedMapsFirst;
+
+
+------------------------------------------------------------------------------
+--  NEXT
+--
+-- Syntax: hashed_maps.next( c );
+-- Ada:    c := hashed_maps.next( c ); -- cannot return resource types
+------------------------------------------------------------------------------
+
+procedure ParseHashedMapsNext is
+  cursorId : identifier;
+  theCursor : resPtr;
+begin
+  expect( hashed_maps_next_t );
+  ParseSingleInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       theCursor.shmCursor := String_Hashed_Maps.Next( theCursor.shmCursor );
+     exception when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseHashedMapsNext;
+
+
+------------------------------------------------------------------------------
+--  KEY
+--
+-- Syntax: k := hashed_maps.key( c );
+-- Ada:    k := hashed_maps.key( c );
+------------------------------------------------------------------------------
+
+procedure ParseHashedMapsKey( result : out unbounded_string; kind : out identifier ) is
+  cursorId : identifier;
+  theCursor : resPtr;
+begin
+  expect( hashed_maps_key_t );
+  ParseSingleInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+  kind := identifiers( cursorId ).genKind;
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       result := String_Hashed_Maps.Key( theCursor.shmCursor );
+     exception when constraint_error =>
+       err( "cursor position has no element" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseHashedMapsKey;
+
+
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -881,6 +973,10 @@ begin
   declareIdent( hashed_maps_map_t, "hashed_maps.map", variable_t, genericTypeClass );
   identifiers( hashed_maps_map_t ).usage := limitedUsage;
   identifiers( hashed_maps_map_t ).resource := true;
+
+  declareIdent( hashed_maps_cursor_t, "hashed_maps.cursor", variable_t, genericTypeClass );
+  identifiers( hashed_maps_cursor_t ).usage := limitedUsage;
+  identifiers( hashed_maps_cursor_t ).resource := true;
 
   declareProcedure( hashed_maps_clear_t,     "hashed_maps.clear",    ParseHashedMapsClear'access );
   declareFunction(  hashed_maps_is_empty_t,  "hashed_maps.is_empty", ParseHashedMapsIsEmpty'access );
@@ -905,6 +1001,9 @@ begin
   declareProcedure( hashed_maps_assign_t,    "hashed_maps.assign",   ParseHashedMapsAssign'access );
   declareProcedure( hashed_maps_move_t,      "hashed_maps.move",     ParseHashedMapsMove'access );
   declareProcedure( hashed_maps_copy_t,      "hashed_maps.copy",     ParseHashedMapsCopy'access );
+  declareProcedure( hashed_maps_first_t,     "hashed_maps.first",    ParseHashedMapsFirst'access );
+  declareProcedure( hashed_maps_next_t,      "hashed_maps.next",     ParseHashedMapsNext'access );
+  declareFunction(  hashed_maps_key_t,       "hashed_maps.key",      ParseHashedMapsKey'access );
 
   declareNamespaceClosed( "hashed_maps" );
 end StartupHMaps;
