@@ -1907,6 +1907,7 @@ begin
      content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );
      content( e, "decrement( m, k [, n] )", "e := get( m, k )", "e := extract( m, k )" );
      content( e, "assign( t, s )",  "move( t, s )", "copy( t, s )" );
+     content( e, "first( m, c )",  "next( m, c )", "k := key( c )" );
      seeAlso( e, "doc/pkg_hashed_maps.html" );
      endHelp( e );
   elsif helpTopic = "history" then
