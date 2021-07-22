@@ -1898,16 +1898,17 @@ begin
      summary( e, "hashed maps package" );
      authorKen( e );
      categoryPackage( e );
-     description( e, "A collection of common routines for working with key-value tables (such as arrays in PHP, or dictionaries in Python)." );
+     description( e, "A collection of common routines for working with key-value tables (such as arrays in PHP, PERL hashes or Python dictionaries)." );
      content( e, "clear( m )", "is_empty( m )", "c := capacity( m ) ");
      content( e, "reserve_capacity( m, c )", "c := length( m )", "insert( m, k, e )" );
      content( e, "insert( m, k, e )", "set( m, k, e )", "include( m, k, e )" );
      content( e, "replace( m, k, e )", "exclude( m, k, e )", "remove( m, k, e )" );
-     content( e, "b := contains( m, k, e )", "e := element( m, k )", "add( m, k, e )" );
+     content( e, "b := contains( m, k, e )", "e := element( m, k ) | ( c )", "add( m, k, e )" );
      content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );
      content( e, "decrement( m, k [, n] )", "e := get( m, k )", "e := extract( m, k )" );
      content( e, "assign( t, s )",  "move( t, s )", "copy( t, s )" );
-     content( e, "first( m, c )",  "next( m, c )", "k := key( c )" );
+     content( e, "first( m, c )",  "next( c )", "k := key( c )" );
+     content( e, "find( m, k, c )" );
      seeAlso( e, "doc/pkg_hashed_maps.html" );
      endHelp( e );
   elsif helpTopic = "history" then

@@ -457,6 +457,29 @@ end ParseNextInOutRecordParameter;
 
 
 ------------------------------------------------------------------------------
+--  PARSE IN OUT INSTANTIATED PARAMETER
+--
+-- Expect an indentifier that derives from an instantiated generic type.
+-- The generic type is a universal type.  Check for side-effects.
+------------------------------------------------------------------------------
+
+procedure ParseInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+begin
+  ParseIdentifier( param_id ); -- in out
+  discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
+  if syntax_check and then not error_found then
+     identifiers( param_id ).wasWritten := true;
+  end if;
+  if isExecutingCommand then
+     checkExpressionFactorVolatilityOnWrite( param_id );
+     checkDoubleThreadWrite( param_id );
+     --checkDoubleGlobalWrite( param_id );
+     identifiers( param_id ).writtenOn := perfStats.lineCnt;
+  end if;
+end ParseInOutInstantiatedParameter;
+
+
+------------------------------------------------------------------------------
 --  PARSE FIRST IN OUT INSTANTIATED PARAMETER
 --
 -- Expect an indentifier that derives from an instantiated generic type.

@@ -77,6 +77,7 @@ hashed_maps_copy_t      : identifier;
 hashed_maps_first_t     : identifier;
 hashed_maps_next_t      : identifier;
 hashed_maps_key_t       : identifier;
+hashed_maps_find_t      : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -439,8 +440,8 @@ end ParseHashedMapsContains;
 ------------------------------------------------------------------------------
 --  ELEMENT
 --
--- Syntax: e := hashed_maps.element( m, k );
--- Ada:    e := hashed_maps.element( m, k );
+-- Syntax: e := hashed_maps.element( m, k ) | element(c)
+-- Ada:    e := hashed_maps.element( m, k ); | element(c)
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsElement( result : out unbounded_string; kind : out identifier ) is
@@ -448,16 +449,47 @@ procedure ParseHashedMapsElement( result : out unbounded_string; kind : out iden
   theMap  : resPtr;
   keyVal : unbounded_string;
   keyType : identifier;
+  cursorId  : identifier := eof_t;
+  theCursor : resPtr;
 begin
-  kind := universal_t; -- type in case of error
   expect( hashed_maps_element_t );
-  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-  ParseLastStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
+
+  -- The first parameter may be a map or a cursor
+
+  expect( symbol_t, "(" );
+  if getBaseType( identifiers( token ).kind ) = hashed_maps_cursor_t then
+     ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+     expect( symbol_t, ")" );
+  elsif getBaseType( identifiers( token ).kind ) = hashed_maps_map_t then
+     ParseInOutInstantiatedParameter( mapId, hashed_maps_map_t );
+     ParseLastStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
+  else
+     err( "map or cursor expected" );
+  end if;
+
+  -- The function result type depends on whether or not we have a map or cursor
+  -- The result type must always be set because it's used during syntax checking.
+  -- If there was an error, the id might be invalid and genKind2 undefined.
+
+  if not error_found then
+     if cursorId /= eof_t then
+          kind := identifiers( cursorId ).genKind2;
+     else
+          kind := identifiers( mapId ).genKind2;
+     end if;
+  else
+     kind := eof_t;
+  end if;
+
   if isExecutingCommand then
      begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := String_Hashed_Maps.Element( theMap.shmMap, keyVal );
-       kind := identifiers( mapId ).genKind2;
+       if cursorId /= eof_t then
+          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          result := String_Hashed_Maps.Element( theCursor.shmCursor );
+       else
+          findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+          result := String_Hashed_Maps.Element( theMap.shmMap, keyVal );
+       end if;
      exception when constraint_error =>
        err_no_key( keyVal );
      when others =>
@@ -961,6 +993,40 @@ begin
 end ParseHashedMapsKey;
 
 
+------------------------------------------------------------------------------
+--  FIND
+--
+-- Syntax: hashed_maps.find( m, k, c );
+-- Ada:    c := hashed_maps.find( m, k );
+------------------------------------------------------------------------------
+
+procedure ParseHashedMapsFind is
+  cursorId : identifier;
+  theCursor : resPtr;
+  mapId : identifier;
+  theMap : resPtr;
+  keyVal : unbounded_string;
+  keyType : identifier;
+begin
+  expect( hashed_maps_find_t );
+  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
+  ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind ); -- TODO
+  ParseLastInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );  -- TODO: not really in out
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       theCursor.shmCursor := String_Hashed_Maps.Find( theMap.shmMap, keyVal );
+     exception when constraint_error =>
+       err( "cursor position has no element" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseHashedMapsFind;
+
 
 ------------------------------------------------------------------------------
 -- HOUSEKEEPING
@@ -1004,6 +1070,7 @@ begin
   declareProcedure( hashed_maps_first_t,     "hashed_maps.first",    ParseHashedMapsFirst'access );
   declareProcedure( hashed_maps_next_t,      "hashed_maps.next",     ParseHashedMapsNext'access );
   declareFunction(  hashed_maps_key_t,       "hashed_maps.key",      ParseHashedMapsKey'access );
+  declareProcedure( hashed_maps_find_t,      "hashed_maps.find",     ParseHashedMapsFind'access );
 
   declareNamespaceClosed( "hashed_maps" );
 end StartupHMaps;

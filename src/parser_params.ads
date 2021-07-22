@@ -137,6 +137,8 @@ procedure ParseLastInOutRecordParameter( param_id : out identifier );
 -- Instantiated Generics Parameters
 ------------------------------------------------------------------------------
 
+procedure ParseInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
+
 procedure ParseSingleInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
 
 procedure ParseFirstInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
