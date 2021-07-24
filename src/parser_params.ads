@@ -65,6 +65,9 @@ procedure ParseGenItemParameter( expr_val : out unbounded_string;
 -- String Parameters
 ------------------------------------------------------------------------------
 
+procedure ParseStringParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t  );
+
 procedure ParseSingleStringParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier := uni_string_t  );
 

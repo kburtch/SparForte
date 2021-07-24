@@ -21,11 +21,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---with text_io;use text_io;
+with text_io;use text_io;
 
 with
     Ada.Containers,
     ada.strings.unbounded,
+    gnat.source_info,
     pegasoft.strings,
     pegasoft.user_io,
     pegasoft.hmaps,
@@ -78,6 +79,7 @@ hashed_maps_first_t     : identifier;
 hashed_maps_next_t      : identifier;
 hashed_maps_key_t       : identifier;
 hashed_maps_find_t      : identifier;
+hashed_maps_replace_element_t :identifier;
 
 
 ------------------------------------------------------------------------------
@@ -193,8 +195,8 @@ end ParseHashedMapsCapacity;
 ------------------------------------------------------------------------------
 --  RESERVE CAPACITY
 --
--- Syntax: hashed_maps.reserve_capacity( m );
--- Ada:    hashed_maps.reserve_capacity( m );
+-- Syntax: hashed_maps.reserve_capacity( m, c );
+-- Ada:    hashed_maps.reserve_capacity( m, c );
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReserveCapacity is
@@ -222,8 +224,8 @@ end ParseHashedMapsReserveCapacity;
 ------------------------------------------------------------------------------
 --  INSERT
 --
--- Syntax: hashed_maps.insert( m, k, e );
--- Ada:    hashed_maps.insert( m, k, e );
+-- Syntax: hashed_maps.insert( m, k, e [, n, p, i ] ) | ( m, k, p, i )
+-- Ada:    hashed_maps.insert( m, k, e [, n, p, i ] )
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsInsert is
@@ -233,15 +235,58 @@ procedure ParseHashedMapsInsert is
   keyType : identifier;
   elemVal : unbounded_string;
   elemType : identifier;
+  cursorId  : identifier := eof_t;
+  theCursor : resPtr;
+  insertRef : reference;
+  version   : natural := 1;
+  result    : boolean;
 begin
   expect( hashed_maps_insert_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
   ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
-  ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
+  expect( symbol_t,"," );
+
+  -- There are 3 variants to an insert
+
+  if getBaseType( identifiers( token ).kind ) = hashed_maps_cursor_t then
+     ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+     ParseLastOutParameter( insertRef, boolean_t );
+     version := 2;
+  else
+    ParseStringParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
+    if token = symbol_t and identifiers( token ).value.all = ")" then
+       expect( symbol_t, ")" );
+    else
+       ParseNextInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+       ParseLastOutParameter( insertRef, boolean_t );
+       version := 3;
+    end if;
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Insert( theMap.shmMap, keyVal, elemVal );
+
+       case version is
+       -- ( m, k, e )
+       when 1 =>
+          String_Hashed_Maps.Insert( theMap.shmMap, keyVal, elemVal );
+       -- (m, k, p, b )
+       when 2 =>
+          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          String_Hashed_Maps.Insert( theMap.shmMap, keyVal, theCursor.shmCursor,
+             result );
+          AssignParameter( insertRef, to_bush_boolean( result ) );
+       -- (m, k, e, p, b )
+       when 3 =>
+          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          String_Hashed_Maps.Insert( theMap.shmMap, keyVal, elemVal,
+             theCursor.shmCursor, result );
+          AssignParameter( insertRef, to_bush_boolean( result ) );
+       when others =>
+          put_line( gnat.source_info.source_location &
+             ": internal error: unknown insert version" );
+       end case;
+
      exception when constraint_error =>
        err_key_exists( keyVal );
      when storage_error =>
@@ -288,22 +333,22 @@ end ParseHashedMapsSet;
 ------------------------------------------------------------------------------
 --  INCLUDE
 --
--- Syntax: hashed_maps.include( m, k, e );
--- Ada:    hashed_maps.include( m, k, e );
+-- Syntax: hashed_maps.include( m, k, e )
+-- Ada:    hashed_maps.include( m, k, e )
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsInclude is
-  mapId   : identifier;
-  theMap  : resPtr;
-  keyVal : unbounded_string;
-  keyType : identifier;
-  elemVal : unbounded_string;
-  elemType : identifier;
+  mapId     : identifier;
+  theMap    : resPtr;
+  keyVal    : unbounded_string;
+  keyType   : identifier;
+  elemVal   : unbounded_string;
+  elemType  : identifier;
 begin
   expect( hashed_maps_include_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
   ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
-  ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
+  ParseLastStringParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
@@ -354,8 +399,8 @@ end ParseHashedMapsReplace;
 ------------------------------------------------------------------------------
 --  EXCLUDE
 --
--- Syntax: hashed_maps.exclude( m, k, e );
--- Ada:    hashed_maps.exclude( m, k, e );
+-- Syntax: hashed_maps.exclude( m, k );
+-- Ada:    hashed_maps.exclude( m, k );
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsExclude is
@@ -383,8 +428,8 @@ end ParseHashedMapsExclude;
 ------------------------------------------------------------------------------
 --  REMOVE
 --
--- Syntax: hashed_maps.remove( m, k, v );
--- Ada:    hashed_maps.delete( m, k, v );
+-- Syntax: hashed_maps.remove( m, k );
+-- Ada:    hashed_maps.delete( m, k );
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsRemove is
@@ -414,8 +459,8 @@ end ParseHashedMapsRemove;
 ------------------------------------------------------------------------------
 --  CONTAINS
 --
--- Syntax: b := hashed_maps.contains( m );
--- Ada:    b := hashed_maps.contains( m );
+-- Syntax: b := hashed_maps.contains( m, k );
+-- Ada:    b := hashed_maps.contains( m, k );
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsContains( result : out unbounded_string; kind : out identifier ) is
@@ -1029,6 +1074,43 @@ end ParseHashedMapsFind;
 
 
 ------------------------------------------------------------------------------
+--  REPLACE ELEMENT
+--
+-- Syntax: hashed_maps.replace_element( m, k, c );
+-- Ada:    c := hashed_maps.replace_element( m, k );
+------------------------------------------------------------------------------
+
+procedure ParseHashedMapsReplaceElement is
+  cursorId : identifier;
+  theCursor : resPtr;
+  mapId : identifier;
+  theMap : resPtr;
+  newVal : unbounded_string;
+  newType : identifier;
+begin
+  expect( hashed_maps_replace_element_t );
+  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
+  ParseNextInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );  -- TODO: not really in out
+  ParseLastStringParameter( newVal, newType, identifiers( mapId ).genKind ); -- TODO
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       String_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newVal );
+     exception when constraint_error =>
+       err( "cursor position has no element" );
+     when program_error =>
+       err( "cursor position not in map" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseHashedMapsReplaceElement;
+
+
+------------------------------------------------------------------------------
 -- HOUSEKEEPING
 ------------------------------------------------------------------------------
 
@@ -1071,6 +1153,7 @@ begin
   declareProcedure( hashed_maps_next_t,      "hashed_maps.next",     ParseHashedMapsNext'access );
   declareFunction(  hashed_maps_key_t,       "hashed_maps.key",      ParseHashedMapsKey'access );
   declareProcedure( hashed_maps_find_t,      "hashed_maps.find",     ParseHashedMapsFind'access );
+  declareProcedure( hashed_maps_replace_element_t, "hashed_maps.replace_element",     ParseHashedMapsReplaceElement'access );
 
   declareNamespaceClosed( "hashed_maps" );
 end StartupHMaps;

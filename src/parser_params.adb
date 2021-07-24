@@ -269,6 +269,27 @@ end ParseGenItemParameter;
 
 
 ------------------------------------------------------------------------------
+--  PARSE STRING PARAMETER
+--
+-- Expect a parameter with a single string expression.  If there is no expected
+-- type, assume it's a universal string type.
+------------------------------------------------------------------------------
+
+procedure ParseStringParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier := uni_string_t  ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+  if syntax_check then
+     identifiers( expected_type ).wasCastTo := true;
+  end if;
+  if isExecutingCommand then
+     expr_val := castToType( expr_val, expected_type );
+  end if;
+end ParseStringParameter;
+
+
+------------------------------------------------------------------------------
 --  PARSE SINGLE STRING PARAMETER
 --
 -- Expect a parameter with a single string expression.  If there is no expected

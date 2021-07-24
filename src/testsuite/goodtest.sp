@@ -6343,6 +6343,98 @@ begin
   pragma assert( doubly_linked_lists.length( list5 ) =  0 );
 end;
 
+-- Hashed Maps
+
+declare
+  m : hashed_maps.map( string, string );
+  c : hashed_maps.cursor( string, string );
+  nm : hashed_maps.map( string, integer );
+  result : boolean;
+  e : string;
+  i : integer;
+  cap : containers.count_type;
+begin
+
+  pragma assert( hashed_maps.is_empty( m ) );
+  hashed_maps.clear( m );
+  pragma assert( hashed_maps.is_empty( m ) );
+  pragma assert( hashed_maps.length( m ) = 0 );
+
+  cap := hashed_maps.capacity( m );
+  hashed_maps.reserve_capacity( m, 20 );
+  cap := hashed_maps.capacity( m );
+  pragma assert( cap > 0 );
+
+  hashed_maps.include( m, "banana", "grey" );
+  e := hashed_maps.get( m, "banana" );
+  pragma assert( e = "grey" );
+  hashed_maps.replace( m, "banana", "yellow" );
+  hashed_maps.find( m, "banana", c );
+  pragma assert( hashed_maps.key( c ) = "banana" );
+  pragma assert( hashed_maps.element( c ) = "yellow" );
+  hashed_maps.add( m, "banana", "brown" );
+  e := hashed_maps.get( m, "banana" );
+  pragma assert( e = "yellow" );
+  hashed_maps.exclude( m, "banana" );
+
+  hashed_maps.include( m, "orange", "orange" );
+  pragma assert( hashed_maps.contains( m, "orange" ) );
+  hashed_maps.remove( m, "orange" );
+  pragma assert( not hashed_maps.contains( m, "orange" ) );
+
+  hashed_maps.set( m, "apple", "red" );
+  hashed_maps.first( m, c );
+  pragma assert( hashed_maps.key( c ) = "apple" );
+  pragma assert( hashed_maps.element( c ) = "red" );
+
+  hashed_maps.set( m, "blueberry", "blue" );
+  hashed_maps.set( m, "cherry", "pink" );
+
+  hashed_maps.insert( m, "pear", "green", c, result );
+  pragma assert( hashed_maps.key( c ) = "pear" );
+  pragma assert( hashed_maps.element( c ) = "green" );
+  pragma assert( result );
+
+  hashed_maps.insert( m, "plum", "blue" );
+  pragma assert( hashed_maps.key( c ) = "pear" );
+  pragma assert( hashed_maps.element( c ) = "green" );
+
+  hashed_maps.find( m, "blueberry", c );
+  pragma assert( hashed_maps.key( c ) = "blueberry" );
+  pragma assert( hashed_maps.element( c ) = "blue" );
+
+  hashed_maps.replace_element( m, c, "dark blue" );
+  pragma assert( hashed_maps.key( c ) = "blueberry" );
+  pragma assert( hashed_maps.element( c ) = "dark blue" );
+
+  hashed_maps.insert( m, "grape", c, result );
+  pragma assert( hashed_maps.key( c ) = "grape" );
+  pragma assert( hashed_maps.element( c ) = "" );
+  pragma assert( result );
+
+  hashed_maps.append( m, "pear", "ish" );
+  e := hashed_maps.element( m, "pear" );
+  pragma assert( e = "greenish" );
+  hashed_maps.prepend( m, "pear", "bright " );
+  e := hashed_maps.element( m, "pear" );
+  pragma assert( e = "bright greenish" );
+
+  hashed_maps.set( nm, "count", 0 );
+  hashed_maps.increment( nm, "count" );
+  i := hashed_maps.element( nm, "count" );
+  pragma assert( i = 1 );
+  hashed_maps.increment( nm, "count", 2 );
+  i := hashed_maps.element( nm, "count" );
+  pragma assert( i = 3 );
+  hashed_maps.decrement( nm, "count" );
+  i := hashed_maps.element( nm, "count" );
+  pragma assert( i = 2 );
+  hashed_maps.decrement( nm, "count", 2 );
+  i := hashed_maps.element( nm, "count" );
+  pragma assert( i = 0 );
+
+end;
+
 -- constant specifications
 
 declare
