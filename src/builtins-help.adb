@@ -1906,9 +1906,9 @@ begin
      content( e, "b := contains( m, k, e )", "e := element( m, k ) | ( c )", "add( m, k, e )" );
      content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );
      content( e, "decrement( m, k [, n] )", "e := get( m, k )", "e := extract( m, k )" );
-     content( e, "assign( t, s )",  "move( t, s )", "copy( t, s )" );
+     content( e, "assign( t, s )",  "move( t, s )", "replace_element( m, c, e )" );
      content( e, "first( m, c )",  "next( c )", "k := key( c )" );
-     content( e, "find( m, k, c )" );
+     content( e, "find( m, k, c )", "insert( m, k, c, b )", "insert( m,k, e, c, b )" );
      seeAlso( e, "doc/pkg_hashed_maps.html" );
      endHelp( e );
   elsif helpTopic = "history" then
