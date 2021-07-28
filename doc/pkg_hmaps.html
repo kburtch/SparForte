@@ -448,6 +448,49 @@ An exception is raised if the value type is not numeric</p></td>
 </tr>
 </table>
 
+<a name="hashed_maps.exclude"></a><h3>hashed_maps.exclude( m, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Remove the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Exclude</p></td>
+</tr>
+</table>
+
 <a name="hashed_maps.prepend"></a><h3>hashed_maps.prepend( m, k, e )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -558,11 +601,11 @@ An exception is raised if the value type is not a string</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.replace"></a><h3>hashed_maps.replace( t, k, v )</h3>
+<a name="hashed_maps.replace"></a><h3>hashed_maps.replace( m, k, v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Replace the value v under key k in the hash table.  If the key does not exist, do nothing.</p>
+<td><p>Replace the value v under key k in the hash map.  If the key does not exist, raise an exception.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.replace( fruit, "apples", 23 );</span></p></td>
 </tr><tr>
@@ -575,11 +618,11 @@ An exception is raised if the value type is not a string</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>t</span></td>
+<td><span>m</span></td>
 <td><span>in out</span></td>
 <td><span>hashed_maps.map</span></td>
 <td><span>required</span></td>
-<td><span>the table</span></td>
+<td><span>the map</span></td>
 </tr><tr>
 <td><span>k</span></td>
 <td><span>in</span></td>
@@ -597,16 +640,14 @@ An exception is raised if the value type is not a string</p></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory</p></td>
-</tr><tr>
-<td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed with pragma ada_95</p>
+An exception is raised if out of memory<br>
+An exception is raised if the key does not exist</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This is in accordance with memcached.</p></td>
