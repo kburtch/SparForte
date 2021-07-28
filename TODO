@@ -15,6 +15,12 @@ Priority Issues (Fix These First)
   - these do not appear in help output when in include files
 - how can design mode be improved to assist with design diagrams?
 - ada hash map support
+  - refactor items to pegasoft hierarchy
+  - negative tests
+  - documentation
+ada vectors
+  - complete
+  - tests
 
 - redesign source code treasury index page
 - update examples with recent changes to SparForte (e.g. affirm clauses)

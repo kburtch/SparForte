@@ -6347,6 +6347,7 @@ end;
 
 declare
   m : hashed_maps.map( string, string );
+  m2: hashed_maps.map( string, string );
   c : hashed_maps.cursor( string, string );
   nm : hashed_maps.map( string, integer );
   result : boolean;
@@ -6376,6 +6377,13 @@ begin
   e := hashed_maps.get( m, "banana" );
   pragma assert( e = "yellow" );
   hashed_maps.exclude( m, "banana" );
+
+  hashed_maps.add( m, "peach", "peach" );
+  hashed_maps.find( m, "peach", c );
+  pragma assert( hashed_maps.key( c ) = "peach" );
+  pragma assert( hashed_maps.element( c ) = "peach" );
+  e := hashed_maps.extract( m, "peach" );
+  pragma assert( not hashed_maps.contains( m, "peach" ) );
 
   hashed_maps.include( m, "orange", "orange" );
   pragma assert( hashed_maps.contains( m, "orange" ) );
@@ -6432,6 +6440,17 @@ begin
   hashed_maps.decrement( nm, "count", 2 );
   i := hashed_maps.element( nm, "count" );
   pragma assert( i = 0 );
+
+  hashed_maps.first( m, c );
+  hashed_maps.next( c );
+
+  hashed_maps.assign( m2, m );
+  pragma assert( not hashed_maps.is_empty( m ) );
+  pragma assert( hashed_maps.is_empty( m2 ) );
+  hashed_maps.clear( m2 );
+  hashed_maps.move( m2, m );
+  pragma assert( hashed_maps.is_empty( m ) );
+  pragma assert( not hashed_maps.is_empty( m2 ) );
 
 end;
 

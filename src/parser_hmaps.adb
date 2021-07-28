@@ -960,30 +960,31 @@ end ParseHashedMapsMove;
 --  COPY
 --
 -- Syntax: hashed_maps.copy( t, s );
--- Ada:    t := hashed_maps.copy( s );
+-- Ada:    t := hashed_maps.copy( t, s [,c] );
 ------------------------------------------------------------------------------
+-- Not sure what this does, may be a GNAT extension
 
-procedure ParseHashedMapsCopy is
-  targetMapId   : identifier;
-  sourceMapId   : identifier;
-  targetMap  : resPtr;
-  sourceMap  : resPtr;
-begin
-  expect( hashed_maps_copy_t );
-  ParseFirstInOutInstantiatedParameter( targetMapId, hashed_maps_map_t );
-  ParseLastInOutInstantiatedParameter( sourceMapId, hashed_maps_map_t );
-  if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
-       findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
-       targetMap.shmMap := String_Hashed_Maps.Copy( sourceMap.shmMap );
-     exception when storage_error =>
-       err_storage;
-     when others =>
-       err_exception_raised;
-     end;
-  end if;
-end ParseHashedMapsCopy;
+--procedure ParseHashedMapsCopy is
+--  targetMapId   : identifier;
+--  sourceMapId   : identifier;
+--  targetMap  : resPtr;
+--  sourceMap  : resPtr;
+--begin
+--  expect( hashed_maps_copy_t );
+--  ParseFirstInOutInstantiatedParameter( targetMapId, hashed_maps_map_t );
+--  ParseLastInOutInstantiatedParameter( sourceMapId, hashed_maps_map_t );
+--  if isExecutingCommand then
+--     begin
+--       findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
+--       findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
+--       targetMap.shmMap := String_Hashed_Maps.Copy( sourceMap.shmMap );
+--     exception when storage_error =>
+--       err_storage;
+--     when others =>
+--       err_exception_raised;
+--     end;
+--  end if;
+--end ParseHashedMapsCopy;
 
 
 ------------------------------------------------------------------------------
@@ -1208,7 +1209,7 @@ begin
   declareFunction(  hashed_maps_extract_t,   "hashed_maps.extract",  ParseHashedMapsExtract'access );
   declareProcedure( hashed_maps_assign_t,    "hashed_maps.assign",   ParseHashedMapsAssign'access );
   declareProcedure( hashed_maps_move_t,      "hashed_maps.move",     ParseHashedMapsMove'access );
-  declareProcedure( hashed_maps_copy_t,      "hashed_maps.copy",     ParseHashedMapsCopy'access );
+  --declareProcedure( hashed_maps_copy_t,      "hashed_maps.copy",     ParseHashedMapsCopy'access );
   declareProcedure( hashed_maps_first_t,     "hashed_maps.first",    ParseHashedMapsFirst'access );
   declareProcedure( hashed_maps_next_t,      "hashed_maps.next",     ParseHashedMapsNext'access );
   declareFunction(  hashed_maps_key_t,       "hashed_maps.key",      ParseHashedMapsKey'access );
