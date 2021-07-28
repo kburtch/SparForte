@@ -74,7 +74,7 @@ hashed_maps_decrement_t : identifier;
 hashed_maps_extract_t   : identifier;
 hashed_maps_assign_t    : identifier;
 hashed_maps_move_t      : identifier;
-hashed_maps_copy_t      : identifier;
+--hashed_maps_copy_t      : identifier;
 hashed_maps_first_t     : identifier;
 hashed_maps_next_t      : identifier;
 hashed_maps_key_t       : identifier;
