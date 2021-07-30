@@ -296,6 +296,94 @@ An exception is raised if the key does not exist</p></td>
 </tr>
 </table>
 
+<a name="hashed_maps.exclude"></a><h3>hashed_maps.exclude( m, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Remove the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Exclude</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.first"></a><h3>hashed_maps.first( m, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the first item in the hashed map.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.first( fruit, cursor );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.First</p></td>
+</tr>
+</table>
+
 <a name="hashed_maps.get"></a><h3>e := hashed_maps.get( m, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -448,13 +536,13 @@ An exception is raised if the value type is not numeric</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.exclude"></a><h3>hashed_maps.exclude( m, k )</h3>
+<a name="hashed_maps.next"></a><h3>hashed_maps.next( c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Remove the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
+<td><p>Move the cursor to the next element in the hashed map.  If there are no more items, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.next( cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -465,29 +553,25 @@ An exception is raised if the value type is not numeric</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>c</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>hashed_maps.cursor</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
+<td><span>the cursor</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Exclude</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Next</p></td>
 </tr>
 </table>
 
