@@ -6394,6 +6394,8 @@ begin
   hashed_maps.first( m, c );
   pragma assert( hashed_maps.key( c ) = "apple" );
   pragma assert( hashed_maps.element( c ) = "red" );
+  hashed_maps.remove( m, c );
+  pragma assert( not hashed_maps.contains( m, "apple" ) );
 
   hashed_maps.set( m, "blueberry", "blue" );
   hashed_maps.set( m, "cherry", "pink" );

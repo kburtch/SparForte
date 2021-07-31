@@ -208,8 +208,8 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><span>k</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
 <td><span><i>map key type</i></span></td>
+<td><span>required</span></td>
 <td><span>the key</span></td>
 </tr><tr>
 <td><span>e</span></td>
@@ -293,6 +293,60 @@ An exception is raised if the key does not exist</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.element"></a><h3>hashed_maps.element( m, k ) | ( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the value for key k or cursor c..</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit, "apple", "red" )<br>f := hashed_maps.element( fruit, "apple" ); -- return red</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the table</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span><i>map key type</i></span></td>
+<td><span>required (if no cursor)</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>hashed_maps.cursor</i></span></td>
+<td><span>required (if no map)</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>map value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the string to append</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the key does not exist</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.find">hashed_maps.find</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.hashed_Maps.Element</p></td>
 </tr>
 </table>
 
@@ -381,6 +435,9 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Hashed_Maps.First</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's First is a function.  SparForte's First is a procedure because the result type is limited.</p></td>
 </tr>
 </table>
 
@@ -572,6 +629,9 @@ An exception is raised if the value type is not numeric</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Hashed_Maps.Next</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Next function is not implemented because in SparForte the result type is limited.</p></td>
 </tr>
 </table>
 
