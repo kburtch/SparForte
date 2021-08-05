@@ -637,34 +637,34 @@ end ParseHashedMapsLength;
 -- Ada:    N/A
 ------------------------------------------------------------------------------
 
-procedure ParseHashedMapsAdd is
-  mapId   : identifier;
-  theMap  : resPtr;
-  keyVal : unbounded_string;
-  keyType : identifier;
-  elemVal : unbounded_string;
-  elemType : identifier;
-begin
-  err_ada95( "add" );
-  expect( hashed_maps_add_t );
-  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-  ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
-  ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
-  if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       if not String_Hashed_Maps.Contains( theMap.shmMap, keyVal ) then
-          String_Hashed_Maps.Include( theMap.shmMap, keyVal, elemVal );
-       end if;
-     exception when constraint_error =>
-       err_no_key( keyVal );
-     when storage_error =>
-       err_storage;
-     when others =>
-       err_exception_raised;
-     end;
-  end if;
-end ParseHashedMapsAdd;
+--procedure ParseHashedMapsAdd is
+--  mapId   : identifier;
+--  theMap  : resPtr;
+--  keyVal : unbounded_string;
+--  keyType : identifier;
+--  elemVal : unbounded_string;
+--  elemType : identifier;
+--begin
+--  err_ada95( "add" );
+--  expect( hashed_maps_add_t );
+--  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
+--  ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
+--  ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
+--  if isExecutingCommand then
+--     begin
+--       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
+--       if not String_Hashed_Maps.Contains( theMap.shmMap, keyVal ) then
+--          String_Hashed_Maps.Include( theMap.shmMap, keyVal, elemVal );
+--       end if;
+--     exception when constraint_error =>
+--       err_no_key( keyVal );
+--     when storage_error =>
+--       err_storage;
+--     when others =>
+--       err_exception_raised;
+--     end;
+--  end if;
+--end ParseHashedMapsAdd;
 
 
 ------------------------------------------------------------------------------

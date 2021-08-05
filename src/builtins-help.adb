@@ -1898,12 +1898,13 @@ begin
      summary( e, "hashed maps package" );
      authorKen( e );
      categoryPackage( e );
+     createdOn( e, "v2.4.2");
      description( e, "A collection of common routines for working with key-value tables (such as arrays in PHP, PERL hashes or Python dictionaries)." );
      content( e, "clear( m )", "is_empty( m )", "c := capacity( m ) ");
      content( e, "reserve_capacity( m, c )", "c := length( m )", "insert( m, k, e )" );
      content( e, "insert( m, k, e )", "set( m, k, e )", "include( m, k, e )" );
      content( e, "replace( m, k, e )", "exclude( m, k, e )", "remove( m, k, e | c )" );
-     content( e, "b := contains( m, k, e )", "e := element( m, k ) | ( c )", "add( m, k, e )" );
+     content( e, "b := contains( m, k, e )", "e := element( m, k ) | ( c )" );
      content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );
      content( e, "decrement( m, k [, n] )", "e := get( m, k )", "e := extract( m, k )" );
      content( e, "assign( t, s )",  "move( t, s )", "replace_element( m, c, e )" );
@@ -1995,6 +1996,7 @@ begin
      summary( e, "localization package" );
      authorKen( e );
      categoryPackage( e );
+     createdOn( e, "v2.4.2");
      description( e, "A collection of common routines for different languages and countries. " &
      " This is a binding to the GNU locale functions." );
      content( e, "s := codeset", "s := d_t_fmt", "s := d_fmt" );
