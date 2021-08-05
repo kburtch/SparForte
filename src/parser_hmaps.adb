@@ -66,7 +66,7 @@ hashed_maps_remove_t   : identifier;
 hashed_maps_contains_t : identifier;
 hashed_maps_element_t  : identifier;
 hashed_maps_get_t      : identifier;
-hashed_maps_add_t      : identifier;
+--hashed_maps_add_t      : identifier;
 hashed_maps_append_t   : identifier;
 hashed_maps_prepend_t  : identifier;
 hashed_maps_increment_t : identifier;
@@ -1201,7 +1201,7 @@ begin
   declareFunction(  hashed_maps_contains_t,  "hashed_maps.contains", ParseHashedMapsContains'access );
   declareFunction(  hashed_maps_element_t,   "hashed_maps.element",  ParseHashedMapsElement'access );
   declareFunction(  hashed_maps_get_t,       "hashed_maps.get",      ParseHashedMapsGet'access );
-  declareProcedure( hashed_maps_add_t,       "hashed_maps.add",      ParseHashedMapsAdd'access );
+  -- declareProcedure( hashed_maps_add_t,       "hashed_maps.add",      ParseHashedMapsAdd'access );
   declareProcedure( hashed_maps_append_t,    "hashed_maps.append",   ParseHashedMapsAppend'access );
   declareProcedure( hashed_maps_prepend_t,   "hashed_maps.prepend",  ParseHashedMapsPrepend'access );
   declareProcedure( hashed_maps_increment_t, "hashed_maps.increment",  ParseHashedMapsIncrement'access );

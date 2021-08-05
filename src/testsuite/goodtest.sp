@@ -6373,12 +6373,9 @@ begin
   hashed_maps.find( m, "banana", c );
   pragma assert( hashed_maps.key( c ) = "banana" );
   pragma assert( hashed_maps.element( c ) = "yellow" );
-  hashed_maps.add( m, "banana", "brown" );
-  e := hashed_maps.get( m, "banana" );
-  pragma assert( e = "yellow" );
   hashed_maps.exclude( m, "banana" );
 
-  hashed_maps.add( m, "peach", "peach" );
+  hashed_maps.include( m, "peach", "peach" );
   hashed_maps.find( m, "peach", c );
   pragma assert( hashed_maps.key( c ) = "peach" );
   pragma assert( hashed_maps.element( c ) = "peach" );
