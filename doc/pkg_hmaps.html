@@ -55,17 +55,16 @@
         <center>
         <div class="code">
 <pre>
-  add( m, k, e )               append( m, k, e )            assign( t, s )
-  c := capacity( m )           clear( m )                   b := contains( m, k, e )
-  decrement( m, k [, n] )      e := element( m, k ) | ( c ) exclude( m, k, e )
-  e := extract( m, k )         find( m, k, c )              first( m, c )
-  e := get( m, k )             b := has_element( c )        include( m, k, e )
-  increment( m, k [, n] )      insert( m, k, c, b )         insert( m, k, e )
-  insert( m, k, e )            insert( m,k, e, c, b )       is_empty( m )
-  k := key( c )                c := length( m )             move( t, s )
-  next( c )                    prepend( m, k, e )           remove( m, k, e | c )
-  replace( m, k, e )           replace_element( m, c, e )   reserve_capacity( m, c )
-  set( m, k, e )
+  append( m, k, e )            assign( t, s )               c := capacity( m ) 
+  clear( m )                   b := contains( m, k, e )     decrement( m, k [, n] )
+  e := element( m, k ) | ( c ) exclude( m, k, e )           e := extract( m, k )
+  find( m, k, c )              first( m, c )                b := has_element( c )
+  include( m, k, e )           increment( m, k [, n] )      insert( m, k, c, b )
+  insert( m, k, e )            insert( m, k, e )            insert( m,k, e, c, b )
+  is_empty( m )                k := key( c )                c := length( m )
+  move( t, s )                 next( c )                    prepend( m, k, e )
+  remove( m, k, e | c )        replace( m, k, e )           replace_element( m, c, e )
+  reserve_capacity( m, c )
 
 <a href="#dynamic_hash_tables.add">add( t, k, v )</a>                  <a href="#dynamic_hash_tables.append">append( t, k, v )</a>
 </pre>
@@ -90,33 +89,21 @@ in the table.  The ken and element types must be scalar</p>
         <div class="code">
 <pre>
 <b>=&gt;</b> type url_string is new string
-<b>=&gt;</b> urls : dynamic_hash_tables.table( url_string )
-<b>=&gt;</b> u : url_string
-<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
-=&gt; (Assuming eof is a new boolean variable)
-<b>=&gt;</b> ? eof
+<b>=&gt;</b> type website is new string
+<b>=&gt;</b> urls : hashed_maps.map( website, url_string )
+<b>=&gt;</b> hashed_maps.insert( urls, "google", "https://www.google.com" )
+<b>=&gt;</b> hashed_maps.insert( urls, "yahoo", "https://www.yahoo.com" )
+<b>=&gt;</b> hashed_maps.insert( urls, "amazon", "https://www.amazon" )
+<b>=&gt;</b> ? hashed_maps.contains( urls, "amazon" )
 true
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "google", "http://www.google.com" )
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "yahoo", "http://www.yahoo.com" )
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", "http://www.amazon.com" )
-<b>=&gt;</b> ? dynamic_hash_tables.has_element( urls, "google" )
+<b>=&gt;</b> ? hashed_maps.element( urls, "amazon" )
+https://www.amazon.com
+<b>=&gt;</b> c : hashed_maps.cursor( website, url_string )
+<b>=&gt;</b> hashed_maps.first( urls, c )
+<b>=&gt;</b> ? hashed_maps.has_element( c )
 true
-<b>=&gt;</b> ? dynamic_hash_tables.get( urls, "google" )
-http://www.google.com
-<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
-<b>=&gt;</b> ? eof
-false
-<b>=&gt;</b> ? u
-http://www.amazon.com
-<b>=&gt;</b> dynamic_hash_tables.get_next( urls, u, eof )
-<b>=&gt;</b> ? eof
-false
-<b>=&gt;</b> ? u
-http://www.google.com
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", 12345 )
-dynamic_hash_tables.set( urls, "amazon", 12345 );
-                                                ^ type <b>universal_numeric</b> is
-inherently different from an <b>url_string</b> (an universal_string)
+<b>=&gt;</b> ? hashed_maps.key( c )
+yahoo
 
 </pre>
         &nbsp;<br>
@@ -384,60 +371,6 @@ An exception is raised if out of memory</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.get"></a><h3>e := hashed_maps.get( m, k )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Get the element under key k in the hash table.  This is another name for the element function.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">put_line( hashed_maps.get( fruit, "apples" ) );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span><i>map element type</i></span></td>
-<td><span>required</span></td>
-<td><span>the value</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span><i>map key type</i></span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key does not exist</p></td>
-</tr><tr>
-<td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed with pragma ada_95</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extensions)</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>This is accordance with Gnat.Dynamic_Hash_tables and memcached.</p></td>
-</tr>
-</table>
-
 <a name="hashed_maps.has_element"></a><h3>b := hashed_maps.has_element( c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -584,7 +517,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Prepend string element e to the value under key k in the hash table.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.set( fruit_unit, "apples", "ushels" );<br>hashed_maps.prepend( fruit_unit, "apples", "b" ); -- value is bushels</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_unit, "apples", "ushels" );<br>hashed_maps.prepend( fruit_unit, "apples", "b" ); -- value is bushels</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >

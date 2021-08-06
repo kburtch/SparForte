@@ -28,6 +28,7 @@ package body pegasoft.hmaps is
 type hash_integer is mod 2**32;
 
 ------------------------------------------------------------------------------
+--  STRING HASHED MAPS HASH
 --
 -- FVN hash (see parser_numerics)
 ------------------------------------------------------------------------------
@@ -51,5 +52,74 @@ begin
   hash := (hash mod limit);
   return Ada.Containers.Hash_Type( hash );
 end String_Hashed_Maps_Hash;
+
+
+------------------------------------------------------------------------------
+--
+-- Extensions
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  APPEND
+--
+------------------------------------------------------------------------------
+
+procedure append( m : in out string_hashed_maps.map; k, e : unbounded_string ) is
+begin
+  String_Hashed_Maps.Include( m, k, String_Hashed_Maps.Element( m, k ) & e );
+end append;
+
+
+------------------------------------------------------------------------------
+--  PREPEND
+--
+------------------------------------------------------------------------------
+
+procedure prepend( m : in out string_hashed_maps.map; k, e : unbounded_string ) is
+begin
+  String_Hashed_Maps.Include( m, k, e & String_Hashed_Maps.Element( m, k ) );
+end prepend;
+
+
+------------------------------------------------------------------------------
+--  INCREMENT
+--
+------------------------------------------------------------------------------
+
+procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float ) is
+  floatVal : long_float;
+begin
+  floatVal := long_float( to_numeric( String_Hashed_Maps.Element( m, k ) ) ) + n;
+  String_Hashed_Maps.Include( m, k, to_unbounded_string( floatVal'img ) );
+end increment;
+
+
+------------------------------------------------------------------------------
+--  DECREMENT
+--
+------------------------------------------------------------------------------
+
+procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float ) is
+  floatVal : long_float;
+begin
+  floatVal := long_float( to_numeric( String_Hashed_Maps.Element( m, k ) ) ) - n;
+  String_Hashed_Maps.Include( m, k, to_unbounded_string( floatVal'img ) );
+end decrement;
+
+
+------------------------------------------------------------------------------
+--  EXTRACT
+--
+------------------------------------------------------------------------------
+
+function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string is
+  result : unbounded_string;
+begin
+  result := String_Hashed_Maps.Element( m, k );
+  String_Hashed_Maps.Delete( m, k );
+  return result;
+end extract;
 
 end pegasoft.hmaps;

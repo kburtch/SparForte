@@ -6367,7 +6367,7 @@ begin
   pragma assert( cap > 0 );
 
   hashed_maps.include( m, "banana", "grey" );
-  e := hashed_maps.get( m, "banana" );
+  e := hashed_maps.element( m, "banana" );
   pragma assert( e = "grey" );
   hashed_maps.replace( m, "banana", "yellow" );
   hashed_maps.find( m, "banana", c );
@@ -6387,15 +6387,15 @@ begin
   hashed_maps.remove( m, "orange" );
   pragma assert( not hashed_maps.contains( m, "orange" ) );
 
-  hashed_maps.set( m, "apple", "red" );
+  hashed_maps.include( m, "apple", "red" );
   hashed_maps.first( m, c );
   pragma assert( hashed_maps.key( c ) = "apple" );
   pragma assert( hashed_maps.element( c ) = "red" );
   hashed_maps.remove( m, c );
   pragma assert( not hashed_maps.contains( m, "apple" ) );
 
-  hashed_maps.set( m, "blueberry", "blue" );
-  hashed_maps.set( m, "cherry", "pink" );
+  hashed_maps.include( m, "blueberry", "blue" );
+  hashed_maps.include( m, "cherry", "pink" );
 
   hashed_maps.insert( m, "pear", "green", c, result );
   pragma assert( hashed_maps.key( c ) = "pear" );
@@ -6426,7 +6426,7 @@ begin
   e := hashed_maps.element( m, "pear" );
   pragma assert( e = "bright greenish" );
 
-  hashed_maps.set( nm, "count", 0 );
+  hashed_maps.include( nm, "count", 0 );
   hashed_maps.increment( nm, "count" );
   i := hashed_maps.element( nm, "count" );
   pragma assert( i = 1 );

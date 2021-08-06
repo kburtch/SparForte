@@ -58,15 +58,12 @@ hashed_maps_capacity_t : identifier;
 hashed_maps_reserve_capacity_t : identifier;
 hashed_maps_length_t   : identifier;
 hashed_maps_insert_t   : identifier;
-hashed_maps_set_t      : identifier;
 hashed_maps_include_t  : identifier;
 hashed_maps_replace_t  : identifier;
 hashed_maps_exclude_t  : identifier;
 hashed_maps_remove_t   : identifier;
 hashed_maps_contains_t : identifier;
 hashed_maps_element_t  : identifier;
-hashed_maps_get_t      : identifier;
---hashed_maps_add_t      : identifier;
 hashed_maps_append_t   : identifier;
 hashed_maps_prepend_t  : identifier;
 hashed_maps_increment_t : identifier;
@@ -74,7 +71,6 @@ hashed_maps_decrement_t : identifier;
 hashed_maps_extract_t   : identifier;
 hashed_maps_assign_t    : identifier;
 hashed_maps_move_t      : identifier;
---hashed_maps_copy_t      : identifier;
 hashed_maps_first_t     : identifier;
 hashed_maps_next_t      : identifier;
 hashed_maps_key_t       : identifier;
@@ -313,39 +309,6 @@ end ParseHashedMapsInsert;
 
 
 ------------------------------------------------------------------------------
---  SET
---
--- Syntax: hashed_maps.set( m, k, e );
--- Ada:    hashed_maps.include( m, k, e );
-------------------------------------------------------------------------------
-
-procedure ParseHashedMapsSet is
-  mapId   : identifier;
-  theMap  : resPtr;
-  keyVal : unbounded_string;
-  keyType : identifier;
-  elemVal : unbounded_string;
-  elemType : identifier;
-begin
-  err_ada95( "set" );
-  expect( hashed_maps_set_t );
-  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-  ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
-  ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
-  if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       String_Hashed_Maps.Include( theMap.shmMap, keyVal, elemVal );
-     exception when storage_error =>
-       err_storage;
-     when others =>
-       err_exception_raised;
-     end;
-  end if;
-end ParseHashedMapsSet;
-
-
-------------------------------------------------------------------------------
 --  INCLUDE
 --
 -- Syntax: hashed_maps.include( m, k, e )
@@ -574,40 +537,6 @@ end ParseHashedMapsElement;
 
 
 ------------------------------------------------------------------------------
---  GET
---
--- Syntax: e := hashed_maps.get( m, k );
--- Ada:    e := hashed_maps.element( m, k );
-------------------------------------------------------------------------------
--- TODO: consolidate code
-
-procedure ParseHashedMapsGet( result : out unbounded_string; kind : out identifier ) is
-  mapId   : identifier;
-  theMap  : resPtr;
-  keyVal : unbounded_string;
-  keyType : identifier;
-begin
-  -- TODO: probably not universal
-  kind := universal_t; -- type in case of error
-  err_ada95( "get" );
-  expect( hashed_maps_get_t );
-  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-  ParseLastStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
-  if isExecutingCommand then
-     begin
-       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := String_Hashed_Maps.Element( theMap.shmMap, keyVal );
-       kind := identifiers( mapId ).genKind2;
-     exception when constraint_error =>
-       err_no_key( keyVal );
-     when others =>
-       err_exception_raised;
-     end;
-  end if;
-end ParseHashedMapsGet;
-
-
-------------------------------------------------------------------------------
 --  LENGTH
 --
 -- Syntax: n := hashed_maps.length( m );
@@ -628,43 +557,6 @@ begin
      end;
   end if;
 end ParseHashedMapsLength;
-
-
-------------------------------------------------------------------------------
---  ADD
---
--- Syntax: hashed_maps.add( m, k, e );
--- Ada:    N/A
-------------------------------------------------------------------------------
-
---procedure ParseHashedMapsAdd is
---  mapId   : identifier;
---  theMap  : resPtr;
---  keyVal : unbounded_string;
---  keyType : identifier;
---  elemVal : unbounded_string;
---  elemType : identifier;
---begin
---  err_ada95( "add" );
---  expect( hashed_maps_add_t );
---  ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
---  ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
---  ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
---  if isExecutingCommand then
---     begin
---       findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
---       if not String_Hashed_Maps.Contains( theMap.shmMap, keyVal ) then
---          String_Hashed_Maps.Include( theMap.shmMap, keyVal, elemVal );
---       end if;
---     exception when constraint_error =>
---       err_no_key( keyVal );
---     when storage_error =>
---       err_storage;
---     when others =>
---       err_exception_raised;
---     end;
---  end if;
---end ParseHashedMapsAdd;
 
 
 ------------------------------------------------------------------------------
@@ -693,8 +585,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       elemVal := String_Hashed_Maps.Element( theMap.shmMap, keyVal ) & elemVal;
-       String_Hashed_Maps.Include( theMap.shmMap, keyVal, elemVal );
+       Append( theMap.shmMap, keyVal, elemVal );
      exception when constraint_error =>
        err_no_key( keyVal );
      when storage_error =>
@@ -732,8 +623,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       elemVal := elemVal & String_Hashed_Maps.Element( theMap.shmMap, keyVal );
-       String_Hashed_Maps.Include( theMap.shmMap, keyVal, elemVal );
+       Prepend( theMap.shmMap, keyVal, elemVal );
      exception when constraint_error =>
        err_no_key( keyVal );
      when storage_error =>
@@ -789,10 +679,7 @@ begin
      end;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       floatVal := long_float( to_numeric(
-          String_Hashed_Maps.Element( theMap.shmMap, keyVal ) ) ) + floatVal;
-       String_Hashed_Maps.Include( theMap.shmMap, keyVal,
-          to_unbounded_string( floatVal'img ) );
+       increment( theMap.shmMap, keyVal, floatVal );
      exception when constraint_error =>
        err_no_key( keyVal );
      when storage_error =>
@@ -848,10 +735,7 @@ begin
      end;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       floatVal := long_float( to_numeric(
-          String_Hashed_Maps.Element( theMap.shmMap, keyVal ) ) ) - floatVal;
-       String_Hashed_Maps.Include( theMap.shmMap, keyVal,
-          to_unbounded_string( floatVal'img ) );
+       decrement( theMap.shmMap, keyVal, floatVal );
      exception when constraint_error =>
        err_no_key( keyVal );
      when storage_error =>
@@ -884,9 +768,8 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := String_Hashed_Maps.Element( theMap.shmMap, keyVal );
        kind := identifiers( mapId ).genKind2;
-       String_Hashed_Maps.Delete( theMap.shmMap, keyVal );
+       result := extract( theMap.shmMap, keyVal );
      exception when constraint_error =>
        err_no_key( keyVal );
      when others =>
@@ -954,37 +837,6 @@ begin
      end;
   end if;
 end ParseHashedMapsMove;
-
-
-------------------------------------------------------------------------------
---  COPY
---
--- Syntax: hashed_maps.copy( t, s );
--- Ada:    t := hashed_maps.copy( t, s [,c] );
-------------------------------------------------------------------------------
--- Not sure what this does, may be a GNAT extension
-
---procedure ParseHashedMapsCopy is
---  targetMapId   : identifier;
---  sourceMapId   : identifier;
---  targetMap  : resPtr;
---  sourceMap  : resPtr;
---begin
---  expect( hashed_maps_copy_t );
---  ParseFirstInOutInstantiatedParameter( targetMapId, hashed_maps_map_t );
---  ParseLastInOutInstantiatedParameter( sourceMapId, hashed_maps_map_t );
---  if isExecutingCommand then
---     begin
---       findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );
---       findResource( to_resource_id( identifiers( sourceMapId ).value.all ), sourceMap );
---       targetMap.shmMap := String_Hashed_Maps.Copy( sourceMap.shmMap );
---     exception when storage_error =>
---       err_storage;
---     when others =>
---       err_exception_raised;
---     end;
---  end if;
---end ParseHashedMapsCopy;
 
 
 ------------------------------------------------------------------------------
@@ -1161,7 +1013,7 @@ procedure ParseHashedMapsHasElement( result : out unbounded_string; kind : out i
 begin
   kind := boolean_t;
   expect( hashed_maps_has_element_t );
-  ParseSingleInOutInstantiatedParameter( cursorId, hashed_maps_map_t );
+  ParseSingleInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
@@ -1193,15 +1045,12 @@ begin
   declareProcedure( hashed_maps_reserve_capacity_t, "hashed_maps.reserve_capacity",    ParseHashedMapsReserveCapacity'access );
   declareFunction(  hashed_maps_length_t,    "hashed_maps.length",   ParseHashedMapsLength'access );
   declareProcedure( hashed_maps_insert_t,    "hashed_maps.insert",   ParseHashedMapsInsert'access );
-  declareProcedure( hashed_maps_set_t,       "hashed_maps.set",      ParseHashedMapsSet'access );
   declareProcedure( hashed_maps_include_t,   "hashed_maps.include",  ParseHashedMapsInclude'access );
   declareProcedure( hashed_maps_replace_t,   "hashed_maps.replace",  ParseHashedMapsReplace'access );
   declareProcedure( hashed_maps_exclude_t,   "hashed_maps.exclude",  ParseHashedMapsExclude'access );
   declareProcedure( hashed_maps_remove_t,    "hashed_maps.remove",   ParseHashedMapsRemove'access );
   declareFunction(  hashed_maps_contains_t,  "hashed_maps.contains", ParseHashedMapsContains'access );
   declareFunction(  hashed_maps_element_t,   "hashed_maps.element",  ParseHashedMapsElement'access );
-  declareFunction(  hashed_maps_get_t,       "hashed_maps.get",      ParseHashedMapsGet'access );
-  -- declareProcedure( hashed_maps_add_t,       "hashed_maps.add",      ParseHashedMapsAdd'access );
   declareProcedure( hashed_maps_append_t,    "hashed_maps.append",   ParseHashedMapsAppend'access );
   declareProcedure( hashed_maps_prepend_t,   "hashed_maps.prepend",  ParseHashedMapsPrepend'access );
   declareProcedure( hashed_maps_increment_t, "hashed_maps.increment",  ParseHashedMapsIncrement'access );
@@ -1209,7 +1058,6 @@ begin
   declareFunction(  hashed_maps_extract_t,   "hashed_maps.extract",  ParseHashedMapsExtract'access );
   declareProcedure( hashed_maps_assign_t,    "hashed_maps.assign",   ParseHashedMapsAssign'access );
   declareProcedure( hashed_maps_move_t,      "hashed_maps.move",     ParseHashedMapsMove'access );
-  --declareProcedure( hashed_maps_copy_t,      "hashed_maps.copy",     ParseHashedMapsCopy'access );
   declareProcedure( hashed_maps_first_t,     "hashed_maps.first",    ParseHashedMapsFirst'access );
   declareProcedure( hashed_maps_next_t,      "hashed_maps.next",     ParseHashedMapsNext'access );
   declareFunction(  hashed_maps_key_t,       "hashed_maps.key",      ParseHashedMapsKey'access );
