@@ -795,6 +795,10 @@ begin
   expect( hashed_maps_assign_t );
   ParseFirstInOutInstantiatedParameter( targetMapId, hashed_maps_map_t );
   ParseLastInOutInstantiatedParameter( sourceMapId, hashed_maps_map_t );
+  if not error_found then
+     genTypesOk( identifiers( targetMapId ).genKind, identifiers( sourceMapId ).genKind );
+     genTypesOk( identifiers( targetMapId ).genKind2, identifiers( sourceMapId ).genKind2 );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( targetMapId ).value.all ), targetMap );

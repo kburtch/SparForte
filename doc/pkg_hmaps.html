@@ -55,18 +55,16 @@
         <center>
         <div class="code">
 <pre>
-  append( m, k, e )            assign( t, s )               c := capacity( m ) 
-  clear( m )                   b := contains( m, k, e )     decrement( m, k [, n] )
-  e := element( m, k ) | ( c ) exclude( m, k, e )           e := extract( m, k )
-  find( m, k, c )              first( m, c )                b := has_element( c )
-  include( m, k, e )           increment( m, k [, n] )      insert( m, k, c, b )
-  insert( m, k, e )            insert( m, k, e )            insert( m,k, e, c, b )
-  is_empty( m )                k := key( c )                c := length( m )
-  move( t, s )                 next( c )                    prepend( m, k, e )
-  remove( m, k, e | c )        replace( m, k, e )           replace_element( m, c, e )
-  reserve_capacity( m, c )
-
-<a href="#dynamic_hash_tables.add">add( t, k, v )</a>                  <a href="#dynamic_hash_tables.append">append( t, k, v )</a>
+  <a href="#hashed_maps.append">append( m, k, e )</a>            <a href="#hashed_maps.assign">assign( t, s )</a>               <a href="#hashed_maps.capacity">c := capacity( m ) </a>
+  <a href="#hashed_maps.clear">clear( m )</a>                   <a href="#hashed_maps.contains">b := contains( m, k )</a>        <a href="#hashed_maps.decrement">decrement( m, k [, n] )</a>
+  <a href="#hashed_maps.element">e := element( m, k ) | ( c )</a> <a href="#hashed_maps.exclude">exclude( m, k, e )</a>           <a href="#hashed_maps.extract">e := extract( m, k )</a>
+  <a href="#hashed_maps.find">find( m, k, c )</a>              <a href="#hashed_maps.first">first( m, c )</a>                <a href="#hashed_maps.has_element">b := has_element( c )</a>
+  <a href="#hashed_maps.include">include( m, k, e )</a>           <a href="#hashed_maps.increment">increment( m, k [, n] )</a>      <a href="#hashed_maps.insert">insert( m, k, c, b )</a>
+  <a href="#hashed_maps.insert">insert( m, k, e )</a>            <a href="#hashed_maps.insert">insert( m, k, e, c, b )</a>
+  <a href="#hashed_maps.is_empty">is_empty( m )</a>                <a href="#hashed_maps.key">k := key( c )</a>                <a href="#hashed_maps.length">c := length( m )</a>
+  <a href="#hashed_maps.move">move( t, s )</a>                 <a href="#hashed_maps.next">next( c )</a>                    <a href="#hashed_maps.prepend">prepend( m, k, e )</a>
+  <a href="#hashed_maps.remove">remove( m, k, e | c )</a>        <a href="#hashed_maps.replace">replace( m, k, e )</a>           <a href="#hashed_maps.replace_element">replace_element( m, c, e )</a>
+  <a href="#hashed_maps.reserve_capacity">reserve_capacity( m, c )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -75,7 +73,7 @@
         </div>
         </center>
 
-<p>A hash table is a lookup table containing key-element (that is, key-value) pairs.  Keys are unique
+<p>A hash map is a lookup table containing key-element (that is, key-value) pairs.  Keys are unique
 in the table.  The ken and element types must be scalar</p>
 
 <p>This package includes a new generic type:</p>
@@ -94,6 +92,7 @@ in the table.  The ken and element types must be scalar</p>
 <b>=&gt;</b> hashed_maps.insert( urls, "google", "https://www.google.com" )
 <b>=&gt;</b> hashed_maps.insert( urls, "yahoo", "https://www.yahoo.com" )
 <b>=&gt;</b> hashed_maps.insert( urls, "amazon", "https://www.amazon" )
+<b>=&gt;</b> hashed_maps.append( urls, "amazon", ".com" )
 <b>=&gt;</b> ? hashed_maps.contains( urls, "amazon" )
 true
 <b>=&gt;</b> ? hashed_maps.element( urls, "amazon" )
@@ -117,9 +116,9 @@ yahoo
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Append string element e to the value under key k in the hash table.  If the key does not exist, do nothing.</p>
+<td><p>Append string element e to the value under key k in the hash map.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.append( fruit_unit, "apple", "s" ); -- changed to "apples"</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_unit, "apple", bushel" );<br>hashed_maps.append( fruit_unit, "apple", "s" ); -- changed to "bushels"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -134,7 +133,7 @@ yahoo
 <td><span>in out</span></td>
 <td><span>hashed_maps.map</span></td>
 <td><span>required</span></td>
-<td><span>the table</span></td>
+<td><span>the map</span></td>
 </tr><tr>
 <td><span>k</span></td>
 <td><span>in</span></td>
@@ -144,7 +143,7 @@ yahoo
 </tr><tr>
 <td><span>e</span></td>
 <td><span>in</span></td>
-<td><span><i>map value type</i></span></td>
+<td><span><i>map element type</i></span></td>
 <td><span>required</span></td>
 <td><span>the string to append</span></td>
 </tr>
@@ -152,6 +151,7 @@ yahoo
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if the key is the wrong type<br>
+An exception is raised if the key does not exist<br>
 An exception is raised if out of memory<br>
 An exception is raised if the element type is not a string</p></td>
 </tr><tr>
@@ -169,11 +169,162 @@ An exception is raised if the element type is not a string</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.decrement"></a><h3>mashed_maps.decrement( t, k [,n] )</h3>
+<a name="hashed_maps.assign"></a><h3>hashed_maps.assign t, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Reduce the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
+<td><p>Assign source map s to target map t, overwriting the contents of t.  s is unchanged.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.assign( old_fruit, updated_fruit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>t</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map to be assigned to</span></td>
+</tr><tr>
+<td><span>s</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map to copy from</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the key or element has the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Assign</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.capacity"></a><h3>c := hashed_maps.capacity( m )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the spare item capacity of map m.  This is the number of items that can be inserted before the map memory grows.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">c := hashed_maps.capacity( fruit_unit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>return value</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of items</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.clear"></a><h3>hashed_maps.clear( m )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete the contents of the hash map.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.clear( fruit_unit );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map to erase</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Clear</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.contains"></a><h3>b := hashed_maps.contains( m, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if key k is in the map m.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.contains( fruit_unit, "apple" ) then...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the key exists</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.decrement"></a><h3>hashed_maps.decrement( m, k [,n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reduce the numeric value under key k in the hash map m by one (or n).  If the key does not exist, raise an exception.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.decrement( fruit, "apples" );</span></p></td>
 </tr><tr>
@@ -200,14 +351,14 @@ An exception is raised if the element type is not a string</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span><i>map element type</i></span></td>
+<td><span>natural</span></td>
 <td><span>1</span></td>
 <td><span>the amount to decrement</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
+<td><p>An exception is raised if the amount is the wrong type<br>
 An exception is raised if out of memory<br>
 An exception is raised if the element type is not numeric<br>
 An exception is raised if the key does not exist</p></td>
@@ -230,9 +381,9 @@ An exception is raised if the key does not exist</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the value for key k or cursor c..</p>
+<td><p>Return the value for key k in map m, or the value at cursor c.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit, "apple", "red" )<br>f := hashed_maps.element( fruit, "apple" ); -- return red</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_color, "apple", "red" )<br>f := hashed_maps.element( fruit_color, "apple" ); -- return red</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -284,7 +435,7 @@ An exception is raised if the key does not exist</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Remove the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
+<td><p>Delete the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
 </tr><tr>
@@ -320,6 +471,108 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Hashed_Maps.Exclude</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.extract"></a><h3>e := hashed_maps.extract( m, k )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Like remove, delete the value v under key k in the hash map but return it.  If the key does not exist, raise an exception.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span><i>map element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the key does not exist<br>
+An exception is raised if the key is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: N/A (AdaScript extension)</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.find"></a><h3>e := hashed_maps.find( m, k, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the position inthe map for key k.  If the key does not exist, the cursor will have no element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.find( fruit_unit, "apple", cursor );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span><i>map key type</i></span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the key is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Find is a function.  SparForte's Find is a procedure because the result type is limited.</p></td>
 </tr>
 </table>
 

@@ -6445,7 +6445,7 @@ begin
 
   hashed_maps.assign( m2, m );
   pragma assert( not hashed_maps.is_empty( m ) );
-  pragma assert( hashed_maps.is_empty( m2 ) );
+  pragma assert( not hashed_maps.is_empty( m2 ) );
   hashed_maps.clear( m2 );
   hashed_maps.move( m2, m );
   pragma assert( hashed_maps.is_empty( m ) );

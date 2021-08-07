@@ -15,9 +15,7 @@ Priority Issues (Fix These First)
   - these do not appear in help output when in include files
 - how can design mode be improved to assist with design diagrams?
 - ada hash map support
-  - refactor items to pegasoft hierarchy
-  - negative tests
-  - documentation
+  - creating cursors as out parameter on hashed_maps.find
 ada vectors
   - complete
   - tests
