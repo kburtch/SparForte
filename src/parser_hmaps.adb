@@ -958,7 +958,7 @@ begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        theCursor.shmCursor := String_Hashed_Maps.Find( theMap.shmMap, keyVal );
-     exception storage_error =>
+     exception when storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
