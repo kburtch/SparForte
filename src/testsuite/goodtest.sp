@@ -6415,6 +6415,7 @@ begin
   pragma assert( hashed_maps.element( c ) = "dark blue" );
 
   hashed_maps.insert( m, "grape", c, result );
+  pragma assert( hashed_maps.has_element( c ) );
   pragma assert( hashed_maps.key( c ) = "grape" );
   pragma assert( hashed_maps.element( c ) = "" );
   pragma assert( result );

@@ -224,7 +224,9 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        String_Hashed_Maps.Reserve_Capacity( theMap.shmMap, cap );
-     exception when others =>
+     exception when storage_error =>
+       err_storage;
+     when others =>
        err_exception_raised;
      end;
   end if;
@@ -616,7 +618,7 @@ begin
   expect( hashed_maps_prepend_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
-     err( "append requires a string element type" );
+     err( "prepend requires a string element type" );
   end if;
   ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
   ParseLastNumericParameter( elemVal, elemType, identifiers( mapId ).genKind2 );
@@ -656,7 +658,7 @@ begin
   expect( hashed_maps_increment_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
-     err( "append requires a numeric element type" );
+     err( "increment requires a numeric element type" );
   end if;
   ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -712,7 +714,7 @@ begin
   expect( hashed_maps_decrement_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
-     err( "append requires a numeric element type" );
+     err( "decrement requires a numeric element type" );
   end if;
   ParseNextStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -956,9 +958,7 @@ begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        theCursor.shmCursor := String_Hashed_Maps.Find( theMap.shmMap, keyVal );
-     exception when constraint_error =>
-       err( "cursor position has no element" );
-     when storage_error =>
+     exception storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
@@ -970,8 +970,8 @@ end ParseHashedMapsFind;
 ------------------------------------------------------------------------------
 --  REPLACE ELEMENT
 --
--- Syntax: hashed_maps.replace_element( m, k, c );
--- Ada:    c := hashed_maps.replace_element( m, k );
+-- Syntax: hashed_maps.replace_element( m, c, e );
+-- Ada:    hashed_maps.replace_element( m, c, e );
 ------------------------------------------------------------------------------
 
 procedure ParseHashedMapsReplaceElement is
