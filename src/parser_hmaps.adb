@@ -61,7 +61,7 @@ hashed_maps_insert_t   : identifier;
 hashed_maps_include_t  : identifier;
 hashed_maps_replace_t  : identifier;
 hashed_maps_exclude_t  : identifier;
-hashed_maps_remove_t   : identifier;
+hashed_maps_delete_t   : identifier;
 hashed_maps_contains_t : identifier;
 hashed_maps_element_t  : identifier;
 hashed_maps_append_t   : identifier;
@@ -406,13 +406,13 @@ end ParseHashedMapsExclude;
 
 
 ------------------------------------------------------------------------------
---  REMOVE
+--  DELETE
 --
--- Syntax: hashed_maps.remove( m, k | c );
+-- Syntax: hashed_maps.delete( m, k | c );
 -- Ada:    hashed_maps.delete( m, k | c );
 ------------------------------------------------------------------------------
 
-procedure ParseHashedMapsRemove is
+procedure ParseHashedMapsDelete is
   mapId   : identifier;
   theMap  : resPtr;
   keyVal : unbounded_string;
@@ -420,7 +420,7 @@ procedure ParseHashedMapsRemove is
   cursorId : identifier := eof_t;
   theCursor : resPtr;
 begin
-  expect( hashed_maps_remove_t );
+  expect( hashed_maps_delete_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
   expect( symbol_t, "," );
   if getBaseType( identifiers( token ).kind ) = hashed_maps_cursor_t then
@@ -447,7 +447,7 @@ begin
        err_exception_raised;
      end;
   end if;
-end ParseHashedMapsRemove;
+end ParseHashedMapsDelete;
 
 
 ------------------------------------------------------------------------------
@@ -1052,7 +1052,7 @@ begin
   declareProcedure( hashed_maps_include_t,   "hashed_maps.include",  ParseHashedMapsInclude'access );
   declareProcedure( hashed_maps_replace_t,   "hashed_maps.replace",  ParseHashedMapsReplace'access );
   declareProcedure( hashed_maps_exclude_t,   "hashed_maps.exclude",  ParseHashedMapsExclude'access );
-  declareProcedure( hashed_maps_remove_t,    "hashed_maps.remove",   ParseHashedMapsRemove'access );
+  declareProcedure( hashed_maps_delete_t,    "hashed_maps.delete",   ParseHashedMapsDelete'access );
   declareFunction(  hashed_maps_contains_t,  "hashed_maps.contains", ParseHashedMapsContains'access );
   declareFunction(  hashed_maps_element_t,   "hashed_maps.element",  ParseHashedMapsElement'access );
   declareProcedure( hashed_maps_append_t,    "hashed_maps.append",   ParseHashedMapsAppend'access );

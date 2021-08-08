@@ -6384,14 +6384,14 @@ begin
 
   hashed_maps.include( m, "orange", "orange" );
   pragma assert( hashed_maps.contains( m, "orange" ) );
-  hashed_maps.remove( m, "orange" );
+  hashed_maps.delete( m, "orange" );
   pragma assert( not hashed_maps.contains( m, "orange" ) );
 
   hashed_maps.include( m, "apple", "red" );
   hashed_maps.first( m, c );
   pragma assert( hashed_maps.key( c ) = "apple" );
   pragma assert( hashed_maps.element( c ) = "red" );
-  hashed_maps.remove( m, c );
+  hashed_maps.delete( m, c );
   pragma assert( not hashed_maps.contains( m, "apple" ) );
 
   hashed_maps.include( m, "blueberry", "blue" );

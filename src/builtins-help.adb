@@ -1903,7 +1903,7 @@ begin
      content( e, "clear( m )", "is_empty( m )", "c := capacity( m ) ");
      content( e, "reserve_capacity( m, c )", "c := length( m )", "insert( m, k, e )" );
      content( e, "include( m, k, e )" );
-     content( e, "replace( m, k, e )", "exclude( m, k, e )", "remove( m, k, e | c )" );
+     content( e, "replace( m, k, e )", "exclude( m, k, e )", "delete( m, k, e | c )" );
      content( e, "b := contains( m, k )", "e := element( m, k ) | ( c )" );
      content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );
      content( e, "decrement( m, k [, n] )", "e := extract( m, k )" );

@@ -63,7 +63,7 @@
   <a href="#hashed_maps.insert">insert( m, k, e )</a>            <a href="#hashed_maps.insert">insert( m, k, e, c, b )</a>
   <a href="#hashed_maps.is_empty">is_empty( m )</a>                <a href="#hashed_maps.key">k := key( c )</a>                <a href="#hashed_maps.length">c := length( m )</a>
   <a href="#hashed_maps.move">move( t, s )</a>                 <a href="#hashed_maps.next">next( c )</a>                    <a href="#hashed_maps.prepend">prepend( m, k, e )</a>
-  <a href="#hashed_maps.remove">remove( m, k, e | c )</a>        <a href="#hashed_maps.replace">replace( m, k, e )</a>           <a href="#hashed_maps.replace_element">replace_element( m, c, e )</a>
+  <a href="#hashed_maps.delete">delete( m, k, e | c )</a>        <a href="#hashed_maps.replace">replace( m, k, e )</a>           <a href="#hashed_maps.replace_element">replace_element( m, c, e )</a>
   <a href="#hashed_maps.reserve_capacity">reserve_capacity( m, c )</a>
 </pre>
         &nbsp;<br>
@@ -475,6 +475,9 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Hashed_Maps.Exclude</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
 </tr>
 </table>
 
@@ -670,6 +673,56 @@ An exception is raised if out of memory</p></td>
 </tr>
 </table>
 
+<a name="hashed_maps.include"></a><h3>hashed_maps.include( m, k, v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Insert the value v under key k in the hash map.  If the key exists, the value is overwritten.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.include( fruit, "apples", 23 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>required</span></td>
+<td><span>the value</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the key does not exist</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps</p></td>
+</tr>
+</table>
+
 <a name="hashed_maps.increment"></a><h3>hashed_maps.increment( t, k [,n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -701,7 +754,7 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span><i>table value type</i></span></td>
+<td><span>natural</span></td>
 <td><span>1</span></td>
 <td><span>the amount to increment</span></td>
 </tr>
@@ -723,6 +776,157 @@ An exception is raised if the value type is not numeric</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This is in accordance with memcached.</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.insert"></a><h3>hashed_maps.insert( m, k, e ) | ( m, k, c, b ) | ( m, k, e, c, b )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Insert the value v under key k in the hash map.  If b exists, b is true if the insert was successful.
+If value e exists, set the value to e.  If c exists, move the cursor to the insert position.
+If the key exists, raise an exception.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit, "apples", 23 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>in</span></td>
+<td><span>string</span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>table value type</i></span></td>
+<td><span>no value</span></td>
+<td><span>the value</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.cursor</span></td>
+<td><span>optional</span></td>
+<td><span>the cursor</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>in out</span></td>
+<td><span>boolean</span></td>
+<td><span>optional</span></td>
+<td><span>true on success</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the key exists</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.is_empty"></a><h3>b := hashed_maps.is_empty( m )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the hashed map has no items.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.is_empty( fruit ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the map is empty</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Is_Empty</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
+</tr>
+</table>
+
+<a name="hashed_maps.key"></a><h3>k := hashed_maps.key( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the key at the cursor c.  If there is no key, raise an exception.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.key( fruit_cursor ) = "apple" then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>k</span></td>
+<td><span>return value</span></td>
+<td><span><i>cursor key type</i></span></td>
+<td><span>required</span></td>
+<td><span>the key</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the map</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no item key at the cursor position<br>An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Key</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>-</p></td>
 </tr>
 </table>
 
@@ -824,13 +1028,13 @@ An exception is raised if the value type is not a string</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.remove"></a><h3>hashed_maps.remove( m, k | c )</h3>
+<a name="hashed_maps.delete"></a><h3>hashed_maps.delete( m, k | c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Delete a key and the associated element from the hash map.  If a cursor is given instead of a key, delete the item at the cursor position.</p>
+<td><p>Remove a key and the associated element from the hash map.  If a cursor is given instead of a key, delete the item at the cursor position.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.remove( fruit, "bad apples" );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.delete( fruit, "bad apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -874,7 +1078,7 @@ An exception is raised if the value type is not a string</p></td>
 <td><p>Ada: Ada.Containers.Hashed_Maps.Delete</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Ada uses "Delete" but delete is a reserved word in SparForte.</p></td>
+<td><p>Ada uses "Delete" but delete is a reserved word in SparForte.  This may be renamed in the future.</p></td>
 </tr>
 </table>
 
@@ -925,94 +1129,6 @@ An exception is raised if the key does not exist</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>Ada: Ada.Containers.Hashed_Maps</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>This is in accordance with memcached.</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.reset"></a><h3>hashed_maps.reset( t )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Delete all keys and associated values in the hash table..</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.reset( fruit );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>t</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the table to clear</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Gnat.Dynamic_Hash_Tables.Reset</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.set"></a><h3>hashed_maps.set( t, k, v )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Assign the value v to the key k in the hash table.  If the key does not exist, create it.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.set( fruit, "apples", 21 );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>t</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the table</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
-</tr><tr>
-<td><span>v</span></td>
-<td><span>in</span></td>
-<td><span><i>table value type</i></span></td>
-<td><span>required</span></td>
-<td><span>the new value</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.add">hashed_maps.add</a><br><a href="#hashed_maps.replace">hashed_maps.replace</a><br><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Gnat.Dynamic_Hash_Tables.Set</p></td>
 </tr>
 </table>
 
