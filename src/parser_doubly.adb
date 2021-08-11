@@ -54,7 +54,6 @@ package body parser_doubly is
 -- doubly_list_t          : identifier;
 -- doubly_cursor_t        : identifier;
 
---doubly_new_list_t      : identifier;
 doubly_clear_t         : identifier;
 doubly_is_empty_t      : identifier;
 doubly_length_t        : identifier;
@@ -65,7 +64,6 @@ doubly_last_element_t  : identifier;
 doubly_delete_first_t  : identifier;
 doubly_delete_last_t   : identifier;
 
---doubly_new_cursor_t    : identifier;
 doubly_first_t         : identifier;
 doubly_last_t          : identifier;
 doubly_next_t          : identifier;
@@ -96,84 +94,41 @@ doubly_parcel_t        : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
---procedure CheckListIsInitialized( listId : identifier ) is
---begin
---  if identifiers( listId ).genKind = eof_t then
---     err( "new_list has not been called to initialize " &
---       optional_bold( to_string( identifiers( listId ).name ) ) &
---       "; Note: a bug in this version of SparForte requires 'new' " &
---       "to be located just after the variable's declaration." );
---  elsif isExecutingCommand then
---     if identifiers( listId ).svalue = "" then
---        err( "new_list has not been called to initialize " &
---          optional_bold( to_string( identifiers( listId ).name ) ) &
---          "; Note: a bug in this version of SparForte requires 'new' " &
---          "to be located just after the variable's declaration." );
---     end if;
---  end if;
---end CheckListIsInitialized;
-
 procedure ParseSingleListParameter( listId : out identifier ) is
 begin
   ParseSingleInOutInstantiatedParameter( listId, doubly_list_t );
-  --CheckListIsInitialized( listId );
 end ParseSingleListParameter;
 
 procedure ParseFirstListParameter( listId : out identifier ) is
 begin
   ParseFirstInOutInstantiatedParameter( listId, doubly_list_t );
-  --CheckListIsInitialized( listId );
 end ParseFirstListParameter;
 
 procedure ParseNextListParameter( listId : out identifier ) is
 begin
   ParseNextInOutInstantiatedParameter( listId, doubly_list_t );
-  --CheckListIsInitialized( listId );
 end ParseNextListParameter;
 
 procedure ParseLastListParameter( listId : out identifier ) is
 begin
   ParseLastInOutInstantiatedParameter( listId, doubly_list_t );
-  --CheckListIsInitialized( listId );
 end ParseLastListParameter;
 
 ------------------------------------------------------------------------------
 
---procedure CheckCursorIsInitialized( cursId : identifier ) is
---begin
---  if identifiers( cursId ).genKind = eof_t then
---     err( "new_cursor has not been called to initialize " &
---          optional_bold( to_string( identifiers( cursId ).name ) ) );
---  elsif isExecutingCommand then
---     if identifiers( cursId ).svalue = "" then
---        err( "new_cursor has not been called to initialize " &
---          optional_bold( to_string( identifiers( cursId ).name ) ) );
---     end if;
---  end if;
---end CheckCursorIsInitialized;
-
 procedure ParseSingleCursorParameter( cursId : out identifier ) is
 begin
   ParseSingleInOutInstantiatedParameter( cursId, doubly_cursor_t );
-  --CheckCursorIsInitialized( cursId );
 end ParseSingleCursorParameter;
-
---procedure ParseFirstCursorParameter( cursId : out identifier ) is
---begin
---  ParseFirstInOutInstantiatedParameter( cursId, doubly_cursor_t );
---  --CheckCursorIsInitialized( cursId );
---end ParseFirstCursorParameter;
 
 procedure ParseNextCursorParameter( cursId : out identifier ) is
 begin
   ParseNextInOutInstantiatedParameter( cursId, doubly_cursor_t );
-  --CheckCursorIsInitialized( cursId );
 end ParseNextCursorParameter;
 
 procedure ParseLastCursorParameter( cursId : out identifier ) is
 begin
   ParseLastInOutInstantiatedParameter( cursId, doubly_cursor_t );
-  --CheckCursorIsInitialized( cursId );
 end ParseLastCursorParameter;
 
 ------------------------------------------------------------------------------

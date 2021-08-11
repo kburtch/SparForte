@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Scanner resource types                                                   --
+-- Vectors and Extensions                                                   --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -17,45 +17,43 @@
 -- to  the Free Software Foundation,  59 Temple Place - Suite 330,  Boston, --
 -- MA 02111-1307, USA.                                                      --
 --                                                                          --
--- This is maintained at http://www.pegasoft.ca                             --
+-- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with world,
-     scanner;
-use  world,
-     scanner;
+with Ada.Strings.Unbounded,
+     Ada.Containers.Vectors;
 
-package scanner_restypes is
+use  Ada.Strings.Unbounded;
 
-------------------------------------------------------------------------------
--- Resource Using Types (Temporary)
+package pegasoft.vectors is
+
+-- Vectors
 --
--- These are temporarily stored here, though they belong to other packages,
--- as they are needed in the main parser for declarations of parameterized
--- generic types.  They are put here to avoid importing the entire package
--- they belong to in the main parser.
+-- A vector is a singly linked list.
+
+type vector_index is new natural;
+
+package vector_string_lists is new Ada.Containers.Vectors(
+   vector_index,
+   unbounded_string,
+   "="
+);
+
+------------------------------------------------------------------------------
+--
+-- Extensions
+--
 ------------------------------------------------------------------------------
 
-btree_file_t          : identifier;
-btree_cursor_t        : identifier;
+-- procedure append( m : in out string_hashed_maps.map; k, e : unbounded_string );
 
-dht_table_t           : identifier;
+-- procedure prepend( m : in out string_hashed_maps.map; k, e : unbounded_string );
 
-doubly_list_t         : identifier;
-doubly_cursor_t       : identifier;
+-- procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
 
-hash_file_t          : identifier;
-hash_cursor_t        : identifier;
+-- procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
 
-hashed_maps_map_t    : identifier;
-hashed_maps_cursor_t : identifier;
+-- function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string;
 
-hashed_sets_map_t    : identifier;
-hashed_sets_cursor_t : identifier;
-
-vectors_vector_t    : identifier;
-vectors_cursor_t    : identifier;
-
-end scanner_restypes;
-
+end pegasoft.vectors;

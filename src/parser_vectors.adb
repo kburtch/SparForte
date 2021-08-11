@@ -27,18 +27,22 @@ with
     Ada.Containers,
     ada.strings.unbounded,
     pegasoft.user_io,
+    pegasoft.vectors,
     world,
     scanner,
     scanner_res,
+    scanner_restypes,
     parser,
     parser_params,
     parser_containers;
 use
     ada.strings.unbounded,
     pegasoft.user_io,
+    pegasoft.vectors,
     world,
     scanner,
     scanner_res,
+    scanner_restypes,
     parser,
     parser_params,
     parser_containers;
@@ -46,13 +50,11 @@ use
 package body parser_vectors is
 
 ------------------------------------------------------------------------------
--- Vecotrs package identifiers
+--
+-- Vectors package identifiers
+--
 ------------------------------------------------------------------------------
 
-vectors_vector_t        : identifier;
-vectors_cursor_t        : identifier;
-
-vectors_new_vector_t    : identifier;
 vectors_clear_t         : identifier;
 vectors_to_vector_t     : identifier;
 vectors_capacity_t      : identifier;
@@ -83,8 +85,43 @@ vectors_delete_t        : identifier;
 
 
 ------------------------------------------------------------------------------
--- Utility subprograms
+--
+-- Utilities
+--
 ------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  ERR STORAGE
+--
+------------------------------------------------------------------------------
+
+procedure err_storage is
+begin
+  err( "storage_error raised" );
+end err_storage;
+
+
+------------------------------------------------------------------------------
+--  ERR EMPTY
+--
+------------------------------------------------------------------------------
+
+procedure err_empty is
+begin
+  err( "storage_error raised" );
+end err_empty;
+
+
+------------------------------------------------------------------------------
+--  ERR INDEX
+--
+------------------------------------------------------------------------------
+
+procedure err_index is
+begin
+  err( "index value out of range" );
+end err_index;
 
 procedure ParseSingleVectorParameter( vectorId : out identifier ) is
 begin
@@ -241,38 +278,40 @@ begin
 end insertTypesOk;
 
 ------------------------------------------------------------------------------
+--
 -- Parser subprograms
+--
 ------------------------------------------------------------------------------
 
 
-procedure ParseVectorsNewVector is
-  -- Syntax: vectors.new_vector( l, idx_type, elem_type );
-  -- Ada:    N/A
-  -- With arrays, genKind is the index type and the element type is from
-  -- the array type.  However, vectors do not have a base kind to refer
-  -- to to get the element type.  We will use genKind2 to hold the index
-  -- type.
-  resId : resHandleId;
-  ref : reference;
-  genKindId : identifier;
-  genKind2Id : identifier;
-  baseIndexKind : identifier;
-
-     function getIntegerBaseType( originalKind : identifier ) return identifier is
-        id : identifier := originalKind;
-     begin
-        if getUniType( id ) = uni_numeric_t then
-        -- dereference types to get the root type
-        -- getBaseType only dereferences subtypes
-           loop
-              exit when id = positive_t or
-                   id = natural_t or
-                   identifiers( id ).kind = uni_numeric_t;
-              id := identifiers( id ).kind;
-           end loop;
-        end if;
-        return id;
-     end getIntegerBaseType;
+--procedure ParseVectorsNewVector is
+--  -- Syntax: vectors.new_vector( l, idx_type, elem_type );
+--  -- Ada:    N/A
+--  -- With arrays, genKind is the index type and the element type is from
+--  -- the array type.  However, vectors do not have a base kind to refer
+--  -- to to get the element type.  We will use genKind2 to hold the index
+--  -- type.
+--  resId : resHandleId;
+--  ref : reference;
+--  genKindId : identifier;
+--  genKind2Id : identifier;
+--  baseIndexKind : identifier;
+--
+--     function getIntegerBaseType( originalKind : identifier ) return identifier is
+--        id : identifier := originalKind;
+--     begin
+--        if getUniType( id ) = uni_numeric_t then
+--        -- dereference types to get the root type
+--        -- getBaseType only dereferences subtypes
+--           loop
+--              exit when id = positive_t or
+--                   id = natural_t or
+--                   identifiers( id ).kind = uni_numeric_t;
+--              id := identifiers( id ).kind;
+--           end loop;
+--        end if;
+--        return id;
+--     end getIntegerBaseType;
 
      -- true
 
@@ -285,88 +324,94 @@ procedure ParseVectorsNewVector is
      -- Positive - 1
      -- Enumerated (including boolean)
      -- The index must be a discrete integer or an enumerated type
-     function isDiscreteIntegerOrEnum( id : identifier ) return boolean is
-        indexBaseKind : identifier;
-        isDiscrete : boolean := false;
-     begin
-        indexBaseKind := getIntegerBaseType( genKind2Id );
-        if identifiers( genKind2Id ).list then
-           err( "index type should be a scalar type" );
-        elsif identifiers( getBaseType( genKind2Id ) ).kind = root_record_t then
-           err( "index type should be a scalar type" );
-        -- descrete type or character
-        elsif genKind2Id = natural_t or
-           genKind2Id = positive_t or
-           genKind2Id = natural_t or
-           genKind2Id = integer_t or
-           genKind2Id = short_short_integer_t or
-           genKind2Id = short_integer_t or
-           genKind2Id = long_integer_t or
-           genKind2Id = long_long_integer_t then
-           isDiscrete := true;
-        -- derived type of descrete type or character
-        elsif indexBaseKind = natural_t or
-           indexBaseKind = positive_t or
-           indexBaseKind = natural_t or
-           indexBaseKind = integer_t or
-           indexBaseKind = short_short_integer_t or
-           indexBaseKind = short_integer_t or
-           indexBaseKind = long_integer_t or
-           indexBaseKind = long_long_integer_t then
-           isDiscrete := true;
-        elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
-           isDiscrete := true;
-        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_string_t then
-           err( "index type should not be a string type (except character)" );
-        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_numeric_t then
-           err( "index type should be a discrete numeric type" );
-        end if;
-        return isDiscrete;
-     end isDiscreteIntegerOrEnum;
+--     function isDiscreteIntegerOrEnum( id : identifier ) return boolean is
+--        indexBaseKind : identifier;
+--        isDiscrete : boolean := false;
+--     begin
+--        indexBaseKind := getIntegerBaseType( genKind2Id );
+--        if identifiers( genKind2Id ).list then
+--           err( "index type should be a scalar type" );
+--        elsif identifiers( getBaseType( genKind2Id ) ).kind = root_record_t then
+--           err( "index type should be a scalar type" );
+--        -- descrete type or character
+--        elsif genKind2Id = natural_t or
+--           genKind2Id = positive_t or
+--           genKind2Id = natural_t or
+--           genKind2Id = integer_t or
+--           genKind2Id = short_short_integer_t or
+--           genKind2Id = short_integer_t or
+--           genKind2Id = long_integer_t or
+--           genKind2Id = long_long_integer_t then
+--           isDiscrete := true;
+--        -- derived type of descrete type or character
+--        elsif indexBaseKind = natural_t or
+--           indexBaseKind = positive_t or
+--           indexBaseKind = natural_t or
+--           indexBaseKind = integer_t or
+--           indexBaseKind = short_short_integer_t or
+--           indexBaseKind = short_integer_t or
+--           indexBaseKind = long_integer_t or
+--           indexBaseKind = long_long_integer_t then
+--           isDiscrete := true;
+--        elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
+--           isDiscrete := true;
+--        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_string_t then
+--           err( "index type should not be a string type (except character)" );
+--        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_numeric_t then
+--           err( "index type should be a discrete numeric type" );
+--        end if;
+--        return isDiscrete;
+--     end isDiscreteIntegerOrEnum;
+--
+--begin
+--  expect( vectors_new_vector_t );
+--  ParseFirstOutParameter( ref, vectors_vector_t );
+--  baseTypesOK( ref.kind, vectors_vector_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKind2Id );
+--  if class_ok( genKind2Id, typeClass, subClass ) then
+--     -- Index must be natural / natural subtype or enumeraged
+--     baseIndexKind := getIntegerBaseType( genKind2Id );
+--     if genKind2Id = natural_t or baseIndexKind = natural_t then
+--        null;
+--     elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
+--        null;
+--     elsif getUniType( genKind2Id ) = uni_string_t then
+--        err( "index type should not be a string type (except character)" );
+--     elsif getUniType( genKind2Id ) = uni_numeric_t then
+--put_line( to_string( identifiers( baseIndexKind ).name ) );
+--        err( "index type  should be a discrete numeric type" );
+--     end if;
+--  end if;
+--  identifiers( ref.id ).genKind2 := genKind2Id;
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--     if identifiers( genKindId ).list then
+--        err( "element type should be a scalar type" );
+--     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
+--        err( "element type should be a scalar type" );
+--     end if;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     -- TODO: don't reinitialize if already initialized
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, vector_string_list, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--  end if;
+--end ParseVectorsNewVector;
 
-begin
-  expect( vectors_new_vector_t );
-  ParseFirstOutParameter( ref, vectors_vector_t );
-  baseTypesOK( ref.kind, vectors_vector_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKind2Id );
-  if class_ok( genKind2Id, typeClass, subClass ) then
-     -- Index must be natural / natural subtype or enumeraged
-     baseIndexKind := getIntegerBaseType( genKind2Id );
-     if genKind2Id = natural_t or baseIndexKind = natural_t then
-        null;
-     elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
-        null;
-     elsif getUniType( genKind2Id ) = uni_string_t then
-        err( "index type should not be a string type (except character)" );
-     elsif getUniType( genKind2Id ) = uni_numeric_t then
-put_line( to_string( identifiers( baseIndexKind ).name ) );
-        err( "index type  should be a discrete numeric type" );
-     end if;
-  end if;
-  identifiers( ref.id ).genKind2 := genKind2Id;
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-     if identifiers( genKindId ).list then
-        err( "element type should be a scalar type" );
-     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-        err( "element type should be a scalar type" );
-     end if;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     -- TODO: don't reinitialize if already initialized
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, vector_string_list, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-  end if;
-end ParseVectorsNewVector;
+
+------------------------------------------------------------------------------
+--  CLEAR
+--
+-- Syntax: vectors.clear( v );
+-- Ada:    vectors.clear( v );
+------------------------------------------------------------------------------
 
 procedure ParseVectorsClear is
-  -- Syntax: vectors.clear( v );
-  -- Ada:    vectors.clear( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -380,9 +425,15 @@ begin
   end if;
 end ParseVectorsClear;
 
+
+------------------------------------------------------------------------------
+--  TO VECTOR
+--
+-- Syntax: vectors.to_vector( v, e, n );
+-- Ada:    v := vectors.to_vector( [e, ] n );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsToVector is
-  -- Syntax: vectors.to_vector( v, e, n );
-  -- Ada:    v := vectors.to_vector( [e, ] n );
   vectorId   : identifier;
   theVector  : resPtr;
   itemExpr   : unbounded_string;
@@ -411,9 +462,15 @@ begin
   end if;
 end ParseVectorsToVector;
 
+
+------------------------------------------------------------------------------
+--  CAPACITY
+--
+-- Syntax: c := capacity( v );
+-- Ada:    c := capacity( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsCapacity( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: c := capacity( v );
-  -- Ada:    c := capacity( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -429,9 +486,15 @@ begin
   end if;
 end ParseVectorsCapacity;
 
+
+------------------------------------------------------------------------------
+--  RESERVE CAPACITY
+--
+-- Syntax: reserve_capacity( v, c );
+-- Ada:    reserve_capacity( v, c );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsReserveCapacity is
-  -- Syntax: reserve_capacity( v, c );
-  -- Ada:    reserve_capacity( v, c );
   vectorId   : identifier;
   theVector  : resPtr;
   cntExpr    : unbounded_string;
@@ -455,14 +518,20 @@ begin
      exception when constraint_error =>
        err( "capacity count is the wrong type" ); -- TODO: say the type
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsReserveCapacity;
 
+
+------------------------------------------------------------------------------
+--  LENGTH
+--
+-- Syntax: c := length( v );
+-- Ada:    c := length( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsLength( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: c := length( v );
-  -- Ada:    c := length( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -478,9 +547,15 @@ begin
   end if;
 end ParseVectorsLength;
 
+
+------------------------------------------------------------------------------
+--  SET LENGTH
+--
+-- Syntax: set_length( v, c );
+-- Ada:    set_length( v, c );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsSetLength is
-  -- Syntax: set_length( v, c );
-  -- Ada:    set_length( v, c );
   vectorId   : identifier;
   theVector  : resPtr;
   cntExpr    : unbounded_string;
@@ -504,14 +579,20 @@ begin
      exception when constraint_error =>
        err( "length count is the wrong type" ); -- TODO: say the type
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsSetLength;
 
+
+------------------------------------------------------------------------------
+--  IS EMPTY
+--
+-- Syntax: b := is_empty( v );
+-- Ada:    b := is_empty( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsIsEmpty( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := is_empty( v );
-  -- Ada:    b := is_empty( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -527,9 +608,15 @@ begin
   end if;
 end ParseVectorsIsEmpty;
 
+
+------------------------------------------------------------------------------
+--  APPEND
+--
+-- Syntax: vectors.append( l, s, [c] );
+-- Ada:    vectors.append( l, s, [c] );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsAppend is
-  -- Syntax: doubly_linked_list.append( l, s, [c] );
-  -- Ada:    doubly_linked_list.append( l, s, [c] );
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -561,14 +648,20 @@ begin
      exception when constraint_error =>
        err( "append count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsAppend;
 
+
+------------------------------------------------------------------------------
+--  PREPEND
+--
+-- Syntax: vectors.prepend( l, s, [c] );
+-- Ada:    vectors.prepend( l, s, [c] );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsPrepend is
-  -- Syntax: doubly_linked_list.prepend( l, s, [c] );
-  -- Ada:    doubly_linked_list.prepend( l, s, [c] );
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -600,14 +693,20 @@ begin
      exception when constraint_error =>
        err( "prepend count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsPrepend;
 
+
+------------------------------------------------------------------------------
+--  FIRST INDEX
+--
+-- Syntax: n := vectors.first_index( v );
+-- Ada:    n := vectors.first_index( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsFirstIndex( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := first_index( v );
-  -- Ada:    n := first_index( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -623,9 +722,15 @@ begin
   end if;
 end ParseVectorsFirstIndex;
 
+
+------------------------------------------------------------------------------
+--  LAST INDEX
+--
+-- Syntax: n := vectors.first_index( v );
+-- Ada:    n := vectors.first_index( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsLastIndex( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: n := first_index( v );
-  -- Ada:    n := first_index( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -641,9 +746,15 @@ begin
   end if;
 end ParseVectorsLastIndex;
 
+
+------------------------------------------------------------------------------
+--  ELEMENT
+--
+-- Syntax: e := vectors.element( c ) | ( v, i )
+-- Ada:    e := vectors.element( c ) | ( v, i )
+------------------------------------------------------------------------------
+
 procedure ParseVectorsElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: e := element( c ) | element( v, i )
-  -- Ada:    e := element( c ) | element( v, i )
   vectorId  : identifier;
   theVector : resPtr;
   idxExpr   : unbounded_string;
@@ -694,16 +805,22 @@ begin
 --put_line( "HERE" );
 -- NOTE: Vector Lists stores internally a natural
      exception when constraint_error =>
-       err( "index value out of range" );
+       err_index;
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsElement;
 
+
+------------------------------------------------------------------------------
+--  FIRST ELEMENT
+--
+-- Syntax: e := vectors.first_element( v );
+-- Ada:    e := vectors.first_element( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsFirstElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: e := first_element( v );
-  -- Ada:    e := first_element( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -715,14 +832,20 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := Vector_String_Lists.First_Element( theVector.vslVector );
      exception when constraint_error =>
-       err( "vector is empty" );
+       err_empty;
      end;
   end if;
 end ParseVectorsFirstElement;
 
+
+------------------------------------------------------------------------------
+--  LAST ELEMENT
+--
+-- Syntax: e := vectors.last_element( v );
+-- Ada:    e := vectors.last_element( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsLastElement( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: e := last_element( v );
-  -- Ada:    e := last_element( v );
   vectorId   : identifier;
   theVector  : resPtr;
 begin
@@ -734,14 +857,20 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := Vector_String_Lists.Last_Element( theVector.vslVector );
      exception when constraint_error =>
-       err( "vector is empty" );
+       err_empty;
      end;
   end if;
 end ParseVectorsLastElement;
 
+
+------------------------------------------------------------------------------
+--  DELETE FIRST
+--
+-- Syntax: vectors.delete_first( v [,c] )
+-- Ada:    vectors.delete_first( v [,c] )
+------------------------------------------------------------------------------
+
 procedure ParseVectorsDeleteFirst is
-  -- Syntax: delete_first( v [,c] )
-  -- Ada:    delete_first( v [,c] )
   vectorId  : identifier;
   theVector : resPtr;
   cntExpr   : unbounded_string;
@@ -770,14 +899,20 @@ begin
      exception when constraint_error =>
        err( "count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsDeleteFirst;
 
+
+------------------------------------------------------------------------------
+--  DELETE LAST
+--
+-- Syntax: vectors.delete_last( v [,c] )
+-- Ada:    vectors.delete_last( v [,c] )
+------------------------------------------------------------------------------
+
 procedure ParseVectorsDeleteLast is
-  -- Syntax: delete_last( v [,c] )
-  -- Ada:    delete_last( v [,c] )
   vectorId  : identifier;
   theVector : resPtr;
   cntExpr   : unbounded_string;
@@ -806,14 +941,20 @@ begin
      exception when constraint_error =>
        err( "count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsDeleteLast;
 
+
+------------------------------------------------------------------------------
+--  CONTAINS
+--
+-- Syntax: b := vectors.contains( v, e )
+-- Ada:    b := vectors.contains( v, e )
+------------------------------------------------------------------------------
+
 procedure ParseVectorsContains( result : out unbounded_string; kind : out identifier ) is
-  -- Syntax: b := contains( v, e )
-  -- Ada:    b := contains( v, e )
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -832,9 +973,15 @@ begin
   end if;
 end ParseVectorsContains;
 
+
+------------------------------------------------------------------------------
+--  MOVE
+--
+-- Syntax: vectors.move( v1, v2 );
+-- Ada:    vectors.move( v1, v2 );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsMove is
-  -- Syntax: move( v1, v2 );
-  -- Ada:    move( v1, v2 );
   sourceVectorId   : identifier;
   theSourceVector  : resPtr;
   targetVectorId   : identifier;
@@ -874,9 +1021,15 @@ end ParseVectorsMove;
 --  end if;
 --end ParseVectorsAssign;
 
+
+------------------------------------------------------------------------------
+--  REVERSE ELEMENTS
+--
+-- Syntax: vectors.reverse_elements( v );
+-- Ada:    vectors.reverse_elements( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsReverseElements is
-  -- Syntax: reverse_elements( v );
-  -- Ada:    reverse_elements( v );
   vectorId  : identifier;
   theVector : resPtr;
 begin
@@ -890,9 +1043,15 @@ begin
   end if;
 end ParseVectorsReverseElements;
 
+
+------------------------------------------------------------------------------
+--  FLIP
+--
+-- Syntax: vectors.flip( v );
+-- Ada:    vectors.flip( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsFlip is
-  -- Syntax: flip( v );
-  -- Ada:    flip( v );
   vectorId  : identifier;
   theVector : resPtr;
 begin
@@ -906,33 +1065,39 @@ begin
   end if;
 end ParseVectorsFlip;
 
-procedure ParseVectorsNewCursor is
-  -- Syntax: vectors.new_cursor( c, t );
-  -- Ada:    N/A
-  resId : resHandleId;
-  ref : reference;
-  genKindId : identifier;
-begin
-  expect( vectors_new_cursor_t );
-  ParseFirstOutParameter( ref, vectors_cursor_t );
-  baseTypesOK( ref.kind, vectors_cursor_t );
-  expect( symbol_t, "," );
-  ParseIdentifier( genKindId );
-  if class_ok( genKindId, typeClass, subClass ) then
-      null;
-  end if;
-  identifiers( ref.id ).genKind := genKindId;
-  expect( symbol_t, ")" );
-  if isExecutingCommand then
-     identifiers( ref.id ).resource := true;
-     declareResource( resId, vector_string_list_cursor, getIdentifierBlock( ref.id ) );
-     AssignParameter( ref, to_unbounded_string( resId ) );
-  end if;
-end ParseVectorsNewCursor;
+--procedure ParseVectorsNewCursor is
+--  -- Syntax: vectors.new_cursor( c, t );
+--  -- Ada:    N/A
+--  resId : resHandleId;
+--  ref : reference;
+--  genKindId : identifier;
+--begin
+--  expect( vectors_new_cursor_t );
+--  ParseFirstOutParameter( ref, vectors_cursor_t );
+--  baseTypesOK( ref.kind, vectors_cursor_t );
+--  expect( symbol_t, "," );
+--  ParseIdentifier( genKindId );
+--  if class_ok( genKindId, typeClass, subClass ) then
+--      null;
+--  end if;
+--  identifiers( ref.id ).genKind := genKindId;
+--  expect( symbol_t, ")" );
+--  if isExecutingCommand then
+--     identifiers( ref.id ).resource := true;
+--     declareResource( resId, vector_string_list_cursor, getIdentifierBlock( ref.id ) );
+--     AssignParameter( ref, to_unbounded_string( resId ) );
+--  end if;
+--end ParseVectorsNewCursor;
+
+
+------------------------------------------------------------------------------
+--  FIRST
+--
+-- Syntax: vectors.first( v, c );
+-- Ada:    c := vectors.first( v );
+------------------------------------------------------------------------------
 
 procedure ParseVectorsFirst is
-  -- Syntax: first( v, c );
-  -- Ada:    c := first( v );
   vectorId   : identifier;
   theVector  : resPtr;
   cursId     : identifier;
@@ -951,9 +1116,15 @@ begin
   end if;
 end ParseVectorsFirst;
 
+
+------------------------------------------------------------------------------
+--  LAST
+--
+-- Syntax: vectors.last( v, c );
+-- Ada:    c := vectors.last( v );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsLast is
-  -- Syntax: last( v, c );
-  -- Ada:    c := last( v );
   vectorId   : identifier;
   theVector  : resPtr;
   cursId     : identifier;
@@ -972,9 +1143,15 @@ begin
   end if;
 end ParseVectorsLast;
 
+
+------------------------------------------------------------------------------
+--  NEXT
+--
+-- Syntax: vectors.next( c );
+-- Ada:    vectors.next( c );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsNext is
-  -- Syntax: next( c );
-  -- Ada:    next( c );
   cursId    : identifier;
   theCursor : resPtr;
 begin
@@ -988,9 +1165,15 @@ begin
   end if;
 end ParseVectorsNext;
 
+
+------------------------------------------------------------------------------
+--  PREVIOUS
+--
+-- Syntax: vectors.previous( c );
+-- Ada:    vectors.previous( c );
+------------------------------------------------------------------------------
+
 procedure ParseVectorsPrevious is
-  -- Syntax: previous( c );
-  -- Ada:    previous( c );
   cursId    : identifier;
   theCursor : resPtr;
 begin
@@ -1004,9 +1187,15 @@ begin
   end if;
 end ParseVectorsPrevious;
 
+
+------------------------------------------------------------------------------
+--  DELETE
+--
+-- Syntax: vectors.delete( v, c | i )
+-- Ada:    vectors.delete( v, c | i )
+------------------------------------------------------------------------------
+
 procedure ParseVectorsDelete is
-  -- Syntax: delete( v, c | i )
-  -- Ada:    delete( v, c | i )
   vectorId  : identifier;
   theVector : resPtr;
   cursorId  : identifier;
@@ -1061,14 +1250,18 @@ begin
      exception when constraint_error =>
        err( "count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err_storage;
      end;
   end if;
 end ParseVectorsDelete;
 
 
-
 -----------------------------------------------------------------------------
+--
+-- Housekeeping
+--
+-----------------------------------------------------------------------------
+
 
 procedure StartupVectors is
 begin
@@ -1078,7 +1271,6 @@ begin
   declareIdent( vectors_cursor_t, "vectors.cursor", variable_t, genericTypeClass );
   identifiers( vectors_cursor_t).usage := limitedUsage;
 
-  declareProcedure( vectors_new_vector_t,  "vectors.new_vector", ParseVectorsNewVector'access );
   declareProcedure( vectors_clear_t,     "vectors.clear",    ParseVectorsClear'access );
   declareProcedure( vectors_to_vector_t, "vectors.to_vector",   ParseVectorsToVector'access );
   declareFunction(  vectors_capacity_t,  "vectors.capacity",    ParseVectorsCapacity'access );
@@ -1100,7 +1292,7 @@ begin
   declareProcedure( vectors_reverse_elements_t,  "vectors.reverse_elements",    ParseVectorsReverseElements'access );
   declareProcedure( vectors_flip_t,  "vectors.flip",    ParseVectorsFlip'access );
 --  declareProcedure( vectors_copy_t,  "vectors.copy",    ParseVectorsCopy'access );
-  declareProcedure( vectors_new_cursor_t,  "vectors.new_cursor", ParseVectorsNewCursor'access );
+  --declareProcedure( vectors_new_cursor_t,  "vectors.new_cursor", ParseVectorsNewCursor'access );
   declareProcedure( vectors_first_t,  "vectors.first", ParseVectorsFirst'access );
   declareProcedure( vectors_last_t,  "vectors.last", ParseVectorsLast'access );
   declareProcedure( vectors_next_t,  "vectors.next", ParseVectorsNext'access );

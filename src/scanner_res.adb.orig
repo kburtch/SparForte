@@ -190,6 +190,10 @@ begin
        put_line( "hashed map cursor" );
   when string_hashed_map =>
        put_line( "hashed map" );
+  when string_hashed_set_cursor =>
+       put_line( "hashed set cursor" );
+  when string_hashed_set =>
+       put_line( "hashed set" );
   when gl_byte_array  =>
        put_line( "OpenGL byte array" );
   when gl_short_array  =>
@@ -271,6 +275,8 @@ begin
      dynamic_string_hash_tables.reset( rp.dsht );
   elsif rp.rt = string_hashed_map then
      string_hashed_maps.clear( rp.shmMap );
+  elsif rp.rt = string_hashed_set then
+     string_hashed_sets.clear( rp.shsSet );
   elsif rp.rt = gl_byte_array then
      Free( rp.gl_ba );
   elsif rp.rt = gl_short_array then

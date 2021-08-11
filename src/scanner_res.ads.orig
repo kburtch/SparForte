@@ -25,13 +25,15 @@ with pegasoft.gen_list,
      Ada.Numerics.Long_Complex_Types,
      Ada.Strings.Unbounded,
      Ada.Containers.Doubly_Linked_Lists,
-     Ada.Containers.Vectors,
-     Ada.Containers.Hashed_Maps,
+     --Ada.Containers.Vectors,
+     --Ada.Containers.Hashed_Maps,
      Unchecked_Deallocation,
      Interfaces.C,
      Gnat.Directory_Operations,
      Gnat.Dynamic_HTables,
      pegasoft.hmaps,
+     pegasoft.hsets,
+     pegasoft.vectors,
 #if POSTGRES
      APQ.PostgreSQL.Client,
 #end if;
@@ -51,6 +53,8 @@ use  world,
      Interfaces.C,
      Gnat.Directory_Operations,
      pegasoft.hmaps,
+     pegasoft.hsets,
+     pegasoft.vectors,
      spar_os.opengl,
      pegasock.tinyserve;
 
@@ -89,6 +93,8 @@ type aResourceType is (
    dynamic_string_hash_table,
    string_hashed_map,
    string_hashed_map_cursor,
+   string_hashed_set,
+   string_hashed_set_cursor,
    gl_byte_array,
    gl_short_array,
    gl_int_array,
@@ -110,9 +116,9 @@ type aResourceType is (
 
 -- Singly Linked String Lists (Vectors)
 
-type vector_index is new natural;
+-- type vector_index is new natural;
 
-package vector_string_lists is new Ada.Containers.Vectors( vector_index, unbounded_string, "=" );
+-- package vector_string_lists is new Ada.Containers.Vectors( vector_index, unbounded_string, "=" );
 
 -- Doubly Linked String Lists
 
@@ -233,6 +239,10 @@ type resHandle( rt : aResourceType ) is record
           shmMap : string_hashed_maps.Map;
      when string_hashed_map_cursor =>
           shmCursor : string_hashed_maps.Cursor;
+     when string_hashed_set =>
+          shsSet : string_hashed_sets.Set;
+     when string_hashed_set_cursor =>
+          shsCursor : string_hashed_sets.Cursor;
      when gl_byte_array =>
           gl_ba : GL_Byte_Array_Access;
      when gl_short_array =>
