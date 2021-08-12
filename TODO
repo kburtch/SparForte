@@ -16,7 +16,8 @@ Priority Issues (Fix These First)
 - how can design mode be improved to assist with design diagrams?
 - ada hash map support
   - creating cursors as out parameter on hashed_maps.find
-ada vectors
+  - check handling of universal types and hashed_maps
+- ada vectors
   - complete
   - tests
 

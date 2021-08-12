@@ -134,6 +134,47 @@ end err_ada95;
 
 
 ------------------------------------------------------------------------------
+--  PARSE LAsT OUT MAP CURSOR
+--
+-- If necessary, declare a out cursor parameter.  Attach the resource.
+------------------------------------------------------------------------------
+
+procedure ParseLastOutMapCursor( mapId : identifier; cursRef : in out reference ) is
+  resId : resHandleId;
+begin
+  expect( symbol_t, "," );
+  if identifiers( token ).kind = new_t then
+     ParseOutParameter( cursRef, vectors_cursor_t );
+
+     if not error_found then
+        identifiers( cursRef.id ).genKind := identifiers( mapId ).genKind;
+        identifiers( cursRef.id ).genKind2 := identifiers( mapId ).genKind2;
+     end if;
+
+     if isExecutingCommand then
+
+        -- Attach the resource
+
+        declareResource( resId, string_hashed_map_cursor, getIdentifierBlock( cursRef.id ) );
+        identifiers( cursRef.id ).svalue := to_unbounded_string( resId );
+        identifiers( cursRef.id ).value := identifiers( cursRef.id ).svalue'access;
+        identifiers( cursRef.id ).resource := true;
+     end if;
+  else
+     ParseLastInOutInstantiatedParameter( cursRef.id , hashed_maps_cursor_t );
+
+     -- Check the type against the map
+
+     if not error_found then
+        genTypesOk( identifiers( mapId ).genKind, identifiers( cursRef.Id ).genKind );
+        genTypesOk( identifiers( mapId ).genKind2, identifiers( cursRef.Id ).genKind2 );
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+end ParseLastOutMapCursor;
+
+
+------------------------------------------------------------------------------
 --  CLEAR
 --
 -- Syntax: hashed_maps.clear( m );
@@ -854,21 +895,19 @@ end ParseHashedMapsMove;
 
 procedure ParseHashedMapsFirst is
   mapId : identifier;
-  cursorId : identifier;
+  --cursorId : identifier;
+  cursRef : reference;
   theMap : resPtr;
   theCursor : resPtr;
 begin
   expect( hashed_maps_first_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-  ParseLastInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
-  if not error_found then
-     genTypesOk( identifiers( mapId ).genKind, identifiers( cursorId ).genKind );
-     genTypesOk( identifiers( mapId ).genKind2, identifiers( cursorId ).genKind2 );
-  end if;
+  --ParseLastInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+  ParseLastOutMapCursor( mapId, cursRef );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursRef.Id ).value.all ), theCursor );
        theCursor.shmCursor := String_Hashed_Maps.First( theMap.shmMap );
      exception when storage_error =>
        err_storage;

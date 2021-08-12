@@ -122,27 +122,48 @@ begin
   err( "index value out of range" );
 end err_index;
 
-procedure ParseSingleVectorParameter( vectorId : out identifier ) is
-begin
-  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
-end ParseSingleVectorParameter;
-
-procedure ParseFirstVectorParameter( vectorId : out identifier ) is
-begin
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-end ParseFirstVectorParameter;
-
---procedure ParseNextVectorParameter( vectorId : out identifier ) is
---begin
---  ParseNextInOutInstantiatedParameter( vectorId, vectors_vector_t );
---end ParseNextVectorParameter;
-
-procedure ParseLastVectorParameter( vectorId : out identifier ) is
-begin
-  ParseLastInOutInstantiatedParameter( vectorId, vectors_vector_t );
-end ParseLastVectorParameter;
 
 ------------------------------------------------------------------------------
+--  PARSE LAsT OUT VECTOR CURSOR
+--
+-- If necessary, declare a out cursor parameter.  Attach the resource.
+------------------------------------------------------------------------------
+
+procedure ParseLastOutVectorCursor( vectorId : identifier; cursRef : in out reference ) is
+  resId : resHandleId;
+begin
+  expect( symbol_t, "," );
+  if identifiers( token ).kind = new_t then
+     ParseOutParameter( cursRef, vectors_cursor_t );
+
+     if not error_found then
+        identifiers( cursRef.id ).genKind := identifiers( vectorId ).genKind;
+        identifiers( cursRef.id ).genKind2 := identifiers( vectorId ).genKind2;
+     end if;
+
+     if isExecutingCommand then
+
+        -- Attach the resource
+
+        declareResource( resId, vector_string_list_cursor, getIdentifierBlock( cursRef.id ) );
+        identifiers( cursRef.id ).svalue := to_unbounded_string( resId );
+        identifiers( cursRef.id ).value := identifiers( cursRef.id ).svalue'access;
+        identifiers( cursRef.id ).resource := true;
+     end if;
+  else
+     ParseLastInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
+     -- Check the type against the map
+     if not error_found then
+        genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );
+        genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind );
+     end if;
+  end if;
+  expect( symbol_t, ")" );
+end ParseLastOutVectorCursor;
+
+
+------------------------------------------------------------------------------
+
 
 function toRealVectorIndex( vectorId : identifier; UserIdx : integer ) return vector_index is
    kind  : identifier;
@@ -206,30 +227,6 @@ begin
    end if;
    return convertedIdx;
 end toUserVectorIndex;
-
-------------------------------------------------------------------------------
-
-procedure ParseSingleCursorParameter( cursId : out identifier ) is
-begin
-  ParseSingleInOutInstantiatedParameter( cursId, vectors_cursor_t );
-end ParseSingleCursorParameter;
-
---procedure ParseFirstCursorParameter( cursId : out identifier ) is
---begin
---  ParseFirstInOutInstantiatedParameter( cursId, vectors_cursor_t );
---end ParseFirstCursorParameter;
-
---procedure ParseNextCursorParameter( cursId : out identifier ) is
---begin
---  ParseNextInOutInstantiatedParameter( cursId, vectors_cursor_t );
---end ParseNextCursorParameter;
-
-procedure ParseLastCursorParameter( cursId : out identifier ) is
-begin
-  ParseLastInOutInstantiatedParameter( cursId, vectors_cursor_t );
-end ParseLastCursorParameter;
-
-------------------------------------------------------------------------------
 
 -- A special message for the insert function
 
@@ -415,7 +412,7 @@ procedure ParseVectorsClear is
   theVector  : resPtr;
 begin
   expect( vectors_clear_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -441,7 +438,7 @@ procedure ParseVectorsToVector is
   cntType    : identifier;
 begin
   expect( vectors_to_vector_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   expect( symbol_t, "," );
   ParseExpression( itemExpr, itemType );
   if baseTypesOK( itemType, identifiers( vectorId ).genKind ) then
@@ -475,7 +472,7 @@ procedure ParseVectorsCapacity( result : out unbounded_string; kind : out identi
 begin
   kind := containers_count_type_t;
   expect( vectors_capacity_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -500,7 +497,7 @@ procedure ParseVectorsReserveCapacity is
   cntType    : identifier;
 begin
   expect( vectors_reserve_capacity_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   expect( symbol_t, "," );
   ParseExpression( cntExpr, cntType );
   if baseTypesOK( cntType, containers_count_type_t ) then
@@ -536,7 +533,7 @@ procedure ParseVectorsLength( result : out unbounded_string; kind : out identifi
 begin
   kind := containers_count_type_t;
   expect( vectors_length_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -561,7 +558,7 @@ procedure ParseVectorsSetLength is
   cntType    : identifier;
 begin
   expect( vectors_set_length_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   expect( symbol_t, "," );
   ParseExpression( cntExpr, cntType );
   if baseTypesOK( cntType, containers_count_type_t ) then
@@ -597,7 +594,7 @@ procedure ParseVectorsIsEmpty( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( vectors_is_empty_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -625,7 +622,7 @@ procedure ParseVectorsAppend is
   hasCnt    : boolean := false;
 begin
   expect( vectors_append_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
@@ -670,7 +667,7 @@ procedure ParseVectorsPrepend is
   hasCnt    : boolean := false;
 begin
   expect( vectors_prepend_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
@@ -711,7 +708,7 @@ procedure ParseVectorsFirstIndex( result : out unbounded_string; kind : out iden
 begin
   kind := boolean_t;
   expect( vectors_first_index_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -735,7 +732,7 @@ procedure ParseVectorsLastIndex( result : out unbounded_string; kind : out ident
 begin
   kind := boolean_t;
   expect( vectors_last_index_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -824,7 +821,7 @@ procedure ParseVectorsFirstElement( result : out unbounded_string; kind : out id
   theVector  : resPtr;
 begin
   expect( vectors_first_element_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   kind := identifiers( vectorId ).genKind;
   if isExecutingCommand then
      begin
@@ -849,7 +846,7 @@ procedure ParseVectorsLastElement( result : out unbounded_string; kind : out ide
   theVector  : resPtr;
 begin
   expect( vectors_last_element_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   kind := identifiers( vectorId ).genKind;
   if isExecutingCommand then
      begin
@@ -877,7 +874,7 @@ procedure ParseVectorsDeleteFirst is
   hasCnt    : boolean := false;
 begin
   expect( vectors_delete_first_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -919,7 +916,7 @@ procedure ParseVectorsDeleteLast is
   hasCnt    : boolean := false;
 begin
   expect( vectors_delete_last_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
@@ -961,7 +958,7 @@ procedure ParseVectorsContains( result : out unbounded_string; kind : out identi
 begin
   kind := boolean_t;
   expect( vectors_contains_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseLastGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind );
   if isExecutingCommand then
      begin
@@ -987,8 +984,8 @@ procedure ParseVectorsMove is
   theTargetVector  : resPtr;
 begin
   expect( vectors_move_t );
-  ParseFirstVectorParameter( targetVectorId );
-  ParseLastVectorParameter( sourceVectorId );
+  ParseFirstInOutInstantiatedParameter( sourceVectorId, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( targetVectorId, vectors_vector_t );
   genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
   if isExecutingCommand then
      begin
@@ -1033,7 +1030,7 @@ procedure ParseVectorsReverseElements is
   theVector : resPtr;
 begin
   expect( vectors_reverse_elements_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -1055,7 +1052,7 @@ procedure ParseVectorsFlip is
   theVector : resPtr;
 begin
   expect( vectors_flip_t );
-  ParseSingleVectorParameter( vectorId );
+  ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -1099,17 +1096,16 @@ end ParseVectorsFlip;
 procedure ParseVectorsFirst is
   vectorId   : identifier;
   theVector  : resPtr;
-  cursId     : identifier;
   theCursor  : resPtr;
+  cursRef    : reference;
 begin
   expect( vectors_first_t );
-  ParseFirstVectorParameter( vectorId );
-  ParseLastCursorParameter( cursId );
-  genTypesOk( identifiers( vectorId ).genKind, identifiers( cursId ).genKind );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseLastOutVectorCursor( vectorId, cursRef );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursRef.id ).value.all ), theCursor );
        theCursor.vslCursor := Vector_String_Lists.First( theVector.vslVector );
      end;
   end if;
@@ -1130,8 +1126,8 @@ procedure ParseVectorsLast is
   theCursor  : resPtr;
 begin
   expect( vectors_last_t );
-  ParseFirstVectorParameter( vectorId );
-  ParseLastCursorParameter( cursId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( cursId, vectors_cursor_t );
   genTypesOk( identifiers( vectorId ).genKind, identifiers( cursId ).genKind );
   if isExecutingCommand then
      begin
@@ -1155,7 +1151,7 @@ procedure ParseVectorsNext is
   theCursor : resPtr;
 begin
   expect( vectors_next_t );
-  ParseSingleCursorParameter( cursId );
+  ParseSingleInOutInstantiatedParameter( cursId, vectors_cursor_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
@@ -1177,7 +1173,7 @@ procedure ParseVectorsPrevious is
   theCursor : resPtr;
 begin
   expect( vectors_previous_t );
-  ParseSingleCursorParameter( cursId );
+  ParseSingleInOutInstantiatedParameter( cursId, vectors_cursor_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
@@ -1209,7 +1205,7 @@ procedure ParseVectorsDelete is
   cnt       : Ada.Containers.Count_Type;
 begin
   expect( vectors_delete_t );
-  ParseFirstVectorParameter( vectorId );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   expect( symbol_t, "," );
   if identifiers( token ).kind = vectors_cursor_t then
      ParseIdentifier( cursorId );
