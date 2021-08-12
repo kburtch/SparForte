@@ -151,7 +151,7 @@ begin
         identifiers( cursRef.id ).resource := true;
      end if;
   else
-     ParseLastInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
+     ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
      -- Check the type against the map
      if not error_found then
         genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );

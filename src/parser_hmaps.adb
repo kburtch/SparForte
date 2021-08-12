@@ -161,7 +161,7 @@ begin
         identifiers( cursRef.id ).resource := true;
      end if;
   else
-     ParseLastInOutInstantiatedParameter( cursRef.id , hashed_maps_cursor_t );
+     ParseInOutInstantiatedParameter( cursRef.id , hashed_maps_cursor_t );
 
      -- Check the type against the map
 
