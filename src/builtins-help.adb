@@ -1902,7 +1902,7 @@ begin
      description( e, "A collection of common routines for working with key-value tables (such as arrays in PHP, PERL hashes or Python dictionaries)." );
      content( e, "clear( m )", "is_empty( m )", "c := capacity( m ) ");
      content( e, "reserve_capacity( m, c )", "c := length( m )", "insert( m, k, e )" );
-     content( e, "include( m, k, e )" );
+     content( e, "b := equal( m1, m2 )", "include( m, k, e )" );
      content( e, "replace( m, k, e )", "exclude( m, k, e )", "delete( m, k, e | c )" );
      content( e, "b := contains( m, k )", "e := element( m, k ) | ( c )" );
      content( e, "append( m, k, e )", "prepend( m, k, e )", "increment( m, k [, n] )" );

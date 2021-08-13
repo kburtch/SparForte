@@ -57,13 +57,14 @@
 <pre>
   <a href="#hashed_maps.append">append( m, k, e )</a>            <a href="#hashed_maps.assign">assign( t, s )</a>               <a href="#hashed_maps.capacity">c := capacity( m ) </a>
   <a href="#hashed_maps.clear">clear( m )</a>                   <a href="#hashed_maps.contains">b := contains( m, k )</a>        <a href="#hashed_maps.decrement">decrement( m, k [, n] )</a>
-  <a href="#hashed_maps.delete">delete( m, k, e | c )</a>        <a href="#hashed_maps.element">e := element( m, k ) | ( c )</a> <a href="#hashed_maps.exclude">exclude( m, k, e )</a>
-  <a href="#hashed_maps.extract">e := extract( m, k )</a>         <a href="#hashed_maps.find">find( m, k, c )</a>              <a href="#hashed_maps.first">first( m, c )</a>
-  <a href="#hashed_maps.has_element">b := has_element( c )</a>        <a href="#hashed_maps.include">include( m, k, e )</a>           <a href="#hashed_maps.increment">increment( m, k [, n] )</a>
-  <a href="#hashed_maps.insert">insert( m, k, c, b )</a>         <a href="#hashed_maps.insert">insert( m, k, e )</a>            <a href="#hashed_maps.insert">insert( m, k, e, c, b )</a>
-  <a href="#hashed_maps.is_empty">is_empty( m )</a>                <a href="#hashed_maps.key">k := key( c )</a>                <a href="#hashed_maps.length">c := length( m )</a>
-  <a href="#hashed_maps.move">move( t, s )</a>                 <a href="#hashed_maps.next">next( c )</a>                    <a href="#hashed_maps.prepend">prepend( m, k, e )</a>
-  <a href="#hashed_maps.replace">replace( m, k, e )</a>           <a href="#hashed_maps.replace_element">replace_element( m, c, e )</a>   <a href="#hashed_maps.reserve_capacity">reserve_capacity( m, c )</a>
+  <a href="#hashed_maps.delete">delete( m, k, e | c )</a>        <a href="#hashed_maps.element">e := element( m, k ) | ( c )</a> <a href="#hashed_maps.equal">b := equal( m1, m2 )</a>
+  <a href="#hashed_maps.exclude">exclude( m, k, e )</a>           <a href="#hashed_maps.extract">e := extract( m, k )</a>         <a href="#hashed_maps.find">find( m, k, c )</a>
+  <a href="#hashed_maps.first">first( m, c )</a>                <a href="#hashed_maps.has_element">b := has_element( c )</a>        <a href="#hashed_maps.include">include( m, k, e )</a>
+  <a href="#hashed_maps.increment">increment( m, k [, n] )</a>      <a href="#hashed_maps.insert">insert( m, k, c, b )</a>         <a href="#hashed_maps.insert">insert( m, k, e )</a>
+  <a href="#hashed_maps.insert">insert( m, k, e, c, b )</a>      <a href="#hashed_maps.is_empty">is_empty( m )</a>                <a href="#hashed_maps.key">k := key( c )</a>
+  <a href="#hashed_maps.length">c := length( m )</a>             <a href="#hashed_maps.move">move( t, s )</a>                 <a href="#hashed_maps.next">next( c )</a>
+  <a href="#hashed_maps.prepend">prepend( m, k, e )</a>           <a href="#hashed_maps.replace">replace( m, k, e )</a>           <a href="#hashed_maps.replace_element">replace_element( m, c, e )</a>
+  <a href="#hashed_maps.reserve_capacity">reserve_capacity( m, c )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
@@ -168,7 +169,7 @@ An exception is raised if the element type is not a string</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.assign"></a><h3>hashed_maps.assign t, s )</h3>
+<a name="hashed_maps.assign"></a><h3>hashed_maps.assign( t, s )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -488,6 +489,55 @@ An exception is raised if the key does not exist</p></td>
 </tr>
 </table>
 
+<a name="hashed_maps.equal"></a><h3>b := hashed_maps.equal( m1, m2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the two maps have identical content.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.equals( old_fruit, updated_fruit ) then ...</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>b</span></td>
+<td><span>return value</span></td>
+<td><span>boolean</span></td>
+<td><span>required</span></td>
+<td><span>true if the maps are equal</span></td>
+</tr><tr>
+<td><span>m1</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the left map</span></td>
+</tr><tr>
+<td><span>m2</span></td>
+<td><span>in out</span></td>
+<td><span>hashed_maps.map</span></td>
+<td><span>required</span></td>
+<td><span>the right map</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the key or element types are different</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps."="</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada is "=" but SparForte does not support in-line functions.</p></td>
+</tr>
+</tr>
+</table>
+
 <a name="hashed_maps.exclude"></a><h3>hashed_maps.exclude( m, k )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
@@ -660,7 +710,7 @@ An exception is raised if out of memory</p></td>
 <td><span>the map</span></td>
 </tr><tr>
 <td><span>c</span></td>
-<td><span>out</span></td>
+<td><span>in out</span></td>
 <td><span>hashed_maps.cursor</span></td>
 <td><span>required</span></td>
 <td><span>the cursor</span></td>
@@ -870,13 +920,13 @@ If the key exists, raise an exception.</p>
 <td><span>the value</span></td>
 </tr><tr>
 <td><span>c</span></td>
-<td><span>in out</span></td>
+<td><span>out</span></td>
 <td><span>hashed_maps.cursor</span></td>
 <td><span>optional</span></td>
 <td><span>the cursor</span></td>
 </tr><tr>
 <td><span>b</span></td>
-<td><span>in out</span></td>
+<td><span>out</span></td>
 <td><span>boolean</span></td>
 <td><span>optional</span></td>
 <td><span>true on success</span></td>

@@ -1097,15 +1097,22 @@ procedure ParseVectorsFirst is
   vectorId   : identifier;
   theVector  : resPtr;
   theCursor  : resPtr;
-  cursRef    : reference;
+  --cursRef    : reference;
+  cursorId   : identifier;
 begin
   expect( vectors_first_t );
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  ParseLastOutVectorCursor( vectorId, cursRef );
+  --ParseLastOutVectorCursor( vectorId, cursRef );
+  ParseInOutInstantiatedParameter( cursorId , vectors_cursor_t );
+  -- Check the type against the map
+  if not error_found then
+     genTypesOk( identifiers( vectorId ).genKind, identifiers( cursorId ).genKind );
+     genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind );
+  end if;
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       findResource( to_resource_id( identifiers( cursRef.id ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        theCursor.vslCursor := Vector_String_Lists.First( theVector.vslVector );
      end;
   end if;

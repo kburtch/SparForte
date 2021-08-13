@@ -77,6 +77,7 @@ hashed_maps_key_t       : identifier;
 hashed_maps_find_t      : identifier;
 hashed_maps_replace_element_t :identifier;
 hashed_maps_has_element_t : identifier;
+hashed_maps_equal_t     : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -134,17 +135,17 @@ end err_ada95;
 
 
 ------------------------------------------------------------------------------
---  PARSE LAsT OUT MAP CURSOR
+--  PARSE OUT MAP CURSOR
 --
 -- If necessary, declare a out cursor parameter.  Attach the resource.
 ------------------------------------------------------------------------------
 
-procedure ParseLastOutMapCursor( mapId : identifier; cursRef : in out reference ) is
+procedure ParseOutMapCursor( mapId : identifier; cursRef : in out reference ) is
   resId : resHandleId;
 begin
-  expect( symbol_t, "," );
+  --expect( symbol_t, "," );
   if identifiers( token ).kind = new_t then
-     ParseOutParameter( cursRef, vectors_cursor_t );
+     ParseOutParameter( cursRef, hashed_maps_cursor_t );
 
      if not error_found then
         identifiers( cursRef.id ).genKind := identifiers( mapId ).genKind;
@@ -170,8 +171,14 @@ begin
         genTypesOk( identifiers( mapId ).genKind2, identifiers( cursRef.Id ).genKind2 );
      end if;
   end if;
-  expect( symbol_t, ")" );
-end ParseLastOutMapCursor;
+  --expect( symbol_t, ")" );
+end ParseOutMapCursor;
+
+procedure ParseNextOutMapCursor( mapId : identifier; cursRef : in out reference ) is
+begin
+  expect( symbol_t, "," );
+  ParseOutMapCursor( mapId, cursRef );
+end ParseNextOutMapCursor;
 
 
 ------------------------------------------------------------------------------
@@ -288,7 +295,8 @@ procedure ParseHashedMapsInsert is
   keyType : identifier;
   elemVal : unbounded_string;
   elemType : identifier;
-  cursorId  : identifier := eof_t;
+  -- cursorId  : identifier := eof_t;
+  cursorRef : reference;
   theCursor : resPtr;
   insertRef : reference;
   version   : natural := 1;
@@ -301,8 +309,11 @@ begin
 
   -- There are 3 variants to an insert
 
-  if getBaseType( identifiers( token ).kind ) = hashed_maps_cursor_t then
-     ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+  -- If a token is undefind, we have to assume it is an out mode cursor.
+
+  if identifiers( token ).kind = new_t or else getBaseType( identifiers( token ).kind ) = hashed_maps_cursor_t then
+     ParseOutMapCursor( mapId, cursorRef );
+     --ParseInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
      ParseLastOutParameter( insertRef, boolean_t );
      version := 2;
   else
@@ -310,7 +321,8 @@ begin
     if token = symbol_t and identifiers( token ).value.all = ")" then
        expect( symbol_t, ")" );
     else
-       ParseNextInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+       ParseNextOutMapCursor( mapId, cursorRef );
+       --ParseNextInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
        ParseLastOutParameter( insertRef, boolean_t );
        version := 3;
     end if;
@@ -325,13 +337,13 @@ begin
           String_Hashed_Maps.Insert( theMap.shmMap, keyVal, elemVal );
        -- (m, k, p, b )
        when 2 =>
-          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          findResource( to_resource_id( identifiers( cursorRef.id ).value.all ), theCursor );
           String_Hashed_Maps.Insert( theMap.shmMap, keyVal, theCursor.shmCursor,
              result );
           AssignParameter( insertRef, to_bush_boolean( result ) );
        -- (m, k, e, p, b )
        when 3 =>
-          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+          findResource( to_resource_id( identifiers( cursorRef.Id ).value.all ), theCursor );
           String_Hashed_Maps.Insert( theMap.shmMap, keyVal, elemVal,
              theCursor.shmCursor, result );
           AssignParameter( insertRef, to_bush_boolean( result ) );
@@ -895,19 +907,19 @@ end ParseHashedMapsMove;
 
 procedure ParseHashedMapsFirst is
   mapId : identifier;
-  --cursorId : identifier;
-  cursRef : reference;
+  cursorId : identifier;
+  --cursRef : reference;
   theMap : resPtr;
   theCursor : resPtr;
 begin
   expect( hashed_maps_first_t );
   ParseFirstInOutInstantiatedParameter( mapId, hashed_maps_map_t );
-  --ParseLastInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
-  ParseLastOutMapCursor( mapId, cursRef );
+  ParseLastInOutInstantiatedParameter( cursorId, hashed_maps_cursor_t );
+  --ParseLastOutMapCursor( mapId, cursRef );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       findResource( to_resource_id( identifiers( cursRef.Id ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        theCursor.shmCursor := String_Hashed_Maps.First( theMap.shmMap );
      exception when storage_error =>
        err_storage;
@@ -1067,6 +1079,42 @@ end ParseHashedMapsHasElement;
 
 
 ------------------------------------------------------------------------------
+--  EQUAL
+--
+-- Syntax: b := hashed_maps.equal( m1, m2 );
+-- Ada:    b := m1 = m2;
+------------------------------------------------------------------------------
+
+procedure ParseHashedMapsEqual( result : out unbounded_string; kind : out identifier ) is
+  leftMapId  : identifier;
+  rightMapId : identifier;
+  leftMap    : resPtr;
+  rightMap   : resPtr;
+  use String_Hashed_Maps;
+begin
+  kind := boolean_t;
+  expect( hashed_maps_equal_t );
+  ParseFirstInOutInstantiatedParameter( leftMapId, hashed_maps_map_t );
+  ParseLastInOutInstantiatedParameter( rightMapId, hashed_maps_map_t );
+  if not error_found then
+     genTypesOk( identifiers( leftMapId ).genKind, identifiers( rightMapId ).genKind );
+     genTypesOk( identifiers( leftMapId ).genKind2, identifiers( rightMapId ).genKind2 );
+  end if;
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( leftMapId ).value.all ), leftMap );
+       findResource( to_resource_id( identifiers( rightMapId ).value.all ), rightMap );
+       result := to_bush_boolean( leftMap.shmMap = rightMap.shmMap );
+     exception when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseHashedMapsEqual;
+
+
+------------------------------------------------------------------------------
 --
 -- HOUSEKEEPING
 --
@@ -1110,6 +1158,7 @@ begin
   declareProcedure( hashed_maps_find_t,      "hashed_maps.find",     ParseHashedMapsFind'access );
   declareProcedure( hashed_maps_replace_element_t, "hashed_maps.replace_element",     ParseHashedMapsReplaceElement'access );
   declareFunction(  hashed_maps_has_element_t, "hashed_maps.has_element",     ParseHashedMapsHasElement'access );
+  declareFunction(  hashed_maps_equal_t,     "hashed_maps.equal",    ParseHashedMapsEqual'access );
 
   declareNamespaceClosed( "hashed_maps" );
 end StartupHMaps;
