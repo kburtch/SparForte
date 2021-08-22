@@ -556,7 +556,7 @@ begin
      ParseInOutInstantiatedParameter( mapId, hashed_maps_map_t );
      ParseLastStringParameter( keyVal, keyType, identifiers( mapId ).genKind );
   else
-     err( "map or cursor expected" );
+     err( "hashed_maps.map or hashed_maps.cursor expected" );
   end if;
 
   -- The function result type depends on whether or not we have a map or cursor

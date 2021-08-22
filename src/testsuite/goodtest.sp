@@ -6456,6 +6456,99 @@ begin
 
 end;
 
+-- vectors
+
+declare
+  v : vectors.vector( natural, string );
+  v2 : vectors.vector( natural, string );
+begin
+
+  -- non-cursor tests
+
+  vectors.clear( v );
+  pragma assert( vectors.capacity( v ) = 0 );
+  pragma assert( vectors.equal( v, v2 ) );
+  vectors.reserve_capacity( v, 20 );
+  pragma assert( vectors.capacity( v ) >= 20 );
+  pragma assert( vectors.is_empty( v ) );
+  pragma assert( vectors.length( v ) = 0 );
+  vectors.to_vector( v, "foo", 5 );
+  pragma assert( vectors.length( v ) = 5 );
+  vectors.set_length( v, 3 );
+  pragma assert( vectors.length( v ) = 3 );
+  vectors.append( v, "bar" );
+  pragma assert( vectors.length( v ) = 4 );
+  vectors.append( v, "boo", 2 );
+  pragma assert( vectors.length( v ) = 6 );
+  pragma assert( vectors.element( v, 0 ) = "foo" );
+  pragma assert( vectors.element( v, 1 ) = "foo" );
+  pragma assert( vectors.element( v, 2 ) = "foo" );
+  pragma assert( vectors.element( v, 3 ) = "bar" );
+  pragma assert( vectors.element( v, 4 ) = "boo" );
+  pragma assert( vectors.element( v, 5 ) = "boo" );
+  vectors.prepend( v, "def", 2 );
+  vectors.prepend( v, "abc" );
+  pragma assert( vectors.element( v, 0 ) = "abc" );
+  pragma assert( vectors.element( v, 1 ) = "def" );
+  pragma assert( vectors.element( v, 2 ) = "def" );
+  pragma assert( vectors.element( v, 3 ) = "foo" );
+  pragma assert( vectors.first_index( v ) = 0 );
+  pragma assert( vectors.last_index( v ) = 8 );
+  vectors.clear( v );
+  vectors.append( v, "abc" );
+  vectors.append( v, "def" );
+  vectors.append( v, "ghi" );
+  vectors.append( v, "jkl" );
+  vectors.append( v, "mno" );
+  vectors.append( v, "pqr" );
+  vectors.append( v, "stu" );
+  vectors.append( v, "xyz" );
+  pragma assert( vectors.first_element( v ) = "abc" );
+  pragma assert( vectors.last_element( v ) = "xyz" );
+  vectors.delete_first( v );
+  pragma assert( vectors.first_element( v ) = "def" );
+  vectors.delete_last( v );
+  pragma assert( vectors.last_element( v ) = "stu" );
+  vectors.delete_first( v, 2 );
+  pragma assert( vectors.first_element( v ) = "jkl" );
+  vectors.delete_last( v, 2 );
+  pragma assert( vectors.last_element( v ) = "mno" );
+  pragma assert( vectors.contains( v, "mno" ) );
+  vectors.clear( v );
+  vectors.clear( v2 );
+  vectors.append( v, "apple" );
+  vectors.append( v, "blueberry" );
+  vectors.append( v, "cherry" );
+  vectors.append( v2, "orange" );
+  vectors.reverse_elements( v );
+  pragma assert( vectors.first_element( v ) = "cherry" );
+  vectors.flip( v );
+  pragma assert( vectors.first_element( v ) = "apple" );
+  vectors.append_vectors( v, v2 );
+  pragma assert( vectors.first_element( v ) = "apple" );
+  pragma assert( vectors.last_element( v ) = "orange" );
+end;
+
+-- vector cursors
+
+declare
+  v : vectors.vector( natural, string );
+  c : vectors.cursor( natural, string );
+begin
+  vectors.append( v, "ant" );
+  vectors.append( v, "bear" );
+  vectors.first( v, c );
+  pragma assert( vectors.element( c ) = "ant" );
+  vectors.next( c );
+  pragma assert( vectors.element( c ) = "bear" );
+  vectors.next( c );
+  pragma assert( vectors.has_element( c ) = false );
+  vectors.last( v, c );
+  pragma assert( vectors.element( c ) = "bear" );
+  vectors.previous( c );
+  pragma assert( vectors.element( c ) = "ant" );
+end;
+
 -- constant specifications
 
 declare

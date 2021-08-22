@@ -20,6 +20,9 @@ Priority Issues (Fix These First)
 - ada vectors
   - complete
   - tests
+  - append/prepend to a vector (Ada) vs. an Element
+  - handling of derrived types and subtypes and universal types (also in hmaps)
+
 
 - redesign source code treasury index page
 - update examples with recent changes to SparForte (e.g. affirm clauses)

@@ -1154,9 +1154,21 @@ begin
       begin
          if class_ok( genKindId, typeClass, subClass ) then
             if identifiers( genKindId ).list then
-               err( "key type should be a scalar type" );
+               err( "key type should be a discrete scalar type" );
             elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-               err( "key type should be a scalar type" );
+               err( "key type should be a discrete scalar type" );
+            elsif genKindId = natural_t or
+               genKindId = positive_t or
+               genKindId = natural_t or
+               genKindId = integer_t then
+               -- short_short_integer_t, short_integer_t, long_integer_t
+               -- long_long_integer_t
+               null;
+             -- TODO: enumeriated
+            elsif getUniType( genKindId ) = root_enumerated_t then
+               null;
+            else
+               err( "key type should be a discrete scalar type" );
             end if;
          end if;
       end;
@@ -1178,15 +1190,27 @@ begin
       end if;
    elsif uniType = vectors_cursor_t then
       -- vector cursor index must be scalar
-      -- TODO
+      -- TODO: THIS IS NOT FINISHED
       declare
          genKindId : identifier renames identifiers( id ).genKind;
       begin
          if class_ok( genKindId, typeClass, subClass ) then
             if identifiers( genKindId ).list then
-               err( "key type should be a scalar type" );
+               err( "key type should be a discrete scalar type" );
             elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-               err( "key type should be a scalar type" );
+               err( "key type should be a discrete scalar type" );
+            elsif genKindId = natural_t or
+               genKindId = positive_t or
+               genKindId = natural_t or
+               genKindId = integer_t then
+               -- short_short_integer_t, short_integer_t, long_integer_t
+               -- long_long_integer_t
+               null;
+             -- TODO: enumeriated
+            elsif getUniType( genKindId ) = root_enumerated_t then
+               null;
+            else
+               err( "key type should be a discrete scalar type" );
             end if;
          end if;
       end;

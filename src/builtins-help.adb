@@ -750,6 +750,7 @@ begin
    content( e, "umask" );
    content( e, "unset" );
    content( e, "variables" );
+   content( e, "vectors" );
    content( e, "wait" );
    content( e, "while" );
    content( e, "with" );
@@ -2613,6 +2614,23 @@ begin
      errors( e, "An exception is raised if pragma ada_95 is enforced" );
      errors( e, "An exception is raised if not used in an interactive session" );
      seeAlsoShellCmds( e );
+     endHelp( e );
+  elsif helpTopic = "vectors" then
+     startHelp( e, "vectors" );
+     summary( e, "vectors package" );
+     authorKen( e );
+     categoryPackage( e );
+     createdOn( e, "v2.4.2");
+     description( e, "A collection of common routines for working with dynamic arrays." );
+     content( e, "capacity( v )", "reserve_capacity( v, c )", "set_length( v, c )" );
+     content( e, "c := length( v )", "b := is_empty( v )", "to_vector( v, e, c )" );
+     content( e, "append( v, e [,c] )", "b := equals( v1, v2 )", "i := first_index( v )" );
+     content( e, "prepend( v, e [,c] )", "i := last_index( v )", "b := contains( c, e )" );
+     content( e, "e := first_element( v )", "e := last_element( v )", "reverse_elements( v )" );
+     content( e, "flip( v )", "b := is_empty( v )", "append_vectors( v1, v2 )" );
+     content( e, "first( v, c )", "next( c )", "last( v, c )" );
+     content( e, "previous( c )" );
+     seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then
      startHelp( e, "wait" );
