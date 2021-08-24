@@ -6527,6 +6527,15 @@ begin
   vectors.append_vectors( v, v2 );
   pragma assert( vectors.first_element( v ) = "apple" );
   pragma assert( vectors.last_element( v ) = "orange" );
+  vectors.clear( v );
+  vectors.append( v, "apple" );
+  vectors.append( v, "blueberry" );
+  vectors.append( v, "cherry" );
+  vectors.append( v, "pear" );
+  vectors.delete( v, vectors.last_index( v ) );
+  pragma assert( vectors.last_element( v ) = "cherry" );
+  vectors.delete( v, vectors.last_index( v ) -1, 2 );
+  pragma assert( vectors.last_element( v ) = "apple" );
 end;
 
 -- vector cursors

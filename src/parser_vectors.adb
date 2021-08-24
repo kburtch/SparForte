@@ -85,7 +85,7 @@ vectors_has_element_t   : identifier;
 vectors_equal_t         : identifier;
 vectors_append_vectors_t : identifier;
 
-vectors_to_index_t      : identifier;
+--vectors_to_index_t      : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -799,10 +799,8 @@ begin
   elsif identifiers( token ).kind = vectors_vector_t then
      ParseInOutInstantiatedParameter( vectorId, vectors_vector_t );
      expect( symbol_t, "," );
-     -- idxkind can be overwritten
-     idxType := identifiers( vectorId ).genKind;
      ParseExpression( idxExpr, idxType );
-     --res := baseTypesOK( idxType, identifiers( vectorId ).genKind );
+     baseTypesOK( idxType, identifiers( vectorId ).genKind );
   else
      err( optional_yellow( "vectors.vector" ) &
           " or " &
@@ -1242,8 +1240,8 @@ end ParseVectorsPrevious;
 ------------------------------------------------------------------------------
 --  DELETE
 --
--- Syntax: vectors.delete( v, c | i )
--- Ada:    vectors.delete( v, c | i )
+-- Syntax: vectors.delete( v, c | i [, n] )
+-- Ada:    vectors.delete( v, c | i [, n] )
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsDelete is
@@ -1264,11 +1262,10 @@ begin
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   expect( symbol_t, "," );
   if identifiers( token ).kind = vectors_cursor_t then
-     ParseIdentifier( cursorId );
-     --CheckCursorIsInitialized( cursorId );
+     ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   else
-     ParseNumericParameter( idxExpr, idxType, identifiers( vectorId ).genKind2 );
-     -- should be extended index
+     ParseExpression( idxExpr, idxType );
+     baseTypesOK( idxType, identifiers( vectorId ).genKind );
      hasIdx := true;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then

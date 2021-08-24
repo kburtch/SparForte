@@ -683,6 +683,21 @@ end ParseLastStringParameter;
 
 
 ------------------------------------------------------------------------------
+--  PARSE ENUM PARAMETER
+--
+-- Expect a parameter that is an enum expression.
+------------------------------------------------------------------------------
+
+procedure ParseEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier ) is
+begin
+  ParseExpression( expr_val, expr_type );
+  -- no cast to type
+  discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
+end ParseEnumParameter;
+
+
+------------------------------------------------------------------------------
 --  PARSE SINGLE ENUM PARAMETER
 --
 -- Expect a single parameter that is an enum expression.

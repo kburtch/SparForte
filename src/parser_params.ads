@@ -84,6 +84,9 @@ procedure ParseLastStringParameter( expr_val : out unbounded_string;
 -- Enumerated Parameters
 ------------------------------------------------------------------------------
 
+procedure ParseEnumParameter( expr_val : out unbounded_string;
+  expr_type : out identifier; expected_type : identifier );
+
 procedure ParseSingleEnumParameter( expr_val : out unbounded_string;
   expr_type : out identifier; expected_type : identifier );
 

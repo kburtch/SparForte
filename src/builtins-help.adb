@@ -2629,7 +2629,7 @@ begin
      content( e, "e := first_element( v )", "e := last_element( v )", "reverse_elements( v )" );
      content( e, "flip( v )", "b := is_empty( v )", "append_vectors( v1, v2 )" );
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
-     content( e, "previous( c )" );
+     content( e, "previous( c )", "delete( i [, c] )" );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then
