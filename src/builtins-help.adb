@@ -1411,13 +1411,15 @@ begin
      endHelp( e );
   elsif helpTopic = "case" then
      startHelp( e, "case" );
-     summary( e, "case var is...end case" );
+     summary( e, "case var [, var ...] is...end case" );
      authorKen( e );
      categoryKeyword( e );
      description( e,
-        "Test multiple conditions, executing the commands for the condition " &
-        "that matches.  If no conditions match, the others case will run." );
-     content( e, "case var is when literal|const[|...] => ...when others => ...end case" );
+        "Test multiple constants or variables, executing the commands for " &
+        "the condition that matches.  If there are multiple variables, " &
+        "each case in the list must match.   If no conditions match, the " &
+        "others case will run." );
+     content( e, "case var [, var ...] is when literal|const[|...][, ...] => ...when others => ...end case" );
      seeAlsoFlowControl( e );
      endHelp( e );
   elsif helpTopic = "cd" then

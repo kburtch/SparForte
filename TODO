@@ -11,6 +11,10 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- multi-case
+  - negative tests
+  - docs
+  - was is wasRef not applied to case statements?
 - pragma todo
   - these do not appear in help output when in include files
 - how can design mode be improved to assist with design diagrams?

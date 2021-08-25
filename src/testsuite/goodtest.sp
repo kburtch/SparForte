@@ -2433,6 +2433,35 @@ when others => i2 := 2;
 end case;
 pragma assert( i2 = 2 );
 
+-- multi-case
+
+declare
+   a : constant integer := 1;
+   b : constant string := "a";
+   c : positive;
+begin
+   c := 3;
+   case a, b is
+   when 1, "a" => c := 1;
+   when others => c := 2;
+   end case;
+   pragma assert( c = 1 );
+
+   c := 3;
+   case a, b is
+   when 2, "a" => c := 1;
+   when others => c := 2;
+   end case;
+   pragma assert( c = 2 );
+
+   c := 3;
+   case a, b is
+   when 1, "b" => c := 1;
+   when others => c := 2;
+   end case;
+   pragma assert( c = 2 );
+end;
+
 -- while loop and exit statement
 
 i := 1;
