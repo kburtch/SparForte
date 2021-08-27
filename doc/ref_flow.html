@@ -105,6 +105,45 @@ case by using the <tt>null</tt> statement.</p>
 <p><b>Ada</b>: The when others clause is optional in Ada.  It's required
 in SparForte.</p>
 
+<h3>The Case Statement (Multi-Case)</h3>
+
+<p>To the multi-case version of the case statement, give a list of
+variables to test after "case".  Each when has a list of values
+corresponding to the initial variable list.  Each value must match
+for the statements after the "=&gt;" to run.</p>
+
+<p>This version of the case statement is especially useful when
+creating lookup tables as commonly used in business programming.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>type</b> a_customer_loyalty <b>is</b> (recent, loyal);<br>
+<b>type</b> a_outage_duration <b>is</b> (short, long);<br>
+<b>type</b> a_rebate <b>is</b> (none, small, medium, large);<br>
+<br>
+customer_loyalty : <b>limited</b> a_customer_loyalty := recent;<br>
+outage_duration  : <b>limited</b> a_outage_duration := long;<br>
+rebate           : a_rebate;<br>
+<br>
+<b>case</b> customer_loyalty, outage_duration <b>is</b><br>
+<b>when</b> recent,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; rebate := small;<br>
+<b>when</b> recent,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; rebate := medium;<br>
+<b>when</b> loyal,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; rebate := medium;<br>
+<b>when</b> loyal,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; rebate := large;<br>
+<b>when</b> <b>others</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt; rebate := none;<br>
+<b>end</b> <b>case</b>;<br>
+<br>
+? "rebate is " @  rebate;<br>
+        <div class="code_caption">
+                <b>Example</b>: The Muti-Case Statement
+        </div>
+        </div>
+        </center>
+
+<p><b>Ada</b>: The multi-case version of the case statement is not
+allowed with pragma ada_95.</p>
+
 <h3>The While Loop Statement</h3>
 
 <p>The while loop is a pre-test loop.&nbsp; The commands in the loop

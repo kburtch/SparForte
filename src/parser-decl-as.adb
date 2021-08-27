@@ -405,6 +405,7 @@ begin
   loop
       ParseIdentifier( test_id );                          -- identifier to test
       if type_checks_done or else class_ok( test_id, varClass ) then
+         --identifiers( test_id ).wasReferenced := true;
          vector_identifier_lists.append( test_ids, test_id );
          test_len := test_len + 1;
       end if;
@@ -430,7 +431,7 @@ begin
      -- this should be ParseConstantIdentifier
      b2 := true;                                          -- assume it succeeds
      test_idx:= 1;                                        -- from first index
-     loop                                                 -- all test ids
+     while test_idx <= test_len loop                       -- all test ids
         test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
         b1 := false;                                      -- assume case fails
         loop
@@ -658,7 +659,7 @@ begin
      -- this should be ParseConstantIdentifier
      b2 := true;
      test_idx := 1;
-     loop
+     while test_idx <= test_len loop
         test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
         b1 := false;                                      -- assume case fails
      loop
