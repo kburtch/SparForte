@@ -410,8 +410,10 @@ begin
       expect( symbol_t, "," );
   end loop;
 
-  if onlyAda95 then
-     err( "case must have one identifier only with " & optional_yellow( "pragma ada_95" ) );
+  if test_len > 1 then
+     if onlyAda95 then
+        err( "case must have one identifier only with " & optional_yellow( "pragma ada_95" ) );
+     end if;
   end if;
 
   expect( is_t );                                       -- "is"
