@@ -12,7 +12,10 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - multi-case
-  - negative tests
+  - multi-case and negative tests
+  - case in negative tests
+  - static case and multi-case
+  - business procedure block that only supports case in (do this after vectors)
 - pragma todo
   - these do not appear in help output when in include files
 - how can design mode be improved to assist with design diagrams?

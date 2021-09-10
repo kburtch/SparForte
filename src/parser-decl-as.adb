@@ -376,118 +376,284 @@ end ParseStaticIfBlock;
 
 
 -----------------------------------------------------------------------------
---  PARSE CASE BLOCK
 --
--- Handle a case statement.
--- Syntax: case-block = "case" ident [,ident] "is"
--- "when" const-ident ["|"...] [, ...]  "=>" ...
--- "when" others =>" ..."
--- "end" "case"
+-- CASE
+--
 -----------------------------------------------------------------------------
 
-procedure ParseCaseBlock is
-  test_ids : vector_identifier_lists.vector;
+
+-----------------------------------------------------------------------------
+--  PARSE STANDARD CASE HEADER PART
+--
+-- ... id [, id ...] is
+--
+-- Parse the list of identifiers after "case".  Consume "is" as well.
+-----------------------------------------------------------------------------
+
+procedure ParseStandardCaseHeaderPart(
+  test_ids : in out vector_identifier_lists.vector;
+  test_len : out count_type
+) is
   test_id  : identifier;
-  test_idx : count_type;
-  test_len : count_type := 0;
-  case_id  : identifier;
-  handled  : boolean := false;
-  b1       : boolean := false;
-  b2       : boolean := false;
 begin
-
-  -- case id is
-
-  expect( case_t );                                        -- "case"
+  test_len := 0;
 
  -- expect one or more test identifiers
 
   loop
       ParseIdentifier( test_id );                          -- identifier to test
       if type_checks_done or else class_ok( test_id, varClass ) then
-         --identifiers( test_id ).wasReferenced := true;
          vector_identifier_lists.append( test_ids, test_id );
          test_len := test_len + 1;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
       expect( symbol_t, "," );
   end loop;
+
   if onlyAda95 then
-     if test_len > 1 then
-        err( "multiple case identifiers are not allowed with " & optional_yellow( "pragma ada_95" ) );
-     end if;
+     err( "case must have one identifier only with " & optional_yellow( "pragma ada_95" ) );
   end if;
 
-  -- we allow const because parameters are consts in Bush 1.x.
+  expect( is_t );                                       -- "is"
+
+end ParseStandardCaseHeaderPart;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE IN HEADER PART
+--
+-- ... in id [, id ...] out id [, id ...] is
+--
+-- Parse the list of identifiers after "in" and after "out".  Consume "is"
+-- as well.
+-----------------------------------------------------------------------------
+
+procedure ParseCaseInHeaderPart(
+  test_ids : in out vector_identifier_lists.vector;
+  test_len : out count_type;
+  return_ids : in out vector_identifier_lists.vector;
+  return_len : out count_type
+) is
+  test_id   : identifier;
+  return_id : identifier;
+begin
+  test_len := 0;
+  return_len := 0;
+
+  if onlyAda95 then
+     err( "case in is not allowed with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+  expect( in_t );                                          -- "in"
+
+ -- expect one or more test identifiers
+
+  loop
+      ParseIdentifier( test_id );                          -- identifier to test
+      if type_checks_done or else class_ok( test_id, varClass ) then
+         vector_identifier_lists.append( test_ids, test_id );
+         test_len := test_len + 1;
+      end if;
+  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
+      expect( symbol_t, "," );
+  end loop;
+
+  -- for a decision table, there is an out part
+
+  expect( out_t );
+  loop
+      return_len := return_len + 1;
+      ParseIdentifier( return_id );                    -- identifier to test
+      if type_checks_done or else class_ok( return_id, varClass ) then
+         vector_identifier_lists.append( return_ids, return_id );
+      end if;
+  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
+      expect( symbol_t, "," );
+  end loop;
 
   expect( is_t );                                       -- "is"
+
+end ParseCaseInHeaderPart;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE IN BIG ARROW PART
+--
+-- "=>" expr [, expr...] ;
+--
+-- Parse the expression list after the big arrow.  Consume the final
+-- semi-colon.
+-----------------------------------------------------------------------------
+
+procedure ParseCaseInBigArrowPart(
+  return_ids : in out vector_identifier_lists.vector;
+  return_len : count_type;
+  b2         : boolean;
+  handled   : in out boolean
+) is
+  return_id  : identifier;
+  outExpr  : unbounded_string;
+  outType  : identifier;
+begin
+  expect( symbol_t, "=>" );                             -- "=>"
+  if b2 and not handled and not exit_block then         -- handled yet?
+     if trace then
+        put_trace( "executing" );
+     end if;
+     -- for decision table
+     for return_idx in 1..return_len loop
+        return_id := vector_identifier_lists.element( return_ids, positive( return_idx ) );
+        ParseExpression( outExpr, outType );
+        if baseTypesOK( identifiers( return_id ).kind, outType ) then
+           if isExecutingCommand then
+              identifiers( return_id ).value.all := outExpr;
+              if trace then
+                 put_trace( to_string( identifiers( return_id ).name ) & " := " & to_string( identifiers( return_id ).value.all ) );
+              end if;
+           end if;
+        end if;
+        if return_idx < return_len then
+           expect( symbol_t, "," ); -- ADDED
+        end if;
+     end loop;
+     handled := true;                                   -- and remember done
+  else
+     -- skip expression
+     for return_idx in 1..return_len loop
+        ParseExpression( outExpr, outType );
+        if return_idx < return_len then
+           expect( symbol_t, "," );
+        end if;
+     end loop;
+  end if;
+  expect( symbol_t, ";" );
+end ParseCaseInBigArrowPart;
+
+
+-----------------------------------------------------------------------------
+--  PARSE STANDARD CASE BIG ARROW PART
+--
+-- "=>" statements ;
+--
+-- Parse the block of statements.  Consume the final semi-colon.
+-----------------------------------------------------------------------------
+
+procedure ParseStandardCaseBigArrowPart(
+  b1        : boolean;
+  handled   : in out boolean
+) is
+begin
+     expect( symbol_t, "=>" );                             -- "=>"
+     if b1 and not handled and not exit_block then         -- handled yet?
+        ParseBlock( when_t );                           -- if not, handle
+        handled := true;                                   -- and remember done
+     else
+        SkipBlock( when_t );                               -- else skip case
+     end if;
+end ParseStandardCaseBigArrowPart;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE WHEN PART
+--
+-- when val [|val ...]
+--
+-- Parse the listof values and determine if the result is true or false.
+-----------------------------------------------------------------------------
+
+procedure ParseCaseWhenPart(
+  test_ids : in out vector_identifier_lists.vector;
+  test_len : count_type;
+  b2       : in out boolean
+) is
+  test_id  : identifier;
+  test_idx : count_type;
+  case_id  : identifier;
+  b1       : boolean := false;
+begin
+  expect( when_t );                                    -- "when"
+  if error_found or token = others_t then
+     return;
+  end if;
+
+  -- this should be ParseConstantIdentifier
+  b2 := true;                                          -- assume it succeeds
+  test_idx:= 1;                                        -- from first index
+  while test_idx <= test_len loop                       -- all test ids
+     test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
+     b1 := false;                                      -- assume case fails
+     loop
+        if token = strlit_t then                          -- strlit allowed
+           if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        elsif token = charlit_t then                      -- charlit allowed
+           if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        elsif token = number_t then                       -- num lit allowed
+           if type_checks_done or else uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+              case_id := token;
+              getNextToken;
+           end if;
+        else                                             -- constant allowed
+           ParseIdentifier( case_id );                         -- get the case
+           if identifiers( case_id ).usage /= constantUsage    -- is constant
+              and identifiers( case_id ).class /= enumClass then -- or enum?
+              err( "variable not allowed as a case" );         -- error if not
+           elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
+                 identifiers( case_id ).kind ) then            -- types good?
+              null;
+           end if;
+        end if;
+        if not error_found then                         -- OK? check case
+           b1 := b1 or                                  -- against test var
+             Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
+             Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+        end if;
+        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+        expect( symbol_t, "|" );                        -- expect alternate
+     end loop;
+     if not error_found then
+        b2 := b2 and b1;
+     end if;
+     exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
+     expect( symbol_t, "," );                           -- expect alternate
+     test_idx := test_idx + 1;
+     if test_idx > test_len then
+        err("too many cases compared to case identifier list" );
+     end if;
+  end loop;
+  if test_idx < test_len then
+     err("too few cases compared to case identifier list" );
+  end if;
+end ParseCaseWhenPart;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE IN BLOCK
+--
+-----------------------------------------------------------------------------
+
+procedure ParseCaseInBlock is
+  test_ids : vector_identifier_lists.vector;
+  test_len : count_type := 0;
+  return_ids : vector_identifier_lists.vector;
+  return_len : count_type := 0;
+  handled  : boolean := false;
+  b2       : boolean := false;
+begin
+
+  ParseCaseInHeaderPart( test_ids, test_len, return_ids, return_len );
 
   if token /= when_t then                                 -- first when missing?
      expect( when_t );                                    -- force error
   end if;
   while token = when_t loop
-     expect( when_t );                                    -- "when"
+     ParseCaseWhenPart( test_ids, test_len, b2 );
      exit when error_found or token = others_t;
-     -- this should be ParseConstantIdentifier
-     b2 := true;                                          -- assume it succeeds
-     test_idx:= 1;                                        -- from first index
-     while test_idx <= test_len loop                       -- all test ids
-        test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
-        b1 := false;                                      -- assume case fails
-        loop
-           if token = strlit_t then                          -- strlit allowed
-              if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
-                 case_id := token;
-                 getNextToken;
-              end if;
-           elsif token = charlit_t then                      -- charlit allowed
-              if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
-                 case_id := token;
-                 getNextToken;
-              end if;
-           elsif token = number_t then                       -- num lit allowed
-              if type_checks_done or else uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
-                 case_id := token;
-                 getNextToken;
-              end if;
-           else                                             -- constant allowed
-              ParseIdentifier( case_id );                         -- get the case
-              if identifiers( case_id ).usage /= constantUsage    -- is constant
-                 and identifiers( case_id ).class /= enumClass then -- or enum?
-                 err( "variable not allowed as a case" );         -- error if not
-              elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
-                    identifiers( case_id ).kind ) then            -- types good?
-                 null;
-              end if;
-           end if;
-           if not error_found then                         -- OK? check case
-              b1 := b1 or                                  -- against test var
-                Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
-                Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
-           end if;
-           exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
-           expect( symbol_t, "|" );                        -- expect alternate
-        end loop;
-        if not error_found then
-           b2 := b2 and b1;
-        end if;
-        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
-        expect( symbol_t, "," );                           -- expect alternate
-        test_idx := test_idx + 1;
-        if test_idx > test_len then
-           err("too many cases compared to case identifier list" );
-        end if;
-     end loop;
-     if test_idx < test_len then
-        err("too few cases compared to case identifier list" );
-     end if;
-     expect( symbol_t, "=>" );                             -- "=>"
-     if b2 and not handled and not exit_block then         -- handled yet?
-        ParseBlock( when_t );                              -- if not, handle
-        handled := true;                                   -- and remember done
-     else
-        SkipBlock( when_t );                               -- else skip case
-     end if;
+     ParseCaseInBigArrowPart( return_ids, return_len, b2, handled );
   end loop;
 
   -- others part
@@ -496,18 +662,149 @@ begin
      err( "when others expected" );                        -- if pointing at
   end if;                                                  -- end case
   expect( others_t );                                      -- "others"
-  expect( symbol_t, "=>" );                                -- "=>"
-  if not handled and not exit_block then                   -- not handled yet?
-     ParseBlock;                                           -- handle now
-  else                                                     -- else just
-     SkipBlock;                                            -- skip
+
+  ParseCaseInBigArrowPart( return_ids, return_len, true, handled );
+
+end ParseCaseInBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE STANDARD CASE BLOCK
+--
+-- Handle a case statement.
+-- Syntax: case-block = "case" ident [,ident] "is"
+-- "when" const-ident ["|"...] [, ...]  "=>" ...
+-- "when" others =>" ..."
+-- "end" "case"
+-----------------------------------------------------------------------------
+
+
+procedure ParseStandardCaseBlock is
+  test_ids : vector_identifier_lists.vector;
+  test_len : count_type := 0;
+  handled  : boolean := false;
+  b1       : boolean := false;
+begin
+
+  -- expect one or more test identifiers
+
+  ParseStandardCaseHeaderPart( test_ids, test_len );
+
+  if token /= when_t then                                 -- first when missing?
+     expect( when_t );                                    -- force error
+  end if;
+  while token = when_t loop
+     ParseCaseWhenPart( test_ids, test_len, b1 );
+     exit when error_found or token = others_t;
+     ParseStandardCaseBigArrowPart( b1, handled );
+  end loop;
+
+  -- others part
+
+  if token /= others_t then                                -- a little clearer
+     err( "when others expected" );                        -- if pointing at
+  end if;                                                  -- end case
+  expect( others_t );                                      -- "others"
+
+  ParseStandardCaseBigArrowPart( true, handled );
+
+
+  --ParseIdentifier( test_id );                          -- identifier to test
+  --if type_checks_done or else class_ok( test_id, varClass ) then
+  --   null;
+  --end if;
+
+  -- we allow const because parameters are consts in Bush 1.x.
+
+  -- expect( is_t );                                       -- "is"
+
+  --if token /= when_t then                                 -- first when missing?
+  --   expect( when_t );                                    -- force error
+  --end if;
+  --while token = when_t loop
+  --   expect( when_t );                                    -- "when"
+  --   exit when error_found or token = others_t;
+  --   -- this should be ParseConstantIdentifier
+  --    b1 := false;                                        -- assume case fails
+  --    loop
+  --      if token = strlit_t then                          -- strlit allowed
+  --         if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
+  --            case_id := token;
+  --            getNextToken;
+  --         end if;
+  --      elsif token = charlit_t then                      -- charlit allowed
+  --         if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
+  --            case_id := token;
+  --            getNextToken;
+  --         end if;
+  --      elsif token = number_t then                       -- num lit allowed
+  --         if type_checks_done or else uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+  --            case_id := token;
+  --            getNextToken;
+  --         end if;
+  --      else                                             -- constant allowed
+  --         ParseIdentifier( case_id );                         -- get the case
+  --         if identifiers( case_id ).usage /= constantUsage    -- is constant
+  --            and identifiers( case_id ).class /= enumClass then -- or enum?
+  --            err( "variable not allowed as a case" );         -- error if not
+  --         elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
+  --               identifiers( case_id ).kind ) then            -- types good?
+  --            null;
+  --         end if;
+  --      end if;
+  --      if not error_found then                         -- OK? check case
+  --         b1 := b1 or                                  -- against test var
+  --           Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
+  --           Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+  --      end if;
+  --      exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+  --      expect( symbol_t, "|" );                        -- expect alternate
+  --   end loop;
+
+  --   expect( symbol_t, "=>" );                             -- "=>"
+  --   if b1 and not handled and not exit_block then         -- handled yet?
+  --      ParseBlock( when_t );                           -- if not, handle
+  --      handled := true;                                   -- and remember done
+  --   else
+  --      SkipBlock( when_t );                               -- else skip case
+  --   end if;
+  --end loop;
+
+  -- others part
+
+  --if token /= others_t then                                -- a little clearer
+  --   err( "when others expected" );                        -- if pointing at
+  --end if;                                                  -- end case
+  --expect( others_t );                                      -- "others"
+  --expect( symbol_t, "=>" );                                -- "=>"
+  --if not handled and not exit_block then                   -- not handled yet?
+  --   ParseBlock;                                        -- handle now
+  --else                                                     -- else just
+  --   SkipBlock;                                            -- skip
+  --end if;
+
+end ParseStandardCaseBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE BLOCK
+--
+-----------------------------------------------------------------------------
+
+procedure ParseCaseBlock is
+begin
+  expect( case_t );
+
+  if token = in_t then
+     ParseCaseInBlock;
+  else
+     ParseStandardcaseBlock;
   end if;
 
   -- end case
 
   expect( end_t );                                         -- "end case"
   expect( case_t );
-
 end ParseCaseBlock;
 
 

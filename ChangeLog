@@ -66,5 +66,7 @@ CHANGES SINCE 2.4.1
 
 28. New: vectors package.[not complete, tests, docs needed]
 
-29. New: case statements can have multiple test variables [tests, docs needed].
+29. New: case in statement can have multiple test variables and return expressions [negative tests].
+
+30. New: case with multiple variables [negative tests].
 
