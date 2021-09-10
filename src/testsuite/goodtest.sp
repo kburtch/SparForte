@@ -2551,6 +2551,32 @@ begin
    pragma assert( rebate_days = 0 );
 end;
 
+-- case with <>
+
+declare
+  i : integer := 3;
+  j : integer := 4;
+  b : boolean;
+begin
+  case i, j is
+  when 1, 2 => b := false;
+  when 2, 3 => b := false;
+  when <>, 4 => b := true;
+  when others => b := false;
+  end case;
+  pragma assert( b );
+
+  i := 3;
+  j := 5;
+  case i, j is
+  when 1, 2 => b := false;
+  when 2, 3 => b := false;
+  when 3, <> => b := true;
+  when others => b := false;
+  end case;
+  pragma assert( b );
+end;
+
 -- case in
 
 -- case in : 1 and 1

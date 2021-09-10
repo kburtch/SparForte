@@ -1148,6 +1148,8 @@ begin
           if cmdpos < length( command ) then
              if Element( command, cmdpos+1 ) = '=' then
                 cmdpos := cmdpos + 1;
+             elsif Element( command, cmdpos+1 ) = '>' then -- box <>
+                cmdpos := cmdpos + 1;
              end if;
           end if;
      when '\' =>

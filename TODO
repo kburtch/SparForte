@@ -15,20 +15,22 @@ Priority Issues (Fix These First)
   - multi-case and negative tests
   - case in negative tests
   - static case and multi-case
-  - business procedure block that only supports case in (do this after vectors)
-- pragma todo
-  - these do not appear in help output when in include files
-- how can design mode be improved to assist with design diagrams?
-- ada hash map support
-  - creating cursors as out parameter on hashed_maps.find
-  - check handling of universal types and hashed_maps
+  - <> box statement negative tests
+  - business process block that only supports case in (do this after vectors)
+  - with separate policy, with separate configuration, with separate process in addition to normal with separate
 - ada vectors
   - complete
   - tests
-  - append/prepend to a vector (Ada) vs. an Element
+  - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - handling of derrived types and subtypes and universal types (also in hmaps)
+- pragma todo
+  - these do not appear in help output when in include files
+- ada hash map support
+  - creating cursors as out parameter on hashed_maps.find
+  - check handling of universal types and hashed_maps
+  - should insert be converted to insert and mark
 
-
+- how can design mode be improved to assist with design diagrams?
 - redesign source code treasury index page
 - update examples with recent changes to SparForte (e.g. affirm clauses)
 - update REPL on website

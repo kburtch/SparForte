@@ -385,6 +385,25 @@ begin
      Put_Line( copyright );
      Put_Line( "This is free software; see the source for copying conditions." );
      Put_Line( "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." );
+     --New_Line;
+
+     --path := to_unbounded_string( globalConfigPath );
+     --if not C_is_includable_file( globalConfigPath & ASCII.NUL ) then
+     --   path := path & " (no file)";
+     --end if;
+     --Put_line( "* Global Configuration: " & toEscaped( path ) );
+
+     --path := to_unbounded_string( globalPolicyPath );
+     --if not C_is_includable_file( globalPolicyPath & ASCII.NUL ) then
+     --   path := path & " (no file)";
+     --end if;
+     --Put_line( "* Global Policy:        " & toEscaped( path ) );
+
+     --path := to_unbounded_string( globalProfilePath );
+     --if not C_is_includable_file( globalProfilePath & ASCII.NUL ) then
+     --   path := path & " (no file)";
+     --end if;
+     --Put_line( "* Global Profile:       " & toEscaped( path ) );
   end if;
 end displayVersionSplash;
 

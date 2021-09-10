@@ -568,6 +568,7 @@ procedure ParseCaseWhenPart(
   test_id  : identifier;
   test_idx : count_type;
   case_id  : identifier;
+  boxCount : count_type := 0;
   b1       : boolean := false;
 begin
   expect( when_t );                                    -- "when"
@@ -597,6 +598,14 @@ begin
               case_id := token;
               getNextToken;
            end if;
+        elsif token = symbol_t and identifiers( token ).value.all = "<>" then -- box allowed
+           boxCount := boxCount + 1;
+           b1 := true;
+           case_id := symbol_t;
+           -- I don't check for pragma ada_95 here because multiple when
+           -- conditions are already not allowed, and a box with single
+           -- when condition is already an error for not using when others.
+           getNextToken;
         else                                             -- constant allowed
            ParseIdentifier( case_id );                         -- get the case
            if identifiers( case_id ).usage /= constantUsage    -- is constant
@@ -608,9 +617,11 @@ begin
            end if;
         end if;
         if not error_found then                         -- OK? check case
-           b1 := b1 or                                  -- against test var
-             Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
-             Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+           if case_id /= symbol_t then                  -- if not box token
+              b1 := b1 or                                  -- against test var
+                Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
+                Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+           end if;
         end if;
         exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
         expect( symbol_t, "|" );                        -- expect alternate
@@ -627,6 +638,9 @@ begin
   end loop;
   if test_idx < test_len then
      err("too few cases compared to case identifier list" );
+  end if;
+  if test_len = boxCount then
+     err( "<> for all conditions should be " & optional_yellow( "when others" ) );
   end if;
 end ParseCaseWhenPart;
 

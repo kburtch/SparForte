@@ -6063,6 +6063,8 @@ begin
           cmdpos := cmdpos + 1;
           if script( cmdpos ) = '=' then
              cmdpos := cmdpos + 1;
+          elsif script( cmdpos ) = '>' then                   -- box <>
+             cmdpos := cmdpos + 1;
           end if;
      when '/' =>                                              -- '/' / /=
           cmdpos := cmdpos + 1;

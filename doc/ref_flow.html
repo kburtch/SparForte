@@ -124,6 +124,8 @@ language : languages;<br>
 &nbsp;&nbsp; put_line( "Canadian English" );<br>
 <b>when</b> canada, french =&gt;<br>
 &nbsp;&nbsp; put_line( "Canadian French" );<br>
+<b>when</b> brazil, &lt;&gt; =&gt;<br>
+&nbsp;&nbsp; put_line( "Brazillian Portugeuse" );<br>
 <b>when</b> others =&gt;<br>
 &nbsp;&nbsp; put_line( "Unexpected country and language" );<br>
 <b>end</b> <b>case</b>;</p>
@@ -133,6 +135,10 @@ language : languages;<br>
         </div>
         </div>
         </center>
+
+<p>The box symbol (&lt;&gt;) can be used as a wildcard to match anything,
+ignoring the value of that case identifier.  In the example above,
+we assume that everyone in Brazil speaks Portugeuse.</p>
 
 <p><b>Ada</b>: pragma ada_95 does not allow multiple cases identifiers.</p>
 

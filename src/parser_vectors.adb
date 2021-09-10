@@ -85,8 +85,6 @@ vectors_has_element_t   : identifier;
 vectors_equal_t         : identifier;
 vectors_append_vectors_t : identifier;
 
---vectors_to_index_t      : identifier;
-
 
 ------------------------------------------------------------------------------
 --

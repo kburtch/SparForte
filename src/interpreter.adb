@@ -809,30 +809,29 @@ procedure doGlobalPolicy is
   save_rshOpt  : commandLineOption;              -- for executing policy
   save_execOpt : commandLineOption;              -- for executing policy
   res  : int;
-  path : constant string := "/etc/sparforte_policy";
   scriptDir : unbounded_string;
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell
   save_execOpt := execOpt;                       -- if cmd line script
   rshOpt := false;                               -- turn off for profile
-  scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
+  scriptFile := open( globalPolicyPath & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
      res := close( scriptFile );            -- close test fd
      -- close EINTR is a diagnostic message.  Do not handle.
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 then
-        scriptDir := dirname( to_unbounded_string( path ) );
+        scriptDir := dirname( to_unbounded_string( globalPolicyPath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
           err( "the global policy directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global policy directory " & optional_yellow( path ) & " is either not readable, is world writable, is not a directory";
-        elsif not C_is_includable_file( path & ASCII.NUL ) then
-          err( "global policy file " & optional_yellow( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
-          raise BAD_PROFILE with "global policy file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
+          raise BAD_PROFILE with "global policy directory " & optional_yellow( globalPolicyPath ) & " is either not readable, is world writable, is not a directory";
+        elsif not C_is_includable_file( globalPolicyPath & ASCII.NUL ) then
+          err( "global policy file " & optional_yellow( globalPolicyPath ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          raise BAD_PROFILE with "global policy file '" & globalPolicyPath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
-        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalPolicyPath ) ) ) );
         interpreterPhase := executing;               -- we are executing
-        interpretPolicy( path ); -- run policy script
+        interpretPolicy( globalPolicyPath ); -- run policy script
      end if;
   end if;
   if error_found then
@@ -860,31 +859,30 @@ procedure doGlobalConfig is
   save_rshOpt  : commandLineOption;              -- for executing config
   save_execOpt : commandLineOption;              -- for executing config
   res  : int;
-  path : constant string := "/etc/sparforte_config";
   scriptDir : unbounded_string;
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell
   save_execOpt := execOpt;                       -- if cmd line script
   rshOpt := false;                               -- turn off for profile
   C_reset_errno;
-  scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
+  scriptFile := open( globalConfigPath & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
      res := close( scriptFile );            -- close test fd
      -- close EINTR is a diagnostic message.  Do not handle.
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 then
-        scriptDir := dirname( to_unbounded_string( path ) );
+        scriptDir := dirname( to_unbounded_string( globalConfigPath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
           err( "the global config directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global config directory " & optional_yellow( path ) & " is either not readable, is world writable, is not a directory";
-        elsif not C_is_includable_file( path & ASCII.NUL ) then
-          err( "global config file " & optional_yellow( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
-          raise BAD_PROFILE with "global config file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
+          raise BAD_PROFILE with "global config directory " & optional_yellow( globalConfigPath ) & " is either not readable, is world writable, is not a directory";
+        elsif not C_is_includable_file( globalConfigPath & ASCII.NUL ) then
+          err( "global config file " & optional_yellow( globalConfigPath ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          raise BAD_PROFILE with "global config file '" & globalConfigPath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
-        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalConfigPath ) ) ) );
         interpreterPhase := executing;               -- we are executing
-        interpretConfig( path ); -- run config script
+        interpretConfig( globalConfigPath ); -- run config script
      end if;
   end if;
   if error_found then
@@ -906,31 +904,30 @@ procedure doGlobalProfile is
   save_rshOpt  : commandLineOption;              -- for executing profile
   save_execOpt : commandLineOption;              -- for executing profile
   res : int;
-  path : constant string := "/etc/sparforte_profile";
   scriptDir : unbounded_string;
 begin
   save_rshOpt := rshOpt;                         -- if restricted shell
   save_execOpt := execOpt;                       -- if cmd line script
   rshOpt := false;                               -- turn off for profile
   C_reset_errno;
-  scriptFile := open( path & ASCII.NUL, 0, 660 ); -- open script
+  scriptFile := open( globalProfilePath & ASCII.NUL, 0, 660 ); -- open script
   if scriptFile > 0 then                         -- good?
      res := close( scriptFile );            -- close test fd
      -- close EINTR is a diagnostic message.  Do not handle.
   end if;
   if C_errno /= ENOENT then
      if C_errno = 0 then
-        scriptDir := dirname( to_unbounded_string( path ) );
+        scriptDir := dirname( to_unbounded_string( globalProfilePath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
           err( "the global profile directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global profile directory " & optional_yellow( path ) & " is either not readable, is world writable, is not a directory";
-        elsif not C_is_includable_file( path & ASCII.NUL ) then
-          err( "global profile file " & optional_yellow( path ) & " is either not readable, is world writable, is not a regular file or is empty" );
-          raise BAD_PROFILE with "global profile file '" & path & "' is either not readable, is world writable, is not a regular file or is empty";
+          raise BAD_PROFILE with "global profile directory " & optional_yellow( globalProfilePath ) & " is either not readable, is world writable, is not a directory";
+        elsif not C_is_includable_file( globalProfilePath & ASCII.NUL ) then
+          err( "global profile file " & optional_yellow( globalProfilePath ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          raise BAD_PROFILE with "global profile file '" & globalProfilePath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
-        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( path ) ) ) );
+        sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalProfilePath ) ) ) );
         interpreterPhase := executing;               -- we are executing
-        interpretScript( path ); -- run login script
+        interpretScript( globalProfilePath ); -- run login script
      end if;
   end if;
   if error_found then

@@ -68,5 +68,7 @@ CHANGES SINCE 2.4.1
 
 29. New: case in statement can have multiple test variables and return expressions [negative tests].
 
-30. New: case with multiple variables [negative tests].
+30. New: case with multiple variables [negative tests needed].
+
+31. New: box <> allowed in case when conditions. [negative tests needed]
 

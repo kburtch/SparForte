@@ -53,6 +53,10 @@ released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
 copyright : constant string  :=  " Copyright (c)2001-2021 Free Software Foundation";
 
+globalConfigPath  : constant string := "/etc/sparforte_config";
+globalPolicyPath  : constant string := "/etc/sparforte_policy";
+globalProfilePath : constant string := "/etc/sparforte_profile";
+
 random_generator : ada.numerics.float_random.generator;
 
 type line_count is new long_long_integer;
