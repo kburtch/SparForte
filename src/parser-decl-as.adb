@@ -674,9 +674,10 @@ begin
 
   ParseCaseInHeaderPart( test_ids, test_len, return_ids, return_len );
 
-  if token /= when_t then                                 -- first when missing?
-     expect( when_t );                                    -- force error
-  end if;
+  -- this will have an error during compilation.
+  --if token /= when_t then                                 -- first when missing?
+  --   expect( when_t );                                    -- force error
+  --end if;
   while token = when_t loop
      ParseCaseWhenPart( test_ids, test_len, b2 );
      exit when error_found or token = others_t;
