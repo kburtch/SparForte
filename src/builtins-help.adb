@@ -1420,7 +1420,7 @@ begin
         "each case in the list must match.   If no conditions match, the " &
         "others case will run." );
      content( e, "case var [, var ...] is when literal|const[|...][, ...] => ...when others => ...end case" );
-     content( e, "case in var [, var ...] out var [,var...] is when literal|const[|...][, ...] => ...when others => ...end case" );
+     content( e, "case in var [, var ...] out var [,var...] is when literal|const|<>[|...][, ...] => ...when others => ...end case" );
      seeAlsoFlowControl( e );
      endHelp( e );
   elsif helpTopic = "cd" then

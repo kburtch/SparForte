@@ -403,11 +403,19 @@ begin
   loop
       ParseIdentifier( test_id );                          -- identifier to test
       if type_checks_done or else class_ok( test_id, varClass ) then
-         vector_identifier_lists.append( test_ids, test_id );
-         test_len := test_len + 1;
+         if not vector_identifier_lists.contains( test_ids,test_id ) then
+            vector_identifier_lists.append( test_ids, test_id );
+            test_len := test_len + 1;
+         else
+            err( optional_yellow( to_string( identifiers( test_id ).name) ) &
+                 " is already in the case identifier list" );
+         end if;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
       expect( symbol_t, "," );
+      if token = is_t then
+         err( "missing case identifier" );
+      end if;
   end loop;
 
   if test_len > 1 then
@@ -582,6 +590,9 @@ begin
   b2 := true;                                          -- assume it succeeds
   test_idx:= 1;                                        -- from first index
   while test_idx <= test_len loop                       -- all test ids
+     if token = symbol_t and identifiers( token ).value.all = "=>" then
+        err( "missing when condition" );
+     end if;
      test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
      b1 := false;                                      -- assume case fails
      loop
