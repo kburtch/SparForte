@@ -73,12 +73,154 @@ use  ada.text_io;
 
 package body parser.decl.as is
 
+
+-----------------------------------------------------------------------------
+--
+-- Forwards
+--
+-----------------------------------------------------------------------------
+
 package vector_identifier_lists is new Ada.Containers.Vectors(
    positive,
    identifier,
    "="
 );
 procedure SkipBlock( termid1, termid2 : identifier := keyword_t );
+
+
+-----------------------------------------------------------------------------
+--
+-- Utilities
+--
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+-- CHECK VAR USAGE QUALIFIER
+--
+-- Handle usage qualifiers (record fields)
+--
+-- At a debug breakout prompt, constant and limited assignment is permitted
+-- with a warning to the user.
+--
+-- When testing, constant and limited assignment is allowed.
+--
+-- Record fields are a little complicated.  As record are collections of
+-- variables, check both the parent record of the file and that record's
+-- type to see if it is constant or limited.  If so, treat the field as
+-- constant or limited.
+-----------------------------------------------------------------------------
+
+procedure checkVarUsageQualifier( var_id : identifier ) is
+begin
+  -- field of a record?
+
+  if identifiers( var_id ).field_of /= eof_t then
+
+     -- check the usage qualifier of the parent
+
+     case identifiers( identifiers( var_id ).field_of ).usage is
+     when abstractUsage =>
+        err( gnat.source_info.source_location &
+             ": internal error: variables should not have abstract types" );
+     when limitedUsage =>
+        if isTesting then
+           null;
+        elsif inputMode = breakout then
+           put_trace( "Warning: assigning a new value to a limited record field" );
+        else
+           err( "limited record fields cannot be assigned a value" );
+        end if;
+     when constantUsage =>
+        if isTesting then
+           null;
+        elsif inputMode = breakout then
+           put_trace( "Warning: assigning a new value to a constant record field" );
+        else
+           err( "constant record fields cannot be assigned a value" );
+        end if;
+     when fullUsage =>
+
+     -- check the usage qualifier of the parent's type
+
+        case identifiers(
+              identifiers (
+                  identifiers( var_id ).field_of
+              ).kind
+           ).usage is
+        when abstractUsage =>
+           null; -- don't bother checking
+        when limitedUsage =>
+           if isTesting then
+              null;
+           elsif inputMode = breakout then
+              put_trace( "Warning: assigning a new value to a limited record field" );
+           else
+              err( "limited record fields cannot be assigned a value" );
+           end if;
+        when constantUsage =>
+           if isTesting then
+              null;
+           elsif inputMode = breakout then
+              put_trace( "Warning: assigning a new value to a constant record field" );
+           else
+              err( "constant record fields cannot be assigned a value" );
+           end if;
+        when fullUsage =>
+           null;
+        when others =>
+           err( gnat.source_info.source_location &
+                ": internal error: unexpected usage qualifier" );
+        end case;
+
+     when others =>
+        err( gnat.source_info.source_location &
+             ": internal error: unexpected usage qualifier " &
+             identifiers( identifiers( var_id ).field_of ).usage'img );
+     end case;
+
+  end if;
+
+  -- Handle usage qualifiers
+  --
+  -- Check everything here. Including record fields that passed the parent
+  -- record tests.
+
+  case identifiers( var_id ).usage is
+
+  when abstractUsage =>
+     err( gnat.source_info.source_location &
+          ": internal error: variables should not be abstract" );
+
+  when limitedUsage =>
+     if isTesting then
+        null;
+     elsif inputMode = breakout then
+        put_trace( "Warning: assigning a new value to a limited variable" );
+     else
+        err( "limited variables cannot be assigned a value" );
+     end if;
+
+  -- constants can only be assigned values if they are specs
+
+  when constantUsage =>
+     if isTesting then
+        null;
+     elsif inputMode = breakout then
+        put_trace( "Warning: assigning a new value to a constant variable" );
+     elsif identifiers( var_id ).specAt = noSpec then
+        err( "constant variables cannot be assigned a value" );
+     end if;
+
+  when fullUsage =>
+     null;
+
+  when others =>
+     err( gnat.source_info.source_location &
+          ":  internal error: unexpected usage qualifier " &
+          identifiers( var_id ).usage'img );
+  end case;
+end checkVarUsageQualifier;
 
 
 -----------------------------------------------------------------------------
@@ -405,6 +547,7 @@ begin
       if type_checks_done or else class_ok( test_id, varClass ) then
          if not vector_identifier_lists.contains( test_ids,test_id ) then
             vector_identifier_lists.append( test_ids, test_id );
+            identifiers( test_id ).wasReferenced := true;
             test_len := test_len + 1;
          else
             err( optional_yellow( to_string( identifiers( test_id ).name) ) &
@@ -461,6 +604,7 @@ begin
       ParseIdentifier( test_id );                          -- identifier to test
       if type_checks_done or else class_ok( test_id, varClass ) then
          vector_identifier_lists.append( test_ids, test_id );
+         identifiers( test_id ).wasReferenced := true;
          test_len := test_len + 1;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
@@ -471,10 +615,30 @@ begin
 
   expect( out_t );
   loop
-      return_len := return_len + 1;
-      ParseIdentifier( return_id );                    -- identifier to test
-      if type_checks_done or else class_ok( return_id, varClass ) then
-         vector_identifier_lists.append( return_ids, return_id );
+      if type_checks_done or else class_ok( token, varClass ) then
+
+         -- TODO: Refactor with ParseAssignment
+         -- Not all identifiers can be written to
+
+         checkVarUsageQualifier( token );                       -- no constants
+
+         if identifiers( token ).list then
+            err( "array parameters not yet supported" );
+         elsif identifiers( getBaseType( identifiers( token ).kind ) ).kind = root_record_t then
+            err( "records not yet supported" );
+         elsif getBaseType( identifiers( token ).kind ) = command_t then
+            err( "commands not yet supported" );
+         end if;
+
+         if not error_found then
+            return_len := return_len + 1;                       -- count idents
+
+            -- add to list
+
+            ParseIdentifier( return_id );
+            vector_identifier_lists.append( return_ids, return_id );
+            identifiers( return_id ).wasWritten := true;
+         end if;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
       expect( symbol_t, "," );
@@ -511,15 +675,38 @@ begin
      end if;
      -- for decision table
      for return_idx in 1..return_len loop
-        return_id := vector_identifier_lists.element( return_ids, positive( return_idx ) );
+        begin
+           return_id := vector_identifier_lists.element( return_ids, positive( return_idx ) );
+        exception when constraint_error =>
+           err( gnat.source_info.source_location &
+             ": internal error: out identifier" & return_idx'img & " does not exist" );
+        end;
         ParseExpression( outExpr, outType );
-        if baseTypesOK( identifiers( return_id ).kind, outType ) then
+        --if baseTypesOK( identifiers( return_id ).kind, outType ) then
            if isExecutingCommand then
+
+              -- TODO: refactor me with parse assignment
+
+              -- Type testing and casting
+
+              -- try to assign an exception to a universal type.  We need to flag that as
+              -- a special case
+              if outType = exception_t then
+                 err( "exceptions cannot be assigned" );
+              elsif type_checks_done or else baseTypesOK( identifiers( return_id ).kind,outType ) then
+                 if syntax_check then
+                    identifiers( outType ).wasCastTo := true;
+                 end if;
+                 if isExecutingCommand then
+                    outExpr := castToType( outExpr, outtype );
+                 end if;
+              end if;
+
               identifiers( return_id ).value.all := outExpr;
               if trace then
                  put_trace( to_string( identifiers( return_id ).name ) & " := " & to_string( identifiers( return_id ).value.all ) );
               end if;
-           end if;
+           --end if;
         end if;
         if return_idx < return_len then
            expect( symbol_t, "," ); -- ADDED
@@ -675,9 +862,9 @@ begin
   ParseCaseInHeaderPart( test_ids, test_len, return_ids, return_len );
 
   -- this will have an error during compilation.
-  --if token /= when_t then                                 -- first when missing?
-  --   expect( when_t );                                    -- force error
-  --end if;
+  if token /= when_t then                                 -- first when missing?
+     expect( when_t );                                    -- force error
+  end if;
   while token = when_t loop
      ParseCaseWhenPart( test_ids, test_len, b2 );
      exit when error_found or token = others_t;
@@ -4943,131 +5130,6 @@ begin
   end if;
 end ParseReturn;
 
-
--- CHECK VAR USAGE QUALIFIER
---
--- Handle usage qualifiers (record fields)
---
--- At a debug breakout prompt, constant and limited assignment is permitted
--- with a warning to the user.
---
--- When testing, constant and limited assignment is allowed.
---
--- Record fields are a little complicated.  As record are collections of
--- variables, check both the parent record of the file and that record's
--- type to see if it is constant or limited.  If so, treat the field as
--- constant or limited.
-
-procedure checkVarUsageQualifier( var_id : identifier ) is
-begin
-  -- field of a record?
-
-  if identifiers( var_id ).field_of /= eof_t then
-
-     -- check the usage qualifier of the parent
-
-     case identifiers( identifiers( var_id ).field_of ).usage is
-     when abstractUsage =>
-        err( gnat.source_info.source_location &
-             ": internal error: variables should not have abstract types" );
-     when limitedUsage =>
-        if isTesting then
-           null;
-        elsif inputMode = breakout then
-           put_trace( "Warning: assigning a new value to a limited record field" );
-        else
-           err( "limited record fields cannot be assigned a value" );
-        end if;
-     when constantUsage =>
-        if isTesting then
-           null;
-        elsif inputMode = breakout then
-           put_trace( "Warning: assigning a new value to a constant record field" );
-        else
-           err( "constant record fields cannot be assigned a value" );
-        end if;
-     when fullUsage =>
-
-     -- check the usage qualifier of the parent's type
-
-        case identifiers(
-              identifiers (
-                  identifiers( var_id ).field_of
-              ).kind
-           ).usage is
-        when abstractUsage =>
-           null; -- don't bother checking
-        when limitedUsage =>
-           if isTesting then
-              null;
-           elsif inputMode = breakout then
-              put_trace( "Warning: assigning a new value to a limited record field" );
-           else
-              err( "limited record fields cannot be assigned a value" );
-           end if;
-        when constantUsage =>
-           if isTesting then
-              null;
-           elsif inputMode = breakout then
-              put_trace( "Warning: assigning a new value to a constant record field" );
-           else
-              err( "constant record fields cannot be assigned a value" );
-           end if;
-        when fullUsage =>
-           null;
-        when others =>
-           err( gnat.source_info.source_location &
-                ": internal error: unexpected usage qualifier" );
-        end case;
-
-     when others =>
-        err( gnat.source_info.source_location &
-             ": internal error: unexpected usage qualifier " &
-             identifiers( identifiers( var_id ).field_of ).usage'img );
-     end case;
-
-  end if;
-
-  -- Handle usage qualifiers
-  --
-  -- Check everything here. Including record fields that passed the parent
-  -- record tests.
-
-  case identifiers( var_id ).usage is
-
-  when abstractUsage =>
-     err( gnat.source_info.source_location &
-          ": internal error: variables should not be abstract" );
-
-  when limitedUsage =>
-     if isTesting then
-        null;
-     elsif inputMode = breakout then
-        put_trace( "Warning: assigning a new value to a limited variable" );
-     else
-        err( "limited variables cannot be assigned a value" );
-     end if;
-
-  -- constants can only be assigned values if they are specs
-
-  when constantUsage =>
-     if isTesting then
-        null;
-     elsif inputMode = breakout then
-        put_trace( "Warning: assigning a new value to a constant variable" );
-     elsif identifiers( var_id ).specAt = noSpec then
-        err( "constant variables cannot be assigned a value" );
-     end if;
-
-  when fullUsage =>
-     null;
-
-  when others =>
-     err( gnat.source_info.source_location &
-          ":  internal error: unexpected usage qualifier " &
-          identifiers( var_id ).usage'img );
-  end case;
-end checkVarUsageQualifier;
 
 procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
   -- Basic variable assignment

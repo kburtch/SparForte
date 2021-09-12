@@ -8,6 +8,3 @@ when 1,2,3 => null; -- too many
 when others => null;
 end case;
 
-? i;
-? j;
-

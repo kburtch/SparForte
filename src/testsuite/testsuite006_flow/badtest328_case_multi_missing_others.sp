@@ -8,6 +8,3 @@ when 1,2 => null; -- no when
 when => null;
 end case;
 
-? i;
-? j;
-

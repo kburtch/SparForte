@@ -12,9 +12,8 @@ Priority Issues (Fix These First)
 -------------------------------
 
 - multi-case
-  - multi-case and negative tests
-  - case in negative tests
-  - static case and multi-case
+  - case in negative tests, type cast, refactor out idents with PareAssignment
+  - static case and support multi-case
   - <> box statement negative tests
   - business process block that only supports case in (do this after vectors)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate

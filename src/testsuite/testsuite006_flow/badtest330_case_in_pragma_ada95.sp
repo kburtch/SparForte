@@ -10,6 +10,3 @@ when 1 => 3;
 when others => 4;
 end case;
 
-? i;
-? j;
-

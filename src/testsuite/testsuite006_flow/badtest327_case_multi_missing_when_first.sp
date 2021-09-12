@@ -8,6 +8,3 @@ case i,j is
 when others => null;
 end case;
 
-? i;
-? j;
-

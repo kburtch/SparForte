@@ -8,6 +8,3 @@ when 1 => null; -- too few
 when others => null;
 end case;
 
-? i;
-? j;
-

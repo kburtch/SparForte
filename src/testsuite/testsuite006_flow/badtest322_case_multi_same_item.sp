@@ -7,4 +7,3 @@ when 1,1 => null;
 when others => null;
 end case;
 
-? i;

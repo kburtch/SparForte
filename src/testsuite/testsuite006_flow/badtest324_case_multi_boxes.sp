@@ -8,6 +8,4 @@ when <>,<> => null; -- not allowed
 when others => null;
 end case;
 
-? i;
-? j;
 

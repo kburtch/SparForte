@@ -7,6 +7,3 @@ case i,j is
 when 1,2 => null; -- no when
 end case;
 
-? i;
-? j;
-
