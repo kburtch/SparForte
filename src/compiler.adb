@@ -490,21 +490,43 @@ begin
   if not gccOpt then
      put_line( standard_error, cmdline );                     -- display line
 
-  -- Error Pointer
+     -- Error Pointer
 
      -- KB: 07/11/04: guestimated
-     for i in 1..length( sfr.name )+length( lineStr )+6 loop                           -- move to token
-        put( standard_error, " " );
-     end loop;
+     -- KB: 09/13/21: ignore on interactive prompt
+     if inputMode = interactive and inputMode = breakout then  -- a script?
+        for i in 1..length( sfr.name )+length( lineStr )+6 loop -- move to token
+           put( standard_error, " " );
+        end loop;
+     end if;
+
      for i in 1..firstpos-1 loop                              -- move to token
         put( standard_error, " " );
      end loop;
-     put( standard_error, "^" );                              -- underline it
      if lastpos-1 > firstpos then
+        if colourOpt then
+           put( standard_error, utf_left );                   -- underline it
+        else
+           put( standard_error, "^" );                        -- underline it
+        end if;
         for i in 1..lastpos-firstpos-2 loop
-           put( standard_error, "-" );
+           if colourOpt then
+              put( standard_error, "-" );
+           else
+              put( standard_error, utf_horizontalLineOnly );
+           end if;
         end loop;
-        put( standard_error, "^" );
+        if colourOpt then
+           put( standard_error, utf_right );                     -- underline it
+        else
+           put( standard_error, "^" );
+        end if;
+     else
+        if colourOpt then
+           put( standard_error, utf_triangle );                -- underline it
+        else
+           put( standard_error, "^" );                        -- underline it
+        end if;
      end if;
   -- TODO: if we include timestamps for templates, they should be in all error
   -- procedures.
@@ -516,7 +538,11 @@ begin
   -- Error Message
 
   put( standard_error, " " );                                 -- display the
-  put_line( standard_error, msg );                            -- error msg
+  if colourOpt then
+     put( standard_error, utf_ballot & " " & msg );
+  else
+     put_line( standard_error, msg );                         -- error msg
+  end if;
   error_found := true;                                        -- flag error
   token := eof_t;                                             -- stop parser
 end err_tokenize;
