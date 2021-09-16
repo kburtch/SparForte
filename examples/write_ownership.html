@@ -1,0 +1,90 @@
+<HEAD><TITLE>write_ownership.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : write_ownership.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar write_ownership.sp
+write_ownership.sp: 38: 23: fourth_writer in write_ownership
+   global_var := @ * 3;
+                      ^ side-effects: global_var (in fourth_writer) is not unchecked_volatile
+but is also changed by third_writer.  Perhaps refactor so one source is a procedure or
+break up the expression.
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "write_ownership" )
+       @( description, "A demonstration of the ownership of global variables" )
+       @( description, "shared by functions in the same expression." )
+       @( errors, "This script will fail" )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> write_ownership <b>is</b>
+  global_var : natural := 1;
+
+  <FONT COLOR=green><EM>-- these procedures are OK</EM></FONT>
+
+  <b>procedure</b> first_writer <b>is</b>
+  <b>begin</b>
+    global_var := @ + 2;
+  <b>end</b> first_writer;
+
+  <b>procedure</b> second_writer <b>is</b>
+  <b>begin</b>
+   global_var := @ * 3;
+  <b>end</b> second_writer;
+
+  <FONT COLOR=green><EM>-- these functions will cause an error if they appear in the</EM></FONT>
+  <FONT COLOR=green><EM>-- same expression.</EM></FONT>
+
+  <b>function</b> third_writer <b>return</b> natural <b>is</b>
+  <b>begin</b>
+    global_var := @ + 2;
+    <b>return</b> 1;
+  <b>end</b> third_writer;
+
+  <b>function</b> fourth_writer <b>return</b> natural <b>is</b>
+  <b>begin</b>
+   global_var := @ * 3;
+   <b>return</b> 1;
+  <b>end</b> fourth_writer;
+
+<b>begin</b>
+
+  first_writer;
+  second_writer;
+  ? third_writer;
+  ? fourth_writer;
+
+  <FONT COLOR=green><EM>-- ERROR: although not an expression side-effect, two different</EM></FONT>
+  <FONT COLOR=green><EM>-- functions are updating the same global in one expression.</EM></FONT>
+  <FONT COLOR=green><EM>-- These are not the same because the value of global_var</EM></FONT>
+  <FONT COLOR=green><EM>-- may be different:</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- third_writer + fourth_writer</EM></FONT>
+  <FONT COLOR=green><EM>-- fourth_writer + third_writer</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- There should be one function that "owns" (is responsible for)</EM></FONT>
+  <FONT COLOR=green><EM>-- changes to a global variable that is used in an expression.</EM></FONT>
+
+  ? third_writer + fourth_writer;
+<b>end</b> write_ownership;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
