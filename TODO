@@ -11,7 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
-- contracts - an exception is being raised by a parent not not getting propagated
+- fix write ownership message to makeit more clear
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
