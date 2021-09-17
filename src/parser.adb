@@ -1038,6 +1038,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
 
    procedure DoContract1( kind_id : identifier; expr_val : in out unbounded_string ) is
       scriptState : aScriptState;
+      save_error_found : boolean;
    begin
       if identifiers( kind_id ).kind /= variable_t then    -- not uni?
          -- Cannot do DoContract1 because type identifier will change
@@ -1048,6 +1049,8 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
          if trace then                                     -- trace message
             put_trace( to_string( identifiers( kind_id ).name ) & " affirm clause" );
          end if;
+         -- parseNewCommands erases any previous error
+         save_error_found := error_found;
          parseNewCommands( scriptState,
            identifiers( kind_id ).contract,
            fragment => true );                           -- setup byte code
@@ -1057,7 +1060,9 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
             expect( eof_t );                               -- should be eof
          end if;
          restoreScript( scriptState );            -- restore original script
+         error_found := save_error_found or error_found;
       end if;
+      --   expectSemicolon;
    end DoContract1;
 
    oldRshOpt : constant commandLineOption := rshOpt;
@@ -1097,10 +1102,11 @@ begin
 
       -- Copying a value is not so easy for an array
       expr_val := identifiers( type_value_id ).value.all;
-      if trace then                                     -- trace message
-         put_trace( "value after affirm clause: " & to_string( toEscaped( expr_val ) ) );
+      if identifiers( kind_id ).contract /= "" then        -- a contract?
+         if trace then                                     -- trace message
+            put_trace( "value after affirm clause: " & to_string( toEscaped( expr_val ) ) );
+         end if;
       end if;
-      --end if;
    end if;
 
    -- Tear down affirm clause block

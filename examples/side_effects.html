@@ -1,0 +1,64 @@
+<HEAD><TITLE>side_effects.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : side_effects.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar side_effects.sp
+side_effects.sp: 32: 33: side_effects
+  temp := oops( 5 ) + global_var;    -- ERROR here
+                                ^ side-effects: global_var was read after written to within an expression.  Perhaps a copy should be used.
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "side_effects" );
+<b>pragma</b> annotate( description, "A demonstration of expression side-effect detection" );
+<b>pragma</b> annotate( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> side_effects <b>is</b>
+  global_var : natural := 0;
+
+  <FONT COLOR=green><EM>-- oops adds inc to global_var and returns it</EM></FONT>
+
+  <b>function</b> oops( inc : natural ) <b>return</b> natural <b>is</b>
+  <b>begin</b>
+    global_var := global_var + inc;
+    <b>return</b> inc;
+  <b>end</b> oops;
+
+  temp : natural;
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- PROBLEM</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Global var is changed by function oops.  These two expressions</EM></FONT>
+  <FONT COLOR=green><EM>-- no longer produce the same result.</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- temp := oops( 5 ) + global_var;</EM></FONT>
+  <FONT COLOR=green><EM>-- temp := global_var + oops( 5 );</EM></FONT>
+
+  temp := oops( 5 ) + global_var;  <FONT COLOR=green><EM>-- ERROR here</EM></FONT>
+
+<b>end</b> side_effects;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

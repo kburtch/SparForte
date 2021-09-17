@@ -84,6 +84,7 @@ vectors_delete_t        : identifier;
 vectors_has_element_t   : identifier;
 vectors_equal_t         : identifier;
 vectors_append_vectors_t : identifier;
+vectors_insert_t        : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -160,7 +161,7 @@ begin
      end if;
   else
      ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
-     -- Check the type against the map
+     -- Check the type against the vector
      if not error_found then
         genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );
         genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind );
@@ -760,6 +761,7 @@ end ParseVectorsFirstIndex;
 procedure ParseVectorsLastIndex( result : out unbounded_string; kind : out identifier ) is
   vectorId   : identifier;
   theVector  : resPtr;
+  userIdx    : vector_index;
 begin
   expect( vectors_last_index_t );
   ParseSingleInOutInstantiatedParameter( vectorId, vectors_vector_t );
@@ -768,7 +770,11 @@ begin
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
 -- TODO: leading space
-       result := to_unbounded_string( vector_index'image( Vector_String_Lists.Last_Index( theVector.vslVector ) ) );
+--put_line( "last_index: vector = " & to_string( identifiers( vectorId ).name ) );
+       userIdx := Vector_String_Lists.Last_Index( theVector.vslVector );
+-- put_line( "last_index: userIdx = " & userIdx'img ); 
+       result := to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) );
+-- put_line( "last_index: result = " & to_string( result ) ); -- DEBUG
      end;
   end if;
 end ParseVectorsLastIndex;
@@ -1362,6 +1368,104 @@ end ParseVectorsEqual;
 
 
 ------------------------------------------------------------------------------
+--  INSERT
+--
+-- Syntax: vectors.insert( v, i, e [, c] )
+--         vectors.insert( v, i, [, c] )
+-- Ada:    vectors.insert
+--
+-- In Ada, Insert can include both before an index or a cursor, and inserting
+-- both elements or a second vector.  The count may be optional and a second
+-- cursor may be returned.
+--
+-- For SparForte, these will be separate functions to make them easier to
+-- implement and manage, though it breaks Ada compatibility.
+------------------------------------------------------------------------------
+
+procedure ParseVectorsInsert is
+  vectorId   : identifier;
+  theVector  : resPtr;
+  beforeVal  : unbounded_string;
+  beforeType : identifier;
+  elemVal    : unbounded_string;
+  elemType   : identifier;
+  hasElem    : boolean := false;
+  cntExpr    : unbounded_string;
+  cntType    : identifier;
+  hasCnt     : boolean := false;
+begin
+  expect( vectors_insert_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextNumericParameter( beforeVal, beforeType, identifiers( vectorId ).genKind );
+
+  -- There are two variants to this procedure.  The next parameter is either
+  -- the element type (which may or may not be numeric)  or a numeric
+  -- containers.count_type type.  Additionally, universal types will have
+  -- to be accounted for.
+
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     expect( symbol_t, "," );
+     ParseExpression( elemVal, elemType );
+     -- TODO: handle universal types here.  This hack is not complete
+     -- (e.g. universal typeless is missing).  Do I need a two param
+     -- baseTypesOk function?
+     if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
+        hasElem := true;
+        if token = symbol_t and identifiers( token ).value.all = "," then
+           expect( symbol_t, "," );
+           ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+           hasCnt := true;
+        end if;
+     elsif baseTypesOk( elemType, containers_count_type_t ) then
+        -- it's the optional count only
+        -- TODO: type casting
+           hasCnt := true;
+           cntExpr := elemval;
+     else
+        err( "element type " & optional_yellow( to_string( identifiers( identifiers( vectorId ).genKind2 ).name ) ) & " or containers.count_type expected" );
+     end if;
+  end if;
+
+  expect( symbol_t,")" );
+
+  if isExecutingCommand then
+     declare
+       idx : vector_index;
+       cnt        : ada.containers.count_type := 1;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
+       if hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          if hasElem then
+             Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal, cnt );
+          else
+             Vector_String_Lists.Insert( theVector.vslVector, idx, cnt );
+          end if;
+       elsif hasElem then
+          Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
+       else
+          Vector_String_Lists.Insert( theVector.vslVector, idx );
+       end if;
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsInsert;
+
+-- Insert Vector
+
+-- Insert and Mark
+
+-- Insert Vector and Mark
+
+-- Insert_Space
+
+------------------------------------------------------------------------------
 --  APPEND VECTORS
 --
 -- Syntax: append_vectors( v1, v2 );
@@ -1447,6 +1551,7 @@ begin
   declareFunction(  vectors_has_element_t,  "vectors.has_element", ParseVectorsHasElement'access );
   declareFunction(  vectors_equal_t,  "vectors.equal", ParseVectorsEqual'access );
   declareProcedure( vectors_append_vectors_t, "vectors.append_vectors", ParseVectorsAppendVectors'access );
+  declareProcedure( vectors_insert_t, "vectors.insert", ParseVectorsInsert'access );
 
   declareNamespaceClosed( "vectors" );
 end StartupVectors;

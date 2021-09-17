@@ -16,21 +16,21 @@ procedure contracts is
 
   type even_natural is new abstract natural
     affirm
-      raise not_even_error when numerics.odd( integer( even_natural ) );
-   end affirm;
+      raise not_even_error when even_natural mod 2 = 1;
+    end affirm;
 
   subtype even_two_digit_natural is even_natural
     affirm
       raise too_large_error when even_two_digit_natural > 99;
-   end affirm;
+    end affirm;
 
-  t : even_two_digit_natural;
+  num : even_two_digit_natural;
 
 begin
 
  -- ERROR: 99 is not even number.
 
-  t := 1;
+  num := 99;
 
 end contracts;
 

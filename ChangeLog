@@ -66,9 +66,13 @@ CHANGES SINCE 2.4.1
 
 28. New: vectors package.[not complete, tests, docs needed]
 
-29. New: case in statement can have multiple test variables and return expressions.
+29. New: case in statement can have multiple test variables and return expressions. [change into a relation function]
 
 30. New: case with multiple variables.
 
 31. New: box <> allowed in case when conditions. [negative tests needed]
+
+32: New: demonstration examples design_examples, side_effects.
+
+33: Fix: parent contracts which raise an exception now propogate the exception.
 
