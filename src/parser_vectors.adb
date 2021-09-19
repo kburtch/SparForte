@@ -775,7 +775,7 @@ begin
 -- TODO: leading space
 --put_line( "last_index: vector = " & to_string( identifiers( vectorId ).name ) );
        userIdx := Vector_String_Lists.Last_Index( theVector.vslVector );
--- put_line( "last_index: userIdx = " & userIdx'img ); 
+-- put_line( "last_index: userIdx = " & userIdx'img );
        result := to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) );
 -- put_line( "last_index: result = " & to_string( result ) ); -- DEBUG
      end;
