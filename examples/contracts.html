@@ -1,0 +1,62 @@
+<HEAD><TITLE>contracts.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : contracts.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ ../src/spar contracts.sp
+contracts.sp: 19: 55: affirm clause in affirm clause in contracts
+      raise not_even_error when even_natural mod 2 = 1;
+                                                      ^ raised not_even_error: value is not even
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "contracts" )
+       @( description, "A demonstration of programming-by-contract with " )
+       @( description, "data types." )
+       @( errors, "This script will fail" )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> contracts <b>is</b>
+
+  not_even_error  : <b>exception</b> <b>with</b> "value is not even" <b>use</b> 255;
+  too_large_error : <b>exception</b> <b>with</b> "value is too large" <b>use</b> 255;
+
+  <b>type</b> even_natural <b>is</b> <b>new</b> <b>abstract</b> natural
+    affirm
+      <b>raise</b> not_even_error <b>when</b> even_natural <b>mod</b> 2 = 1;
+    <b>end</b> affirm;
+
+  <b>subtype</b> even_two_digit_natural <b>is</b> even_natural
+    affirm
+      <b>raise</b> too_large_error <b>when</b> even_two_digit_natural &gt; 99;
+    <b>end</b> affirm;
+
+  num : even_two_digit_natural;
+
+<b>begin</b>
+
+<FONT COLOR=green><EM>-- ERROR: 99 is not even number.</EM></FONT>
+
+  num := 99;
+
+<b>end</b> contracts;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

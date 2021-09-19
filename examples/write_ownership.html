@@ -9,9 +9,9 @@
 $ spar write_ownership.sp
 write_ownership.sp: 38: 23: fourth_writer in write_ownership
    global_var := @ * 3;
-                      ^ side-effects: global_var (in fourth_writer) is not unchecked_volatile
-but is also changed by third_writer.  Perhaps refactor so one source is a procedure or
-break up the expression.
+                      ^ side-effects: global_var used here in fourth_writer
+is also changed by third_writer.  Perhaps refactor so one is a procedure, or
+break up the shared expression or use pragma unchecked_volatile.
 
 </PRE>
 </SPAN>

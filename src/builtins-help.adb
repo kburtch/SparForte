@@ -2633,6 +2633,8 @@ begin
      content( e, "flip( v )", "b := is_empty( v )", "append_vectors( v1, v2 )" );
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
      content( e, "clear( v )", "previous( c )", "delete( i [, c] )" );
+     content( e, "insert( v, i, e [, n] )", "insert_vector( v, c, v2 )" );
+     content( e, "insert_at( v, c, e [, n] )" );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then

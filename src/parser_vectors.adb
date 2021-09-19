@@ -85,6 +85,9 @@ vectors_has_element_t   : identifier;
 vectors_equal_t         : identifier;
 vectors_append_vectors_t : identifier;
 vectors_insert_t        : identifier;
+vectors_insert_vector_t : identifier;
+vectors_insert_at_t     : identifier;
+--vectors_insert_and_mark_t : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -1389,7 +1392,6 @@ procedure ParseVectorsInsert is
   beforeType : identifier;
   elemVal    : unbounded_string;
   elemType   : identifier;
-  hasElem    : boolean := false;
   cntExpr    : unbounded_string;
   cntType    : identifier;
   hasCnt     : boolean := false;
@@ -1410,19 +1412,18 @@ begin
      -- (e.g. universal typeless is missing).  Do I need a two param
      -- baseTypesOk function?
      if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
-        hasElem := true;
         if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
            hasCnt := true;
         end if;
-     elsif baseTypesOk( elemType, containers_count_type_t ) then
-        -- it's the optional count only
-        -- TODO: type casting
-           hasCnt := true;
-           cntExpr := elemval;
-     else
-        err( "element type " & optional_yellow( to_string( identifiers( identifiers( vectorId ).genKind2 ).name ) ) & " or containers.count_type expected" );
+     --elsif baseTypesOk( elemType, containers_count_type_t ) then
+     --   -- it's the optional count only
+     --   -- TODO: type casting
+     --      hasCnt := true;
+     --      cntExpr := elemval;
+     --else
+     --   err( "element type " & optional_yellow( to_string( identifiers( identifiers( vectorId ).genKind2 ).name ) ) & " or containers.count_type expected" );
      end if;
   end if;
 
@@ -1437,15 +1438,9 @@ begin
        idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
        if hasCnt then
           cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
-          if hasElem then
-             Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal, cnt );
-          else
-             Vector_String_Lists.Insert( theVector.vslVector, idx, cnt );
-          end if;
-       elsif hasElem then
-          Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
+          Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal, cnt );
        else
-          Vector_String_Lists.Insert( theVector.vslVector, idx );
+          Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
        end if;
      exception when constraint_error =>
        err( "count must be a natural integer" );
@@ -1457,9 +1452,116 @@ begin
   end if;
 end ParseVectorsInsert;
 
--- Insert Vector
+------------------------------------------------------------------------------
 
--- Insert and Mark
+procedure ParseVectorsInsertVector is
+  vectorId   : identifier;
+  cursorId   : identifier;
+  vector2Id  : identifier;
+begin
+  expect( vectors_insert_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+  ParseLastInOutInstantiatedParameter( vector2Id, vectors_vector_t );
+
+  if isExecutingCommand then
+     declare
+       theVector  : resPtr;
+       theCursor  : resPtr;
+       theVector2 : resPtr;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( vector2Id ).value.all ), theVector2 );
+       Vector_String_Lists.Insert(
+          theVector.vslVector,
+          theCursor.vslCursor,
+          theVector2.vslVector
+       );
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsInsertVector;
+
+------------------------------------------------------------------------------
+
+procedure ParseVectorsInsertAt is
+  vectorId   : identifier;
+  cursorId   : identifier;
+  elemVal    : unbounded_string;
+  elemType   : identifier;
+  cntExpr    : unbounded_string;
+  cntType    : identifier;
+  hasCnt     : boolean := false;
+  --cursorId2  : identifier;
+begin
+  expect( vectors_insert_at_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+
+  -- There are two variants to this procedure.  The next parameter is either
+  -- the element type (which may or may not be numeric)  or a numeric
+  -- containers.count_type type.  Additionally, universal types will have
+  -- to be accounted for.
+
+  --if token = symbol_t and identifiers( token ).value.all = "," then
+  expect( symbol_t, "," );
+  ParseExpression( elemVal, elemType );
+     -- TODO: handle universal types here.  This hack is not complete
+     -- (e.g. universal typeless is missing).  Do I need a two param
+     -- baseTypesOk function?
+  --ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+  if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+        hasCnt := true;
+     end if;
+     --elsif baseTypesOk( elemType, containers_count_type_t ) then
+     --   -- it's the optional count only
+     --   -- TODO: type casting
+     --      hasCnt := true;
+     --      cntExpr := elemval;
+     --else
+     --   err( "element type " & optional_yellow( to_string( identifiers( identifiers( vectorId ).genKind2 ).name ) ) & " or containers.count_type expected" );
+  --   end if;
+  end if;
+
+  expect( symbol_t,")" );
+
+  if isExecutingCommand then
+     declare
+       --idx : vector_index;
+       cnt        : ada.containers.count_type := 1;
+       theVector  : resPtr;
+       theCursor  : resPtr;
+       --theCursor2 : resPtr;
+     begin
+       --idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       --findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
+       if hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+       end if;
+       Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemVal, cnt );
+       --else
+       --   Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
+       --end if;
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsInsertAt;
 
 -- Insert Vector and Mark
 
@@ -1552,6 +1654,9 @@ begin
   declareFunction(  vectors_equal_t,  "vectors.equal", ParseVectorsEqual'access );
   declareProcedure( vectors_append_vectors_t, "vectors.append_vectors", ParseVectorsAppendVectors'access );
   declareProcedure( vectors_insert_t, "vectors.insert", ParseVectorsInsert'access );
+  declareProcedure( vectors_insert_vector_t, "vectors.insert_vector", ParseVectorsInsertVector'access );
+  declareProcedure( vectors_insert_at_t, "vectors.insert_at", ParseVectorsInsertAt'access );
+  --declareProcedure( vectors_insert_and_mark_t, "vectors.insert_and_mark", ParseVectorsInsertAndMark'access );
 
   declareNamespaceClosed( "vectors" );
 end StartupVectors;

@@ -238,10 +238,10 @@ begin
               -- Unless it is volatile, it is an error.
               if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
                  err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
-                      " (in " & optional_yellow( to_string( getThreadName ) ) &
-                      ") is not unchecked_volatile but is also changed by " &
+                      " used here in " & optional_yellow( to_string( getThreadName ) ) &
+                      " is also changed by " &
                       optional_yellow( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
-                      ".  Perhaps refactor so one source is a procedure or break up the expression." );
+                      ".  Perhaps refactor so one is a procedure, or break up the shared expression or use pragma unchecked_volatile." );
               end if;
            end if;
         end if;
@@ -258,10 +258,10 @@ begin
               -- Unless it is volatile, it is an error.
               if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
                  err( "side-effects: " & to_string( identifiers( id ).name &
-                      " (in " & optional_yellow( to_string( getThreadName ) ) &
-                      ") is not unchecked_volatile but is also changed by " &
+                      " used here in " & optional_yellow( to_string( getThreadName ) ) &
+                      " is also changed by " &
                       optional_yellow( to_string( identifiers( id ).writtenByThread ) ) ) &
-                      ".  Perhaps refactor so one source is a procedure or break up the expression." );
+                      ".  Perhaps refactor so one is a procedure, or break up the shared expression or use pragma unchecked_volatile." );
               end if;
            end if;
         end if;
