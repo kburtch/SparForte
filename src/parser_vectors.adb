@@ -87,7 +87,8 @@ vectors_append_vectors_t : identifier;
 vectors_insert_t        : identifier;
 vectors_insert_vector_t : identifier;
 vectors_insert_at_t     : identifier;
---vectors_insert_and_mark_t : identifier;
+vectors_insert_at_and_mark_t : identifier;
+vectors_insert_vector_and_mark_t : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -136,6 +137,44 @@ end err_index;
 
 
 ------------------------------------------------------------------------------
+--  PARSE NEXT OUT VECTOR CURSOR
+--
+-- If necessary, declare a out cursor parameter.  Attach the resource.
+------------------------------------------------------------------------------
+
+procedure ParseNextOutVectorCursor( vectorId : identifier; cursRef : in out reference ) is
+  resId : resHandleId;
+begin
+  expect( symbol_t, "," );
+  if identifiers( token ).kind = new_t then
+     ParseOutParameter( cursRef, vectors_cursor_t );
+
+     if not error_found then
+        identifiers( cursRef.id ).genKind := identifiers( vectorId ).genKind;
+        identifiers( cursRef.id ).genKind2 := identifiers( vectorId ).genKind2;
+     end if;
+
+     if isExecutingCommand then
+
+        -- Attach the resource
+
+        declareResource( resId, vector_string_list_cursor, getIdentifierBlock( cursRef.id ) );
+        identifiers( cursRef.id ).svalue := to_unbounded_string( resId );
+        identifiers( cursRef.id ).value := identifiers( cursRef.id ).svalue'access;
+        identifiers( cursRef.id ).resource := true;
+     end if;
+  else
+     ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
+     -- Check the type against the vector
+     if not error_found then
+        genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );
+        genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind2 );
+     end if;
+  end if;
+end ParseNextOutVectorCursor;
+
+
+------------------------------------------------------------------------------
 --  PARSE LAsT OUT VECTOR CURSOR
 --
 -- If necessary, declare a out cursor parameter.  Attach the resource.
@@ -167,7 +206,7 @@ begin
      -- Check the type against the vector
      if not error_found then
         genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );
-        genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind );
+        genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind2 );
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -1563,7 +1602,117 @@ begin
   end if;
 end ParseVectorsInsertAt;
 
--- Insert Vector and Mark
+------------------------------------------------------------------------------
+
+procedure ParseVectorsInsertVectorAndMark is
+  vectorId   : identifier;
+  cursorId   : identifier;
+  vector2Id  : identifier;
+  cursor2Ref : reference;
+begin
+  expect( vectors_insert_vector_and_mark_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+  ParseNextInOutInstantiatedParameter( vector2Id, vectors_vector_t );
+  ParseLastOutVectorCursor( vectorId, cursor2Ref );
+
+  if isExecutingCommand then
+     declare
+       theVector  : resPtr;
+       theCursor  : resPtr;
+       theVector2 : resPtr;
+       theCursor2 : resPtr;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       findResource( to_resource_id( identifiers( vector2Id ).value.all ), theVector2 );
+       -- TODO: does not handle arrays
+       findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+       Vector_String_Lists.Insert(
+          theVector.vslVector,
+          theCursor.vslCursor,
+          theVector2.vslVector,
+          theCursor2.vslCursor
+       );
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsInsertVectorAndMark;
+
+------------------------------------------------------------------------------
+
+procedure ParseVectorsInsertAtAndMark is
+  vectorId   : identifier;
+  cursorId   : identifier;
+  elemVal    : unbounded_string;
+  elemType   : identifier;
+  cursor2Ref : reference;
+  cntExpr    : unbounded_string;
+  cntType    : identifier;
+  hasCnt     : boolean := false;
+  --cursorId2  : identifier;
+begin
+  expect( vectors_insert_at_and_mark_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+
+  -- There are two variants to this procedure.  The next parameter is either
+  -- the element type (which may or may not be numeric)  or a numeric
+  -- containers.count_type type.  Additionally, universal types will have
+  -- to be accounted for.
+
+  --if token = symbol_t and identifiers( token ).value.all = "," then
+  expect( symbol_t, "," );
+  ParseExpression( elemVal, elemType );
+  if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
+     ParseNextOutVectorCursor( vectorId, cursor2Ref );
+     if token = symbol_t and identifiers( token ).value.all = "," then
+        expect( symbol_t, "," );
+        ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+        hasCnt := true;
+     end if;
+  end if;
+
+  expect( symbol_t,")" );
+
+  if isExecutingCommand then
+     declare
+       --idx : vector_index;
+       cnt        : ada.containers.count_type := 1;
+       theVector  : resPtr;
+       theCursor  : resPtr;
+       theCursor2 : resPtr;
+     begin
+       --idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+       -- TODO: array of cursor support
+       findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+       if hasCnt then
+          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+       end if;
+       Vector_String_Lists.Insert(
+          Container => theVector.vslVector,
+          Before    => theCursor.vslCursor,
+          New_Item  => elemVal,
+          Position  => theCursor.vslCursor,
+          Count     => cnt
+       );
+     exception when constraint_error =>
+       err( "count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsInsertAtAndMark;
+
 
 -- Insert_Space
 
@@ -1656,7 +1805,8 @@ begin
   declareProcedure( vectors_insert_t, "vectors.insert", ParseVectorsInsert'access );
   declareProcedure( vectors_insert_vector_t, "vectors.insert_vector", ParseVectorsInsertVector'access );
   declareProcedure( vectors_insert_at_t, "vectors.insert_at", ParseVectorsInsertAt'access );
-  --declareProcedure( vectors_insert_and_mark_t, "vectors.insert_and_mark", ParseVectorsInsertAndMark'access );
+ declareProcedure(  vectors_insert_at_and_mark_t, "vectors.insert_at_and_mark", ParseVectorsInsertAtAndMark'access );
+ declareProcedure(  vectors_insert_vector_and_mark_t, "vectors.insert_vector_and_mark", ParseVectorsInsertVectorAndMark'access );
 
   declareNamespaceClosed( "vectors" );
 end StartupVectors;

@@ -19,7 +19,7 @@ Priority Issues (Fix These First)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate
 - ada vectors
   - complete
-  - tests
+  - tests - subtypes, arrays (out param), universals
   - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - handling of derrived types and subtypes and universal types (also in hmaps)
 - pragma todo
