@@ -1175,7 +1175,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           err( optional_yellow( to_string( identifiers( t ).name ) ) & " is an array type" );
        end if;                               -- represent array types
        castType := t;                        -- in expressiosn (yet)
-       expect( symbol_t, "(" );
+       if token = symbol_t and identifiers( token ).value.all = "(" then
+          getNextToken;
+       else
+          err( optional_yellow( to_string( identifiers( t ).name ) ) & " is a type or subtype and a typecast expects a '('" );
+       end if;
        ParseExpression( f, kind );
        expect( symbol_t, ")" );
        if type_checks_done or else uniTypesOk( castType, kind ) then
