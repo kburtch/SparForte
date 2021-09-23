@@ -86,8 +86,8 @@ vectors_equal_t         : identifier;
 vectors_append_vectors_t : identifier;
 vectors_insert_t        : identifier;
 vectors_insert_vector_t : identifier;
-vectors_insert_at_t     : identifier;
-vectors_insert_at_and_mark_t : identifier;
+vectors_insert_before_t : identifier;
+vectors_insert_before_and_mark_t : identifier;
 vectors_insert_vector_and_mark_t : identifier;
 
 
@@ -134,6 +134,16 @@ procedure err_index( idx : vector_index ) is
 begin
   err( "index value" & toProtectedValue( to_unbounded_string( idx'img ) ) & " is out of range" );
 end err_index;
+
+------------------------------------------------------------------------------
+--  ERR COUNT
+--
+------------------------------------------------------------------------------
+
+procedure err_count is
+begin
+  err( "count is not a natural" );
+end err_count;
 
 
 ------------------------------------------------------------------------------
@@ -1410,18 +1420,30 @@ end ParseVectorsEqual;
 
 
 ------------------------------------------------------------------------------
---  INSERT
 --
--- Syntax: vectors.insert( v, i, e [, c] )
---         vectors.insert( v, i, [, c] )
--- Ada:    vectors.insert
+--  INSERT FAMILY
 --
 -- In Ada, Insert can include both before an index or a cursor, and inserting
--- both elements or a second vector.  The count may be optional and a second
--- cursor may be returned.
+-- elements, a second vector or blank space.  The count may be optional and a
+-- second cursor may be returned.  There are more variations than in doubly
+-- linked lists or hashed maps.
 --
 -- For SparForte, these will be separate functions to make them easier to
 -- implement and manage, though it breaks Ada compatibility.
+-- If the count type and element type are the same, SparForte cannot
+-- distinguish between them.  So we don't permit the element to be
+-- absent.
+--
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  INSERT (Insert function 1)
+--
+-- Syntax: vectors.insert( v, i, e [, c] )
+-- Ada:    vectors.insert
+--
+-- Note: "Insert" is a reserved word in SparForte.
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsert is
@@ -1439,50 +1461,43 @@ begin
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseNextNumericParameter( beforeVal, beforeType, identifiers( vectorId ).genKind );
 
-  -- There are two variants to this procedure.  The next parameter is either
-  -- the element type (which may or may not be numeric)  or a numeric
-  -- containers.count_type type.  Additionally, universal types will have
-  -- to be accounted for.
+  -- In Ada, the element can be missing, the count can be missing, or both.
+  -- If the count type and element type are the same, SparForte cannot
+  -- distinguish between them.  So we don't permit the element to be
+  -- absent.
 
   if token = symbol_t and identifiers( token ).value.all = "," then
      expect( symbol_t, "," );
      ParseExpression( elemVal, elemType );
-     -- TODO: handle universal types here.  This hack is not complete
-     -- (e.g. universal typeless is missing).  Do I need a two param
-     -- baseTypesOk function?
      if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
         if token = symbol_t and identifiers( token ).value.all = "," then
            expect( symbol_t, "," );
            ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
            hasCnt := true;
         end if;
-     --elsif baseTypesOk( elemType, containers_count_type_t ) then
-     --   -- it's the optional count only
-     --   -- TODO: type casting
-     --      hasCnt := true;
-     --      cntExpr := elemval;
-     --else
-     --   err( "element type " & optional_yellow( to_string( identifiers( identifiers( vectorId ).genKind2 ).name ) ) & " or containers.count_type expected" );
      end if;
   end if;
-
   expect( symbol_t,")" );
 
   if isExecutingCommand then
      declare
        idx : vector_index;
-       cnt        : ada.containers.count_type := 1;
+       cnt : ada.containers.count_type := 1;
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          begin
+             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          exception when others =>
+             err_count;
+          end;
           Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal, cnt );
        else
           Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
        end if;
      exception when constraint_error =>
-       err( "count must be a natural integer" );
+       err_index;
      when storage_error =>
        err_storage;
      when others =>
@@ -1491,6 +1506,12 @@ begin
   end if;
 end ParseVectorsInsert;
 
+
+------------------------------------------------------------------------------
+-- INSERT VECTOR (Insert function 2)
+--
+-- Syntax: insert_vector( v, c, v2 )
+-- Ada:    insert
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertVector is
@@ -1527,9 +1548,17 @@ begin
   end if;
 end ParseVectorsInsertVector;
 
+
+------------------------------------------------------------------------------
+-- INSERT BEFORE (Insert function 3)
+--
+-- "before" functions use a cursor instead of an index
+--
+-- Syntax: insert_before( v, c, e [, n] )
+-- Ada:    insert
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsInsertAt is
+procedure ParseVectorsInsertBefore is
   vectorId   : identifier;
   cursorId   : identifier;
   elemVal    : unbounded_string;
@@ -1539,69 +1568,59 @@ procedure ParseVectorsInsertAt is
   hasCnt     : boolean := false;
   --cursorId2  : identifier;
 begin
-  expect( vectors_insert_at_t );
+  expect( vectors_insert_before_t );
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
 
-  -- There are two variants to this procedure.  The next parameter is either
-  -- the element type (which may or may not be numeric)  or a numeric
-  -- containers.count_type type.  Additionally, universal types will have
-  -- to be accounted for.
-
-  --if token = symbol_t and identifiers( token ).value.all = "," then
   expect( symbol_t, "," );
   ParseExpression( elemVal, elemType );
      -- TODO: handle universal types here.  This hack is not complete
      -- (e.g. universal typeless is missing).  Do I need a two param
      -- baseTypesOk function?
-  --ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
         expect( symbol_t, "," );
         ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
      end if;
-     --elsif baseTypesOk( elemType, containers_count_type_t ) then
-     --   -- it's the optional count only
-     --   -- TODO: type casting
-     --      hasCnt := true;
-     --      cntExpr := elemval;
-     --else
-     --   err( "element type " & optional_yellow( to_string( identifiers( identifiers( vectorId ).genKind2 ).name ) ) & " or containers.count_type expected" );
-  --   end if;
   end if;
 
   expect( symbol_t,")" );
 
   if isExecutingCommand then
      declare
-       --idx : vector_index;
        cnt        : ada.containers.count_type := 1;
        theVector  : resPtr;
        theCursor  : resPtr;
-       --theCursor2 : resPtr;
      begin
-       --idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       --findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          begin
+             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          exception when others =>
+             err_count;
+          end;
        end if;
        Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemVal, cnt );
-       --else
-       --   Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
-       --end if;
      exception when constraint_error =>
-       err( "count must be a natural integer" );
+       err_index;
      when storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
      end;
   end if;
-end ParseVectorsInsertAt;
+end ParseVectorsInsertBefore;
 
+
+------------------------------------------------------------------------------
+-- INSERT VECTOR AND MARK (Insert function 4)
+--
+-- "mark" functions return a cursor
+--
+-- Syntax: insert_vector_and_mark( v, c, v2, c2 )
+-- Ada:    insert
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertVectorAndMark is
@@ -1626,17 +1645,31 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        findResource( to_resource_id( identifiers( vector2Id ).value.all ), theVector2 );
-       -- TODO: does not handle arrays
-       findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+
+       -- For a reference, the index is significant if it is an array.
+       -- I cannot remember if value is set for me in the reference.  I will
+       -- assume I handle it manually.
+       -- TODO: even if someone were to try this, the cursor functions are
+       -- not written to support an array element.
+
+       if identifiers( cursor2ref.id ).list then
+          findResource( to_resource_id(
+             identifiers( cursor2ref.id ).avalue( cursor2ref.index ) ),
+             theCursor2 );
+       else
+          findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+       end if;
+
        Vector_String_Lists.Insert(
           theVector.vslVector,
           theCursor.vslCursor,
           theVector2.vslVector,
           theCursor2.vslCursor
        );
-     exception when constraint_error =>
-       err( "count must be a natural integer" );
-     when storage_error =>
+
+       -- The resource does not need to be updated.
+
+     exception when storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
@@ -1644,9 +1677,18 @@ begin
   end if;
 end ParseVectorsInsertVectorAndMark;
 
+
+------------------------------------------------------------------------------
+-- INSERT BEFORE AND MARK (Insert function 5)
+--
+-- "before" functions use a cursor instead of an index
+-- "mark" functions return a cursor
+--
+-- Syntax: insert_before_and_mark( v, c, e, c2 [, n])
+-- Ada:    insert
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsInsertAtAndMark is
+procedure ParseVectorsInsertBeforeAndMark is
   vectorId   : identifier;
   cursorId   : identifier;
   elemVal    : unbounded_string;
@@ -1655,18 +1697,11 @@ procedure ParseVectorsInsertAtAndMark is
   cntExpr    : unbounded_string;
   cntType    : identifier;
   hasCnt     : boolean := false;
-  --cursorId2  : identifier;
 begin
-  expect( vectors_insert_at_and_mark_t );
+  expect( vectors_insert_before_and_mark_t );
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( cursorId, vectors_cursor_t );
 
-  -- There are two variants to this procedure.  The next parameter is either
-  -- the element type (which may or may not be numeric)  or a numeric
-  -- containers.count_type type.  Additionally, universal types will have
-  -- to be accounted for.
-
-  --if token = symbol_t and identifiers( token ).value.all = "," then
   expect( symbol_t, "," );
   ParseExpression( elemVal, elemType );
   if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
@@ -1682,19 +1717,34 @@ begin
 
   if isExecutingCommand then
      declare
-       --idx : vector_index;
        cnt        : ada.containers.count_type := 1;
        theVector  : resPtr;
        theCursor  : resPtr;
        theCursor2 : resPtr;
      begin
-       --idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeVal ) ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       -- TODO: array of cursor support
-       findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+
+       -- For a reference, the index is significant if it is an array.
+       -- I cannot remember if value is set for me in the reference.  I will
+       -- assume I handle it manually.
+       -- TODO: even if someone were to try this, the cursor functions are
+       -- not written to support an array element.
+
+       if identifiers( cursor2ref.id ).list then
+          findResource( to_resource_id(
+             identifiers( cursor2ref.id ).avalue( cursor2ref.index ) ),
+             theCursor2 );
+       else
+          findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
+       end if;
+
        if hasCnt then
-          cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          begin
+             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+          exception when others =>
+             err_count;
+          end;
        end if;
        Vector_String_Lists.Insert(
           Container => theVector.vslVector,
@@ -1703,15 +1753,16 @@ begin
           Position  => theCursor.vslCursor,
           Count     => cnt
        );
-     exception when constraint_error =>
-       err( "count must be a natural integer" );
-     when storage_error =>
+
+       -- The resource does not need to be updated.
+
+     exception when storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
      end;
   end if;
-end ParseVectorsInsertAtAndMark;
+end ParseVectorsInsertBeforeAndMark;
 
 
 -- Insert_Space
@@ -1804,8 +1855,8 @@ begin
   declareProcedure( vectors_append_vectors_t, "vectors.append_vectors", ParseVectorsAppendVectors'access );
   declareProcedure( vectors_insert_t, "vectors.insert", ParseVectorsInsert'access );
   declareProcedure( vectors_insert_vector_t, "vectors.insert_vector", ParseVectorsInsertVector'access );
-  declareProcedure( vectors_insert_at_t, "vectors.insert_at", ParseVectorsInsertAt'access );
- declareProcedure(  vectors_insert_at_and_mark_t, "vectors.insert_at_and_mark", ParseVectorsInsertAtAndMark'access );
+  declareProcedure( vectors_insert_before_t, "vectors.insert_before", ParseVectorsInsertBefore'access );
+ declareProcedure(  vectors_insert_before_and_mark_t, "vectors.insert_before_and_mark", ParseVectorsInsertBeforeAndMark'access );
  declareProcedure(  vectors_insert_vector_and_mark_t, "vectors.insert_vector_and_mark", ParseVectorsInsertVectorAndMark'access );
 
   declareNamespaceClosed( "vectors" );

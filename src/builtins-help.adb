@@ -2634,8 +2634,8 @@ begin
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
      content( e, "clear( v )", "previous( c )", "delete( i [, c] )" );
      content( e, "insert( v, i, e [, n] )", "insert_vector( v, c, v2 )" );
-     content( e, "insert_at( v, c, e [, n] )", "insert_vector_and_mark( v, c, v2, c2 )" );
-     content( e, "insert_at_and_mark( v, c, e, c2 [, n]" );
+     content( e, "insert_before( v, c, e [, n] )", "insert_vector_and_mark( v, c, v2, c2 )" );
+     content( e, "insert_before_and_mark( v, c, e, c2 [, n] )" );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then

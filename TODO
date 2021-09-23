@@ -28,6 +28,9 @@ Priority Issues (Fix These First)
   - creating cursors as out parameter on hashed_maps.find
   - check handling of universal types and hashed_maps
   - should insert be converted to insert and mark
+- arrays of containers
+  - array elements of vectors / doubly / hashed_maps and their cursors and
+    handling in the various package subprograms
 
 - ada95 recommendations
 - locations (on declared but not used errors)

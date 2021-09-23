@@ -10,8 +10,7 @@ CHANGES SINCE 2.4
 
 3. New: renaming a generic type.
 
-4. Fix: missing filename at end-of-line for >, 2>, < no longer produce an
-exception.
+4. Fix: missing filename at end-of-line for >, 2>, < no longer produce an exception.
 
 5. Change: forgetting a "when" in a case statement with strings, which looks
 like a shell command, is now an error, detected by the presence of the big arrow
@@ -72,7 +71,7 @@ CHANGES SINCE 2.4.1
 
 31. New: box <> allowed in case when conditions. [negative tests needed]
 
-32: New: demonstration examples design_examples, side_effects.
+32: New: demonstration examples contracts, design_examples, scheduler, side_effects.
 
 33: Fix: parent contracts which raise an exception now propogate the exception.
 

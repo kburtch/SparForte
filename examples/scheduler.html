@@ -1,0 +1,421 @@
+<HEAD><TITLE>scheduler.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : scheduler.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar scheduler.sp
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:133::work is reset
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:164::pid 1 - run me once - added
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:164::pid 2 - run me late - added
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:164::pid 3 - run me again - added
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:42:112747:scheduler:OK:scheduler.sp:189::pid 1 - run me once - exec
+09/22 20:26:42:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:42:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:43:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:43:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:43:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:44:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:45:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:45:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:45:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:45:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:46:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:46:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:46:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:47:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:48:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:48:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:48:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:48:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:49:112747:scheduler:INFO:scheduler.sp:211:::... repeated 3 times
+09/22 20:26:49:112747:scheduler:WARNING:scheduler.sp:211::pid 2 - run me late - overdue
+09/22 20:26:49:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:49:112747:scheduler:OK:scheduler.sp:189::pid 2 - run me late - exec
+09/22 20:26:49:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:49:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:50:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:51:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:51:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:51:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:51:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:52:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:52:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:52:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:53:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:54:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:54:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:54:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:54:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:55:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:55:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:55:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:55:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:57:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:57:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:57:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:57:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:58:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:58:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:58:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:58:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:26:59:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:26:59:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:26:59:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:26:59:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:01:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:01:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:01:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:01:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:02:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:02:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:02:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:02:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:04:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:04:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:04:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:04:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:05:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:05:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:05:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:05:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:06:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:06:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:06:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:07:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:08:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:08:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:08:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:08:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:09:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:09:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:09:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:10:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:11:112747:scheduler:INFO:scheduler.sp:215:::... repeated 4 times
+09/22 20:27:11:112747:scheduler:OK:scheduler.sp:215::pid 3 - run me again - exec
+09/22 20:27:11:112747:scheduler:INFO:scheduler.sp:225::pid 3 - run me again - rescheduled
+09/22 20:27:11:112747:scheduler:INFO:scheduler.sp:280::running scheduler
+09/22 20:27:12:112747:scheduler:INFO:scheduler.sp:299:::... repeated 2 times
+09/22 20:27:12:112747:scheduler:INFO:scheduler.sp:299::time is up - exiting
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "scheduler" )
+       @( description, "An example of a simple non-preemptive scheduler" )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> scheduler <b>is</b>
+
+<FONT COLOR=green><EM>-- EXCEPTIONS</EM></FONT>
+
+  constraint_error : <b>exception</b>;
+  process_error    : <b>exception</b>;
+
+<FONT COLOR=green><EM>-- SCHEDULE NUMBER and PRIORITY</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- a_schedule_number is the iteration number of the scheduler</EM></FONT>
+<FONT COLOR=green><EM>-- a_priority is added to the schedule number to determine when</EM></FONT>
+<FONT COLOR=green><EM>-- word is rescheduled</EM></FONT>
+
+  <b>type</b> a_schedule_number <b>is</b> <b>new</b> natural;
+
+  min_priority : <b>constant</b> a_schedule_number := 0;
+  max_priority : <b>constant</b> a_schedule_number := 5;
+
+  <b>subtype</b> a_priority <b>is</b> a_schedule_number
+  affirm
+     <b>raise</b> constraint_error <b>when</b> a_priority &lt; min_priority <b>or</b> a_priority &gt; max_priority;
+  <b>end</b> affirm;
+
+
+<FONT COLOR=green><EM>-- WORK TYPES</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- For this example, idle means there is no work item.  run means there</EM></FONT>
+<FONT COLOR=green><EM>-- is a work item.</EM></FONT>
+
+  <b>type</b> work_types <b>is</b> (idle, run_once, repeat);
+
+
+<FONT COLOR=green><EM>-- WORK PROCESS ITEM</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- This is an entry in the the process table.</EM></FONT>
+
+  <b>type</b> work_process_item <b>is</b> <b>record</b>
+       title            : string;
+       work_type        : work_types;
+       priority         : a_priority;
+       schedule_number  : a_schedule_number;
+       start_date_year  : calendar.year_number;
+       start_date_month : calendar.month_number;
+       start_date_day   : calendar.day_number;
+       start_date_dur   : calendar.day_duration;
+       due_date_year    : calendar.year_number;
+       due_date_month   : calendar.month_number;
+       due_date_day     : calendar.day_number;
+       due_date_dur     : calendar.day_duration;
+  <b>end</b> <b>record</b>;
+
+
+<FONT COLOR=green><EM>-- PROCESSES</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- The process table.  The process id is the index in the table.  Because the</EM></FONT>
+<FONT COLOR=green><EM>-- current version of SparForte does not support an array of records, records</EM></FONT>
+<FONT COLOR=green><EM>-- will be stored as JSON strings.</EM></FONT>
+
+  min_process : <b>constant</b> natural := 1;
+  max_process : <b>constant</b> natural := 10;
+
+  <b>subtype</b> a_process_id <b>is</b> natural
+  affirm
+    <b>raise</b> constraint_error <b>when</b> a_process_id &lt; min_process <b>or</b> a_process_id &gt; max_process;
+  <b>end</b> affirm;
+
+  work_processes : <b>array</b>(min_process..max_process) <b>of</b> json_string;
+
+
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- SCHEDULER</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+
+<FONT COLOR=green><EM>--  WAIT SCHEDULE</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- The schedule period is how often the scheduler will run.  This procedure</EM></FONT>
+<FONT COLOR=green><EM>-- waits until it is time to run the scheduler again, unless the scheduler</EM></FONT>
+<FONT COLOR=green><EM>-- is already late.</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+  schedule_period : <b>constant</b> duration := 0.5;
+
+  last_clock : calendar.time := calendar.clock;
+
+  <b>procedure</b> wait_scheduler <b>is</b>
+    elapsed_secs : duration;
+    now : <b>constant</b> calendar.time := calendar.clock;
+  <b>begin</b>
+    elapsed_secs := now - last_clock;
+    <b>if</b> elapsed_secs &lt; schedule_period <b>then</b>
+       <b>delay</b> schedule_period - elapsed_secs;
+    <b>end</b> <b>if</b>;
+    last_clock := now;
+  <b>end</b> wait_scheduler;
+
+
+<FONT COLOR=green><EM>--  RESET WORK</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Initializes the process table.</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> reset_work <b>is</b>
+    item : work_process_item;
+    js : json_string;
+  <b>begin</b>
+    item.title := "untitled";
+    item.work_type := idle;
+    item.priority := 5;
+    item.schedule_number := 1;
+    calendar.split( calendar.clock, item.due_date_year, item.due_date_month, item.due_date_day, item.due_date_dur );
+    item.start_date_year  := item.due_date_year;
+    item.start_date_month := item.due_date_month;
+    item.start_date_day   := item.due_date_day;
+    item.start_date_dur   := item.due_date_dur;
+    records.to_json( js, item );
+
+    <b>for</b> pid <b>in</b> min_process..max_process <b>loop</b>
+        records.to_json( js, item );
+        work_processes( pid ) := js;
+    <b>end</b> <b>loop</b>;
+    logs.info( "work is reset" );
+  <b>end</b> reset_work;
+
+
+<FONT COLOR=green><EM>--  SCHEDULE WORK</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Add work to an empty position in the process table.  Process error is</EM></FONT>
+<FONT COLOR=green><EM>-- raised if the work was not added.</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> schedule_work( title : string; priority : a_priority; work_type : work_types; date_year : calendar.year_number; date_month : calendar.month_number; date_day : calendar.day_number; date_dur : calendar.day_duration; schedule_number : a_schedule_number ) <b>is</b>
+    old_item : work_process_item;
+    item : work_process_item;
+    js : json_string;
+    added : boolean := false;
+  <b>begin</b>
+    item.title := title;
+    item.work_type := work_type;
+    item.priority := priority;
+    item.schedule_number := schedule_number;
+    calendar.split( calendar.clock, item.start_date_year, item.start_date_month, item.start_date_day, item.start_date_dur );
+    item.due_date_year  := date_year;
+    item.due_date_month := date_month;
+    item.due_date_day   := date_day;
+    item.due_date_dur   := date_dur;
+    records.to_json( js, item );
+
+    <b>for</b> pid <b>in</b> min_process..max_process <b>loop</b>
+        records.to_record( old_item, work_processes( pid ) );
+        <b>if</b> old_item.work_type = idle <b>then</b>
+           work_processes( pid ) := js;
+           logs.info( "pid" &amp; strings.image( pid ) &amp; " - " &amp; item.title &amp; " - added" );
+           added;
+           <b>exit</b>;
+        <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>if</b> <b>not</b> added <b>then</b>
+       logs.error( item.title &amp; " - not added" );
+       <b>raise</b> process_error;
+    <b>end</b> <b>if</b>;
+  <b>end</b> schedule_work;
+
+
+<FONT COLOR=green><EM>--  EXEC WORK</EM></FONT>
+<FONT COLOR=green><EM>--</EM></FONT>
+<FONT COLOR=green><EM>-- Run a task if it is scheduled or if the scheduler is late for due date.</EM></FONT>
+<FONT COLOR=green><EM>-----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> exec_work( pid : a_process_id; schedule_number : a_schedule_number ) <b>is</b>
+    item : work_process_item;
+    js   : json_string;
+  <b>begin</b>
+    records.to_record( item, work_processes( pid ) );
+    <b>case</b> item.work_type <b>is</b>
+    <b>when</b> run_once =&gt;
+       <b>if</b> item.schedule_number = schedule_number <b>then</b>
+          logs.ok( "pid" &amp; strings.image( pid ) &amp; " - " &amp; item.title &amp; " - exec" );
+          <FONT COLOR=green><EM>-- the next run is rescheduled by the priority</EM></FONT>
+
+          <b>if</b> item.priority = 0 <b>then</b>
+             item.schedule_number := schedule_number + 1;
+          <b>else</b>
+             item.schedule_number := schedule_number + item.priority;
+          <b>end</b> <b>if</b>;
+
+          <FONT COLOR=green><EM>-- Remove the entry from the process table</EM></FONT>
+
+          item.work_type := idle;
+          records.to_json( js, item );
+          work_processes( pid ) := js;
+       <b>elsif</b> calendar.clock &gt; calendar.time_of( item.due_date_year, item.due_date_month, item.due_date_day, item.due_date_dur ) <b>then</b>
+
+          <FONT COLOR=green><EM>-- If it's not time to run but the run is late, schedule the task</EM></FONT>
+          <FONT COLOR=green><EM>-- for the next schedule iteration</EM></FONT>
+
+          item.schedule_number := schedule_number + 1;
+          records.to_json( js, item );
+          work_processes( pid ) := js;
+          logs.warning( "pid" &amp; strings.image( pid ) &amp; " - " &amp; item.title &amp; " - overdue" );
+       <b>end</b> <b>if</b>;
+    <b>when</b> repeat =&gt;
+       <b>if</b> item.schedule_number = schedule_number <b>then</b>
+          logs.ok( "pid" &amp; strings.image( pid ) &amp; " - " &amp; item.title &amp; " - exec" );
+          <FONT COLOR=green><EM>-- the next run is rescheduled by the priority</EM></FONT>
+
+          <b>if</b> item.priority = 0 <b>then</b>
+             item.schedule_number := schedule_number + 1;
+          <b>else</b>
+             item.schedule_number := schedule_number + item.priority;
+          <b>end</b> <b>if</b>;
+          records.to_json( js, item );
+          work_processes( pid ) := js;
+          logs.info( "pid" &amp; strings.image( pid ) &amp; " - " &amp; item.title &amp; " - rescheduled" );
+       <b>end</b> <b>if</b>;
+    <b>when</b> <b>others</b> =&gt; <b>null</b>;
+    <b>end</b> <b>case</b>;
+  <b>end</b> exec_work;
+
+
+<FONT COLOR=green><EM>-- SCHEDULER</EM></FONT>
+
+  schedule_number : a_schedule_number := 1;
+  <FONT COLOR=green><EM>-- the iteration of the scheduler</EM></FONT>
+
+  current_process : a_process_id := 1;
+  <FONT COLOR=green><EM>-- the current process being checked</EM></FONT>
+
+  stop_time : calendar.time;
+  <FONT COLOR=green><EM>-- the time when this example should stop</EM></FONT>
+
+  done : boolean := false;
+  <FONT COLOR=green><EM>-- true if the scheduler should stop</EM></FONT>
+
+  due_date_year : calendar.year_number;
+  due_date_month : calendar.month_number;
+  due_date_day : calendar.day_number;
+  due_date_dur : calendar.day_duration;
+  <FONT COLOR=green><EM>-- used for passing the due date to schedule_work</EM></FONT>
+
+<b>begin</b>
+
+  <FONT COLOR=green><EM>-- Initialize the scheduler</EM></FONT>
+
+  reset_work;
+  stop_time := calendar.clock + 30;
+
+  <FONT COLOR=green><EM>-- Schedule some tasks</EM></FONT>
+
+  calendar.split( calendar.clock + 5, due_date_year, due_date_month, due_date_day, due_date_dur );
+  schedule_work( "run me once", 2, run_once, due_date_year, due_date_month, due_date_day, due_date_dur, schedule_number );
+
+  calendar.split( calendar.clock + 7, due_date_year, due_date_month, due_date_day, due_date_dur );
+  schedule_work( "run me late", 3, run_once, due_date_year, due_date_month, due_date_day, due_date_dur, schedule_number + 50 );
+
+  calendar.split( calendar.clock + 7, due_date_year, due_date_month, due_date_day, due_date_dur );
+  schedule_work( "run me again", 5, repeat, due_date_year, due_date_month, due_date_day, due_date_dur, schedule_number );
+
+  <FONT COLOR=green><EM>-- Scheduler loop</EM></FONT>
+
+  <b>while</b> <b>not</b> done <b>loop</b>
+
+     <FONT COLOR=green><EM>-- At the start of the process table, wait for the schedule period</EM></FONT>
+     <FONT COLOR=green><EM>-- then run the scheduler</EM></FONT>
+
+     <b>if</b> current_process = min_process <b>then</b>
+        wait_scheduler;
+        logs.info( "running scheduler" );
+     <b>end</b> <b>if</b>;
+
+     <FONT COLOR=green><EM>-- Check and run the work task (if necessary)</EM></FONT>
+
+     exec_work( current_process, schedule_number );
+
+     <FONT COLOR=green><EM>-- Move on to the next work task in the process table</EM></FONT>
+
+     <b>if</b> current_process = max_process <b>then</b>
+        current_process := min_process;
+        schedule_number := @+1;
+     <b>else</b>
+        current_process := @+1;
+     <b>end</b> <b>if</b>;
+
+     <FONT COLOR=green><EM>-- Check to see if this example is over</EM></FONT>
+
+     <b>if</b> calendar.clock &gt; stop_time <b>then</b>
+        logs.info( "time is up - exiting" );
+        done;
+     <b>end</b> <b>if</b>;
+  <b>end</b> <b>loop</b>;
+
+<b>end</b> scheduler;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>
