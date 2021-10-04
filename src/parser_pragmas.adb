@@ -315,7 +315,7 @@ begin
         err( "unknown annotation field type" );
      else
         ParsePragmaIdentifier;
-        expect( symbol_t, "," );
+        expectPragmaComma;
      end if;
   end if;
   -- A team.member variable for the author doesn't work because variables
@@ -338,22 +338,22 @@ begin
   if name = "used" then
      assumeKind := assumption_used;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "written" then
      assumeKind := assumption_written;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "applied" then
      assumeKind := assumption_applied;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "factor" then
      assumeKind := assumption_factor;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   else
      assumeKind := assumption;
@@ -375,12 +375,12 @@ begin
   if name = "shell" then
      importKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "cgi" then
      importKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "local_memcache" then
      if restriction_no_memcache then
@@ -388,7 +388,7 @@ begin
      end if;
      importKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "memcache" then
      if restriction_no_memcache then
@@ -396,12 +396,12 @@ begin
      end if;
      importKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "session" then
      importKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   else
      importKind := null_unbounded_string;
@@ -423,22 +423,22 @@ begin
   if name = "shell" then
      exportKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "local_memcache" then
      exportKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "memcache" then
      exportKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   elsif name = "session" then
      exportKind := name_unbounded;
      ParsePragmaIdentifier;
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseIdentifier( var_id );
   else
      exportKind := null_unbounded_string;
@@ -460,7 +460,7 @@ procedure ParseLicenseKind( expr_val : out unbounded_string ) is
   procedure ParseLicenseExtra is
   begin
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         expr_val := expr_val & ": " & identifiers( token ).value.all;
         expect( strlit_t );
      end if;
@@ -620,7 +620,7 @@ begin
 
   ParseIdentifier( var_id );
   unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_measure_t );
-  expect( symbol_t, "," );
+  expectPragmaComma;
   work_estimate_unknown := false;
 
   -- the work estimate value
@@ -644,7 +644,7 @@ begin
   else
      err( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work measure value" );
   end if;
-  expect( symbol_t, "," );
+  expectPragmaComma;
 end ParseWorkEstimate;
 
 
@@ -665,7 +665,7 @@ begin
 
   ParseIdentifier( var_id );
   unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_work_priority_t );
-  expect( symbol_t, "," );
+  expectPragmaComma;
 
   -- the work priority value
 
@@ -1391,10 +1391,10 @@ begin
   when advise =>                             -- pragma advise
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
@@ -1402,7 +1402,7 @@ begin
   when affinity =>                           -- pragma affinity
      ParseDesignPragmaAffinityIdentifier( expr_val );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( expr_val3, var_id );
         baseTypesOK( var_id, float_t );
      else
@@ -1417,10 +1417,10 @@ begin
   when blocked =>                            -- pragma clarify
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
@@ -1428,10 +1428,10 @@ begin
   when clarify =>                            -- pragma clarify
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
@@ -1440,7 +1440,7 @@ begin
      null;
   when constraint =>                         -- pragma constraint
      ParseDesignPragmaConstraintIdentifier( expr_val );
-     expect( symbol_t, "," );
+     expectPragmaComma;
      if token = strlit_t then
         expr_val2 := identifiers( token ).value.all;
         getNextToken;
@@ -1448,7 +1448,7 @@ begin
         ParsePragmaIdentifier ( expr_val2 );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( expr_val3, var_id );
         baseTypesOK( var_id, float_t );
      else
@@ -1462,7 +1462,7 @@ begin
   when declare_affinity =>                      -- pragma declare_affinity
      ParseDesignPragmaAffinityModeIdentifier( expr_val );
      affinityMode := toAffinityMode( expr_val );
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseDesignPragmaAffinityIdentifier( expr_val );
      -- expect( symbol_t, "," );
      -- if token = strlit_t then
@@ -1476,7 +1476,7 @@ begin
      --    ParsePragmaIdentifier( expr_val2 );
      -- end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( expr_val3, var_id );
         baseTypesOK( var_id, float_t );
      else
@@ -1485,9 +1485,9 @@ begin
   when declare_constraint =>                    -- pragma declare_constraint
      ParseDesignPragmaModeIdentifier( expr_val );
      constraintMode := toConstraintMode( expr_val );
-     expect( symbol_t, "," );
+     expectPragmaComma;
      ParseDesignPragmaConstraintIdentifier( expr_val );
-     expect( symbol_t, "," );
+     expectPragmaComma;
      if token = strlit_t then
         if identifiers( token ).value.all = "" then
            err( "constraint name should not be an empty string" );
@@ -1499,7 +1499,7 @@ begin
         ParsePragmaIdentifier( expr_val2 );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( expr_val3, var_id );
         baseTypesOK( var_id, float_t );
      else
@@ -1512,10 +1512,10 @@ begin
   when dispute =>                               -- pragma dispute
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
@@ -1540,34 +1540,34 @@ begin
   when manual_test =>                        -- pragma manual_test
      ParseIdentifier( var_id );                -- test owner
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( testCaseName, var_id );  -- test name/subject
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- test objective
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- test description
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- test environment
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- test category
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- preconditions
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- steps/expected results
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- postconditions/cleanup
         baseTypesOK( var_id, uni_string_t );
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseWorkEstimate( work_estimate_unknown ); -- work estimate
         ParseWorkPriority( work_estimate_unknown, is_todo => false ); -- work priority
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseStaticExpression( expr_val, var_id );  -- work ticket / user story
         baseTypesOK( var_id, uni_string_t );
      else
@@ -1576,19 +1576,19 @@ begin
   when manual_test_result =>                 -- pragma manual_test_result
       ParseIdentifier( var_id );                -- tester
       if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );  -- date
            baseTypesOK( var_id, uni_string_t );
            test_message := "Date: " & expr_val;
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );  -- notes
            baseTypesOK( var_id, uni_string_t );
            test_message := test_message & "; Notes: " & expr_val;
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );  -- screenshots
            baseTypesOK( var_id, uni_string_t );
            test_message := test_message & "; Screenshots: " & expr_val;
-           expect( symbol_t, "," );                    -- test result
+           expectPragmaComma;
            -- TODO: status is false when test succeeded.
            if token = true_t then
               test_result_status := false;
@@ -1600,7 +1600,7 @@ begin
               err( "true or false expected for the test status" );
            end if;
           if token = symbol_t and identifiers( token ).value.all = "," then
-             expect( symbol_t, "," );
+             getNextToken;
              ParseStaticExpression( expr_val, var_id );  -- defect id
              baseTypesOK( var_id, uni_string_t );
              test_message := test_message & "; Ticket: " & expr_val;
@@ -1632,10 +1632,10 @@ begin
   when propose =>                           -- pragma refactor
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
@@ -1643,10 +1643,10 @@ begin
   when refactor =>                           -- pragma refactor
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-        expect( symbol_t, "," );
+        expectPragmaComma;
         ParseIdentifier( var_id );
         if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
-           expect( symbol_t, "," );
+           expectPragmaComma;
            ParseStaticExpression( expr_val, var_id );
            baseTypesOK( var_id, uni_string_t );
         end if;
@@ -1654,7 +1654,7 @@ begin
   when register_memcache_server =>           -- pragma register_memcache_server
      expr_val := identifiers( token ).value.all;
      expect( strlit_t );
-     expect( symbol_t, "," );
+     expectPragmaComma;
      expr_val2 := identifiers( token ).value.all;
      expect( number_t );
   when restriction =>                        -- pragma restriction
@@ -1727,7 +1727,7 @@ begin
      else
         ParsePragmaIdentifier( expr_val );
         if token = symbol_t and identifiers( token ).value.all = "," then
-           expect( symbol_t, "," );
+           getNextToken;
            expect( strlit_t );
            var_id := strlit_t;
         else
@@ -1766,7 +1766,7 @@ begin
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         expect( strlit_t );
         expr_val2 := identifiers( strlit_t ).value.all;
      else
@@ -1783,7 +1783,7 @@ begin
         err( "unknown test report type '" & to_string( expr_val ) & "'" );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( reportPath, expr_type );
         baseTypesOK( expr_type, uni_string_t );
         if expr_val = "text" and length( reportPath ) > 0 then
@@ -1831,17 +1831,17 @@ begin
      begin
        ParseIdentifier( var_id );              -- the person
        unused_bool := baseTypesOK( identifiers( var_id ).kind, teams_member_t );
-       expect( symbol_t, "," );
+       expectPragmaComma;
        ParseStaticExpression( expr_val, var_id );
        baseTypesOK( var_id, uni_string_t );
-       expect( symbol_t, "," );
+       expectPragmaComma;
 
        ParseWorkEstimate( work_estimate_unknown );
        ParseWorkPriority( work_estimate_unknown );
 
        -- optional ticket id
        if token = symbol_t and identifiers( token ).value.all = "," then
-          expect( symbol_t, "," );
+          getNextToken;
           expect( strlit_t );
        end if;
      end;
@@ -1854,7 +1854,7 @@ begin
      ParseIdentifier( var_id );
      expr_val := null_unbounded_string;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( expr_val, expr_type );
         baseTypesOK( expr_type, duration_t );
      end if;
@@ -1865,7 +1865,7 @@ begin
      ParseIdentifier( var_id );
      expr_val := null_unbounded_string;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseStaticExpression( expr_val, expr_type );
         baseTypesOK( expr_type, duration_t );
      end if;

@@ -482,7 +482,7 @@ procedure ParseLevelEnd is
   id : identifier;
 begin
   expect( logs_level_end_t );
-  ParseSingleInOutParameter( id, log_level_t );
+  ParseSingleInOutParameter( logs_level_end_t, id, log_level_t );
   if isExecutingCommand then
      begin
         level := natural'value( ' ' & to_string( identifiers( id ).value.all ) );
@@ -501,7 +501,7 @@ procedure ParseOK is
 begin
   expect( logs_ok_t );
 <<repeat_ok>>
-  ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  ParseSingleStringParameter( logs_ok_t, msgExpr, msgType, universal_t );
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
@@ -554,7 +554,7 @@ procedure ParseInfo is
 begin
   expect( logs_info_t );
 <<repeat_info>>
-  ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  ParseSingleStringParameter( logs_info_t, msgExpr, msgType, universal_t );
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
@@ -608,7 +608,7 @@ procedure ParseWarning is
 begin
   expect( logs_warning_t );
 <<repeat_warning>>
-  ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  ParseSingleStringParameter( logs_warning_t, msgExpr, msgType, universal_t );
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
@@ -662,7 +662,7 @@ procedure ParseError is
 begin
   expect( logs_error_t );
 <<repeat_error>>
-  ParseSingleStringParameter( msgExpr, msgType, universal_t );
+  ParseSingleStringParameter( logs_error_t, msgExpr, msgType, universal_t );
   -- Here we fake a chain context.  We don't create the chain identifiers
   -- but instead read the script and determine the chain position, which
   -- is all we need.
@@ -724,12 +724,12 @@ procedure ParseOpen is
 begin
   expect( logs_open_t );
   ParseFirstStringParameter( pathExpr, pathType, string_t );
-  ParseNextEnumParameter( modeExpr, modeType, log_modes_t );
+  ParseNextEnumParameter( logs_open_t, modeExpr, modeType, log_modes_t );
   if token = symbol_t and identifiers( token ).value.all = ")" then
      widthExpr:= to_unbounded_string( defaultWidth'img );
      expect( symbol_t, ")" );
   else
-     ParseLastNumericParameter( widthExpr, widthType, positive_t );
+     ParseLastNumericParameter( logs_open_t, widthExpr, widthType, positive_t );
   end if;
 
   if isExecutingCommand then

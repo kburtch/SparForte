@@ -745,7 +745,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = ")" then
         mode := out_file_t;
      else
-        expect( symbol_t, "," );
+        expectParameterComma;
         ParseIdentifier( mode );
         if baseTypesOk( identifiers( mode ).kind, file_mode_t ) then
            if create and mode = in_file_t then
@@ -757,7 +757,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = ")" then
         makeTempFile( name );
      else
-        expect( symbol_t, "," );
+        expectParameterComma;
         ParseExpression( exprVal, exprType );
         if uniTypesOk( exprType, uni_string_t ) then
            name := exprVal;
@@ -772,7 +772,7 @@ begin
      expect( symbol_t, "(" );
      ParseClosedFileOrSocket( file_ref, kind );
      if kind = file_type_t then
-        expect( symbol_t, "," );
+        expectParameterComma;
         ParseIdentifier( mode );
         if baseTypesOk( identifiers( mode ).kind, file_mode_t ) then
            if boolean(rshOpt) and mode = out_file_t then
@@ -782,7 +782,7 @@ begin
      end if;
      if not error_found then
         -- not error_found because file must be legit in here
-        expect( symbol_t, "," );
+        expectParameterComma;
         -- At this point, it may be the second or third parameter, depending on
         -- whether or not it is a socket.  The third parameter is an expression
         -- and the expression could contain keywords like $1.
@@ -837,7 +837,7 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
+     getNextToken;
      if baseTypesOk( identifiers( token ).kind, file_mode_t ) then
         mode := token;
         getNextToken;
@@ -1041,7 +1041,7 @@ begin
   expect( symbol_t, "(" );
   if identifiers( token ).kind /= keyword_t then
      ParseOpenFileOrSocket( file_ref, kind );
-     expect( symbol_t, "," );
+     expectParameterComma;
   else
      file_ref.id := standard_input_t;
   end if;
@@ -1120,10 +1120,10 @@ begin
               err( "This is a in_mode file" );
            end if;
         end if;
-        expect( symbol_t, "," );
+        expectParameterComma;
      elsif kind = socket_type_t then
         ParseOpenSocket( target_ref );
-        expect( symbol_t, "," );
+        expectParameterComma;
      else
         target_ref.id := standard_output_t;
      end if;
@@ -1385,10 +1385,10 @@ begin
               err( "This is a in_mode file" );
            end if;
         end if;
-        expect( symbol_t, "," );
+        expectParameterComma;
      elsif kind = socket_type_t then
         ParseOpenSocket( target_ref );
-        expect( symbol_t, "," );
+        expectParameterComma;
      else
         target_ref.id := standard_output_t;
      end if;
@@ -1403,7 +1403,7 @@ begin
   end if;
   -- apply optional numeric formatting
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
+     getNextToken;
      ParseExpression( pic_val, pic_type );
      if getUniType( pic_type ) /= uni_string_t then
         err( "number format picture string expected" );
@@ -1645,7 +1645,7 @@ begin
      baseType := getBaseType( kind );
      if baseType = file_type_t or baseType = socket_type_t then
         ParseOpenFileOrSocket( file_ref, kind );
-        expect( symbol_t, "," );
+        expectParameterComma;
      else
         -- default is standard input
         file_ref.id := standard_input_t;
@@ -1656,7 +1656,7 @@ begin
   end if;
   ParseOutParameter( id_ref, character_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
+     getNextToken;
      ParseOutParameter( avail_ref, boolean_t );
      hasAvail := true;
   end if;
@@ -1716,7 +1716,7 @@ begin
   expect( symbol_t, "(" );
   if identifiers( token ).kind /= keyword_t then
      ParseOpenFileOrSocket( file_ref, kind );
-     expect( symbol_t, "," );
+     expectParameterComma;
   else
      file_ref.id := standard_input_t;
   end if;

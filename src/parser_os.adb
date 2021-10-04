@@ -44,7 +44,7 @@ procedure ParseOSSystem is
   expr_type  : identifier;
 begin
   expect( os_system_t );
-  ParseSingleStringParameter( expr_val, expr_type, string_t );
+  ParseSingleStringParameter( os_system_t, expr_val, expr_type, string_t );
   if isExecutingCommand then
      begin
         last_status:= aStatusCode( linux_system( to_string( expr_val ) & ascii.nul ) );
@@ -81,7 +81,7 @@ procedure ParseOSErrorString( result : out unbounded_string; kind : out identifi
 begin
   kind := string_t;
   expect( os_error_string_t );
-  ParseSingleNumericParameter( expr_val, expr_type, integer_t );
+  ParseSingleNumericParameter( os_error_string_t, expr_val, expr_type, integer_t );
   if isExecutingCommand then
      begin
         result := to_unbounded_string( OSerror( integer( to_numeric( expr_val ) ) ) );

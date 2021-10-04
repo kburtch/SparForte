@@ -59,7 +59,7 @@ begin
   expect( records_to_json_t );
   expect( symbol_t, "(" );
   ParseOutParameter( target_ref, json_string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   ParseIdentifier( source_var_id );
   if identifiers( getBaseType( identifiers( source_var_id ).kind ) ).kind /= root_record_t then
      err( "Record type expected" );
@@ -105,7 +105,7 @@ begin
   if identifiers( baseType ).kind /= root_record_t then
      err( "Record type expected" );
   end if;
-  expect( symbol_t, "," );
+  expectParameterComma;
   ParseExpression( sourceVal, sourceType );
   if baseTypesOK( sourceType, json_string_t ) then
      expect( symbol_t, ")" );

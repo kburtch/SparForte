@@ -77,7 +77,7 @@ begin
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
-        Put_Line( "  --color or --colour - enable coloured messages" );
+        Put_Line( "  --color or --colour - enable coloured messages and UTF-8 icons" );
         Put_Line( "  --debug or -d       - enable pragma assert and pragma debug" );
         Put_Line( "  --design or -D      - design phase mode" );
         Put_Line( "  --exec or -e        - script is a string containing SparForte commands" );
@@ -93,7 +93,7 @@ begin
         Put_Line( "  --restricted or -r  - restricted shell mode" );
         Put_Line( "  --test or -t        - test phase mode (default)" );
         Put_Line( "  --trace or -x       - show script lines as they run" );
-        Put_Line( "  --verbose or -v     - show shell activity" );
+        Put_Line( "  --verbose or -v     - show shell activity and detailed messages" );
         Put_Line( "  --version or -V     - show version" );
         Put_Line( "  --                  - explicitly end shell options" );
         Set_Exit_Status( 0 );

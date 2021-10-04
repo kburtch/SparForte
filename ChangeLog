@@ -71,7 +71,9 @@ CHANGES SINCE 2.4.1
 
 31. New: box <> allowed in case when conditions. [negative tests needed]
 
-32: New: demonstration examples contracts, design_examples, scheduler, side_effects.
+32. New: demonstration examples contracts, design_examples, scheduler, side_effects.
 
-33: Fix: parent contracts which raise an exception now propogate the exception.
+33. Fix: parent contracts which raise an exception now propogate the exception.
+
+34. Change: Improved some error messages for context and ease of understanding.
 

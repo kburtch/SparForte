@@ -145,15 +145,15 @@ begin
   end if;
   ParseFirstStringParameter( dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( userExpr, userType, string_t );
+     ParseNextStringParameter( mysql_connect_t, userExpr, userType, string_t );
      hasUser := true;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseNextStringParameter( pswdExpr, pswdType, string_t );
+        ParseNextStringParameter( mysql_connect_t, pswdExpr, pswdType, string_t );
         if token = symbol_t and identifiers( token ).value.all = "," then
-           ParseNextStringParameter( hostExpr, hostType, string_t );
+           ParseNextStringParameter( mysql_connect_t, hostExpr, hostType, string_t );
            hasHost := true;
            if token = symbol_t and identifiers( token ).value.all = "," then
-              ParseNextNumericParameter( portExpr, portType, integer_t );
+              ParseNextNumericParameter( mysql_connect_t, portExpr, portType, integer_t );
               hasPort := true;
            end if;
         end if;
@@ -288,7 +288,7 @@ begin
   ParseExpression( sqlExpr, sqlType );
   if baseTypesOK( string_t, sqlType ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        expectParameterComma;
         ParseExpression( afterExpr, afterType );
         if baseTypesOK( string_t, sqlType ) then
            hasAfter := true;
@@ -329,7 +329,7 @@ begin
   expect( mysql_prepare_t );
   ParseFirstStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( afterExpr, afterType, string_t );
+     ParseNextStringParameter( mysql_prepare_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
   expect( symbol_t, ")" );
@@ -365,7 +365,7 @@ begin
   expect( mysql_append_t );
   ParseFirstStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( afterExpr, afterType, string_t );
+     ParseNextStringParameter( mysql_append_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
   expect( symbol_t, ")" );
@@ -396,7 +396,7 @@ procedure ParseMySQLAppendLine is
   sqlType   : identifier;
 begin
   expect( mysql_append_line_t );
-  ParseSingleStringParameter( sqlExpr, sqlType, string_t );
+  ParseSingleStringParameter( mysql_append_line_t, sqlExpr, sqlType, string_t );
 
   if isExecutingCommand then
      begin
@@ -425,7 +425,7 @@ begin
   expect( mysql_append_quoted_t );
   ParseFirstStringParameter( sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( afterExpr, afterType, string_t );
+     ParseNextStringParameter( mysql_append_quoted_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
   expect( symbol_t, ")" );
@@ -483,7 +483,7 @@ procedure ParseMySQLExecuteChecked is
 begin
   expect( mysql_execute_checked_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseSingleStringParameter( msgExpr, msgType, string_t );
+     ParseSingleStringParameter( mysql_execute_checked_t, msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
 
@@ -737,7 +737,7 @@ begin
   expect( mysql_open_db_trace_t );
   ParseFirstStringParameter( fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
+     ParseNextStringParameter( mysql_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
      hasMode := true;
   end if;
@@ -899,7 +899,7 @@ procedure ParseMySQLReportErrors is
 begin
   expect( mysql_report_errors_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseSingleStringParameter( reportExpr, reportType, boolean_t );
+     ParseSingleStringParameter( mysql_report_errors_t, reportExpr, reportType, boolean_t );
   else
      reportExpr := to_unbounded_string( "1" );
   end if;
@@ -1026,7 +1026,7 @@ procedure ParseMySQLFetch is
 begin
   expect( mysql_fetch_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseSingleNumericParameter( expr_val, expr_type, mysql_tuple_index_type_t );
+     ParseSingleNumericParameter( mysql_fetch_t, expr_val, expr_type, mysql_tuple_index_type_t );
      haveIndex := true;
   end if;
   if isExecutingCommand then
@@ -1155,7 +1155,7 @@ procedure ParseMySQLColumnName( result : out unbounded_string; kind : out identi
 begin
   kind := string_t;
   expect( mysql_column_name_t );
-  ParseSingleNumericParameter( exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( mysql_column_name_t, exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string(
@@ -1184,7 +1184,7 @@ procedure ParseMySQLColumnIndex( result : out unbounded_string; kind : out ident
 begin
   kind := mysql_column_index_type_t;
   expect( mysql_column_index_t );
-  ParseSingleStringParameter( exprVal, exprType, string_t );
+  ParseSingleStringParameter( mysql_column_index_t, exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string( Column_Index_Type'image(
@@ -1242,7 +1242,7 @@ procedure ParseMySQLIsNull( result : out unbounded_string; kind : out identifier
 begin
   kind := boolean_t;
   expect( mysql_is_null_t );
-  ParseSingleNumericParameter( exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( mysql_is_null_t, exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
        result := to_bush_boolean(
@@ -1274,7 +1274,7 @@ procedure ParseMySQLValue( result : out unbounded_string; kind : out identifier 
 begin
   kind := universal_t;
   expect( mysql_value_t );
-  ParseSingleNumericParameter( exprVal, exprType, mysql_column_index_type_t );
+  ParseSingleNumericParameter( mysql_value_t, exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
        result := Value( Q, Column_Index_Type( to_numeric( exprVal ) ) );

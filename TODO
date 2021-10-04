@@ -21,6 +21,11 @@ Priority Issues (Fix These First)
   - <> box statement negative tests
   - business process block that only supports case in (do this after vectors)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate to load such things from non-standard locations
+  - with separate policy, with separate configuration, with separate process in addition to normal with separate
+- ada vectors (the package that takes forever to finish)
+  - complete
+  - tests - subtypes, arrays (out param), universals
+  - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - handling of derrived types and subtypes and universal types (also in hmaps)
 - pragma todo
   - these do not appear in help output when in include files
@@ -28,6 +33,7 @@ Priority Issues (Fix These First)
   - creating cursors as out parameter on hashed_maps.find
   - check handling of universal types and hashed_maps
   - should insert be converted to insert and mark
+  - shouldn't assume keys are strings
 - arrays of containers
   - array elements of vectors / doubly / hashed_maps and their cursors and
     handling in the various package subprograms
@@ -40,6 +46,18 @@ Priority Issues (Fix These First)
 - how can design mode be improved to assist with producing design diagrams?  translating
   things into design diagrams is a costly part of design.
 - refactor source code treasury index page
+- record field identifiers erros in a record definition are reported as
+  "shell words" for string or numeric literals but should not be.  record
+  type declarations have nothing to do will the Bourne shell features.
+- check for TODO's
+
+- ada95 corrective recommendations
+- locations (on declared but not used errors)
+- how can design mode be improved to assist with design diagrams?  perhaps
+  a simple left-justified tree of the program like the shell tree command
+  showing the program components and design notes or documentation?  One
+  of the problem with design is keeping the documentation up-to-date.
+- redesign source code treasury index page
 - update examples with recent changes to SparForte (e.g. affirm clauses)
 - update REPL on website
 - check pascal's changes for supporting graphic environments
@@ -55,6 +73,8 @@ Priority Issues (Fix These First)
   - anything to be done?
 - completions
   - drill-down on empty directories probably not working
+- fazing out ada.text_io for SparForte's functions to eliminate device
+  errors.
 - manual test cases -  can HTML be embedded as CDATA in junit xml?
 - incomplete casting tests
 - Research: for web to be secure, you can output raw strings to the console.

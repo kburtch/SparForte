@@ -212,7 +212,7 @@ procedure ParseMemcacheIsValidMemcacheKey( result : out unbounded_string; kind :
 begin
   kind := boolean_t;
   expect( memcache_is_valid_memcache_key_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( memcache_is_valid_memcache_key_t, expr_val, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
@@ -259,8 +259,8 @@ begin
   checkRestrictedShell;
   expect( memcache_register_server_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastNumericParameter( expr_val2, expr_type2, natural_t );
+  ParseNextStringParameter( memcache_register_server_t, expr_val, expr_type );
+  ParseLastNumericParameter( memcache_register_server_t, expr_val2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -287,7 +287,7 @@ procedure ParseMemcacheClearServers is
 begin
   checkRestrictedShell;
   expect( memcache_clear_servers_t );
-  ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_clear_servers_t, cluster_id, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -316,7 +316,7 @@ begin
   checkRestrictedShell;
   expect( memcache_set_cluster_name_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseLastStringParameter( expr_val, expr_type, string_t );
+  ParseLastStringParameter( memcache_set_cluster_name_t, expr_val, expr_type, string_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -347,7 +347,7 @@ begin
   checkRestrictedShell;
   expect( memcache_set_cluster_type_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseLastEnumParameter( expr_val, expr_type, memcache_cluster_type_t );
+  ParseLastEnumParameter( memcache_set_cluster_type_t, expr_val, expr_type, memcache_cluster_type_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
@@ -385,8 +385,8 @@ begin
   checkRestrictedShell;
   expect( memcache_set_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_set_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_set_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -419,8 +419,8 @@ begin
   checkRestrictedShell;
   expect( memcache_add_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_add_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_add_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -453,8 +453,8 @@ begin
   checkRestrictedShell;
   expect( memcache_replace_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_replace_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_replace_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -485,8 +485,8 @@ begin
   checkRestrictedShell;
   expect( memcache_append_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_append_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_append_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -517,8 +517,8 @@ begin
   checkRestrictedShell;
   expect( memcache_prepend_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( memcache_prepend_t, expr_val, expr_type );
+  ParseLastStringParameter( memcache_prepend_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -548,7 +548,7 @@ begin
   checkRestrictedShell;
   expect( memcache_get_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( memcache_get_t, expr_val, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -579,7 +579,7 @@ begin
   checkRestrictedShell;
   expect( memcache_delete_t );
   ParseFirstInOutParameter( cluster_id, memcache_cluster_t  );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( memcache_delete_t, expr_val, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -608,7 +608,7 @@ begin
   kind := string_t;
   checkRestrictedShell;
   expect( memcache_stats_t );
-  ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_stats_t, cluster_id, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -635,7 +635,7 @@ begin
   kind := string_t;
   checkRestrictedShell;
   expect( memcache_version_t );
-  ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_version_t, cluster_id, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -663,7 +663,7 @@ procedure ParseMemcacheFlush is
 begin
   checkRestrictedShell;
   expect( memcache_flush_t );
-  ParseSingleInOutParameter( cluster_id, memcache_cluster_t  );
+  ParseSingleInOutParameter( memcache_flush_t, cluster_id, memcache_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -723,8 +723,8 @@ begin
   checkRestrictedShell;
   expect( highread_register_alpha_server_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastNumericParameter( expr_val2, expr_type2, natural_t );
+  ParseNextStringParameter( highread_register_alpha_server_t, expr_val, expr_type );
+  ParseLastNumericParameter( highread_register_alpha_server_t, expr_val2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -756,8 +756,8 @@ begin
   checkRestrictedShell;
   expect( highread_register_beta_server_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastNumericParameter( expr_val2, expr_type2, natural_t );
+  ParseNextStringParameter( highread_register_beta_server_t, expr_val, expr_type );
+  ParseLastNumericParameter( highread_register_beta_server_t, expr_val2, expr_type2, natural_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -784,7 +784,7 @@ procedure ParseHighreadClearServers is
 begin
   checkRestrictedShell;
   expect( highread_clear_servers_t );
-  ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_clear_servers_t, cluster_id, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -813,7 +813,7 @@ begin
   checkRestrictedShell;
   expect( highread_set_cluster_name_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseLastStringParameter( expr_val, expr_type, string_t );
+  ParseLastStringParameter( highread_set_cluster_name_t, expr_val, expr_type, string_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -844,7 +844,7 @@ begin
   checkRestrictedShell;
   expect( highread_set_cluster_type_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseLastEnumParameter( expr_val, expr_type, memcache_cluster_type_t );
+  ParseLastEnumParameter( highread_set_cluster_type_t, expr_val, expr_type, memcache_cluster_type_t );
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
@@ -882,8 +882,8 @@ begin
   checkRestrictedShell;
   expect( highread_set_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_set_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_set_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -916,8 +916,8 @@ begin
   checkRestrictedShell;
   expect( highread_add_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_add_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_add_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -950,8 +950,8 @@ begin
   checkRestrictedShell;
   expect( highread_replace_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_replace_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_replace_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -982,8 +982,8 @@ begin
   checkRestrictedShell;
   expect( highread_append_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_append_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_append_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1014,8 +1014,8 @@ begin
   checkRestrictedShell;
   expect( highread_prepend_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseNextStringParameter( expr_val, expr_type );
-  ParseLastStringParameter( expr_val2, expr_type2 );
+  ParseNextStringParameter( highread_prepend_t, expr_val, expr_type );
+  ParseLastStringParameter( highread_prepend_t, expr_val2, expr_type2 );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1045,7 +1045,7 @@ begin
   checkRestrictedShell;
   expect( highread_get_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( highread_get_t, expr_val, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1076,7 +1076,7 @@ begin
   checkRestrictedShell;
   expect( highread_delete_t );
   ParseFirstInOutParameter( cluster_id, highread_cluster_t  );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( highread_delete_t, expr_val, expr_type );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1105,7 +1105,7 @@ begin
   kind := string_t;
   checkRestrictedShell;
   expect( highread_stats_t );
-  ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_stats_t, cluster_id, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1132,7 +1132,7 @@ begin
   kind := string_t;
   checkRestrictedShell;
   expect( highread_version_t );
-  ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_version_t, cluster_id, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare
@@ -1160,7 +1160,7 @@ procedure ParseHighreadFlush is
 begin
   checkRestrictedShell;
   expect( highread_flush_t );
-  ParseSingleInOutParameter( cluster_id, highread_cluster_t  );
+  ParseSingleInOutParameter( highread_flush_t, cluster_id, highread_cluster_t  );
   checkMemcacheRestriction;
   if isExecutingCommand then
      declare

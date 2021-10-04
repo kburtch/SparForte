@@ -60,7 +60,7 @@ begin
   end if;
   expect( perl_match_t );
   ParseFirstStringParameter( pat_val, pat_type );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( perl_match_t, expr_val, expr_type );
   if isExecutingCommand then
      #if PCRE
      declare

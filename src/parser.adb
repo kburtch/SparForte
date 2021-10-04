@@ -329,7 +329,7 @@ procedure CheckHomonyms( id : identifier ) is
           );
           findIdent( temp, tempId );
           if tempId /= eof_t then
-             err( "style issue: name " & optional_yellow( to_string( identifiers(id).name ) ) &
+             err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) &
                   " is similar to another visible name " &
                   optional_yellow( to_string( temp ) ) &
                   " and may cause confusion" );
@@ -383,39 +383,34 @@ end CheckHomonyms;
 --  IS TOKEN VALID IDENTIFIER
 --
 -- Common checks to make sure the token is not something other than an
--- identifier.  This does not check for style.
+-- identifier.  This does not check for style. "what" is a string giving
+-- the context for error messages.
 -----------------------------------------------------------------------------
 
-function isTokenValidIdentifier return boolean is
+function isTokenValidIdentifier( what : string ) return boolean is
   valid : boolean := false;
 begin
   valid := false;
   if token = number_t then
-     err( optional_yellow( "identifier") & " expected, not a " &
-          optional_yellow( "number" ) );
+     expectIdentifier( what, "number" );
+     --err( optional_yellow( "identifier") & " expected, not a " &
+     --     optional_yellow( "number" ) );
   elsif token = strlit_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "string literal" ) );
+     expectIdentifier( what, "string literal" );
   elsif token = backlit_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "backquoted literal" ) );
+     expectIdentifier( what, "backquoted literal" );
   elsif token = charlit_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "character literal" ) );
+     expectIdentifier( what, "character literal" );
   elsif token = word_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "(shell immediate) word" ) );
+     expectIdentifier( what, "(immediate) shell word" );
   elsif token = eof_t then
      err( optional_yellow( "identifier" ) & " expected" );
   elsif is_keyword( token ) and token /= eof_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "keyword" ) );
+     expectIdentifier( what, "keyword" );
   elsif token = symbol_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "symbol" ) );
+     expectIdentifier( what, "punctuation symbol" );
   elsif token = shell_symbol_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "shell symbol" ) );
+     expectIdentifier( what, "shell symbol" );
   else
      valid := true;
   end if;
@@ -441,17 +436,25 @@ procedure ParseFieldIdentifier( record_id : identifier; id : out identifier ) is
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a field name" ) then
         if identifiers( token ).field_of /= eof_t then
-           err( optional_yellow( "identifier" ) & " expected, not a " &
-                optional_yellow( "field of a record type" ) );
+           err(
+               which => token,
+               what  => "is a record or record type field",
+               why   => "but was expecting a simple identifier",
+               how   => "use an identifier without a period while defining a record."
+          );
         else
            -- an existing token name
            fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
            findIdent( fieldName, temp_id );
            if temp_id /= eof_t then
-              err( "already declared " &
-                   optional_yellow( to_string( fieldName ) ) );
+              err( which => record_id,
+                   why   => "already has a field " & optional_yellow( to_string( identifiers( token ).name ) ),
+                   how   => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
+              );
+              -- err( "already declared " &
+              --      optional_yellow( to_string( fieldName ) ) );
            else                                                     -- declare it
               declareIdent( id, fieldName, new_t, varClass );
            end if;
@@ -463,8 +466,10 @@ begin
      fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
      findIdent( fieldName, temp_id );
      if temp_id /= eof_t then
-        err( "already declared " &
-             optional_yellow( to_string( fieldName ) ) );
+        err( which => record_id,
+             why   => "already has a field " & optional_yellow( to_string( identifiers( token ).name ) ),
+             how   => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
+        );
      else                                                     -- declare it
         discardUnusedIdentifier( token );
         declareIdent( id, fieldName, new_t, varClass );
@@ -472,7 +477,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseFieldIdentifier;
@@ -493,10 +498,16 @@ procedure ParseProcedureIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a procedure name" ) then
         if identifiers( token ).field_of /= eof_t then
-           err( optional_yellow( "identifier" ) & " expected, not a " &
-                optional_yellow( "field of a record type" ) );
+           err(
+               which => token,
+               what  => "is a record or record type field",
+               why   => "but was expecting a simple identifier",
+               how   => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
+          );
+           --err( optional_yellow( "identifier" ) & " expected, not a " &
+           --     optional_yellow( "field of a record type" ) );
         -- if old, don't redeclare if it was a forward declaration
         elsif identifiers( token ).class = userProcClass or         -- a proc?
               identifiers( token ).class = userFuncClass then       -- or func?
@@ -504,16 +515,26 @@ begin
               if length( identifiers( token ).value.all ) = 0 then      -- forward?
                  id := token;                                       -- then it's
               else                                                  -- not fwd?
-                 err( "already declared " &
-                      optional_yellow( to_string( identifiers( token ).name ) ) );
+                 err( which => token,
+                      what  => "is already defined",
+                      why   => "and should be unique in the same block",
+                      how   => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
+                 );
+                 --err( "already declared " &
+                 --     optional_yellow( to_string( identifiers( token ).name ) ) );
               end if;                                               -- not local?
            else                                                     -- declare it
               declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
               identifiers( token ).class);
            end if;                                                  -- otherwise
         elsif isLocal( token ) then
-           err( "already declared " &
-                optional_yellow( to_string( identifiers( token ).name ) ) );
+           err( which => token,
+                what  => "is already defined",
+                why   => "and should be unique in the same block",
+                how   => "choose an unused name, define it in a different block or remove it if it's a duplicate."
+           );
+           --err( "already declared " &
+           --     optional_yellow( to_string( identifiers( token ).name ) ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
@@ -545,7 +566,7 @@ begin
 
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseProcedureIdentifier;
@@ -566,7 +587,7 @@ begin
      if identifiers( token ).kind = keyword_t then
         name := identifiers( token ).name;
         getNextToken;
-     elsif isTokenValidIdentifier then
+     elsif isTokenValidIdentifier( "a pragma name" ) then
         name := identifiers( token ).name;
         getNextToken;
      end if;
@@ -576,7 +597,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParsePragmaIdentifier;
@@ -596,7 +617,7 @@ end ParsePragmaIdentifier;
 procedure ParseDesignPragmaConstraintIdentifier( name : out unbounded_string ) is
 begin
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a design pragma constraint" ) then
         name := identifiers( token ).name;
         if toConstraintMode( name ) /= undefined then
            err( "unique, exclusive or local are not allowed for a constraint name" );
@@ -612,7 +633,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaConstraintIdentifier;
@@ -626,7 +647,7 @@ end ParseDesignPragmaConstraintIdentifier;
 procedure ParseDesignPragmaAffinityIdentifier( name : out unbounded_string ) is
 begin
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a design pragma affinity" ) then
         name := identifiers( token ).name;
         if toAffinityMode( name ) /= undefined then
            err( "inclusive is not allowed for an affinity name" );
@@ -642,7 +663,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaAffinityIdentifier;
@@ -656,7 +677,7 @@ end ParseDesignPragmaAffinityIdentifier;
 procedure ParseDesignPragmaModeIdentifier( name : out unbounded_string ) is
 begin
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a design pragma mode" ) then
         name := identifiers( token ).name;
         if toConstraintMode( name ) = undefined then
            err( "unique, file or subprogram expected for a constraint Mode" );
@@ -672,7 +693,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaModeIdentifier;
@@ -687,7 +708,7 @@ end ParseDesignPragmaModeIdentifier;
 procedure ParseDesignPragmaAffinityModeIdentifier( name : out unbounded_string ) is
 begin
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a design pragma affinity mode" ) then
         name := identifiers( token ).name;
         if toAffinityMode( name ) = undefined then
            err( "file or subprogram expected for an affinity mode" );
@@ -703,7 +724,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseDesignPragmaAffinityModeIdentifier;
@@ -731,7 +752,7 @@ begin
      getNextToken;
   -- error messages if not new
   elsif identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a variable" ) then
         if isLocal( token ) then
            err( "already declared " &
                 optional_yellow( to_string( identifiers( token ).name ) ) );
@@ -776,7 +797,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseVariableIdentifier;
@@ -794,7 +815,7 @@ procedure ParseNewIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- dummy
   if identifiers( token ).kind /= new_t then
-     if isTokenValidIdentifier then
+     if isTokenValidIdentifier( "a new identifier" ) then
         if isLocal( token ) then
            err( "already declared " &
                 optional_yellow( to_string( identifiers( token ).name ) ) );
@@ -840,7 +861,7 @@ begin
      getNextToken;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseNewIdentifier;
@@ -856,7 +877,7 @@ procedure ParseIdentifier( id : out identifier ) is
   recId : identifier;
 begin
   id := eof_t; -- assume failure
-  if isTokenValidIdentifier then
+  if isTokenValidIdentifier( "" ) then
      if identifiers( token ).kind = new_t or identifiers( token ).deleted then
         -- if we're skipping a block, it doesn't matter if the identifier is
         -- declared, but it does if we're executing a block or checking syntax
@@ -911,7 +932,7 @@ begin
   end if;
   getNextToken;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseIdentifier;
@@ -987,7 +1008,7 @@ begin
   end if;
   getNextToken;
 exception when symbol_table_overflow =>
-  err( optional_red( "too many identifiers (symbol table overflow)" ) );
+  err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 end ParseStaticIdentifier;
@@ -1172,16 +1193,31 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        identifiers( t ).class = typeClass then
        -- this will change when arrays can have derived types.
        if identifiers( getBaseType( t ) ).list then
-          err( optional_yellow( to_string( identifiers( t ).name ) ) & " is an array type" );
+          --err( optional_yellow( to_string( identifiers( t ).name ) ) & " is an array type" );
+          err(
+            which => t,
+            what => "is an array type",
+            why => "and typecast by aggregate types is not supported"
+          );
        end if;                               -- represent array types
        castType := t;                        -- in expressiosn (yet)
        if token = symbol_t and identifiers( token ).value.all = "(" then
           getNextToken;
        else
-          err( optional_yellow( to_string( identifiers( t ).name ) ) & " is a type or subtype and a typecast expects a '('" );
+          expectSymbol(
+            expectedValue => "(",
+            which => t,
+            what => "is a type or subtype",
+            why => "and a typecast"
+          );
        end if;
        ParseExpression( f, kind );
-       expect( symbol_t, ")" );
+       expectSymbol(
+         expectedValue => ")",
+         which => t,
+         what => "is a type or subtype",
+         why => "and a typecast"
+       );
        if type_checks_done or else uniTypesOk( castType, kind ) then
 
           kind := castType;
@@ -1199,7 +1235,13 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        kind := eof_t;
     elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
        array_id := t;                            -- array_id=array variable
-       expect( symbol_t, "(" );                  -- parse index part
+       expectSymbol(                                    -- parse index part
+          expectedValue => "(",
+          which => t,
+          what => "is an array",
+          whatkind => identifiers( t ).kind,
+          why => "and an array index"
+       );
        ParseExpression( f, kind );               -- kind is the index type
        if getUniType( kind ) = uni_string_t or   -- index must be scalar
           getUniType( kind ) = root_record_t or
@@ -1242,7 +1284,13 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        elsif syntax_check then
           identifiers( array_id ).wasFactor := true;
        end if;
-       expect( symbol_t, ")" );                  -- element type is k's k
+       expectSymbol(
+          expectedValue => ")",
+          which => t,
+          what => "is an array",
+          whatkind => identifiers( t ).kind,
+          why => "and an array index"
+       );
        kind := identifiers( identifiers( array_id ).kind ).kind;
     else
        -- does it look like a record?
@@ -1306,9 +1354,14 @@ begin
      getNextToken;
   end if;
   if Token = symbol_t and then identifiers( Token ).value.all = "(" then
-     expect( symbol_t, "(" );
+     getNextToken;
      ParseExpression( f, kind );
-     expect( symbol_t, ")" );
+     expectSymbol(
+        expectedValue => ")",
+        what => "In this subexpression",
+        whatkind => kind,
+        why => "closing it"
+     );
   -- to speed things up, these wide if statements break up tokens into
   -- categories.  If the token isn't in the category, skip the rest.
   elsif token < reserved_top then
@@ -1440,7 +1493,11 @@ begin
      else
         f := null_unbounded_string;                -- (always return something)
         kind := eof_t;
-        err( "operand expected" );
+        err(
+              what => "This expression",
+              why => "expects an operand",
+              how => "a variable, value or expression."
+        );
      end if;
      -- Another board category, is the token a pre-defined idenifier?
   elsif token < predefined_top then
@@ -1503,7 +1560,11 @@ begin
   elsif identifiers( token ).kind = keyword_t then      -- no keywords
      f := null_unbounded_string;                        -- (always return something)
      kind := universal_t;
-     err( "variable, value or expression expected" );
+     err(
+        what => "This expression",
+        why => "expects an operand",
+        how => "a variable, value or expression."
+     );
   else                                                  -- a user ident?
      ParseFactorIdentifier;
   end if;
@@ -1558,6 +1619,11 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
      err( "operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "'**'."
+     );
   -- This is checked by parseTerm
   --elsif identifiers( Token ).value.all /= "**" then
   --   err( "** operator expected");
@@ -1638,9 +1704,17 @@ begin
   if Token = mod_t or Token = rem_t then
      op := identifiers( token ).name;
   elsif Token /= symbol_t then
-     err( "operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a term operator like '*', '/' or '&'."
+     );
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
-     err( "term operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a term operator like '*', '/' or '&'."
+     );
   else
      op := identifiers( token ).value.all;
   end if;
@@ -1851,8 +1925,17 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
      err( "operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a simple expression operator like '+' or '-'."
+     );
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
-     err( "simple expression operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a simple expression operator like '+' or '-'."
+     );
   end if;
   op := identifiers( token ).value.all;
   getNextToken;
@@ -2028,7 +2111,11 @@ procedure ParseRelationalOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
-     err( "operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a relational operator like '=', '/=' or 'in'."
+     );
   elsif identifiers( Token ).value.all /= ">=" and
         identifiers( Token ).value.all /= ">" and
         identifiers( Token ).value.all /= "<" and
@@ -2036,7 +2123,11 @@ begin
         identifiers( Token ).value.all /= "=" and
         identifiers( Token ).value.all /= "/=" and
         Token /= in_t and Token /= not_t then
-     err( "relational operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a relational operator like '=', '/=' or 'in'."
+     );
   end if;
   if Token = in_t then
      op := identifiers( token ).name;
@@ -2044,7 +2135,11 @@ begin
      op := to_unbounded_string( "not in" );
      getNextToken;
      if Token /= in_t then
-        err( "relational operator expected");
+        err(
+           what => "This expression",
+           why => "expects an operator",
+           how => "a relational operator like '=', '/=' or 'in'."
+        );
      end if;
   else
      op := identifiers( token ).value.all;
@@ -2087,7 +2182,12 @@ begin
      if operator = "in" or operator = "not in" then
         ParseFactor( se2, kind2 );
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then -- redundant below but
-           expect( symbol_t, ".." );        -- keeps error messages nice
+           expectSymbol(                           -- keeps error messages nice
+              expectedValue => "..",
+              what => "For the in / not in range",
+              whatkind => kind1,
+              why => "the range"
+           );
            ParseFactor( se3, kind3 );       -- should probably restructure
            if type_checks_done or else baseTypesOK( kind2, kind3 ) then
               null;
@@ -2241,6 +2341,11 @@ begin
      Token /= or_t and
      Token /= xor_t then
      err( "boolean operator expected");
+     err(
+        what => "This expression",
+        why => "expects an operator",
+        how => "a boolean operator like 'and', 'or' or 'xor'."
+     );
   end if;
   op := Token;
   getNextToken;
@@ -2369,7 +2474,10 @@ begin
               end if;
            end if;
         else
-           err( "boolean or number expected" );
+           err(
+              what => "This expression",
+              why => "expects an boolean or a number"
+           );
         end if;
      end if;
      last_op := operator;

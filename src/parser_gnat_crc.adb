@@ -85,7 +85,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if baseTypesOk( identifiers( var_id ).kind, gnat_crc32_crc32_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( expr_val, expr_type );
      --if uniTypesOk( identifiers( expr_type ).kind, uni_string_t ) then
      if uniTypesOk( expr_type, uni_string_t ) then

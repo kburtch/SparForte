@@ -172,7 +172,7 @@ package body builtins.help is
                discardUnusedIdentifier( token );
                getNextToken;
                if token = symbol_t and identifiers( token ).value.all = "," then
-                  expect( symbol_t, "," );
+                  getNextToken;
                   info := info & ": " & identifiers( token ).value.all;
                   expect( strlit_t );
                end if;
@@ -187,14 +187,14 @@ package body builtins.help is
                getNextToken;
                info := identifiers( token ).name; -- name
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                ParseStaticExpression( exprVal, exprType );
                info := info & "," & ToCSV( exprVal ); -- message
-               expect( symbol_t, "," );
+               expectPragmaComma;
                info := info & "," & identifiers( token ).name; -- measure
                measure := token;
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                info := info & "," & identifiers( token ).value.all; -- unit
                units := identifiers( token ).value.all;
                -- calculate work by measure
@@ -220,11 +220,11 @@ package body builtins.help is
                   null; -- DEBUG
                end if;
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                info := info & "," & identifiers( token ).name; -- priority
                measure := token;
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                info := info & "," & identifiers( token ).value.all; -- unit
                units := identifiers( token ).value.all;
                if measure = teams_work_priority_unknown_t then
@@ -268,7 +268,7 @@ package body builtins.help is
                getNextToken;
                -- ticket is optional
                if token = symbol_t and identifiers( token ).value.all = "," then
-                  expect( symbol_t, "," );
+                  getNextToken;
                   info := info & "," & ToCSV( identifiers( token ).value.all );
                   getNextToken;
                end if;
@@ -287,10 +287,10 @@ package body builtins.help is
                getNextToken;
                info := pragmaKind & "," & identifiers( token ).name; -- name
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                info := info & "," & identifiers( token ).name; -- name
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                ParseStaticExpression( exprVal, exprType );
                info := info & "," & ToCSV( exprVal ); -- message
                expect( symbol_t, ")" );
@@ -304,7 +304,7 @@ package body builtins.help is
                annotationKind := identifiers( token ).name;
                discardUnusedIdentifier( token );
                getNextToken;
-               expect( symbol_t, "," );
+               expectPragmaComma;
                ParseStaticExpression( exprVal, exprType );
                if annotationKind = accounts_str then
                   accounts( e, to_string(exprVal)  );

@@ -1288,6 +1288,91 @@ end err;
 
 
 -----------------------------------------------------------------------------
+-- ERR
+--
+-- Report an error but structure is based on the "reporter questions", to
+-- describe the context around the error as briefly as possible.
+--
+-- Parameter         Meaning                   Example
+-- [which]           The token in question     -
+-- [whichKind]       The type of token         -
+-- [where]           Token alternate location  "(" declared at ")"
+-- [what]            The situation             "For the in / not in range"
+-- [whatKind]        The situation data type   universal_numeric
+-- [why]             What the language wants   the range expects '..'
+-- [how (to remedy)] Possible solutions        (Perhaps ...) -
+--
+-- See also expect functions.
+--
+-- It is a difficult balance to provide context without making the error
+-- message too long.  I've noticed some other languages have tried to create
+-- more descriptive error messages, or spend a lot of effort on the "why"
+-- (how to correct the ere).  My goal here is to provide more context of
+-- why a certain token is expected, rather than the correction.
+-----------------------------------------------------------------------------
+
+procedure err(
+    which     : identifier := eof_t;
+    whichKind : identifier := eof_t;
+    where     : string := "";
+    what      : string := "";
+    whatKind  : identifier := eof_t;
+    why       : string := "";
+    how       : string := "" ) is
+  msg : unbounded_string;
+begin
+  if which /= eof_t then
+     msg := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( which ).name ) ) ) );
+  end if;
+  if whatkind /= eof_t then
+     msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( whatkind ).name ) ) ) ) );
+     if where = "" then
+        msg := msg & ")";
+     end if;
+  end if;
+  if where /= "" then
+     if whatkind = eof_t then
+        msg := msg & " (";
+     else
+        msg := msg & ", ";
+     end if;
+     msg := msg & where & ")";
+  end if;
+  if what /= "" then
+     msg := msg & " " & what;
+  end if;
+  if whatkind /= eof_t then
+     msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( whatkind ).name ) ) ) ) & ")" );
+  end if;
+  if why /= "" then
+     msg := msg & " " & why;
+  end if;
+  if how /= "" then
+     if boolean(verboseOpt) then
+        msg := msg & ". Perhaps " & how;
+     else
+        msg := msg & ". (More with -v)";
+     end if;
+  end if;
+  err( to_string( msg ) );
+end err;
+
+
+-----------------------------------------------------------------------------
+--  ERR SYMBOL TABLE OVERFLOW
+--
+-- Report an error but structure is based on the "reporter questions", to
+-- describe the context around the error as briefly as possible.  This
+-- version represents an inconsistency between two identifiers.
+-----------------------------------------------------------------------------
+
+procedure err_symbol_table_overflow  is
+begin
+  err( optional_red( "there are too many identifiers for SparForte to handle (symbol table overflow)" ) );
+end err_symbol_table_overflow;
+
+
+-----------------------------------------------------------------------------
 -- ERR STYLE
 --
 -- Display a style error.  It is not an error if the script is unstructured.
@@ -6154,6 +6239,55 @@ end expect;
 
 
 -----------------------------------------------------------------------------
+--  EXPECT SYMBOL
+--
+-- Expect that structures the message like "reporter questions", with the
+-- why (expects 'x') being provided.
+-----------------------------------------------------------------------------
+
+procedure expectSymbol(
+  expectedValue : string;
+  expectPlural  : boolean := false;
+  which     : identifier := eof_t;
+  whichKind : identifier := eof_t;
+  where     : string := "";
+  what      : string := "";
+  whatkind  : identifier := eof_t;
+  why       : string := "";
+  how       : string := "" ) is
+  msg       : unbounded_string;
+  expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
+begin
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+
+     if not expectPlural then
+        expectOrExpects := expectOrExpects & "s";
+     end if;
+
+     err(
+        which => which,
+        whichKind => whichKind,
+        where => where,
+        what => what,
+        whatKind => whatKind,
+        why => why & " " & to_string( expectOrExpects ) & " '" & expectedValue & "'",
+        how => how
+     );
+  end if;
+  getNextToken;
+end expectSymbol;
+
+procedure expectIdentifier( what, receivedDescription : string ) is
+begin
+  if what /= "" then
+     err( "In the declaration, an " & optional_yellow( "identifier") & " for " & what & " was expected but this looks like " & optional_yellow( receivedDescription ) );
+  else
+     err( "In the declaration, an " & optional_yellow( "identifier") & " was expected but this looks like " & optional_yellow( receivedDescription ) );
+  end if;
+end expectIdentifier;
+
+
+-----------------------------------------------------------------------------
 --  EXPECT SEMICOLON
 --
 -- Because it happens a lot.
@@ -6161,12 +6295,114 @@ end expect;
 
 procedure expectSemicolon is
 begin
+  -- Common typo
   if token = symbol_t and identifiers( token ).value.all = ":" then
      err( "':' should  be ';'" );
   else
      expect( symbol_t, ";" );
   end if;
 end expectSemicolon;
+
+
+-----------------------------------------------------------------------------
+--  EXPECT COMMA
+--
+-- Because it happens a lot.
+-----------------------------------------------------------------------------
+
+procedure expectParameterComma( subprogram : identifier := eof_t ) is
+  whatContext : unbounded_string;
+begin
+
+  -- If we know the name of the subprogram, include it in the error message.
+  -- This is useful if there are several nested function calls and SparForte
+  -- explains which function it is concerned about.
+
+  if subprogram = eof_t then
+     whatContext := to_unbounded_string( "In the parameter list" );
+  else
+     whatContext := to_unbounded_string( "For " & optional_yellow( to_string( identifiers( subprogram ).name ) ) );
+  end if;
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     expectSymbol(
+       expectedValue => ",",
+       what => to_string( whatContext ) & ", ';' looks like it was used by mistake",
+       why => "because the list"
+     );
+  elsif token = symbol_t and identifiers( token ).value.all = "." then
+     expectSymbol(
+       expectedValue => ",",
+       what => to_string( whatContext ) & ", '.' looks like it was used by mistake",
+       why => "because the list"
+     );
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+     expectSymbol(
+       expectedValue => ",",
+       what => to_string( whatContext ) & ", there are too few parameters",
+       why => "because the list"
+     );
+  else
+     expectSymbol(
+       expectedValue => ",",
+       what => to_string( whatContext ) & ",",
+       why  => "to separate parameters the list"
+     );
+  end if;
+end expectParameterComma;
+
+procedure expectPragmaComma is
+begin
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     expectSymbol(
+       expectedValue => ",",
+       what => "In the pragma parameter list, ';' looks like it was used by mistake",
+       why => "because the list"
+     );
+  elsif token = symbol_t and identifiers( token ).value.all = "." then
+     expectSymbol(
+       expectedValue => ",",
+       what => "In the pragma parameter list, '.' looks like it was used by mistake",
+       why => "because the list"
+     );
+  else
+     expectSymbol(
+       expectedValue => ",",
+       what => "In the pragma parameter list,",
+       why  => "to separate parameters the list"
+     );
+  end if;
+end expectPragmaComma;
+
+procedure expectParameterClose( subprogram : identifier := eof_t ) is
+  whatContext : unbounded_string;
+begin
+  if subprogram = eof_t then
+     whatContext := to_unbounded_string( "In the parameter list" );
+  else
+     whatContext := to_unbounded_string( "For " & optional_yellow( to_string( identifiers( subprogram ).name ) ) );
+  end if;
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     expectSymbol(
+       expectedValue => ")",
+       what => to_string( whatContext ) & ", ';' looks like it was used by mistake",
+       why => "because the list"
+     );
+  elsif token = symbol_t and identifiers( token ).value.all = "," then
+     expectSymbol(
+       expectedValue => ")",
+       what => to_string( whatContext ) & ", ',' looks like too many parameters",
+       why => "because the list"
+     );
+  else
+     expectSymbol(
+       expectedValue => ")",
+       what => to_string( whatContext ) & ",",
+       why  => "to finish the list"
+     );
+  end if;
+end expectParameterClose;
 
 
 -----------------------------------------------------------------------------

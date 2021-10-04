@@ -171,7 +171,7 @@ begin
   result := null_unbounded_string;
   expect( glob_t );
   ParseFirstStringParameter( pat_val, pat_type );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( glob_t, expr_val, expr_type );
   if isExecutingCommand then
      begin
        re := compile( to_string( pat_val ), glob => true,
@@ -216,7 +216,7 @@ begin
   result := null_unbounded_string;
   expect( match_t ); --getNextToken;
   ParseFirstStringParameter( pat_val, pat_type );
-  ParseLastStringParameter( expr_val, expr_type );
+  ParseLastStringParameter( match_t, expr_val, expr_type );
   if isExecutingCommand then
      begin
        b := match( to_string( pat_val ), to_string( expr_val ) );
@@ -273,7 +273,7 @@ begin
   kind := character_t;
   expect( element_t );
   ParseFirstStringParameter( str_val, str_type, Uni_String_T );
-  ParseLastNumericParameter( index_val, index_type, positive_t );
+  ParseLastNumericParameter( element_t, index_val, index_type, positive_t );
   begin
      if isExecutingCommand then
         result := to_unbounded_string( "" &
@@ -301,10 +301,10 @@ procedure ParseStringsSlice( result : out unbounded_string; kind : out identifie
   hi_type  : identifier;
 begin
   kind := uni_string_t;
-  expect( Slice_T );
+  expect( slice_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( low_val, low_type, positive_t );
-  ParseLastNumericParameter( hi_val,  hi_type,  natural_t );
+  ParseNextNumericParameter( slice_t, low_val, low_type, positive_t );
+  ParseLastNumericParameter( slice_t, hi_val,  hi_type,  natural_t );
   begin
      if isExecutingCommand then
         result := to_unbounded_string(
@@ -339,7 +339,7 @@ begin
   kind := natural_t;
   expect( index_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextStringParameter( pat_val, pat_type, Uni_String_T );
+  ParseNextStringParameter( index_t, pat_val, pat_type, Uni_String_T );
   -- no value if syntax check
   if isExecutingCommand then
      if length( pat_val ) = 0 then
@@ -347,7 +347,7 @@ begin
      end if;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
+     ParseLastEnumParameter( index_t, dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dir_val ) ) is
         when 0 => dir := forward;
@@ -388,7 +388,7 @@ begin
   expect( index_non_blank_t );
   ParseFirstStringParameter( str_val, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
+     ParseLastEnumParameter( index_non_blank_t, dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dir_val ) ) is
         when 0 => dir := forward;
@@ -435,14 +435,14 @@ begin
   kind := natural_t;
   expect( index_set_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextStringParameter( set_val, set_type, uni_string_t );
+  ParseNextStringParameter( index_set_t, set_val, set_type, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( first_val, first_type, positive_t );
+     ParseNextStringParameter( index_set_t, first_val, first_type, positive_t );
   else
      first_val := to_unbounded_string("1" );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( test_val, test_type, strings_membership_t );
+     ParseNextStringParameter( index_set_t, test_val, test_type, strings_membership_t );
      if isExecutingCommand then
         if to_string( test_val ) = "1" then -- 1 is outside; TODO: cleaner way?
            test := outside;
@@ -450,7 +450,7 @@ begin
      end if;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( dir_val, dir_type, strings_direction_t );
+     ParseLastEnumParameter( index_set_t, dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then
         case natural( to_numeric( dir_val ) ) is
         when 0 => dir := forward;
@@ -493,7 +493,7 @@ begin
   kind := natural_t;
   expect( count_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseLastStringParameter( pat_val, pat_type, Uni_String_T );
+  ParseLastStringParameter( count_t, pat_val, pat_type, Uni_String_T );
   begin
      if isExecutingCommand then
         result := to_unbounded_string( Ada.Strings.Unbounded.Count( str_val,
@@ -525,9 +525,9 @@ begin
   kind := uni_string_t;
   expect( replace_slice_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( low_val, low_type, positive_t );
-  ParseNextNumericParameter( hi_val,  hi_type,  natural_t );
-  ParseLastStringParameter(  by_val,  by_type, Uni_String_T );
+  ParseNextNumericParameter( replace_slice_t, low_val, low_type, positive_t );
+  ParseNextNumericParameter( replace_slice_t, hi_val,  hi_type,  natural_t );
+  ParseLastStringParameter(  replace_slice_t, by_val,  by_type, Uni_String_T );
   begin
      if isExecutingCommand then
         result := Replace_Slice( str_val,
@@ -565,10 +565,10 @@ begin
   end if;
   expect( replace_all_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextStringParameter( needle_val, needle_type );
-  ParseNextStringParameter( newstr_val, newstr_type );
+  ParseNextStringParameter( replace_all_t, needle_val, needle_type );
+  ParseNextStringParameter( replace_all_t, newstr_val, newstr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter(  sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+     ParseLastEnumParameter( replace_all_t, sensitivity_val,  sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
     sensitivity_val := to_unbounded_string( "1" );
@@ -605,8 +605,8 @@ begin
   kind := uni_string_t;
   expect( strings_insert_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( before_val, before_type, positive_t );
-  ParseLastStringParameter( new_val, new_type, uni_string_T );
+  ParseNextNumericParameter( strings_insert_t, before_val, before_type, positive_t );
+  ParseLastStringParameter( strings_insert_t, new_val, new_type, uni_string_T );
   begin
      if isExecutingCommand then
         result := Insert( str_val,
@@ -638,8 +638,8 @@ begin
   kind := uni_string_t;
   expect( overwrite_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( pos_val, pos_type, positive_t );
-  ParseLastStringParameter( new_val, new_type, Uni_String_T );
+  ParseNextNumericParameter( overwrite_t, pos_val, pos_type, positive_t );
+  ParseLastStringParameter( overwrite_t, new_val, new_type, Uni_String_T );
   begin
      if isExecutingCommand then
         result := Overwrite( str_val,
@@ -671,8 +671,8 @@ begin
   kind := uni_string_t;
   expect( sdelete_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( low_val, low_type, positive_t );
-  ParseLastNumericParameter( hi_val,  hi_type,  natural_t );
+  ParseNextNumericParameter( sdelete_t, low_val, low_type, positive_t );
+  ParseLastNumericParameter( sdelete_t, hi_val,  hi_type,  natural_t );
   if isExecutingCommand then
      begin
         result := Delete( str_val,
@@ -707,7 +707,7 @@ begin
   ParseFirstStringParameter( str_val, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      has_end := true;
-     ParseLastEnumParameter( trim_end_val, trim_end_type, strings_trim_end_t );
+     ParseLastEnumParameter( trim_t, trim_end_val, trim_end_type, strings_trim_end_t );
   else
      expect( symbol_t, ")" );
   end if;
@@ -745,7 +745,7 @@ procedure ParseStringsLength( result : out unbounded_string; kind : out identifi
 begin
   kind := natural_t;
   expect( length_t );
-  ParseSingleStringParameter( str_val, str_type );
+  ParseSingleStringParameter( length_t, str_val, str_type );
   begin
      if isExecutingCommand then
         result := to_unbounded_string( length( str_val )'img );
@@ -775,9 +775,9 @@ begin
   kind := uni_string_t;
   expect( head_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
+  ParseNextNumericParameter( head_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( pad_val, pad_type, character_t );
+     ParseLastStringParameter( head_t, pad_val, pad_type, character_t );
      begin
         pad_char := element( pad_val, 1 );
      exception when others =>
@@ -816,9 +816,9 @@ begin
   kind := uni_string_t;
   expect( tail_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
+  ParseNextNumericParameter( tail_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( pad_val, pad_type, character_t );
+     ParseLastStringParameter( tail_t, pad_val, pad_type, character_t );
      begin
         pad_char := element( pad_val, 1 );
      exception when others =>
@@ -859,9 +859,9 @@ begin
   end if;
   expect( starts_with_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextStringParameter( head_val, head_type );
+  ParseNextStringParameter( starts_with_t, head_val, head_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( sensitivity_val, sensitivity_type, strings_sensitivity_t );
+     ParseLastEnumParameter( starts_with_t, sensitivity_val, sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
     sensitivity_val := to_unbounded_string( "1" );
@@ -905,9 +905,9 @@ begin
   end if;
   expect( ends_with_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextStringParameter( tail_val, tail_type );
+  ParseNextStringParameter( ends_with_t, tail_val, tail_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastEnumParameter( sensitivity_val, sensitivity_type, strings_sensitivity_t );
+     ParseLastEnumParameter( ends_with_t, sensitivity_val, sensitivity_type, strings_sensitivity_t );
   else
     expect( symbol_t, ")" );
     sensitivity_val := to_unbounded_string( "1" );
@@ -952,9 +952,9 @@ begin
   end if;
   expect( field_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
+  ParseNextNumericParameter( field_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( del_val, del_type, character_t );
+     ParseLastStringParameter( field_t, del_val, del_type, character_t );
      if isExecutingCommand then
         begin
           delim := element( del_val, 1 );
@@ -1000,10 +1000,10 @@ begin
   end if;
   expect( csv_field_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
+  ParseNextNumericParameter( csv_field_t, cnt_val, cnt_type, natural_t );
   -- Optional delimiter
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( del_val, del_type, character_t );
+     ParseNextStringParameter( csv_field_t, del_val, del_type, character_t );
      if isExecutingCommand then
         begin
           delim := element( del_val, 1 );
@@ -1013,7 +1013,7 @@ begin
      end if;
      -- Optional single quotes flag
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastEnumParameter( squotes_val, squotes_type, boolean_t );
+        ParseLastEnumParameter( csv_field_t, squotes_val, squotes_type, boolean_t );
         if isExecutingCommand then
            begin
              squotes := to_string( squotes_val ) = "1";
@@ -1055,7 +1055,7 @@ begin
      err( "mktemp cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( mktemp_t );
-  ParseSingleStringParameter( str_val, str_type );
+  ParseSingleStringParameter( mktemp_t, str_val, str_type );
   if isExecutingCommand then
      declare
        LinuxPath : string := to_string( str_val ) & "XXXXXX" & ASCII.NUL;
@@ -1096,7 +1096,7 @@ procedure ParseStringsVal( result : out unbounded_string; kind : out identifier 
 begin
   kind := character_t;
   expect( val_t );
-  ParseSingleNumericParameter( expr_val, expr_type, natural_t );
+  ParseSingleNumericParameter( val_t, expr_val, expr_type, natural_t );
   begin
     if isExecutingCommand then
        result := to_unbounded_string( "" & character'val( natural( to_numeric( expr_val ) ) ) );
@@ -1212,7 +1212,7 @@ procedure ParseStringsToString( result : out unbounded_string; kind : out identi
 begin
   kind := string_t;
   expect( to_string_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( to_string_t, expr_val, expr_type );
   baseType := getBaseType( expr_type );
   if baseType /= unbounded_string_t and baseType /= json_string_t and
      baseType /= base64_string_t then
@@ -1247,7 +1247,7 @@ procedure ParseStringsToUString( result : out unbounded_string; kind : out ident
 begin
   kind := unbounded_string_t;
   expect( to_u_string_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( to_u_string_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := expr_val;
@@ -1277,9 +1277,9 @@ begin
   kind := uni_string_t;
   expect( lookup_t );
   ParseFirstStringParameter( src_val, src_type );
-  ParseNextStringParameter( tar_val, tar_type );
+  ParseNextStringParameter( lookup_t, tar_val, tar_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastStringParameter( del_val, del_type, character_t );
+     ParseLastStringParameter( lookup_t, del_val, del_type, character_t );
      if isExecutingCommand then
         begin
           delim := element( del_val, 1 );
@@ -1322,10 +1322,10 @@ begin
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, Uni_String_T ) then
-     ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-     ParseNextStringParameter( tar_val, tar_type, Uni_String_T );
+     ParseNextNumericParameter( replace_t, cnt_val, cnt_type, natural_t );
+     ParseNextStringParameter( replace_t, tar_val, tar_type, Uni_String_T );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastStringParameter( del_val, del_type, character_t );
+        ParseLastStringParameter( replace_t, del_val, del_type, character_t );
         if isExecutingCommand then
            begin
              delim := element( del_val, 1 );
@@ -1380,10 +1380,10 @@ begin
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, Uni_String_t ) then
-     ParseNextNumericParameter( cnt_val, cnt_type, natural_t );
-     ParseNextStringParameter( tar_val, tar_type );
+     ParseNextNumericParameter( csv_replace_t, cnt_val, cnt_type, natural_t );
+     ParseNextStringParameter( csv_replace_t, tar_val, tar_type );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseNextStringParameter( del_val, del_type, character_t );
+        ParseNextStringParameter( csv_replace_t, del_val, del_type, character_t );
         if isExecutingCommand then
            begin
              delim := element( del_val, 1 );
@@ -1393,7 +1393,7 @@ begin
         end if;
         -- Optional single quotes flag
         if token = symbol_t and identifiers( token ).value.all = "," then
-           ParseLastEnumParameter( squotes_val, squotes_type, boolean_t );
+           ParseLastEnumParameter( csv_replace_t, squotes_val, squotes_type, boolean_t );
            if isExecutingCommand then
               begin
                 squotes := to_string( squotes_val ) = "1";
@@ -1436,7 +1436,7 @@ procedure ParseStringsToUpper( result : out unbounded_string; kind : out identif
   src_type : identifier;
 begin
   expect( to_upper_t );
-  ParseSingleStringParameter( src_val, src_type );
+  ParseSingleStringParameter( to_upper_t, src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
      result := ToUpper( src_val );
@@ -1456,7 +1456,7 @@ procedure ParseStringsToLower( result : out unbounded_string; kind : out identif
   src_type : identifier;
 begin
   expect( to_lower_t );
-  ParseSingleStringParameter( src_val, src_type );
+  ParseSingleStringParameter( to_lower_t, src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
      result := ToLower( src_val );
@@ -1476,7 +1476,7 @@ procedure ParseStringsToProper( result : out unbounded_string; kind : out identi
   src_type : identifier;
 begin
   expect( to_proper_t );
-  ParseSingleStringParameter( src_val, src_type );
+  ParseSingleStringParameter( to_proper_t, src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
      result := ToProper( src_val );
@@ -1496,7 +1496,7 @@ procedure ParseStringsToBasic( result : out unbounded_string; kind : out identif
   src_type : identifier;
 begin
   expect( to_basic_t );
-  ParseSingleStringParameter( src_val, src_type );
+  ParseSingleStringParameter( to_basic_t, src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
      result := ToBasic( src_val );
@@ -1519,7 +1519,7 @@ begin
      err( "to_escaped cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( to_escaped_t );
-  ParseSingleStringParameter( src_val, src_type );
+  ParseSingleStringParameter( to_escaped_t, src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
      begin
@@ -1553,9 +1553,9 @@ begin
   end if;
   expect( split_t );
   ParseFirstStringParameter( src_val, src_type );
-  ParseNextOutParameter( left_ref, Uni_String_T );
-  ParseNextOutParameter( right_ref, Uni_String_T );
-  ParseLastNumericParameter( field_val, field_type, natural_t );
+  ParseNextOutParameter( split_t, left_ref, Uni_String_T );
+  ParseNextOutParameter( split_t, right_ref, Uni_String_T );
+  ParseLastNumericParameter( split_t, field_val, field_type, natural_t );
   begin
      if isExecutingCommand then
         split( src_val, leftStr, rightStr,
@@ -1582,7 +1582,7 @@ procedure ParseStringsIsControl( result : out unbounded_string; kind : out ident
 begin
   kind := boolean_t;
   expect( is_control_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_control_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_control( expr_val ) );
@@ -1606,7 +1606,7 @@ procedure ParseStringsIsGraphic( result : out unbounded_string; kind : out ident
 begin
   kind := boolean_t;
   expect( is_graphic_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_graphic_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_graphic( expr_val ) );
@@ -1630,7 +1630,7 @@ procedure ParseStringsIsLetter( result : out unbounded_string; kind : out identi
 begin
   kind := boolean_t;
   expect( is_letter_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_letter_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_letter( expr_val ) );
@@ -1654,7 +1654,7 @@ procedure ParseStringsIsLower( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( is_lower_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_lower_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_lower( expr_val ) );
@@ -1678,7 +1678,7 @@ procedure ParseStringsIsUpper( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( is_upper_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_upper_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_upper( expr_val ) );
@@ -1702,7 +1702,7 @@ procedure ParseStringsIsBasic( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( is_basic_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_basic_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_basic( expr_val ) );
@@ -1726,7 +1726,7 @@ procedure ParseStringsIsDigit( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( is_digit_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_digit_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_digit( expr_val ) );
@@ -1750,7 +1750,7 @@ procedure ParseStringsIsHexDigit( result : out unbounded_string; kind : out iden
 begin
   kind := boolean_t;
   expect( is_hex_digit_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_hex_digit_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_hexadecimal_digit( expr_val ) );
@@ -1774,7 +1774,7 @@ procedure ParseStringsIsAlphanumeric( result : out unbounded_string; kind : out 
 begin
   kind := boolean_t;
   expect( is_alphanumeric_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_alphanumeric_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_alphanumeric( expr_val ) );
@@ -1798,7 +1798,7 @@ procedure ParseStringsIsSpecial( result : out unbounded_string; kind : out ident
 begin
   kind := boolean_t;
   expect( is_special_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_special_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_special( expr_val ) );
@@ -1825,7 +1825,7 @@ begin
      err( "is_slashed_date cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( is_slashed_date_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_slashed_date_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_date( expr_val ) );
@@ -1849,7 +1849,7 @@ procedure ParseStringsIsFixed( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( is_fixed_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( is_fixed_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( is_fixed( expr_val ) );
@@ -1878,7 +1878,7 @@ begin
   end if;
   expect( to_base64_t );
   kind := base64_string_t;
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( to_base64_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        -- The AdaPower base64 package requires streams and/or files.  It
@@ -1938,7 +1938,7 @@ begin
   end if;
   expect( is_typo_of_t );
   ParseFirstStringParameter( expr1_val, expr1_type );
-  ParseLastStringParameter( expr2_val, expr2_type );
+  ParseLastStringParameter( is_typo_of_t, expr2_val, expr2_type );
   begin
     if isExecutingCommand then
        result := to_bush_boolean( typoOf( expr1_val, expr2_val ) );
@@ -1967,8 +1967,8 @@ begin
   kind := unbounded_string_t;
   expect( unbounded_slice_t );
   ParseFirstStringParameter( str_val, str_type );
-  ParseNextNumericParameter( low_val, low_type, positive_t );
-  ParseLastNumericParameter( hi_val,  hi_type,  natural_t );
+  ParseNextNumericParameter( unbounded_slice_t, low_val, low_type, positive_t );
+  ParseLastNumericParameter( unbounded_slice_t, hi_val,  hi_type,  natural_t );
   begin
      if isExecutingCommand then
         result := to_unbounded_string(
@@ -2000,7 +2000,7 @@ begin
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, unbounded_string_t ) then
-     ParseLastStringParameter( str_val, str_type );
+     ParseLastStringParameter( set_unbounded_string_t, str_val, str_type );
   end if;
   begin
      if isExecutingCommand then
@@ -2028,7 +2028,7 @@ begin
      err( "to_json cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( strings_to_json_t );
-  ParseSingleStringParameter( expr_val, expr_type );
+  ParseSingleStringParameter( strings_to_json_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
        result := DoStringToJSON( expr_val  );
@@ -2068,7 +2068,7 @@ begin
      err( "to_hexadecimal_digits cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( to_hex_digits_t );
-  ParseSingleNumericParameter( expr_val, expr_type, natural_t );
+  ParseSingleNumericParameter( to_hex_digits_t, expr_val, expr_type, natural_t );
   if baseTypesOK( expr_type, natural_t ) then
      declare
        expr  : natural;
@@ -2116,7 +2116,7 @@ begin
   end if;
   expect( levenshtein_t );
   ParseFirstStringParameter( str1_val, str1_type );
-  ParseLastStringParameter( str2_val, str2_type );
+  ParseLastStringParameter( levenshtein_t, str2_val, str2_type );
   if baseTypesOK( str1_type, str2_type ) then
      if isExecutingCommand then
         begin
@@ -2145,7 +2145,7 @@ begin
      err( "soundex cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( soundex_t );
-  ParseSingleStringParameter( str_val, str_type );
+  ParseSingleStringParameter( soundex_t, str_val, str_type );
   if isExecutingCommand then
      begin
         result := to_unbounded_string( Soundex( to_string( str_val ) ) );
@@ -2172,7 +2172,7 @@ begin
      err( "word_count cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( word_count_t );
-  ParseSingleStringParameter( str_val, str_type );
+  ParseSingleStringParameter( word_count_t, str_val, str_type );
   if isExecutingCommand then
      begin
         result := to_unbounded_string( WordCount( str_val )'img );
@@ -2208,14 +2208,14 @@ begin
   end if;
   expect( compare_t );
   ParseFirstStringParameter( first_val, first_type );
-  ParseNextStringParameter( last_val, last_type );
+  ParseNextStringParameter( compare_t, last_val, last_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextEnumParameter(  sensitivity_val,  sensitivity_type, strings_sensitivity_t );
+     ParseNextEnumParameter( compare_t, sensitivity_val,  sensitivity_type, strings_sensitivity_t );
   else
     sensitivity_val := to_unbounded_string( "1" );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( len_val, len_type, natural_t );
+     ParseLastNumericParameter( compare_t, len_val, len_type, natural_t );
   else
     expect( symbol_t, ")" );
     compare_len := natural'last;

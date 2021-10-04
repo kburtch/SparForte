@@ -184,7 +184,7 @@ begin
   if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
      identifiers( varId ).genKind := genKind;
      if token = symbol_t and identifiers( token ).svalue = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseIdentifier( genKind );
         if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
            identifiers( varId ).genKind2 := genKind;
@@ -401,7 +401,7 @@ begin
           arrayIndex := arrayIndex+1;                          -- next element
        end if;                                                 -- stop on err
        exit when error_found or identifiers( token ).value.all /= ","; -- more?
-       expect( symbol_t, "," );                                -- continueP
+       expectParameterComma;                                   -- continue
      end loop;
      arrayIndex := arrayIndex - 1;                             -- last added
      if trace then
@@ -775,7 +775,7 @@ begin
                " fields but the record has only" & optional_yellow( expected_fields'img ) );
        end if;
        exit when error_found or identifiers( token ).value.all /= ","; -- more?
-       expect( symbol_t, "," );
+       expectParameterComma;
        field_no := field_no + 1;
      end loop;
      expect( symbol_t, ")" );
@@ -2298,7 +2298,7 @@ begin
          end if;
          enum_index := enum_index + 1;                     -- next item number
          exit when error_found or identifiers( token ).value.all /= ",";      -- quit when no ","
-         expect( symbol_t, "," );                          -- ","
+         expectParameterComma;                             -- ","
       end loop;
       expect( symbol_t, ")" );                             -- closing ")"
       if error_found or exit_block then                    -- problems?

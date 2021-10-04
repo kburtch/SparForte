@@ -60,17 +60,17 @@ begin
      if token = symbol_t and identifiers( token ).value.all = ")" then
         file_val := expr_val;
      else
-        expect( symbol_t, "," );
+        expectParameterComma;
         ParseExpression( file_val, expr_type );
         -- first variation: dir, file [,wait [,retry] ]
         if getUniType( expr_type ) = uni_string_t then
            dir_val := expr_val;
            if token = symbol_t and identifiers( token ).value.all = "," then
-              expect( symbol_t, "," );
+              getNextToken;
               ParseExpression( wait_val, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
                  if token = symbol_t and identifiers( token ).value.all = "," then
-                    expect( symbol_t, "," );
+                    getNextToken;
                     ParseExpression( retry_val, expr_type );
                     if baseTypesOk( expr_type, duration_t ) then
                        null;
@@ -84,7 +84,7 @@ begin
            wait_val := file_val; -- what we read was wait time
            file_val := expr_val; -- and first param is file
            if token = symbol_t and identifiers( token ).value.all = "," then
-              expect( symbol_t, "," );
+              getNextToken;
               ParseExpression( retry_val, expr_type );
               if baseTypesOk( expr_type, duration_t ) then
                   null;
@@ -128,7 +128,7 @@ begin
   ParseExpression( file_val, expr_type );
   if baseTypesOk( expr_type, string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         dir_val := file_val;
         ParseExpression( file_val, expr_type );
         if baseTypesOk( expr_type, string_t ) then

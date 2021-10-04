@@ -555,7 +555,7 @@ begin
          end if;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expect( symbol_t, "," );
+      expectParameterComma;
       if token = is_t then
          err( "missing case identifier" );
       end if;
@@ -608,7 +608,7 @@ begin
          test_len := test_len + 1;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expect( symbol_t, "," );
+      expectParameterComma;
   end loop;
 
   -- for a decision table, there is an out part
@@ -641,7 +641,7 @@ begin
          end if;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expect( symbol_t, "," );
+      expectParameterComma;
   end loop;
 
   expect( is_t );                                       -- "is"
@@ -709,7 +709,7 @@ begin
            --end if;
         end if;
         if return_idx < return_len then
-           expect( symbol_t, "," ); -- ADDED
+           expectParameterComma;
         end if;
      end loop;
      handled := true;                                   -- and remember done
@@ -718,7 +718,7 @@ begin
      for return_idx in 1..return_len loop
         ParseExpression( outExpr, outType );
         if return_idx < return_len then
-           expect( symbol_t, "," );
+           expectParameterComma;
         end if;
      end loop;
   end if;
@@ -830,7 +830,7 @@ begin
         b2 := b2 and b1;
      end if;
      exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
-     expect( symbol_t, "," );                           -- expect alternate
+     expectParameterComma;                                      -- expect alternate
      test_idx := test_idx + 1;
      if test_idx > test_len then
         err("too many cases compared to case identifier list" );
@@ -1152,7 +1152,7 @@ begin
          end if;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expect( symbol_t, "," );
+      expectParameterComma;
   end loop;
   if onlyAda95 then
      if test_len > 1 then
@@ -1212,7 +1212,7 @@ begin
            b2 := b2 and b1;
         end if;
         exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
-        expect( symbol_t, "," );                           -- expect alternate
+        expectParameterComma;                                       -- expect alternate
         test_idx := test_idx + 1;
         if test_idx > test_len then
            err("too many cases compared to case identifier list" );
@@ -1782,7 +1782,7 @@ procedure ParseVm is
 begin
   ParseExpression( regtype_val, regtype_kind );
   if baseTypesOK( regtype_kind, string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( regnum_val, regnum_kind );
      if baseTypesOK( regnum_kind, integer_t ) then
         null;
@@ -3380,7 +3380,7 @@ begin
      -- Not sure we need to exit on an error here - KB: 17/10/15
      --exit when error_found or identifiers( token ).value.all /= ","; -- more?
      exit when identifiers( token ).value.all /= ","; -- more?
-     expect( symbol_t, "," );
+     expectParameterComma;
      parameterNumber := parameterNumber + 1;
      formalParamId := identifier( integer( formalParamId ) + 1 );
   end loop;
@@ -5379,7 +5379,7 @@ procedure ParseVarDeclaration is
 begin
    ParseVariableIdentifier( var_id );
    if token = symbol_t and identifiers( token ).value.all = "," then
-      expect( symbol_t, "," );
+      expectParameterComma;
       var2_id := token;
       pragma warnings( off ); -- hide infinite recursion warning
       ParseVarDeclaration;

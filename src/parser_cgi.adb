@@ -171,11 +171,11 @@ begin
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseExpression( expr_val2, expr_type2 );
         if uniTypesOk( expr_type2, positive_t ) then
            if token = symbol_t and identifiers( token ).value.all = "," then
-              expect( symbol_t, "," );
+              getNextToken;
               ParseExpression( expr_val3, expr_type3 );
               if uniTypesOk( expr_type3, boolean_t ) then
                  null;
@@ -216,7 +216,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( expr_val2, expr_type2 );
      if uniTypesOk( expr_type2, positive_t ) then
         expect( symbol_t, ")" );
@@ -357,7 +357,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( expr2_val, expr2_type );
      if uniTypesOk( expr2_type, uni_string_t ) then
         expect( symbol_t, ")" );
@@ -425,7 +425,7 @@ begin
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        expectParameterComma;
         ParseExpression( expr2_val, expr2_type );
         if uniTypesOk( expr2_type, uni_string_t ) then
            null;
@@ -457,7 +457,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( level_val, level_type );
      if baseTypesOk( level_type, positive_t ) then
         null;
@@ -633,7 +633,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( pos_val, pos_type );
      if baseTypesOk( pos_type, positive_t ) then
         null;
@@ -673,7 +673,7 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
      ParseExpression( pos_val, pos_type );
      if baseTypesOk( pos_type, positive_t ) then
         null;
@@ -721,7 +721,7 @@ begin
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseExpression( bool_val, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
            null;
@@ -760,7 +760,7 @@ begin
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseExpression( bool_val, bool_type );
         if baseTypesOk( bool_type, boolean_t ) then
            null;
@@ -861,25 +861,25 @@ begin
   expect( symbol_t, "(" );
   ParseExpression( key_val, key_type );
   if baseTypesOK( key_type, string_t ) then
-     expect( symbol_t, "," );
+     expectParameterComma;
   end if;
   ParseExpression( cookie_val, cookie_type );
   if baseTypesOK( cookie_type, string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseExpression( expires_val, expires_type );
         if baseTypesOK( expires_type, string_t ) then
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
+     getNextToken;
      ParseExpression( path_val, path_type );
      if baseTypesOK( path_type, string_t ) then
         if token = symbol_t and identifiers( token ).value.all = "," then
-           expect( symbol_t, "," );
+           getNextToken;
            ParseExpression( domain_val, domain_type );
            if baseTypesOK( domain_type, string_t ) then
 
            if token = symbol_t and identifiers( token ).value.all = "," then
-              expect( symbol_t, "," );
+              getNextToken;
               ParseExpression( secure_val, secure_type );
               if baseTypesOK( secure_type, boolean_t ) then
                  null;
@@ -927,11 +927,11 @@ begin
   ParseExpression( expr_val, expr_type );
   if uniTypesOk( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseExpression( pos_val, pos_type );
         if baseTypesOk( pos_type, positive_t ) then
            if token = symbol_t and identifiers( token ).value.all = "," then
-              expect( symbol_t, "," );
+              getNextToken;
               ParseExpression( bool_val, bool_type );
               if baseTypesOk( bool_type, boolean_t ) then
                  null;

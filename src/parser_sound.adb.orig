@@ -54,7 +54,7 @@ begin
   ParseExpression( expr_val, expr_type );
   if uniTypesOK( expr_type, uni_string_t ) then
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
+        getNextToken;
         ParseExpression( pri_val, pri_type );
         if uniTypesOK( pri_type, uni_numeric_t ) then
            null;

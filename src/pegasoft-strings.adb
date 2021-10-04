@@ -557,9 +557,28 @@ begin
   return item;
 end ToJSONUnescaped;
 
+
+-- A OR AN
+--
+-- There are no strict rules, as "a' or "an" depend on the sound of the
+-- following word more than the spelling.  Even then, there
+-- are exceptions, such as whether h-words sound like a vowel, or acronyms.
+------------------------------------------------------------------------------
+
 function AorAN( s : unbounded_string ) return unbounded_string is
-  ch : constant character := Element( s, 1 );
+  ch  : character := Element( s, 1 );
+  ch2 : string(1..2);
 begin
+  if length( s ) > 0 then
+     ch := Element( s, 1 );
+  end if;
+  if length( s ) > 1 then
+     ch2 := ch & Element( s, 2 );
+  end if;
+
+  if ch2 = "an" or ch2 = "un" or ch2 = "us" then
+     return "a " & s;
+  end if;
   if ch='a' or ch='e' or ch='i' or ch='o' or ch='u' or
      ch='A' or ch='E' or ch='I' or ch='O' or ch='U' then
      return "an " & s;

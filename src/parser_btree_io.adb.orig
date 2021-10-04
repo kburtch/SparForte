@@ -114,9 +114,9 @@ btree_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure ParseSingleFileParameter( fileId : out identifier ) is
+procedure ParseSingleFileParameter( subprogram : identifier; fileId : out identifier ) is
 begin
-  ParseSingleInOutInstantiatedParameter( fileId, btree_file_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, fileId, btree_file_t );
 end ParseSingleFileParameter;
 
 procedure ParseFirstFileParameter( fileId : out identifier ) is
@@ -146,14 +146,14 @@ end ParseFirstFileParameter;
 --  ParseFirstInOutInstantiatedParameter( cursId, btree_cursor_t );
 --end ParseFirstCursorParameter;
 
-procedure ParseNextCursorParameter( cursId : out identifier ) is
+procedure ParseNextCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseNextInOutInstantiatedParameter( cursId, btree_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogram, cursId, btree_cursor_t );
 end ParseNextCursorParameter;
 
-procedure ParseLastCursorParameter( cursId : out identifier ) is
+procedure ParseLastCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseLastInOutInstantiatedParameter( cursId, btree_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogram, cursId, btree_cursor_t );
 end ParseLastCursorParameter;
 
 #if BDB
@@ -293,7 +293,7 @@ procedure ParseBTreeClear is
   theFile  : resPtr;
 begin
   expect( btree_clear_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_clear_t, fileId );
   if isExecutingCommand then
      begin
        -- close the file / environment, if they are still open.  This doesn't
@@ -335,7 +335,7 @@ begin
   end if;
   expect( btree_recover_t );
   ParseFirstFileParameter( fileId );
-  ParseLastStringParameter( fname_val, fname_type, string_t );
+  ParseLastStringParameter( btree_recover_t, fname_val, fname_type, string_t );
 
   if isExecutingCommand then
      declare
@@ -416,9 +416,9 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( fname_val, fname_type, string_t );
-  ParseNextNumericParameter( keyLenExpr, keyLenType, positive_t );
-  ParseLastNumericParameter( valLenExpr, valLenType, positive_t );
+  ParseNextStringParameter( btree_create_t, fname_val, fname_type, string_t );
+  ParseNextNumericParameter( btree_create_t, keyLenExpr, keyLenType, positive_t );
+  ParseLastNumericParameter( btree_create_t, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
@@ -532,7 +532,7 @@ procedure ParseBTreeClose is
   theFile    : resPtr;
 begin
   expect( btree_close_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_close_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -583,10 +583,10 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( fname_val, fname_type, string_t );
+  ParseNextStringParameter( btree_open_t, fname_val, fname_type, string_t );
   -- TODO: can this be dynamic?
-  ParseNextNumericParameter( keyLenExpr, keyLenType, positive_t );
-  ParseLastNumericParameter( valLenExpr, valLenType, positive_t );
+  ParseNextNumericParameter( btree_open_t, keyLenExpr, keyLenType, positive_t );
+  ParseLastNumericParameter( btree_open_t, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
@@ -691,7 +691,7 @@ procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier
 begin
   kind := boolean_t;
   expect( btree_is_open_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_is_open_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -722,7 +722,7 @@ procedure ParseBTreeName( result : out unbounded_string; kind : out identifier )
 begin
   kind := string_t;
   expect( btree_name_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_name_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -755,7 +755,7 @@ begin
      err( "delete not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_delete_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_delete_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -904,8 +904,8 @@ begin
   end if;
   expect( btree_set_t );
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( keyExpr, keyType, string_t );
-  expect( symbol_t, "," );
+  ParseNextStringParameter( btree_set_t, keyExpr, keyType, string_t );
+  expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1001,8 +1001,8 @@ begin
   expect( btree_get_t );
   ParseFirstFileParameter( fileId );
   genKindId := identifiers( fileId ).genKind;
-  ParseNextStringParameter( keyExpr, keyType, string_t );
-  expect( symbol_t, "," );
+  ParseNextStringParameter( btree_get_t, keyExpr, keyType, string_t );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -1124,7 +1124,7 @@ begin
   kind := boolean_t;
   expect( btree_has_element_t );
   ParseFirstFileParameter( fileId );
-  ParseLastStringParameter( keyExpr, keyType, string_t );
+  ParseLastStringParameter( btree_has_element_t, keyExpr, keyType, string_t );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1167,7 +1167,7 @@ begin
   end if;
   expect( btree_remove_t );
   ParseFirstFileParameter( fileId );
-  expect( symbol_t, "," );
+  expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
@@ -1236,10 +1236,10 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( btree_increment_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( btree_increment_t, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -1307,10 +1307,10 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( btree_decrement_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( btree_decrement_t, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -1376,8 +1376,8 @@ begin
   end if;
   expect( btree_add_t );
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  expect( symbol_t, "," );
+  ParseNextStringParameter( btree_add_t, keyExpr, keyType, uni_string_t );
+  expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1499,7 +1499,7 @@ begin
   end if;
   expect( btree_replace_t );
   ParseFirstFileParameter( fileId );
-  expect( symbol_t, "," );
+  expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
@@ -1507,7 +1507,7 @@ begin
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
-  expect( symbol_t, "," );
+  expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1703,8 +1703,8 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseNextStringParameter( btree_append_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( btree_append_t, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1755,8 +1755,8 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseNextStringParameter( btree_prepend_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( btree_prepend_t, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1795,7 +1795,7 @@ procedure ParseBTreeFlush is
   theFile    : resPtr;
 begin
   expect( btree_flush_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_flush_t, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1830,7 +1830,7 @@ begin
      err( "truncate not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_truncate_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_truncate_t, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1910,7 +1910,7 @@ procedure ParseBTreeOpenCursor is
 begin
   expect( btree_open_cursor_t );
   ParseFirstFileParameter( fileId );
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( btree_open_cursor_t, cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1950,7 +1950,7 @@ procedure ParseBTreeCloseCursor is
 begin
   expect( btree_close_cursor_t );
   ParseFirstFileParameter( fileId );
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( btree_close_cursor_t, cursId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2003,12 +2003,12 @@ begin
   end if;
   expect( btree_get_first_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( btree_get_first_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( btree_get_first_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2159,12 +2159,12 @@ begin
   end if;
   expect( btree_get_next_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( btree_get_next_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( btree_get_next_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2315,12 +2315,12 @@ begin
   end if;
   expect( btree_get_last_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( btree_get_last_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( btree_get_last_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2471,12 +2471,12 @@ begin
   end if;
   expect( btree_get_previous_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( btree_get_previous_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( btree_get_previous_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2614,7 +2614,7 @@ procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( btree_will_raise_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_will_raise_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2647,7 +2647,7 @@ procedure ParseBTreeLastError( result : out unbounded_string; kind : out identif
 begin
   kind := bdb_db_error_t;
   expect( btree_last_error_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( btree_last_error_t, fileId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2683,7 +2683,7 @@ procedure ParseBTreeRaiseExceptions is
 begin
   expect( btree_raise_exceptions_t );
   ParseFirstFileParameter( fileId );
-  ParseLastEnumParameter( boolExpr, boolType, boolean_t );
+  ParseLastEnumParameter( btree_raise_exceptions_t, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
        raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );

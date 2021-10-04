@@ -82,7 +82,7 @@ procedure ParseCalYear( result : out unbounded_string; kind : out identifier ) i
 begin
   kind := cal_year_number_t;
   expect( cal_year_t );
-  ParseSingleNumericParameter( expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_year_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string( year( time( to_numeric( expr_val ) ) )'img );
@@ -104,7 +104,7 @@ procedure ParseCalMonth( result : out unbounded_string; kind : out identifier ) 
 begin
   kind := cal_month_number_t;
   expect( cal_month_t );
-  ParseSingleNumericParameter( expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_month_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string( month( time( to_numeric( expr_val ) ) )'img );
@@ -126,7 +126,7 @@ procedure ParseCalDay( result : out unbounded_string; kind : out identifier ) is
 begin
   kind := cal_day_number_t;
   expect( cal_day_t );
-  ParseSingleNumericParameter( expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_day_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string( day( time( to_numeric( expr_val ) ) )'img );
@@ -148,7 +148,7 @@ procedure ParseCalSeconds( result : out unbounded_string; kind : out identifier 
 begin
   kind := cal_day_duration_t;
   expect( cal_seconds_t );
-  ParseSingleNumericParameter( expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_seconds_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string( long_float( seconds( time( to_numeric( expr_val ) ) ) )'img );
@@ -178,10 +178,10 @@ procedure ParseCalSplit is
 begin
   expect( cal_split_t );
   ParseFirstNumericParameter( date_val, date_type, cal_time_t );
-  ParseNextOutParameter( id1_ref, cal_year_number_t );
-  ParseNextOutParameter( id2_ref, cal_month_number_t );
-  ParseNextOutParameter( id3_ref, cal_day_number_t );
-  ParseLastOutParameter( id4_ref, cal_day_duration_t );
+  ParseNextOutParameter( cal_split_t, id1_ref, cal_year_number_t );
+  ParseNextOutParameter( cal_split_t, id2_ref, cal_month_number_t );
+  ParseNextOutParameter( cal_split_t, id3_ref, cal_day_number_t );
+  ParseLastOutParameter( cal_split_t, id4_ref, cal_day_duration_t );
   if isExecutingCommand then
      begin
        Split( time( to_numeric( date_val ) ), year, month, day, seconds );
@@ -214,9 +214,9 @@ begin
   kind := cal_time_t;
   expect( cal_time_of_t );
   ParseFirstNumericParameter( year_val, year_type, cal_year_number_t );
-  ParseNextNumericParameter( month_val, month_type, cal_month_number_t );
-  ParseNextNumericParameter( day_val, day_type, cal_day_number_t );
-  ParseLastNumericParameter( secs_val, secs_type, cal_day_duration_t );
+  ParseNextNumericParameter( cal_time_t, month_val, month_type, cal_month_number_t );
+  ParseNextNumericParameter( cal_time_t, day_val, day_type, cal_day_number_t );
+  ParseLastNumericParameter( cal_time_t, secs_val, secs_type, cal_day_duration_t );
   if isExecutingCommand then
      begin
        result := to_unbounded_string(
@@ -246,7 +246,7 @@ procedure ParseCalToJulian( result : out unbounded_string; kind : out identifier
 begin
   kind := long_integer_t;
   expect( cal_to_julian_t );
-  ParseSingleNumericParameter( expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_to_julian_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      declare
        -- Communications of the ACM, October 1968
@@ -297,7 +297,7 @@ procedure ParseCalToTime( result : out unbounded_string; kind : out identifier )
 begin
   kind := cal_time_t;
   expect( cal_to_time_t );
-  ParseSingleNumericParameter( expr_val, expr_type, long_integer_t );
+  ParseSingleNumericParameter( cal_to_time_t, expr_val, expr_type, long_integer_t );
   if isExecutingCommand then
      declare
        -- Communications of the ACM, October 1968
@@ -344,7 +344,7 @@ procedure ParseCalDayOfWeek( result : out unbounded_string; kind : out identifie
 begin
   kind := integer_t;
   expect( cal_day_of_week_t );
-  ParseSingleNumericParameter( expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_day_of_week_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      declare
        Year   : year_number;

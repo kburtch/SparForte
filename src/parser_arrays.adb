@@ -915,7 +915,7 @@ begin
   if not (class_ok( target_var_id, varClass ) and identifiers( target_var_id ).list) then
      err( "Array expected" );
   end if;
-  expect( symbol_t, "," );
+  expectParameterComma;
   ParseExpression( source_val, source_type );
   if baseTypesOK( source_type, json_string_t ) then
      expect( symbol_t, ")" );
@@ -959,7 +959,7 @@ begin
   expect( arrays_to_json_t );
   expect( symbol_t, "(" );
   ParseOutParameter( target_ref, json_string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   ParseIdentifier( source_var_id );
   --if identifiers( source_var_id ).class = typeClass or identifiers( source_var_id ).class = subClass then
   --   source_base_id := getBaseType( source_var_id );

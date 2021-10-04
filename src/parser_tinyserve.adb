@@ -60,9 +60,9 @@ begin
   end if;
 end CheckServerIsInitialized;
 
-procedure ParseSingleServerParameter( serverId : out identifier ) is
+procedure ParseSingleServerParameter( subprogram : identifier; serverId : out identifier ) is
 begin
-  ParseSingleInOutParameter( serverId, tinyserve_socket_server_t );
+  ParseSingleInOutParameter( subprogram, serverId, tinyserve_socket_server_t );
   CheckServerIsInitialized( serverId );
 end ParseSingleServerParameter;
 
@@ -91,7 +91,7 @@ begin
   expect( tinyserve_new_socket_server_t );
   ParseFirstOutParameter( ref, tinyserve_socket_server_t );
   baseTypesOK( ref.kind, tinyserve_socket_server_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   ParseIdentifier( genKindId );
   if class_ok( genKindId, typeClass, subClass ) then
      null;
@@ -133,14 +133,14 @@ begin
   else
      expect( tinyserve_startup_t );
      ParseFirstServerParameter( serverId );
-     ParseNextStringParameter( hostExpr, hostKind, string_t );
-     ParseNextNumericParameter( portExpr, portKind, integer_t );
-     ParseNextNumericParameter( recvExpr, recvKind, integer_t );
-     ParseNextNumericParameter( sendExpr, sendKind, integer_t );
-     ParseNextNumericParameter( queueExpr, queueKind, integer_t );
-     ParseNextNumericParameter( lingerExpr, lingerKind, integer_t );
-     ParseNextNumericParameter( secsExpr, secsKind, integer_t );
-     ParseLastNumericParameter( usecsExpr, usecsKind, integer_t );
+     ParseNextStringParameter( tinyserve_startup_t, hostExpr, hostKind, string_t );
+     ParseNextNumericParameter( tinyserve_startup_t, portExpr, portKind, integer_t );
+     ParseNextNumericParameter( tinyserve_startup_t, recvExpr, recvKind, integer_t );
+     ParseNextNumericParameter( tinyserve_startup_t, sendExpr, sendKind, integer_t );
+     ParseNextNumericParameter( tinyserve_startup_t, queueExpr, queueKind, integer_t );
+     ParseNextNumericParameter( tinyserve_startup_t, lingerExpr, lingerKind, integer_t );
+     ParseNextNumericParameter( tinyserve_startup_t, secsExpr, secsKind, integer_t );
+     ParseLastNumericParameter( tinyserve_startup_t, usecsExpr, usecsKind, integer_t );
 -- TODO: handle defaults
 -- TODO: out parameter works here?
      if isExecutingCommand then
@@ -169,7 +169,7 @@ procedure ParseTSShutdown is
   server     : resPtr := null;
 begin
   expect( tinyserve_shutdown_t );
-  ParseSingleServerParameter( serverId );
+  ParseSingleServerParameter( tinyserve_shutdown_t, serverId );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then
@@ -187,7 +187,7 @@ procedure ParseTSManageConnections is
 begin
   expect( tinyserve_manage_connections_t );
   ParseFirstServerParameter( serverId );
-  ParseLastOutParameter( clientRef, tinyserve_client_id_t );
+  ParseLastOutParameter( tinyserve_manage_connections_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
      manageConnections( server.tinyserve_server, client );
@@ -204,7 +204,7 @@ procedure ParseTSGetNextClient is
 begin
   expect( tinyserve_get_next_client_t );
   ParseFirstServerParameter( serverId );
-  ParseLastOutParameter( clientRef, tinyserve_client_id_t );
+  ParseLastOutParameter( tinyserve_get_next_client_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then
@@ -223,7 +223,7 @@ procedure ParseTSGetListenerSocket is
 begin
   expect( tinyserve_get_listener_socket_t );
   ParseFirstServerParameter( serverId );
-  ParseLastOutParameter( clientRef, tinyserve_client_id_t );
+  ParseLastOutParameter( tinyserve_get_listener_socket_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then

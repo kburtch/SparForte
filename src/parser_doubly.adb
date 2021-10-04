@@ -94,9 +94,9 @@ doubly_parcel_t        : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure ParseSingleListParameter( listId : out identifier ) is
+procedure ParseSingleListParameter( subprogram : identifier; listId : out identifier ) is
 begin
-  ParseSingleInOutInstantiatedParameter( listId, doubly_list_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, listId, doubly_list_t );
 end ParseSingleListParameter;
 
 procedure ParseFirstListParameter( listId : out identifier ) is
@@ -104,31 +104,31 @@ begin
   ParseFirstInOutInstantiatedParameter( listId, doubly_list_t );
 end ParseFirstListParameter;
 
-procedure ParseNextListParameter( listId : out identifier ) is
+procedure ParseNextListParameter( subprogram : identifier; listId : out identifier ) is
 begin
-  ParseNextInOutInstantiatedParameter( listId, doubly_list_t );
+  ParseNextInOutInstantiatedParameter( subprogram, listId, doubly_list_t );
 end ParseNextListParameter;
 
-procedure ParseLastListParameter( listId : out identifier ) is
+procedure ParseLastListParameter( subprogram : identifier; listId : out identifier ) is
 begin
-  ParseLastInOutInstantiatedParameter( listId, doubly_list_t );
+  ParseLastInOutInstantiatedParameter( subprogram, listId, doubly_list_t );
 end ParseLastListParameter;
 
 ------------------------------------------------------------------------------
 
-procedure ParseSingleCursorParameter( cursId : out identifier ) is
+procedure ParseSingleCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseSingleInOutInstantiatedParameter( cursId, doubly_cursor_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, cursId, doubly_cursor_t );
 end ParseSingleCursorParameter;
 
-procedure ParseNextCursorParameter( cursId : out identifier ) is
+procedure ParseNextCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseNextInOutInstantiatedParameter( cursId, doubly_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogram, cursId, doubly_cursor_t );
 end ParseNextCursorParameter;
 
-procedure ParseLastCursorParameter( cursId : out identifier ) is
+procedure ParseLastCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseLastInOutInstantiatedParameter( cursId, doubly_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogram, cursId, doubly_cursor_t );
 end ParseLastCursorParameter;
 
 ------------------------------------------------------------------------------
@@ -220,7 +220,7 @@ procedure ParseDoublyClear is
   theList  : resPtr;
 begin
   expect( doubly_clear_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_clear_t, listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -237,7 +237,7 @@ procedure ParseDoublyIsEmpty( result : out unbounded_string; kind : out identifi
 begin
   kind := boolean_t;
   expect( doubly_is_empty_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_is_empty_t, listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -254,7 +254,7 @@ procedure ParseDoublyLength( result : out unbounded_string; kind : out identifie
 begin
   kind := containers_count_type_t;
   expect( doubly_length_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_length_t, listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -281,10 +281,10 @@ begin
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( doubly_append_t, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( doubly_append_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
      expect( symbol_t, ")" );
@@ -326,10 +326,10 @@ begin
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( doubly_prepend_t, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( doubly_prepend_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
      expect( symbol_t, ")" );
@@ -360,7 +360,7 @@ procedure ParseDoublyFirstElement( result : out unbounded_string; kind : out ide
   theList  : resPtr;
 begin
   expect( doubly_first_element_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_first_element_t, listId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -383,7 +383,7 @@ procedure ParseDoublyLastElement( result : out unbounded_string; kind : out iden
   theList  : resPtr;
 begin
   expect( doubly_last_element_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_last_element_t, listId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -413,7 +413,7 @@ begin
   expect( doubly_delete_first_t );
   ParseFirstListParameter( listId );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( doubly_delete_first_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
      expect( symbol_t, ")" );
@@ -449,7 +449,7 @@ begin
   expect( doubly_delete_last_t );
   ParseFirstListParameter( listId );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( doubly_delete_last_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
      expect( symbol_t, ")" );
@@ -505,7 +505,7 @@ procedure ParseDoublyFirst is
 begin
   expect( doubly_first_t );
   ParseFirstListParameter( listId );
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( doubly_first_t, cursId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -530,7 +530,7 @@ procedure ParseDoublyLast is
 begin
   expect( doubly_last_t );
   ParseFirstListParameter( listId );
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( doubly_last_t, cursId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -554,7 +554,7 @@ procedure ParseDoublyNext is
   theCursor : resPtr;
 begin
   expect( doubly_next_t );
-  ParseSingleCursorParameter( cursId );
+  ParseSingleCursorParameter( doubly_next_t, cursId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
@@ -572,7 +572,7 @@ procedure ParseDoublyPrevious is
   theCursor : resPtr;
 begin
   expect( doubly_previous_t );
-  ParseSingleCursorParameter( cursId );
+  ParseSingleCursorParameter( doubly_previous_t, cursId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
@@ -588,7 +588,7 @@ procedure ParseDoublyElement( result : out unbounded_string; kind : out identifi
   theCursor : resPtr;
 begin
   expect( doubly_element_t );
-  ParseSingleCursorParameter( cursId );
+  ParseSingleCursorParameter( doubly_element_t, cursId );
   -- if an error occurred, the cursId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -620,14 +620,14 @@ procedure ParseDoublyReplaceElement is
 begin
   expect( doubly_replace_element_t );
   ParseFirstListParameter( listId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( doubly_replace_element_t, cursId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
      genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   end if;
   if not error_found then
-     ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseLastGenItemParameter( doubly_replace_element_t, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
   if isExecutingCommand then
      begin
@@ -681,12 +681,12 @@ procedure ParseDoublyInsertBefore is
 begin
   expect( doubly_insert_before_t );
   ParseFirstListParameter( listId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( doubly_insert_before_t, cursId );
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+  ParseNextGenItemParameter( doubly_insert_before_t, itemExpr, itemType, identifiers( listId ).genKind );
   genTypesOk( identifiers( listId ).genKind, itemType );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cntExpr, cntType );
+     ParseLastNumericParameter( doubly_insert_before_t, cntExpr, cntType );
      hasCnt := true;
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
@@ -739,9 +739,9 @@ procedure ParseDoublyInsertBeforeAndMark is
 begin
   expect( doubly_insert_before_and_mark_t );
   ParseFirstListParameter( listId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( doubly_insert_before_and_mark_t, cursId );
   genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- The third parameter can be a cursor or a new item.  Since a cursor
   -- is a single variable, it will either be the token or else new_t
   -- for an undeclared variable.  This assumes the undeclared variable
@@ -753,7 +753,7 @@ begin
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
      -- A cursor may be followed by an optional count
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+        ParseLastNumericParameter( doubly_insert_before_and_mark_t, cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
      elsif token = symbol_t and identifiers( token ).value.all = ")" then
         expect( symbol_t, ")" );
@@ -768,11 +768,11 @@ begin
      -- the two different variations for the third parameter.
      b := insertTypesOk( itemType, identifiers( listId ).genKind );
      hasItem := true;
-     ParseNextOutParameter( ref, doubly_cursor_t );
+     ParseNextOutParameter( doubly_insert_before_and_mark_t, ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastNumericParameter( cntExpr, cntType );
+        ParseLastNumericParameter( doubly_insert_before_and_mark_t, cntExpr, cntType );
         hasCnt := true;
      elsif token = symbol_t and identifiers( token ).value.all = ")" then
         expect( symbol_t, ")" );
@@ -829,14 +829,14 @@ procedure ParseDoublyDelete is
 begin
   expect( doubly_delete_t );
   ParseFirstListParameter( listId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( doubly_delete_t, cursId );
   -- if an error occurred, the cursId may be invalid and won't have a genKind
   -- defined
   if not error_found then
      genTypesOk( identifiers( listId ).genKind, identifiers( cursId ).genKind );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( doubly_delete_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
      expect( symbol_t, ")" );
@@ -877,7 +877,7 @@ begin
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseLastGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseLastGenItemParameter( doubly_contains_t, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
   if isExecutingCommand then
      begin
@@ -902,9 +902,9 @@ begin
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( doubly_find_t, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( doubly_find_t, cursId );
   -- if an error occurred, the cursId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -934,9 +934,9 @@ begin
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
-     ParseNextGenItemParameter( itemExpr, itemType, identifiers( listId ).genKind );
+     ParseNextGenItemParameter( doubly_reverse_find_t, itemExpr, itemType, identifiers( listId ).genKind );
   end if;
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( doubly_reverse_find_t, cursId );
   -- if an error occurred, the cursId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -960,7 +960,7 @@ procedure ParseDoublyReverseElements is
   theList  : resPtr;
 begin
   expect( doubly_reverse_elements_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_reverse_elements_t, listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -976,7 +976,7 @@ procedure ParseDoublyFlip is
   theList  : resPtr;
 begin
   expect( doubly_flip_t );
-  ParseSingleListParameter( listId );
+  ParseSingleListParameter( doubly_flip_t, listId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
@@ -995,7 +995,7 @@ procedure ParseDoublyAssign is
 begin
   expect( doubly_assign_t );
   ParseFirstListParameter( targetListId );
-  ParseLastListParameter( sourceListId );
+  ParseLastListParameter( doubly_assign_t, sourceListId );
   if not error_found then
      genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
   end if;
@@ -1033,7 +1033,7 @@ procedure ParseDoublyMove is
 begin
   expect( doubly_move_t );
   ParseFirstListParameter( targetListId );
-  ParseLastListParameter( sourceListId );
+  ParseLastListParameter( doubly_move_t, sourceListId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -1061,13 +1061,13 @@ procedure ParseDoublySwap is
 begin
   expect( doubly_swap_t );
   ParseFirstListParameter( listId );
-  ParseNextCursorParameter( firstCursId );
+  ParseNextCursorParameter( doubly_swap_t, firstCursId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
      genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
   end if;
-  ParseLastCursorParameter( secondCursId );
+  ParseLastCursorParameter( doubly_swap_t, secondCursId );
   -- if an error occurred, the listId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -1102,13 +1102,13 @@ procedure ParseDoublySwapLinks is
 begin
   expect( doubly_swap_links_t );
   ParseFirstListParameter( listId );
-  ParseNextCursorParameter( firstCursId );
+  ParseNextCursorParameter( doubly_swap_links_t, firstCursId );
   -- if an error occurred, the cursId may be invalid and won't have a genKind
   -- defined
   if not error_found then
      genTypesOk( identifiers( listId ).genKind, identifiers( firstCursId ).genKind );
   end if;
-  ParseLastCursorParameter( secondCursId );
+  ParseLastCursorParameter( doubly_swap_links_t, secondCursId );
   -- if an error occurred, the cursId may be invalid and won't have a genKind
   -- defined
   if not error_found then
@@ -1149,18 +1149,18 @@ procedure ParseDoublySplice is
 begin
   expect( doubly_splice_t );
   ParseFirstListParameter( targetListId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( doubly_splice_t, cursId );
   genTypesOk( identifiers( targetListId ).genKind, identifiers( cursId ).genKind );
   -- There's no easy way to handle this.  Two optional parameters, one is
   -- in out and one isn't.
-  expect( symbol_t, "," );
+  expectParameterComma( doubly_splice_t );
   ParseIdentifier( tempId );
   if getBaseType( identifiers( tempId ).kind ) = doubly_list_t then
      sourceListId := tempId;
      hasSourceId := true;
      genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastCursorParameter( curs2Id );
+        ParseLastCursorParameter( doubly_splice_t, curs2Id );
         hasCurs2 := true;
         genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
      else
@@ -1247,7 +1247,7 @@ procedure ParseDoublyHasElement( result : out unbounded_string; kind : out ident
 begin
   kind := boolean_t;
   expect( doubly_has_element_t );
-  ParseSingleCursorParameter( cursId );
+  ParseSingleCursorParameter( doubly_has_element_t, cursId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
@@ -1281,10 +1281,10 @@ begin
   expect( doubly_assemble_t );
   ParseFirstListParameter( listId );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( delimExpr, delimType, uni_string_t );
+     ParseNextStringParameter( doubly_assemble_t, delimExpr, delimType, uni_string_t );
      hasDelim := true;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastStringParameter( finalExpr, finalType, uni_string_t );
+        ParseLastStringParameter( doubly_assemble_t, finalExpr, finalType, uni_string_t );
         hasFinal := true;
      else
         expect( symbol_t, ")" );
@@ -1340,12 +1340,12 @@ procedure ParseDoublyDisassemble is
 begin
   expect( doubly_disassemble_t );
   ParseFirstStringParameter( strExpr, strType, uni_string_t );
-  ParseNextListParameter( listId );
+  ParseNextListParameter( doubly_disassemble_t, listId );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( delimExpr, delimType, uni_string_t );
+     ParseNextStringParameter( doubly_disassemble_t, delimExpr, delimType, uni_string_t );
      hasDelim := true;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseLastStringParameter( finalExpr, finalType, uni_string_t );
+        ParseLastStringParameter( doubly_disassemble_t, finalExpr, finalType, uni_string_t );
         hasFinal := true;
      else
         expect( symbol_t, ")" );
@@ -1431,8 +1431,8 @@ begin
   end if;
   expect( doubly_parcel_t );
   ParseFirstStringParameter( strExpr, strType, uni_string_t );
-  ParseNextNumericParameter( widthExpr, widthType, positive_t );
-  ParseLastListParameter( listId );
+  ParseNextNumericParameter( doubly_parcel_t, widthExpr, widthType, positive_t );
+  ParseLastListParameter( doubly_parcel_t, listId );
   elemType := getUniType( identifiers( listId ).genKind );
   if elemType /= uni_string_t and elemType /= universal_t then
      err( "list elements should be strings or typeless" );

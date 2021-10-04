@@ -181,17 +181,17 @@ begin
   --   return;
   --end if;
   ParseFirstInOutParameter( connectId, dbm_connection_t );
-  ParseNextStringParameter( dbnameExpr, dbnameType, string_t );
+  ParseNextStringParameter( dbm_connect_t, dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( userExpr, userType, string_t );
+     ParseNextStringParameter( dbm_connect_t, userExpr, userType, string_t );
      hasUser := true;
      if token = symbol_t and identifiers( token ).value.all = "," then
-        ParseNextStringParameter( pswdExpr, pswdType, string_t );
+        ParseNextStringParameter( dbm_connect_t, pswdExpr, pswdType, string_t );
         if token = symbol_t and identifiers( token ).value.all = "," then
-           ParseNextStringParameter( hostExpr, hostType, string_t );
+           ParseNextStringParameter( dbm_connect_t, hostExpr, hostType, string_t );
            hasHost := true;
            if token = symbol_t and identifiers( token ).value.all = "," then
-              ParseNextNumericParameter( portExpr, portType, integer_t );
+              ParseNextNumericParameter( dbm_connect_t, portExpr, portType, integer_t );
               hasPort := true;
            end if;
         end if;
@@ -292,7 +292,7 @@ procedure ParseDBMEngineOf( result : out unbounded_string; kind : out identifier
 begin
   kind := db_database_type_t;
   expect( dbm_engine_of_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_engine_of_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -370,9 +370,9 @@ procedure ParseDBMPrepare is
 begin
   expect( dbm_prepare_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextStringParameter( sqlExpr, sqlType, string_t );
+  ParseNextStringParameter( dbm_prepare_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( afterExpr, afterType, string_t );
+     ParseNextStringParameter( dbm_prepare_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
   expect( symbol_t, ")" );
@@ -415,9 +415,9 @@ procedure ParseDBMAppend is
 begin
   expect( dbm_append_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextStringParameter( sqlExpr, sqlType, string_t );
+  ParseNextStringParameter( dbm_append_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( afterExpr, afterType, string_t );
+     ParseNextStringParameter( dbm_append_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
   expect( symbol_t, ")" );
@@ -457,7 +457,7 @@ procedure ParseDBMAppendLine is
 begin
   expect( dbm_append_line_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastStringParameter( sqlExpr, sqlType, string_t );
+  ParseLastStringParameter( dbm_append_line_t, sqlExpr, sqlType, string_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -495,10 +495,10 @@ procedure ParseDBMAppendQuoted is
 begin
   expect( dbm_append_quoted_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextInOutParameter( connectId, dbm_connection_t );
-  ParseNextStringParameter( sqlExpr, sqlType, string_t );
+  ParseNextInOutParameter( dbm_append_quoted_t, connectId, dbm_connection_t );
+  ParseNextStringParameter( dbm_append_quoted_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( afterExpr, afterType, string_t );
+     ParseNextStringParameter( dbm_append_quoted_t, afterExpr, afterType, string_t );
      hasAfter := true;
   end if;
   expect( symbol_t, ")" );
@@ -539,7 +539,7 @@ procedure ParseDBMExecute is
 begin
   expect( dbm_execute_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastInOutParameter( connectId, dbm_connection_t );
+  ParseLastInOutParameter( dbm_execute_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -582,9 +582,9 @@ procedure ParseDBMExecuteChecked is
 begin
   expect( dbm_execute_checked_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextInOutParameter( connectId, dbm_connection_t );
+  ParseNextInOutParameter( dbm_execute_checked_t, connectId, dbm_connection_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( msgExpr, msgType, string_t );
+     ParseNextStringParameter( dbm_execute_checked_t, msgExpr, msgType, string_t );
      hasMsg := true;
   end if;
   expect( symbol_t, ")" );
@@ -640,7 +640,7 @@ procedure ParseDBMDisconnect is
   connection : resPtr;
 begin
   expect( dbm_disconnect_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_disconnect_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
         findConnection( connectId, connection );
@@ -676,7 +676,7 @@ procedure ParseDBMIsConnected( result : out unbounded_string; kind : out identif
 begin
   kind := boolean_t;
   expect( dbm_is_connected_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_is_connected_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -708,7 +708,7 @@ procedure ParseDBMReset is
   connection : resPtr;
 begin
   expect( dbm_reset_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_reset_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -739,7 +739,7 @@ procedure ParseDBMErrorMessage( result : out unbounded_string; kind : out identi
 begin
   kind := string_t;
   expect( dbm_error_message_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_error_message_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -770,7 +770,7 @@ procedure ParseDBMNoticeMessage( result : out unbounded_string; kind : out ident
 begin
   kind := string_t;
   expect( dbm_notice_message_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_notice_message_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -801,7 +801,7 @@ procedure ParseDBMInAbortState( result : out unbounded_string; kind : out identi
 begin
   kind := boolean_t;
   expect( dbm_in_abort_state_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_in_abort_state_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -834,7 +834,7 @@ procedure ParseDBMOptions( result : out unbounded_string; kind : out identifier 
 begin
   kind := string_t;
   expect( dbm_options_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_options_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -867,7 +867,7 @@ procedure ParseDBMSetRollbackOnFinalize is
 begin
   expect( dbm_set_rollback_on_finalize_t );
   ParseFirstInOutParameter( connectId, dbm_connection_t );
-  ParseLastEnumParameter( rollExpr, rollType, boolean_t );
+  ParseLastEnumParameter( dbm_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
@@ -900,7 +900,7 @@ procedure ParseDBMWillRollbackOnFinalize( result : out unbounded_string; kind : 
 begin
   kind := boolean_t;
   expect( dbm_will_rollback_on_finalize_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_will_rollback_on_finalize_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -937,9 +937,9 @@ procedure ParseDBMOpenDBTrace is
 begin
   expect( dbm_open_db_trace_t );
   ParseFirstInOutParameter( connectId, dbm_connection_t );
-  ParseNextStringParameter( fnameExpr, fnameType, string_t );
+  ParseNextStringParameter( dbm_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextStringParameter( modeExpr, modeType, db_trace_mode_type_t );
+     ParseNextStringParameter( dbm_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
      hasMode := true;
   end if;
@@ -983,7 +983,7 @@ procedure ParseDBMCloseDBTrace is
   connection : resPtr;
 begin
   expect( dbm_close_db_trace_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_close_db_trace_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -1016,7 +1016,7 @@ procedure ParseDBMSetTrace is
 begin
   expect( dbm_set_trace_t );
   ParseFirstinOutParameter( connectId, dbm_connection_t );
-  ParseLastEnumParameter( traceExpr, traceType, boolean_t );
+  ParseLastEnumParameter( dbm_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
@@ -1049,7 +1049,7 @@ procedure ParseDBMIsTrace( result : out unbounded_string; kind : out identifier 
 begin
   kind := boolean_t;
   expect( dbm_is_trace_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_is_trace_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -1079,7 +1079,7 @@ procedure ParseDBMClear is
   query : resPtr;
 begin
   expect( dbm_clear_t );
-  ParseSingleInOutParameter( queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_clear_t, queryId, dbm_query_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1115,7 +1115,7 @@ begin
   expect( dbm_raise_exceptions_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextEnumParameter( raiseExpr, raiseType, boolean_t );
+     ParseNextEnumParameter( dbm_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
   end if;
@@ -1155,7 +1155,7 @@ begin
   expect( dbm_report_errors_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextEnumParameter( reportExpr, reportType, boolean_t );
+     ParseNextEnumParameter( dbm_report_errors_t, reportExpr, reportType, boolean_t );
   else
      reportExpr := to_unbounded_string( "1" );
   end if;
@@ -1194,7 +1194,7 @@ procedure ParseDBMBeginWork is
 begin
   expect( dbm_begin_work_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastInOutParameter( connectId, dbm_connection_t );
+  ParseLastInOutParameter( dbm_begin_work_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1232,7 +1232,7 @@ procedure ParseDBMRollbackWork is
 begin
   expect( dbm_rollback_work_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastInOutParameter( connectId, dbm_connection_t );
+  ParseLastInOutParameter( dbm_rollback_work_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -1270,7 +1270,7 @@ procedure ParseDBMCommitWork is
 begin
   expect( dbm_commit_work_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastInOutParameter( connectId, dbm_connection_t );
+  ParseLastInOutParameter( dbm_commit_work_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -1305,7 +1305,7 @@ procedure ParseDBMRewind is
   query : resPtr;
 begin
   expect( dbm_rewind_t );
-  ParseSingleInOutParameter( queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_rewind_t, queryId, dbm_query_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1340,7 +1340,7 @@ begin
   expect( dbm_fetch_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseNextNumericParameter( expr_val, expr_type, dbm_tuple_index_type_t );
+     ParseNextNumericParameter( dbm_fetch_t, expr_val, expr_type, dbm_tuple_index_type_t );
      haveIndex := true;
   end if;
   expect( symbol_t, ")" );
@@ -1382,7 +1382,7 @@ procedure ParseDBMEndOfQuery( result : out unbounded_string; kind : out identifi
 begin
   kind := boolean_t;
   expect( dbm_end_of_query_t );
-  ParseSingleInOutParameter( queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_end_of_query_t, queryId, dbm_query_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1413,7 +1413,7 @@ procedure ParseDBMTuple( result : out unbounded_string; kind : out identifier ) 
 begin
   kind := dbm_tuple_index_type_t;
   expect( dbm_tuple_t );
-  ParseSingleInOutParameter( queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_tuple_t, queryId, dbm_query_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1446,7 +1446,7 @@ procedure ParseDBMTuples( result : out unbounded_string; kind : out identifier )
 begin
   kind := dbm_tuple_count_type_t;
   expect( dbm_tuples_t );
-  ParseSingleInOutParameter( queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_tuples_t, queryId, dbm_query_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1479,7 +1479,7 @@ procedure ParseDBMColumns( result : out unbounded_string; kind : out identifier 
 begin
   kind := natural_t;
   expect( dbm_columns_t );
-  ParseSingleInOutParameter( queryId, dbm_query_t );
+  ParseSingleInOutParameter( dbm_columns_t, queryId, dbm_query_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1515,7 +1515,7 @@ begin
   kind := string_t;
   expect( dbm_column_name_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastNumericParameter( exprVal, exprType, dbm_column_index_type_t );
+  ParseLastNumericParameter( dbm_column_name_t, exprVal, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1553,7 +1553,7 @@ begin
   kind := dbm_column_index_type_t;
   expect( dbm_column_index_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastStringParameter( exprVal, exprType, string_t );
+  ParseLastStringParameter( dbm_column_index_type_t, exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1619,7 +1619,7 @@ begin
   kind := boolean_t;
   expect( dbm_is_null_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastNumericParameter( exprVal, exprType, dbm_column_index_type_t );
+  ParseLastNumericParameter( dbm_is_null_t, exprVal, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1660,7 +1660,7 @@ begin
   kind := universal_t;
   expect( dbm_value_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastNumericParameter( exprVal, exprType, dbm_column_index_type_t );
+  ParseLastNumericParameter( dbm_value_t, exprVal, exprType, dbm_column_index_type_t );
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
@@ -1872,7 +1872,7 @@ procedure ParseDBMShow is
 begin
   expect( dbm_show_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseLastInOutParameter( connectionId, dbm_connection_t );
+  ParseLastInOutParameter( dbm_show_t, connectionId, dbm_connection_t );
   if isExecutingCommand then
      findConnection( connectionId, connection );
      findConnection( queryId, query );
@@ -1901,7 +1901,7 @@ procedure ParseDBMList is
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_list_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_list_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -2097,7 +2097,7 @@ procedure ParseDBMSchema is
 begin
   expect( dbm_schema_t );
   ParseFirstInOutParameter( connectId, dbm_connection_t );
-  ParseLastStringParameter( exprVal, exprType, string_t );
+  ParseLastStringParameter( dbm_schema_t, exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -2356,7 +2356,7 @@ procedure ParseDBMUsers is
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_users_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_users_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -2556,7 +2556,7 @@ procedure ParseDBMDatabases is
   Q : APQ.PostgreSQL.Client.Query_Type;
 begin
   expect( dbm_databases_t );
-  ParseSingleInOutParameter( connectId, dbm_connection_t );
+  ParseSingleInOutParameter( dbm_databases_t, connectId, dbm_connection_t );
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
@@ -2837,9 +2837,9 @@ procedure ParseDBMFetchValues is
 begin
   expect( dbm_fetch_values_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextInOutParameter( connectionId, dbm_connection_t );
+  ParseNextInOutParameter( dbm_fetch_values_t, connectionId, dbm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
-  ParseLastInOutRecordParameter( id  );
+  ParseLastInOutRecordParameter( dbm_fetch_values_t, id  );
 -- TODO: is kind in the reference?
   if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
      err( "Record type expected" );
@@ -2975,9 +2975,9 @@ procedure ParseDBMAppendForInsert is
 begin
   expect( dbm_append_for_insert_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextInOutParameter( connectionId, dbm_connection_t );
+  ParseNextInOutParameter( dbm_append_for_insert_t, connectionId, dbm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
-  ParseLastInOutRecordParameter( id  );
+  ParseLastInOutRecordParameter( dbm_append_for_insert_t, id  );
 -- TODO: is kind in the reference?
   if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
      err( "Record type expected" );
@@ -3100,9 +3100,9 @@ procedure ParseDBMAppendForUpdate is
 begin
   expect( dbm_append_for_update_t );
   ParseFirstInOutParameter( queryId, dbm_query_t );
-  ParseNextInOutParameter( connectionId, dbm_connection_t );
+  ParseNextInOutParameter( dbm_append_for_update_t, connectionId, dbm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
-  ParseLastInOutRecordParameter( id  );
+  ParseLastInOutRecordParameter( dbm_append_for_update_t, id  );
 -- TODO: is kind in the reference?
   if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
      err( "Record type expected" );

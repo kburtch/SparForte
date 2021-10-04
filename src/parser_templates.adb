@@ -57,7 +57,7 @@ procedure ParseTemplatesSetHTTPStatus is
   exprKind : identifier;
 begin
   expect( templates_set_http_status_t );
-  ParseSingleNumericParameter( exprVal, exprKind );
+  ParseSingleNumericParameter( templates_set_http_status_t, exprVal, exprKind );
   baseTypesOK( exprKind, natural_t );
   if isExecutingCommand then
      if templateHeader.templateHeaderSent then
@@ -82,7 +82,7 @@ procedure ParseTemplatesSetHTTPLocation is
   exprKind : identifier;
 begin
   expect( templates_set_http_location_t );
-  ParseSingleStringParameter( exprVal, exprKind );
+  ParseSingleStringParameter( templates_set_http_location_t, exprVal, exprKind );
   baseTypesOK( exprKind, string_t );
   if isExecutingCommand then
      if templateHeader.templateHeaderSent then

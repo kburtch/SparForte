@@ -71,9 +71,9 @@ dht_decrement_t     : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure ParseSingleTableParameter( tableId : out identifier ) is
+procedure ParseSingleTableParameter( subprogram : identifier; tableId : out identifier ) is
 begin
-  ParseSingleInOutInstantiatedParameter( tableId, dht_table_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, tableId, dht_table_t );
 end ParseSingleTableParameter;
 
 procedure ParseFirstTableParameter( tableId : out identifier ) is
@@ -136,7 +136,7 @@ procedure ParseDHTReset is
   theTable : resPtr;
 begin
   expect( dht_reset_t );
-  ParseSingleTableParameter( tableId );
+  ParseSingleTableParameter( dht_reset_t, tableId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -164,8 +164,8 @@ procedure ParseDHTSet is
 begin
   expect( dht_set_t );
   ParseFirstTableParameter( tableId );
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t ); -- TODO double gen
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseNextStringParameter( dht_set_t, keyExpr, keyType, uni_string_t ); -- TODO double gen
+  ParseLastGenItemParameter( dht_set_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -195,7 +195,7 @@ begin
   expect( dht_get_t );
   ParseFirstTableParameter( tableId );
   kind := identifiers( tableId ).genKind;
-  ParseLastStringParameter( keyExpr, keyType, uni_string_t );
+  ParseLastStringParameter( dht_get_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -220,7 +220,7 @@ begin
   kind := boolean_t;
   expect( dht_has_element_t );
   ParseFirstTableParameter( tableId );
-  ParseLastStringParameter( keyExpr, keyType, uni_string_t );
+  ParseLastStringParameter( dht_has_element_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -244,7 +244,7 @@ procedure ParseDHTRemove is
 begin
   expect( dht_remove_t );
   ParseFirstTableParameter( tableId );
-  ParseLastStringParameter( keyExpr, keyType, uni_string_t );
+  ParseLastStringParameter( dht_remove_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -273,9 +273,9 @@ begin
      err( optional_bold( "pragma ada_95" ) & " doesn't allow get_first" );
   end if;
   ParseFirstTableParameter( tableId );
-  ParseNextOutParameter( itemRef, identifiers( tableId ).genKind );
+  ParseNextOutParameter( dht_get_first_t, itemRef, identifiers( tableId ).genKind );
   baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
-  ParseLastOutParameter( eofRef, boolean_t );
+  ParseLastOutParameter( dht_get_first_t, eofRef, boolean_t );
   baseTypesOK( eofRef.kind, boolean_t );
   if isExecutingCommand then
      declare
@@ -307,9 +307,9 @@ begin
      err( optional_bold( "pragma ada_95" ) & " doesn't allow get_next" );
   end if;
   ParseFirstTableParameter( tableId );
-  ParseNextOutParameter( itemRef, identifiers( tableId ).genKind );
+  ParseNextOutParameter( dht_get_next_t, itemRef, identifiers( tableId ).genKind );
   baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
-  ParseLastOutParameter( eofRef, boolean_t );
+  ParseLastOutParameter( dht_get_next_t, eofRef, boolean_t );
   baseTypesOK( eofRef.kind, boolean_t );
   if isExecutingCommand then
      declare
@@ -344,8 +344,8 @@ begin
      err( optional_bold( "pragma ada_95" ) & " doesn't allow add" );
   end if;
   ParseFirstTableParameter( tableId );
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseNextStringParameter( dht_add_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( dht_add_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -380,8 +380,8 @@ begin
      err( optional_bold( "pragma ada_95" ) & " doesn't allow replace" );
   end if;
   ParseFirstTableParameter( tableId );
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseNextStringParameter( dht_replace_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( dht_replace_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -419,8 +419,8 @@ begin
   if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseNextStringParameter( dht_append_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( dht_append_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -458,8 +458,8 @@ begin
   if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
      err( "prepend requires a string item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( tableId ).genKind );
+  ParseNextStringParameter( dht_prepend_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( dht_prepend_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -499,10 +499,10 @@ begin
   if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( dht_increment_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( dht_increment_t, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -554,10 +554,10 @@ begin
   if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
      err( "decrement requires a numeric item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( dht_decrement_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( dht_decrement_t, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else

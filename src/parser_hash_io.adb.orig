@@ -109,9 +109,9 @@ hash_get_previous_t  : identifier;
 -- Utility subprograms
 ------------------------------------------------------------------------------
 
-procedure ParseSingleFileParameter( fileId : out identifier ) is
+procedure ParseSingleFileParameter( subprogram : identifier; fileId : out identifier ) is
 begin
-  ParseSingleInOutInstantiatedParameter( fileId, hash_file_t );
+  ParseSingleInOutInstantiatedParameter( subprogram, fileId, hash_file_t );
 end ParseSingleFileParameter;
 
 procedure ParseFirstFileParameter( fileId : out identifier ) is
@@ -141,14 +141,14 @@ end ParseFirstFileParameter;
 --  ParseFirstInOutInstantiatedParameter( cursId, hash_cursor_t );
 --end ParseFirstCursorParameter;
 
-procedure ParseNextCursorParameter( cursId : out identifier ) is
+procedure ParseNextCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseNextInOutInstantiatedParameter( cursId, hash_cursor_t );
+  ParseNextInOutInstantiatedParameter( subprogram, cursId, hash_cursor_t );
 end ParseNextCursorParameter;
 
-procedure ParseLastCursorParameter( cursId : out identifier ) is
+procedure ParseLastCursorParameter( subprogram : identifier; cursId : out identifier ) is
 begin
-  ParseLastInOutInstantiatedParameter( cursId, hash_cursor_t );
+  ParseLastInOutInstantiatedParameter( subprogram, cursId, hash_cursor_t );
 end ParseLastCursorParameter;
 
 #if BDB
@@ -282,7 +282,7 @@ procedure ParseHashClear is
   theFile  : resPtr;
 begin
   expect( hash_clear_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_clear_t, fileId );
   if isExecutingCommand then
      begin
        -- close the file / environment, if they are still open.  This doesn't
@@ -324,7 +324,7 @@ begin
   end if;
   expect( hash_recover_t );
   ParseFirstFileParameter( fileId );
-  ParseLastStringParameter( fname_val, fname_type, string_t );
+  ParseLastStringParameter( hash_recover_t, fname_val, fname_type, string_t );
 
 
   if isExecutingCommand then
@@ -401,9 +401,9 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( fname_val, fname_type, string_t );
-  ParseNextNumericParameter( keyLenExpr, keyLenType, positive_t );
-  ParseLastNumericParameter( valLenExpr, valLenType, positive_t );
+  ParseNextStringParameter( hash_create_t, fname_val, fname_type, string_t );
+  ParseNextNumericParameter( hash_create_t, keyLenExpr, keyLenType, positive_t );
+  ParseLastNumericParameter( hash_create_t, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
@@ -513,7 +513,7 @@ procedure ParseHashClose is
   theFile    : resPtr;
 begin
   expect( hash_close_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_close_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -559,10 +559,10 @@ begin
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( fname_val, fname_type, string_t );
+  ParseNextStringParameter( hash_open_t, fname_val, fname_type, string_t );
   -- TODO: can this be dynamic?
-  ParseNextNumericParameter( keyLenExpr, keyLenType, positive_t );
-  ParseLastNumericParameter( valLenExpr, valLenType, positive_t );
+  ParseNextNumericParameter( hash_open_t, keyLenExpr, keyLenType, positive_t );
+  ParseLastNumericParameter( hash_open_t, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
@@ -663,7 +663,7 @@ procedure ParseHashIsOpen( result : out unbounded_string; kind : out identifier 
 begin
   kind := boolean_t;
   expect( hash_is_open_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_is_open_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -689,7 +689,7 @@ procedure ParseHashName( result : out unbounded_string; kind : out identifier ) 
 begin
   kind := string_t;
   expect( hash_name_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_name_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -717,7 +717,7 @@ begin
      err( "delete not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( hash_delete_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_delete_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -829,8 +829,8 @@ begin
   end if;
   expect( hash_set_t );
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( keyExpr, keyType, string_t );
-  expect( symbol_t, "," );
+  ParseNextStringParameter( hash_set_t, keyExpr, keyType, string_t );
+  expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -921,8 +921,8 @@ begin
   expect( hash_get_t );
   ParseFirstFileParameter( fileId );
   genKindId := identifiers( fileId ).genKind;
-  ParseNextStringParameter( keyExpr, keyType, string_t );
-  expect( symbol_t, "," );
+  ParseNextStringParameter( hash_get_t, keyExpr, keyType, string_t );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -1039,7 +1039,7 @@ begin
   kind := boolean_t;
   expect( hash_has_element_t );
   ParseFirstFileParameter( fileId );
-  ParseLastStringParameter( keyExpr, keyType, string_t );
+  ParseLastStringParameter( hash_has_element_t, keyExpr, keyType, string_t );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1077,7 +1077,7 @@ begin
   end if;
   expect( hash_remove_t );
   ParseFirstFileParameter( fileId );
-  expect( symbol_t, "," );
+  expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = hash_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
@@ -1141,10 +1141,10 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( hash_increment_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( hash_increment_t, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -1208,10 +1208,10 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( hash_decrement_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( hash_decrement_t, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -1272,8 +1272,8 @@ begin
   end if;
   expect( hash_add_t );
   ParseFirstFileParameter( fileId );
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  expect( symbol_t, "," );
+  ParseNextStringParameter( hash_add_t, keyExpr, keyType, uni_string_t );
+  expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1384,7 +1384,7 @@ begin
   end if;
   expect( hash_replace_t );
   ParseFirstFileParameter( fileId );
-  expect( symbol_t, "," );
+  expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = hash_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
@@ -1392,7 +1392,7 @@ begin
      ParseExpression( keyExpr, keyType );
      baseTypesOk( keyType, uni_string_t );
   end if;
-  expect( symbol_t, "," );
+  expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1583,8 +1583,8 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseNextStringParameter( hash_append_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( hash_append_t, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1630,8 +1630,8 @@ begin
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
-  ParseNextStringParameter( keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseNextStringParameter( hash_prepend_t, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( hash_prepend_t, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1665,7 +1665,7 @@ procedure ParseHashFlush is
   theFile    : resPtr;
 begin
   expect( hash_flush_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_flush_t, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1695,7 +1695,7 @@ begin
      err( "truncate not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( hash_truncate_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_truncate_t, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1770,7 +1770,7 @@ procedure ParseHashOpenCursor is
 begin
   expect( hash_open_cursor_t );
   ParseFirstFileParameter( fileId );
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( hash_open_cursor_t, cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( fileId, theFile ) then
@@ -1805,7 +1805,7 @@ procedure ParseHashCloseCursor is
 begin
   expect( hash_close_cursor_t );
   ParseFirstFileParameter( fileId );
-  ParseLastCursorParameter( cursId );
+  ParseLastCursorParameter( hash_close_cursor_t, cursId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -1854,12 +1854,12 @@ begin
   end if;
   expect( hash_get_first_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( hash_get_first_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( hash_get_first_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2005,12 +2005,12 @@ begin
   end if;
   expect( hash_get_next_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( hash_get_next_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( hash_get_next_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2156,12 +2156,12 @@ begin
   end if;
   expect( hash_get_last_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( hash_get_last_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( hash_get_last_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2307,12 +2307,12 @@ begin
   end if;
   expect( hash_get_previous_t );
   ParseFirstFileParameter( fileId );
-  ParseNextCursorParameter( cursId );
+  ParseNextCursorParameter( hash_get_previous_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( keyRef, string_t );
+  ParseNextOutParameter( hash_get_previous_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
-  expect( symbol_t, "," );
+  expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
   if identifiers( getBaseType( genKindId ) ).kind = root_record_t then
@@ -2445,7 +2445,7 @@ procedure ParseHashWillRaise( result : out unbounded_string; kind : out identifi
 begin
   kind := boolean_t;
   expect( hash_will_raise_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_will_raise_t, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2473,7 +2473,7 @@ procedure ParseHashLastError( result : out unbounded_string; kind : out identifi
 begin
   kind := bdb_db_error_t;
   expect( hash_last_error_t );
-  ParseSingleFileParameter( fileId );
+  ParseSingleFileParameter( hash_last_error_t, fileId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2504,7 +2504,7 @@ procedure ParseHashRaiseExceptions is
 begin
   expect( hash_raise_exceptions_t );
   ParseFirstFileParameter( fileId );
-  ParseLastEnumParameter( boolExpr, boolType, boolean_t );
+  ParseLastEnumParameter( hash_raise_exceptions_t, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
        raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );

@@ -168,6 +168,20 @@ procedure err( msg : string );
 -- set the token to eof_t to abort the parsing and set the
 -- error_found flag to indicate that an error was encountered
 
+procedure err(
+  which     : identifier := eof_t;
+  whichKind : identifier := eof_t;
+  where     : string := "";
+  what      : string := "";
+  whatKind  : identifier := eof_t;
+  why       : string := "";
+  how       : string := "" );
+-- Report an error but structure is based on the "reporter questions", to
+-- describe the context around the error as briefly as possible.
+
+procedure err_symbol_table_overflow;
+-- fatal error.  the symbol table overflowed
+
 procedure err_style( msg : string );
 -- display a style error.  It is not an error if the script is unstructured.
 
@@ -390,8 +404,29 @@ procedure expect( expected_token : identifier; value : string );
 -- check for the specified identifier and value.  If the current token
 -- and its value matches, get the next token otherwise show an error
 
+procedure expectSymbol(
+  expectedValue : string;
+  expectPlural  : boolean := false;
+  which     : identifier := eof_t;
+  whichKind : identifier := eof_t;
+  where     : string := "";
+  what      : string := "";
+  whatKind  : identifier := eof_t;
+  why       : string := "";
+  how       : string := "" );
+-- Expect that structures the message like "reporter questions", with the
+-- why (expects 'x') being provided.
+
+procedure expectIdentifier( what, receivedDescription : string );
+
 procedure expectSemicolon;
 -- expect a semi-colon, check for colon
+
+procedure expectParameterComma( subprogram : identifier := eof_t );
+procedure expectPragmaComma;
+-- expect a comma, check for semi-colon
+
+procedure expectParameterClose( subprogram : identifier := eof_t );
 
 pragma inline( expect );
 pragma inline( expectSemicolon );
