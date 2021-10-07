@@ -76,7 +76,7 @@
 <p>A hash map is a lookup table containing key-element (that is, key-value) pairs.  Keys are unique
 in the table.  The ken and element types must be scalar</p>
 
-<p>This package includes a new generic type:</p>
+<p>This package includes new generic types:</p>
 
 <ul>
 <li><b>hashed_maps.cursor( <i>key type</i>, <i>element type</i> )</b></li>
@@ -205,7 +205,8 @@ An exception is raised if the element type is not a string</p></td>
 An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Assign</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Assign<br>
+Java: HashMap.putAll()</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Assign fails on CentOS 7 due to a Ada bug.</p></td>
@@ -281,7 +282,8 @@ An exception is raised if out of memory</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Clear</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Clear<br>
+Java: HashMap.clear()</p></td>
 </tr>
 </table>
 
@@ -320,7 +322,8 @@ An exception is raised if out of memory</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Contains<br>
+Java: HashMap.containsKey()</p></td>
 </tr>
 </table>
 
@@ -485,7 +488,8 @@ An exception is raised if the key does not exist</p></td>
 <td><p><a href="#hashed_maps.find">hashed_maps.find</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.hashed_Maps.Element</p></td>
+<td><p>Ada: Ada.Containers.hashed_Maps.Element<br>
+Java: HashMap.get()</p></td>
 </tr>
 </table>
 
@@ -577,7 +581,8 @@ An exception is raised if out of memory</p></td>
 <td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Exclude</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Exclude<br>
+Java: HashMap.remove()</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
@@ -638,7 +643,7 @@ An exception is raised if out of memory</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the position inthe map for key k.  If the key does not exist, the cursor will have no element.</p>
+<td><p>Move the cursor to the position in the map for key k.  If the key does not exist, the cursor will have no element.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.find( fruit_unit, "apple", cursor );</span></p></td>
 </tr><tr>
@@ -822,7 +827,8 @@ An exception is raised if the key does not exist</p></td>
 <td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Include<br>
+Java: HashMap.put()</p></td>
 </tr>
 </table>
 
@@ -984,7 +990,8 @@ An exception is raised if the key exists</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Is_Empty</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Is_Empty<br>
+Java: HashMap.is_empty()</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>-</p></td>
@@ -1068,7 +1075,8 @@ An exception is raised if the key exists</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Length</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Length<br>
+Java: HashMap.size()</p></td>
 </tr>
 </table>
 
@@ -1108,10 +1116,10 @@ An exception is raised if the key exists</p></td>
 An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Assign</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Move</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Assign fails on CentOS 7 due to a Ada bug.</p></td>
+<td><p>Move fails on CentOS 7 due to a Ada bug.</p></td>
 </tr>
 </tr>
 </table>
@@ -1261,7 +1269,8 @@ An exception is raised if the key does not exist</p></td>
 <td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Replace</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Replace<br>
+Java: HashMap.replace()</p></td>
 </tr>
 </table>
 
@@ -1400,6 +1409,7 @@ An exception is raised if the element type is not a string</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_templates.html">&nbsp;templates</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
+                                <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
 </a></p>
 
 			</td>

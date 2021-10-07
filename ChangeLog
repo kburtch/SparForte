@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Bug fixes following 2.4 and continue command line improvements.
+Objective: Bug fixes following 2.4 and reducing technical debt.
 
 CHANGES SINCE 2.4
 
@@ -67,7 +67,7 @@ CHANGES SINCE 2.4.1
 
 29. New: case in statement can have multiple test variables and return expressions. [change into a relation function]
 
-30. New: case with multiple variables.
+30. New: case with multiple variables (like rust, python, and some other languages).
 
 31. New: box <> allowed in case when conditions. [negative tests needed]
 

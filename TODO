@@ -11,16 +11,16 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- ada vectors
+  - complete
+  - tests - subtypes, arrays (out param), universals
+  - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
   - <> box statement negative tests
   - business process block that only supports case in (do this after vectors)
-  - with separate policy, with separate configuration, with separate process in addition to normal with separate
-- ada vectors
-  - complete
-  - tests - subtypes, arrays (out param), universals
-  - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
+  - with separate policy, with separate configuration, with separate process in addition to normal with separate to load such things from non-standard locations
   - handling of derrived types and subtypes and universal types (also in hmaps)
 - pragma todo
   - these do not appear in help output when in include files
@@ -31,11 +31,15 @@ Priority Issues (Fix These First)
 - arrays of containers
   - array elements of vectors / doubly / hashed_maps and their cursors and
     handling in the various package subprograms
-
-- ada95 recommendations
-- locations (on declared but not used errors)
-- how can design mode be improved to assist with design diagrams?
-- redesign source code treasury index page
+    - if cannot be done, at least provide an appropriate error when it is attempted
+- better expected token messages
+  - expected errors in the form of when, what's expected and why (e.g. "x is such-and-such
+    so y is expected anticipating z".
+  - ada95 solution recommendations.  these might benefit from the better expected messages
+  - declaration locations, useful on declared but not used errors...where was it declared?
+- how can design mode be improved to assist with producing design diagrams?  translating
+  things into design diagrams is a costly part of design.
+- refactor source code treasury index page
 - update examples with recent changes to SparForte (e.g. affirm clauses)
 - update REPL on website
 - check pascal's changes for supporting graphic environments
@@ -43,7 +47,7 @@ Priority Issues (Fix These First)
 - fix some of the issues with opengl support
 - shell source code review
   - fix signal handling
-  - add ctrl-c to pause / fg / bg commmands to SparForte
+  - add ctrl-c to pause / fg / bg commmands to SparForte, and maybe job control?
 - shell parser rewrite
   - ls("-l") | wc -l does not work (legacy compiler issue) but the
     opposite works.

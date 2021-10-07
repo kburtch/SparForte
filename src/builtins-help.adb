@@ -2630,12 +2630,15 @@ begin
      content( e, "append( v, e [,c] )", "b := equals( v1, v2 )", "i := first_index( v )" );
      content( e, "prepend( v, e [,c] )", "i := last_index( v )", "b := contains( c, e )" );
      content( e, "e := first_element( v )", "e := last_element( v )", "reverse_elements( v )" );
-     content( e, "flip( v )", "b := is_empty( v )", "append_vectors( v1, v2 )" );
+     content( e, "flip( v )", "append_vectors( v1, v2 )" );
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
      content( e, "clear( v )", "previous( c )", "delete( i [, c] )" );
      content( e, "insert( v, i, e [, n] )", "insert_vector( v, c, v2 )" );
      content( e, "insert_before( v, c, e [, n] )", "insert_vector_and_mark( v, c, v2, c2 )" );
      content( e, "insert_before_and_mark( v, c, e, c2 [, n] )" );
+     content( e, "insert_space( v, i [,n] )", "insert_space( v, c, c2, [, n] )" );
+     content( e, "swap( v, i1, i2 | v, c1, c2 )", "find( v, e, c1, c2 )", "reverse_find( v, e, c1, c2 )" );
+     content( e, "find_index( v, e, i1, i1 )", "reverse_find_index( v, e, i1, i2 )" );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then

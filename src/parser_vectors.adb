@@ -22,6 +22,7 @@
 ------------------------------------------------------------------------------
 
 with text_io;use text_io;
+with pegasoft.strings;
 
 with
     Ada.Containers,
@@ -89,6 +90,12 @@ vectors_insert_vector_t : identifier;
 vectors_insert_before_t : identifier;
 vectors_insert_before_and_mark_t : identifier;
 vectors_insert_vector_and_mark_t : identifier;
+vectors_insert_space_t  : identifier;
+vectors_swap_t          : identifier;
+vectors_find_t          : identifier;
+vectors_reverse_find_t  : identifier;
+vectors_find_index_t    : identifier;
+vectors_reverse_find_index_t : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -144,6 +151,18 @@ procedure err_count is
 begin
   err( "count is not a natural" );
 end err_count;
+
+
+------------------------------------------------------------------------------
+--  ERR CURSOR MISMATCH
+--
+------------------------------------------------------------------------------
+
+procedure err_cursor_mismatch is
+begin
+  err( "the cursor does not match this vector" );
+end err_cursor_mismatch;
+
 
 
 ------------------------------------------------------------------------------
@@ -1659,6 +1678,7 @@ begin
        else
           findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
        end if;
+       -- TODO: the cursor may not exist
 
        Vector_String_Lists.Insert(
           theVector.vslVector,
@@ -1738,6 +1758,7 @@ begin
        else
           findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
        end if;
+       -- TODO: the cursor may not exist
 
        if hasCnt then
           begin
@@ -1750,7 +1771,7 @@ begin
           Container => theVector.vslVector,
           Before    => theCursor.vslCursor,
           New_Item  => elemVal,
-          Position  => theCursor.vslCursor,
+          Position  => theCursor2.vslCursor,
           Count     => cnt
        );
 
@@ -1765,7 +1786,110 @@ begin
 end ParseVectorsInsertBeforeAndMark;
 
 
--- Insert_Space
+------------------------------------------------------------------------------
+--  INSERT SPACE
+--
+-- Syntax: insert_space( v, i [, n] ) | ( v, c, c2 [, n] );
+-- Ada:    insert_space( v, i [, c] ) | ( v, c, c2 [, n] );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsInsertSpace is
+  vectorId   : identifier;
+  beforeCursorId : identifier;
+  beforeIdxExpr : unbounded_string;
+  beforeIdxType : identifier;
+  positionCursorRef : reference;
+  cntExpr    : unbounded_string;
+  cntType    : identifier;
+  theVector  : resPtr;
+  cnt        : ada.containers.count_type := 1;
+  hasIdx     : boolean := false;
+  hasCnt     : boolean := false;
+begin
+  expect( vectors_insert_space_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  expect( symbol_t, "," );
+  if identifiers( token ).kind = vectors_cursor_t then
+     ParseInOutInstantiatedParameter( beforeCursorId, vectors_cursor_t );
+     ParseNextOutVectorCursor( vectorId, positionCursorRef );
+  else
+     ParseExpression( beforeIdxExpr, beforeIdxType );
+     baseTypesOK( beforeIdxType, identifiers( vectorId ).genKind );
+     hasIdx := true;
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     expect( symbol_t, "," );
+     ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+     hasCnt := true;
+  end if;
+  expect( symbol_t, ")" );
+
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+
+       -- Either variation can have a count
+
+       if hasCnt then
+           begin
+              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
+           exception when others =>
+              err_count;
+           end;
+       end if;
+
+       -- variation 1: with index
+       -- variation 2: with cursor and out position cursor
+
+       if hasIdx then
+          declare
+             idx : vector_index;
+          begin
+             idx := toRealVectorIndex( vectorId, integer( to_numeric( beforeIdxExpr ) ) );
+             Vector_String_Lists.Insert_Space( theVector.vslVector, idx, cnt );
+          end;
+       else
+          declare
+             positionCursorResourceId : resHandleId;
+             theBeforeCursor  : resPtr;
+             thePositionCursor : resPtr;
+          begin
+             findResource(
+                 to_resource_id( identifiers( beforeCursorId ).value.all ),
+                 theBeforeCursor
+             );
+
+             -- the second cursor is the out parameter.  Declare it.  Then fetch it.
+             -- TODO: if out is overwriting a resource, delete old resource(s)
+             identifiers( positionCursorRef.id ).resource := true;
+             declareResource(
+                 positionCursorResourceId,
+                 vector_string_list_cursor,
+                 getIdentifierBlock( positionCursorRef.id )
+             );
+             AssignParameter(
+                 positionCursorRef,
+                 to_unbounded_string( positionCursorResourceId )
+             );
+             findResource( positionCursorResourceId, thePositionCursor );
+             Vector_String_Lists.Insert_Space(
+                theVector.vslVector,
+                theBeforeCursor.vslCursor,
+                thePositionCursor.vslCursor,
+                cnt
+             );
+          end;
+       end if;
+     exception when storage_error =>
+       err_storage;
+     when program_error =>
+       err_cursor_mismatch;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsInsertSpace;
+
 
 ------------------------------------------------------------------------------
 --  APPEND VECTORS
@@ -1800,6 +1924,266 @@ begin
      end;
   end if;
 end ParseVectorsAppendVectors;
+
+
+------------------------------------------------------------------------------
+--  SWAP
+--
+-- Syntax: swap( v, i1, i2 | v, c1, c2 );
+-- Ada:    swap( v, i1, i2 | v, c1, c2 );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsSwap is
+  vectorId   : identifier;
+  cursorId   : identifier;
+  cursorId2  : identifier;
+  theVector  : resPtr;
+  theCursor  : resPtr;
+  theCursor2 : resPtr;
+  idxExpr1   : unbounded_string;
+  idxType1   : identifier;
+  idxExpr2   : unbounded_string;
+  idxType2   : identifier;
+  hasIdx     : boolean := false;
+begin
+  expect( vectors_swap_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  expect( symbol_t, "," );
+  if identifiers( token ).kind = vectors_cursor_t then
+     ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
+     ParseLastInOutInstantiatedParameter( cursorId2, vectors_cursor_t );
+  else
+     ParseExpression( idxExpr1, idxType1 );
+     baseTypesOK( idxType1, identifiers( vectorId ).genKind );
+     expect( symbol_t,"," );
+     ParseExpression( idxExpr2, idxType2 );
+     baseTypesOK( idxType2, identifiers( vectorId ).genKind );
+     hasIdx := true;
+     expect( symbol_t, ")" );
+  end if;
+
+  if isExecutingCommand then
+     if hasIdx then
+        declare
+           idx1 : vector_index;
+           idx2 : vector_index;
+        begin
+           idx1 := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr1 ) ) );
+           idx2 := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr2 ) ) );
+           findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+           Vector_String_Lists.Swap( theVector.vslVector, idx1, idx2 );
+        end;
+     else
+        begin
+           findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+           findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
+           findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
+           Vector_String_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
+        end;
+     end if;
+  end if;
+end ParseVectorsSwap;
+
+
+------------------------------------------------------------------------------
+--  FIND
+--
+-- Syntax: find( v, e, ,c1 ,c2 );
+-- Ada:    find( v, e, [,c1], c2 );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsFind is
+  vectorId      : identifier;
+  itemExpr      : unbounded_string;
+  itemType      : identifier;
+  startCursorId : identifier;
+  positionCursorRef : reference;
+begin
+  expect( vectors_find_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  -- It is tricky to handle one optional cursor followed by a required one,
+  -- one existing and one a reference.
+  ParseNextInOutInstantiatedParameter( startCursorId, vectors_cursor_t );
+  ParseLastOutVectorCursor( vectorId, positionCursorRef );
+
+  if isExecutingCommand then
+     declare
+        theVector : resPtr;
+        theCursor : resPtr;
+        --
+        positionCursorResourceId : resHandleId;
+        thePositionCursor : resPtr;
+     begin
+        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+        findResource( to_resource_id( identifiers( startCursorId ).value.all ), theCursor );
+
+        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
+        -- TODO: if out is overwriting a resource, delete old resource(s)
+        identifiers( positionCursorRef.id ).resource := true;
+        declareResource(
+            positionCursorResourceId,
+            vector_string_list_cursor,
+            getIdentifierBlock( positionCursorRef.id )
+        );
+        AssignParameter(
+            positionCursorRef,
+            to_unbounded_string( positionCursorResourceId )
+        );
+        findResource( positionCursorResourceId, thePositionCursor );
+
+        thePositionCursor.vslCursor := Vector_String_Lists.Find( theVector.vslVector, itemExpr, theCursor.vslCursor );
+     end;
+  end if;
+end ParseVectorsFind;
+
+
+------------------------------------------------------------------------------
+--  REVERSE FIND
+--
+-- Syntax: reverse_find( v, e, ,c1 ,c2 );
+-- Ada:    reverse_find( v, e, [,c1], c2 );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsReverseFind is
+  vectorId      : identifier;
+  itemExpr      : unbounded_string;
+  itemType      : identifier;
+  startCursorId : identifier;
+  positionCursorRef : reference;
+begin
+  expect( vectors_reverse_find_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  -- It is tricky to handle one optional cursor followed by a required one,
+  -- one existing and one a reference.
+  ParseNextInOutInstantiatedParameter( startCursorId, vectors_cursor_t );
+  ParseLastOutVectorCursor( vectorId, positionCursorRef );
+
+  if isExecutingCommand then
+     declare
+        theVector : resPtr;
+        theCursor : resPtr;
+        --
+        positionCursorResourceId : resHandleId;
+        thePositionCursor : resPtr;
+     begin
+        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+        findResource( to_resource_id( identifiers( startCursorId ).value.all ), theCursor );
+
+        -- the second cursor is the out parameter.  Declare it.  Then fetch it.
+        -- TODO: if out is overwriting a resource, delete old resource(s)
+        identifiers( positionCursorRef.id ).resource := true;
+        declareResource(
+            positionCursorResourceId,
+            vector_string_list_cursor,
+            getIdentifierBlock( positionCursorRef.id )
+        );
+        AssignParameter(
+            positionCursorRef,
+            to_unbounded_string( positionCursorResourceId )
+        );
+        findResource( positionCursorResourceId, thePositionCursor );
+
+        thePositionCursor.vslCursor := Vector_String_Lists.Reverse_Find( theVector.vslVector, itemExpr, theCursor.vslCursor );
+     end;
+  end if;
+end ParseVectorsReverseFind;
+
+
+------------------------------------------------------------------------------
+--  FIND INDEX
+--
+-- Syntax: find_index( v, e, ,i1, i2 );
+-- Ada:    find_index( v, e, [,i1], i2 );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsFindIndex is
+  vectorId      : identifier;
+  itemExpr      : unbounded_string;
+  itemType      : identifier;
+  startIdxExpr  : unbounded_string;
+  startIdxType  : identifier;
+  positionIdxRef : reference;
+begin
+  expect( vectors_find_index_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  -- in Ada, the next parameter is optional but is easier to make optional
+  -- than find with two cursors
+  ParseNextGenItemParameter( startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
+  ParseLastOutParameter( positionIdxRef, identifiers( vectorId ).genKind );
+
+  if isExecutingCommand then
+     declare
+        theVector   : resPtr;
+        startIdx    : vector_index;
+        positionIdx : vector_index;
+        positionValue : unbounded_string;
+     begin
+        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+
+        startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr ) ) );
+
+        positionIdx := Vector_String_Lists.Find_Index( theVector.vslVector, itemExpr, startIdx );
+        positionvalue := to_unbounded_string( long_float( toUserVectorIndex( vectorId, positionIdx ) ) );
+
+        AssignParameter(
+            positionIdxRef,
+            positionValue
+        );
+
+
+     end;
+  end if;
+end ParseVectorsFindIndex;
+
+
+------------------------------------------------------------------------------
+--  REVERSE FIND INDEX
+--
+-- Syntax: reverse_find_index( v, e, ,i1, i2 );
+-- Ada:    reverse_find_index( v, e, [,i1], i2 );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsReverseFindIndex is
+  vectorId      : identifier;
+  itemExpr      : unbounded_string;
+  itemType      : identifier;
+  startIdxExpr  : unbounded_string;
+  startIdxType  : identifier;
+  positionIdxRef : reference;
+begin
+  expect( vectors_reverse_find_index_t );
+  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  -- in Ada, the next parameter is optional but is easier to make optional
+  -- than find with two cursors
+  ParseNextGenItemParameter( startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
+  ParseLastOutParameter( positionIdxRef, identifiers( vectorId ).genKind );
+
+  if isExecutingCommand then
+     declare
+        theVector   : resPtr;
+        startIdx    : vector_index;
+        positionIdx : vector_index;
+        positionValue : unbounded_string;
+     begin
+        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+
+        startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr ) ) );
+
+        positionIdx := Vector_String_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr, startIdx );
+        positionvalue := to_unbounded_string( long_float( toUserVectorIndex( vectorId, positionIdx ) ) );
+
+        AssignParameter(
+            positionIdxRef,
+            positionValue
+        );
+
+     end;
+  end if;
+end ParseVectorsReverseFindIndex;
 
 
 -----------------------------------------------------------------------------
@@ -1856,8 +2240,14 @@ begin
   declareProcedure( vectors_insert_t, "vectors.insert", ParseVectorsInsert'access );
   declareProcedure( vectors_insert_vector_t, "vectors.insert_vector", ParseVectorsInsertVector'access );
   declareProcedure( vectors_insert_before_t, "vectors.insert_before", ParseVectorsInsertBefore'access );
- declareProcedure(  vectors_insert_before_and_mark_t, "vectors.insert_before_and_mark", ParseVectorsInsertBeforeAndMark'access );
- declareProcedure(  vectors_insert_vector_and_mark_t, "vectors.insert_vector_and_mark", ParseVectorsInsertVectorAndMark'access );
+  declareProcedure( vectors_insert_before_and_mark_t, "vectors.insert_before_and_mark", ParseVectorsInsertBeforeAndMark'access );
+  declareProcedure( vectors_insert_vector_and_mark_t, "vectors.insert_vector_and_mark", ParseVectorsInsertVectorAndMark'access );
+  declareProcedure( vectors_insert_space_t, "vectors.insert_space", ParseVectorsInsertSpace'access );
+  declareProcedure( vectors_swap_t, "vectors.swap", ParseVectorsSwap'access );
+  declareProcedure( vectors_find_t, "vectors.find", ParseVectorsFind'access );
+  declareProcedure( vectors_reverse_find_t, "vectors.reverse_find", ParseVectorsReverseFind'access );
+  declareProcedure( vectors_find_index_t, "vectors.find_index", ParseVectorsFindIndex'access );
+  declareProcedure( vectors_reverse_find_index_t, "vectors.reverse_find_index", ParseVectorsReverseFindIndex'access );
 
   declareNamespaceClosed( "vectors" );
 end StartupVectors;
