@@ -6818,6 +6818,301 @@ begin
   pragma assert( vectors.element( c ) = "ant" );
 end;
 
+  -- tests with selected data types
+
+  declare
+    iv : vectors.vector( integer, string );
+    nv : vectors.vector( natural, string );
+    pv : vectors.vector( positive, string );
+    type gems is ( beryl, ruby, sapphire );
+    gv : vectors.vector( gems, string );
+    --pu : vectors.vector( positive, universal_typeless );
+  begin
+    vectors.append( iv, "nat" );
+    -- this depends on the size of int
+    pragma assert( vectors.first_index( iv ) < 0 );
+    vectors.append( nv, "nat" );
+    pragma assert( vectors.element( nv, 0 ) = "nat" );
+    vectors.append( pv, "pos" );
+    pragma assert( vectors.element( pv, 1 ) = "pos" );
+    vectors.append( gv, "beryl" );
+  end;
+
+  -- Insert
+
+declare
+  v : vectors.vector( natural, string );
+begin
+
+  declare
+    v1 : vectors.vector( natural, string );
+    v2 : vectors.vector( natural, string );
+    c : vectors.cursor( natural, string );
+    c2 : vectors.cursor( natural, string );
+    idx : natural;
+
+  begin
+
+    -- insert with index and element
+
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    idx := vectors.last_index( v1 );
+    vectors.insert( v1, idx, "bear" );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bear" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+    -- insert + universal typeless
+
+    declare
+       v3 : vectors.vector( natural, universal_typeless );
+       c3 : vectors.cursor( natural, universal_typeless );
+    begin
+       vectors.append( v3, "ant" );
+       vectors.append( v3, "cat" );
+       idx := vectors.last_index( v3 );
+       vectors.insert( v3, idx, "1234" );
+       vectors.first( v3, c3 );
+       pragma assert( vectors.element( c3 ) = "ant" );
+       vectors.next( c3 );
+       pragma assert( vectors.element( c3 ) = 1234);
+       vectors.next( c3 );
+       pragma assert( vectors.element( c3 ) = "cat" );
+    end;
+
+    -- insert with index and element and count
+
+    idx := vectors.last_index( v1 );
+    vectors.insert( v1, idx, "wolf", 2 );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bear" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "wolf" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "wolf" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+   -- insert_vector
+
+    vectors.clear( v1 );
+    vectors.clear( v2 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    vectors.append( v2, "bear" );
+    vectors.last( v1, c );
+    vectors.insert_vector( v1, c, v2 );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bear" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+    -- insert_before
+
+    vectors.clear( v1 );
+    vectors.clear( v2 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    vectors.last( v1, c );
+    vectors.insert_before( v1, c, "bear" );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bear" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+    -- insert_vector_and_mark
+
+    vectors.clear( v1 );
+    vectors.clear( v2 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    vectors.append( v2, "bear" );
+    vectors.last( v1, c );
+    vectors.insert_vector_and_mark( v1, c, v2, c2 );
+    pragma assert( vectors.element( c2 ) = "bear" );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bear" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+   -- insert_before_and_mark
+
+    vectors.clear( v1 );
+    vectors.clear( v2 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    vectors.last( v1, c );
+    vectors.insert_before_and_mark( v1, c, "bear", c2 );
+    pragma assert( vectors.element( c2 ) = "bear" );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bear" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+    vectors.first( v1, c );
+    vectors.insert_before_and_mark( v1, c, "bird", c2, 2 );
+    pragma assert( vectors.element( c2 ) = "bird" );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "bird" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "bird" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+
+    vectors.clear( v1 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    idx := vectors.last_index( v1 );
+    vectors.insert_space( v1, idx );
+    pragma assert( vectors.length( v1 ) = 3 );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+    vectors.clear( v1 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    idx := vectors.last_index( v1 );
+    vectors.insert_space( v1, idx, 2 );
+    pragma assert( vectors.length( v1 ) = 4 );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    vectors.next( c );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+
+    vectors.clear( v1 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    vectors.last( v1, c );
+    vectors.insert_space( v1, c, c2 );
+    pragma assert( vectors.length( v1 ) = 3 );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+    pragma assert( vectors.element( c2 ) = "cat" );
+
+    vectors.clear( v1 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "cat" );
+    idx := vectors.last_index( v1 );
+    vectors.insert_space( v1, c, c2, 2 );
+    pragma assert( vectors.length( v1 ) = 4 );
+    vectors.first( v1, c );
+    pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    vectors.next( c );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "cat" );
+    pragma assert( vectors.element( c2 ) = "cat" );
+
+  end;
+
+  -- swap vectors
+
+  declare
+    idx1 : natural;
+    idx2 : natural;
+    c1 : vectors.cursor( natural, string );
+    c2 : vectors.cursor( natural, string );
+  begin
+
+    -- swap with index
+
+    vectors.clear( v );
+    vectors.append( v, "ant" );
+    vectors.append( v, "bear" );
+    idx1 := vectors.first_index( v );
+    idx2 := vectors.last_index( v );
+    vectors.swap( v, idx1, idx2 );
+    pragma assert( vectors.first_element( v ) = "bear" );
+    pragma assert( vectors.last_element( v ) = "ant" );
+
+    -- swap with cursors
+
+    vectors.clear( v );
+    vectors.append( v, "cat" );
+    vectors.append( v, "dog" );
+    vectors.first( v, c1 );
+    vectors.last( v, c2 );
+    vectors.swap( v, c1, c2 );
+    pragma assert( vectors.first_element( v ) = "dog" );
+    pragma assert( vectors.last_element( v ) = "cat" );
+
+  end;
+
+  -- find / reverse find
+
+  declare
+    c1 : vectors.cursor( natural, string );
+    c2 : vectors.cursor( natural, string );
+  begin
+    vectors.clear( v );
+    vectors.append( v, "ant" );
+    vectors.append( v, "bear" );
+    vectors.append( v, "cat" );
+    vectors.first( v, c1 );
+    vectors.find( v, "bear", c1, c2 );
+    pragma assert( vectors.element( c2 ) = "bear" );
+    vectors.last( v, c1 );
+    vectors.reverse_find( v, "bear", c1, c2 );
+    pragma assert( vectors.element( c2 ) = "bear" );
+  end;
+
+  -- find / reverse find index
+
+  declare
+    idx1 : natural;
+    idx2 : natural;
+  begin
+    vectors.clear( v );
+    vectors.append( v, "ant" );
+    vectors.append( v, "bear" );
+    vectors.append( v, "cat" );
+    idx1 := vectors.first_index( v );
+    vectors.find_index( v, "bear", idx1, idx2 );
+    pragma assert( idx2 = 1 );
+    idx1 := vectors.last_index( v );
+    vectors.reverse_find_index( v, "bear", idx1, idx2 );
+    pragma assert( idx2 = 1 );
+  end;
+
+  -- assignment and copy
+
+  declare
+    v1 : vectors.vector( natural, string );
+    v2 : vectors.vector( natural, string );
+  begin
+    vectors.clear( v1 );
+    vectors.clear( v2 );
+    vectors.append( v1, "ant" );
+    vectors.append( v1, "bear" );
+    vectors.move( v1, v2 );
+    pragma assert( vectors.length( v1 ) = 0 );
+    pragma assert( vectors.length( v2 ) = 2 );
+  end;
+
+end;
+
 -- constant specifications
 
 declare
