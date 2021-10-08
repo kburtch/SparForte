@@ -34,6 +34,7 @@ with ada.numerics.long_elementary_functions,
     gnat.sha512,
     world,
     scanner,
+    scanner.communications,
     parser_params,
     parser,
     md5;
@@ -43,6 +44,7 @@ use ada.numerics.long_elementary_functions,
     interfaces,
     world,
     scanner,
+    scanner.communications,
     parser_params,
     parser,
     md5;
@@ -164,7 +166,7 @@ procedure ParseNumericsShiftLeft( result : out unbounded_string; kind : out iden
 begin
   kind := uni_numeric_t;
   expect( shift_left_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( shift_left_t, expr_val, expr_type );
   ParseLastNumericParameter( shift_left_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
@@ -188,7 +190,7 @@ procedure ParseNumericsShiftRight( result : out unbounded_string; kind : out ide
 begin
   kind := uni_numeric_t;
   expect( shift_right_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( shift_right_t, expr_val, expr_type );
   ParseLastNumericParameter( shift_right_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
@@ -212,7 +214,7 @@ procedure ParseNumericsRotateLeft( result : out unbounded_string; kind : out ide
 begin
   kind := uni_numeric_t;
   expect( rotate_left_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( rotate_left_t, expr_val, expr_type );
   ParseLastNumericParameter( rotate_left_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
@@ -236,7 +238,7 @@ procedure ParseNumericsRotateRight( result : out unbounded_string; kind : out id
 begin
   kind := uni_numeric_t;
   expect( rotate_right_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( rotate_right_t, expr_val, expr_type );
   ParseLastNumericParameter( rotate_right_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
@@ -260,7 +262,7 @@ procedure ParseNumericsASR( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( shift_right_arith_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( shift_right_arith_t, expr_val, expr_type );
   ParseLastNumericParameter( shift_right_arith_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
@@ -302,7 +304,7 @@ procedure ParseNumericsLog( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( log_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( log_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( log_t, base_val, base_type );
   else
@@ -350,7 +352,7 @@ procedure ParseNumericsSin( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( sin_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( sin_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( sin_t, cycle_val, cycle_type );
   else
@@ -380,7 +382,7 @@ procedure ParseNumericsCos( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( cos_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( cos_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cos_t, cycle_val, cycle_type );
   else
@@ -411,7 +413,7 @@ procedure ParseNumericsTan( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( tan_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( tan_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( tan_t, cycle_val, cycle_type );
   else
@@ -441,7 +443,7 @@ procedure ParseNumericsCot( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( cot_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( cot_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( cot_t, cycle_val, cycle_type );
   else
@@ -471,7 +473,7 @@ procedure ParseNumericsArcSin( result : out unbounded_string; kind : out identif
 begin
   kind := uni_numeric_t;
   expect( arcsin_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( arcsin_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( arcsin_t, cycle_val, cycle_type );
   else
@@ -501,7 +503,7 @@ procedure ParseNumericsArcCos( result : out unbounded_string; kind : out identif
 begin
   kind := uni_numeric_t;
   expect( arccos_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( arccos_t, expr_val, expr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( arccos_t, cycle_val, cycle_type );
   else
@@ -534,7 +536,7 @@ procedure ParseNumericsArcTan( result : out unbounded_string; kind : out identif
 begin
   kind := uni_numeric_t;
   expect( arctan_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( arctan_t, expr_val, expr_type );
   ParseNextNumericParameter( arctan_t, expr2_val, expr2_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( arctan_t, cycle_val, cycle_type );
@@ -569,7 +571,7 @@ procedure ParseNumericsArcCot( result : out unbounded_string; kind : out identif
 begin
   kind := uni_numeric_t;
   expect( arccot_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( arccot_t, expr_val, expr_type );
   ParseNextNumericParameter( arccot_t, expr2_val, expr2_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( arccot_t, cycle_val, cycle_type );
@@ -835,7 +837,7 @@ procedure ParseNumericsRemainder( result : out unbounded_string; kind : out iden
 begin
   kind := uni_numeric_t;
   expect( remainder_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( remainder_t, expr_val, expr_type );
   ParseLastNumericParameter( remainder_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
@@ -893,7 +895,7 @@ procedure ParseNumericsLeadingPart( result : out unbounded_string; kind : out id
 begin
   kind := uni_numeric_t;
   expect( leading_part_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( leading_part_t, expr_val, expr_type );
   ParseLastNumericParameter( leading_part_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
@@ -915,7 +917,7 @@ procedure ParseNumericsCopySign( result : out unbounded_string; kind : out ident
 begin
   kind := uni_numeric_t;
   expect( copy_sign_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( copy_sign_t, expr_val, expr_type );
   ParseLastNumericParameter( copy_sign_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
@@ -940,7 +942,7 @@ procedure ParseNumericsSturges( result : out unbounded_string; kind : out identi
 begin
   kind := uni_numeric_t;
   expect( sturges_t );
-  ParseFirstNumericParameter( lo_val, lo_type );
+  ParseFirstNumericParameter( sturges_t, lo_val, lo_type );
   ParseNextNumericParameter( sturges_t, hi_val, hi_type );
   ParseLastNumericParameter( sturges_t, total_val, total_type );
   begin
@@ -965,7 +967,7 @@ procedure ParseNumericsMax( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( max_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( max_t, expr_val, expr_type );
   ParseLastNumericParameter( max_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
@@ -987,7 +989,7 @@ procedure ParseNumericsMin( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_numeric_t;
   expect( min_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter( min_t, expr_val, expr_type );
   ParseLastNumericParameter( min_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
@@ -1027,7 +1029,7 @@ procedure ParseNumericsScaling( result : out unbounded_string; kind : out identi
 begin
   kind := uni_numeric_t;
   expect( scaling_t );
-  ParseFirstNumericParameter( expr_val, expr_type );
+  ParseFirstNumericParameter(scaling_t,  expr_val, expr_type );
   ParseLastNumericParameter( scaling_t, expr2_val, expr2_type, integer_t );
   begin
      if isExecutingCommand then
@@ -1474,7 +1476,7 @@ procedure ParseNumericsHashOf( result : out unbounded_string; kind : out identif
 begin
   kind := natural_t;
   expect( hash_of_t );
-  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseFirstNumericParameter( hash_of_t, expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( hash_of_t, expr2_val, expr2_type, natural_t );
   declare
     limit : hash_integer;
@@ -1502,7 +1504,7 @@ procedure ParseNumericsSdbmHashOf( result : out unbounded_string; kind : out ide
 begin
   kind := natural_t;
   expect( sdbm_hash_of_t );
-  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseFirstNumericParameter( sdbm_hash_of_t, expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( sdbm_hash_of_t, expr2_val, expr2_type, natural_t );
   declare
     limit : hash_integer;
@@ -1531,7 +1533,7 @@ procedure ParseNumericsFnvHashOf( result : out unbounded_string; kind : out iden
 begin
   kind := natural_t;
   expect( fnv_hash_of_t );
-  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseFirstNumericParameter( fnv_hash_of_t, expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( fnv_hash_of_t, expr2_val, expr2_type, natural_t );
   declare
     hash   : hash_integer := 16#811c9dc5#;
@@ -1565,7 +1567,7 @@ procedure ParseNumericsMurmurHashOf( result : out unbounded_string; kind : out i
 begin
   kind := natural_t;
   expect( murmur_hash_of_t );
-  ParseFirstNumericParameter( expr1_val, expr1_type, string_t );
+  ParseFirstNumericParameter( murmur_hash_of_t, expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( murmur_hash_of_t, expr2_val, expr2_type, natural_t );
   declare
     seed : constant hash_integer := 16#811c9dc5#;

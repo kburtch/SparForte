@@ -34,6 +34,7 @@ with ada.io_exceptions,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      parser,
      parser_params,
      parser_db;
@@ -51,6 +52,7 @@ use  ada.io_exceptions,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      parser,
      parser_params,
      parser_db;
@@ -143,7 +145,7 @@ begin
      err( "only one database connection may be open" );
      return;
   end if;
-  ParseFirstStringParameter( dbnameExpr, dbnameType, string_t );
+  ParseFirstStringParameter( mysql_connect_t, dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysql_connect_t, userExpr, userType, string_t );
      hasUser := true;
@@ -327,7 +329,7 @@ procedure ParseMySQLPrepare is
   hasAfter  : boolean := false;
 begin
   expect( mysql_prepare_t );
-  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  ParseFirstStringParameter( mysql_prepare_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysql_prepare_t, afterExpr, afterType, string_t );
      hasAfter := true;
@@ -363,7 +365,7 @@ procedure ParseMySQLAppend is
   hasAfter  : boolean := false;
 begin
   expect( mysql_append_t );
-  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  ParseFirstStringParameter( mysql_append_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysql_append_t, afterExpr, afterType, string_t );
      hasAfter := true;
@@ -423,7 +425,7 @@ procedure ParseMySQLAppendQuoted is
   hasAfter  : boolean := false;
 begin
   expect( mysql_append_quoted_t );
-  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  ParseFirstStringParameter( mysql_append_quoted_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysql_append_quoted_t, afterExpr, afterType, string_t );
      hasAfter := true;
@@ -683,7 +685,7 @@ procedure ParseMySQLSetRollbackOnFinalize is
   rollType : identifier;
 begin
   expect( mysql_set_rollback_on_finalize_t );
-  ParseSingleEnumParameter( rollExpr, rollType, boolean_t );
+  ParseSingleEnumParameter( mysql_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
@@ -735,7 +737,7 @@ procedure ParseMySQLOpenDBTrace is
   hasMode  : boolean := false;
 begin
   expect( mysql_open_db_trace_t );
-  ParseFirstStringParameter( fnameExpr, fnameType, string_t );
+  ParseFirstStringParameter( mysql_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysql_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
@@ -797,7 +799,7 @@ procedure ParseMySQLSetTrace is
   traceType : identifier;
 begin
   expect( mysql_set_trace_t );
-  ParseSingleEnumParameter( traceExpr, traceType, boolean_t );
+  ParseSingleEnumParameter( mysql_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
@@ -869,7 +871,7 @@ procedure ParseMySQLRaiseExceptions is
 begin
   expect( mysql_raise_exceptions_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseSingleEnumParameter( raiseExpr, raiseType, boolean_t );
+     ParseSingleEnumParameter( mysql_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
   end if;

@@ -37,6 +37,7 @@ with Interfaces.C,
     jobs,
     signal_flags,
     compiler,
+    scanner.communications,
     scanner_res,
     parser.decl.shell, -- sybling package
     parser_aux,
@@ -58,6 +59,7 @@ use Interfaces.C,
     jobs,
     signal_flags,
     compiler,
+    scanner.communications,
     scanner_res,
     parser.decl.shell, -- sybling package
     parser_aux,
@@ -1820,16 +1822,16 @@ begin
      end if;
   end if;
   expect( strlit_t );
-  expectSemicolon;
+  expectStatementSemicolon( contextNotes => "in with separate" );
   -- That was the end of the with separate statement.  However, remember that
   -- the subscript is embedded in the main script so we have to read the
   -- subscript header.  Only pragmas allowed before separate keyword.
   while token = pragma_t loop
       ParsePragma;
-      expectSemicolon;
+      expectStatementSemicolon( context => pragma_t );
   end loop;
   expect( separate_t );
-  expectSemicolon;
+  expectStatementSemicolon( context => separate_t );
 end ParseWith;
 
 
@@ -1847,13 +1849,13 @@ begin
   while token /= begin_t and token /= end_t and token /= eof_t loop
      if token = pragma_t then
         ParsePragma;
-        expectSemicolon;
+        expectStatementSemicolon( context => pragma_t );
      elsif token = type_t then
         ParseType;
-        expectSemicolon;
+        expectStatementSemicolon( context => type_t );
      elsif token = subtype_t then
         ParseSubtype;
-        expectSemicolon;
+        expectStatementSemicolon( context => subtype_t );
      elsif Token = with_t then
         -- When parsing a procedure declaration, we never want to run it.
         save_syntax_check := syntax_check;
@@ -1875,7 +1877,7 @@ begin
      else
         ParseVariableIdentifier( var_id );
         ParseDeclarationPart( var_id, anon_arrays => true, exceptions => true ); -- var id may change...
-        expectSemicolon;
+        expectDeclarationSemicolon( context => var_id );
      end if;
   end loop;
 end ParseDeclarations;

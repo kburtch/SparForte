@@ -29,6 +29,7 @@ with
     pegasoft.user_io,
     world,
     scanner,
+    scanner.communications,
     scanner_res,
     --string_util,
     parser_aux,
@@ -41,6 +42,7 @@ use
     world,
     pegasoft.user_io,
     scanner,
+    scanner.communications,
     scanner_res,
     --string_util,
     parser_aux,
@@ -66,9 +68,9 @@ begin
   CheckServerIsInitialized( serverId );
 end ParseSingleServerParameter;
 
-procedure ParseFirstServerParameter( serverId : out identifier ) is
+procedure ParseFirstServerParameter( subprogram : identifier; serverId : out identifier ) is
 begin
-  ParseFirstInOutParameter( serverId, tinyserve_socket_server_t );
+  ParseFirstInOutParameter( subprogram, serverId, tinyserve_socket_server_t );
   CheckServerIsInitialized( serverId );
 end ParseFirstServerParameter;
 
@@ -89,7 +91,7 @@ procedure ParseTSNewSocketServer is
   genKindId : identifier;
 begin
   expect( tinyserve_new_socket_server_t );
-  ParseFirstOutParameter( ref, tinyserve_socket_server_t );
+  ParseFirstOutParameter( tinyserve_new_socket_server_t, ref, tinyserve_socket_server_t );
   baseTypesOK( ref.kind, tinyserve_socket_server_t );
   expectParameterComma;
   ParseIdentifier( genKindId );
@@ -132,7 +134,7 @@ begin
         optional_yellow( "restricted shell" ) );
   else
      expect( tinyserve_startup_t );
-     ParseFirstServerParameter( serverId );
+     ParseFirstServerParameter( tinyserve_startup_t, serverId );
      ParseNextStringParameter( tinyserve_startup_t, hostExpr, hostKind, string_t );
      ParseNextNumericParameter( tinyserve_startup_t, portExpr, portKind, integer_t );
      ParseNextNumericParameter( tinyserve_startup_t, recvExpr, recvKind, integer_t );
@@ -186,7 +188,7 @@ procedure ParseTSManageConnections is
   client     : aClientID;
 begin
   expect( tinyserve_manage_connections_t );
-  ParseFirstServerParameter( serverId );
+  ParseFirstServerParameter( tinyserve_manage_connections_t, serverId );
   ParseLastOutParameter( tinyserve_manage_connections_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
@@ -203,7 +205,7 @@ procedure ParseTSGetNextClient is
   client     : aClientID := 0;
 begin
   expect( tinyserve_get_next_client_t );
-  ParseFirstServerParameter( serverId );
+  ParseFirstServerParameter( tinyserve_get_next_client_t, serverId );
   ParseLastOutParameter( tinyserve_get_next_client_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
@@ -222,7 +224,7 @@ procedure ParseTSGetListenerSocket is
   client     : aClientID;
 begin
   expect( tinyserve_get_listener_socket_t );
-  ParseFirstServerParameter( serverId );
+  ParseFirstServerParameter( tinyserve_get_listener_socket_t, serverId );
   ParseLastOutParameter( tinyserve_get_listener_socket_t, clientRef, tinyserve_client_id_t );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
@@ -241,7 +243,7 @@ procedure ParseTSCountClients( result : out unbounded_string; kind : out identif
 begin
   kind := integer_t;
   expect( tinyserve_count_clients_t );
-  ParseFirstServerParameter( serverId );
+  ParseFirstServerParameter( tinyserve_count_clients_t, serverId );
   if isExecutingCommand then
      findServer( identifiers( serverId ).value.all, server );
      if server /= null then

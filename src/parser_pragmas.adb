@@ -37,6 +37,7 @@ with  ada.text_io,
     pegasoft.script_io,
     compiler,
     scanner,
+    scanner.communications,
     signal_flags,
     jobs, -- for clearCommandHash
     parser.decl.as,
@@ -56,6 +57,7 @@ use ada.text_io,
     pegasoft.strings,
     compiler,
     scanner,
+    scanner.communications,
     signal_flags,
     jobs,
     parser,
@@ -1381,7 +1383,8 @@ begin
      if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value.all /= "(") then
         pragmaKind := debug_on;
      else
-        expect( symbol_t, "(" );
+        expectPragmaParameterOpen( pragmaKind'img );
+        --expect( symbol_t, "(" );
      end if;
   end if;
 
@@ -1876,7 +1879,8 @@ begin
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
      noCommandHash and pragmaKind /= debug_on and pragmaKind /= peek and
      pragmaKind /= gcc_errors and pragmaKind /= colour_messages then
-     expect( symbol_t, ")" );
+     expectPragmaParameterClose( pragmaKind'img );
+     --expect( symbol_t, ")" );
   end if;
 
   -- Execute the pragma

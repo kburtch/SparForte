@@ -11,6 +11,8 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 -------------------------------
 
+- in parser-decl-as, an include file that starts with a blank line will
+  cause the compiler to raise an exception.
 - ada vectors
   - complete
   - tests - subtypes, arrays (out param), universals
@@ -33,7 +35,6 @@ Priority Issues (Fix These First)
   - creating cursors as out parameter on hashed_maps.find
   - check handling of universal types and hashed_maps
   - should insert be converted to insert and mark
-  - shouldn't assume keys are strings
 - arrays of containers
   - array elements of vectors / doubly / hashed_maps and their cursors and
     handling in the various package subprograms
@@ -49,6 +50,8 @@ Priority Issues (Fix These First)
 - record field identifiers erros in a record definition are reported as
   "shell words" for string or numeric literals but should not be.  record
   type declarations have nothing to do will the Bourne shell features.
+- check on use of gen parameter functions vs. numeric in dht package
+- in out parameters for built-in subprograms should use references
 - check for TODO's
 
 - ada95 corrective recommendations

@@ -27,11 +27,13 @@ with gnat.crc32,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser,
     parser_params;
 use ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser,
     parser_params;
 

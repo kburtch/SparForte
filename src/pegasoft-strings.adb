@@ -100,6 +100,7 @@ begin
   return to_string( escapeSpacesWithBackslashes( to_unbounded_string( original ) ) );
 end escapeSpacesWithBackslashes;
 
+
 ------------------------------------------------------------------------------
 --  UNESCAPE WITH BACKSLASHES
 --
@@ -204,8 +205,14 @@ end TypoOf;
 -- Basic String Testing
 ------------------------------------------------------------------------------
 
-function Is_Control( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS CONTROL
+--
 -- true if string is completely control characters
+------------------------------------------------------------------------------
+
+function Is_Control( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -217,8 +224,14 @@ begin
   return flag;
 end Is_Control;
 
-function Is_Graphic( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS GRAPHIC
+--
 -- true if string is completely printable characters
+------------------------------------------------------------------------------
+
+function Is_Graphic( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -230,8 +243,14 @@ begin
   return flag;
 end Is_Graphic;
 
-function Is_Letter( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS LETTER
+--
 -- true if string is completely letter characters
+------------------------------------------------------------------------------
+
+function Is_Letter( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -243,8 +262,14 @@ begin
   return flag;
 end Is_Letter;
 
-function Is_Lower( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS LOWER
+--
 -- true if string is completely lower-case characters
+------------------------------------------------------------------------------
+
+function Is_Lower( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -256,8 +281,14 @@ begin
   return flag;
 end Is_Lower;
 
-function Is_Upper( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS UPPER
+--
 -- true if string is completely Upper-case characters
+------------------------------------------------------------------------------
+
+function Is_Upper( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -269,8 +300,14 @@ begin
   return flag;
 end Is_Upper;
 
-function Is_Basic( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS BASIC
+--
 -- true if string is completely basic characters
+------------------------------------------------------------------------------
+
+function Is_Basic( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -282,8 +319,14 @@ begin
   return flag;
 end Is_Basic;
 
-function Is_Digit( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS DIGIT
+--
 -- true if string is completely digit characters
+------------------------------------------------------------------------------
+
+function Is_Digit( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -295,8 +338,14 @@ begin
   return flag;
 end Is_Digit;
 
-function Is_Hexadecimal_Digit( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS HEXADECIMAL DIGIT
+--
 -- true if string is completely hexadecimal digit characters
+------------------------------------------------------------------------------
+
+function Is_Hexadecimal_Digit( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -308,8 +357,14 @@ begin
   return flag;
 end Is_Hexadecimal_Digit;
 
-function Is_Alphanumeric( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS ALPHANUMERIC
+--
 -- true if string is completely hexadecimal digit characters
+------------------------------------------------------------------------------
+
+function Is_Alphanumeric( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -321,8 +376,14 @@ begin
   return flag;
 end Is_Alphanumeric;
 
+
+------------------------------------------------------------------------------
+--  IS SPECIAL
+--
+-- true if string is completely special symbol characters
+------------------------------------------------------------------------------
+
 function Is_Special( s : unbounded_string ) return boolean is
--- true if string is completely hexadecimal digit characters
   flag : boolean := true;
 begin
   for i in 1..length( s ) loop
@@ -334,8 +395,14 @@ begin
   return flag;
 end Is_Special;
 
-function Is_Date( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS DATE
+--
 -- true if string looks like a slashed date
+------------------------------------------------------------------------------
+
+function Is_Date( s : unbounded_string ) return boolean is
   flag : boolean := true;
 begin
   if length( s ) = 8 then
@@ -368,8 +435,14 @@ begin
   return flag;
 end Is_Date;
 
-function Is_Fixed( s : unbounded_string ) return boolean is
+
+------------------------------------------------------------------------------
+--  IS FIXED
+--
 -- true if string is a fixed point number
+------------------------------------------------------------------------------
+
+function Is_Fixed( s : unbounded_string ) return boolean is
   flag : boolean := true;
   dotcnt : natural := 0;
   ch   : character;
@@ -404,6 +477,13 @@ end Is_Fixed;
 -- Basic String Conversions
 ------------------------------------------------------------------------------
 
+
+------------------------------------------------------------------------------
+--  TO LOWER
+--
+-- Convert to lower-case
+------------------------------------------------------------------------------
+
 function ToLower( s : unbounded_string ) return unbounded_string is
   ch : character;
   newstr : unbounded_string;
@@ -419,6 +499,13 @@ begin
   return newstr;
 end ToLower;
 
+
+------------------------------------------------------------------------------
+--  TO UPPER
+--
+-- Convert to upper-case
+------------------------------------------------------------------------------
+
 function ToUpper( s : unbounded_string ) return unbounded_string is
   ch : character;
   newstr : unbounded_string;
@@ -433,6 +520,13 @@ begin
   end loop;
   return newstr;
 end ToUpper;
+
+
+------------------------------------------------------------------------------
+--  TO PROPER
+--
+-- Convert to proper-case (title case)
+------------------------------------------------------------------------------
 
 function ToProper( s : unbounded_string ) return unbounded_string is
   ch        : character;
@@ -459,6 +553,13 @@ begin
   return newstr;
 end ToProper;
 
+
+------------------------------------------------------------------------------
+--  TO BASIC
+--
+-- Convert to basic characters
+------------------------------------------------------------------------------
+
 function ToBasic( s : unbounded_string ) return unbounded_string is
   ch : character;
   newstr : unbounded_string;
@@ -471,9 +572,15 @@ begin
   return newstr;
 end ToBasic;
 
-function ToEscaped( s : unbounded_string ) return unbounded_string is
+
+------------------------------------------------------------------------------
+--  TO ESCAPED
+--
 -- Create a printable string by marking unprintable characters with
 -- "[# ascii-code]"
+------------------------------------------------------------------------------
+
+function ToEscaped( s : unbounded_string ) return unbounded_string is
   ch : character;
   newstr : unbounded_string;
 begin
@@ -489,8 +596,13 @@ begin
 end ToEscaped;
 
 
-function ToJSONEscaped( s : unbounded_string ) return unbounded_string is
+------------------------------------------------------------------------------
+--  TO JSON ESCAPED
+--
 -- convert special characters in string to JSON escape codes
+------------------------------------------------------------------------------
+
+function ToJSONEscaped( s : unbounded_string ) return unbounded_string is
   item : unbounded_string;
   ch : character;
 begin
@@ -519,8 +631,13 @@ begin
   return item;
 end ToJSONEscaped;
 
-function ToJSONUnescaped( s : unbounded_string ) return unbounded_string is
+------------------------------------------------------------------------------
+--  TO JSON UNESCAPED
+--
 -- convert JSON escape codes in string back to actual characters
+------------------------------------------------------------------------------
+
+function ToJSONUnescaped( s : unbounded_string ) return unbounded_string is
   item : unbounded_string;
   ch   : character;
   k    : natural := 1;
@@ -558,7 +675,8 @@ begin
 end ToJSONUnescaped;
 
 
--- A OR AN
+------------------------------------------------------------------------------
+--  A OR AN
 --
 -- There are no strict rules, as "a' or "an" depend on the sound of the
 -- following word more than the spelling.  Even then, there
@@ -586,6 +704,13 @@ begin
   return "a " & s;
 end AorAN;
 
+
+------------------------------------------------------------------------------
+--  SPLIT
+--
+-- Split a string around a space, no longer than width
+------------------------------------------------------------------------------
+
 procedure Split( s : unbounded_string; left, right : out unbounded_string;
 width : natural ) is
   i    : natural := width;
@@ -610,8 +735,14 @@ begin
   right := to_unbounded_string( slice( s, i+1, length( s ) ) );
 end Split;
 
-function Levenshtein_Distance (S, T : String) return Natural is
+------------------------------------------------------------------------------
+--  LEVENSHTEIN DISTANE
+--
+-- A measure of the similarity between two strings.
 -- Taken from Rosetta Code website, May 28/2021.
+------------------------------------------------------------------------------
+
+function Levenshtein_Distance (S, T : String) return Natural is
    D : array (0 .. S'Length, 0 .. T'Length) of Natural;
 begin
    for I in D'Range (1) loop
@@ -635,9 +766,16 @@ begin
    return D (S'Length, T'Length);
 end Levenshtein_Distance;
 
-function Soundex (instr : String) return String is
+
+------------------------------------------------------------------------------
+--  SOUNDEX
+--
+-- A representation of the English sound of a string.
 -- Taken from Rosetta Code website, May 29/2021.
 -- Modified for bugs.
+------------------------------------------------------------------------------
+
+function Soundex (instr : String) return String is
    str  : String := To_Upper(instr);
    output : String := "0000";
    spos : Integer := str'First+1;  opos : Positive := 2;
@@ -671,8 +809,14 @@ begin
    return output;
 end Soundex;
 
+
+------------------------------------------------------------------------------
+--  WORD COUNT
+--
+-- count the number of "words"
+------------------------------------------------------------------------------
+
 function WordCount(instr : unbounded_string) return natural is
-  -- count the number of "words"
   str    : constant unbounded_string := ToBasic( instr );
   inWord : boolean := false;
   wcount : natural := 0;
@@ -693,8 +837,14 @@ begin
   return wcount;
 end WordCount;
 
-function ToCSV( s : unbounded_string ) return unbounded_string is
+
+------------------------------------------------------------------------------
+--  TO CSV
+--
 -- convert s to CSV.  For our purposes, only all numbers will not be quoted.
+------------------------------------------------------------------------------
+
+function ToCSV( s : unbounded_string ) return unbounded_string is
   csv : unbounded_string;
   needsQuotes : boolean := false;
   ch : character;
@@ -751,9 +901,15 @@ end charIntToResult;
 -- String Field Handling
 ------------------------------------------------------------------------------
 
+
+------------------------------------------------------------------------------
+--  STRING FIELD
+--
+-- return the fth field delimited by delimiter
+------------------------------------------------------------------------------
+
 function stringField( s : unbounded_string; delimiter : character; f : natural )
 return unbounded_string is
--- return the fth field delimited by delimiter
   firstPos    : natural := 1;
   delimCnt    : natural := 0;
   returnStr   : unbounded_string;
@@ -782,12 +938,18 @@ begin
   end if;
 end stringField;
 
-function stringCSVField( s1 : unbounded_string; delimiter : character;
-f : natural; allowSingleQuotes : boolean := false ) return unbounded_string is
+
+------------------------------------------------------------------------------
+--  STRING FIELD
+--
 -- return the fth field delimited by delimiter (typically a comma) but
 -- allow the delimiter to be escaped by double quote marks
 -- if allowSingleQuotes is true, allow the field to be enclosed by single
 -- quotes as well as double quotes.
+------------------------------------------------------------------------------
+
+function stringCSVField( s1 : unbounded_string; delimiter : character;
+f : natural; allowSingleQuotes : boolean := false ) return unbounded_string is
   firstPos    : natural := 1;
   delimCnt    : natural := 0;
   inQuotes    : boolean := false;
@@ -853,6 +1015,13 @@ begin
   end if;
 end stringCSVField;
 
+
+------------------------------------------------------------------------------
+--  REPLACE FIELD
+--
+-- replace the fth field delimited by delimiter (typically a comma)
+------------------------------------------------------------------------------
+
 procedure replaceField( s : in out unbounded_string; delimiter : character;
 f : natural; field : string ) is
   firstPos    : natural := 1;
@@ -884,6 +1053,13 @@ begin
   end;
   Insert( s, firstPos, field );
 end replaceField;
+
+
+------------------------------------------------------------------------------
+--  REPLACE CSV FIELD
+--
+-- replace the fth field delimited by delimiter (typically a comma)
+------------------------------------------------------------------------------
 
 procedure replaceCSVField( s : in out unbounded_string; delimiter : character;
 f : natural; field : string; allowSingleQuotes : boolean:= false ) is
@@ -940,11 +1116,17 @@ begin
   Insert( s, firstPos, attachQuotes( to_unbounded_string( field ) ) );
 end replaceCSVField;
 
-function stringLookup( s, t : unbounded_string; delimiter : character )
- return unbounded_string is
+
+------------------------------------------------------------------------------
+--  STRING LOOKUP
+--
 -- Treat s (source) as a series of field pairs.  Return the right-hand pair
 -- member associated with t (target), or a null string if none exists.  If
 -- source or target is a null string, a null string is also returned.
+------------------------------------------------------------------------------
+
+function stringLookup( s, t : unbounded_string; delimiter : character )
+ return unbounded_string is
   left      : unbounded_string;
   returnStr : unbounded_string;
   firstPos  : natural;
@@ -984,6 +1166,13 @@ begin
   end loop;
   return null_unbounded_string;
 end stringLookup;
+
+
+------------------------------------------------------------------------------
+--  REPLACE ALL
+--
+-- Replace all occurrences of a substring.
+------------------------------------------------------------------------------
 
 function replaceAll( str_val, needle_val, newstr_val : unbounded_string; sensitive : boolean ) return unbounded_string is
   result : unbounded_string;
@@ -1032,7 +1221,7 @@ end replaceAll;
 
 
 ------------------------------------------------------------------------------
--- GET DATE STRING
+--  GET DATE STRING
 --
 -- Convert the calendar time to a human readable string in the format
 -- mm/dd hh:mm:ss
@@ -1089,8 +1278,15 @@ begin
    return timeStr;
 end getDateString;
 
+
 ------------------------------------------------------------------------------
 -- Operating System String Handling
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+--  DIRNAME
+--
 ------------------------------------------------------------------------------
 
 function dirname( s : unbounded_string ) return unbounded_string is
@@ -1111,6 +1307,12 @@ begin
   return to_unbounded_string( "." );
 end dirname;
 
+
+------------------------------------------------------------------------------
+--  BASENAME
+--
+------------------------------------------------------------------------------
+
 function basename( s : unbounded_string ) return unbounded_string is
 begin
   if length( s ) = 0 then
@@ -1128,6 +1330,13 @@ begin
   -- no directory
   return s;
 end basename;
+
+
+------------------------------------------------------------------------------
+--  TO SECURE DATA
+--
+-- If in mantenance mode, return "secured data" instead of the string.
+------------------------------------------------------------------------------
 
 function toSecureData( s : string ) return string is
 -- return a string if not running in maintenance mode

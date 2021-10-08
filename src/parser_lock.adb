@@ -27,11 +27,13 @@ with gnat.lock_files,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser;
 use gnat.lock_files,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser;
 
 package body parser_lock is

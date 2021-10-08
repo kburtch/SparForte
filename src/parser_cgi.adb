@@ -27,10 +27,12 @@ with ada.strings.unbounded,
     cgi,
     world,
     scanner,
+    scanner.communications,
     parser;
 use ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser;
 
 package body parser_cgi is

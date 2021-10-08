@@ -27,12 +27,14 @@ with ada.strings.unbounded,
      world,
      pegasoft.strings,
      scanner,
+     scanner.communications,
      parser,
      parser_params;
 use  ada.strings.unbounded,
      world,
      pegasoft.strings,
      scanner,
+     scanner.communications,
      parser,
      parser_params;
 

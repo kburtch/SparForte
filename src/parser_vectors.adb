@@ -30,7 +30,7 @@ with
     pegasoft.user_io,
     pegasoft.vectors,
     world,
-    scanner,
+    scanner.communications,
     scanner_res,
     scanner_restypes,
     parser,
@@ -42,6 +42,7 @@ use
     pegasoft.vectors,
     world,
     scanner,
+    scanner.communications,
     scanner_res,
     scanner_restypes,
     parser,
@@ -64,7 +65,7 @@ vectors_length_t        : identifier;
 vectors_set_length_t    : identifier;
 vectors_is_empty_t      : identifier;
 --vectors_append_t        : identifier;
-vectors_append_elements_t : identifier;
+vectors_append_t : identifier;
 vectors_prepend_t       : identifier;
 vectors_first_index_t   : identifier;
 vectors_last_index_t    : identifier;
@@ -172,10 +173,10 @@ end err_cursor_mismatch;
 -- If necessary, declare a out cursor parameter.  Attach the resource.
 ------------------------------------------------------------------------------
 
-procedure ParseNextOutVectorCursor( vectorId : identifier; cursRef : in out reference ) is
+procedure ParseNextOutVectorCursor( subprogram : identifier; vectorId : identifier; cursRef : in out reference ) is
   resId : resHandleId;
 begin
-  expect( symbol_t, "," );
+  expectParameterComma( subprogram );
   if identifiers( token ).kind = new_t then
      ParseOutParameter( cursRef, vectors_cursor_t );
 
@@ -210,10 +211,10 @@ end ParseNextOutVectorCursor;
 -- If necessary, declare a out cursor parameter.  Attach the resource.
 ------------------------------------------------------------------------------
 
-procedure ParseLastOutVectorCursor( vectorId : identifier; cursRef : in out reference ) is
+procedure ParseLastOutVectorCursor( subprogram : identifier; vectorId : identifier; cursRef : in out reference ) is
   resId : resHandleId;
 begin
-  expect( symbol_t, "," );
+  expectParameterComma( subprogram );
   if identifiers( token ).kind = new_t then
      ParseOutParameter( cursRef, vectors_cursor_t );
 
@@ -239,7 +240,7 @@ begin
         genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind2 );
      end if;
   end if;
-  expect( symbol_t, ")" );
+  expectParameterClose( subprogram );
 end ParseLastOutVectorCursor;
 
 
@@ -382,126 +383,6 @@ end insertTypesOk;
 ------------------------------------------------------------------------------
 
 
---procedure ParseVectorsNewVector is
---  -- Syntax: vectors.new_vector( l, idx_type, elem_type );
---  -- Ada:    N/A
---  -- With arrays, genKind is the index type and the element type is from
---  -- the array type.  However, vectors do not have a base kind to refer
---  -- to to get the element type.  We will use genKind2 to hold the index
---  -- type.
---  resId : resHandleId;
---  ref : reference;
---  genKindId : identifier;
---  genKind2Id : identifier;
---  baseIndexKind : identifier;
---
---     function getIntegerBaseType( originalKind : identifier ) return identifier is
---        id : identifier := originalKind;
---     begin
---        if getUniType( id ) = uni_numeric_t then
---        -- dereference types to get the root type
---        -- getBaseType only dereferences subtypes
---           loop
---              exit when id = positive_t or
---                   id = natural_t or
---                   identifiers( id ).kind = uni_numeric_t;
---              id := identifiers( id ).kind;
---           end loop;
---        end if;
---        return id;
---     end getIntegerBaseType;
-
-     -- true
-
-
-     -- TODO: put in scanner
-     -- TODO: this does not handle derived types, only subtypes
-     -- All integer types will be treated as a standard integer
-     -- Integer - starting at -2147483648
-     -- Natural - 0
-     -- Positive - 1
-     -- Enumerated (including boolean)
-     -- The index must be a discrete integer or an enumerated type
---     function isDiscreteIntegerOrEnum( id : identifier ) return boolean is
---        indexBaseKind : identifier;
---        isDiscrete : boolean := false;
---     begin
---        indexBaseKind := getIntegerBaseType( genKind2Id );
---        if identifiers( genKind2Id ).list then
---           err( "index type should be a scalar type" );
---        elsif identifiers( getBaseType( genKind2Id ) ).kind = root_record_t then
---           err( "index type should be a scalar type" );
---        -- descrete type or character
---        elsif genKind2Id = natural_t or
---           genKind2Id = positive_t or
---           genKind2Id = natural_t or
---           genKind2Id = integer_t or
---           genKind2Id = short_short_integer_t or
---           genKind2Id = short_integer_t or
---           genKind2Id = long_integer_t or
---           genKind2Id = long_long_integer_t then
---           isDiscrete := true;
---        -- derived type of descrete type or character
---        elsif indexBaseKind = natural_t or
---           indexBaseKind = positive_t or
---           indexBaseKind = natural_t or
---           indexBaseKind = integer_t or
---           indexBaseKind = short_short_integer_t or
---           indexBaseKind = short_integer_t or
---           indexBaseKind = long_integer_t or
---           indexBaseKind = long_long_integer_t then
---           isDiscrete := true;
---        elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
---           isDiscrete := true;
---        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_string_t then
---           err( "index type should not be a string type (except character)" );
---        elsif getUniType( identifiers( genKind2Id ).kind ) = uni_numeric_t then
---           err( "index type should be a discrete numeric type" );
---        end if;
---        return isDiscrete;
---     end isDiscreteIntegerOrEnum;
---
---begin
---  expect( vectors_new_vector_t );
---  ParseFirstOutParameter( ref, vectors_vector_t );
---  baseTypesOK( ref.kind, vectors_vector_t );
---  expect( symbol_t, "," );
---  ParseIdentifier( genKind2Id );
---  if class_ok( genKind2Id, typeClass, subClass ) then
---     -- Index must be natural / natural subtype or enumeraged
---     baseIndexKind := getIntegerBaseType( genKind2Id );
---     if genKind2Id = natural_t or baseIndexKind = natural_t then
---        null;
---     elsif getUniType( identifiers( genKind2Id ).kind ) = root_enumerated_t then
---        null;
---     elsif getUniType( genKind2Id ) = uni_string_t then
---        err( "index type should not be a string type (except character)" );
---     elsif getUniType( genKind2Id ) = uni_numeric_t then
---put_line( to_string( identifiers( baseIndexKind ).name ) );
---        err( "index type  should be a discrete numeric type" );
---     end if;
---  end if;
---  identifiers( ref.id ).genKind2 := genKind2Id;
---  expect( symbol_t, "," );
---  ParseIdentifier( genKindId );
---  if class_ok( genKindId, typeClass, subClass ) then
---     if identifiers( genKindId ).list then
---        err( "element type should be a scalar type" );
---     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
---        err( "element type should be a scalar type" );
---     end if;
---  end if;
---  identifiers( ref.id ).genKind := genKindId;
---  expect( symbol_t, ")" );
---  if isExecutingCommand then
---     -- TODO: don't reinitialize if already initialized
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, vector_string_list, getIdentifierBlock( ref.id ) );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---  end if;
---end ParseVectorsNewVector;
-
-
 ------------------------------------------------------------------------------
 --  CLEAR
 --
@@ -540,18 +421,9 @@ procedure ParseVectorsToVector is
   cntType    : identifier;
 begin
   expect( vectors_to_vector_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  expect( symbol_t, "," );
-  ParseExpression( itemExpr, itemType );
-  if baseTypesOK( itemType, identifiers( vectorId ).genKind2 ) then
-     null;
-  end if;
-  expect( symbol_t, "," );
-  ParseExpression( cntExpr, cntType );
-  if baseTypesOK( cntType, containers_count_type_t ) then
-     null;
-  end if;
-  expect( symbol_t, ")" );
+  ParseFirstInOutInstantiatedParameter( vectors_to_vector_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_to_vector_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseLastNumericParameter( vectors_to_vector_t, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -578,7 +450,6 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
--- TODO: leading space
        result := to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Capacity( theVector.vslVector ) ) );
      end;
   end if;
@@ -599,13 +470,8 @@ procedure ParseVectorsReserveCapacity is
   cntType    : identifier;
 begin
   expect( vectors_reserve_capacity_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  expect( symbol_t, "," );
-  ParseExpression( cntExpr, cntType );
-  if baseTypesOK( cntType, containers_count_type_t ) then
-     null;
-  end if;
-  expect( symbol_t, ")" );
+  ParseFirstInOutInstantiatedParameter( vectors_reserve_capacity_t, vectorId, vectors_vector_t );
+  ParseLastNumericParameter( vectors_reserve_capacity_t, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      declare
        cnt : ada.containers.count_type;
@@ -614,7 +480,8 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
-       err( "capacity count is the wrong type" ); -- TODO: say the type
+       -- e.g. user gave "5.5" for what is an integer type
+       err( "capacity count is not compatible with " & optional_yellow( "containers.count_type" ) );
      when storage_error =>
        err_storage;
      end;
@@ -639,7 +506,6 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
--- TODO: leading space
        result := to_unbounded_string( ada.containers.count_type'image( Vector_String_Lists.Length( theVector.vslVector ) ) );
      end;
   end if;
@@ -660,13 +526,8 @@ procedure ParseVectorsSetLength is
   cntType    : identifier;
 begin
   expect( vectors_set_length_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  expect( symbol_t, "," );
-  ParseExpression( cntExpr, cntType );
-  if baseTypesOK( cntType, containers_count_type_t ) then
-     null;
-  end if;
-  expect( symbol_t, ")" );
+  ParseFirstInOutInstantiatedParameter( vectors_set_length_t, vectorId, vectors_vector_t );
+  ParseLastNumericParameter( vectors_reserve_capacity_t, cntExpr, cntType, containers_count_type_t );
   if isExecutingCommand then
      declare
        cnt : ada.containers.count_type;
@@ -675,7 +536,8 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
-       err( "length count is the wrong type" ); -- TODO: say the type
+       -- e.g. user gave "5.5" for what is an integer type
+       err( "capacity count is not compatible with " & optional_yellow( "containers.count_type" ) );
      when storage_error =>
        err_storage;
      end;
@@ -700,7 +562,6 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
--- TODO: leading space
        result := to_bush_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) );
      end;
   end if;
@@ -710,11 +571,11 @@ end ParseVectorsIsEmpty;
 ------------------------------------------------------------------------------
 --  APPEND
 --
--- Syntax: vectors.append_elements( v, s, [c] );
+-- Syntax: vectors.append( v, s, [c] );
 -- Ada:    vectors.append( v, s, [c] );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsAppendElements is
+procedure ParseVectorsAppend is
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -723,14 +584,14 @@ procedure ParseVectorsAppendElements is
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
-  expect( vectors_append_elements_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  expect( vectors_append_t );
+  ParseFirstInOutInstantiatedParameter( vectors_append_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_append_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( vectors_append_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
-     expect( symbol_t, ")" );
+     expectParameterClose( vectors_append_t );
   end if;
   if isExecutingCommand then
      declare
@@ -749,7 +610,7 @@ begin
        err_storage;
      end;
   end if;
-end ParseVectorsAppendElements;
+end ParseVectorsAppend;
 
 
 ------------------------------------------------------------------------------
@@ -769,13 +630,13 @@ procedure ParseVectorsPrepend is
   hasCnt    : boolean := false;
 begin
   expect( vectors_prepend_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_prepend_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( vectors_prepend_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
-     expect( symbol_t, ")" );
+     expectParameterClose( vectors_prepend_t );
   end if;
   if isExecutingCommand then
      declare
@@ -815,7 +676,6 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
--- TODO: leading space
        userIdx := Vector_String_Lists.First_Index( theVector.vslVector );
        result := to_unbounded_string( integer'image( toUserVectorIndex( vectorId, userIdx ) ) );
      end;
@@ -841,7 +701,6 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
--- TODO: leading space
 --put_line( "last_index: vector = " & to_string( identifiers( vectorId ).name ) );
        userIdx := Vector_String_Lists.Last_Index( theVector.vslVector );
 -- put_line( "last_index: userIdx = " & userIdx'img );
@@ -874,16 +733,14 @@ begin
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   elsif identifiers( token ).kind = vectors_vector_t then
      ParseInOutInstantiatedParameter( vectorId, vectors_vector_t );
-     expect( symbol_t, "," );
-     ParseExpression( idxExpr, idxType );
-     baseTypesOK( idxType, identifiers( vectorId ).genKind );
+     ParseNextGenItemParameter( vectors_element_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   else
      err( optional_yellow( "vectors.vector" ) &
           " or " &
           optional_yellow( "vectors.cursor" ) &
           " expected" );
   end if;
-  expect( symbol_t, ")" );
+  expectParameterClose( vectors_element_t );
 
   -- The function result type depends on whether or not we have a vector or cursor
   -- The result type must always be set because it's used during syntax checking.
@@ -990,12 +847,12 @@ procedure ParseVectorsDeleteFirst is
   hasCnt    : boolean := false;
 begin
   expect( vectors_delete_first_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_delete_first_t, vectorId, vectors_vector_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( vectors_delete_first_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
-     expect( symbol_t, ")" );
+     expectParameterClose( vectors_delete_first_t );
   end if;
   if isExecutingCommand then
      declare
@@ -1034,12 +891,12 @@ procedure ParseVectorsDeleteLast is
   hasCnt    : boolean := false;
 begin
   expect( vectors_delete_last_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_delete_last_t, vectorId, vectors_vector_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastNumericParameter( vectors_delete_last_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
-     expect( symbol_t, ")" );
+     expectParameterClose( vectors_delete_last_t );
   end if;
   if isExecutingCommand then
      declare
@@ -1078,7 +935,7 @@ procedure ParseVectorsContains( result : out unbounded_string; kind : out identi
 begin
   kind := boolean_t;
   expect( vectors_contains_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_contains_t, vectorId, vectors_vector_t );
   ParseLastGenItemParameter( vectors_contains_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if isExecutingCommand then
      begin
@@ -1104,7 +961,7 @@ procedure ParseVectorsMove is
   theTargetVector  : resPtr;
 begin
   expect( vectors_move_t );
-  ParseFirstInOutInstantiatedParameter( sourceVectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_move_t, sourceVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_move_t, targetVectorId, vectors_vector_t );
   genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
   if isExecutingCommand then
@@ -1221,7 +1078,7 @@ procedure ParseVectorsFirst is
   cursorId   : identifier;
 begin
   expect( vectors_first_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_first_t, vectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_first_t, cursorId , vectors_cursor_t );
   -- Check the type against the vector
   if not error_found then
@@ -1252,7 +1109,7 @@ procedure ParseVectorsLast is
   theCursor  : resPtr;
 begin
   expect( vectors_last_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_last_t, vectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_last_t, cursorId, vectors_cursor_t );
   -- Check the type against the vector
   if not error_found then
@@ -1335,8 +1192,8 @@ procedure ParseVectorsDelete is
   cnt       : Ada.Containers.Count_Type;
 begin
   expect( vectors_delete_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  expect( symbol_t, "," );
+  ParseFirstInOutInstantiatedParameter( vectors_delete_t, vectorId, vectors_vector_t );
+  expectParameterComma( vectors_delete_t );
   if identifiers( token ).kind = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   else
@@ -1345,11 +1202,10 @@ begin
      hasIdx := true;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
-     ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseNextNumericParameter( vectors_delete_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   end if;
-  expect( symbol_t, ")" );
+  expectParameterClose( vectors_delete_t );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
@@ -1421,7 +1277,7 @@ procedure ParseVectorsEqual( result : out unbounded_string; kind : out identifie
 begin
   kind := boolean_t;
   expect( vectors_equal_t );
-  ParseFirstInOutInstantiatedParameter( leftVectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_equal_t, leftVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_equal_t, rightVectorId, vectors_vector_t );
   if not error_found then
      genTypesOk( identifiers( leftVectorId ).genKind, identifiers( rightVectorId ).genKind );
@@ -1480,7 +1336,7 @@ procedure ParseVectorsInsert is
   hasCnt     : boolean := false;
 begin
   expect( vectors_insert_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_insert_t, vectorId, vectors_vector_t );
   ParseNextNumericParameter( vectors_insert_t, beforeVal, beforeType, identifiers( vectorId ).genKind );
 
   -- In Ada, the element can be missing, the count can be missing, or both.
@@ -1489,17 +1345,16 @@ begin
   -- absent.
 
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
+     expectParameterComma( vectors_insert_t );
      ParseExpression( elemVal, elemType );
      if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
         if token = symbol_t and identifiers( token ).value.all = "," then
-           expect( symbol_t, "," );
-           ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+           ParseNextNumericParameter( vectors_insert_t, cntExpr, cntType, containers_count_type_t );
            hasCnt := true;
         end if;
      end if;
   end if;
-  expect( symbol_t,")" );
+  expectParameterClose( vectors_insert_t );
 
   if isExecutingCommand then
      declare
@@ -1542,7 +1397,7 @@ procedure ParseVectorsInsertVector is
   vector2Id  : identifier;
 begin
   expect( vectors_insert_vector_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_insert_vector_t, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_t, cursorId, vectors_cursor_t );
   ParseLastInOutInstantiatedParameter( vectors_insert_vector_t, vector2Id, vectors_vector_t );
 
@@ -1589,23 +1444,15 @@ procedure ParseVectorsInsertBefore is
   --cursorId2  : identifier;
 begin
   expect( vectors_insert_before_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_insert_before_t, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_before_t, cursorId, vectors_cursor_t );
-
-  expect( symbol_t, "," );
-  ParseExpression( elemVal, elemType );
-     -- TODO: handle universal types here.  This hack is not complete
-     -- (e.g. universal typeless is missing).  Do I need a two param
-     -- baseTypesOk function?
-  if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
-     if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
-        ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
-        hasCnt := true;
-     end if;
+  ParseNextGenItemParameter( vectors_insert_before_t, elemVal, elemType, identifiers( vectorId ).genKind2 );
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     ParseNextNumericParameter( vectors_insert_before_t, cntExpr, cntType, containers_count_type_t );
+     hasCnt := true;
   end if;
 
-  expect( symbol_t,")" );
+  expectParameterClose( vectors_insert_before_t );
 
   if isExecutingCommand then
      declare
@@ -1650,10 +1497,10 @@ procedure ParseVectorsInsertVectorAndMark is
   cursor2Ref : reference;
 begin
   expect( vectors_insert_vector_and_mark_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_insert_vector_and_mark_t, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_and_mark_t, cursorId, vectors_cursor_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_and_mark_t, vector2Id, vectors_vector_t );
-  ParseLastOutVectorCursor( vectorId, cursor2Ref );
+  ParseLastOutVectorCursor( vectors_insert_vector_and_mark_t, vectorId, cursor2Ref );
 
   if isExecutingCommand then
      declare
@@ -1720,21 +1567,20 @@ procedure ParseVectorsInsertBeforeAndMark is
   hasCnt     : boolean := false;
 begin
   expect( vectors_insert_before_and_mark_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_insert_before_and_mark_t, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_before_and_mark_t, cursorId, vectors_cursor_t );
 
-  expect( symbol_t, "," );
+  expectParameterComma( vectors_insert_before_and_mark_t );
   ParseExpression( elemVal, elemType );
   if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
-     ParseNextOutVectorCursor( vectorId, cursor2Ref );
+     ParseNextOutVectorCursor( vectors_insert_before_and_mark_t, vectorId, cursor2Ref );
      if token = symbol_t and identifiers( token ).value.all = "," then
-        expect( symbol_t, "," );
-        ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+        ParseNextNumericParameter( vectors_insert_before_and_mark_t, cntExpr, cntType, containers_count_type_t );
         hasCnt := true;
      end if;
   end if;
 
-  expect( symbol_t,")" );
+  expectParameterClose( vectors_insert_before_and_mark_t );
 
   if isExecutingCommand then
      declare
@@ -1808,22 +1654,21 @@ procedure ParseVectorsInsertSpace is
   hasCnt     : boolean := false;
 begin
   expect( vectors_insert_space_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  expect( symbol_t, "," );
+  ParseFirstInOutInstantiatedParameter( vectors_insert_space_t, vectorId, vectors_vector_t );
+  expectParameterComma( vectors_insert_space_t );
   if identifiers( token ).kind = vectors_cursor_t then
      ParseInOutInstantiatedParameter( beforeCursorId, vectors_cursor_t );
-     ParseNextOutVectorCursor( vectorId, positionCursorRef );
+     ParseNextOutVectorCursor( vectors_insert_space_t, vectorId, positionCursorRef );
   else
      ParseExpression( beforeIdxExpr, beforeIdxType );
      baseTypesOK( beforeIdxType, identifiers( vectorId ).genKind );
      hasIdx := true;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
-     expect( symbol_t, "," );
-     ParseNumericParameter( cntExpr, cntType, containers_count_type_t );
+     ParseNextNumericParameter( vectors_insert_space_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   end if;
-  expect( symbol_t, ")" );
+  expectParameterClose( vectors_insert_space_t );
 
   if isExecutingCommand then
      begin
@@ -1907,7 +1752,7 @@ procedure ParseVectorsAppendVectors is
   use Vector_String_Lists;
 begin
   expect( vectors_append_vectors_t );
-  ParseFirstInOutInstantiatedParameter( leftVectorId, vectors_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_append_vectors_t, leftVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_append_vectors_t, rightVectorId, vectors_vector_t );
   if not error_found then
      genTypesOk( identifiers( leftVectorId ).genKind, identifiers( rightVectorId ).genKind );
@@ -1948,19 +1793,19 @@ procedure ParseVectorsSwap is
   hasIdx     : boolean := false;
 begin
   expect( vectors_swap_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  expect( symbol_t, "," );
+  ParseFirstInOutInstantiatedParameter( vectors_swap_t, vectorId, vectors_vector_t );
+  expectParameterComma( vectors_swap_t );
   if identifiers( token ).kind = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
-     ParseLastInOutInstantiatedParameter( cursorId2, vectors_cursor_t );
+     ParseLastInOutInstantiatedParameter( vectors_swap_t, cursorId2, vectors_cursor_t );
   else
      ParseExpression( idxExpr1, idxType1 );
      baseTypesOK( idxType1, identifiers( vectorId ).genKind );
-     expect( symbol_t,"," );
+     expectParameterComma( vectors_swap_t );
      ParseExpression( idxExpr2, idxType2 );
      baseTypesOK( idxType2, identifiers( vectorId ).genKind );
      hasIdx := true;
-     expect( symbol_t, ")" );
+     expectParameterClose( vectors_swap_t );
   end if;
 
   if isExecutingCommand then
@@ -2011,12 +1856,12 @@ procedure ParseVectorsFind is
   positionCursorRef : reference;
 begin
   expect( vectors_find_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( vectors_find_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_find_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   -- It is tricky to handle one optional cursor followed by a required one,
   -- one existing and one a reference.
-  ParseNextInOutInstantiatedParameter( startCursorId, vectors_cursor_t );
-  ParseLastOutVectorCursor( vectorId, positionCursorRef );
+  ParseNextInOutInstantiatedParameter( vectors_find_t, startCursorId, vectors_cursor_t );
+  ParseLastOutVectorCursor( vectors_find_t, vectorId, positionCursorRef );
 
   if isExecutingCommand then
      declare
@@ -2066,12 +1911,12 @@ procedure ParseVectorsReverseFind is
   positionCursorRef : reference;
 begin
   expect( vectors_reverse_find_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( vectors_reverse_find_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_reverse_find_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   -- It is tricky to handle one optional cursor followed by a required one,
   -- one existing and one a reference.
-  ParseNextInOutInstantiatedParameter( startCursorId, vectors_cursor_t );
-  ParseLastOutVectorCursor( vectorId, positionCursorRef );
+  ParseNextInOutInstantiatedParameter( vectors_reverse_find_t, startCursorId, vectors_cursor_t );
+  ParseLastOutVectorCursor( vectors_reverse_find_t, vectorId, positionCursorRef );
 
   if isExecutingCommand then
      declare
@@ -2120,12 +1965,12 @@ procedure ParseVectorsFindIndex is
   positionIdxRef : reference;
 begin
   expect( vectors_find_index_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( vectors_find_index_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_find_index_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   -- in Ada, the next parameter is optional but is easier to make optional
   -- than find with two cursors
-  ParseNextGenItemParameter( startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
-  ParseLastOutParameter( positionIdxRef, identifiers( vectorId ).genKind );
+  ParseNextGenItemParameter( vectors_find_index_t, startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
+  ParseLastOutParameter( vectors_find_index_t, positionIdxRef, identifiers( vectorId ).genKind );
 
   if isExecutingCommand then
      declare
@@ -2168,12 +2013,12 @@ procedure ParseVectorsReverseFindIndex is
   positionIdxRef : reference;
 begin
   expect( vectors_reverse_find_index_t );
-  ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( vectors_reverse_find_index_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_reverse_find_index_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   -- in Ada, the next parameter is optional but is easier to make optional
   -- than find with two cursors
-  ParseNextGenItemParameter( startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
-  ParseLastOutParameter( positionIdxRef, identifiers( vectorId ).genKind );
+  ParseNextGenItemParameter( vectors_reverse_find_index_t, startIdxExpr, startIdxType, identifiers( vectorId ).genKind );
+  ParseLastOutParameter( vectors_reverse_find_index_t, positionIdxRef, identifiers( vectorId ).genKind );
 
   if isExecutingCommand then
      declare
@@ -2229,7 +2074,7 @@ begin
   declareFunction(  vectors_length_t,    "vectors.length",    ParseVectorsLength'access );
   declareProcedure( vectors_set_length_t,  "vectors.set_length",    ParseVectorsSetLength'access );
   declareFunction(  vectors_is_empty_t,  "vectors.is_empty",  ParseVectorsIsEmpty'access );
-  declareProcedure( vectors_append_elements_t,  "vectors.append_elements",    ParseVectorsAppendElements'access );
+  declareProcedure( vectors_append_t,  "vectors.append_elements",    ParseVectorsAppend'access );
   declareProcedure( vectors_prepend_t,  "vectors.prepend",    ParseVectorsPrepend'access );
   declareFunction(  vectors_first_index_t,  "vectors.first_index",    ParseVectorsFirstIndex'access );
   declareFunction(  vectors_last_index_t,  "vectors.last_index",    ParseVectorsLastIndex'access );

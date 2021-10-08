@@ -35,6 +35,7 @@ with
     pegasoft.strings,
     compiler,
     scanner,
+    scanner.communications,
     chain_util,
     parser_aux,
     parser_params,
@@ -55,6 +56,7 @@ use
     pegasoft.strings,
     compiler,
     scanner,
+    scanner.communications,
     chain_util,
     parser_aux,
     parser_params,
@@ -464,7 +466,7 @@ procedure ParseLevelBegin is
 begin
   --kind := log_level_t;
   expect( logs_level_begin_t );
-  ParseSingleOutParameter( ref, log_level_t );
+  ParseSingleOutParameter( logs_level_begin_t, ref, log_level_t );
   if isExecutingCommand then
      begin
         AssignParameter(ref, to_unbounded_string( long_float( level ) ) );
@@ -723,7 +725,7 @@ procedure ParseOpen is
   sourceFile : unbounded_string;
 begin
   expect( logs_open_t );
-  ParseFirstStringParameter( pathExpr, pathType, string_t );
+  ParseFirstStringParameter( logs_open_t, pathExpr, pathType, string_t );
   ParseNextEnumParameter( logs_open_t, modeExpr, modeType, log_modes_t );
   if token = symbol_t and identifiers( token ).value.all = ")" then
      widthExpr:= to_unbounded_string( defaultWidth'img );

@@ -28,6 +28,7 @@ with
     pegasoft.user_io,
     world,
     scanner,
+    scanner.communications,
     scanner_res,
     scanner_restypes,
     parser_params;
@@ -36,6 +37,7 @@ use
     world,
     pegasoft.user_io,
     scanner,
+    scanner.communications,
     scanner_res,
     scanner_restypes,
     parser_params;
@@ -67,62 +69,11 @@ dht_decrement_t     : identifier;
 --dht_assemble_t      : identifier;
 --dht_disassemble_t   : identifier;
 
-------------------------------------------------------------------------------
--- Utility subprograms
-------------------------------------------------------------------------------
-
-procedure ParseSingleTableParameter( subprogram : identifier; tableId : out identifier ) is
-begin
-  ParseSingleInOutInstantiatedParameter( subprogram, tableId, dht_table_t );
-end ParseSingleTableParameter;
-
-procedure ParseFirstTableParameter( tableId : out identifier ) is
-begin
-  ParseFirstInOutInstantiatedParameter( tableId, dht_table_t );
-end ParseFirstTableParameter;
-
---procedure ParseNextTableParameter( tableId : out identifier ) is
---begin
---  ParseNextInOutInstantiatedParameter( tableId, dht_table_t );
---end ParseNextTableParameter;
-
---procedure ParseLastTableParameter( tableId : out identifier ) is
---begin
---  ParseLastInOutInstantiatedParameter( tableId, dht_table_t );
---end ParseLastTableParameter;
 
 ------------------------------------------------------------------------------
 -- Parser subprograms
 ------------------------------------------------------------------------------
 
-
---procedure ParseDHTNewTable is
---  -- Syntax: dynamic_hash_tables.new_table( t, ty );
---  -- Ada:    N/A
---  resId : resHandleId;
---  ref   : reference;
---  genKindId : identifier;
---begin
---  expect( dht_new_table_t );
---  ParseFirstOutParameter( ref, dht_table_t );
---  baseTypesOK( ref.kind, dht_table_t );
---  expect( symbol_t, "," );
---  ParseIdentifier( genKindId );
---  if class_ok( genKindId, typeClass, subClass ) then
---     if identifiers( genKindId ).list then
---        err( "element type should be a scalar type" );
---     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
---        err( "element type should be a scalar type" );
---     end if;
---  end if;
---  identifiers( ref.id ).genKind := genKindId;
---  expect( symbol_t, ")" );
---  if isExecutingCommand then
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, dynamic_string_hash_table, getIdentifierBlock( ref.id ) );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---  end if;
---end ParseDHTNewTable;
 
 -----------------------------------------------------------------------------
 --  RESET
@@ -136,7 +87,7 @@ procedure ParseDHTReset is
   theTable : resPtr;
 begin
   expect( dht_reset_t );
-  ParseSingleTableParameter( dht_reset_t, tableId );
+  ParseSingleInOutInstantiatedParameter( dht_reset_t, tableId, dht_table_t );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
@@ -163,8 +114,8 @@ procedure ParseDHTSet is
   itemType : identifier;
 begin
   expect( dht_set_t );
-  ParseFirstTableParameter( tableId );
-  ParseNextStringParameter( dht_set_t, keyExpr, keyType, uni_string_t ); -- TODO double gen
+  ParseFirstInOutInstantiatedParameter( dht_set_t, tableId, dht_table_t ); -- TODO double gen
+  ParseNextStringParameter( dht_set_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( dht_set_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
      begin
@@ -193,7 +144,7 @@ procedure ParseDHTGet( result : out unbounded_string; kind : out identifier ) is
   keyType  : identifier;
 begin
   expect( dht_get_t );
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_get_t, tableId, dht_table_t );
   kind := identifiers( tableId ).genKind;
   ParseLastStringParameter( dht_get_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
@@ -219,7 +170,7 @@ procedure ParseDHTHasElement( result : out unbounded_string; kind : out identifi
 begin
   kind := boolean_t;
   expect( dht_has_element_t );
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_has_element_t, tableId, dht_table_t );
   ParseLastStringParameter( dht_has_element_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
@@ -243,7 +194,7 @@ procedure ParseDHTRemove is
   keyType  : identifier;
 begin
   expect( dht_remove_t );
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_remove_t, tableId, dht_table_t );
   ParseLastStringParameter( dht_remove_t, keyExpr, keyType, uni_string_t );
   if isExecutingCommand then
      begin
@@ -272,7 +223,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow get_first" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_get_first_t, tableId, dht_table_t );
   ParseNextOutParameter( dht_get_first_t, itemRef, identifiers( tableId ).genKind );
   baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
   ParseLastOutParameter( dht_get_first_t, eofRef, boolean_t );
@@ -306,7 +257,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow get_next" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_get_next_t, tableId, dht_table_t );
   ParseNextOutParameter( dht_get_next_t, itemRef, identifiers( tableId ).genKind );
   baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
   ParseLastOutParameter( dht_get_next_t, eofRef, boolean_t );
@@ -343,7 +294,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow add" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_add_t, tableId, dht_table_t );
   ParseNextStringParameter( dht_add_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( dht_add_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
@@ -379,7 +330,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow replace" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_replace_t, tableId, dht_table_t );
   ParseNextStringParameter( dht_replace_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( dht_replace_t, itemExpr, itemType, identifiers( tableId ).genKind );
   if isExecutingCommand then
@@ -415,7 +366,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow append" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_append_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
@@ -454,7 +405,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow prepend" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_prepend_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
      err( "prepend requires a string item type" );
   end if;
@@ -495,7 +446,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow increment" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_increment_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
@@ -550,7 +501,7 @@ begin
   if onlyAda95 then
      err( optional_bold( "pragma ada_95" ) & " doesn't allow decrement" );
   end if;
-  ParseFirstTableParameter( tableId );
+  ParseFirstInOutInstantiatedParameter( dht_decrement_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
      err( "decrement requires a numeric item type" );
   end if;

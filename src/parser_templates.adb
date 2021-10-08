@@ -26,12 +26,13 @@
 with
     ada.strings.unbounded,
     world,
-    scanner,
+    scanner.communications,
     parser_params;
 use
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser_params;
 
 package body parser_templates is

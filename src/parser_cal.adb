@@ -25,11 +25,13 @@
 
 with ada.strings.unbounded,
     scanner.calendar,
+    scanner.communications,
     parser_params,
     spar_os;
 use ada.strings.unbounded,
     scanner,
     scanner.calendar,
+    scanner.communications,
     parser_params,
     spar_os;
 
@@ -177,7 +179,7 @@ procedure ParseCalSplit is
    seconds  : day_duration;
 begin
   expect( cal_split_t );
-  ParseFirstNumericParameter( date_val, date_type, cal_time_t );
+  ParseFirstNumericParameter( cal_split_t, date_val, date_type, cal_time_t );
   ParseNextOutParameter( cal_split_t, id1_ref, cal_year_number_t );
   ParseNextOutParameter( cal_split_t, id2_ref, cal_month_number_t );
   ParseNextOutParameter( cal_split_t, id3_ref, cal_day_number_t );
@@ -213,7 +215,7 @@ procedure ParseCalTimeOf( result : out unbounded_string; kind : out identifier )
 begin
   kind := cal_time_t;
   expect( cal_time_of_t );
-  ParseFirstNumericParameter( year_val, year_type, cal_year_number_t );
+  ParseFirstNumericParameter( cal_time_of_t, year_val, year_type, cal_year_number_t );
   ParseNextNumericParameter( cal_time_t, month_val, month_type, cal_month_number_t );
   ParseNextNumericParameter( cal_time_t, day_val, day_type, cal_day_number_t );
   ParseLastNumericParameter( cal_time_t, secs_val, secs_type, cal_day_duration_t );

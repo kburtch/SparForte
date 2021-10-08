@@ -27,10 +27,12 @@ pragma ada_2005;
 with ada.strings.unbounded,
      world,
      scanner,
+     scanner.communications,
      parser;
 use  ada.strings.unbounded,
      world,
      scanner,
+     scanner.communications,
      parser;
 
 package body parser_enums is

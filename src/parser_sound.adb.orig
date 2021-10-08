@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- BUSH_OS Package Parser                                                   --
+-- Sound Package Parser                                                     --
 --                                                                          --
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
@@ -27,6 +27,7 @@ with gnat.source_info,
     spar_os.sound,
     world,
     scanner,
+    scanner.communications,
     pegasoft.user_io,
     parser,
     builtins;
@@ -35,6 +36,7 @@ use ada.strings.unbounded,
     spar_os.sound,
     world,
     scanner,
+    scanner.communications,
     pegasoft.user_io,
     parser,
     builtins;

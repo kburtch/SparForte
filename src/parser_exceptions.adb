@@ -26,11 +26,13 @@
 with
     ada.strings.unbounded,
     world,
-    scanner;
+    scanner,
+    scanner.communications;
 use
     ada.strings.unbounded,
     world,
-    scanner;
+    scanner,
+    scanner.communications;
 
 package body parser_exceptions is
 

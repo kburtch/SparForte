@@ -30,6 +30,7 @@ with ada.text_io,
      pegasoft.user_io,
      compiler,
      scanner,
+     scanner.communications,
      parser_params,
      parser.decl.as;
 use  ada.text_io,
@@ -40,6 +41,7 @@ use  ada.text_io,
      compiler,
      parser,
      scanner,
+     scanner.communications,
      parser_params,
      parser.decl.as;
 

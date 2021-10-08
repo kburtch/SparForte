@@ -28,6 +28,7 @@ with gnat.directory_operations,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     scanner_res,
     parser_params;
 use gnat.directory_operations,
@@ -35,6 +36,7 @@ use gnat.directory_operations,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     scanner_res,
     parser_params;
 
@@ -159,7 +161,7 @@ procedure ParseDirOpsRemoveDir is
   expr_type2: identifier;
 begin
   expect( dirops_remove_dir_t );
-  ParseFirstStringParameter( expr_val, expr_type, dirops_dir_name_str_t );
+  ParseFirstStringParameter( dirops_remove_dir_t, expr_val, expr_type, dirops_dir_name_str_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( dirops_remove_dir_t, expr_val2, expr_type2, boolean_t );
   else
@@ -241,7 +243,7 @@ procedure ParseDirOpsBaseName( result : out unbounded_string; kind : out identif
 begin
   kind := string_t;
   expect( dirops_base_name_t );
-  ParseFirstStringParameter( expr_val, expr_type, dirops_path_name_t );
+  ParseFirstStringParameter( dirops_base_name_t, expr_val, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( dirops_base_name_t, expr_val2, expr_type2, string_t );
   else
@@ -302,7 +304,7 @@ procedure ParseDirOpsFormatPathname( result : out unbounded_string; kind : out i
 begin
   kind := dirops_path_name_t;
   expect( dirops_format_pathname_t );
-  ParseFirstStringParameter( expr_val, expr_type, dirops_path_name_t );
+  ParseFirstStringParameter( dirops_format_pathname_t, expr_val, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( dirops_format_pathname_t, expr_val2, expr_type2, dirops_path_style_t );
   else
@@ -339,7 +341,7 @@ procedure ParseDirOpsExpandPath( result : out unbounded_string; kind : out ident
 begin
   kind := dirops_path_name_t;
   expect( dirops_expand_path_t );
-  ParseFirstStringParameter( expr_val, expr_type, dirops_path_name_t );
+  ParseFirstStringParameter( dirops_expand_path_t, expr_val, expr_type, dirops_path_name_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( dirops_expand_path_t, expr_val2, expr_type2, dirops_env_style_t );
   else
@@ -396,7 +398,7 @@ procedure ParseDirOpsOpen is
   theDir : resPtr;
 begin
   expect( dirops_open_t );
-  ParseFirstOutParameter( ref, dirops_dir_type_t );
+  ParseFirstOutParameter( dirops_open_t, ref, dirops_dir_type_t );
   if baseTypesOK( ref.kind, dirops_dir_type_t ) then
      ParseLastStringParameter( dirops_open_t, expr_val, expr_type, string_t );
   end if;
@@ -479,7 +481,7 @@ procedure ParseDirOpsRead is
   theDir   : resPtr;
 begin
   expect( dirops_read_t );
-  ParseFirstInOutParameter( dirId, dirops_dir_type_t );
+  ParseFirstInOutParameter( dirops_read_t, dirId, dirops_dir_type_t );
   ParseLastOutParameter( dirops_read_t, strRef, string_t );
   --ParseLastOutParameter( lastRef, natural_t );
   if isExecutingCommand then

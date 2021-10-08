@@ -26,12 +26,14 @@
 with ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser_params,
     parser_aux,
     spar_os;
 use ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser_params,
     parser_aux,
     spar_os;

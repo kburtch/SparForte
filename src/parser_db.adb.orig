@@ -32,6 +32,7 @@ with ada.io_exceptions,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      parser,
      parser_params;
 use  ada.io_exceptions,
@@ -47,6 +48,7 @@ use  ada.io_exceptions,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      parser,
      parser_params;
 
@@ -135,7 +137,7 @@ begin
      err( "only one database connection may be open" );
      return;
   end if;
-  ParseFirstStringParameter( dbnameExpr, dbnameType, string_t );
+  ParseFirstStringParameter( db_connect_t, dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( db_connect_t, userExpr, userType, string_t );
      hasUser := true;
@@ -313,7 +315,7 @@ procedure ParseDBPrepare is
   hasAfter  : boolean := false;
 begin
   expect( db_prepare_t );
-  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  ParseFirstStringParameter( db_prepare_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( db_prepare_t, afterExpr, afterType, string_t );
      hasAfter := true;
@@ -354,7 +356,7 @@ procedure ParseDBAppend is
   hasAfter  : boolean := false;
 begin
   expect( db_append_t );
-  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  ParseFirstStringParameter( db_append_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( db_append_t, afterExpr, afterType, string_t );
      hasAfter := true;
@@ -424,7 +426,7 @@ procedure ParseDBAppendQuoted is
   hasAfter  : boolean := false;
 begin
   expect( db_append_quoted_t );
-  ParseFirstStringParameter( sqlExpr, sqlType, string_t );
+  ParseFirstStringParameter( db_append_quoted_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( db_append_quoted_t, afterExpr, afterType, string_t );
      hasAfter := true;
@@ -744,7 +746,7 @@ procedure ParseDBSetRollbackOnFinalize is
   rollType : identifier;
 begin
   expect( db_set_rollback_on_finalize_t );
-  ParseSingleEnumParameter( rollExpr, rollType, boolean_t );
+  ParseSingleEnumParameter( db_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
        rollback : constant boolean := rollExpr = to_unbounded_string( "1" );
@@ -806,7 +808,7 @@ procedure ParseDBOpenDBTrace is
   hasMode  : boolean := false;
 begin
   expect( db_open_db_trace_t );
-  ParseFirstStringParameter( fnameExpr, fnameType, string_t );
+  ParseFirstStringParameter( db_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( db_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
      traceMode := Trace_Mode_Type'val( integer'value( ' ' & to_string( modeExpr ) ) );
@@ -877,7 +879,7 @@ procedure ParseDBSetTrace is
   traceType : identifier;
 begin
   expect( db_set_trace_t );
-  ParseSingleEnumParameter( traceExpr, traceType, boolean_t );
+  ParseSingleEnumParameter( db_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
        traceback : constant boolean := traceExpr = to_unbounded_string( "1" );
@@ -962,7 +964,7 @@ procedure ParseDBRaiseExceptions is
 begin
   expect( db_raise_exceptions_t );
   if token = symbol_t and identifiers( token ).value.all = "(" then
-     ParseSingleEnumParameter( raiseExpr, raiseType, boolean_t );
+     ParseSingleEnumParameter( db_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
      raiseExpr := to_unbounded_string( "1" );
   end if;

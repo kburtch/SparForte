@@ -34,6 +34,7 @@ with ada.io_exceptions,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      scanner_res,
      parser_params,
      parser_db;
@@ -52,6 +53,7 @@ use  ada.io_exceptions,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      scanner_res,
      parser_params,
      parser_db;
@@ -169,7 +171,7 @@ procedure ParseMySQLMConnect is
   connection : resPtr;
 begin
   expect( mysqlm_connect_t );
-  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
+  ParseFirstInOutParameter( mysqlm_connect_t, connectId, mysqlm_connection_t );
   ParseNextStringParameter( mysqlm_connect_t, dbnameExpr, dbnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysqlm_connect_t, userExpr, userType, string_t );
@@ -354,7 +356,7 @@ procedure ParseMySQLMPrepare is
   query : resPtr;
 begin
   expect( mysqlm_prepare_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_prepare_t, queryId, mysqlm_query_t );
   ParseNextStringParameter( mysqlm_prepare_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysqlm_prepare_t, afterExpr, afterType, string_t );
@@ -393,7 +395,7 @@ procedure ParseMySQLMAppend is
   query : resPtr;
 begin
   expect( mysqlm_append_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_append_t, queryId, mysqlm_query_t );
   ParseNextStringParameter( mysqlm_append_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysqlm_append_t, afterExpr, afterType, string_t );
@@ -429,7 +431,7 @@ procedure ParseMySQLMAppendLine is
   query : resPtr;
 begin
   expect( mysqlm_append_line_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_append_line_t, queryId, mysqlm_query_t );
   ParseLastStringParameter( mysqlm_append_line_t, sqlExpr, sqlType, string_t );
   if isExecutingCommand then
      begin
@@ -461,7 +463,7 @@ procedure ParseMySQLMAppendQuoted is
   connection : resPtr;
 begin
   expect( mysqlm_append_quoted_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_append_quoted_t, queryId, mysqlm_query_t );
   ParseNextInOutParameter( mysqlm_append_quoted_t, connectId, mysqlm_connection_t );
   ParseNextStringParameter( mysqlm_append_quoted_t, sqlExpr, sqlType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -499,7 +501,7 @@ procedure ParseMySQLMExecute is
   connection : resPtr;
 begin
   expect( mysqlm_execute_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_execute_t, queryId, mysqlm_query_t );
   ParseLastInOutParameter( mysqlm_execute_t, connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
@@ -536,7 +538,7 @@ procedure ParseMySQLMExecuteChecked is
   connection : resPtr;
 begin
   expect( mysqlm_execute_checked_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_execute_checked_t, queryId, mysqlm_query_t );
   ParseNextInOutParameter( mysqlm_execute_checked_t, connectId, mysqlm_connection_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysqlm_execute_checked_t, msgExpr, msgType, string_t );
@@ -764,7 +766,7 @@ procedure ParseMySQLMSetRollbackOnFinalize is
   connection : resPtr;
 begin
   expect( mysqlm_set_rollback_on_finalize_t );
-  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
+  ParseFirstInOutParameter( mysqlm_set_rollback_on_finalize_t, connectId, mysqlm_connection_t );
   ParseLastEnumParameter( mysqlm_set_rollback_on_finalize_t, rollExpr, rollType, boolean_t );
   if isExecutingCommand then
      declare
@@ -824,7 +826,7 @@ procedure ParseMySQLMOpenDBTrace is
   connection : resPtr;
 begin
   expect( mysqlm_open_db_trace_t );
-  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
+  ParseFirstInOutParameter( mysqlm_open_db_trace_t, connectId, mysqlm_connection_t );
   ParseNextStringParameter( mysqlm_open_db_trace_t, fnameExpr, fnameType, string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( mysqlm_open_db_trace_t, modeExpr, modeType, db_trace_mode_type_t );
@@ -893,7 +895,7 @@ procedure ParseMySQLMSetTrace is
   connection : resPtr;
 begin
   expect( mysqlm_set_trace_t );
-  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
+  ParseFirstInOutParameter( mysqlm_set_trace_t, connectId, mysqlm_connection_t );
   ParseLastEnumParameter( mysqlm_set_trace_t, traceExpr, traceType, boolean_t );
   if isExecutingCommand then
      declare
@@ -976,7 +978,7 @@ procedure ParseMySQLMRaiseExceptions is
   query : resPtr;
 begin
   expect( mysqlm_raise_exceptions_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_raise_exceptions_t, queryId, mysqlm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( mysqlm_raise_exceptions_t, raiseExpr, raiseType, boolean_t );
   else
@@ -1011,7 +1013,7 @@ procedure ParseMySQLMReportErrors is
   query : resPtr;
 begin
   expect( mysqlm_report_errors_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_report_errors_t, queryId, mysqlm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( mysqlm_report_errors_t, reportExpr, reportType, boolean_t );
   else
@@ -1046,7 +1048,7 @@ procedure ParseMySQLMBeginWork is
   connection : resPtr;
 begin
   expect( mysqlm_begin_work_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_begin_work_t, queryId, mysqlm_query_t );
   ParseLastInOutParameter( mysqlm_begin_work_t, connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
@@ -1079,7 +1081,7 @@ procedure ParseMySQLMRollbackWork is
   connection : resPtr;
 begin
   expect( mysqlm_rollback_work_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_rollback_work_t, queryId, mysqlm_query_t );
   ParseLastInOutParameter( mysqlm_rollback_work_t, connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
@@ -1112,7 +1114,7 @@ procedure ParseMySQLMCommitWork is
   connection : resPtr;
 begin
   expect( mysqlm_commit_work_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_commit_work_t, queryId, mysqlm_query_t );
   ParseLastInOutParameter( mysqlm_commit_work_t, connectId, mysqlm_connection_t );
   if isExecutingCommand then
      begin
@@ -1171,7 +1173,7 @@ procedure ParseMySQLMFetch is
   query : resPtr;
 begin
   expect( mysqlm_fetch_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_fetch_t, queryId, mysqlm_query_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextNumericParameter( mysqlm_fetch_t, expr_val, expr_type, mysqlm_tuple_index_type_t );
      haveIndex := true;
@@ -1322,7 +1324,7 @@ procedure ParseMySQLMColumnName( result : out unbounded_string; kind : out ident
 begin
   kind := string_t;
   expect( mysqlm_column_name_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_column_name_t, queryId, mysqlm_query_t );
   ParseLastNumericParameter( mysqlm_column_name_t, exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
@@ -1355,7 +1357,7 @@ procedure ParseMySQLMColumnIndex( result : out unbounded_string; kind : out iden
 begin
   kind := mysqlm_column_index_type_t;
   expect( mysqlm_column_index_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_column_index_t, queryId, mysqlm_query_t );
   ParseLastStringParameter( mysqlm_column_index_t, exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
@@ -1416,7 +1418,7 @@ procedure ParseMySQLMIsNull( result : out unbounded_string; kind : out identifie
 begin
   kind := boolean_t;
   expect( mysqlm_is_null_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_is_null_t, queryId, mysqlm_query_t );
   ParseLastNumericParameter( mysqlm_is_null_t, exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
@@ -1452,7 +1454,7 @@ procedure ParseMySQLMValue( result : out unbounded_string; kind : out identifier
 begin
   kind := universal_t;
   expect( mysqlm_value_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_value_t, queryId, mysqlm_query_t );
   ParseLastNumericParameter( mysqlm_value_t, exprVal, exprType, mysqlm_column_index_type_t );
   if isExecutingCommand then
      begin
@@ -1654,7 +1656,7 @@ procedure ParseMySQLMShow is
   connection : resPtr;
 begin
   expect( mysqlm_show_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_show_t, queryId, mysqlm_query_t );
   ParseLastInOutParameter( mysqlm_show_t, connectionId, mysqlm_connection_t );
   if isExecutingCommand then
      findConnection( connectionId, connection );
@@ -1902,7 +1904,7 @@ procedure ParseMySQLMSchema is
   Q : APQ.MySQL.Client.Query_Type;
 begin
   expect( mysqlm_schema_t );
-  ParseFirstInOutParameter( connectId, mysqlm_connection_t );
+  ParseFirstInOutParameter( mysqlm_schema_t, connectId, mysqlm_connection_t );
   ParseLastStringParameter( mysqlm_schema_t, exprVal, exprType, string_t );
   if isExecutingCommand then
      begin
@@ -2606,7 +2608,7 @@ procedure ParseMySQLMNewConnection is
   ref : reference;
 begin
   expect( mysqlm_new_connection_t );
-  ParseSingleOutParameter( ref, mysqlm_connection_t );
+  ParseSingleOutParameter( mysqlm_new_connection_t, ref, mysqlm_connection_t );
   if baseTypesOK( ref.kind, mysqlm_connection_t ) then
       null;
   end if;
@@ -2631,7 +2633,7 @@ procedure ParseMySQLMNewQuery is
   ref : reference;
 begin
   expect( mysqlm_new_query_t );
-  ParseSingleOutParameter( ref, mysqlm_query_t );
+  ParseSingleOutParameter( mysqlm_new_query_t, ref, mysqlm_query_t );
   if baseTypesOK( ref.kind, mysqlm_query_t ) then
       null;
   end if;
@@ -2662,7 +2664,7 @@ procedure ParseMySQLMFetchValues is
   --ref : reference;
 begin
   expect( mysqlm_fetch_values_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_fetch_values_t, queryId, mysqlm_query_t );
   ParseNextInOutParameter( mysqlm_fetch_values_t, connectionId, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( mysqlm_fetch_values_t, id  );
@@ -2796,7 +2798,7 @@ procedure ParseMySQLMAppendForInsert is
   id : identifier;
 begin
   expect( mysqlm_append_for_insert_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_append_for_insert_t, queryId, mysqlm_query_t );
   ParseNextInOutParameter( mysqlm_append_for_insert_t, connectionId, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( mysqlm_append_for_insert_t, id  );
@@ -2915,7 +2917,7 @@ procedure ParseMySQLMAppendForUpdate is
   id : identifier;
 begin
   expect( mysqlm_append_for_update_t );
-  ParseFirstInOutParameter( queryId, mysqlm_query_t );
+  ParseFirstInOutParameter( mysqlm_append_for_update_t, queryId, mysqlm_query_t );
   ParseNextInOutParameter( mysqlm_append_for_update_t, connectionId, mysqlm_connection_t );
   -- TODO: ref type is meaningless here since you can't autodeclare
   ParseLastInOutRecordParameter( mysqlm_append_for_update_t, id  );

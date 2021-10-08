@@ -33,8 +33,8 @@ with ada.command_line,
     pegasoft.user_io,
     performance_monitoring,
     compiler,
-    scanner,
     scanner.calendar,
+    scanner.communications,
     scanner_res,
     parser.decl.as, -- circular dependency for parse general statement, etc.
     parser_sidefx,
@@ -50,6 +50,7 @@ use ada.command_line,
     compiler,
     scanner,
     scanner.calendar,
+    scanner.communications,
     scanner_res,
     parser.decl,
     parser.decl.as, -- circular dependency for parse general statement, etc.
@@ -439,19 +440,22 @@ begin
      if isTokenValidIdentifier( "a field name" ) then
         if identifiers( token ).field_of /= eof_t then
            err(
-               which => token,
-               what  => "is a record or record type field",
-               why   => "but was expecting a simple identifier",
-               how   => "use an identifier without a period while defining a record."
+               context => record_id,
+               subject => token,
+               reason  => "is a record or record type field",
+               obstructorNotes   => "but was expecting a simple identifier",
+               remedy  => "use an identifier without a period while defining a record."
           );
         else
            -- an existing token name
            fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
            findIdent( fieldName, temp_id );
            if temp_id /= eof_t then
-              err( which => record_id,
-                   why   => "already has a field " & optional_yellow( to_string( identifiers( token ).name ) ),
-                   how   => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
+              err(
+                   context => record_id,
+                   reason => "already has a field named",
+                   obstructor => token,
+                   remedy => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
               );
               -- err( "already declared " &
               --      optional_yellow( to_string( fieldName ) ) );
@@ -466,9 +470,10 @@ begin
      fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
      findIdent( fieldName, temp_id );
      if temp_id /= eof_t then
-        err( which => record_id,
-             why   => "already has a field " & optional_yellow( to_string( identifiers( token ).name ) ),
-             how   => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
+        err( context => record_id,
+             reason => "already has a field named",
+             obstructor => token,
+             remedy => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
         );
      else                                                     -- declare it
         discardUnusedIdentifier( token );
@@ -501,10 +506,10 @@ begin
      if isTokenValidIdentifier( "a procedure name" ) then
         if identifiers( token ).field_of /= eof_t then
            err(
-               which => token,
-               what  => "is a record or record type field",
-               why   => "but was expecting a simple identifier",
-               how   => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
+               subject => token,
+               reason  => "is a record or record type field",
+               obstructorNotes => "but was expecting a simple identifier",
+               remedy  => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
           );
            --err( optional_yellow( "identifier" ) & " expected, not a " &
            --     optional_yellow( "field of a record type" ) );
@@ -515,10 +520,10 @@ begin
               if length( identifiers( token ).value.all ) = 0 then      -- forward?
                  id := token;                                       -- then it's
               else                                                  -- not fwd?
-                 err( which => token,
-                      what  => "is already defined",
-                      why   => "and should be unique in the same block",
-                      how   => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
+                 err( subject => token,
+                      reason => "is already defined",
+                      obstructorNotes => "and should be unique in the same block",
+                      remedy => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
                  );
                  --err( "already declared " &
                  --     optional_yellow( to_string( identifiers( token ).name ) ) );
@@ -528,10 +533,10 @@ begin
               identifiers( token ).class);
            end if;                                                  -- otherwise
         elsif isLocal( token ) then
-           err( which => token,
-                what  => "is already defined",
-                why   => "and should be unique in the same block",
-                how   => "choose an unused name, define it in a different block or remove it if it's a duplicate."
+           err( subject => token,
+                reason => "is already defined",
+                obstructorNotes => "and should be unique in the same block",
+                remedy => "choose an unused name, define it in a different block or remove it if it's a duplicate."
            );
            --err( "already declared " &
            --     optional_yellow( to_string( identifiers( token ).name ) ) );
@@ -1076,14 +1081,13 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
            identifiers( kind_id ).contract,
            fragment => true );                           -- setup byte code
          ParseAffirmBlock;
-         expectSemicolon;
+         expectSemicolon;               -- should be previously syntax checked
          if not done then                                  -- not done?
             expect( eof_t );                               -- should be eof
          end if;
          restoreScript( scriptState );            -- restore original script
          error_found := save_error_found or error_found;
       end if;
-      --   expectSemicolon;
    end DoContract1;
 
    oldRshOpt : constant commandLineOption := rshOpt;
@@ -1195,9 +1199,10 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        if identifiers( getBaseType( t ) ).list then
           --err( optional_yellow( to_string( identifiers( t ).name ) ) & " is an array type" );
           err(
-            which => t,
-            what => "is an array type",
-            why => "and typecast by aggregate types is not supported"
+            contextNotes => "in the expression",
+            subject => t,
+            reason => "is an array type",
+            obstructorNotes => "and typecast by aggregate types is not supported"
           );
        end if;                               -- represent array types
        castType := t;                        -- in expressiosn (yet)
@@ -1205,18 +1210,18 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           getNextToken;
        else
           expectSymbol(
+            contextNotes => "in the expression",
             expectedValue => "(",
-            which => t,
-            what => "is a type or subtype",
-            why => "and a typecast"
+            subject => t,
+            reason => "is a type or subtype and a typecast"
           );
        end if;
        ParseExpression( f, kind );
        expectSymbol(
+         contextNotes => "in the expression",
          expectedValue => ")",
-         which => t,
-         what => "is a type or subtype",
-         why => "and a typecast"
+         subject => t,
+         reason => "is a typecast and the end of the typecast"
        );
        if type_checks_done or else uniTypesOk( castType, kind ) then
 
@@ -1236,11 +1241,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
     elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
        array_id := t;                            -- array_id=array variable
        expectSymbol(                                    -- parse index part
+          contextNotes => "in the expression",
           expectedValue => "(",
-          which => t,
-          what => "is an array",
-          whatkind => identifiers( t ).kind,
-          why => "and an array index"
+          subject => t,
+          subjectType => identifiers( t ).kind,
+          reason => "is an array variable and an array index"
        );
        ParseExpression( f, kind );               -- kind is the index type
        if getUniType( kind ) = uni_string_t or   -- index must be scalar
@@ -1285,11 +1290,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           identifiers( array_id ).wasFactor := true;
        end if;
        expectSymbol(
+          contextNotes => "in the expression",
           expectedValue => ")",
-          which => t,
-          what => "is an array",
-          whatkind => identifiers( t ).kind,
-          why => "and an array index"
+          subject => t,
+          subjectType => identifiers( t ).kind,
+          reason => "is an array variable and closing an array index"
        );
        kind := identifiers( identifiers( array_id ).kind ).kind;
     else
@@ -1358,9 +1363,10 @@ begin
      ParseExpression( f, kind );
      expectSymbol(
         expectedValue => ")",
-        what => "In this subexpression",
-        whatkind => kind,
-        why => "closing it"
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the subexpression",
+        subjectType => kind,
+        reason => "is closing and"
      );
   -- to speed things up, these wide if statements break up tokens into
   -- categories.  If the token isn't in the category, skip the rest.
@@ -1490,13 +1496,24 @@ begin
      elsif token = abs_t then                             -- abs function
         ParseNumericsAbs( f );
         kind := uni_numeric_t;
+     elsif token = if_t or token = case_t then            -- ada 2012
+        f := null_unbounded_string;                -- (always return something)
+        kind := eof_t;
+        err(                                              -- if/case function
+           contextNotes => "in this expression",
+           subjectNotes => "Ada 2012 if and case expressions",
+           reason => "are not supported",
+           remedy => "use the statement version which is easier to debug and maintain"
+        );
      else
         f := null_unbounded_string;                -- (always return something)
         kind := eof_t;
         err(
-              what => "This expression",
-              why => "expects an operand",
-              how => "a variable, value or expression."
+              -- redundant contextNotes => "in this expression",
+              subjectNotes => "the expression",
+              reason => "expects an operand not",
+              obstructor => token,
+              remedy => "an expression factor expects a variable, value or subexpression"
         );
      end if;
      -- Another board category, is the token a pre-defined idenifier?
@@ -1561,10 +1578,12 @@ begin
      f := null_unbounded_string;                        -- (always return something)
      kind := universal_t;
      err(
-        what => "This expression",
-        why => "expects an operand",
-        how => "a variable, value or expression."
-     );
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operand not",
+        obstructor => token,
+        remedy => "an expression factor expects a variable, value or subexpression"
+        );
   else                                                  -- a user ident?
      ParseFactorIdentifier;
   end if;
@@ -1618,11 +1637,12 @@ procedure ParsePowerTermOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
-     err( "operator expected");
+     --err( "operator expected");
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "'**'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator symbol",
+        remedy => "'**'."
      );
   -- This is checked by parseTerm
   --elsif identifiers( Token ).value.all /= "**" then
@@ -1705,15 +1725,17 @@ begin
      op := identifiers( token ).name;
   elsif Token /= symbol_t then
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a term operator like '*', '/' or '&'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a term operator like '*', '/' or '&'."
      );
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a term operator like '*', '/' or '&'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a term operator like '*', '/' or '&'."
      );
   else
      op := identifiers( token ).value.all;
@@ -1924,17 +1946,18 @@ procedure ParseSimpleExpressionOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
-     err( "operator expected");
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a simple expression operator like '+' or '-'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a simple expression operator like '+' or '-'."
      );
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a simple expression operator like '+' or '-'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a simple expression operator like '+' or '-'."
      );
   end if;
   op := identifiers( token ).value.all;
@@ -2112,9 +2135,10 @@ begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a relational operator like '=', '/=' or 'in'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a relational operator like '=', '/=' or 'in'"
      );
   elsif identifiers( Token ).value.all /= ">=" and
         identifiers( Token ).value.all /= ">" and
@@ -2124,9 +2148,10 @@ begin
         identifiers( Token ).value.all /= "/=" and
         Token /= in_t and Token /= not_t then
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a relational operator like '=', '/=' or 'in'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a relational operator like '=', '/=' or 'in'"
      );
   end if;
   if Token = in_t then
@@ -2136,9 +2161,10 @@ begin
      getNextToken;
      if Token /= in_t then
         err(
-           what => "This expression",
-           why => "expects an operator",
-           how => "a relational operator like '=', '/=' or 'in'."
+           -- redundant contextNotes => "in this expression",
+           subjectNotes => "the expression",
+           reason => "expects an operator",
+           remedy => "a relational operator like '=', '/=' or 'in'."
         );
      end if;
   else
@@ -2184,9 +2210,9 @@ begin
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then -- redundant below but
            expectSymbol(                           -- keeps error messages nice
               expectedValue => "..",
-              what => "For the in / not in range",
-              whatkind => kind1,
-              why => "the range"
+              contextNotes => "in this expression",
+              subjectNotes => "the in / not in range",
+              subjectType => kind1
            );
            ParseFactor( se3, kind3 );       -- should probably restructure
            if type_checks_done or else baseTypesOK( kind2, kind3 ) then
@@ -2342,9 +2368,10 @@ begin
      Token /= xor_t then
      err( "boolean operator expected");
      err(
-        what => "This expression",
-        why => "expects an operator",
-        how => "a boolean operator like 'and', 'or' or 'xor'."
+        -- redundant contextNotes => "in this expression",
+        subjectNotes => "the expression",
+        reason => "expects an operator",
+        remedy => "a boolean operator like 'and', 'or' or 'xor'."
      );
   end if;
   op := Token;
@@ -2475,8 +2502,10 @@ begin
            end if;
         else
            err(
-              what => "This expression",
-              why => "expects an boolean or a number"
+              -- redundant contextNotes => "in this expression",
+              subjectNotes => "this expression",
+              reason => "expects",
+              obstructorNotes => "a boolean or a number"
            );
         end if;
      end if;

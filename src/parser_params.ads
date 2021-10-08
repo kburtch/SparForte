@@ -52,6 +52,11 @@ procedure ParseRenamingReference( ref : out renamingReference; expectedType : id
 -- Unchecked Parameters
 ------------------------------------------------------------------------------
 
+procedure ParseGenItemParameter(
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_string_t );
+
 procedure ParseNextGenItemParameter(
   subprogram : identifier;
   expr_val : out unbounded_string;
@@ -64,15 +69,14 @@ procedure ParseLastGenItemParameter(
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
-procedure ParseGenItemParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_string_t );
-
 ------------------------------------------------------------------------------
 -- String Parameters
 ------------------------------------------------------------------------------
 
-procedure ParseStringParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_string_t  );
+procedure ParseStringParameter(
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_string_t  );
 
 procedure ParseSingleStringParameter(
   subprogram : identifier;
@@ -80,8 +84,11 @@ procedure ParseSingleStringParameter(
   expr_type : out identifier;
   expected_type : identifier := uni_string_t  );
 
-procedure ParseFirstStringParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_string_t );
+procedure ParseFirstStringParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_string_t );
 
 procedure ParseNextStringParameter(
   subprogram : identifier;
@@ -99,14 +106,22 @@ procedure ParseLastStringParameter(
 -- Enumerated Parameters
 ------------------------------------------------------------------------------
 
-procedure ParseEnumParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier );
+procedure ParseEnumParameter(
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier );
 
-procedure ParseSingleEnumParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier );
+procedure ParseSingleEnumParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier );
 
-procedure ParseFirstEnumParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier );
+procedure ParseFirstEnumParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier );
 
 procedure ParseNextEnumParameter(
   subprogram : identifier;
@@ -124,14 +139,22 @@ procedure ParseLastEnumParameter(
 -- Numeric Parameters
 ------------------------------------------------------------------------------
 
+procedure ParseNumericParameter(
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_numeric_t );
+
 procedure ParseSingleNumericParameter(
   subprogram : identifier;
   expr_val : out unbounded_string;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 
-procedure ParseFirstNumericParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_numeric_t );
+procedure ParseFirstNumericParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_numeric_t );
 
 procedure ParseNextNumericParameter(
   subprogram : identifier;
@@ -145,20 +168,22 @@ procedure ParseLastNumericParameter(
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 
-procedure ParseNumericParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_numeric_t );
-
 ------------------------------------------------------------------------------
 -- In/Out Parameters
 ------------------------------------------------------------------------------
+
+procedure ParseInOutParameter( ref : out reference );
+-- TODO: should modify others to also use a reference
 
 procedure ParseSingleInOutParameter(
   subprogram : identifier;
   param_id : out identifier;
   expected_type : identifier  );
 
-
-procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : identifier  );
+procedure ParseFirstInOutParameter(
+  subprogram : identifier;
+  param_id : out identifier;
+  expected_type : identifier  );
 
 procedure ParseNextInOutParameter(
   subprogram : identifier;
@@ -170,23 +195,25 @@ procedure ParseLastInOutParameter(
   param_id : out identifier;
   expected_type : identifier  );
 
-procedure ParseInOutParameter( ref : out reference );
--- TODO: should modify others to also use a reference
-
 procedure ParseLastInOutRecordParameter( subprogram : identifier; param_id : out identifier );
 
 ------------------------------------------------------------------------------
 -- Instantiated Generics Parameters
 ------------------------------------------------------------------------------
 
-procedure ParseInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
+procedure ParseInOutInstantiatedParameter(
+  param_id : out identifier;
+  expected_type : identifier  );
 
 procedure ParseSingleInOutInstantiatedParameter(
   subprogram : identifier;
   param_id : out identifier;
   expected_type : identifier );
 
-procedure ParseFirstInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  );
+procedure ParseFirstInOutInstantiatedParameter(
+  subprogram : identifier;
+  param_id : out identifier;
+  expected_type : identifier  );
 
 procedure ParseNextInOutInstantiatedParameter(
   subprogram : identifier;
@@ -202,11 +229,19 @@ procedure ParseLastInOutInstantiatedParameter(
 -- Out Parameters
 ------------------------------------------------------------------------------
 
-procedure ParseOutParameter( ref : out reference; defaultType : identifier );
+procedure ParseOutParameter(
+  ref : out reference;
+  defaultType : identifier );
 
-procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier );
+procedure ParseSingleOutParameter(
+  subprogram : identifier;
+  ref : out reference;
+  defaultType : identifier );
 
-procedure ParseFirstOutParameter( ref : out reference; defaultType : identifier );
+procedure ParseFirstOutParameter(
+  subprogram : identifier;
+  ref : out reference;
+  defaultType : identifier );
 
 procedure ParseNextOutParameter(
   subprogram : identifier;

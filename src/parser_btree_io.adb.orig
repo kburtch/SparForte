@@ -34,6 +34,7 @@ with
     world,
     pegasoft.user_io,
     scanner,
+    scanner.communications,
     scanner_res,
     scanner_restypes,
     parser,
@@ -53,6 +54,7 @@ use
     world,
     pegasoft.user_io,
     scanner,
+    scanner.communications,
     scanner_res,
     scanner_restypes,
     parser,
@@ -119,9 +121,9 @@ begin
   ParseSingleInOutInstantiatedParameter( subprogram, fileId, btree_file_t );
 end ParseSingleFileParameter;
 
-procedure ParseFirstFileParameter( fileId : out identifier ) is
+procedure ParseFirstFileParameter( subprogram : identifier; fileId : out identifier ) is
 begin
-  ParseFirstInOutInstantiatedParameter( fileId, btree_file_t );
+  ParseFirstInOutInstantiatedParameter( subprogram, fileId, btree_file_t );
 end ParseFirstFileParameter;
 
 --procedure ParseNextFileParameter( fileId : out identifier ) is
@@ -334,7 +336,7 @@ begin
      err( "recover not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_recover_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_recover_t, fileId );
   ParseLastStringParameter( btree_recover_t, fname_val, fname_type, string_t );
 
   if isExecutingCommand then
@@ -415,7 +417,7 @@ begin
   expect( btree_create_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_create_t, fileId );
   ParseNextStringParameter( btree_create_t, fname_val, fname_type, string_t );
   ParseNextNumericParameter( btree_create_t, keyLenExpr, keyLenType, positive_t );
   ParseLastNumericParameter( btree_create_t, valLenExpr, valLenType, positive_t );
@@ -582,7 +584,7 @@ begin
   expect( btree_open_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_open_t, fileId );
   ParseNextStringParameter( btree_open_t, fname_val, fname_type, string_t );
   -- TODO: can this be dynamic?
   ParseNextNumericParameter( btree_open_t, keyLenExpr, keyLenType, positive_t );
@@ -903,7 +905,7 @@ begin
      err( "set not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_set_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_set_t, fileId );
   ParseNextStringParameter( btree_set_t, keyExpr, keyType, string_t );
   expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
@@ -999,7 +1001,7 @@ procedure ParseBTreeGet is
 begin
   -- TODO: null string instead of exception to parallel dht
   expect( btree_get_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_get_t, fileId );
   genKindId := identifiers( fileId ).genKind;
   ParseNextStringParameter( btree_get_t, keyExpr, keyType, string_t );
   expectParameterComma;
@@ -1123,7 +1125,7 @@ procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identi
 begin
   kind := boolean_t;
   expect( btree_has_element_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_has_element_t, fileId );
   ParseLastStringParameter( btree_has_element_t, keyExpr, keyType, string_t );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -1166,8 +1168,8 @@ begin
      err( "remove not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_remove_t );
-  ParseFirstFileParameter( fileId );
-  expectParameterComma;
+  ParseFirstFileParameter( btree_remove_t, fileId );
+  expectParameterComma( btree_remove_t );
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
@@ -1232,7 +1234,7 @@ begin
      err( "increment not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_increment_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_increment_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
@@ -1303,7 +1305,7 @@ begin
      err( "decrement not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_decrement_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_decrement_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
   end if;
@@ -1375,7 +1377,7 @@ begin
      err( "add not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_add_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_add_t, fileId );
   ParseNextStringParameter( btree_add_t, keyExpr, keyType, uni_string_t );
   expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
@@ -1498,7 +1500,7 @@ begin
      err( "replace not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_replace_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_replace_t, fileId );
   expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
      ParseIdentifier( cursId );
@@ -1699,7 +1701,7 @@ begin
      err( "append not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_append_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_append_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
@@ -1751,7 +1753,7 @@ begin
      err( "prepend not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_prepend_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_prepend_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
   end if;
@@ -1909,7 +1911,7 @@ procedure ParseBTreeOpenCursor is
   theCurs    : resPtr;
 begin
   expect( btree_open_cursor_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_open_cursor_t, fileId );
   ParseLastCursorParameter( btree_open_cursor_t, cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -1949,7 +1951,7 @@ procedure ParseBTreeCloseCursor is
   theCurs    : resPtr;
 begin
   expect( btree_close_cursor_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_close_cursor_t, fileId );
   ParseLastCursorParameter( btree_close_cursor_t, cursId );
   if isExecutingCommand then
      begin
@@ -2002,7 +2004,7 @@ begin
      err( "get_first not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_first_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_get_first_t, fileId );
   ParseNextCursorParameter( btree_get_first_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
@@ -2158,7 +2160,7 @@ begin
      err( "get_next not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_next_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_get_next_t, fileId );
   ParseNextCursorParameter( btree_get_next_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
@@ -2314,7 +2316,7 @@ begin
      err( "get_last not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_last_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_get_last_t, fileId );
   ParseNextCursorParameter( btree_get_last_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
@@ -2470,7 +2472,7 @@ begin
      err( "get_previous not allowed in a " & optional_yellow( "restricted shell" ) );
   end if;
   expect( btree_get_previous_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_get_previous_t, fileId );
   ParseNextCursorParameter( btree_get_previous_t, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
@@ -2682,7 +2684,7 @@ procedure ParseBTreeRaiseExceptions is
   boolType   : identifier;
 begin
   expect( btree_raise_exceptions_t );
-  ParseFirstFileParameter( fileId );
+  ParseFirstFileParameter( btree_raise_exceptions_t, fileId );
   ParseLastEnumParameter( btree_raise_exceptions_t, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare

@@ -24,12 +24,13 @@
 --with text_io;
 
 with interfaces.c,
-    scanner,
+    scanner.communications,
     pegasoft.strings,
     pegasoft.user_io,
     parser_params;
 use interfaces.c,
     scanner,
+    scanner.communications,
     pegasoft.strings,
     pegasoft.user_io,
     parser_params;
@@ -59,7 +60,7 @@ begin
      err( optional_yellow( "pragma ada_95" ) & " doesn't allow perl_match" );
   end if;
   expect( perl_match_t );
-  ParseFirstStringParameter( pat_val, pat_type );
+  ParseFirstStringParameter( perl_match_t, pat_val, pat_type );
   ParseLastStringParameter( perl_match_t, expr_val, expr_type );
   if isExecutingCommand then
      #if PCRE

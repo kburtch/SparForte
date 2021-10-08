@@ -33,7 +33,7 @@ with interfaces.c,
     base64,
     spar_os,
     world,
-    scanner,
+    scanner.communications,
     pegasoft.strings,
     pegasoft.user_io,
     parser_aux,
@@ -51,6 +51,7 @@ use interfaces.c,
     spar_os,
     world,
     scanner,
+    scanner.communications,
     pegasoft.strings,
     pegasoft.user_io,
     parser_params,
@@ -170,7 +171,7 @@ begin
   kind := boolean_t;
   result := null_unbounded_string;
   expect( glob_t );
-  ParseFirstStringParameter( pat_val, pat_type );
+  ParseFirstStringParameter( glob_t, pat_val, pat_type );
   ParseLastStringParameter( glob_t, expr_val, expr_type );
   if isExecutingCommand then
      begin
@@ -215,7 +216,7 @@ begin
   kind := boolean_t;
   result := null_unbounded_string;
   expect( match_t ); --getNextToken;
-  ParseFirstStringParameter( pat_val, pat_type );
+  ParseFirstStringParameter( match_t, pat_val, pat_type );
   ParseLastStringParameter( match_t, expr_val, expr_type );
   if isExecutingCommand then
      begin
@@ -272,7 +273,7 @@ procedure ParseStringsElement( result : out unbounded_string; kind : out identif
 begin
   kind := character_t;
   expect( element_t );
-  ParseFirstStringParameter( str_val, str_type, Uni_String_T );
+  ParseFirstStringParameter( element_t, str_val, str_type, Uni_String_T );
   ParseLastNumericParameter( element_t, index_val, index_type, positive_t );
   begin
      if isExecutingCommand then
@@ -302,7 +303,7 @@ procedure ParseStringsSlice( result : out unbounded_string; kind : out identifie
 begin
   kind := uni_string_t;
   expect( slice_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( slice_t, str_val, str_type );
   ParseNextNumericParameter( slice_t, low_val, low_type, positive_t );
   ParseLastNumericParameter( slice_t, hi_val,  hi_type,  natural_t );
   begin
@@ -338,7 +339,7 @@ procedure ParseStringsIndex( result : out unbounded_string; kind : out identifie
 begin
   kind := natural_t;
   expect( index_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( index_t, str_val, str_type );
   ParseNextStringParameter( index_t, pat_val, pat_type, Uni_String_T );
   -- no value if syntax check
   if isExecutingCommand then
@@ -386,7 +387,7 @@ procedure ParseStringsIndexNonBlank( result : out unbounded_string; kind : out i
 begin
   kind := natural_t;
   expect( index_non_blank_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( index_non_blank_t, str_val, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( index_non_blank_t, dir_val, dir_type, strings_direction_t );
      if isExecutingCommand then
@@ -434,7 +435,7 @@ procedure ParseStringsIndexSet( result : out unbounded_string; kind : out identi
 begin
   kind := natural_t;
   expect( index_set_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( index_set_t, str_val, str_type );
   ParseNextStringParameter( index_set_t, set_val, set_type, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextStringParameter( index_set_t, first_val, first_type, positive_t );
@@ -492,7 +493,7 @@ procedure ParseStringsCount( result : out unbounded_string; kind : out identifie
 begin
   kind := natural_t;
   expect( count_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( count_t, str_val, str_type );
   ParseLastStringParameter( count_t, pat_val, pat_type, Uni_String_T );
   begin
      if isExecutingCommand then
@@ -524,7 +525,7 @@ procedure ParseStringsReplaceSlice( result : out unbounded_string; kind : out id
 begin
   kind := uni_string_t;
   expect( replace_slice_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( replace_slice_t, str_val, str_type );
   ParseNextNumericParameter( replace_slice_t, low_val, low_type, positive_t );
   ParseNextNumericParameter( replace_slice_t, hi_val,  hi_type,  natural_t );
   ParseLastStringParameter(  replace_slice_t, by_val,  by_type, Uni_String_T );
@@ -564,7 +565,7 @@ begin
      err( "replace_all cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( replace_all_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( replace_all_t, str_val, str_type );
   ParseNextStringParameter( replace_all_t, needle_val, needle_type );
   ParseNextStringParameter( replace_all_t, newstr_val, newstr_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -604,7 +605,7 @@ procedure ParseStringsInsert( result : out unbounded_string; kind : out identifi
 begin
   kind := uni_string_t;
   expect( strings_insert_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( strings_insert_t, str_val, str_type );
   ParseNextNumericParameter( strings_insert_t, before_val, before_type, positive_t );
   ParseLastStringParameter( strings_insert_t, new_val, new_type, uni_string_T );
   begin
@@ -637,7 +638,7 @@ procedure ParseStringsOverwrite( result : out unbounded_string; kind : out ident
 begin
   kind := uni_string_t;
   expect( overwrite_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( overwrite_t, str_val, str_type );
   ParseNextNumericParameter( overwrite_t, pos_val, pos_type, positive_t );
   ParseLastStringParameter( overwrite_t, new_val, new_type, Uni_String_T );
   begin
@@ -670,7 +671,7 @@ procedure ParseStringsDelete( result : out unbounded_string; kind : out identifi
 begin
   kind := uni_string_t;
   expect( sdelete_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( sdelete_t, str_val, str_type );
   ParseNextNumericParameter( sdelete_t, low_val, low_type, positive_t );
   ParseLastNumericParameter( sdelete_t, hi_val,  hi_type,  natural_t );
   if isExecutingCommand then
@@ -704,7 +705,7 @@ procedure ParseStringsTrim( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_string_t;
   expect( trim_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( trim_t, str_val, str_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      has_end := true;
      ParseLastEnumParameter( trim_t, trim_end_val, trim_end_type, strings_trim_end_t );
@@ -774,7 +775,7 @@ procedure ParseStringsHead( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_string_t;
   expect( head_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( head_t, str_val, str_type );
   ParseNextNumericParameter( head_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( head_t, pad_val, pad_type, character_t );
@@ -815,7 +816,7 @@ procedure ParseStringsTail( result : out unbounded_string; kind : out identifier
 begin
   kind := uni_string_t;
   expect( tail_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( tail_t, str_val, str_type );
   ParseNextNumericParameter( tail_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( tail_t, pad_val, pad_type, character_t );
@@ -858,7 +859,7 @@ begin
      err( "starts_with cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( starts_with_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( starts_with_t, str_val, str_type );
   ParseNextStringParameter( starts_with_t, head_val, head_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( starts_with_t, sensitivity_val, sensitivity_type, strings_sensitivity_t );
@@ -904,7 +905,7 @@ begin
      err( "ends_with cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( ends_with_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( ends_with_t, str_val, str_type );
   ParseNextStringParameter( ends_with_t, tail_val, tail_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastEnumParameter( ends_with_t, sensitivity_val, sensitivity_type, strings_sensitivity_t );
@@ -951,7 +952,7 @@ begin
      err( "field cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( field_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( field_t, str_val, str_type );
   ParseNextNumericParameter( field_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( field_t, del_val, del_type, character_t );
@@ -999,7 +1000,7 @@ begin
      err( "csv_field cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( csv_field_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( csv_field_t, str_val, str_type );
   ParseNextNumericParameter( csv_field_t, cnt_val, cnt_type, natural_t );
   -- Optional delimiter
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1276,7 +1277,7 @@ procedure ParseStringsLookup( result : out unbounded_string; kind : out identifi
 begin
   kind := uni_string_t;
   expect( lookup_t );
-  ParseFirstStringParameter( src_val, src_type );
+  ParseFirstStringParameter( lookup_t, src_val, src_type );
   ParseNextStringParameter( lookup_t, tar_val, tar_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseLastStringParameter( lookup_t, del_val, del_type, character_t );
@@ -1552,7 +1553,7 @@ begin
      err( "split cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( split_t );
-  ParseFirstStringParameter( src_val, src_type );
+  ParseFirstStringParameter( split_t, src_val, src_type );
   ParseNextOutParameter( split_t, left_ref, Uni_String_T );
   ParseNextOutParameter( split_t, right_ref, Uni_String_T );
   ParseLastNumericParameter( split_t, field_val, field_type, natural_t );
@@ -1937,7 +1938,7 @@ begin
      err( "is_typo_of cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( is_typo_of_t );
-  ParseFirstStringParameter( expr1_val, expr1_type );
+  ParseFirstStringParameter( is_typo_of_t, expr1_val, expr1_type );
   ParseLastStringParameter( is_typo_of_t, expr2_val, expr2_type );
   begin
     if isExecutingCommand then
@@ -1966,7 +1967,7 @@ procedure ParseStringsUnboundedSlice( result : out unbounded_string; kind : out 
 begin
   kind := unbounded_string_t;
   expect( unbounded_slice_t );
-  ParseFirstStringParameter( str_val, str_type );
+  ParseFirstStringParameter( unbounded_slice_t, str_val, str_type );
   ParseNextNumericParameter( unbounded_slice_t, low_val, low_type, positive_t );
   ParseLastNumericParameter( unbounded_slice_t, hi_val,  hi_type,  natural_t );
   begin
@@ -2115,7 +2116,7 @@ begin
      err( "levenshtein cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( levenshtein_t );
-  ParseFirstStringParameter( str1_val, str1_type );
+  ParseFirstStringParameter( levenshtein_t, str1_val, str1_type );
   ParseLastStringParameter( levenshtein_t, str2_val, str2_type );
   if baseTypesOK( str1_type, str2_type ) then
      if isExecutingCommand then
@@ -2207,7 +2208,7 @@ begin
      err( "compare cannot be used with " & optional_yellow( "pragma ada_95" ) );
   end if;
   expect( compare_t );
-  ParseFirstStringParameter( first_val, first_type );
+  ParseFirstStringParameter( compare_t, first_val, first_type );
   ParseNextStringParameter( compare_t, last_val, last_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextEnumParameter( compare_t, sensitivity_val,  sensitivity_type, strings_sensitivity_t );

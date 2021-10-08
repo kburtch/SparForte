@@ -27,11 +27,13 @@ with
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     chain_util;
 use
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     chain_util;
 
 package body parser_chains is

@@ -25,11 +25,13 @@ with ada.command_line,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser;
 use ada.command_line,
     ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser;
 
 pragma warnings( off );               -- suppress GNAT interal package warning

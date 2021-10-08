@@ -30,12 +30,14 @@ with gnat.bubble_sort_a,
      spar_os,
      pegasoft.strings,
      world,
+     scanner.communications,
      parser,
      parser_aux;
 use  ada.numerics.long_elementary_functions,
      spar_os,
      pegasoft.strings,
      world,
+     scanner.communications,
      parser,
      parser_aux;
 

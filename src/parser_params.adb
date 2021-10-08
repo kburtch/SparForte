@@ -26,7 +26,7 @@ with ada.text_io; use ada.text_io;
 with ada.strings.unbounded,
     world,
     pegasoft.user_io,
-    scanner,
+    scanner.communications,
     performance_monitoring,
     parser_aux,
     parser_sidefx,
@@ -36,6 +36,7 @@ use ada.strings,
     world,
     pegasoft.user_io,
     scanner,
+    scanner.communications,
     performance_monitoring,
     parser_aux,
     parser_sidefx,
@@ -310,7 +311,7 @@ procedure ParseSingleStringParameter(
   expr_type : out identifier;
   expected_type : identifier := uni_string_t  ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
@@ -337,9 +338,12 @@ end ParseSingleStringParameter;
 -- type, assume it's a universal string type.
 ------------------------------------------------------------------------------
 
-procedure ParseFirstInOutParameter( param_id : out identifier; expected_type : identifier  ) is
+procedure ParseFirstInOutParameter(
+  subprogram : identifier;
+  param_id : out identifier;
+  expected_type : identifier  ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseIdentifier( param_id ); -- in out
   discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
   if syntax_check and then not error_found then
@@ -424,7 +428,7 @@ procedure ParseSingleInOutParameter(
   param_id : out identifier;
   expected_type : identifier  ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseIdentifier( param_id ); -- in out
   discard_result := type_checks_done or else baseTypesOK( identifiers( param_id ).kind, expected_type );
   if syntax_check and then not error_found then
@@ -527,9 +531,12 @@ end ParseInOutInstantiatedParameter;
 -- The generic type is a universal type.  Check for side-effects.
 ------------------------------------------------------------------------------
 
-procedure ParseFirstInOutInstantiatedParameter( param_id : out identifier; expected_type : identifier  ) is
+procedure ParseFirstInOutInstantiatedParameter(
+  subprogram : identifier;
+  param_id : out identifier;
+  expected_type : identifier  ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseIdentifier( param_id ); -- in out
   --if param_id /= eof_t and then identifiers( param_id ).genKind = eof_t then -- DEBUG
   --   put_line( "parser_params: " & to_string( identifiers( param_id ).name ) & " has a genKind of EOF" ); -- DEBUG
@@ -614,7 +621,7 @@ procedure ParseSingleInOutInstantiatedParameter(
   param_id : out identifier;
   expected_type : identifier ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseIdentifier( param_id ); -- in out
   discard_result := type_checks_done or else uniTypesOK( identifiers( param_id ).kind, expected_type );
   if syntax_check and then not error_found then
@@ -644,10 +651,13 @@ end ParseSingleInOutInstantiatedParameter;
 -- type, assume it's a universal string type.
 ------------------------------------------------------------------------------
 
-procedure ParseFirstStringParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_string_t ) is
+procedure ParseFirstStringParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_string_t ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
@@ -735,14 +745,17 @@ end ParseEnumParameter;
 -- Expect a single parameter that is an enum expression.
 ------------------------------------------------------------------------------
 
-procedure ParseSingleEnumParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier ) is
+procedure ParseSingleEnumParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseExpression( expr_val, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
-  expectParameterClose;
+  expectParameterClose( subprogram );
 end ParseSingleEnumParameter;
 
 
@@ -752,10 +765,13 @@ end ParseSingleEnumParameter;
 -- Expect a first parameter that is an enum expression.
 ------------------------------------------------------------------------------
 
-procedure ParseFirstEnumParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier ) is
+procedure ParseFirstEnumParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseExpression( expr_val, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
@@ -820,7 +836,7 @@ procedure ParseSingleNumericParameter(
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
@@ -838,10 +854,13 @@ end ParseSingleNumericParameter;
 --
 ------------------------------------------------------------------------------
 
-procedure ParseFirstNumericParameter( expr_val : out unbounded_string;
-  expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
+procedure ParseFirstNumericParameter(
+  subprogram : identifier;
+  expr_val : out unbounded_string;
+  expr_type : out identifier;
+  expected_type : identifier := uni_numeric_t ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram );
   ParseExpression( expr_val, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
@@ -1068,9 +1087,12 @@ end ParseOutParameter;
 --
 ------------------------------------------------------------------------------
 
-procedure ParseSingleOutParameter( ref : out reference; defaultType : identifier ) is
+procedure ParseSingleOutParameter(
+  subprogram : identifier;
+  ref : out reference;
+  defaultType : identifier ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram  );
   ParseOutParameter( ref, defaultType );
   expectParameterClose;
 end ParseSingleOutParameter;
@@ -1081,9 +1103,12 @@ end ParseSingleOutParameter;
 --
 ------------------------------------------------------------------------------
 
-procedure ParseFirstOutParameter( ref : out reference; defaultType : identifier ) is
+procedure ParseFirstOutParameter(
+  subprogram : identifier;
+  ref : out reference;
+  defaultType : identifier ) is
 begin
-  expect( symbol_t, "(" );
+  expectParameterOpen( subprogram  );
   ParseOutParameter( ref, defaultType );
 end ParseFirstOutParameter;
 

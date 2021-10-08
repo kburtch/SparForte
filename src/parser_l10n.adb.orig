@@ -28,6 +28,7 @@ with ada.strings.unbounded,
      world,
      pegasoft.strings,
      scanner,
+     scanner.communications,
      parser_params;
 use  ada.strings.unbounded,
 #if L10N
@@ -37,6 +38,7 @@ use  ada.strings.unbounded,
      world,
      pegasoft.strings,
      scanner,
+     scanner.communications,
      parser_params;
 
 package body parser_l10n is
@@ -131,7 +133,7 @@ procedure ParseL10NSetLocale is
   loc_kind :identifier;
 begin
   expect( l10n_setlocale_t );
-  ParseFirstNumericParameter( cat_val, cat_kind, l10n_locale_category_t );
+  ParseFirstNumericParameter( l10n_setlocale_t, cat_val, cat_kind, l10n_locale_category_t );
   ParseLastStringParameter( l10n_setlocale_t, loc_val,loc_kind );
   if isExecutingCommand then
      -- checking errno is not reliable.  On first attempt to use an invalid
