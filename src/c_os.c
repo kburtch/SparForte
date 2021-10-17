@@ -19,7 +19,11 @@
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 int group_member(gid_t gid) {
   int ngroups, i, ret;
+#if defined(__APPLE__)
+  int groups[NGROUPS_MAX];
+#else
   unsigned int groups[NGROUPS_MAX];
+#endif
 
   ngroups = NGROUPS_MAX;
   if (getgrouplist(getlogin(), -1, groups, &ngroups) == -1) {
