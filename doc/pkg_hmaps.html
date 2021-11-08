@@ -472,12 +472,6 @@ An exception is raised if the key does not exist</p></td>
 <td><span>hashed_maps.cursor</i></span></td>
 <td><span>required (if no map)</span></td>
 <td><span>the cursor</span></td>
-</tr><tr>
-<td><span>e</span></td>
-<td><span>in</span></td>
-<td><span><i>map value type</i></span></td>
-<td><span>required</span></td>
-<td><span>the string to append</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1331,7 +1325,7 @@ An exception is raised if the element type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Add enough memory to the map to handle at least c items.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.capacity( fruit_unit, 20 );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.reserve_capacity( fruit_unit, 20 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >

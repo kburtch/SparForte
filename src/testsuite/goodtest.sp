@@ -6736,9 +6736,9 @@ begin
   pragma assert( vectors.length( v ) = 5 );
   vectors.set_length( v, 3 );
   pragma assert( vectors.length( v ) = 3 );
-  vectors.append( v, "bar" );
+  vectors.append_elements( v, "bar" );
   pragma assert( vectors.length( v ) = 4 );
-  vectors.append( v, "boo", 2 );
+  vectors.append_elements( v, "boo", 2 );
   pragma assert( vectors.length( v ) = 6 );
   pragma assert( vectors.element( v, 0 ) = "foo" );
   pragma assert( vectors.element( v, 1 ) = "foo" );
@@ -6755,14 +6755,14 @@ begin
   pragma assert( vectors.first_index( v ) = 0 );
   pragma assert( vectors.last_index( v ) = 8 );
   vectors.clear( v );
-  vectors.append( v, "abc" );
-  vectors.append( v, "def" );
-  vectors.append( v, "ghi" );
-  vectors.append( v, "jkl" );
-  vectors.append( v, "mno" );
-  vectors.append( v, "pqr" );
-  vectors.append( v, "stu" );
-  vectors.append( v, "xyz" );
+  vectors.append_elements( v, "abc" );
+  vectors.append_elements( v, "def" );
+  vectors.append_elements( v, "ghi" );
+  vectors.append_elements( v, "jkl" );
+  vectors.append_elements( v, "mno" );
+  vectors.append_elements( v, "pqr" );
+  vectors.append_elements( v, "stu" );
+  vectors.append_elements( v, "xyz" );
   pragma assert( vectors.first_element( v ) = "abc" );
   pragma assert( vectors.last_element( v ) = "xyz" );
   vectors.delete_first( v );
@@ -6776,10 +6776,10 @@ begin
   pragma assert( vectors.contains( v, "mno" ) );
   vectors.clear( v );
   vectors.clear( v2 );
-  vectors.append( v, "apple" );
-  vectors.append( v, "blueberry" );
-  vectors.append( v, "cherry" );
-  vectors.append( v2, "orange" );
+  vectors.append_elements( v, "apple" );
+  vectors.append_elements( v, "blueberry" );
+  vectors.append_elements( v, "cherry" );
+  vectors.append_elements( v2, "orange" );
   vectors.reverse_elements( v );
   pragma assert( vectors.first_element( v ) = "cherry" );
   vectors.flip( v );
@@ -6788,10 +6788,10 @@ begin
   pragma assert( vectors.first_element( v ) = "apple" );
   pragma assert( vectors.last_element( v ) = "orange" );
   vectors.clear( v );
-  vectors.append( v, "apple" );
-  vectors.append( v, "blueberry" );
-  vectors.append( v, "cherry" );
-  vectors.append( v, "pear" );
+  vectors.append_elements( v, "apple" );
+  vectors.append_elements( v, "blueberry" );
+  vectors.append_elements( v, "cherry" );
+  vectors.append_elements( v, "pear" );
   vectors.delete( v, vectors.last_index( v ) );
   pragma assert( vectors.last_element( v ) = "cherry" );
   vectors.delete( v, vectors.last_index( v ) -1, 2 );
@@ -6804,8 +6804,8 @@ declare
   v : vectors.vector( natural, string );
   c : vectors.cursor( natural, string );
 begin
-  vectors.append( v, "ant" );
-  vectors.append( v, "bear" );
+  vectors.append_elements( v, "ant" );
+  vectors.append_elements( v, "bear" );
   vectors.first( v, c );
   pragma assert( vectors.element( c ) = "ant" );
   vectors.next( c );
@@ -6828,14 +6828,14 @@ end;
     gv : vectors.vector( gems, string );
     --pu : vectors.vector( positive, universal_typeless );
   begin
-    vectors.append( iv, "nat" );
+    vectors.append_elements( iv, "nat" );
     -- this depends on the size of int
     pragma assert( vectors.first_index( iv ) < 0 );
-    vectors.append( nv, "nat" );
+    vectors.append_elements( nv, "nat" );
     pragma assert( vectors.element( nv, 0 ) = "nat" );
-    vectors.append( pv, "pos" );
+    vectors.append_elements( pv, "pos" );
     pragma assert( vectors.element( pv, 1 ) = "pos" );
-    vectors.append( gv, "beryl" );
+    vectors.append_elements( gv, "beryl" );
   end;
 
   -- Insert
@@ -6855,8 +6855,8 @@ begin
 
     -- insert with index and element
 
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     idx := vectors.last_index( v1 );
     vectors.insert( v1, idx, "bear" );
     vectors.first( v1, c );
@@ -6872,8 +6872,8 @@ begin
        v3 : vectors.vector( natural, universal_typeless );
        c3 : vectors.cursor( natural, universal_typeless );
     begin
-       vectors.append( v3, "ant" );
-       vectors.append( v3, "cat" );
+       vectors.append_elements( v3, "ant" );
+       vectors.append_elements( v3, "cat" );
        idx := vectors.last_index( v3 );
        vectors.insert( v3, idx, "1234" );
        vectors.first( v3, c3 );
@@ -6903,9 +6903,9 @@ begin
 
     vectors.clear( v1 );
     vectors.clear( v2 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
-    vectors.append( v2, "bear" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
+    vectors.append_elements( v2, "bear" );
     vectors.last( v1, c );
     vectors.insert_vector( v1, c, v2 );
     vectors.first( v1, c );
@@ -6919,8 +6919,8 @@ begin
 
     vectors.clear( v1 );
     vectors.clear( v2 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     vectors.last( v1, c );
     vectors.insert_before( v1, c, "bear" );
     vectors.first( v1, c );
@@ -6934,9 +6934,9 @@ begin
 
     vectors.clear( v1 );
     vectors.clear( v2 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
-    vectors.append( v2, "bear" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
+    vectors.append_elements( v2, "bear" );
     vectors.last( v1, c );
     vectors.insert_vector_and_mark( v1, c, v2, c2 );
     pragma assert( vectors.element( c2 ) = "bear" );
@@ -6951,8 +6951,8 @@ begin
 
     vectors.clear( v1 );
     vectors.clear( v2 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     vectors.last( v1, c );
     vectors.insert_before_and_mark( v1, c, "bear", c2 );
     pragma assert( vectors.element( c2 ) = "bear" );
@@ -6974,8 +6974,8 @@ begin
     vectors.next( c );
 
     vectors.clear( v1 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     idx := vectors.last_index( v1 );
     vectors.insert_space( v1, idx );
     pragma assert( vectors.length( v1 ) = 3 );
@@ -6986,8 +6986,8 @@ begin
     pragma assert( vectors.element( c ) = "cat" );
 
     vectors.clear( v1 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     idx := vectors.last_index( v1 );
     vectors.insert_space( v1, idx, 2 );
     pragma assert( vectors.length( v1 ) = 4 );
@@ -6999,8 +6999,8 @@ begin
     pragma assert( vectors.element( c ) = "cat" );
 
     vectors.clear( v1 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     vectors.last( v1, c );
     vectors.insert_space( v1, c, c2 );
     pragma assert( vectors.length( v1 ) = 3 );
@@ -7012,8 +7012,8 @@ begin
     pragma assert( vectors.element( c2 ) = "cat" );
 
     vectors.clear( v1 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "cat" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "cat" );
     idx := vectors.last_index( v1 );
     vectors.insert_space( v1, c, c2, 2 );
     pragma assert( vectors.length( v1 ) = 4 );
@@ -7039,8 +7039,8 @@ begin
     -- swap with index
 
     vectors.clear( v );
-    vectors.append( v, "ant" );
-    vectors.append( v, "bear" );
+    vectors.append_elements( v, "ant" );
+    vectors.append_elements( v, "bear" );
     idx1 := vectors.first_index( v );
     idx2 := vectors.last_index( v );
     vectors.swap( v, idx1, idx2 );
@@ -7050,8 +7050,8 @@ begin
     -- swap with cursors
 
     vectors.clear( v );
-    vectors.append( v, "cat" );
-    vectors.append( v, "dog" );
+    vectors.append_elements( v, "cat" );
+    vectors.append_elements( v, "dog" );
     vectors.first( v, c1 );
     vectors.last( v, c2 );
     vectors.swap( v, c1, c2 );
@@ -7067,9 +7067,9 @@ begin
     c2 : vectors.cursor( natural, string );
   begin
     vectors.clear( v );
-    vectors.append( v, "ant" );
-    vectors.append( v, "bear" );
-    vectors.append( v, "cat" );
+    vectors.append_elements( v, "ant" );
+    vectors.append_elements( v, "bear" );
+    vectors.append_elements( v, "cat" );
     vectors.first( v, c1 );
     vectors.find( v, "bear", c1, c2 );
     pragma assert( vectors.element( c2 ) = "bear" );
@@ -7085,9 +7085,9 @@ begin
     idx2 : natural;
   begin
     vectors.clear( v );
-    vectors.append( v, "ant" );
-    vectors.append( v, "bear" );
-    vectors.append( v, "cat" );
+    vectors.append_elements( v, "ant" );
+    vectors.append_elements( v, "bear" );
+    vectors.append_elements( v, "cat" );
     idx1 := vectors.first_index( v );
     vectors.find_index( v, "bear", idx1, idx2 );
     pragma assert( idx2 = 1 );
@@ -7104,8 +7104,8 @@ begin
   begin
     vectors.clear( v1 );
     vectors.clear( v2 );
-    vectors.append( v1, "ant" );
-    vectors.append( v1, "bear" );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "bear" );
     vectors.move( v1, v2 );
     pragma assert( vectors.length( v1 ) = 0 );
     pragma assert( vectors.length( v2 ) = 2 );

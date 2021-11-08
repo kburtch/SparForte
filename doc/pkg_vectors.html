@@ -44,7 +44,7 @@
 	<!-- Content Area -->
 <h2><a NAME="4.14"></a>Vectors Package</h2>
 
-<p>A collection of common routines for working with dynamic arrays (indexed lists).</p>
+<p>A collection of common routines for working with dynamic arrays (indexed lists).  This is based on the work of Grady Booch.</p>
   
 
 <p><u>Introduced</u>: SparForte 2.4.2<br>
@@ -159,13 +159,13 @@ An exception is raised if the element type is not a string</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.assign"></a><h3>hashed_maps.assign( t, s )</h3>
+<a name="vectors.append_elements"></a><h3>vectors.append_elements( v, e [,c])</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Assign source map s to target map t, overwriting the contents of t.  s is unchanged.</p>
+<td><p>Queue list element e at the end of the vector v.  If c is used, append c copies of e.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.assign( old_fruit, updated_fruit );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.append_elements( v, "zebra", 2 ); -- append 2 copies of "zebra"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -176,80 +176,46 @@ An exception is raised if the element type is not a string</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>t</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map to be assigned to</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>s</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>list element type</i></span></td>
 <td><span>required</span></td>
-<td><span>the map to copy from</span></td>
+<td><span>the element to queue</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</i></span></td>
+<td><span>1</span></td>
+<td><span>the number of copies</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key or element has the wrong type<br>
+<td><p>An exception is raised if the copies is not an integer value<br>
 An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Assign<br>
-Java: HashMap.putAll()</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Append</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Assign fails on CentOS 7 due to a Ada bug.</p></td>
-</tr>
-</tr>
-</table>
-
-<a name="hashed_maps.capacity"></a><h3>c := hashed_maps.capacity( m )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the spare item capacity of map m.  This is the number of items that can be inserted before the map memory grows.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">c := hashed_maps.capacity( fruit_unit );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>return value</span></td>
-<td><span>containers.count_type</span></td>
-<td><span>required</span></td>
-<td><span>the number of items</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+<td><p>Ada's append is separated into individual subprograms due to SparForte's current lack of named parameters to differentiate the variations.</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.clear"></a><h3>hashed_maps.clear( m )</h3>
+<a name="vectors.append_vectors"></a><h3>vectors.append_vectors( v1, v2 )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Delete the contents of the hash map.</p>
+<td><p>Add the contents of vector v2 to the end of vector v1.  Vector v2 is unchanged.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.clear( fruit_unit );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">--if v1 has "a", "b", "c" and v2 has "d", "e", "f"<br>
+vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -269,21 +235,95 @@ Java: HashMap.putAll()</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
+<td><p>An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Clear<br>
-Java: HashMap.clear()</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Append</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's append is separated into individual subprograms due to SparForte's current lack of named parameters to differentiate the variations.</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.contains"></a><h3>b := hashed_maps.contains( m, k )</h3>
+<a name="vectors.capacity"></a><h3>c := vectors.capacity( v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return true if key k is in the map m.</p>
+<td><p>Return the spare element capacity of vector v.  This is the number of elements that can be inserted before the vector memory grows.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.contains( fruit_unit, "apple" ) then...</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">c := vectors.capacity( animal_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>return value</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of elements</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+</tr>
+</table>
+
+<a name="vectors.clear"></a><h3>vectors.clear( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Delete the contents of the vector.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.clear( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector to erase</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Clear</p></td>
+</tr>
+</table>
+
+<a name="vectors.contains"></a><h3>b := vectors.contains( v, e )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return true if element e in the vector v.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if vectors.contains( device_vector, "router" ) then...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -298,13 +338,13 @@ Java: HashMap.clear()</p></td>
 <td><span>return value</span></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
-<td><span>true if the key exists</span></td>
+<td><span>true if the element exists</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
+<td><span>the vector</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -312,8 +352,7 @@ Java: HashMap.clear()</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Contains<br>
-Java: HashMap.containsKey()</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Contains</p></td>
 </tr>
 </table>
 
@@ -374,13 +413,17 @@ An exception is raised if the key does not exist</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.delete"></a><h3>hashed_maps.delete( m, k | c )</h3>
+<a name="vectors.delete"></a><h3>vectors.delete( v, c | i [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Remove a key and the associated element from the hash map.  If a cursor is given instead of a key, delete the item at the cursor position.</p>
+<td><p>Remove an element from the vector at the index position, effectively
+sliding the elements toward the start of the vector by one position.  If a
+cursor is given instead of an index, delete the item at the cursor position.
+If a count of n is given, delete n elements instead of one.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.delete( fruit, "bad apples" );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">-- if char_vector contains "a", "b", "c"<br>
+vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -391,50 +434,55 @@ An exception is raised if the key does not exist</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required (if no cursor)</span></td>
-<td><span>the map</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>k</span></td>
+<td><span>i</span></td>
 <td><span>in</span></td>
 <td><span><i>map key type</i></span></td>
-<td><span>required</span></td>
-<td><span>the key to delete</span></td>
+<td><span>required (if no cursor)</span></td>
+<td><span>the position to delete</span></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in</span></td>
-<td><span><i>map element type</i></span></td>
-<td><span>required (if no map)</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required (if no index)</span></td>
 <td><span>the cursor position to delete</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of elements to delete</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if nothing is at the cursor position.<br>An exception is raised if the key is not found in the map.</p></td>
-</tr><tr>
-<td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed with pragma ada_95</p>
+<td><p>An exception is raised if the number of elements is not an integer-type value</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p><a href="#hashed_maps.reset">hashed_maps.reset</a><br><a href="#hashed_maps.set">hashed_maps.set</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Delete</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Delete</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Delete" but delete is a reserved word in SparForte.  This may be renamed in the future.</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.element"></a><h3>hashed_maps.element( m, k ) | ( c )</h3>
+<a name="vectors.delete_first"></a><h3>vectors.delete_first( v, [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the value for key k in map m, or the value at cursor c.</p>
+<td><p>Remove an element from the start of the vector.  If a count n is
+given, delete n elements.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_color, "apple", "red" )<br>f := hashed_maps.element( fruit_color, "apple" ); -- return red</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">-- if char_vector contains "a", "b", "c"<br>
+vectors.delete_first( char_vector, 2 ); -- vector is "c"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -445,51 +493,133 @@ An exception is raised if the key does not exist</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the table</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>k</span></td>
+<td><span>n</span></td>
 <td><span>in</span></td>
-<td><span><i>map key type</i></span></td>
-<td><span>required (if no cursor)</span></td>
-<td><span>the key</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>in</span></td>
-<td><span>hashed_maps.cursor</i></span></td>
-<td><span>required (if no map)</span></td>
-<td><span>the cursor</span></td>
-</tr><tr>
-<td><span>e</span></td>
-<td><span>in</span></td>
-<td><span><i>map value type</i></span></td>
-<td><span>required</span></td>
-<td><span>the string to append</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of elements to delete</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key does not exist</p></td>
+<td><p>An exception is raised if the number of elements is not an integer-type value</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.find">hashed_maps.find</a></p></td>
+<td><p><a href="#hashed_maps.reset">hashed_maps.reset</a><br><a href="#hashed_maps.set">hashed_maps.set</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.hashed_Maps.Element<br>
-Java: HashMap.get()</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Delete_First</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.equal"></a><h3>b := hashed_maps.equal( m1, m2 )</h3>
+<a name="vectors.delete_last"></a><h3>vectors.delete_last( v, [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the two maps have identical content.</p>
+<td><p>Remove an element from the end of the vector.  If a count n is
+given, delete n elements.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.equals( old_fruit, updated_fruit ) then ...</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">-- if char_vector contains "a", "b", "c"<br>
+vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of elements to delete</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the number of elements is not an integer-type value</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#hashed_maps.reset">hashed_maps.reset</a><br><a href="#hashed_maps.set">hashed_maps.set</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Delete_Last</p></td>
+</tr>
+</table>
+
+<a name="vectors.element"></a><h3>e := vectors.element( c ) | ( v, i )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the element for index position i in vector v, or the element at cursor c.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">-- if the vector has "switch", "router", "firewall"<br>
+? vectors.element( device_vector, 1 ); -- displays "switch"</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required (if no cursor)</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required (if no cursor)</span></td>
+<td><span>the position</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in</span></td>
+<td><span>vectorss.cursor</i></span></td>
+<td><span>required (if no index)</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if there is no such position<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.contains">vectors.contains</a><br>
+<a href="#vectors.find">vectors.find</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Element</p></td>
+</tr>
+</table>
+
+<a name="vectors.equal"></a><h3>b := vectors.equal( v1, v2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the two vectors have identical content.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if vectors.equal( first_device_vector, second_device_vector ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -506,17 +636,17 @@ Java: HashMap.get()</p></td>
 <td><span>required</span></td>
 <td><span>true if the maps are equal</span></td>
 </tr><tr>
-<td><span>m1</span></td>
+<td><span>v1</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the left map</span></td>
+<td><span>the left vector</span></td>
 </tr><tr>
-<td><span>m2</span></td>
+<td><span>v2</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the right map</span></td>
+<td><span>the right vector</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -524,7 +654,7 @@ Java: HashMap.get()</p></td>
 <td><p>An exception is raised if the key or element types are different</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps."="</p></td>
+<td><p>Ada: Ada.Containers.Vectors."="</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada is "=" but SparForte does not support in-line functions.</p></td>
@@ -532,13 +662,13 @@ Java: HashMap.get()</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.exclude"></a><h3>hashed_maps.exclude( m, k )</h3>
+<a name="vectors.find"></a><h3>vectors.find( v, e, c1, c2 )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Delete the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
+<td><p>Move the cursor c2 to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -549,145 +679,54 @@ Java: HashMap.get()</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Exclude<br>
-Java: HashMap.remove()</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.extract"></a><h3>e := hashed_maps.extract( m, k )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Like remove, delete the value v under key k in the hash map but return it.  If the key does not exist, raise an exception.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
 <td><span>e</span></td>
-<td><span>return value</span></td>
-<td><span><i>map element type</i></span></td>
-<td><span>required</span></td>
-<td><span>the value</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span><i>element type</i></span></td>
 <td><span>required</span></td>
-<td><span>the key</span></td>
+<td><span>the element to find</span></td>
+</tr><tr>
+<td><span>c1</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the starting position</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position of the element</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key does not exist<br>
-An exception is raised if the key is the wrong type<br>
-An exception is raised if out of memory</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.remove">hashed_maps.remove</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.find"></a><h3>e := hashed_maps.find( m, k, c )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the position in the map for key k.  If the key does not exist, the cursor will have no element.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.find( fruit_unit, "apple", cursor );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span><i>map key type</i></span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.cursor</span></td>
-<td><span>required</span></td>
-<td><span>the value</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key is the wrong type<br>
-An exception is raised if out of memory</p></td>
+<td><p>An error occurs if the element is the wrong type<br>
+An exception is raised if the cursor has the wrong types</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Find</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Find</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada's Find is a function.  SparForte's Find is a procedure because the result type is limited.</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.first"></a><h3>hashed_maps.first( m, c )</h3>
+<a name="vectors.find_index"></a><h3>vectors.find_index( v, e, i1, i2 )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the first item in the hashed map.</p>
+<td><p>Return the index in the vector for element e.  Start at the position of index i1.  If the element does not exist, the index i2 will have no index.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.first( fruit, cursor );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.find_index( device_vector, "firewall", 1, position_index );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -698,15 +737,118 @@ An exception is raised if out of memory</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr><tr>
+<td><span>i1</span></td>
+<td><span>in out</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the starting position</span></td>
+</tr><tr>
+<td><span>i2</span></td>
+<td><span>out</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position of the element</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the element is the wrong type<br>
+An exception is raised if the starting position value is bad</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.reverse_find_index">vectors.reverse_find_index</a></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Find_Index</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Find_Index is a function.  SparForte's Find_Index is a procedure because a vector is limited type.  The starting position is required, not optional.</p></td>
+</tr>
+</table>
+
+<a name="vectors.first_index"></a><h3>i := vectors.first_index( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the index to the first element in the vector.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">i := vectors.first_index( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the index</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.First_Index</p></td>
+</tr>
+</table>
+
+<a name="vectors.first"></a><h3>vectors.first( v, c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the first element in the vectors.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.first( device_map, cursor );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.cursor</span></td>
+<td><span>vectors.cursor</span></td>
 <td><span>required</span></td>
 <td><span>the cursor</span></td>
 </tr>
@@ -726,16 +868,15 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada's First is a function.  SparForte's First is a procedure because the result type is limited.</p></td>
-</tr>
 </table>
 
-<a name="hashed_maps.has_element"></a><h3>b := hashed_maps.has_element( c )</h3>
+<a name="vectors.first_element"></a><h3>e := vectors.first_element( v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if item under cursor has a value.</p>
+<td><p>Return the first element of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.has_element( cursor ) then ...</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">e := vectors.first_element( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -745,90 +886,42 @@ An exception is raised if out of memory</p></td>
 <td><span class="pkg_param">Type</span></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>b</span></td>
-<td><span>return value</span></td>
-<td><span>boolean</span></td>
-<td><span>required</span></td>
-<td><span>true if there is an element</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>in</span></td>
-<td><span>hashed_maps.cursor</span></td>
-<td><span>required</span></td>
-<td><span>the cursor</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>Ada: Has_Element</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.include"></a><h3>hashed_maps.include( m, k, v )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Insert the value v under key k in the hash map.  If the key exists, the value is overwritten.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.include( fruit, "apples", 23 );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
 </tr><tr>
 <td><span>v</span></td>
-<td><span>in</span></td>
-<td><span><i>table value type</i></span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the value</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory<br>
-An exception is raised if the key does not exist</p></td>
+<td><p>An exception is raised if the vector is empty.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Include<br>
-Java: HashMap.put()</p></td>
+<td><p>Ada: Ada.Containers.Vectors.First_Element</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.increment"></a><h3>hashed_maps.increment( t, k [,n] )</h3>
+<a name="vectors.first_index"></a><h3>i := vectors.first_index( v )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Increase the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
+<td><p>Return the first index of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.increment( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">i := vectors.first_index( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -839,54 +932,80 @@ Java: HashMap.put()</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>t</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the table</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span><i>vector index type</i></span></td>
 <td><span>required</span></td>
-<td><span>the key</span></td>
-</tr><tr>
-<td><span>n</span></td>
-<td><span>in</span></td>
-<td><span>natural</span></td>
-<td><span>1</span></td>
-<td><span>the amount to increment</span></td>
+<td><span>the index</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory<br>
-An exception is raised if the value type is not numeric</p></td>
+<td><p>An exception is raised if the vector is empty.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Hashed_Maps.First_Index</p></td>
+</tr>
+</table>
+
+<a name="vectors.flip"></a><h3>vectors.flip( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reverse the elements of the vector.  A renaming of vectors.reverse_elements.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.flip( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Restrictions</p></td>
 <td><p>Not allowed with pragma ada_95</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.decrement">hashed_maps.decrement</a></p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.reverse_elements</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>This is in accordance with memcached.</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Reverse_Elements</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.insert"></a><h3>hashed_maps.insert( m, k, e ) | ( m, k, c, b ) | ( m, k, e, c, b )</h3>
+<a name="vectors.insert"></a><h3>vectors.insert( v, i, e [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Insert the value v under key k in the hash map.  If b exists, b is true if the insert was successful.
-If value e exists, set the value to e.  If c exists, move the cursor to the insert position.
-If the key exists, raise an exception.</p>
+<td><p>Insert element e into vector v before index i.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit, "apples", 23 );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert( device_vector, 1, "firewall" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -897,61 +1016,385 @@ If the key exists, raise an exception.</p>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
-<td><span>k</span></td>
+<td><span>i</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
+<td><span><i>vector index type</i></span></td>
 <td><span>required</span></td>
-<td><span>the key</span></td>
+<td><span>the position to insert before</span></td>
 </tr><tr>
 <td><span>e</span></td>
 <td><span>in</span></td>
-<td><span><i>table value type</i></span></td>
-<td><span>no value</span></td>
-<td><span>the value</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to insert</span></td>
 </tr><tr>
-<td><span>c</span></td>
-<td><span>out</span></td>
-<td><span>hashed_maps.cursor</span></td>
-<td><span>optional</span></td>
-<td><span>the cursor</span></td>
-</tr><tr>
-<td><span>b</span></td>
-<td><span>out</span></td>
-<td><span>boolean</span></td>
-<td><span>optional</span></td>
-<td><span>true on success</span></td>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</i></span></td>
+<td><span>1</span></td>
+<td><span>the number of copies</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if the value is the wrong type<br>
 An exception is raised if out of memory<br>
-An exception is raised if the key exists</p></td>
+An exception is raised if the index is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.insert...</a></p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Insert</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Insert</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
 </tr>
+</tr>
 </table>
 
-<a name="hashed_maps.is_empty"></a><h3>b := hashed_maps.is_empty( m )</h3>
+<a name="vectors.insert_before"></a><h3>vectors.insert_before( v, c, e [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>True if the hashed map has no items.</p>
+<td><p>Insert element e into vector v before cursor c.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.is_empty( fruit ) then ...</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert( device_vector, device_cursor, "router" );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>vector cursor type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to insert</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</i></span></td>
+<td><span>1</span></td>
+<td><span>the number of copies</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the index is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.insert</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_before</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_before_and_mark</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_vector</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_vector_and_mark</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses "Insert" but insert is split into several functions in SparForte due to implementation challenges.</p></td>
+</tr>
+</tr>
+</table>
+
+<a name="vectors.insert_before_and_mark"></a><h3>vectors.insert_before_and_mark( v, c, e, c2 [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Insert element e into vector v before cursor c.  Return the position in cursor c2.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert( device_vector, device_cursor, "router", insert_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span><i>vector cursor type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to insert</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>out</span></td>
+<td><span><i>vector cursor type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</i></span></td>
+<td><span>1</span></td>
+<td><span>the number of copies</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the index is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.insert</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_before</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_before_and_mark</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_vector</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_vector_and_mark</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses "Insert" but insert is split into several functions in SparForte due to implementation challenges.</p></td>
+</tr>
+</tr>
+</table>
+
+<a name="vectors.insert_space"></a><h3>insert_space( v, i [, n] ) | ( v, c, c2 [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Insert empty elements into vector v before index i.  If a cursor is used instead, insert the elements before cursor c.  Return the position new cursor.   If a count n is used, insert n copies of the element.  The second vector is unchanged.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert_spacee( device_vector, 1, 15 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>in</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the index to insert before (if no cursor)</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before (if no index)</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the new position (if no index)</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>1</span></td>
+<td><span>the number of elements to insert</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the count is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.insert...</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Insert_Space</p></td>
+</tr>
+</table>
+
+<a name="vectors.insert_vector"></a><h3>vectors.insert_vector( v, c, v2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Copy the elements of v2 into vector v before cursor c.  The second vector is unchanged.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert_vector( device_vector, vector_cursor, firewall_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector to insert</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.insert...</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
+</tr>
+</tr>
+</table>
+
+<a name="vectors.insert_vector_and_mark"></a><h3>vectors.insert_vector_and_mark( v, c, v2, c2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Copy the elements of v2 into vector v before cursor c.  Return the position in cursor c2.  The second vector is unchanged.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert_vector_and_mark( device_vector, device_cursor, new_devices, insert_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span><i>vector cursor type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before</span></td>
+</tr><tr>
+<td><span>v2</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</i></span></td>
+<td><span>required</span></td>
+<td><span>the vector to insert</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>out</span></td>
+<td><span><i>vector cursor type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position to insert before</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the elements are the wrong type<br>
+An exception is raised if out of memory</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.reverse_elements">vectors.insert</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_before</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_before_and_mark</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_vector</a><br>
+<a href="#vectors.reverse_elements">vectors.insert_vector_and_mark</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Insert</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada uses "Insert" but insert is split into several functions in SparForte due to implementation challenges.</p></td>
+</tr>
+</tr>
+</table>
+
+<a name="vectors.is_empty"></a><h3>b := vectors.is_empty( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>True if the vector has no items.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">if vectors.is_empty( device_vector ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -966,13 +1409,13 @@ An exception is raised if the key exists</p></td>
 <td><span>return value</span></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
-<td><span>true if the map is empty</span></td>
+<td><span>true if the vector is empty</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
+<td><span>the vector</span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -980,21 +1423,20 @@ An exception is raised if the key exists</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Is_Empty<br>
-Java: HashMap.is_empty()</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Is_Empty</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
 <td><p>-</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.key"></a><h3>k := hashed_maps.key( c )</h3>
+<a name="vectors.last"></a><h3>vectors.last( v, c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return the key at the cursor c.  If there is no key, raise an exception.</p>
+<td><p>Move the cursor to the last element in the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.key( fruit_cursor ) = "apple" then ...</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.last( device_vector, cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1005,135 +1447,15 @@ Java: HashMap.is_empty()</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>k</span></td>
-<td><span>return value</span></td>
-<td><span><i>cursor key type</i></span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
-</tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if there is no item key at the cursor position<br>An exception is raised if out of memory</p></td>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Key</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>-</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.length"></a><h3>n := hashed_maps.length( m )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the number of elements in the map.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">n := hashed_maps.length( fruit_unit );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>n</span></td>
-<td><span>return value</span></td>
-<td><span>containers.count_type</span></td>
-<td><span>required</span></td>
-<td><span>the number of items</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Length<br>
-Java: HashMap.size()</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.move"></a><h3>hashed_maps.move( t, s )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Move source map s to target map t, overwriting the contents of t.  s is cleared.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.move( old_fruit, updated_fruit );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>t</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map to be assigned to</span></td>
-</tr><tr>
-<td><span>s</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map to copy from</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key or element has the wrong type<br>
-An exception is raised if out of memory</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Move</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>Move fails on CentOS 7 due to a Ada bug.</p></td>
-</tr>
-</tr>
-</table>
-
-<a name="hashed_maps.next"></a><h3>hashed_maps.next( c )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Move the cursor to the next element in the hashed map.  If there are no more items, do nothing.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.next( cursor );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.cursor</span></td>
+<td><span>vectors.cursor</span></td>
 <td><span>required</span></td>
 <td><span>the cursor</span></td>
 </tr>
@@ -1149,20 +1471,190 @@ An exception is raised if out of memory</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Next</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Last</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Last is a function.  SparForte's Last is a procedure because the result type is limited.</p></td>
+</table>
+
+<a name="vectors.last_element"></a><h3>e := vectors.last_element( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the last element of the vector.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">e := vectors.last_element( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>return value</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the vector is empty.</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Last_Element</p></td>
+</tr>
+</table>
+
+<a name="vectors.last_index"></a><h3>i := vectors.last_index( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the index to the last element in the vector.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">i := vectors.last_index( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>i</span></td>
+<td><span>return value</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the index</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.First_Index</p></td>
+</tr>
+</table>
+
+<a name="vectors.length"></a><h3>n := vectors.length( m )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the number of elements in the vector.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">n := vectors.length( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>return value</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of items</span></td>
+</tr><tr>
+<td><span>m</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectorss.Length</p></td>
+</tr>
+</table>
+
+<a name="vectors.next"></a><h3>vectors.next( c )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor to the next element in the vector.  If there are no more items, do nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.next( device_cursor );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Next</p></td>
 </tr><tr>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada's Next function is not implemented because in SparForte the result type is limited.</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.prepend"></a><h3>hashed_maps.prepend( m, k, e )</h3>
+<a name="vectors.prepend"></a><h3>vectors.prepend( v, e [, n] )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Prepend string element e to the value under key k in the hash table.  If the key does not exist, raise an exception.</p>
+<td><p>Insert element e into vector v before the first position.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_unit, "apples", "ushels" );<br>hashed_maps.prepend( fruit_unit, "apples", "b" ); -- value is bushels</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.prepend( device_vector, "router" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1173,155 +1665,49 @@ An exception is raised if out of memory</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
+<td><span>v</span></td>
 <td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
-<td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
+<td><span>the vector</span></td>
 </tr><tr>
 <td><span>e</span></td>
 <td><span>in</span></td>
-<td><span><i>map element type</i></span></td>
+<td><span><i>vector element type</i></span></td>
 <td><span>required</span></td>
-<td><span>the string to prepend</span></td>
-</tr>
-</table></td>
+<td><span>the element to insert</span></td>
 </tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the key does not exist<br>
-An exception is raised if the value is the wrong type<br>
-An exception is raised if out of memory<br>
-An exception is raised if the value type is not a string</p></td>
-</tr><tr>
-<td><p class="pkg_label">Restrictions</p></td>
-<td><p>Not allowed with pragma ada_95</p>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.append">hashed_maps.append</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: N/A (AdaScript extension)</p></td>
-</tr><tr>
-<td><p class="pkg_label">Implementation Note</p></td>
-<td><p>This is in accordance with memcached.</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.replace"></a><h3>hashed_maps.replace( m, k, v )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Replace the value v under key k in the hash map.  If the key does not exist, raise an exception.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.replace( fruit, "apples", 23 );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>k</span></td>
+<td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>string</span></td>
-<td><span>required</span></td>
-<td><span>the key</span></td>
-</tr><tr>
-<td><span>v</span></td>
-<td><span>in</span></td>
-<td><span><i>table value type</i></span></td>
-<td><span>required</span></td>
-<td><span>the new value</span></td>
+<td><span>containers.count_type</i></span></td>
+<td><span>1</span></td>
+<td><span>the number of copies</span></td>
 </tr>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
 <td><p>An exception is raised if the value is the wrong type<br>
 An exception is raised if out of memory<br>
-An exception is raised if the key does not exist</p></td>
+An exception is raised if the index is out-of-range</p></td>
 </tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p><a href="#hashed_maps.set">hashed_maps.set</a><br><a href="#hashed_maps.add">hashed_maps.add</a></p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Replace<br>
-Java: HashMap.replace()</p></td>
-</tr>
-</table>
-
-<a name="hashed_maps.replace_element"></a><h3>hashed_maps.replace_element( m, c, e )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Replace the element at cursor position c in the hash map.  If the key does not exist, raise an exception.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.replace_element( fruit_unit, cursor, "basket" ); -- changed value to "basket"</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
-<td><span>c</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.cursor</span></td>
-<td><span>required</span></td>
-<td><span>the cursor</span></td>
-</tr><tr>
-<td><span>e</span></td>
-<td><span>in</span></td>
-<td><span><i>map element type</i></span></td>
-<td><span>required</span></td>
-<td><span>the value to replace</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>An exception is raised if the cursor has no element<br>
-An exception is raised if the cursor is not in the map<br>
-An exception is raised if out of memory<br>
-An exception is raised if the element type is not a string</p></td>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Replaced_Element</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Prepend</p></td>
 </tr>
 </table>
 
-<a name="hashed_maps.reserve_capacity"></a><h3>c := hashed_maps.reserve_capacity( m, c )</h3>
+<a name="vectors.previous"></a><h3>vectors.previous( c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Add enough memory to the map to handle at least c items.</p>
+<td><p>Move the cursor to the previous element in the vector.  If there are no more items, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.capacity( fruit_unit, 20 );</span></p></td>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.previous( device_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1332,13 +1718,55 @@ An exception is raised if the element type is not a string</p></td>
 <td><span class="pkg_param">Default</span></td>
 <td><span class="pkg_param">Description</span></td>
 </tr><tr>
-<td><span>m</span></td>
-<td><span>in out</span></td>
-<td><span>hashed_maps.map</span></td>
-<td><span>required</span></td>
-<td><span>the map</span></td>
-</tr><tr>
 <td><span>c</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the cursor</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Previous</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Previous function is not implemented because in SparForte the result type is limited.</p></td>
+</tr>
+</table>
+
+<a name="vectors.reserve_capacity"></a><h3>vectors.reserve_capacity( v, n )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Add enough memory to the vector to handle at least c items.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.reserve_capacity( device_vector, 20 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>n</span></td>
 <td><span>in</span></td>
 <td><span>containers.count_type</span></td>
 <td><span>required</span></td>
@@ -1350,7 +1778,321 @@ An exception is raised if the element type is not a string</p></td>
 <td><p>-</p></td>
 </tr><tr>
 <td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Hashed_Maps.Capacity</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Reserve_Capacity</p></td>
+</tr>
+</table>
+
+<a name="vectors.reverse_elements"></a><h3>vectors.reverse_elements( v )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Reverse the elements of the vector.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.reverse_elements( device_vector );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.flip">vectors.flip</a></p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Reverse_Elements</p></td>
+</tr>
+</table>
+
+<a name="vectors.reverse_find"></a><h3>vectors.reverse_find( v, e, c1, c2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Move the cursor c2 backwards to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.reverse_find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr><tr>
+<td><span>c1</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the starting position</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position of the element</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the element is the wrong type<br>
+An exception is raised if the cursor has the wrong types</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Reverse_Find</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Reverse_Find is a function.  SparForte's Find is a procedure because the result type is limited.  The starting position is required.</p></td>
+</tr>
+</table>
+
+<a name="vectors.reverse_find_index"></a><h3>vectors.reverse_find_index( v, e, i1, i2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Return the index in the vector for element e, searching backwards.  Start at the position of index i1.  If the element does not exist, the index i2 will have no index.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.reverse_find_index( device_vector, "firewall", 1, position_index );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to find</span></td>
+</tr><tr>
+<td><span>i1</span></td>
+<td><span>in out</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the starting position</span></td>
+</tr><tr>
+<td><span>i2</span></td>
+<td><span>out</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position of the element</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An error occurs if the element is the wrong type<br>
+An exception is raised if the starting position value is bad</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p><a href="#vectors.find_index">vectors.find_index</a></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Reverse_Find_Index</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's Reverse_Find_Index is a function.  SparForte's Reverse_Find_Index is a procedure because a vector is limited type.  The starting position is required, not optional.</p></td>
+</tr>
+</table>
+
+<a name="vectors.set_length"></a><h3>vectors.set_length( v, n )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Resize the vector to n items, removing elements or adding empty elements if necessary.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.set_length( device_vector, 20 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</span></td>
+<td><span>required</span></td>
+<td><span>the number of items</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Set_Length</p></td>
+</tr>
+</table>
+
+<a name="vectors.swap"></a><h3>vectors.swap( v, i1, i2 | v, c1, c2 )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Exchange two elements in the vector, either by a pair of indexes or a pair of cursors.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.swap( device_vector, first_position, second_position );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>i1</span></td>
+<td><span>in</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the starting position (if no cursor)</span></td>
+</tr><tr>
+<td><span>i2</span></td>
+<td><span>in</span></td>
+<td><span><i>vector index type</i></span></td>
+<td><span>required</span></td>
+<td><span>the position of the element (if no cursor)</span></td>
+</tr><tr>
+<td><span>c1</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the starting position (if no index)</span></td>
+</tr><tr>
+<td><span>c2</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.cursor</span></td>
+<td><span>required</span></td>
+<td><span>the position of the element (if no index)</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if one of the positions is no position.<br>
+An exception is raised if the cursors are in different vectors.</p></td>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.Swap</p></td>
+</tr>
+</table>
+
+<a name="vectors.to_vector"></a><h3>vectors.to_vector( v, e [, n] )</h3>
+<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
+<tr>
+<td width="15%">&nbsp;</td>
+<td><p>Create a vector out of the element.   If a count n is used, use n copies of the element.  A count of zero inserts nothing.</p>
+</tr><tr>
+<td><p class="pkg_label">Example</td><td><span class="code">vectors.to_vector( new_vector, "switch", 4 );</span></p></td>
+</tr><tr>
+<td><p class="pkg_label">Parameters</p></td>
+<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
+<tr>
+<td><span class="pkg_param">Param</span></td>
+<td><span class="pkg_param">Mode</span></td>
+<td><span class="pkg_param">Type</span></td>
+<td><span class="pkg_param">Default</span></td>
+<td><span class="pkg_param">Description</span></td>
+</tr><tr>
+<td><span>v</span></td>
+<td><span>in out</span></td>
+<td><span>vectors.vector</span></td>
+<td><span>required</span></td>
+<td><span>the vector</span></td>
+</tr><tr>
+<td><span>e</span></td>
+<td><span>in</span></td>
+<td><span><i>vector element type</i></span></td>
+<td><span>required</span></td>
+<td><span>the element to insert</span></td>
+</tr><tr>
+<td><span>n</span></td>
+<td><span>in</span></td>
+<td><span>containers.count_type</i></span></td>
+<td><span>1</span></td>
+<td><span>the number of copies</span></td>
+</tr>
+</table></td>
+</tr><tr>
+<td><p class="pkg_label">Exceptions</p></td>
+<td><p>An exception is raised if the value is the wrong type<br>
+An exception is raised if out of memory<br>
+An exception is raised if the index is out-of-range</p></td>
+</tr><tr>
+<td><p class="pkg_label">Restrictions</p></td>
+<td><p>-</p>
+</tr><tr>
+<td><p class="pkg_label">See Also</p></td>
+<td><p>-</p></td>
+</tr><tr>
+<td><p class="pkg_label">Compare With</p></td>
+<td><p>Ada: Ada.Containers.Vectors.To_Vector</p></td>
+</tr><tr>
+<td><p class="pkg_label">Implementation Note</p></td>
+<td><p>Ada's To_Vector is a function.  SparForte's To_Vector is a procedure because a vector is limited type.  The element is required, not optional.</p></td>
 </tr>
 </table>
 
