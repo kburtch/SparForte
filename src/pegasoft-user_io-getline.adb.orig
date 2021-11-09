@@ -46,12 +46,10 @@ use  ada.text_io,
 #if not READLINE
 with gnat.regexp,
      gnat.os_lib,
-     signal_flags,
-     string_util;
+     signal_flags;
 use  gnat.regexp,
      gnat.os_lib,
-     signal_flags,
-     string_util;
+     signal_flags;
 #end if;
 
 package body pegasoft.user_io.getline is
@@ -2157,6 +2155,11 @@ begin
   return Null_Ptr;
 end Ada_svn_word_generator;
 
+function Ada_command_word_generator(text : chars_ptr; state : int ) return chars_ptr is
+begin
+  return Null_Ptr;
+end Ada_command_word_generator;
+
 function Ada_apt_word_generator(text : chars_ptr; state : int ) return chars_ptr is
 begin
   return Null_Ptr;
@@ -2299,7 +2302,7 @@ when others => -- end_error = out of data
   historyNext := 1;
 end startupGetline;
 #else
-procedure startupGetline is
+procedure startupGetline( optionOffset : natural) is
 begin
   null;
 end startupGetline;

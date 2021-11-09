@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -419,7 +420,9 @@ void C_init_readline() {
   // Remove backslash from word break characters.
 
   rl_completer_word_break_characters = " ";
-  rl_char_is_quoted_p = &backslash_check;
+#ifndef __APPLE__
+    rl_char_is_quoted_p = &backslash_check;
+#endif
 }
 
 

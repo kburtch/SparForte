@@ -1152,7 +1152,7 @@ if [ -z "$NO_READLINE" ] ; then
    fi
    if [ -z "$READLINE_VERSION" ] ; then
       echo -n "checking for readline 8 (ldconfig -p, Linux)... "
-      TMP=`$LDCONFIG_SUDO sudo /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.8`
+      TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.8`
       if [ -z "$TMP" ] ; then
          echo "no"
       else
@@ -1163,7 +1163,7 @@ if [ -z "$NO_READLINE" ] ; then
    fi
    if [ -z "$READLINE_VERSION" ] ; then
       echo -n "checking for readline 7 (ldconfig -p, Linux)... "
-      TMP=`$LDCONFIG_SUDO sudo /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.7`
+      TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libreadline.so.7`
       if [ -z "$TMP" ] ; then
          echo "no"
       else
@@ -1202,7 +1202,7 @@ if [ -z "$NO_READLINE" ] ; then
             echo "no"
          else
             HAS_READLINE=1
-            READLINE_VERSION=6
+            READLINE_VERSION=
             echo "yes"
          fi
       fi
@@ -1677,6 +1677,9 @@ else
 fi
 if [ -z "$NO_READLINE" ] ; then
    RLINCL="\-I\.\/areadline\/"
+  if [ "$OS" = "darwin" ]; then
+      RLLIBS="-lreadline -lhistory c_rl.o"
+  else
    # Linux Mint doesn't need ncurses and breaks...needed for Slackware?
    #RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.6\ \-l:libhistory.so.6\ \-lncurses"
    if [ -z "$READLINE_VERSION" ] ; then
@@ -1684,6 +1687,7 @@ if [ -z "$NO_READLINE" ] ; then
    else
       RLLIBS="\-L\/lib\/x86_64\-linux\-gnu\/\ \-l:libreadline.so.$READLINE_VERSION\ \-l:libhistory.so.$READLINE_VERSION c_rl.o"
    fi
+  fi
 else
    RLINCL=
    RLLIBS=

@@ -34,6 +34,29 @@ char *getlocale(int lc) {
   return setlocale( lc, NULL );
 }
 
+// Define missing items for macOS
+#if defined(__APPLE__)
+#define	DECIMAL_POINT -1
+#define	THOUSANDS_SEP -1
+#define	CURRENCY_SYMBOL -1
+#define	POSITIVE_SIGN -1
+#define	NEGATIVE_SIGN -1
+#define	INT_CURR_SYMBOL -1
+#define	GROUPING -1
+#define	FRAC_DIGITS -1
+#define	INT_FRAC_DIGITS -1
+#define	P_CS_PRECEDES -1
+#define	P_SEP_BY_SPACE -1
+#define	P_SIGN_POSN -1
+#define	N_CS_PRECEDES -1
+#define	N_SEP_BY_SPACE -1
+#define	N_SIGN_POSN -1
+#define	MON_DECIMAL_POINT -1
+#define	MON_THOUSANDS_SEP -1
+#define	MON_GROUPING -1
+#define	ERA_YEAR -1
+#endif
+
 /**
  *  LANGINFO CODESET
  *
