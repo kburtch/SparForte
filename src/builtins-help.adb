@@ -2625,10 +2625,10 @@ begin
      categoryPackage( e );
      createdOn( e, "v2.4.2");
      description( e, "A collection of common routines for working with dynamic arrays." );
-     content( e, "capacity( v )", "reserve_capacity( v, c )", "set_length( v, c )" );
-     content( e, "c := length( v )", "b := is_empty( v )", "to_vector( v, e, c )" );
-     content( e, "append( v, e [,c] )", "b := equals( v1, v2 )", "i := first_index( v )" );
-     content( e, "prepend( v, e [,c] )", "i := last_index( v )", "b := contains( c, e )" );
+     content( e, "capacity( v )", "reserve_capacity( v, n )", "set_length( v, n )" );
+     content( e, "c := length( v )", "b := is_empty( v )", "to_vector( v, e, n )" );
+     content( e, "append_elements( v, e [,c] )", "b := equal( v1, v2 )", "i := first_index( v )" );
+     content( e, "prepend( v, e, [n] )", "i := last_index( v )", "b := contains( c, e )" );
      content( e, "e := first_element( v )", "e := last_element( v )", "reverse_elements( v )" );
      content( e, "flip( v )", "append_vectors( v1, v2 )" );
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
@@ -2638,7 +2638,8 @@ begin
      content( e, "insert_before_and_mark( v, c, e, c2 [, n] )" );
      content( e, "insert_space( v, i [,n] )", "insert_space( v, c, c2, [, n] )" );
      content( e, "swap( v, i1, i2 | v, c1, c2 )", "find( v, e, c1, c2 )", "reverse_find( v, e, c1, c2 )" );
-     content( e, "find_index( v, e, i1, i1 )", "reverse_find_index( v, e, i1, i2 )" );
+     content( e, "find_index( v, e, i1, i2 )", "reverse_find_index( v, e, i1, i2 )" );
+     content( e, "element( c ) | ( v, i )", "delete_first( v [,n] )", "delete_last( v [,n] )"  );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then

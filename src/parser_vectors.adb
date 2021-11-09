@@ -63,7 +63,8 @@ vectors_reserve_capacity_t : identifier;
 vectors_length_t        : identifier;
 vectors_set_length_t    : identifier;
 vectors_is_empty_t      : identifier;
-vectors_append_t        : identifier;
+--vectors_append_t        : identifier;
+vectors_append_elements_t : identifier;
 vectors_prepend_t       : identifier;
 vectors_first_index_t   : identifier;
 vectors_last_index_t    : identifier;
@@ -709,11 +710,11 @@ end ParseVectorsIsEmpty;
 ------------------------------------------------------------------------------
 --  APPEND
 --
--- Syntax: vectors.append( v, s, [c] );
+-- Syntax: vectors.append_elements( v, s, [c] );
 -- Ada:    vectors.append( v, s, [c] );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsAppend is
+procedure ParseVectorsAppendElements is
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -722,7 +723,7 @@ procedure ParseVectorsAppend is
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
-  expect( vectors_append_t );
+  expect( vectors_append_elements_t );
   ParseFirstInOutInstantiatedParameter( vectorId, vectors_vector_t );
   ParseNextGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -748,14 +749,14 @@ begin
        err_storage;
      end;
   end if;
-end ParseVectorsAppend;
+end ParseVectorsAppendElements;
 
 
 ------------------------------------------------------------------------------
 --  PREPEND
 --
--- Syntax: vectors.prepend( l, s, [c] );
--- Ada:    vectors.prepend( l, s, [c] );
+-- Syntax: vectors.prepend( v, e, [n] );
+-- Ada:    vectors.prepend( v, e, [n] );
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsPrepend is
@@ -825,8 +826,8 @@ end ParseVectorsFirstIndex;
 ------------------------------------------------------------------------------
 --  LAST INDEX
 --
--- Syntax: n := vectors.last_index( v );
--- Ada:    n := vectors.last_index( v );
+-- Syntax: i := vectors.last_index( v );
+-- Ada:    i := vectors.last_index( v );
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsLastIndex( result : out unbounded_string; kind : out identifier ) is
@@ -977,8 +978,8 @@ end ParseVectorsLastElement;
 ------------------------------------------------------------------------------
 --  DELETE FIRST
 --
--- Syntax: vectors.delete_first( v [,c] )
--- Ada:    vectors.delete_first( v [,c] )
+-- Syntax: vectors.delete_first( v [,n] )
+-- Ada:    vectors.delete_first( v [,n] )
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsDeleteFirst is
@@ -1354,6 +1355,8 @@ begin
         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
         if hasIdx then
            if hasCnt then
+              -- TODO: shouldn't the account be rounded on a universal numeric?  Check casting,
+              -- here and elsewhere.
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
               idx := Vector_String_Lists.Extended_Index( to_numeric( idxExpr ) );
               Vector_String_Lists.Delete( theVector.vslVector, idx, cnt );
@@ -1405,8 +1408,8 @@ end ParseVectorsHasElement;
 ------------------------------------------------------------------------------
 --  EQUAL
 --
--- Syntax: b := equal( m1, m2 );
--- Ada:    b := m1 = m2;
+-- Syntax: b := equal( v1, v2 );
+-- Ada:    b := v1 = v2;
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsEqual( result : out unbounded_string; kind : out identifier ) is
@@ -1557,9 +1560,7 @@ begin
           theCursor.vslCursor,
           theVector2.vslVector
        );
-     exception when constraint_error =>
-       err( "count must be a natural integer" );
-     when storage_error =>
+     exception when storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
@@ -1790,7 +1791,7 @@ end ParseVectorsInsertBeforeAndMark;
 --  INSERT SPACE
 --
 -- Syntax: insert_space( v, i [, n] ) | ( v, c, c2 [, n] );
--- Ada:    insert_space( v, i [, c] ) | ( v, c, c2 [, n] );
+-- Ada:    insert_space( v, i [, n] ) | ( v, c, c2 [, n] );
 ------------------------------------------------------------------------------
 
 procedure ParseVectorsInsertSpace is
@@ -1972,6 +1973,10 @@ begin
            idx2 := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr2 ) ) );
            findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
            Vector_String_Lists.Swap( theVector.vslVector, idx1, idx2 );
+        exception when constraint_error =>
+           err_index;
+        when others =>
+           err_exception_raised;
         end;
      else
         begin
@@ -1979,6 +1984,12 @@ begin
            findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
            findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
            Vector_String_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
+        exception when constraint_error =>
+           err_index;
+        when program_error =>
+           err_cursor_mismatch;
+        when others =>
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -2033,6 +2044,8 @@ begin
         findResource( positionCursorResourceId, thePositionCursor );
 
         thePositionCursor.vslCursor := Vector_String_Lists.Find( theVector.vslVector, itemExpr, theCursor.vslCursor );
+     exception when others =>
+       err_exception_raised;
      end;
   end if;
 end ParseVectorsFind;
@@ -2216,7 +2229,7 @@ begin
   declareFunction(  vectors_length_t,    "vectors.length",    ParseVectorsLength'access );
   declareProcedure( vectors_set_length_t,  "vectors.set_length",    ParseVectorsSetLength'access );
   declareFunction(  vectors_is_empty_t,  "vectors.is_empty",  ParseVectorsIsEmpty'access );
-  declareProcedure( vectors_append_t,  "vectors.append",    ParseVectorsAppend'access );
+  declareProcedure( vectors_append_elements_t,  "vectors.append_elements",    ParseVectorsAppendElements'access );
   declareProcedure( vectors_prepend_t,  "vectors.prepend",    ParseVectorsPrepend'access );
   declareFunction(  vectors_first_index_t,  "vectors.first_index",    ParseVectorsFirstIndex'access );
   declareFunction(  vectors_last_index_t,  "vectors.last_index",    ParseVectorsLastIndex'access );
