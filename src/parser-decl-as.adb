@@ -1929,6 +1929,7 @@ procedure ParseRaise( has_when : out boolean ) is
   with_text : unbounded_string;
   withTextType : identifier;
   mustRaise : boolean := true;
+  atSemicolon : aScannerState;
 begin
   expect( raise_t );
   has_when := false;
@@ -1955,6 +1956,14 @@ begin
         --if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
         --   err( "the raise makes this unreachable code" );
         --end if;
+         -- this is a bit slow but it's only during a syntax check
+         markScanner( atSemicolon );
+         getNextToken; -- skip semicolon
+         -- eof_t because a raise might be the last line in a simple script
+         if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
+           err( "the raise makes this unreachable code" );
+         end if;
+         resumeScanning( atSemicolon ); -- restore original position
      end if;
      if isExecutingCommand then
         if mustRaise then
