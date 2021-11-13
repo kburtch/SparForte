@@ -1952,11 +1952,7 @@ begin
         ParseWhenClause( mustRaise );
      elsif syntax_check then
         -- if the raise has no when clause, check for unreachable statements
-        -- but we cannot do this because we haven't consumed the ;
-        --if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-        --   err( "the raise makes this unreachable code" );
-        --end if;
-         -- this is a bit slow but it's only during a syntax check
+        -- but we have to read past the semicolon.
          markScanner( atSemicolon );
          getNextToken; -- skip semicolon
          -- eof_t because a raise might be the last line in a simple script
