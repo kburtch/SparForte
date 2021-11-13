@@ -1951,9 +1951,10 @@ begin
         ParseWhenClause( mustRaise );
      elsif syntax_check then
         -- if the raise has no when clause, check for unreachable statements
-        if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-           err( "the raise makes this unreachable code" );
-        end if;
+        -- but we cannot do this because we haven't consumed the ;
+        --if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+        --   err( "the raise makes this unreachable code" );
+        --end if;
      end if;
      if isExecutingCommand then
         if mustRaise then
