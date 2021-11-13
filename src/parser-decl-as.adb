@@ -357,16 +357,16 @@ begin
   while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
      if token = pragma_t then
         ParsePragma;
-        expectSemicolon;
+        expectStatementSemicolon( context => pragma_t );
      elsif token = if_t then
         ParseStaticIfBlock;
-        expectSemicolon;
+        expectStatementSemicolon( context => if_t );
      elsif token = case_t then
         ParseStaticCaseBlock;
-        expectSemicolon;
+        expectStatementSemicolon( context => case_t );
      elsif token = null_t then
         expect( null_t );
-        expectSemicolon;
+        expectStatementSemicolon( context => null_t );
      end if;
   end loop;
 end ParseStaticBlock;
@@ -1947,16 +1947,13 @@ begin
            err_exception.value := err_exception.svalue'access;
         end if;
      end if;
-     --expectSemicolon;
-     -- Also check for obviously unreachable code.  Otherwise, restore the
-     -- exception by setting the error flag.
-     --if syntax_check then
-     --   if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
-     --      err( "unreachable code" );
-     --   end if;
-     --elsif isExecutingCommand then
      if token = when_t or token = if_t then
         ParseWhenClause( mustRaise );
+     elsif syntax_check then
+        -- if the raise has no when clause, check for unreachable statements
+        if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t then
+           err( "the raise makes this unreachable code" );
+        end if;
      end if;
      if isExecutingCommand then
         if mustRaise then
@@ -2494,7 +2491,9 @@ begin
     if error_found or token = eof_t or (token = symbol_t and identifiers( token ).value.all = ")" ) then
        exit;
     end if;
-    expectSemicolon;
+    expectDeclarationSemicolon( context => formal_param_id );
+    -- TODO: this will show the formal param as sub.param, which might be
+    -- confusing to users.
     -- the symbol table will overflow before field_no does
   end loop;
 end ParseFormalParameters;
@@ -2766,7 +2765,7 @@ begin
      -- consume a trailing semi-colon
 
      if token = symbol_t and identifiers( token ).value.all = ";" then
-        expectSemicolon;
+        expectDeclarationSemicolon( context => specParamId );
      end if;
 
     specParamId := identifier( integer( specParamId ) + 1 );
@@ -2803,11 +2802,11 @@ end VerifySubprogramReturnPart;
 
 
 -----------------------------------------------------------------------------
---  DECLARE ACTUAL PARAMETERS
+--  PARSE SEPARATE PROC HEADER
 --
 -- Syntax: separate( parent ); procedure p [(param1...)] is
--- Note: forward declaration handling not yet written so minimal parameter
--- checking in the header.
+-- TODO: forward declaration handling has been written so minimal parameter
+-- checking in the header should be corrected here.
 -----------------------------------------------------------------------------
 
 procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural ) is
@@ -2820,7 +2819,7 @@ procedure ParseSeparateProcHeader( proc_id : identifier; procStart : out natural
 begin
    -- getFullParentUnitName( pu );
    -- separate
-   expectSemicolon;
+   expectDeclarationSemicolon( context => proc_id );
    expect( separate_t );
    expect( symbol_t, "(");
    ParseIdentifier( parent_id );
@@ -2842,7 +2841,7 @@ begin
          err( "expected parent unit " & optional_yellow( to_string( pu ) ) );
    end if;
    expect( symbol_t, ")");
-   expectSemicolon;
+   expectStatementSemicolon( separate_t );
    -- separate's procedure header
    procStart := firstPos;
    expect( procedure_t );
@@ -2869,7 +2868,7 @@ end ParseSeparateProcHeader;
 
 
 -----------------------------------------------------------------------------
---  DECLARE ACTUAL PARAMETERS
+--  PARSE PROCEDURE BLOCK
 --
 -- Syntax: procedure [abstract] p [(param1...)] OR procedure [abstract] p [(param1...)] is block
 -- end p;
@@ -2988,7 +2987,7 @@ begin
         -- not be the first token on the line (though it usually is)
      end if;
   end if;
-  expectSemicolon;
+  expectDeclarationSemicolon( context => proc_id );
 end ParseProcedureBlock;
 
 
@@ -3423,10 +3422,16 @@ begin
   end if;
 end ParseActualParameters;
 
+
+-----------------------------------------------------------------------------
+--  PARSE SEPARATE FUNC HEADER
+--
+-- Syntax: separate( parent ); function p [(param1...)] return type is
+-- Note: forward declaration handling not yet written so minimal parameter
+-- checking in the header.
+-----------------------------------------------------------------------------
+
 procedure ParseSeparateFuncHeader( func_id : identifier; funcStart : out natural ) is
-  -- Syntax: separate( parent ); function p [(param1...)] return type is
-  -- Note: forward declaration handling not yet written so minimal parameter
-  -- checking in the header.
   separate_func_id : identifier;
   type_token       : identifier;
   parent_id        : identifier;
@@ -3436,7 +3441,7 @@ procedure ParseSeparateFuncHeader( func_id : identifier; funcStart : out natural
   ch : character;
 begin
    -- separate
-   expectSemicolon;
+   expectDeclarationSemicolon( context => func_id );
    expect( separate_t );
    expect( symbol_t, "(");
    ParseIdentifier( parent_id );
@@ -3458,7 +3463,7 @@ begin
          err( "expected parent unit " & optional_yellow( to_string( pu ) ) );
    end if;
    expect( symbol_t, ")");
-   expectSemicolon;
+   expectDeclarationSemicolon( context => separate_t );
    -- separate's procedure header
    funcStart := firstPos;
    expect( function_t );
@@ -3488,11 +3493,17 @@ begin
    expect( is_t );
 end ParseSeparateFuncHeader;
 
+
+-----------------------------------------------------------------------------
+--  PARSE FUNCTION BLOCK
+--
+-- Syntax: function [abstract] f OR function [abstract] p return t is block end p;
+-- Handle procedure declarations, including forward declarations.
+-- Note: DoUserDefinedFunction executes a user-defined function created by
+-- this routine.
+-----------------------------------------------------------------------------
+
 procedure ParseFunctionBlock is
-  -- Syntax: function [abstract] f OR function [abstract] p return t is block end p;
-  -- Handle procedure declarations, including forward declarations.
-  -- Note: DoUserDefinedFunction executes a user-defined function created by
-  -- this routine.
   func_id   : identifier;
   funcStart : natural;
   funcEnd   : natural;
@@ -3645,14 +3656,20 @@ begin
         -- not be the first token on the line (though it usually is)
      end if;
   end if;
-  expectSemicolon;
+  expectDeclarationSemicolon( context => func_id );
 end ParseFunctionBlock;
 
+
+-----------------------------------------------------------------------------
+--  DO USER DEFINED PROCEDURE
+--
+-- Execute a user-defined procedure.  Based on interpretScript.
+-- procedure_name [(param1 [,param2...])]
+-- Note: ParseProcedureBlock compiles / creates the user-defined procedure.
+-- This routines runs the previously compiled procedure.
+-----------------------------------------------------------------------------
+
 procedure DoUserDefinedProcedure( s : unbounded_string ) is
-  -- Execute a user-defined procedure.  Based on interpretScript.
-  -- procedure_name [(param1 [,param2...])]
-  -- Note: ParseProcedureBlock compiles / creates the user-defined procedure.
-  -- This routines runs the previously compiled procedure.
   scriptState : aScriptState;
   results     : unbounded_string;
   proc_id     : identifier;
@@ -3822,7 +3839,7 @@ begin
      end if;
      expect( end_t );
      expect( proc_id );
-     expectSemicolon;
+     expectDeclarationSemicolon( proc_id );
      if not done then                     -- not exiting?
          expect( eof_t );                  -- should be nothing else
      end if;
@@ -3844,12 +3861,18 @@ begin
   end if;
 end DoUserDefinedProcedure;
 
+
+-----------------------------------------------------------------------------
+--  DO USER DEFINED FUNCTION
+--
+-- Execute a user-defined function.  Based on interpretScript.  Return value
+-- for function is result parameter.
+-- function_name [(param1 [,param2...])]
+-- Note: ParseFunctionBlock compiles / creates the user-defined function.
+-- This routines runs the previously compiled function.
+-----------------------------------------------------------------------------
+
 procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string ) is
-  -- Execute a user-defined function.  Based on interpretScript.  Return value
-  -- for function is result parameter.
-  -- function_name [(param1 [,param2...])]
-  -- Note: ParseFunctionBlock compiles / creates the user-defined function.
-  -- This routines runs the previously compiled function.
   scriptState : aScriptState;
   func_id     : identifier;
   return_id   : identifier;
@@ -3906,7 +3929,7 @@ begin
      end if;
      expect( end_t );                         -- end
      expect( func_id );                       -- function_name
-     expectSemicolon;
+     expectDeclarationSemicolon( context => func_id );
      if not done then                         -- not exiting?
          expect( eof_t );                     -- should be nothing else
      end if;
@@ -3924,9 +3947,15 @@ begin
   pullBlock;                                  -- discard locals
 end DoUserDefinedFunction;
 
+
+-----------------------------------------------------------------------------
+--  DO SHELL COMMAND
+--
+-- Syntax: command-word ( expr [,expr...] )
+-- Syntax: command-word param-word [param-word...]
+-----------------------------------------------------------------------------
+
 procedure ParseShellCommand is
-  -- Syntax: command-word ( expr [,expr...] )
-  -- Syntax: command-word param-word [param-word...]
   cmdNameToken : identifier;
   cmdName    : unbounded_string;
   expr_val   : unbounded_string;
@@ -3938,7 +3967,9 @@ procedure ParseShellCommand is
   exportList : argumentListPtr;          -- exported C-string variables
   exportCnt  : natural := 0;             -- number of exported variables
 
-  procedure exportVariables is
+
+  --  EXPORT VARIABLES
+  --
   -- Search for all exported variables and export them to the
   -- environment so that the program we're running can see them.
   -- The search must start at the bottom of the symbol table so
@@ -3950,6 +3981,9 @@ procedure ParseShellCommand is
   -- the exported variables as C-strings.  The list must be cleared
   -- afterward.
   -- Note: this is not very efficient.
+  ---------------------------------------------------------------------------
+
+  procedure exportVariables is
     exportPos  : positive := 1;        -- position in exportList
     tempStr    : unbounded_string;
   begin
@@ -3997,10 +4031,15 @@ procedure ParseShellCommand is
     end if;
   end exportVariables;
 
+
+  -- CLEAR EXPORTED VARIABLES
+  --
+  -- Clear the strings allocated in exportVariables
+  -- should individual strings be deallocated?  If so, need to declare
+  -- free?  Also, ap list?
+  ---------------------------------------------------------------------------
+
   procedure clearExportedVariables is
-    -- Clear the strings allocated in exportVariables
-    -- should individual strings be deallocated?  If so, need to declare
-    -- free?  Also, ap list?
     equalsPos : natural;
     result    : integer;
   begin
@@ -4029,6 +4068,11 @@ procedure ParseShellCommand is
        exportCnt := 0;
     end if;
   end clearExportedVariables;
+
+
+  --  CLEAR PARAM LIST
+  --
+  ---------------------------------------------------------------------------
 
   procedure clearParamList is
   begin
@@ -4126,6 +4170,7 @@ procedure ParseShellCommand is
   pipeStderr : boolean := false;  -- true stderr through pipeline
   needToRedirectErr2Out : boolean := false;  -- true if we're doing 2>&1
 
+
   --  PARSE SHELL REDIRECT TARGET
   --
   -- Read the next shell word argument, which should be the target for a
@@ -4140,6 +4185,7 @@ procedure ParseShellCommand is
     parseUniqueShellWord( shellWord );
   end ParseShellRedirectTarget;
 
+
   --  CHECK ADA 95 REDIRECTS
   ----------------------------------------------------------------------------
 
@@ -4150,6 +4196,7 @@ procedure ParseShellCommand is
              optional_yellow( "pragma ada_95" ) & ".  Use set_output/input/error instead" );
      end if;
   end checkAda95Redirects;
+
 
   --  PARSE SHELL OUTPUT REDIRECT
   ----------------------------------------------------------------------------
@@ -4190,6 +4237,7 @@ begin
   end if;
 end ParseShellOutputRedirect;
 
+
   --  PARSE SHELL INPUT REDIRECT
   ----------------------------------------------------------------------------
 
@@ -4222,6 +4270,7 @@ begin
      end if;
   end if;
 end ParseShellInputRedirect;
+
 
   --  PARSE SHELL OUTPUT APPEND REDIRECT
   ----------------------------------------------------------------------------
@@ -4258,6 +4307,7 @@ begin
      end if;
   end if;
 end ParseShellOutputAppendRedirect;
+
 
   --  PARSE SHELL ERR OUTPUT REDIRECT
   ----------------------------------------------------------------------------
@@ -4310,6 +4360,7 @@ begin
   end if;
 end ParseShellErrOutputRedirect;
 
+
   --  PARSE SHELL ERR OUTPUT APPEND REDIRECT
   ----------------------------------------------------------------------------
 
@@ -4353,6 +4404,7 @@ begin
       end if;
   end if;
 end ParseShellErrOutputAppendRedirect;
+
 
   --  DO SHELL ERROR TO OUTPUT REDIRECT
   --
@@ -4565,7 +4617,7 @@ begin
              token_value : unbounded_string renames identifiers( token ).value.all;
           begin
              if token = eof_t then
-                expectSemicolon;
+                expectStatementSemicolon( contextNotes => "in " & to_string( cmdName ) );
                 haveAllParameters := true;
                 exit;
              elsif token = symbol_t then
@@ -4851,6 +4903,7 @@ begin
   end if;
 end CompileAndRun;
 
+
 -----------------------------------------------------------------------------
 -- RUN AND CAPTURE OUTPUT
 --
@@ -4994,6 +5047,7 @@ begin
   end if;
 end RunAndCaptureOutput;
 
+
 -----------------------------------------------------------------------------
 -- COMPILE RUN AND CAPTURE OUTPUT
 --
@@ -5016,8 +5070,14 @@ begin
   restoreScript( scriptState );            -- restore original script
 end CompileRunAndCaptureOutput;
 
-procedure ParseStep is
+
+-----------------------------------------------------------------------------
+--  PARSE STEP
+--
 -- debugger: step one instruction forward.  Do this by activating SIGINT
+-----------------------------------------------------------------------------
+
+procedure ParseStep is
 begin
   expect( step_t );
   if inputMode /= breakout then
@@ -5030,10 +5090,16 @@ begin
   end if;
 end ParseStep;
 
+
+-----------------------------------------------------------------------------
+--  PARSE RETURN
+--
+-- Syntax: return [function-result-expr]
+-- Return from a subprogram or quit interactive session or resume from a
+-- breakout.
+-----------------------------------------------------------------------------
+
 procedure ParseReturn is
-  -- Syntax: return [function-result-expr]
-  -- Return from a subprogram or quit interactive session or resume from a
-  -- breakout.
   expr_val    : unbounded_string;
   expr_type   : identifier;
   return_id   : identifier;
@@ -5043,7 +5109,7 @@ begin
   -- Return has a special meaning in interactive modes
   if inputMode = breakout then
      expect( return_t );
-     expectSemicolon;
+     expectReturnSemicolon;
      done := true;
      breakoutContinue := true;
      syntax_check := true;
@@ -5054,7 +5120,7 @@ begin
              optional_yellow( "logout" ) & " to quit." );
      else
         expect( return_t );
-        expectSemicolon;
+        expectReturnSemicolon;
         if isExecutingCommand then
            DoQuit;
         end if;
@@ -5105,7 +5171,8 @@ begin
 
      -- Check for semi-colon and
 
-     expectSemicolon;
+     expectReturnSemicolon;
+     -- we don't know the subprogram name
      if syntax_check then
         -- this marks a function return has having been seen for checks on
         -- a function with no return.
@@ -5117,7 +5184,7 @@ begin
            if token /= eof_t and token /= end_t and token /= elsif_t and
               token /= else_t and token /= when_t and token /= others_t and
               token /= exception_t then
-                 err( "unreachable code" );
+                 err( "the return makes this unreachable code" );
            end if;
         end if;
      end if;
@@ -5133,9 +5200,14 @@ begin
 end ParseReturn;
 
 
+-----------------------------------------------------------------------------
+--  PARSE ASSIGNMENT
+--
+-- Basic variable assignment
+-- Syntax: var := expression or array(index) := expr
+-----------------------------------------------------------------------------
+
 procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
-  -- Basic variable assignment
-  -- Syntax: var := expression or array(index) := expr
   var_id     : identifier;
   var_kind   : identifier;
   expr_value : unbounded_string;
@@ -5369,10 +5441,16 @@ begin
   itself_type := new_t;
 end ParseAssignment;
 
+
+-----------------------------------------------------------------------------
+--  PARSE VAR DECLARATION
+--
+-- Basic variable declaration
+-- Syntax: var [,var2 ...] declaration_part
+-- Array variables can only be declared one-at-a-time
+-----------------------------------------------------------------------------
+
 procedure ParseVarDeclaration is
-  -- Basic variable declaration
-  -- Syntax: var [,var2 ...] declaration_part
-  -- Array variables can only be declared one-at-a-time
   var_id  : identifier;
   var2_id : identifier;
   name    : unbounded_string;
@@ -5438,6 +5516,7 @@ begin
 end ParseVarDeclaration;
 
 
+-----------------------------------------------------------------------------
 --  PARSE EXECUTABLE STATEMENT
 --
 -- This procedure is used when any executable statement is expected (such as
@@ -5547,7 +5626,7 @@ begin
              " to quit" );
      end if;
      getNextToken;
-     expectSemicolon;
+     expectStatementSemicolon( context => logout_t );
      if not error_found or inputMode = breakout then
         DoQuit;
      end if;
@@ -5607,7 +5686,7 @@ begin
            getNextToken; -- skip semicolon
            -- eof_t because a raise might be the last line in a simple script
            if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
-             err( "unreachable code" );
+             err( "the raise makes this unreachable code" );
           end if;
           resumeScanning( atSemicolon ); -- restore original position
         end if;
@@ -5629,7 +5708,7 @@ begin
               if token /= eof_t and token /= end_t and token /= elsif_t and
                  token /= else_t and token /= when_t and token /= others_t and
                  token /= exception_t then
-                 err( "unreachable code" );
+                 err( "the exit makes this unreachable code" );
               end if;
               resumeScanning( cmdStart ); -- restore original position
               getNextToken;
@@ -5762,13 +5841,7 @@ begin
         end if;
      else
         itself_type := new_t;
-        -- interactive?
-        if inputMode = interactive or inputMode = breakout then
-           if token = eof_t then
-              err( "';' expected. Possibly hidden by a comment or unescaped '--'" );
-           end if;
-        end if;
-        expectSemicolon;
+        expectStatementSemicolon( context => startToken );
      end if;
   end if;
 
@@ -5825,6 +5898,7 @@ when block_table_overflow =>
 end ParseExecutableStatement;
 
 
+-----------------------------------------------------------------------------
 --  PARSE GENERAL STATEMENT
 --
 -- This procedure, for unstructured scripts, is used when any excutable or
@@ -5935,7 +6009,7 @@ begin
              " to quit" );
      end if;
      getNextToken;
-     expectSemicolon;
+     expectStatementSemicolon( context => logout_t );
      if not error_found or inputMode = breakout then
         DoQuit;
      end if;
@@ -5999,7 +6073,7 @@ begin
            getNextToken; -- skip semicolon
            -- eof_t because a raise might be the last line in a simple script
            if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
-             err( "unreachable code" );
+             err( "the raise makes this unreachable code" );
           end if;
           resumeScanning( atSemicolon ); -- restore original position
         end if;
@@ -6021,7 +6095,7 @@ begin
               if token /= eof_t and token /= end_t and token /= elsif_t and
                  token /= else_t and token /= when_t and token /= others_t and
                  token /= exception_t then
-                 err( "unreachable code" );
+                 err( "the exit makes this unreachable code" );
               end if;
               resumeScanning( cmdStart ); -- restore original position
               getNextToken;
@@ -6154,13 +6228,7 @@ begin
         end if;
      else
         itself_type := new_t;
-        -- interactive?
-        if inputMode = interactive or inputMode = breakout then
-           if token = eof_t then
-              err( "';' expected. Possibly hidden by a comment or unescaped '--'" );
-           end if;
-        end if;
-        expectSemicolon;
+        expectStatementSemicolon( context => startToken );
      end if;
   end if;
 
@@ -6240,16 +6308,16 @@ begin
   while (not error_found and not done) loop
      if token = pragma_t then
         ParsePragma;
-        expectSemicolon;
+        expectStatementSemicolon( context => pragma_t );
      elsif token = if_t then
         ParseStaticIfBlock;
-        expectSemicolon;
+        expectStatementSemicolon( context => if_t );
      elsif token = case_t then
         ParseStaticCaseBlock;
-        expectSemicolon;
+        expectStatementSemicolon( context => case_t );
      elsif token = null_t then
         expect( null_t );
-        expectSemicolon;
+        expectStatementSemicolon( context => null_t );
      else
         exit;
      end if;
@@ -6374,16 +6442,16 @@ begin
        token = trace_t ) loop
         if token = pragma_t then
            ParsePragma;
-           expectSemicolon;
+           expectStatementSemicolon( context => pragma_t );
         elsif token = policy_t then
            ParsePolicy;
-           expectSemicolon;
+           expectStatementSemicolon( context => policy_t );
         elsif token = configuration_t then
            ParseConfig;
-           expectSemicolon;
+           expectStatementSemicolon( context => configuration_t );
         elsif token = procedure_t then
            ParseMainProgram;
-           expectSemicolon;
+           expectStatementSemicolon( context => procedure_t );
            expect( eof_t );                        -- should be nothing else
            exit;
         elsif token = with_t then                  -- with before main pgm
@@ -6391,7 +6459,7 @@ begin
            ParseWith;
         elsif token = trace_t then
            ParseShellCommand;
-           expectSemicolon;
+           expectStatementSemicolon( context => trace_t );
         end if;
      end loop;
 

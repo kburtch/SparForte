@@ -595,6 +595,7 @@ begin
   end if;
 end err_shell;
 
+
 -----------------------------------------------------------------------------
 --  ERR
 --
@@ -649,6 +650,7 @@ begin
   err( "an unexpected exception was raised" );
 end err_exception_raised;
 
+
 -----------------------------------------------------------------------------
 --  ERR RENAMING
 --
@@ -678,6 +680,7 @@ begin
           optional_yellow( to_string( identifiers( ident ).name ) ) );
   end if;
 end err_renaming;
+
 
 -----------------------------------------------------------------------------
 --  RAISE EXCEPTION
@@ -1138,9 +1141,13 @@ procedure err(
     obstructorNotes : string := "";            -- if not type issue
     remedy          : string := "" ) is        -- suggested solutions
   msg : unbounded_string;
+  blockName : unbounded_string;
 begin
 
   -- The context
+  --
+  -- If an identifier is provided, use it first.  Otherwise use textual notes.
+  -- If no context was provided, use the current block name for the context.
 
   if context /= eof_t then
      if context < keywords_top then
@@ -1151,6 +1158,14 @@ begin
   elsif contextNotes /= "" then
      msg := "While " & to_unbounded_string( contextNotes );
   end if;
+  if msg = "" then
+     if blocks_top > block'first then
+        blockName := getBlockName( blocks_top-1 );
+     end if;
+     if blockName /= null_unbounded_string then
+        msg := "In " & blockName;
+     end if;
+  end if;
   if contextType /= eof_t then
      msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) & ")" );
   elsif msg /= "" then
@@ -1158,6 +1173,9 @@ begin
   end if;
 
   -- Subject
+  --
+  -- This is the identifier the error refers to.  If no identifier is provided,
+  -- use textual notes.
 
   if subject /= eof_t then
      if msg /= "" then
@@ -1189,6 +1207,8 @@ begin
   end if;
 
   -- Reason
+  --
+  -- The error message.
 
   if msg /= "" then
      msg := msg & " ";
@@ -1196,6 +1216,9 @@ begin
   msg := msg & reason;
 
   -- Obstructor
+  --
+  -- The identifier causing the error for the subject.  If no identifier is
+  -- given, use the textual notes.
 
   if obstructor /= eof_t then
      if msg /= "" then
@@ -1213,6 +1236,8 @@ begin
   end if;
 
   -- Remedy
+  --
+  -- Suggestions to correct the problem.
 
   if remedy /= "" then
      if boolean(verboseOpt) then
@@ -1235,7 +1260,8 @@ end err;
 -- ERR
 --
 -- Report an error but structure is based on the "reporter questions", to
--- describe the context around the error as briefly as possible.
+-- describe the context around the error as briefly as possible.  Choose an
+-- error subprogram based on the user's language.
 -----------------------------------------------------------------------------
 
 procedure err(
@@ -1392,32 +1418,32 @@ end expectIdentifier;
 
 
 -----------------------------------------------------------------------------
---  EXPECT SEMICOLON
+--  EXPECT STATEMENT SEMICOLON
 --
 -- Read a semicolon, if it is present.  Otherwise, show an error related to
--- a missing semicolon.
+-- a missing semicolon at the end of a statement.
 -----------------------------------------------------------------------------
--- TODO: to be deprecated.
-
-procedure expectSemicolon is
-begin
-  -- Common typo
-  if token = symbol_t and identifiers( token ).value.all = ":" then
-     err( "':' should  be ';'" );
-  else
-     expect( symbol_t, ";" );
-  end if;
-end expectSemicolon;
 
 procedure expectStatementSemicolon( context : identifier := eof_t; contextNotes : string := "" ) is
 begin
+  -- in interactive modes, a comment will hide the semi-colon automatically
+  -- added by SparForte.  This can also happen with `..`
+  if token = eof_t then
+     expectSymbol(
+       expectedValue => ";",
+       context => context,
+       contextNotes => contextNotes,
+       reason => "the end of statement",
+       remedy => "a comment or unescaped '--' has hidden a ';'"
+     );
+  end if;
   -- Common typo
   if token = symbol_t and identifiers( token ).value.all = ":" then
      expectSymbol(
        expectedValue => ";",
        context => context,
        contextNotes => contextNotes,
-       reason => "':' looks like it was used by mistake because the end of the statement"
+       reason => "':' could be a mistake because the end of the statement"
      );
   else
      expectSymbol(
@@ -1428,6 +1454,14 @@ begin
     );
   end if;
 end expectStatementSemicolon;
+
+
+-----------------------------------------------------------------------------
+--  EXPECT DECLARATION SEMICOLON
+--
+-- Read a semicolon, if it is present.  Otherwise, show an error related to
+-- a missing semicolon at the end of a declaration.
+-----------------------------------------------------------------------------
 
 procedure expectDeclarationSemicolon( context : identifier := eof_t; contextNotes : string := "" ) is
   myContextNotes : unbounded_string := to_unbounded_string( contextNotes );
@@ -1441,7 +1475,7 @@ begin
      expectSymbol(
        expectedValue => ";",
        contextNotes => to_string( myContextNotes ),
-       reason => "':' looks like it was used by mistake because the end of the declaration"
+       reason => "':' could be a mistake because the end of the declaration"
      );
   else
      expectSymbol(
@@ -1451,6 +1485,47 @@ begin
     );
   end if;
 end expectDeclarationSemicolon;
+
+
+-----------------------------------------------------------------------------
+--  EXPECT RETURN SEMICOLON
+--
+-- Read a semicolon, if it is present.  Otherwise, show an error related to
+-- a missing semicolon at the end of a return.  The context of the return
+-- is the block it is in.
+-----------------------------------------------------------------------------
+
+procedure expectReturnSemicolon is
+  blockName : unbounded_string;
+  myContextNotes : unbounded_string;
+begin
+
+  -- Get the name of the current block, the one this return applies to.
+
+  if blocks_top > block'first then
+     blockName := getBlockName( blocks_top-1 );
+  end if;
+  if blockName /= null_unbounded_string then
+     myContextNotes := "in this return for " & blockName;
+  else
+     myContextNotes := to_unbounded_string( "in this return" );
+  end if;
+
+  -- Common typo
+  if token = symbol_t and identifiers( token ).value.all = ":" then
+     expectSymbol(
+       expectedValue => ";",
+       contextNotes => to_string( myContextNotes ),
+       reason => "':' could be a mistake because the end of the statement"
+     );
+  else
+     expectSymbol(
+       expectedValue => ";",
+       contextNotes => to_string( myContextNotes ),
+       reason => "the end of the statement"
+    );
+  end if;
+end expectReturnSemicolon;
 
 -- TODO: more
 
@@ -1486,13 +1561,13 @@ begin
        context => subprogram,
        contextNotes => to_string( contextNotes ),
        expectedValue => ",",
-       reason => "';' looks like it was used by mistake because the parameters");
+       reason => "';' could be a mistake because the parameters");
   elsif token = symbol_t and identifiers( token ).value.all = "." then
      expectSymbol(
        context => subprogram,
        contextNotes => to_string( contextNotes ),
        expectedValue => ",",
-       reason => "'.' looks like it was used by mistake because the parameters");
+       reason => "'.' could be a mistake because the parameters");
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expectSymbol(
        expectedValue => ",",
@@ -1524,13 +1599,13 @@ begin
      expectSymbol(
        contextNotes => contextNotes,
        expectedValue => ",",
-       reason => "';' looks like it was used by mistake because the list"
+       reason => "';' could be a mistake because the list"
      );
   elsif token = symbol_t and identifiers( token ).value.all = "." then
      expectSymbol(
        expectedValue => ",",
        contextNotes => contextNotes,
-       reason => "'.' looks like it was used by mistake because the list"
+       reason => "'.' could be a mistake because the list"
      );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expectSymbol(

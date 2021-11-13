@@ -1081,7 +1081,7 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
            identifiers( kind_id ).contract,
            fragment => true );                           -- setup byte code
          ParseAffirmBlock;
-         expectSemicolon;               -- should be previously syntax checked
+         expectStatementSemicolon( context => affirm_t ); -- should be previously syntax checked?
          if not done then                                  -- not done?
             expect( eof_t );                               -- should be eof
          end if;

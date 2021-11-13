@@ -364,7 +364,7 @@ begin
         token := identifiers'first;                -- dummy, replaced by g_n_t
         getNextToken;                              -- load first token
         parsePolicy;
-        expectSemicolon;
+        expectStatementSemicolon( contextNotes => "in the global policy" );
         if token /= eof_t then                     -- unexpected token?
            expect( pragma_t );                     -- say what we expect
         else
@@ -467,7 +467,7 @@ begin
         token := identifiers'first;                -- dummy, replaced by g_n_t
         getNextToken;                              -- load first token
         parseConfig;
-        expectSemicolon;
+        expectStatementSemicolon( contextNotes => "in the global configuration" );
         expect( eof_t );                        -- should be nothing else
      end if;
   elsif C_errno = 2 then                             -- file not found?

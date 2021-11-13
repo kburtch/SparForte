@@ -120,16 +120,21 @@ procedure expectSymbol(
 
 procedure expectIdentifier( what, receivedDescription : string );
 
+pragma inline( expectIdentifier );
+
 -----------------------------------------------------------------------------
 -- Missing Round Bracket / Paranthesis
 -----------------------------------------------------------------------------
 
-procedure expectSemicolon;
--- expect a semi-colon, check for colon
-
 procedure expectStatementSemicolon( context : identifier := eof_t; contextNotes : string := "" );
 
 procedure expectDeclarationSemicolon( context : identifier := eof_t; contextNotes : string := "" );
+
+procedure expectReturnSemicolon;
+
+pragma inline( expectStatementSemicolon );
+pragma inline( expectDeclarationSemicolon );
+pragma inline( expectReturnSemicolon );
 
 -----------------------------------------------------------------------------
 -- Missing Commas
@@ -138,6 +143,8 @@ procedure expectDeclarationSemicolon( context : identifier := eof_t; contextNote
 procedure expectParameterComma( subprogram : identifier := eof_t );
 procedure expectPragmaComma;
 -- expect a comma, check for semi-colon
+
+pragma inline( expectParameterComma );
 
 -----------------------------------------------------------------------------
 -- Missing Round Bracket / Paranthesis
@@ -151,8 +158,10 @@ procedure expectPragmaParameterOpen( pragmaKind : string );
 
 procedure expectPragmaParameterClose( pragmaKind : string );
 
+pragma inline( expectParameterOpen );
+pragma inline( expectParameterClose );
+
 pragma inline( expect );
-pragma inline( expectSemicolon );
 
 PRIVATE
 

@@ -9,9 +9,10 @@ These are new issues identified but not entered into the outstanding bug list
 -----------------------------------------------------------------------------
 
 Priority Issues (Fix These First)
--------------------------------
+---------------------------------
 
-- in parser-decl-as, an include file that starts with a blank line will
+- eof handling in expect symbol (i.e. reached end-of-file)
+- bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.
 - ada vectors
   - complete
@@ -55,6 +56,8 @@ Priority Issues (Fix These First)
 - check for TODO's
 
 - ada95 corrective recommendations
+- separate subprograms need parameter verification like other forward
+  specifications, or the two should be harmonized to work the same way
 - locations (on declared but not used errors)
 - how can design mode be improved to assist with design diagrams?  perhaps
   a simple left-justified tree of the program like the shell tree command

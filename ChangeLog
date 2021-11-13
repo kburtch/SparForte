@@ -77,3 +77,5 @@ CHANGES SINCE 2.4.1
 
 34. Change: Improved some error messages for context and ease of understanding.
 
+35. Fix: basic raise reports unreachable code (test was removed when "raise when" was added).
+

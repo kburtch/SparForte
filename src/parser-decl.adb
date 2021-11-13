@@ -2020,7 +2020,7 @@ begin
      identifiers( field_id ).wasReferenced := true;
      --identifiers( field_id ).referencedByThread := getThreadName;
   end if;
-  expectSemicolon;
+  expectDeclarationSemicolon( context => field_id );
   if not error_found and  token /= eof_t and token /= end_t then
      field_no := field_no + 1;
      ParseRecordFields( record_id, field_no );
