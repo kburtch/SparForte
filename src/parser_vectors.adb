@@ -64,8 +64,9 @@ vectors_reserve_capacity_t : identifier;
 vectors_length_t        : identifier;
 vectors_set_length_t    : identifier;
 vectors_is_empty_t      : identifier;
---vectors_append_t        : identifier;
-vectors_append_t : identifier;
+vectors_append_vector_t : identifier;
+vectors_append_elements_t : identifier;
+vectors_prepend_elements_t : identifier;
 vectors_prepend_t       : identifier;
 vectors_first_index_t   : identifier;
 vectors_last_index_t    : identifier;
@@ -86,7 +87,7 @@ vectors_previous_t      : identifier;
 vectors_delete_t        : identifier;
 vectors_has_element_t   : identifier;
 vectors_equal_t         : identifier;
-vectors_append_vectors_t : identifier;
+vectors_append_t        : identifier;
 vectors_insert_t        : identifier;
 vectors_insert_vector_t : identifier;
 vectors_insert_before_t : identifier;
@@ -569,13 +570,13 @@ end ParseVectorsIsEmpty;
 
 
 ------------------------------------------------------------------------------
---  APPEND
+--  APPEND ELEMENTS
 --
--- Syntax: vectors.append( v, s, [c] );
--- Ada:    vectors.append( v, s, [c] );
+-- Syntax: vectors.append_elements( v, s, [c] );
+-- Ada:    vectors.append_elements( v, s, [c] );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsAppend is
+procedure ParseVectorsAppendElements is
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -584,7 +585,7 @@ procedure ParseVectorsAppend is
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
-  expect( vectors_append_t );
+  expect( vectors_append_elements_t );
   ParseFirstInOutInstantiatedParameter( vectors_append_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_append_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -610,17 +611,17 @@ begin
        err_storage;
      end;
   end if;
-end ParseVectorsAppend;
+end ParseVectorsAppendElements;
 
 
 ------------------------------------------------------------------------------
---  PREPEND
+--  PREPEND VECTOR
 --
--- Syntax: vectors.prepend( v, e, [n] );
--- Ada:    vectors.prepend( v, e, [n] );
+-- Syntax: vectors.prepend_elements( v, e, [n] );
+-- Ada:    vectors.prepend_elements( v, e, [n] );
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsPrepend is
+procedure ParseVectorsPrependElements is
   vectorId  : identifier;
   theVector : resPtr;
   itemExpr  : unbounded_string;
@@ -629,7 +630,7 @@ procedure ParseVectorsPrepend is
   cntType   : identifier;
   hasCnt    : boolean := false;
 begin
-  expect( vectors_prepend_t );
+  expect( vectors_prepend_elements_t );
   ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_prepend_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -649,6 +650,76 @@ begin
        else
           Vector_String_Lists.Prepend( theVector.vslVector, itemExpr );
        end if;
+     exception when constraint_error =>
+       err( "prepend count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     end;
+  end if;
+end ParseVectorsPrependElements;
+
+
+------------------------------------------------------------------------------
+--  APPEND
+--
+-- Syntax: vectors.append( v, e, s );
+-- Ada:    vectors.append( v, e, s );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsAppend is
+  vectorId  : identifier;
+  theVector : resPtr;
+  idxExpr   : unbounded_string;
+  idxType   : identifier;
+  strExpr   : unbounded_string;
+  strType   : identifier;
+begin
+  expect( vectors_append_t );
+  ParseFirstInOutInstantiatedParameter( vectors_append_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_append_t, idxExpr, idxType, identifiers( vectorId ).genKind );
+  ParseLastStringParameter( vectors_append_t, strExpr, strType, identifiers( vectorId ).genKind2 );
+  if isExecutingCommand then
+     declare
+       idx : vector_index;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+       Append( theVector.vslVector, idx, strExpr );
+     exception when constraint_error =>
+       err( "prepend count must be a natural integer" );
+     when storage_error =>
+       err_storage;
+     end;
+  end if;
+end ParseVectorsAppend;
+
+
+------------------------------------------------------------------------------
+--  PREPEND
+--
+-- Syntax: vectors.prepend( v, e, s );
+-- Ada:    vectors.prepend( v, e, s );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsPrepend is
+  vectorId  : identifier;
+  theVector : resPtr;
+  idxExpr   : unbounded_string;
+  idxType   : identifier;
+  strExpr   : unbounded_string;
+  strType   : identifier;
+begin
+  expect( vectors_prepend_t );
+  ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_prepend_t, idxExpr, idxType, identifiers( vectorId ).genKind );
+  ParseLastStringParameter( vectors_prepend_t, strExpr, strType, identifiers( vectorId ).genKind2 );
+  if isExecutingCommand then
+     declare
+       idx : vector_index;
+     begin
+       findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+       idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+       Prepend( theVector.vslVector, idx, strExpr );
      exception when constraint_error =>
        err( "prepend count must be a natural integer" );
      when storage_error =>
@@ -1738,22 +1809,22 @@ end ParseVectorsInsertSpace;
 
 
 ------------------------------------------------------------------------------
---  APPEND VECTORS
+--  APPEND VECTOR
 --
--- Syntax: append_vectors( v1, v2 );
+-- Syntax: append_vector( v1, v2 );
 -- Ada:    v0 := v1 & v2;
 ------------------------------------------------------------------------------
 
-procedure ParseVectorsAppendVectors is
+procedure ParseVectorsAppendVector is
   leftVectorId  : identifier;
   rightVectorId : identifier;
   leftVector    : resPtr;
   rightVector   : resPtr;
   use Vector_String_Lists;
 begin
-  expect( vectors_append_vectors_t );
-  ParseFirstInOutInstantiatedParameter( vectors_append_vectors_t, leftVectorId, vectors_vector_t );
-  ParseLastInOutInstantiatedParameter( vectors_append_vectors_t, rightVectorId, vectors_vector_t );
+  expect( vectors_append_vector_t );
+  ParseFirstInOutInstantiatedParameter( vectors_append_vector_t, leftVectorId, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( vectors_append_vector_t, rightVectorId, vectors_vector_t );
   if not error_found then
      genTypesOk( identifiers( leftVectorId ).genKind, identifiers( rightVectorId ).genKind );
      genTypesOk( identifiers( leftVectorId ).genKind2, identifiers( rightVectorId ).genKind2 );
@@ -1769,7 +1840,7 @@ begin
        err_exception_raised;
      end;
   end if;
-end ParseVectorsAppendVectors;
+end ParseVectorsAppendVector;
 
 
 ------------------------------------------------------------------------------
@@ -2074,7 +2145,9 @@ begin
   declareFunction(  vectors_length_t,    "vectors.length",    ParseVectorsLength'access );
   declareProcedure( vectors_set_length_t,  "vectors.set_length",    ParseVectorsSetLength'access );
   declareFunction(  vectors_is_empty_t,  "vectors.is_empty",  ParseVectorsIsEmpty'access );
-  declareProcedure( vectors_append_t,  "vectors.append_elements",    ParseVectorsAppend'access );
+  declareProcedure( vectors_append_vector_t,  "vectors.append_vector",    ParseVectorsAppendVector'access );
+  declareProcedure( vectors_append_elements_t,  "vectors.append_elements",    ParseVectorsAppendElements'access );
+  declareProcedure( vectors_prepend_elements_t,  "vectors.prepend_elements",    ParseVectorsPrependElements'access );
   declareProcedure( vectors_prepend_t,  "vectors.prepend",    ParseVectorsPrepend'access );
   declareFunction(  vectors_first_index_t,  "vectors.first_index",    ParseVectorsFirstIndex'access );
   declareFunction(  vectors_last_index_t,  "vectors.last_index",    ParseVectorsLastIndex'access );
@@ -2094,7 +2167,7 @@ begin
   declareProcedure( vectors_delete_t,  "vectors.delete", ParseVectorsDelete'access );
   declareFunction(  vectors_has_element_t,  "vectors.has_element", ParseVectorsHasElement'access );
   declareFunction(  vectors_equal_t,  "vectors.equal", ParseVectorsEqual'access );
-  declareProcedure( vectors_append_vectors_t, "vectors.append_vectors", ParseVectorsAppendVectors'access );
+  declareProcedure( vectors_append_t, "vectors.append", ParseVectorsAppend'access );
   declareProcedure( vectors_insert_t, "vectors.insert", ParseVectorsInsert'access );
   declareProcedure( vectors_insert_vector_t, "vectors.insert_vector", ParseVectorsInsertVector'access );
   declareProcedure( vectors_insert_before_t, "vectors.insert_before", ParseVectorsInsertBefore'access );

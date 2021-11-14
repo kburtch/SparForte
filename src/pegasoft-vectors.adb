@@ -21,24 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded,
-     Ada.Containers.Vectors;
+--with text_io;use text_io;
 
-use  Ada.Strings.Unbounded;
+package body pegasoft.vectors is
 
-package pegasoft.vectors is
-
--- Vectors
---
--- A vector is a singly linked list.
-
-type vector_index is new natural;
-
-package vector_string_lists is new Ada.Containers.Vectors(
-   vector_index,
-   unbounded_string,
-   "="
-);
 
 ------------------------------------------------------------------------------
 --
@@ -46,14 +32,53 @@ package vector_string_lists is new Ada.Containers.Vectors(
 --
 ------------------------------------------------------------------------------
 
-procedure append( v : in out vector_string_lists.vector; k :vector_index; e : unbounded_string );
 
-procedure prepend( v : in out vector_string_lists.vector; k :vector_index; e : unbounded_string );
+------------------------------------------------------------------------------
+--  APPEND
+--
+------------------------------------------------------------------------------
 
--- procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
+procedure append( v : in out vector_string_lists.vector; k : vector_index; e : unbounded_string ) is
+  the_string : unbounded_string;
+begin
+  the_string := Vector_String_Lists.Element( v, k );
+  the_string := the_string & e;
+  Vector_String_Lists.Replace_Element( v, k, the_string );
+end append;
 
--- procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
 
--- function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string;
+------------------------------------------------------------------------------
+--  PREPEND
+--
+------------------------------------------------------------------------------
+
+procedure prepend( v : in out vector_string_lists.vector; k : vector_index; e : unbounded_string ) is
+  the_string : unbounded_string;
+begin
+  the_string := Vector_String_Lists.Element( v, k );
+  the_string := e & the_string;
+  Vector_String_Lists.Replace_Element( v, k, the_string );
+end prepend;
+
+
+------------------------------------------------------------------------------
+--  INCREMENT
+--
+------------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------------
+--  DECREMENT
+--
+------------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------------
+--  EXTRACT
+--
+------------------------------------------------------------------------------
+
 
 end pegasoft.vectors;

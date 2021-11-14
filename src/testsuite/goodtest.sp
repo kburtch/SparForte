@@ -6746,8 +6746,8 @@ begin
   pragma assert( vectors.element( v, 3 ) = "bar" );
   pragma assert( vectors.element( v, 4 ) = "boo" );
   pragma assert( vectors.element( v, 5 ) = "boo" );
-  vectors.prepend( v, "def", 2 );
-  vectors.prepend( v, "abc" );
+  vectors.prepend_elements( v, "def", 2 );
+  vectors.prepend_elements( v, "abc" );
   pragma assert( vectors.element( v, 0 ) = "abc" );
   pragma assert( vectors.element( v, 1 ) = "def" );
   pragma assert( vectors.element( v, 2 ) = "def" );
@@ -6784,7 +6784,7 @@ begin
   pragma assert( vectors.first_element( v ) = "cherry" );
   vectors.flip( v );
   pragma assert( vectors.first_element( v ) = "apple" );
-  vectors.append_vectors( v, v2 );
+  vectors.append_vector( v, v2 );
   pragma assert( vectors.first_element( v ) = "apple" );
   pragma assert( vectors.last_element( v ) = "orange" );
   vectors.clear( v );
