@@ -1613,10 +1613,15 @@ else
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g;s/\ \-lpgport//g;s/\ \-lreadline//g'`
    # On Raspberry Pi 4, libpgcommon isn't in the path
    # TODO: these should not be hard-coded.
+   # Jesse (I think)
    if [ -d "/usr/lib/postgresql/11" ] ; then
       PGLIBSSUB="/usr/lib/postgresql/11/lib -L""$PGLIBSSUB"
+   # Buster
    elif [ -d "/usr/lib/postgresql/12" ] ; then
       PGLIBSSUB="/usr/lib/postgresql/12/lib -L""$PGLIBSSUB"
+   # Bullseye
+   elif [ -d "/usr/lib/postgresql/13" ] ; then
+      PGLIBSSUB="/usr/lib/postgresql/13/lib -L""$PGLIBSSUB"
    fi
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 fi
