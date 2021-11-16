@@ -13,7 +13,8 @@ bdb_constants.ads: gen_constants
 	./gen_constants > bdb_constants.ads
 
 db: db.adb
-	gnatmake -c -gnatVaep -gnateEeAeEeF db.adb
+    # -gnateA removed for GCC 11 bug
+	gnatmake -c -gnatVaep -gnateEeEeF db.adb
 	gnatbind -x db.ali
 	gnatlink db.ali ${BDBBASELIBS} c_bdb.o
 
