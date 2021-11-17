@@ -99,6 +99,8 @@ vectors_find_t          : identifier;
 vectors_reverse_find_t  : identifier;
 vectors_find_index_t    : identifier;
 vectors_reverse_find_index_t : identifier;
+vectors_increment_t     : identifier;
+vectors_decrement_t     : identifier;
 
 
 ------------------------------------------------------------------------------
@@ -662,9 +664,11 @@ end ParseVectorsPrependElements;
 ------------------------------------------------------------------------------
 --  APPEND
 --
--- Syntax: vectors.append( v, e, s );
--- Ada:    vectors.append( v, e, s );
+-- Syntax: vectors.append( v, i, s );
+-- Ada:    vectors.append( v, i, s );
 ------------------------------------------------------------------------------
+-- TODO: support cursors
+-- TODO: subject defaults to current token?
 
 procedure ParseVectorsAppend is
   vectorId  : identifier;
@@ -674,7 +678,7 @@ procedure ParseVectorsAppend is
   strExpr   : unbounded_string;
   strType   : identifier;
 begin
-  expect( vectors_append_t );
+  expectSparForte( subject => vectors_append_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_append_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_append_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( vectors_append_t, strExpr, strType, identifiers( vectorId ).genKind2 );
@@ -709,7 +713,7 @@ procedure ParseVectorsPrepend is
   strExpr   : unbounded_string;
   strType   : identifier;
 begin
-  expect( vectors_prepend_t );
+  expectSparForte( vectors_prepend_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_prepend_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( vectors_prepend_t, strExpr, strType, identifiers( vectorId ).genKind2 );
@@ -2115,6 +2119,120 @@ begin
 end ParseVectorsReverseFindIndex;
 
 
+------------------------------------------------------------------------------
+--  INCREMENT
+--
+-- Syntax: vectors.increment( v, i [, n] );
+-- Ada:    vectors.increment( v, i [, n] );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsIncrement is
+  vectorId  : identifier;
+  theVector : resPtr;
+  idxExpr   : unbounded_string;
+  idxType   : identifier;
+  numExpr   : unbounded_string;
+  numType   : identifier;
+  hasAmt    : boolean := false;
+begin
+  expectSparForte( subject => vectors_increment_t, remedy => "use element and replace_element" );
+  ParseFirstInOutInstantiatedParameter( vectors_increment_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_increment_t, idxExpr, idxType, identifiers( vectorId ).genKind );
+  if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
+     err( "increment requires a numeric element type" );
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     hasAmt := true;
+     ParseLastStringParameter( vectors_increment_t, numExpr, numType, identifiers( vectorId ).genKind2 );
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+     expect( symbol_t, ")" );
+  else
+     err( ", or ) expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       floatVal  : long_float;
+     begin
+       if hasAmt then
+          floatVal := long_float( natural( to_numeric( numExpr ) ) );
+       else
+          floatVal := 1.0;
+       end if;
+       declare
+         idx : vector_index;
+       begin
+         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+         Increment( theVector.vslVector, idx, floatVal );
+       exception when constraint_error =>
+         err( "prepend count must be a natural integer" );
+       when storage_error =>
+         err_storage;
+       end;
+     exception when constraint_error =>
+       err( "increment value is not natural" );
+     end;
+  end if;
+end ParseVectorsIncrement;
+
+
+------------------------------------------------------------------------------
+--  DECREMENT
+--
+-- Syntax: vectors.decrement( v, i [, n] );
+-- Ada:    vectors.decrement( v, i [, n] );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsDecrement is
+  vectorId  : identifier;
+  theVector : resPtr;
+  idxExpr   : unbounded_string;
+  idxType   : identifier;
+  numExpr   : unbounded_string;
+  numType   : identifier;
+  hasAmt    : boolean := false;
+begin
+  expectSparForte( subject => vectors_decrement_t, remedy => "use element and replace_element" );
+  ParseFirstInOutInstantiatedParameter( vectors_decrement_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_decrement_t, idxExpr, idxType, identifiers( vectorId ).genKind );
+  if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
+     err( "decrement requires a numeric element type" );
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = "," then
+     hasAmt := true;
+     ParseLastStringParameter( vectors_decrement_t, numExpr, numType, identifiers( vectorId ).genKind2 );
+  elsif token = symbol_t and identifiers( token ).value.all = ")" then
+     expect( symbol_t, ")" );
+  else
+     err( ", or ) expected" );
+  end if;
+  if isExecutingCommand then
+     declare
+       floatVal  : long_float;
+     begin
+       if hasAmt then
+          floatVal := long_float( natural( to_numeric( numExpr ) ) );
+       else
+          floatVal := 1.0;
+       end if;
+       declare
+         idx : vector_index;
+       begin
+         findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
+         idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
+         Decrement( theVector.vslVector, idx, floatVal );
+       exception when constraint_error =>
+         err( "prepend count must be a natural integer" );
+       when storage_error =>
+         err_storage;
+       end;
+     exception when constraint_error =>
+       err( "increment value is not natural" );
+     end;
+  end if;
+end ParseVectorsDecrement;
+
+
 -----------------------------------------------------------------------------
 --
 -- Housekeeping
@@ -2179,6 +2297,8 @@ begin
   declareProcedure( vectors_reverse_find_t, "vectors.reverse_find", ParseVectorsReverseFind'access );
   declareProcedure( vectors_find_index_t, "vectors.find_index", ParseVectorsFindIndex'access );
   declareProcedure( vectors_reverse_find_index_t, "vectors.reverse_find_index", ParseVectorsReverseFindIndex'access );
+  declareProcedure( vectors_increment_t, "vectors.increment", ParseVectorsIncrement'access );
+  declareProcedure( vectors_decrement_t, "vectors.decrement", ParseVectorsDecrement'access );
 
   declareNamespaceClosed( "vectors" );
 end StartupVectors;

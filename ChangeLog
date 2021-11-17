@@ -79,3 +79,9 @@ CHANGES SINCE 2.4.1
 
 35. Fix: restored a unreachable code by raise test removed when raise..when was added.
 
+36. Fix: [Blady] various OS/X changes.
+
+37. Fix: [] Slackware / GCC 11 fix.
+
+38. New: Support for Raspian / Debian 11.1 (Bullseye) on Raspberry Pi.
+

@@ -2642,7 +2642,8 @@ begin
      content( e, "swap( v, i1, i2 | v, c1, c2 )", "find( v, e, c1, c2 )", "reverse_find( v, e, c1, c2 )" );
      content( e, "find_index( v, e, i1, i2 )", "reverse_find_index( v, e, i1, i2 )" );
      content( e, "element( c ) | ( v, i )", "delete_first( v [,n] )", "delete_last( v [,n] )"  );
-     content( e, "append( v, i, s )", "prepend( v, i, s )" );
+     content( e, "append( v, i, s )", "prepend( v, i, s )", "increment( v, i [, n] )" );
+     content( e, "decrement( v, i [, n] )" );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then

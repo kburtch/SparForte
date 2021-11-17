@@ -46,13 +46,14 @@ package vector_string_lists is new Ada.Containers.Vectors(
 --
 ------------------------------------------------------------------------------
 
-procedure append( v : in out vector_string_lists.vector; k :vector_index; e : unbounded_string );
+procedure append( v : in out vector_string_lists.vector; i :vector_index; e : unbounded_string );
 
-procedure prepend( v : in out vector_string_lists.vector; k :vector_index; e : unbounded_string );
+procedure prepend( v : in out vector_string_lists.vector; i :vector_index; e : unbounded_string );
 
--- procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
+procedure increment( v : in out vector_string_lists.vector; i : vector_index; n : long_float );
 
--- procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
+procedure decrement( v : in out vector_string_lists.vector; i : vector_index; n : long_float );
+
 
 -- function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string;
 

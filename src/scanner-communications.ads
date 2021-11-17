@@ -163,6 +163,20 @@ pragma inline( expectParameterClose );
 
 pragma inline( expect );
 
+-----------------------------------------------------------------------------
+-- Use of Non-Ada 95 Feature under Pragma Ada 95
+-----------------------------------------------------------------------------
+
+procedure expectSparForte(
+    context         : identifier := eof_t;
+    contextType     : identifier := eof_t;
+    contextNotes    : string := "";
+    subject         : identifier := eof_t;
+    --subjectType     : identifier := eof_t;
+    --subjectLocation : string := "";
+    --subjectNotes    : string := "";
+    remedy          : string := "" );
+
 PRIVATE
 
 type englishUserLanguage is new rootUserLanguage with null record;

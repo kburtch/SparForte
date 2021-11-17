@@ -1778,7 +1778,34 @@ end expectPragmaParameterClose;
 -----------------------------------------------------------------------------
 -- Use of Non-Ada 95 Feature under Pragma Ada 95
 -----------------------------------------------------------------------------
--- TODO
+
+procedure expectSparForte(
+    context         : identifier := eof_t;     -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    contextNotes    : string := "";            -- notes
+    subject         : identifier := eof_t;     -- which
+    --subjectType     : identifier := eof_t;     -- which kind
+    --subjectLocation : string := "";            -- where it was
+    --subjectNotes    : string := "";            -- if not type issue
+    remedy          : string := "" ) is        -- suggested solutions
+begin
+  if onlyAda95 then 
+     err(
+        userLanguage => userLanguage.all,
+        context => context,
+        contextType => contextType,
+        contextNotes => contextNotes,
+        subject => subject,
+        --subjectType => subjectType,
+        --subjectLocation => subjectLocation,
+        --subjectNotes => subjectNotes,
+        reason => "is not compatible with",
+        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        remedy => remedy
+     );
+  end if;
+  expect( subject );
+end expectSparForte;
 
 begin
   -- hard coded, for now

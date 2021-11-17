@@ -38,12 +38,12 @@ package body pegasoft.vectors is
 --
 ------------------------------------------------------------------------------
 
-procedure append( v : in out vector_string_lists.vector; k : vector_index; e : unbounded_string ) is
+procedure append( v : in out vector_string_lists.vector; i : vector_index; e : unbounded_string ) is
   the_string : unbounded_string;
 begin
-  the_string := Vector_String_Lists.Element( v, k );
+  the_string := Vector_String_Lists.Element( v, i );
   the_string := the_string & e;
-  Vector_String_Lists.Replace_Element( v, k, the_string );
+  Vector_String_Lists.Replace_Element( v, i, the_string );
 end append;
 
 
@@ -52,12 +52,12 @@ end append;
 --
 ------------------------------------------------------------------------------
 
-procedure prepend( v : in out vector_string_lists.vector; k : vector_index; e : unbounded_string ) is
+procedure prepend( v : in out vector_string_lists.vector; i : vector_index; e : unbounded_string ) is
   the_string : unbounded_string;
 begin
-  the_string := Vector_String_Lists.Element( v, k );
+  the_string := Vector_String_Lists.Element( v, i );
   the_string := e & the_string;
-  Vector_String_Lists.Replace_Element( v, k, the_string );
+  Vector_String_Lists.Replace_Element( v, i, the_string );
 end prepend;
 
 
@@ -66,6 +66,13 @@ end prepend;
 --
 ------------------------------------------------------------------------------
 
+procedure increment( v : in out vector_string_lists.vector; i : vector_index; n : long_float ) is
+  the_string : unbounded_string;
+begin
+  the_string := Vector_String_Lists.Element( v, i );
+  the_string := to_unbounded_string( to_numeric( the_string ) + n );
+  Vector_String_Lists.Replace_Element( v, i, the_string );
+end increment;
 
 
 ------------------------------------------------------------------------------
@@ -73,7 +80,13 @@ end prepend;
 --
 ------------------------------------------------------------------------------
 
-
+procedure decrement( v : in out vector_string_lists.vector; i : vector_index; n : long_float ) is
+  the_string : unbounded_string;
+begin
+  the_string := Vector_String_Lists.Element( v, i );
+  the_string := to_unbounded_string( to_numeric( the_string ) - n );
+  Vector_String_Lists.Replace_Element( v, i, the_string );
+end decrement;
 
 ------------------------------------------------------------------------------
 --  EXTRACT
