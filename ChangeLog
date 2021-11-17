@@ -81,7 +81,7 @@ CHANGES SINCE 2.4.1
 
 36. Fix: [Blady] various OS/X changes.
 
-37. Fix: [] Slackware / GCC 11 fix.
+37. Fix: [Zhu] Slackware / GCC 11 fix.
 
 38. New: Support for Raspian / Debian 11.1 (Bullseye) on Raspberry Pi.
 

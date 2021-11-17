@@ -1789,7 +1789,7 @@ procedure expectSparForte(
     --subjectNotes    : string := "";            -- if not type issue
     remedy          : string := "" ) is        -- suggested solutions
 begin
-  if onlyAda95 then 
+  if onlyAda95 then
      err(
         userLanguage => userLanguage.all,
         context => context,
