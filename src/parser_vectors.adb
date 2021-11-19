@@ -77,7 +77,7 @@ vectors_delete_first_t  : identifier;
 vectors_delete_last_t   : identifier;
 vectors_contains_t      : identifier;
 vectors_move_t          : identifier;
---vectors_copy_t          : identifier;
+vectors_assign_t          : identifier;
 vectors_reverse_elements_t : identifier;
 vectors_flip_t          : identifier;
 vectors_first_t         : identifier;
@@ -2233,6 +2233,41 @@ begin
 end ParseVectorsDecrement;
 
 
+------------------------------------------------------------------------------
+--  ASSIGN
+--
+-- Syntax: hashed_maps.assign( t, s );
+-- Ada:    hashed_maps.assign( t, s );
+------------------------------------------------------------------------------
+
+procedure ParseVectorsAssign is
+  targetVectorId   : identifier;
+  sourceVectorId   : identifier;
+  targetVector  : resPtr;
+  sourceVector  : resPtr;
+begin
+  expect( vectors_assign_t );
+  ParseFirstInOutInstantiatedParameter( vectors_assign_t, targetVectorId, vectors_vector_t );
+  ParseLastInOutInstantiatedParameter( vectors_assign_t, sourceVectorId, vectors_vector_t );
+  if not error_found then
+     genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
+     genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
+  end if;
+  if isExecutingCommand then
+     begin
+       findResource( to_resource_id( identifiers( targetVectorId ).value.all ), targetVector );
+       findResource( to_resource_id( identifiers( sourceVectorId ).value.all ), sourceVector );
+       Vector_String_Lists.Assign( targetVector.vslVector, sourceVector.vslVector );
+     exception when storage_error =>
+       err_storage;
+     when others =>
+       err_exception_raised;
+     end;
+  end if;
+end ParseVectorsAssign;
+
+
+
 -----------------------------------------------------------------------------
 --
 -- Housekeeping
@@ -2299,6 +2334,7 @@ begin
   declareProcedure( vectors_reverse_find_index_t, "vectors.reverse_find_index", ParseVectorsReverseFindIndex'access );
   declareProcedure( vectors_increment_t, "vectors.increment", ParseVectorsIncrement'access );
   declareProcedure( vectors_decrement_t, "vectors.decrement", ParseVectorsDecrement'access );
+  declareProcedure( vectors_assign_t, "vectors.assign", ParseVectorsAssign'access );
 
   declareNamespaceClosed( "vectors" );
 end StartupVectors;

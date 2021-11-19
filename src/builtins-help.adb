@@ -2630,7 +2630,7 @@ begin
      content( e, "capacity( v )", "reserve_capacity( v, n )", "set_length( v, n )" );
      content( e, "c := length( v )", "b := is_empty( v )", "to_vector( v, e, n )" );
      content( e, "append_elements( v, e [,c] )", "b := equal( v1, v2 )", "i := first_index( v )" );
-     content( e, "prepend_vector( v, e, [n] )", "i := last_index( v )", "b := contains( c, e )" );
+     content( e, "assign( v2, v1 )", "i := last_index( v )", "b := contains( c, e )" );
      content( e, "e := first_element( v )", "e := last_element( v )", "reverse_elements( v )" );
      content( e, "flip( v )", "prepend_elements( v, e, [,c ] )", "append_vectors( v1, v2 )" );
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
@@ -2643,7 +2643,7 @@ begin
      content( e, "find_index( v, e, i1, i2 )", "reverse_find_index( v, e, i1, i2 )" );
      content( e, "element( c ) | ( v, i )", "delete_first( v [,n] )", "delete_last( v [,n] )"  );
      content( e, "append( v, i, s )", "prepend( v, i, s )", "increment( v, i [, n] )" );
-     content( e, "decrement( v, i [, n] )" );
+     content( e, "decrement( v, i [, n] )", "move( v2, v1 )" );
      seeAlso( e, "doc/pkg_vectors.html" );
      endHelp( e );
   elsif helpTopic = "wait" then
