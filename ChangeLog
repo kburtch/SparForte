@@ -85,3 +85,5 @@ CHANGES SINCE 2.4.1
 
 38. New: Support for Raspian / Debian 11.1 (Bullseye) on Raspberry Pi.
 
+39. New: Support for YAML substitutions.
+

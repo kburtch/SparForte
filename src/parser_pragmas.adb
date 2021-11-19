@@ -1761,6 +1761,8 @@ begin
            templateHeader.templateType := wmlTemplate;
         elsif expr_val = "xml" then
            templateHeader.templateType := xmlTemplate; -- text/xml
+        elsif expr_val = "yaml" then
+           templateHeader.templateType := yamlTemplate;
         else
            err( "unknown template type" );
         end if;

@@ -1022,6 +1022,8 @@ begin
         fullErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
      when textTemplate =>
         fullErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
+     when yamlTemplate =>
+        fullErrorMessage := "# " & convertToPlainText( fullErrorMessage );
      when noTemplate | jsonTemplate =>
         fullErrorMessage := convertToPlainText( fullErrorMessage );
      end case;
@@ -1241,6 +1243,8 @@ begin
         fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
      when xmlTemplate =>
         fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+     when yamlTemplate =>
+        fullTemplateErrorMessage := "# " & convertToPlainText( fullErrorMessage );
      when textTemplate =>
         fullTemplateErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
      when noTemplate | jsonTemplate =>
@@ -1516,6 +1520,8 @@ begin
         fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
      when xmlTemplate =>
         fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+     when yamlTemplate =>
+        fullTemplateErrorMessage := "# " & convertToPlainText( fullErrorMessage );
      when noTemplate | textTemplate | jsonTemplate =>
         fullTemplateErrorMessage := convertToPlainText( fullErrorMessage );
      end case;
@@ -1672,7 +1678,9 @@ begin
      when cssTemplate | jsTemplate =>
         ourFullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) & " -->";
+        ourFullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) & " -->";
+     when yamlTemplate =>
+        ourFullTemplateErrorMessage := "# " & convertToPlainText( ourFullErrorMessage );
      when noTemplate | textTemplate | jsonTemplate =>
         ourFullTemplateErrorMessage := convertToPlainText( ourFullErrorMessage );
      end case;
@@ -1752,6 +1760,8 @@ begin
         put( "/* " & templateErrorHeader & " " & convertToPlainText( fullMsg ) &  " */" );
      when xmlTemplate =>
         put( "<!-- " & templateErrorHeader & " " & convertToPlainText( fullMsg ) & " -->" );
+     when yamlTemplate =>
+        fullErrorMessage := "# " & convertToPlainText( fullMsg );
      when noTemplate | textTemplate | jsonTemplate =>
         put( convertToPlainText( fullMsg ) );
      end case;

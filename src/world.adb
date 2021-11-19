@@ -2090,6 +2090,7 @@ begin
   when textTemplate => s := s & "text/plain";
   when xmlTemplate  => s := s & "text/xml";
   when wmlTemplate  => s := s & "text/vnd.wap.wml";
+  when yamlTemplate => s := s & "text/yaml";
   when others => -- includes noTemplate
      --s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
