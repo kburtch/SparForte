@@ -30,11 +30,12 @@ with gnat.cgi,
 #end if;
 with ada.strings.unbounded,
     world,
-    scanner,
+    scanner.communications,
     parser;
 use ada.strings.unbounded,
     world,
     scanner,
+    scanner.communications,
     parser;
 
 package body parser_gnat_cgi is

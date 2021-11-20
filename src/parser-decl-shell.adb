@@ -31,7 +31,7 @@ with pegasoft.gen_list,
      pegasoft.strings,
      pegasoft.user_io,
      world,
-     scanner,
+     scanner.communications,
      parser.decl.as;
 
 use  world,
@@ -42,6 +42,7 @@ use  world,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
+     scanner.communications,
      parser.decl.as;
 
 package body parser.decl.shell is

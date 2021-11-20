@@ -21,8 +21,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io, gnat.source_info, pegasoft.user_io, scanner;
-use  ada.text_io, pegasoft.user_io, scanner;
+with ada.text_io,
+     gnat.source_info,
+     pegasoft.user_io,
+     scanner.communications;
+use  ada.text_io,
+     pegasoft.user_io,
+     scanner.communications;
 
 #if BDB
   with bdb;

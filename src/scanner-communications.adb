@@ -30,14 +30,18 @@ with gnat.source_info,
      pegasoft.script_io,
      pegasoft.strings,
      pegasoft.user_io,
-     spar_os.tty;
+     spar_os.tty,
+     -- TODO: references own parent.  This is messy to sort out.  Will
+     -- deal with it later.
+     scanner;
 
 use  ada.strings.unbounded.text_io,
      ada.strings.fixed,
      pegasoft.strings,
      pegasoft.script_io,
      pegasoft.user_io,
-     spar_os.tty;
+     spar_os.tty,
+     scanner;
 
 package body scanner.communications is
 

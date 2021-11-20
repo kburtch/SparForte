@@ -35,35 +35,35 @@ package scanner.communications is
 --
 ------------------------------------------------------------------------------
 
---function get_script_execution_position( msg : string ) return unbounded_string;
+function get_script_execution_position( msg : string ) return unbounded_string;
 -- get the script position but do not cause an error
 
---procedure err_shell( msg : string; wordOffset : natural );
+procedure err_shell( msg : string; wordOffset : natural );
 -- a shell error message with an offset into the token (shell word)
 
---procedure err( msg : string );
+procedure err( msg : string );
 -- if this is the first error encountered, display the message
 -- set the token to eof_t to abort the parsing and set the
 -- error_found flag to indicate that an error was encountered
 
---procedure err_symbol_table_overflow;
+procedure err_symbol_table_overflow;
 -- fatal error.  the symbol table overflowed
 
---procedure err_style( msg : string );
+procedure err_style( msg : string );
 -- display a style error.  It is not an error if the script is unstructured.
 
---procedure err_exception_raised;
+procedure err_exception_raised;
 -- generic error for when others => exceptions
 
---procedure err_renaming( ident : identifier );
+procedure err_renaming( ident : identifier );
 -- Show an error message for something disallowed for renaming
 
---procedure err_test_result;
+procedure err_test_result;
 -- error for pragma test_result failure
 
---procedure raise_exception( msg : string );
+procedure raise_exception( msg : string );
 
---procedure warn( msg : string );
+procedure warn( msg : string );
 
 ------------------------------------------------------------------------------
 -- New-style Errors

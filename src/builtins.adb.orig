@@ -36,7 +36,7 @@ with ada.text_io,
      pegasoft.strings,
      pegasoft.user_io,
      world,
-     scanner,
+     scanner.communications,
      jobs,
      parser_db,
      parser_mysql;
@@ -55,6 +55,7 @@ use  ada.text_io,
      pegasoft.user_io,
      world,
      scanner,
+     scanner.communications,
      parser_db,
      parser_mysql;
 

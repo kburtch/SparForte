@@ -21,9 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with scanner,
+with scanner.communications,
      pegasoft.user_io;
 use  scanner,
+     scanner.communications,
      pegasoft.user_io;
 
 --with ada.text_io;
