@@ -212,7 +212,23 @@ procedure expectSparForte(
     --subjectNotes    : string := "";
     remedy          : string := "" );
 
+procedure expectSparForteDifferences(
+    context         : identifier := eof_t;
+    contextType     : identifier := eof_t;
+    contextNotes    : string := "";
+    subject         : identifier := eof_t;
+    --subjectType     : identifier := eof_t;
+    --subjectLocation : string := "";
+    --subjectNotes    : string := "";
+    remedy          : string := "" );
+-- like expectSparForte, must makes it clear Ada and SparForte both have the
+-- subject but they may vary in parameters or function/procedure.
+
+
+-----------------------------------------------------------------------------
 PRIVATE
+-----------------------------------------------------------------------------
+
 
 type englishUserLanguage is new rootUserLanguage with null record;
 

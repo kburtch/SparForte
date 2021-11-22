@@ -12,8 +12,7 @@ Priority Issues (Fix These First)
 ---------------------------------
 
 - templates
-  - yaml substitutions
-  - templates that are not for HTML
+  - templates that are not for HTTP
 - eof handling in expect symbol (i.e. reached end-of-file)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.

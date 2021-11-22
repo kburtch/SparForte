@@ -1813,13 +1813,40 @@ begin
         --subjectType => subjectType,
         --subjectLocation => subjectLocation,
         --subjectNotes => subjectNotes,
-        reason => "is not compatible with",
         obstructorNotes => optional_yellow( "pragma ada_95" ),
         remedy => remedy
      );
   end if;
   expect( subject );
 end expectSparForte;
+
+procedure expectSparForteDifferences(
+    context         : identifier := eof_t;     -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    contextNotes    : string := "";            -- notes
+    subject         : identifier := eof_t;     -- which
+    --subjectType     : identifier := eof_t;     -- which kind
+    --subjectLocation : string := "";            -- where it was
+    --subjectNotes    : string := "";            -- if not type issue
+    remedy          : string := "" ) is        -- suggested solutions
+begin
+  if onlyAda95 then
+     err(
+        userLanguage => userLanguage.all,
+        context => context,
+        contextType => contextType,
+        contextNotes => contextNotes,
+        subject => subject,
+        --subjectType => subjectType,
+        --subjectLocation => subjectLocation,
+        --subjectNotes => subjectNotes,
+        reason => "has differences with Ada's version and is not fully compatible with" ,
+        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        remedy => remedy
+     );
+  end if;
+  expect( subject );
+end expectSparForteDifferences;
 
 begin
   -- hard coded, for now

@@ -219,10 +219,7 @@ procedure ParseDHTGetFirst is
   itemRef  : reference;
   eofRef   : reference;
 begin
-  expect( dht_get_first_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow get_first" );
-  end if;
+  expectSparForteDifferences( subject => dht_get_first_t );
   ParseFirstInOutInstantiatedParameter( dht_get_first_t, tableId, dht_table_t );
   ParseNextOutParameter( dht_get_first_t, itemRef, identifiers( tableId ).genKind );
   baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
@@ -253,10 +250,7 @@ procedure ParseDHTGetNext is
   itemRef  : reference;
   eofRef   : reference;
 begin
-  expect( dht_get_next_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow get_next" );
-  end if;
+  expectSparForteDifferences( subject => dht_get_next_t );
   ParseFirstInOutInstantiatedParameter( dht_get_next_t, tableId, dht_table_t );
   ParseNextOutParameter( dht_get_next_t, itemRef, identifiers( tableId ).genKind );
   baseTypesOK( itemRef.kind, identifiers( tableId ).genKind );
@@ -290,10 +284,7 @@ procedure ParseDHTAdd is
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
-  expect( dht_add_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow add" );
-  end if;
+  expectSparForte( subject => dht_add_t, remedy => "use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_add_t, tableId, dht_table_t );
   ParseNextStringParameter( dht_add_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( dht_add_t, itemExpr, itemType, identifiers( tableId ).genKind );
@@ -326,10 +317,7 @@ procedure ParseDHTReplace is
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
-  expect( dht_replace_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow replace" );
-  end if;
+  expectSparForte( subject => dht_replace_t, remedy => "use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_replace_t, tableId, dht_table_t );
   ParseNextStringParameter( dht_replace_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( dht_replace_t, itemExpr, itemType, identifiers( tableId ).genKind );
@@ -362,10 +350,7 @@ procedure ParseDHTAppend is
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
-  expect( dht_append_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow append" );
-  end if;
+  expectSparForte( subject => dht_append_t, remedy => "use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_append_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
      err( "append requires a string item type" );
@@ -401,10 +386,7 @@ procedure ParseDHTPrepend is
   itemType : identifier;
   oldItem  : unbounded_string;
 begin
-  expect( dht_prepend_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow prepend" );
-  end if;
+  expectSparForte( subject => dht_prepend_t, remedy => "use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_prepend_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_string_t then
      err( "prepend requires a string item type" );
@@ -442,10 +424,7 @@ procedure ParseDHTIncrement is
   oldItem  : unbounded_string;
   oldItemValue : long_float;
 begin
-  expect( dht_increment_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow increment" );
-  end if;
+  expectSparForte( subject => dht_increment_t, remedy => "use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_increment_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
      err( "increment requires a numeric item type" );
@@ -497,10 +476,7 @@ procedure ParseDHTDecrement is
   oldItem  : unbounded_string;
   oldItemValue : long_float;
 begin
-  expect( dht_decrement_t );
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow decrement" );
-  end if;
+  expectSparForte( subject => dht_decrement_t, remedy => "use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_decrement_t, tableId, dht_table_t );
   if getUniType( identifiers( tableId ).genKind ) /= uni_numeric_t then
      err( "decrement requires a numeric item type" );

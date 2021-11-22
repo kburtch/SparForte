@@ -124,19 +124,6 @@ end err_key_exists;
 
 
 ------------------------------------------------------------------------------
---  ERR KEY EXISTS
---
-------------------------------------------------------------------------------
-
-procedure err_ada95( subName : string ) is
-begin
-  if onlyAda95 then
-     err( optional_bold( "pragma ada_95" ) & " doesn't allow " & subName );
-  end if;
-end err_ada95;
-
-
-------------------------------------------------------------------------------
 --  PARSE OUT MAP CURSOR
 --
 -- If necessary, declare a out cursor parameter.  Attach the resource.
@@ -631,8 +618,7 @@ procedure ParseHashedMapsAppend is
   elemVal : unbounded_string;
   elemType : identifier;
 begin
-  err_ada95( "append" );
-  expect( hashed_maps_append_t );
+  expectSparForte( subject => hashed_maps_append_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( hashed_maps_append_t, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
      err( "append requires a string element type" );
@@ -669,8 +655,7 @@ procedure ParseHashedMapsPrepend is
   elemVal : unbounded_string;
   elemType : identifier;
 begin
-  err_ada95( "prepend" );
-  expect( hashed_maps_prepend_t );
+  expectSparForte( subject => hashed_maps_prepend_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( hashed_maps_prepend_t, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
      err( "prepend requires a string element type" );
@@ -709,8 +694,7 @@ procedure ParseHashedMapsIncrement is
   floatVal : long_float;
   hasAmt  : boolean := false;
 begin
-  err_ada95( "increment" );
-  expect( hashed_maps_increment_t );
+  expectSparForte( subject => hashed_maps_increment_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( hashed_maps_increment_t, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
      err( "increment requires a numeric element type" );
@@ -765,8 +749,7 @@ procedure ParseHashedMapsDecrement is
   floatVal : long_float;
   hasAmt  : boolean := false;
 begin
-  err_ada95( "decrement" );
-  expect( hashed_maps_decrement_t );
+  expectSparForte( subject => hashed_maps_decrement_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( hashed_maps_decrement_t, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
      err( "decrement requires a numeric element type" );
@@ -818,8 +801,7 @@ procedure ParseHashedMapsExtract( result : out unbounded_string; kind : out iden
   keyType : identifier;
 begin
   kind := universal_t; -- type in case of error  TODO
-  err_ada95( "extract" );
-  expect( hashed_maps_extract_t );
+  expectSparForte( subject => hashed_maps_extract_t, remedy => "use element and delete" );
   ParseFirstInOutInstantiatedParameter( hashed_maps_extract_t, mapId, hashed_maps_map_t );
   ParseLastGenItemParameter( hashed_maps_extract_t, keyVal, keyType, identifiers( mapId ).genKind );
   if isExecutingCommand then
