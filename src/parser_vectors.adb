@@ -633,13 +633,13 @@ procedure ParseVectorsPrependElements is
   hasCnt    : boolean := false;
 begin
   expect( vectors_prepend_elements_t );
-  ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( vectors_prepend_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  ParseFirstInOutInstantiatedParameter( vectors_prepend_elements_t, vectorId, vectors_vector_t );
+  ParseNextGenItemParameter( vectors_prepend_elements_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
   if token = symbol_t and identifiers( token ).value.all = "," then
-     ParseLastNumericParameter( vectors_prepend_t, cntExpr, cntType, containers_count_type_t );
+     ParseLastNumericParameter( vectors_prepend_elements_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
   else
-     expectParameterClose( vectors_prepend_t );
+     expectParameterClose( vectors_prepend_elements_t );
   end if;
   if isExecutingCommand then
      declare
@@ -690,7 +690,7 @@ begin
        idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
        Append( theVector.vslVector, idx, strExpr );
      exception when constraint_error =>
-       err( "prepend count must be a natural integer" );
+       err( "append index is wrong type" );
      when storage_error =>
        err_storage;
      end;
@@ -713,7 +713,7 @@ procedure ParseVectorsPrepend is
   strExpr   : unbounded_string;
   strType   : identifier;
 begin
-  expectSparForte( vectors_prepend_t, remedy => "use element and replace_element" );
+  expectSparForte( subject => vectors_prepend_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_prepend_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( vectors_prepend_t, strExpr, strType, identifiers( vectorId ).genKind2 );
