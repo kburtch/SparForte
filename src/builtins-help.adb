@@ -2632,7 +2632,7 @@ begin
      content( e, "append_elements( v, e [,c] )", "b := equal( v1, v2 )", "i := first_index( v )" );
      content( e, "assign( v2, v1 )", "i := last_index( v )", "b := contains( c, e )" );
      content( e, "e := first_element( v )", "e := last_element( v )", "reverse_elements( v )" );
-     content( e, "flip( v )", "prepend_elements( v, e, [,c ] )", "append_vectors( v1, v2 )" );
+     content( e, "flip( v )", "prepend_elements( v, e, [,c ] )", "append_vector( v1, v2 )" );
      content( e, "first( v, c )", "next( c )", "last( v, c )" );
      content( e, "clear( v )", "previous( c )", "delete( i [, c] )" );
      content( e, "insert( v, i, e [, n] )", "insert_vector( v, c, v2 )" );
