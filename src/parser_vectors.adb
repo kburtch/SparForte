@@ -608,7 +608,7 @@ begin
           Vector_String_Lists.Append( theVector.vslVector, itemExpr );
        end if;
      exception when constraint_error =>
-       err( "append count must be a natural integer" );
+       err( "append_elements count must be a natural" );
      when storage_error =>
        err_storage;
      end;
@@ -617,7 +617,7 @@ end ParseVectorsAppendElements;
 
 
 ------------------------------------------------------------------------------
---  PREPEND VECTOR
+--  PREPEND ELEMENTS
 --
 -- Syntax: vectors.prepend_elements( v, e, [n] );
 -- Ada:    vectors.prepend_elements( v, e, [n] );
@@ -653,7 +653,7 @@ begin
           Vector_String_Lists.Prepend( theVector.vslVector, itemExpr );
        end if;
      exception when constraint_error =>
-       err( "prepend count must be a natural integer" );
+       err( "prepend_elements count must be a natural" );
      when storage_error =>
        err_storage;
      end;

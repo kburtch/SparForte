@@ -498,6 +498,8 @@ New Unique Concepts
     - generally, features to allow a program to construct programs safely
       in another language (e.g. SQL, shell or other), safeguarding from
       code injection or other issues.
+    - for PostreSQL, SELECT ... INTO var FROM...  SparForte could use a
+      similar approach to read results into its variables.
   - sofware model + archecture
     - allow architects to apply architecture policy to groups of software by the
       software model system.  Explore what needs to be involved.  should the

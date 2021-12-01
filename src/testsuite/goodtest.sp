@@ -6723,7 +6723,7 @@ declare
   v2 : vectors.vector( natural, string );
 begin
 
-  -- non-cursor tests
+  -- basic non-cursor tests
 
   vectors.clear( v );
   pragma assert( vectors.capacity( v ) = 0 );
@@ -6796,6 +6796,8 @@ begin
   pragma assert( vectors.last_element( v ) = "cherry" );
   vectors.delete( v, vectors.last_index( v ) -1, 2 );
   pragma assert( vectors.last_element( v ) = "apple" );
+  vectors.append_elements( v, "" );
+  pragma assert( vectors.last_element( v ) = "" );
 end;
 
 -- vector cursors
@@ -6865,6 +6867,9 @@ begin
     pragma assert( vectors.element( c ) = "bear" );
     vectors.next( c );
     pragma assert( vectors.element( c ) = "cat" );
+    vectors.insert( v1, idx, "" );
+    vectors.previous( c );
+    pragma assert( vectors.element( c ) = "" );
 
     -- insert + universal typeless
 
@@ -6890,6 +6895,8 @@ begin
     vectors.insert( v1, idx, "wolf", 2 );
     vectors.first( v1, c );
     pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "" );
     vectors.next( c );
     pragma assert( vectors.element( c ) = "bear" );
     vectors.next( c );
@@ -6923,8 +6930,11 @@ begin
     vectors.append_elements( v1, "cat" );
     vectors.last( v1, c );
     vectors.insert_before( v1, c, "bear" );
+    vectors.insert_before( v1, c, "" );
     vectors.first( v1, c );
     pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "" );
     vectors.next( c );
     pragma assert( vectors.element( c ) = "bear" );
     vectors.next( c );
