@@ -27,6 +27,7 @@ with pegasoft.strings;
 with
     Ada.Containers,
     ada.strings.unbounded,
+    pegasoft.strings,
     pegasoft.user_io,
     pegasoft.vectors,
     world,
@@ -38,6 +39,7 @@ with
     parser_containers;
 use
     ada.strings.unbounded,
+    pegasoft.strings,
     pegasoft.user_io,
     pegasoft.vectors,
     world,
@@ -147,14 +149,20 @@ begin
   err( "index value" & toProtectedValue( to_unbounded_string( idx'img ) ) & " is out of range" );
 end err_index;
 
+
 ------------------------------------------------------------------------------
 --  ERR COUNT
 --
 ------------------------------------------------------------------------------
 
-procedure err_count is
+procedure err_count( subprogram : identifier; cntExpr : unbounded_string; cntType : identifier ) is
 begin
-  err( "count is not a natural" );
+   err( context => subprogram,
+        subjectNotes => "the count value of " & toSecureData( to_string( cntExpr ) ),
+        subjectType  => cntType,
+        reason => "is not valid for",
+        obstructor => containers_count_type_t,
+        remedy => "the value should be >= 0" );
 end err_count;
 
 
@@ -167,7 +175,6 @@ procedure err_cursor_mismatch is
 begin
   err( "the cursor does not match this vector" );
 end err_cursor_mismatch;
-
 
 
 ------------------------------------------------------------------------------
@@ -479,12 +486,17 @@ begin
      declare
        cnt : ada.containers.count_type;
      begin
-       cnt := ada.containers.count_type'value( to_string( cntExpr ) );
+       cnt := ada.containers.count_type( to_numeric( cntExpr ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Reserve_Capacity( theVector.vslVector, cnt );
      exception when constraint_error =>
-       -- e.g. user gave "5.5" for what is an integer type
-       err( "capacity count is not compatible with " & optional_yellow( "containers.count_type" ) );
+       -- e.g. user gave "-1" for what is a natural type
+       err( context => vectors_reserve_capacity_t,
+            subjectNotes => "the capacity count value of " & toSecureData( to_string( cntExpr ) ),
+            subjectType  => cntType,
+            reason => "is not valid for",
+            obstructor => containers_count_type_t,
+            remedy => "the value should be >= 0" );
      when storage_error =>
        err_storage;
      end;
@@ -535,12 +547,17 @@ begin
      declare
        cnt : ada.containers.count_type;
      begin
-       cnt := ada.containers.count_type'value( to_string( cntExpr ) );
+       cnt := ada.containers.count_type( to_numeric( cntExpr ) );
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        Vector_String_Lists.Set_Length( theVector.vslVector, cnt );
      exception when constraint_error =>
-       -- e.g. user gave "5.5" for what is an integer type
-       err( "capacity count is not compatible with " & optional_yellow( "containers.count_type" ) );
+       -- e.g. user gave "-1" for what is a natural type
+       err( context => vectors_set_length_t,
+            subjectNotes => "the capacity count value of " & toSecureData( to_string( cntExpr ) ),
+            subjectType  => cntType,
+            reason => "is not valid for",
+            obstructor => containers_count_type_t,
+            remedy => "the value should be >= 0" );
      when storage_error =>
        err_storage;
      end;
@@ -608,7 +625,7 @@ begin
           Vector_String_Lists.Append( theVector.vslVector, itemExpr );
        end if;
      exception when constraint_error =>
-       err( "append_elements count must be a natural" );
+       err_count( vectors_append_elements_t, cntExpr, cntType );
      when storage_error =>
        err_storage;
      end;
@@ -653,7 +670,7 @@ begin
           Vector_String_Lists.Prepend( theVector.vslVector, itemExpr );
        end if;
      exception when constraint_error =>
-       err( "prepend_elements count must be a natural" );
+       err_count( vectors_prepend_elements_t, cntExpr, cntType );
      when storage_error =>
        err_storage;
      end;
@@ -941,7 +958,7 @@ begin
           Vector_String_Lists.Delete_First( theVector.vslVector );
        end if;
      exception when constraint_error =>
-       err( "count must be a natural integer" );
+       err_count( vectors_delete_first_t, cntExpr, cntType );
      when storage_error =>
        err_storage;
      when others =>
@@ -985,7 +1002,7 @@ begin
           Vector_String_Lists.Delete_Last( theVector.vslVector );
        end if;
      exception when constraint_error =>
-       err( "count must be a natural integer" );
+       err_count( vectors_delete_last_t, cntExpr, cntType );
      when storage_error =>
        err_storage;
      when others =>
@@ -1305,7 +1322,7 @@ begin
            end if;
         end if;
      exception when constraint_error =>
-       err( "count must be a natural integer" );
+       err_count( vectors_delete_t, cntExpr, cntType );
      when storage_error =>
        err_storage;
      end;
@@ -1442,7 +1459,7 @@ begin
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           exception when others =>
-             err_count;
+             err_count( vectors_insert_t, cntExpr, cntType );
           end;
           Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal, cnt );
        else
@@ -1541,7 +1558,7 @@ begin
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           exception when others =>
-             err_count;
+             err_count( vectors_insert_before_t, cntExpr, cntType );
           end;
        end if;
        Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemVal, cnt );
@@ -1686,7 +1703,7 @@ begin
           begin
              cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           exception when others =>
-             err_count;
+             err_count( vectors_insert_before_and_mark_t, cntExpr, cntType );
           end;
        end if;
        Vector_String_Lists.Insert(
@@ -1755,7 +1772,7 @@ begin
            begin
               cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
            exception when others =>
-              err_count;
+             err_count( vectors_insert_space_t, cntExpr, cntType );
            end;
        end if;
 

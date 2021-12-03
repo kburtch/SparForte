@@ -7121,6 +7121,32 @@ begin
     pragma assert( vectors.length( v2 ) = 2 );
   end;
 
+  -- enumerated key
+
+  declare
+    type animals is (ant, bear);
+    v1 : vectors.vector( animals, string );
+  begin
+    vectors.clear( v1 );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "bear" );
+    pragma assert( vectors.length( v1 ) = 2 );
+    pragma assert( vectors.element( v1, ant ) = "ant" );
+    pragma assert( vectors.element( v1, bear ) = "bear" );
+  end;
+
+  -- integer key (weird but possible...first index depends on the system)
+
+  declare
+    v1 : vectors.vector( integer, string );
+  begin
+    vectors.clear( v1 );
+    vectors.append_elements( v1, "ant" );
+    vectors.append_elements( v1, "bear" );
+    pragma assert( vectors.length( v1 ) = 2 );
+    pragma assert( vectors.element( v1, vectors.first_index( v1 ) ) = "ant" );
+    pragma assert( vectors.element( v1, vectors.first_index( v1 )+1 ) = "bear" );
+  end;
 end;
 
 -- constant specifications
