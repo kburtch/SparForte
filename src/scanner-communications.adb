@@ -1419,9 +1419,9 @@ end expectSymbol;
 procedure expectIdentifier( what, receivedDescription : string ) is
 begin
   if what /= "" then
-     err( "In the declaration, an " & optional_yellow( "identifier") & " for " & what & " was expected but this looks like " & optional_yellow( receivedDescription ) );
+     err( "an " & optional_yellow( "identifier") & " for " & what & " was expected but this looks like " & optional_yellow( receivedDescription ) );
   else
-     err( "In the declaration, an " & optional_yellow( "identifier") & " was expected but this looks like " & optional_yellow( receivedDescription ) );
+     err( "an " & optional_yellow( "identifier") & " was expected but this looks like " & optional_yellow( receivedDescription ) );
   end if;
 end expectIdentifier;
 
@@ -1671,6 +1671,14 @@ begin
        subjectNotes => "the parameters",
        reason => "are starting and"
      );
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = ")" then
+     err( context => subprogram,
+          contextNotes => to_string( contextNotes ),
+          subjectNotes => "the parameters",
+          reason => "are missing",
+          remedy => "omit the parentheses if there are no required parameters"
+    );
   end if;
 end expectParameterOpen;
 

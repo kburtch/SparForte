@@ -139,15 +139,27 @@ end err_empty;
 --
 ------------------------------------------------------------------------------
 
-procedure err_index is
+procedure err_index( subprogram : identifier; idxExpr : unbounded_string ) is
 begin
-  err( "index value out of range" );
+  err( context => subprogram,
+       subjectNotes => "the index position" & toProtectedValue( idxExpr ),
+       reason => "is not in the vector"
+  );
 end err_index;
 
-procedure err_index( idx : vector_index ) is
+procedure err_index( subprogram : identifier; idxExpr1, idxExpr2 : unbounded_string ) is
 begin
-  err( "index value" & toProtectedValue( to_unbounded_string( idx'img ) ) & " is out of range" );
+  err( context => subprogram,
+       subjectNotes => "the index position" & toProtectedValue( idxExpr1 ) &
+                  " or " & toProtectedValue( idxExpr2 ),
+       reason => "is not in the vector"
+  );
 end err_index;
+
+--procedure err_index( idx : vector_index ) is
+--begin
+--  err( "index value" & toProtectedValue( to_unbounded_string( idx'img ) ) & " is out of range" );
+--end err_index;
 
 
 ------------------------------------------------------------------------------
@@ -295,7 +307,7 @@ begin
          convertedIdx := vector_index( UserIdx );
       end if;
    exception when constraint_error =>
-      err_index;
+      err( "internal error: index out-of-range" );
    end;
    return convertedIdx;
 end toRealVectorIndex;
@@ -336,7 +348,7 @@ begin
          convertedIdx := integer( realIdx );
       end if;
    exception when constraint_error =>
-      err_index;
+      err( "internal error: index out-of-range" );
    end;
    return convertedIdx;
 end toUserVectorIndex;
@@ -820,17 +832,20 @@ procedure ParseVectorsElement( result : out unbounded_string; kind : out identif
 begin
   expect( vectors_element_t );
   -- A cursor is a single identifier.  An index is an expression.
-  expect( symbol_t, "(" );
+  expectParameterOpen( vectors_element_t );
   if identifiers( token ).kind = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   elsif identifiers( token ).kind = vectors_vector_t then
      ParseInOutInstantiatedParameter( vectorId, vectors_vector_t );
      ParseNextGenItemParameter( vectors_element_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   else
-     err( optional_yellow( "vectors.vector" ) &
-          " or " &
-          optional_yellow( "vectors.cursor" ) &
-          " expected" );
+     err( context => vectors_element_t,
+          subject => token,
+          subjectType => identifiers( token ).kind,
+          obstructorNotes => optional_yellow( "vectors.vector" ) & " or " &
+             optional_yellow( "vectors.cursor" ),
+          reason =>  "is not compatible with the expected types"
+     );
   end if;
   expectParameterClose( vectors_element_t );
 
@@ -852,8 +867,6 @@ begin
      declare
        idx : vector_index;
      begin
---put_line( to_string( idxExpr ) );
---put_line( idx'img );
        if cursorId /= eof_t then
          findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
          result := Vector_String_Lists.Element( theCursor.vslCursor );
@@ -863,10 +876,9 @@ begin
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
          result := Vector_String_Lists.Element( theVector.vslVector, idx );
        end if;
---put_line( "HERE" );
 -- NOTE: Vector Lists stores internally a natural
      exception when constraint_error =>
-       err_index;
+       err_index( vectors_element_t, idxExpr );
      when storage_error =>
        err_storage;
      end;
@@ -1466,7 +1478,7 @@ begin
           Vector_String_Lists.Insert( theVector.vslVector, idx, elemVal );
        end if;
      exception when constraint_error =>
-       err_index;
+       err_index( vectors_insert_t, beforeVal );
      when storage_error =>
        err_storage;
      when others =>
@@ -1562,9 +1574,7 @@ begin
           end;
        end if;
        Vector_String_Lists.Insert( theVector.vslVector, theCursor.vslCursor, elemVal, cnt );
-     exception when constraint_error =>
-       err_index;
-     when storage_error =>
+     exception when storage_error =>
        err_storage;
      when others =>
        err_exception_raised;
@@ -1911,7 +1921,7 @@ begin
            findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
            Vector_String_Lists.Swap( theVector.vslVector, idx1, idx2 );
         exception when constraint_error =>
-           err_index;
+           err_index( vectors_swap_t, idxExpr1, idxExpr2 );
         when others =>
            err_exception_raised;
         end;
@@ -1921,9 +1931,7 @@ begin
            findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
            findResource( to_resource_id( identifiers( cursorId2 ).value.all ), theCursor2 );
            Vector_String_Lists.Swap( theVector.vslVector, theCursor.vslCursor, theCursor2.vslCursor );
-        exception when constraint_error =>
-           err_index;
-        when program_error =>
+        exception when program_error =>
            err_cursor_mismatch;
         when others =>
            err_exception_raised;

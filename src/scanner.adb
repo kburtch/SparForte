@@ -2954,7 +2954,7 @@ begin
           & AorAN( identifiers( effectiveLeftType ).name )
           & ")";
     end if;
-    msg := msg & " is inherently different from " &
+    msg := msg & " is inherently different from the expected type " &
         optional_yellow( to_string( AorAN( identifiers( rightType ).name ) ) );
     if effectiveRightType = root_enumerated_t then
        msg := msg & " (an enumerated type)";
@@ -3016,7 +3016,7 @@ begin
 
   if effectiveLeftType /= effectiveRightType then
      err_previous( "type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
-          " is not compatible with type " &
+          " is not compatible with the expeced type " &
           optional_yellow( to_string( identifiers( rightType ).name ) ) );
      return false;
   end if;
@@ -3088,7 +3088,7 @@ begin
 
   if effectiveLeftType /= effectiveRightType then
      err_previous( "item type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
-          " is not compatible with item type " &
+          " is not compatible with expected item type " &
           optional_yellow( to_string( identifiers( rightType ).name ) ) );
      return false;
   end if;
