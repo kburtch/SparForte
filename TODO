@@ -13,6 +13,9 @@ Priority Issues (Fix These First)
 
 - templates
   - templates that are not for HTTP
+- strings.replace all bug
+  =&gt; ? strings.replace_all( "foobaroozle", "oo", "_" )
+    f_baro_le - second delete is one position out-of-place
 - eof handling in expect symbol (i.e. reached end-of-file)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.
@@ -21,9 +24,12 @@ Priority Issues (Fix These First)
   - tests - subtypes, arrays (out param), universals
   - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - handling of derrived types and subtypes and universal types (also in hmaps)
+  - check handling of vectors of vectors, maps of maps, etc.
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
+  - should <> box be replaced with *, since it's a standard and box does not
+    otherwise exist in SparForte?
   - <> box statement negative tests
   - business process block that only supports case in (do this after vectors)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate to load such things from non-standard locations

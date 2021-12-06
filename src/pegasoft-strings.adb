@@ -1190,7 +1190,7 @@ begin
       begin
         first := 1;
         loop
-           pos := index( str_val, needle, first );
+           pos := index( result, needle, first );
         exit when pos = 0;
            replace_slice( result, pos, pos + needle_len - 1, newstr );
            first := pos + newstr_len;
@@ -1203,7 +1203,7 @@ begin
         needle_len : constant natural := length( needle_val );
         newstr     : constant string  := to_string( newstr_val );
         newstr_len : constant natural := length( newstr_val );
-        searchstr  : constant unbounded_string  := ToLower( str_val );
+        searchstr  : unbounded_string  := ToLower( str_val );
         first : positive;
         pos   : natural;
       begin
@@ -1212,6 +1212,7 @@ begin
            pos := index( searchstr, needle, first );
         exit when pos = 0;
            replace_slice( result, pos, pos + needle_len - 1, newstr );
+           replace_slice( searchstr, pos, pos + needle_len - 1, newstr );
            first := pos + newstr_len;
         end loop;
       end;
