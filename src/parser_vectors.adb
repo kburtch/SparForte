@@ -128,9 +128,11 @@ end err_storage;
 --
 ------------------------------------------------------------------------------
 
-procedure err_empty is
+procedure err_empty( subprogram : identifier; vectorId : identifier) is
 begin
-  err( "storage_error raised" );
+  err( context => subprogram,
+       subject => vectorId,
+       reason =>"is empty" );
 end err_empty;
 
 
@@ -905,7 +907,7 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := Vector_String_Lists.First_Element( theVector.vslVector );
      exception when constraint_error =>
-       err_empty;
+       err_empty( vectors_first_element_t, vectorId );
      end;
   end if;
 end ParseVectorsFirstElement;
@@ -930,7 +932,7 @@ begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
        result := Vector_String_Lists.Last_Element( theVector.vslVector );
      exception when constraint_error =>
-       err_empty;
+       err_empty( vectors_last_element_t, vectorId );
      end;
   end if;
 end ParseVectorsLastElement;
