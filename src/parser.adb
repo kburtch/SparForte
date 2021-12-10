@@ -452,7 +452,7 @@ begin
            findIdent( fieldName, temp_id );
            if temp_id /= eof_t then
               err(
-                   context => record_id,
+                   subject => record_id,
                    reason => "already has a field named",
                    obstructor => token,
                    remedy => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
@@ -470,7 +470,7 @@ begin
      fieldName := identifiers( record_id ).name & "." & identifiers( token ).name;
      findIdent( fieldName, temp_id );
      if temp_id /= eof_t then
-        err( context => record_id,
+        err( subject => record_id,
              reason => "already has a field named",
              obstructor => token,
              remedy => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
@@ -1501,8 +1501,9 @@ begin
         kind := eof_t;
         err(                                              -- if/case function
            contextNotes => "in this expression",
-           subjectNotes => "Ada 2012 if and case expressions",
-           reason => "are not supported",
+           subjectNotes => "SparForte",
+           reason => "does not permit",
+           obstructorNotes => "Ada 2012 style if and case expressions",
            remedy => "use the statement version which is easier to debug and maintain"
         );
      else
@@ -1641,7 +1642,8 @@ begin
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator symbol",
+        reason => "expects",
+        obstructorNotes => "an operator symbol",
         remedy => "'**'."
      );
   -- This is checked by parseTerm
@@ -1727,14 +1729,16 @@ begin
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a term operator like '*', '/' or '&'."
      );
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a term operator like '*', '/' or '&'."
      );
   else
@@ -1949,14 +1953,16 @@ begin
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a simple expression operator like '+' or '-'."
      );
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a simple expression operator like '+' or '-'."
      );
   end if;
@@ -2137,7 +2143,8 @@ begin
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a relational operator like '=', '/=' or 'in'"
      );
   elsif identifiers( Token ).value.all /= ">=" and
@@ -2150,7 +2157,8 @@ begin
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a relational operator like '=', '/=' or 'in'"
      );
   end if;
@@ -2163,7 +2171,8 @@ begin
         err(
            -- redundant contextNotes => "in this expression",
            subjectNotes => "the expression",
-           reason => "expects an operator",
+           reason => "expects",
+           obstructorNotes => "an operator",
            remedy => "a relational operator like '=', '/=' or 'in'."
         );
      end if;
@@ -2370,7 +2379,8 @@ begin
      err(
         -- redundant contextNotes => "in this expression",
         subjectNotes => "the expression",
-        reason => "expects an operator",
+        reason => "expects",
+        obstructorNotes => "an operator",
         remedy => "a boolean operator like 'and', 'or' or 'xor'."
      );
   end if;

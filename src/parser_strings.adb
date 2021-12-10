@@ -561,7 +561,7 @@ procedure ParseStringsReplaceAll( result : out unbounded_string; kind : out iden
   sensitivity_type : identifier;
 begin
   kind := uni_string_t;
-  expectSparForte( subject => replace_all_t );
+  expectAdaScript( subject => replace_all_t );
   ParseFirstStringParameter( replace_all_t, str_val, str_type );
   ParseNextStringParameter( replace_all_t, needle_val, needle_type );
   ParseNextStringParameter( replace_all_t, newstr_val, newstr_type );
@@ -852,7 +852,7 @@ procedure ParseStringsStartsWith( result : out unbounded_string; kind : out iden
   sensitivity_type : identifier;
 begin
   kind := boolean_t;
-  expectSparForte( subject => starts_with_t );
+  expectAdaScript( subject => starts_with_t );
   ParseFirstStringParameter( starts_with_t, str_val, str_type );
   ParseNextStringParameter( starts_with_t, head_val, head_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -895,7 +895,7 @@ procedure ParseStringsEndsWith( result : out unbounded_string; kind : out identi
   sensitivity_type : identifier;
 begin
   kind := boolean_t;
-  expectSparForte( subject => ends_with_t );
+  expectAdaScript( subject => ends_with_t );
   ParseFirstStringParameter( ends_with_t, str_val, str_type );
   ParseNextStringParameter( ends_with_t, tail_val, tail_type );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -939,7 +939,7 @@ procedure ParseStringsField( result : out unbounded_string; kind : out identifie
   delim    : character := defaultDelimiter;
 begin
   kind := uni_string_t;
-  expectSparForte( subject => field_t );
+  expectAdaScript( subject => field_t );
   ParseFirstStringParameter( field_t, str_val, str_type );
   ParseNextNumericParameter( field_t, cnt_val, cnt_type, natural_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -984,7 +984,7 @@ procedure ParseStringsCSVField( result : out unbounded_string; kind : out identi
   squotes : boolean := false;
 begin
   kind := uni_string_t;
-  expectSparForte( subject => csv_field_t );
+  expectAdaScript( subject => csv_field_t );
   ParseFirstStringParameter( csv_field_t, str_val, str_type );
   ParseNextNumericParameter( csv_field_t, cnt_val, cnt_type, natural_t );
   -- Optional delimiter
@@ -1037,7 +1037,7 @@ procedure ParseStringsMkTemp( result : out unbounded_string; kind : out identifi
   closeResult : int;
 begin
   kind := uni_string_t;
-  expectSparForte( subject => mktemp_t );
+  expectAdaScript( subject => mktemp_t );
   ParseSingleStringParameter( mktemp_t, str_val, str_type );
   if isExecutingCommand then
      declare
@@ -1356,7 +1356,7 @@ procedure ParseStringsCSVReplace is
   squotes : boolean := false;
   tempStr  : unbounded_string;
 begin
-  expectSparForte( subject => csv_replace_t );
+  expectAdaScript( subject => csv_replace_t );
   expect( symbol_t, "(" );
   ParseInOutParameter( src_ref );
   if uniTypesOk( src_ref.kind, Uni_String_t ) then
@@ -1495,7 +1495,7 @@ procedure ParseStringsToEscaped( result : out unbounded_string; kind : out ident
   src_val  : unbounded_string;
   src_type : identifier;
 begin
-  expectSparForte( subject => to_escaped_t );
+  expectAdaScript( subject => to_escaped_t );
   ParseSingleStringParameter( to_escaped_t, src_val, src_type );
   kind := src_type;
   if isExecutingCommand then
@@ -1525,7 +1525,7 @@ procedure ParseStringsSplit is
   leftStr  : unbounded_string;
   rightStr : unbounded_string;
 begin
-  expectSparForte( subject => split_t );
+  expectAdaScript( subject => split_t );
   ParseFirstStringParameter( split_t, src_val, src_type );
   ParseNextOutParameter( split_t, left_ref, Uni_String_T );
   ParseNextOutParameter( split_t, right_ref, Uni_String_T );
@@ -1795,7 +1795,7 @@ procedure ParseStringsIsSlashedDate( result : out unbounded_string; kind : out i
   expr_type  : identifier;
 begin
   kind := boolean_t;
-  expectSparForte( subject => is_slashed_date_t );
+  expectAdaScript( subject => is_slashed_date_t );
   ParseSingleStringParameter( is_slashed_date_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
@@ -1845,7 +1845,7 @@ procedure ParseStringsToBase64( result : out unbounded_string; kind : out identi
   expr_type : identifier;
 begin
   kind := base64_string_t;
-  expectSparForte( subject => to_base64_t );
+  expectAdaScript( subject => to_base64_t );
   ParseSingleStringParameter( to_base64_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
@@ -1901,7 +1901,7 @@ procedure ParseStringsIsTypoOf( result : out unbounded_string; kind : out identi
   expr2_type  : identifier;
 begin
   kind := boolean_t;
-  expectSparForte( subject => is_typo_of_t );
+  expectAdaScript( subject => is_typo_of_t );
   ParseFirstStringParameter( is_typo_of_t, expr1_val, expr1_type );
   ParseLastStringParameter( is_typo_of_t, expr2_val, expr2_type );
   begin
@@ -1989,7 +1989,7 @@ procedure ParseStringsToJSON( result : out unbounded_string; kind : out identifi
   expr_type  : identifier;
 begin
   kind := json_string_t;
-  expectSparForte( subject => strings_to_json_t );
+  expectAdaScript( subject => strings_to_json_t );
   ParseSingleStringParameter( strings_to_json_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
@@ -2026,7 +2026,7 @@ procedure ParseStringsToHexDigits( result : out unbounded_string; kind : out ide
   expr_type  : identifier;
 begin
   kind := string_t;
-  expectSparForte( subject => to_hex_digits_t );
+  expectAdaScript( subject => to_hex_digits_t );
   ParseSingleNumericParameter( to_hex_digits_t, expr_val, expr_type, natural_t );
   if baseTypesOK( expr_type, natural_t ) then
      declare
@@ -2070,7 +2070,7 @@ procedure ParseStringsLevenshtein( result : out unbounded_string; kind : out ide
    str2_type : identifier;
 begin
   kind := natural_t;
-  expectSparForte( subject => levenshtein_t );
+  expectAdaScript( subject => levenshtein_t );
   ParseFirstStringParameter( levenshtein_t, str1_val, str1_type );
   ParseLastStringParameter( levenshtein_t, str2_val, str2_type );
   if baseTypesOK( str1_type, str2_type ) then
@@ -2097,7 +2097,7 @@ procedure ParseStringsSoundex( result : out unbounded_string; kind : out identif
    str_type : identifier;
 begin
   kind := string_t;
-  expectSparForte( subject => soundex_t );
+  expectAdaScript( subject => soundex_t );
   ParseSingleStringParameter( soundex_t, str_val, str_type );
   if isExecutingCommand then
      begin
@@ -2121,7 +2121,7 @@ procedure ParseStringsWordCount( result : out unbounded_string; kind : out ident
    str_type : identifier;
 begin
   kind := natural_t;
-  expectSparForte( subject => word_count_t );
+  expectAdaScript( subject => word_count_t );
   ParseSingleStringParameter( word_count_t, str_val, str_type );
   if isExecutingCommand then
      begin
@@ -2153,7 +2153,7 @@ procedure ParseStringsCompare( result : out unbounded_string; kind : out identif
 begin
   kind := integer_t;
   compare_len := natural'last;
-  expectSparForte( subject => compare_t );
+  expectAdaScript( subject => compare_t );
   ParseFirstStringParameter( compare_t, first_val, first_type );
   ParseNextStringParameter( compare_t, last_val, last_type );
   if token = symbol_t and identifiers( token ).value.all = "," then

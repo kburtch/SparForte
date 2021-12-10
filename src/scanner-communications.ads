@@ -68,26 +68,115 @@ procedure warn( msg : string );
 ------------------------------------------------------------------------------
 -- New-style Errors
 --
+-- Report an error but structure is based on the "reporter questions", to
+-- describe the context around the error as briefly as possible.
 ------------------------------------------------------------------------------
 
 type rootUserLanguage is abstract tagged null record;
 
 procedure err(
     userLanguage    : rootUserLanguage;
-    context         : identifier := eof_t;     -- the parent or situation
+    contextNotes    : string := "";            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- english description
-    subject         : identifier := eof_t;     -- which
+    subjectNotes    : string;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
     subjectLocation : string := "";            -- where it was
-    subjectNotes    : string := "";            -- if not type issue
-    reason          : string := "";            -- problem description
-    obstructor      : identifier := eof_t;     -- ident causing problem
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    obstructorNotes : string := "";            -- if not type issue
-    remedy          : string := "" ) is abstract; -- suggested solutions
--- Report an error but structure is based on the "reporter questions", to
--- describe the context around the error as briefly as possible.
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                   -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string := "";            -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is abstract;
+
+procedure err(
+    userLanguage    : rootUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "") is abstract;
 
 type anyUserLanguagePtr is access all rootUserLanguage'class;
 
@@ -114,22 +203,109 @@ userLanguage : anyUserLanguagePtr;
 -- New-style Errors: Error Functions
 ------------------------------------------------------------------------------
 
-
-procedure err(
-    context         : identifier := eof_t;     -- the parent or situation
-    contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
-    subject         : identifier := eof_t;     -- which
-    subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    subjectNotes    : string := "";            -- if not type issue
-    reason          : string := "";            -- problem description
-    obstructor      : identifier := eof_t;     -- ident causing problem
-    obstructorType  : identifier := eof_t;     -- its type
-    obstructorNotes : string := "";            -- if not type issue
-    remedy          : string := "" );          -- suggested solutions
+-- Wrapper functions
+--
+-- These are the new-style error procedures.  They will redirect to equivalent
+-- procedures in the user's chosen language.
+--
 -- Report an error but structure is based on the "reporter questions", to
 -- describe the context around the error as briefly as possible.
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";
+    seeAlso         : string := "" );
 
 procedure expect( expected_token : identifier );
 -- check for the specified identifier.  If the current token matches,
@@ -142,14 +318,44 @@ procedure expect( expected_token : identifier; value : string );
 procedure expectSymbol(
     expectedValue   : string;
     expectPlural    : boolean := false;
-    context         : identifier := eof_t;
+    context         : identifier;
+    subject         : identifier;
+    subjectType     : identifier := eof_t;
+    subjectLocation : string := "";
+    reason          : string := "";
+    remedy          : string := "" );
+
+procedure expectSymbol(
+    expectedValue   : string;
+    expectPlural    : boolean := false;
     contextNotes    : string := "";
-    subject         : identifier := eof_t;
+    subject         : identifier;
+    subjectType     : identifier := eof_t;
+    subjectLocation : string := "";
+    reason          : string := "";
+    remedy          : string := "" );
+
+procedure expectSymbol(
+    expectedValue   : string;
+    expectPlural    : boolean := false;
+    context         : identifier;
     subjectType     : identifier := eof_t;
     subjectLocation : string := "";
     subjectNotes    : string := "";
     reason          : string := "";
     remedy          : string := "" );
+
+procedure expectSymbol(
+    expectedValue   : string;
+    expectPlural    : boolean := false;
+    contextNotes    : string := "";
+    subjectType     : identifier := eof_t;
+    subjectLocation : string := "";
+    subjectNotes    : string := "";
+    reason          : string := "";
+    remedy          : string := "" );
+
+
 -- Expect that structures the message like "reporter questions", with the
 -- why (expects 'x') being provided.
 
@@ -161,9 +367,11 @@ pragma inline( expectIdentifier );
 -- Missing Round Bracket / Paranthesis
 -----------------------------------------------------------------------------
 
-procedure expectStatementSemicolon( context : identifier := eof_t; contextNotes : string := "" );
+procedure expectStatementSemicolon( context : identifier := eof_t );
+procedure expectStatementSemicolon( contextNotes : string := "" );
 
-procedure expectDeclarationSemicolon( context : identifier := eof_t; contextNotes : string := "" );
+procedure expectDeclarationSemicolon( context : identifier := eof_t ) ;
+procedure expectDeclarationSemicolon( contextNotes : string := "" );
 
 procedure expectReturnSemicolon;
 
@@ -202,26 +410,31 @@ pragma inline( expect );
 -- Use of Non-Ada 95 Feature under Pragma Ada 95
 -----------------------------------------------------------------------------
 
-procedure expectSparForte(
-    context         : identifier := eof_t;
+procedure expectAdaScript(
+    context         : identifier;
     contextType     : identifier := eof_t;
-    contextNotes    : string := "";
     subject         : identifier := eof_t;
-    --subjectType     : identifier := eof_t;
-    --subjectLocation : string := "";
-    --subjectNotes    : string := "";
     remedy          : string := "" );
 
-procedure expectSparForteDifferences(
-    context         : identifier := eof_t;
+procedure expectAdaScript(
     contextType     : identifier := eof_t;
     contextNotes    : string := "";
     subject         : identifier := eof_t;
-    --subjectType     : identifier := eof_t;
-    --subjectLocation : string := "";
-    --subjectNotes    : string := "";
     remedy          : string := "" );
--- like expectSparForte, must makes it clear Ada and SparForte both have the
+
+procedure expectAdaScriptDifferences(
+    context         : identifier;
+    contextType     : identifier := eof_t;
+    subject         : identifier := eof_t;
+    remedy          : string := "" );
+
+procedure expectAdaScriptDifferences(
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    contextNotes    : string := "";            -- notes
+    subject         : identifier := eof_t;     -- which
+    remedy          : string := "" );
+
+-- like expectAdaScript, must makes it clear Ada and SparForte both have the
 -- subject but they may vary in parameters or function/procedure.
 
 
@@ -259,19 +472,109 @@ type englishUserLanguage is new rootUserLanguage with null record;
 
 procedure err(
     userLanguage    : englishUserLanguage;
-    context         : identifier := eof_t;     -- the parent or situation
+    contextNotes    : string;                  -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
-    subject         : identifier := eof_t;     -- which
+    subjectNotes    : string;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
     subjectLocation : string := "";            -- where it was
-    subjectNotes    : string := "";            -- if not type issue
-    reason          : string := "";            -- problem description
-    obstructor      : identifier := eof_t;     -- ident causing problem
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    obstructorNotes : string := "";            -- if not type issue
-    remedy          : string := "" );          -- suggested solutions
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
 -- Report an error but structure is based on the "reporter questions", to
 -- describe the context around the error as briefly as possible.
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                   -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" );
+
 end scanner.communications;
 

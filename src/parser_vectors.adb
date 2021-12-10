@@ -132,7 +132,8 @@ procedure err_empty( subprogram : identifier; vectorId : identifier) is
 begin
   err( context => subprogram,
        subject => vectorId,
-       reason =>"is empty" );
+       reason =>"is",
+       obstructorNotes => "empty" );
 end err_empty;
 
 
@@ -145,7 +146,8 @@ procedure err_index( subprogram : identifier; idxExpr : unbounded_string ) is
 begin
   err( context => subprogram,
        subjectNotes => "the index position" & toProtectedValue( idxExpr ),
-       reason => "is not in the vector"
+       reason => "is",
+       obstructorNotes => "not in the vector"
   );
 end err_index;
 
@@ -154,7 +156,8 @@ begin
   err( context => subprogram,
        subjectNotes => "the index position" & toProtectedValue( idxExpr1 ) &
                   " or " & toProtectedValue( idxExpr2 ),
-       reason => "is not in the vector"
+       reason => "is",
+       obstructorNotes => "not in the vector"
   );
 end err_index;
 
@@ -709,7 +712,7 @@ procedure ParseVectorsAppend is
   strExpr   : unbounded_string;
   strType   : identifier;
 begin
-  expectSparForte( subject => vectors_append_t, remedy => "use element and replace_element" );
+  expectAdaScript( subject => vectors_append_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_append_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_append_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( vectors_append_t, strExpr, strType, identifiers( vectorId ).genKind2 );
@@ -744,7 +747,7 @@ procedure ParseVectorsPrepend is
   strExpr   : unbounded_string;
   strType   : identifier;
 begin
-  expectSparForte( subject => vectors_prepend_t, remedy => "use element and replace_element" );
+  expectAdaScript( subject => vectors_prepend_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_prepend_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_prepend_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( vectors_prepend_t, strExpr, strType, identifiers( vectorId ).genKind2 );
@@ -1069,7 +1072,19 @@ begin
   expect( vectors_move_t );
   ParseFirstInOutInstantiatedParameter( vectors_move_t, sourceVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_move_t, targetVectorId, vectors_vector_t );
-  genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
+  -- The indices must match exactly.  Otherwise, integer, natural, positive all match.
+  -- It's difficult to map positive to integer, for example..but a simple move will
+  -- alter the indice values since they're all implemented as naturals.
+  if identifiers( targetVectorId ).genKind /= identifiers( sourceVectorId ).genKind then
+     err( context => vectors_move_t,
+          subjectNotes => "the index of " & optional_yellow( to_string( identifiers( sourceVectorId ).name ) ),
+          subjectType => identifiers( sourceVectorId ).genKind,
+          obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( targetVectorId ).name ) ),
+          obstructorType => identifiers( targetVectorId ).genKind,
+          reason => "differs from"
+     );
+  end if;
+  genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( targetVectorId ).value.all ), theTargetVector );
@@ -2162,7 +2177,7 @@ procedure ParseVectorsIncrement is
   numType   : identifier;
   hasAmt    : boolean := false;
 begin
-  expectSparForte( subject => vectors_increment_t, remedy => "use element and replace_element" );
+  expectAdaScript( subject => vectors_increment_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_increment_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_increment_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
@@ -2219,7 +2234,7 @@ procedure ParseVectorsDecrement is
   numType   : identifier;
   hasAmt    : boolean := false;
 begin
-  expectSparForte( subject => vectors_decrement_t, remedy => "use element and replace_element" );
+  expectAdaScript( subject => vectors_decrement_t, remedy => "use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( vectors_decrement_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_decrement_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then

@@ -1117,7 +1117,7 @@ end err_previous;
 
 
 -----------------------------------------------------------------------------
--- ERR
+-- ERR (English)
 --
 -- Report an error but structure is based on the "reporter questions", to
 -- describe the context around the error as briefly as possible.
@@ -1138,24 +1138,26 @@ end err_previous;
 -- more descriptive error messages, or spend a lot of effort on the "why"
 -- (how to correct the ere).  My goal here is to provide more context of
 -- why a certain token is expected, rather than the correction.
+--
+-- In this general version, context, subject and obstructor are supplied as
+-- text.  The text can have mark-up.  Each of these may be optional.
 -----------------------------------------------------------------------------
 
 procedure err(
     userLanguage    : englishUserLanguage;
-    context         : identifier := eof_t;     -- the parent or situation
+    contextNotes    : string;                  -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
-    subject         : identifier := eof_t;     -- which
+    subjectNotes    : string;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
     subjectLocation : string := "";            -- where it was
-    subjectNotes    : string := "";            -- if not type issue
-    reason          : string := "";            -- problem description
-    obstructor      : identifier := eof_t;     -- ident causing problem
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    obstructorNotes : string := "";            -- if not type issue
-    remedy          : string := "" ) is        -- suggested solutions
-  msg : unbounded_string;
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  msg       : unbounded_string;
   blockName : unbounded_string;
+  needV     : boolean := false;
 begin
 
   -- The context
@@ -1163,23 +1165,17 @@ begin
   -- If an identifier is provided, use it first.  Otherwise use textual notes.
   -- If no context was provided, use the current block name for the context.
 
-  if context /= eof_t then
-     if context < keywords_top then
-        msg := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
-     else
-        msg := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
-    end if;
-  elsif contextNotes /= "" then
-     msg := "While " & to_unbounded_string( contextNotes );
-  end if;
-  if msg = "" then
+  if contextNotes = "" then
      if blocks_top > block'first then
         blockName := getBlockName( blocks_top-1 );
      end if;
      if blockName /= null_unbounded_string then
         msg := "In " & blockName;
      end if;
+  else
+     msg := "While " & to_unbounded_string( contextNotes );
   end if;
+
   if contextType /= eof_t then
      msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) & ")" );
   elsif msg /= "" then
@@ -1191,12 +1187,7 @@ begin
   -- This is the identifier the error refers to.  If no identifier is provided,
   -- use textual notes.
 
-  if subject /= eof_t then
-     if msg /= "" then
-        msg := msg & " ";
-     end if;
-     msg := msg & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
-  elsif subjectNotes /= "" then
+  if subjectNotes /= "" then
      if msg /= "" then
         msg := msg & " " & subjectNotes;
      else
@@ -1205,6 +1196,7 @@ begin
         msg := msg & subjectNotes( subjectNotes'first+1..subjectNotes'last );
      end if;
   end if;
+
   if subjectType /= eof_t then
      msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) ) );
      if subjectLocation = "" then
@@ -1234,12 +1226,7 @@ begin
   -- The identifier causing the error for the subject.  If no identifier is
   -- given, use the textual notes.
 
-  if obstructor /= eof_t then
-     if msg /= "" then
-        msg := msg & " ";
-     end if;
-     msg := msg & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
-  elsif obstructorNotes /= "" then
+  if obstructorNotes /= "" then
      if msg /= "" then
         msg := msg & " ";
      end if;
@@ -1257,11 +1244,320 @@ begin
      if boolean(verboseOpt) then
         msg := msg & ". Perhaps " & remedy & ".";
      else
-        msg := msg & ". (More with -v)";
+        needV := true;
      end if;
   end if;
 
+  -- See Also
+  --
+  -- Usually a reference to the documentation.
+
+  if remedy /= "" then
+     if boolean(verboseOpt) then
+        msg := msg & ". See also " & seeAlso & ".";
+     else
+        needV := true;
+     end if;
+  end if;
+
+  if needV then
+     msg := msg & ". (More with -v)";
+  end if;
+
   err( to_string( msg ) );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context, subject, obstructor all identifiers
+-----------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  contextNotes    : unbounded_string;
+  subjectNotes    : unbounded_string;
+  obstructorNotes : unbounded_string;
+begin
+  if context /= eof_t then
+    if context < keywords_top then
+      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    else
+      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    end if;
+  end if;
+
+   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => to_string( contextNotes ),
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => to_string( subjectNotes ),
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => to_string( obstructorNotes ),
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context notes, subject identifier, obstructor identifier
+------------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  subjectNotes    : unbounded_string;
+  obstructorNotes : unbounded_string;
+begin
+   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => contextNotes,
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => to_string( subjectNotes ),
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => to_string( obstructorNotes ),
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context identifier, subject notes, obstructor identifier
+------------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                   -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  contextNotes    : unbounded_string;
+  obstructorNotes : unbounded_string;
+begin
+  if context /= eof_t then
+    if context < keywords_top then
+      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    else
+      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    end if;
+  end if;
+   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => to_string( contextNotes ),
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => subjectNotes,
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => to_string( obstructorNotes ),
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context identifier, subject identifier, obstructor notes
+------------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  contextNotes    : unbounded_string;
+  subjectNotes    : unbounded_string;
+begin
+  if context /= eof_t then
+    if context < keywords_top then
+      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    else
+      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    end if;
+  end if;
+   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => to_string( contextNotes ),
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => to_string( subjectNotes ),
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => obstructorNotes,
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context notes, subject notes, obstructor identifier
+------------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  obstructorNotes : unbounded_string;
+begin
+   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => contextNotes,
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => subjectNotes,
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => to_string( obstructorNotes ),
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context notes, subject identifier, obstructor notes
+------------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  subjectNotes    : unbounded_string;
+begin
+   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => contextNotes,
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => to_string( subjectNotes ),
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => obstructorNotes,
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (English)
+--
+-- Variation for context identifier, subject notes, obstructor notes
+------------------------------------------------------------------------------
+
+procedure err(
+    userLanguage    : englishUserLanguage;
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+  contextNotes    : unbounded_string;
+begin
+  if context /= eof_t then
+    if context < keywords_top then
+      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    else
+      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+    end if;
+  end if;
+
+   err(
+    userLanguage    => userLanguage,
+    contextType     => contextType,
+    contextNotes    => to_string( contextNotes ),
+    subjectType     => subjectType,
+    subjectLocation => subjectLocation,
+    subjectNotes    => subjectNotes,
+    reason          => reason,
+    obstructorType  => obstructorType,
+    obstructorNotes => obstructorNotes,
+    remedy          => remedy,
+    seeAlso         => seeAlso
+  );
 end err;
 
 
@@ -1271,7 +1567,7 @@ end err;
 
 
 -----------------------------------------------------------------------------
--- ERR
+-- ERR (Wrapper)
 --
 -- Report an error but structure is based on the "reporter questions", to
 -- describe the context around the error as briefly as possible.  Choose an
@@ -1279,34 +1575,265 @@ end err;
 -----------------------------------------------------------------------------
 
 procedure err(
-    context         : identifier := eof_t;     -- the parent or situation
+    contextNotes    : string := "";            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
-    subject         : identifier := eof_t;     -- which
+    subjectNotes    : string;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
     subjectLocation : string := "";            -- where it was
-    subjectNotes    : string := "";            -- if not type issue
-    reason          : string := "";            -- problem description
-    obstructor      : identifier := eof_t;     -- ident causing problem
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    obstructorNotes : string := "";            -- if not type issue
-    remedy          : string := "" ) is        -- suggested solutions
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
 begin
     err(
        userLanguage => userLanguage.all,
-       context => context,
-       contextType => contextType,
        contextNotes => contextNotes,
-       subject => subject,
+       contextType => contextType,
+       subjectNotes => subjectNotes,
        subjectType => subjectType,
        subjectLocation => subjectLocation,
-       subjectNotes => subjectNotes,
        reason => reason,
-       obstructor => obstructor,
-       obstructorType => obstructorType,
        obstructorNotes => obstructorNotes,
-       remedy => remedy
+       obstructorType => obstructorType,
+       remedy => remedy,
+       seeAlso         => seeAlso
     );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context, subject, obstructor all identifiers
+-----------------------------------------------------------------------------
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       context         => context,
+       contextType     => contextType,
+       subject         => subject,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructor      => obstructor,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
+end err;
+
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context notes, subject identifier, obstructor identifier
+------------------------------------------------------------------------------
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       contextNotes    => contextNotes,
+       contextType     => contextType,
+       subject         => subject,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructor      => obstructor,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context identifier, subject notes, obstructor identifier
+------------------------------------------------------------------------------
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       context         => context,
+       contextType     => contextType,
+       subjectNotes    => subjectNotes,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructor      => obstructor,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
+end err;
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context identifier, subject identifier, obstructor notes
+------------------------------------------------------------------------------
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       context         => context,
+       contextType     => contextType,
+       subject         => subject,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructorNotes => obstructorNotes,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
+end err;
+
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context notes, subject notes, obstructor identifier
+------------------------------------------------------------------------------
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructor      : identifier;              -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       contextNotes    => contextNotes,
+       contextType     => contextType,
+       subjectNotes    => subjectNotes,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructor      => obstructor,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
+end err;
+
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context notes, subject identifier, obstructor notes
+------------------------------------------------------------------------------
+
+procedure err(
+    contextNotes    : string := "";            -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier;              -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       contextNotes    => contextNotes,
+       contextType     => contextType,
+       subject         => subject,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructorNotes => obstructorNotes,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
+end err;
+
+
+-----------------------------------------------------------------------------
+--  ERR (Wrapper)
+--
+-- Variation for context identifier, subject notes, obstructor notes
+------------------------------------------------------------------------------
+
+procedure err(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subjectNotes    : string;                  -- which
+    subjectType     : identifier := eof_t;     -- which kind
+    subjectLocation : string := "";            -- where it was
+    reason          : string;                  -- problem description
+    obstructorNotes : string;                  -- ident causing problem
+    obstructorType  : identifier := eof_t;     -- its type
+    remedy          : string := "";            -- suggested solutions
+    seeAlso         : string := "" ) is
+begin
+   err(
+       userLanguage    => userLanguage.all,
+       context         => context,
+       contextType     => contextType,
+       subjectNotes    => subjectNotes,
+       subjectType     => subjectType,
+       subjectLocation => subjectLocation,
+       reason          => reason,
+       obstructorNotes => obstructorNotes,
+       obstructorType  => obstructorType,
+       remedy          => remedy,
+       seeAlso         => seeAlso
+  );
 end err;
 
 
@@ -1378,9 +1905,69 @@ end expect;
 procedure expectSymbol(
     expectedValue   : string;
     expectPlural    : boolean := false;
-    context         : identifier := eof_t;
+    context         : identifier;
+    subject         : identifier;
+    subjectType     : identifier := eof_t;
+    subjectLocation : string := "";
+    reason          : string := "";
+    remedy          : string := "" ) is
+  msg             : unbounded_string;
+  expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
+begin
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+
+     if not expectPlural then
+        expectOrExpects := expectOrExpects & "s";
+     end if;
+     err(
+        userLanguage => userLanguage.all,
+        context => context,
+        subject => subject,
+        subjectType => subjectType,
+        subjectLocation => subjectLocation,
+        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
+        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        remedy => remedy
+     );
+  end if;
+  getNextToken;
+end expectSymbol;
+
+procedure expectSymbol(
+    expectedValue   : string;
+    expectPlural    : boolean := false;
     contextNotes    : string := "";
-    subject         : identifier := eof_t;
+    subject         : identifier;
+    subjectType     : identifier := eof_t;
+    subjectLocation : string := "";
+    reason          : string := "";
+    remedy          : string := "" ) is
+  msg             : unbounded_string;
+  expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
+begin
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+
+     if not expectPlural then
+        expectOrExpects := expectOrExpects & "s";
+     end if;
+     err(
+        userLanguage => userLanguage.all,
+        contextNotes => contextNotes,
+        subject => subject,
+        subjectType => subjectType,
+        subjectLocation => subjectLocation,
+        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
+        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        remedy => remedy
+     );
+  end if;
+  getNextToken;
+end expectSymbol;
+
+procedure expectSymbol(
+    expectedValue   : string;
+    expectPlural    : boolean := false;
+    context         : identifier;
     subjectType     : identifier := eof_t;
     subjectLocation : string := "";
     subjectNotes    : string := "";
@@ -1397,8 +1984,37 @@ begin
      err(
         userLanguage => userLanguage.all,
         context => context,
+        subjectNotes=> subjectNotes,
+        subjectType => subjectType,
+        subjectLocation => subjectLocation,
+        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
+        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        remedy => remedy
+     );
+  end if;
+  getNextToken;
+end expectSymbol;
+
+procedure expectSymbol(
+    expectedValue   : string;
+    expectPlural    : boolean := false;
+    contextNotes    : string := "";
+    subjectType     : identifier := eof_t;
+    subjectLocation : string := "";
+    subjectNotes    : string := "";
+    reason          : string := "";
+    remedy          : string := "" ) is
+  msg             : unbounded_string;
+  expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
+begin
+  if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
+
+     if not expectPlural then
+        expectOrExpects := expectOrExpects & "s";
+     end if;
+     err(
+        userLanguage => userLanguage.all,
         contextNotes => contextNotes,
-        subject => subject,
         subjectNotes=> subjectNotes,
         subjectType => subjectType,
         subjectLocation => subjectLocation,
@@ -1438,7 +2054,7 @@ end expectIdentifier;
 -- a missing semicolon at the end of a statement.
 -----------------------------------------------------------------------------
 
-procedure expectStatementSemicolon( context : identifier := eof_t; contextNotes : string := "" ) is
+procedure expectStatementSemicolon( context : identifier := eof_t ) is
 begin
   -- in interactive modes, a comment will hide the semi-colon automatically
   -- added by SparForte.  This can also happen with `..`
@@ -1446,7 +2062,6 @@ begin
      expectSymbol(
        expectedValue => ";",
        context => context,
-       contextNotes => contextNotes,
        reason => "the end of statement",
        remedy => "a comment or unescaped '--' has hidden a ';'"
      );
@@ -1456,13 +2071,39 @@ begin
      expectSymbol(
        expectedValue => ";",
        context => context,
-       contextNotes => contextNotes,
        reason => "':' could be a mistake because the end of the statement"
      );
   else
      expectSymbol(
        expectedValue => ";",
        context => context,
+       reason => "the end of the statement"
+    );
+  end if;
+end expectStatementSemicolon;
+
+procedure expectStatementSemicolon( contextNotes : string := "" ) is
+begin
+  -- in interactive modes, a comment will hide the semi-colon automatically
+  -- added by SparForte.  This can also happen with `..`
+  if token = eof_t then
+     expectSymbol(
+       expectedValue => ";",
+       contextNotes => contextNotes,
+       reason => "the end of statement",
+       remedy => "a comment or unescaped '--' has hidden a ';'"
+     );
+  end if;
+  -- Common typo
+  if token = symbol_t and identifiers( token ).value.all = ":" then
+     expectSymbol(
+       expectedValue => ";",
+       contextNotes => contextNotes,
+       reason => "':' could be a mistake because the end of the statement"
+     );
+  else
+     expectSymbol(
+       expectedValue => ";",
        contextNotes => contextNotes,
        reason => "the end of the statement"
     );
@@ -1477,8 +2118,8 @@ end expectStatementSemicolon;
 -- a missing semicolon at the end of a declaration.
 -----------------------------------------------------------------------------
 
-procedure expectDeclarationSemicolon( context : identifier := eof_t; contextNotes : string := "" ) is
-  myContextNotes : unbounded_string := to_unbounded_string( contextNotes );
+procedure expectDeclarationSemicolon( context : identifier := eof_t ) is
+  myContextNotes : unbounded_string;
 begin
   if context /= eof_t then
      myContextNotes := to_unbounded_string( "in the declaration of " & optional_yellow( to_string( identifiers( context ).name ) ) );
@@ -1499,6 +2140,27 @@ begin
     );
   end if;
 end expectDeclarationSemicolon;
+
+procedure expectDeclarationSemicolon( contextNotes : string := "" ) is
+  myContextNotes : unbounded_string := to_unbounded_string( contextNotes );
+begin
+
+  -- Common typo
+  if token = symbol_t and identifiers( token ).value.all = ":" then
+     expectSymbol(
+       expectedValue => ";",
+       contextNotes => to_string( myContextNotes ),
+       reason => "':' could be a mistake because the end of the declaration"
+     );
+  else
+     expectSymbol(
+       expectedValue => ";",
+       contextNotes => to_string( myContextNotes ),
+       reason => "the end of the declaration"
+    );
+  end if;
+end expectDeclarationSemicolon;
+
 
 
 -----------------------------------------------------------------------------
@@ -1571,30 +2233,57 @@ begin
   -- Semi-colon may not happen because it may abort earlier due to
   -- end-of-function.
   if token = symbol_t and identifiers( token ).value.all = ";" then
-     expectSymbol(
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       expectedValue => ",",
-       reason => "';' could be a mistake because the parameters");
+     if subprogram = eof_t then
+        expectSymbol(
+          contextNotes => to_string( contextNotes ),
+          expectedValue => ",",
+          reason => "';' could be a mistake because the parameters");
+     else
+        expectSymbol(
+          context => subprogram,
+          expectedValue => ",",
+          reason => "';' could be a mistake because the parameters");
+     end if;
   elsif token = symbol_t and identifiers( token ).value.all = "." then
-     expectSymbol(
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       expectedValue => ",",
-       reason => "'.' could be a mistake because the parameters");
+     if subprogram = eof_t then
+        expectSymbol(
+          contextNotes => to_string( contextNotes ),
+          expectedValue => ",",
+          reason => "'.' could be a mistake because the parameters");
+     else
+        expectSymbol(
+          context => subprogram,
+          expectedValue => ",",
+          reason => "'.' could be a mistake because the parameters");
+     end if;
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
-     expectSymbol(
-       expectedValue => ",",
-       context => subprogram,
-       reason => "there are too few parameters because the list"
-     );
+     if subprogram = eof_t then
+        expectSymbol(
+          expectedValue => ",",
+          contextNotes => to_string( contextNotes ),
+          reason => "there are too few parameters because the list"
+        );
+     else
+        expectSymbol(
+          expectedValue => ",",
+          context => subprogram,
+          reason => "there are too few parameters because the list"
+        );
+     end if;
   else
-     expectSymbol(
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       expectedValue => ",",
-       reason  => "to separate parameters the list"
-     );
+     if subprogram = eof_t then
+        expectSymbol(
+          contextNotes => to_string( contextNotes ),
+          expectedValue => ",",
+          reason  => "to separate parameters the list"
+        );
+     else
+        expectSymbol(
+          context => subprogram,
+          expectedValue => ",",
+          reason  => "to separate parameters the list"
+        );
+     end if;
   end if;
 end expectParameterComma;
 
@@ -1663,22 +2352,40 @@ begin
        reason => "';' looks like parameters are missing because the list"
      );
   else
-     expectSymbol(
-       expectedValue => "(",
-       expectPlural => true,
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       subjectNotes => "the parameters",
-       reason => "are starting and"
-     );
-  end if;
-  if token = symbol_t and identifiers( token ).value.all = ")" then
-     err( context => subprogram,
+     if contextNotes = "" then
+        expectSymbol(
+          expectedValue => "(",
+          expectPlural => true,
+          context => subprogram,
+          subjectNotes => "the parameters",
+          reason => "are starting and"
+        );
+     else
+        expectSymbol(
+          expectedValue => "(",
+          expectPlural => true,
           contextNotes => to_string( contextNotes ),
           subjectNotes => "the parameters",
-          reason => "are missing",
-          remedy => "omit the parentheses if there are no required parameters"
-    );
+          reason => "are starting and"
+        );
+     end if;
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = ")" then
+     if contextNotes = "" then
+        err( context => subprogram,
+             subjectNotes => "the parameters",
+             obstructorNotes => "",
+             reason => "are missing",
+             remedy => "omit the parentheses if there are no required parameters"
+       );
+     else
+        err( contextNotes => to_string( contextNotes ),
+             subjectNotes => "the parameters",
+             obstructorNotes => "",
+             reason => "are missing",
+             remedy => "omit the parentheses if there are no required parameters"
+        );
+    end if;
   end if;
 end expectParameterOpen;
 
@@ -1699,26 +2406,47 @@ begin
   end if;
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
-     expectSymbol(
-       expectedValue => ")",
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       reason => "';' looks like a symbol is missing because the list"
-     );
+     if contextNotes = "" then
+        expectSymbol(
+          expectedValue => ")",
+          context => subprogram,
+          reason => "';' looks like a symbol is missing because the list"
+        );
+     else
+        expectSymbol(
+          expectedValue => ")",
+          contextNotes => to_string( contextNotes ),
+          reason => "';' looks like a symbol is missing because the list"
+        );
+     end if;
   elsif token = symbol_t and identifiers( token ).value.all = "," then
-     expectSymbol(
-       expectedValue => ")",
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       reason => "')' looks like too many parameters because the list"
-     );
+     if contextNotes = "" then
+        expectSymbol(
+          expectedValue => ")",
+          context => subprogram,
+          reason => "')' looks like too many parameters because the list"
+        );
+     else
+        expectSymbol(
+          expectedValue => ")",
+          contextNotes => to_string( contextNotes ),
+          reason => "')' looks like too many parameters because the list"
+        );
+     end if;
   else
-     expectSymbol(
-       expectedValue => ")",
-       context => subprogram,
-       contextNotes => to_string( contextNotes ),
-       reason => "the end of the parameters"
-     );
+     if contextNotes = "" then
+        expectSymbol(
+          expectedValue => ")",
+          context => subprogram,
+          reason => "the end of the parameters"
+        );
+     else
+        expectSymbol(
+          expectedValue => ")",
+          contextNotes => to_string( contextNotes ),
+          reason => "the end of the parameters"
+        );
+     end if;
   end if;
 end expectParameterClose;
 
@@ -1801,14 +2529,18 @@ end expectPragmaParameterClose;
 -- Use of Non-Ada 95 Feature under Pragma Ada 95
 -----------------------------------------------------------------------------
 
-procedure expectSparForte(
-    context         : identifier := eof_t;     -- the parent or situation
+
+-----------------------------------------------------------------------------
+--  EXPECT SPARFORTE
+--
+-- Something is expected that is AdaScript syntax.  If pragma ada_95, or some
+-- future pragma on language features, is set, then report an error.
+-----------------------------------------------------------------------------
+
+procedure expectAdaScript(
+    context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
     subject         : identifier := eof_t;     -- which
-    --subjectType     : identifier := eof_t;     -- which kind
-    --subjectLocation : string := "";            -- where it was
-    --subjectNotes    : string := "";            -- if not type issue
     remedy          : string := "" ) is        -- suggested solutions
 begin
   if onlyAda95 then
@@ -1816,26 +2548,47 @@ begin
         userLanguage => userLanguage.all,
         context => context,
         contextType => contextType,
-        contextNotes => contextNotes,
         subject => subject,
-        --subjectType => subjectType,
-        --subjectLocation => subjectLocation,
-        --subjectNotes => subjectNotes,
+        reason => "is not compatible with",
         obstructorNotes => optional_yellow( "pragma ada_95" ),
         remedy => remedy
      );
   end if;
   expect( subject );
-end expectSparForte;
+end expectAdaScript;
 
-procedure expectSparForteDifferences(
-    context         : identifier := eof_t;     -- the parent or situation
+procedure expectAdaScript(
     contextType     : identifier := eof_t;     -- associated type (if any)
     contextNotes    : string := "";            -- notes
     subject         : identifier := eof_t;     -- which
-    --subjectType     : identifier := eof_t;     -- which kind
-    --subjectLocation : string := "";            -- where it was
-    --subjectNotes    : string := "";            -- if not type issue
+    remedy          : string := "" ) is        -- suggested solutions
+begin
+  if onlyAda95 then
+     err(
+        userLanguage => userLanguage.all,
+        contextType => contextType,
+        contextNotes => contextNotes,
+        subject => subject,
+        reason => "is not compatible with",
+        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        remedy => remedy
+     );
+  end if;
+  expect( subject );
+end expectAdaScript;
+
+
+-----------------------------------------------------------------------------
+--  EXPECT SPARFORTE DIFFERENCES
+--
+-- like expectSparForte, must makes it clear Ada and SparForte both have the
+-- subject but they may vary in parameters or function/procedure.
+-----------------------------------------------------------------------------
+
+procedure expectAdaScriptDifferences(
+    context         : identifier;              -- the parent or situation
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    subject         : identifier := eof_t;     -- which
     remedy          : string := "" ) is        -- suggested solutions
 begin
   if onlyAda95 then
@@ -1843,22 +2596,38 @@ begin
         userLanguage => userLanguage.all,
         context => context,
         contextType => contextType,
-        contextNotes => contextNotes,
         subject => subject,
-        --subjectType => subjectType,
-        --subjectLocation => subjectLocation,
-        --subjectNotes => subjectNotes,
         reason => "has differences with Ada's version and is not fully compatible with" ,
         obstructorNotes => optional_yellow( "pragma ada_95" ),
         remedy => remedy
      );
   end if;
   expect( subject );
-end expectSparForteDifferences;
+end expectAdaScriptDifferences;
+
+procedure expectAdaScriptDifferences(
+    contextType     : identifier := eof_t;     -- associated type (if any)
+    contextNotes    : string := "";            -- notes
+    subject         : identifier := eof_t;     -- which
+    remedy          : string := "" ) is        -- suggested solutions
+begin
+  if onlyAda95 then
+     err(
+        userLanguage => userLanguage.all,
+        contextType => contextType,
+        contextNotes => contextNotes,
+        subject => subject,
+        reason => "has differences with Ada's version and is not fully compatible with" ,
+        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        remedy => remedy
+     );
+  end if;
+  expect( subject );
+end expectAdaScriptDifferences;
+
 
 begin
-  -- hard coded, for now
+  -- the user language is hard coded, for now, to English
   userLanguage  := new englishUserLanguage;
-
 end scanner.communications;
 
