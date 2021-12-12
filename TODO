@@ -13,9 +13,8 @@ Priority Issues (Fix These First)
 
 - templates
   - templates that are not for HTTP
-- strings.replace all bug
-  =&gt; ? strings.replace_all( "foobaroozle", "oo", "_" )
-    f_baro_le - second delete is one position out-of-place
+- While In error message - in should not be capitalized.
+- errors should support err_previous
 - eof handling in expect symbol (i.e. reached end-of-file)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.

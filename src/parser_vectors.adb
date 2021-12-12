@@ -195,6 +195,30 @@ end err_cursor_mismatch;
 
 
 ------------------------------------------------------------------------------
+--  VECTOR ITEM INDICES OK
+--
+-- Check vectors/cursors for identical index types.  If I used genTypesOK,
+-- it reports the types but not that it's related to the index.  Also, the
+-- types must be identical to avoid mapping one index to another.
+------------------------------------------------------------------------------
+
+procedure vectorItemIndicesOk( leftVectorItem : identifier; rightVectorItem : identifier ) is
+begin
+-- TODO types ok flag
+  if identifiers( leftVectorItem ).genKind /= identifiers( rightVectorItem ).genKind then
+     err(
+       context => vectors_first_t,
+       subjectNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ),
+       subjectType => identifiers( leftVectorItem ).genKind,
+       reason => "should have the identical type as",
+       obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+       obstructorType => identifiers( rightVectorItem ).genKind
+    );
+  end if;
+end vectorItemIndicesOk;
+
+
+------------------------------------------------------------------------------
 --  PARSE NEXT OUT VECTOR CURSOR
 --
 -- If necessary, declare a out cursor parameter.  Attach the resource.
@@ -1072,18 +1096,7 @@ begin
   expect( vectors_move_t );
   ParseFirstInOutInstantiatedParameter( vectors_move_t, sourceVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_move_t, targetVectorId, vectors_vector_t );
-  -- The indices must match exactly.  Otherwise, integer, natural, positive all match.
-  -- It's difficult to map positive to integer, for example..but a simple move will
-  -- alter the indice values since they're all implemented as naturals.
-  if identifiers( targetVectorId ).genKind /= identifiers( sourceVectorId ).genKind then
-     err( context => vectors_move_t,
-          subjectNotes => "the index of " & optional_yellow( to_string( identifiers( sourceVectorId ).name ) ),
-          subjectType => identifiers( sourceVectorId ).genKind,
-          obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( targetVectorId ).name ) ),
-          obstructorType => identifiers( targetVectorId ).genKind,
-          reason => "differs from"
-     );
-  end if;
+  vectorItemIndicesOk( sourceVectorId, targetVectorid );
   genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
   if isExecutingCommand then
      begin
@@ -1149,6 +1162,7 @@ procedure ParseVectorsFlip is
   vectorId  : identifier;
   theVector : resPtr;
 begin
+  expectAdaScript( subject => vectors_flip_t, remedy => "use reverse_elements" );
   expect( vectors_flip_t );
   ParseSingleInOutInstantiatedParameter( vectors_flip_t, vectorId, vectors_vector_t );
   if isExecutingCommand then
@@ -1201,10 +1215,13 @@ begin
   expect( vectors_first_t );
   ParseFirstInOutInstantiatedParameter( vectors_first_t, vectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_first_t, cursorId , vectors_cursor_t );
+
   -- Check the type against the vector
+
   if not error_found then
-     genTypesOk( identifiers( vectorId ).genKind, identifiers( cursorId ).genKind );
-     genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     vectorItemIndicesOk( vectorId, cursorId );
+     genElementsOk( vectors_first_t, vectorId, cursorId, identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     -- genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
@@ -1234,7 +1251,7 @@ begin
   ParseLastInOutInstantiatedParameter( vectors_last_t, cursorId, vectors_cursor_t );
   -- Check the type against the vector
   if not error_found then
-     genTypesOk( identifiers( vectorId ).genKind, identifiers( cursorId ).genKind );
+     vectorItemIndicesOk( vectorid, cursorId );
      genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
   end if;
   if isExecutingCommand then

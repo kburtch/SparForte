@@ -293,6 +293,10 @@ function genTypesOk( leftType, rightType : identifier ) return boolean;
 procedure genTypesOk( leftType, rightType : identifier );
 -- same as a procedure
 
+function genElementsOk( contextId, leftId, rightId, leftType, rightType : identifier ) return boolean;
+
+procedure genElementsOk( contextId, leftId, rightId, leftType, rightType : identifier );
+
 function renamingTypesOk( renamingType, canonicalType : identifier ) return
   boolean;
 -- basically same as genTypesOK but different error message

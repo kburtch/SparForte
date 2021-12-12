@@ -3103,6 +3103,72 @@ begin
   discard := genTypesOk( leftType, rightType );
 end genTypesOk;
 
+function genElementsOk( contextId, leftId, rightId, leftType, rightType : identifier ) return boolean is
+  effectiveLeftType  : identifier;
+  effectiveRightType : identifier;
+begin
+
+  -- If an error occurred, the identifiers passed to this test may be invalid.
+
+  if error_found then
+     return false;
+  end if;
+
+  -- Basic checks: if the root types don't match, then the base types
+  -- won't.  If either type is universal typeless, they automatically
+  -- match.
+
+  if not uniTypesOk( leftType, rightType ) then
+     return false;
+  end if;
+  if leftType = universal_t or rightType = universal_t then
+     return true;
+  end if;
+  effectiveLeftType := getBaseType( leftType );
+  effectiveRightType := getBaseType( rightType );
+
+  -- Universal type cases: Universal numeric or universal string will
+  -- match depending on the root type of the second type.
+
+  if effectiveLeftType = uni_numeric_t and then getUniType( rightType ) = uni_numeric_t then
+     return true;
+  end if;
+  if effectiveLeftType = uni_string_t and then getUniType( rightType ) = uni_string_t then
+     return true;
+  end if;
+  if effectiveRightType = uni_numeric_t and then getUniType( leftType ) = uni_numeric_t then
+     return true;
+  end if;
+  if effectiveRightType = uni_string_t and then getUniType( leftType ) = uni_string_t then
+     return true;
+  end if;
+
+  -- Otherwise, the types must be identical.
+
+  if effectiveLeftType /= effectiveRightType then
+        err(
+          context => contextId,
+          subjectNotes => "the element of " & optional_yellow( to_string( identifiers( leftId ).name ) ),
+          subjectType => leftType,
+          reason => "should have the compatible type to",
+          obstructorNotes => "the element of " & optional_yellow( to_string( identifiers( rightId ).name ) ),
+          obstructorType => rightType
+       );
+     -- err_previous( "item type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
+     --      " is not compatible with expected item type " &
+     --      optional_yellow( to_string( identifiers( rightType ).name ) ) );
+     return false;
+  end if;
+  return true;
+end genElementsOk;
+
+-- same as a procedure
+
+procedure genElementsOk( contextId, leftId, rightId, leftType, rightType : identifier ) is
+  discard : boolean;
+begin
+  discard := genElementsOk( contextId, leftId, rightId, leftType, rightType );
+end genElementsOk;
 
 -----------------------------------------------------------------------------
 --  RENAMING TYPES OK
