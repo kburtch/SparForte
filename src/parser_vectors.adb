@@ -1163,7 +1163,6 @@ procedure ParseVectorsFlip is
   theVector : resPtr;
 begin
   expectAdaScript( subject => vectors_flip_t, remedy => "use reverse_elements" );
-  expect( vectors_flip_t );
   ParseSingleInOutInstantiatedParameter( vectors_flip_t, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
