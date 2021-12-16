@@ -1,0 +1,2 @@
+vectors.last; -- no parameters
+

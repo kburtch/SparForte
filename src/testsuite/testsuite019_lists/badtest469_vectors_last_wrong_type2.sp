@@ -3,5 +3,5 @@ v : vectors.vector( natural, string );
 
 m : integer;
 
-vectors.first( v, m ); -- m is not cursor
+vectors.last( v, m ); -- m is not cursor
 

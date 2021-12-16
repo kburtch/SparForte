@@ -202,12 +202,12 @@ end err_cursor_mismatch;
 -- types must be identical to avoid mapping one index to another.
 ------------------------------------------------------------------------------
 
-procedure vectorItemIndicesOk( leftVectorItem : identifier; rightVectorItem : identifier ) is
+procedure vectorItemIndicesOk( subprogram, leftVectorItem, rightVectorItem : identifier ) is
 begin
 -- TODO types ok flag
   if identifiers( leftVectorItem ).genKind /= identifiers( rightVectorItem ).genKind then
      err(
-       context => vectors_first_t,
+       context => subprogram,
        subjectNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ),
        subjectType => identifiers( leftVectorItem ).genKind,
        reason => "should have the identical type as",
@@ -1096,7 +1096,7 @@ begin
   expect( vectors_move_t );
   ParseFirstInOutInstantiatedParameter( vectors_move_t, sourceVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_move_t, targetVectorId, vectors_vector_t );
-  vectorItemIndicesOk( sourceVectorId, targetVectorid );
+  vectorItemIndicesOk( vectors_move_t, sourceVectorId, targetVectorid );
   genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
   if isExecutingCommand then
      begin
@@ -1218,7 +1218,7 @@ begin
   -- Check the type against the vector
 
   if not error_found then
-     vectorItemIndicesOk( vectorId, cursorId );
+     vectorItemIndicesOk( vectors_first_t, vectorId, cursorId );
      genElementsOk( vectors_first_t, vectorId, cursorId, identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
      -- genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
   end if;
@@ -1250,7 +1250,7 @@ begin
   ParseLastInOutInstantiatedParameter( vectors_last_t, cursorId, vectors_cursor_t );
   -- Check the type against the vector
   if not error_found then
-     vectorItemIndicesOk( vectorid, cursorId );
+     vectorItemIndicesOk( vectors_last_t, vectorid, cursorId );
      genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
   end if;
   if isExecutingCommand then

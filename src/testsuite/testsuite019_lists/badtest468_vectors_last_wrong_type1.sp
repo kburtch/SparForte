@@ -3,5 +3,5 @@ c : vectors.cursor( positive, string );
 
 m : integer;
 
-vectors.first( m, c ); -- m is not vector
+vectors.last( m, c ); -- m is not vector
 
