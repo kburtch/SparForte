@@ -25,6 +25,7 @@ with ada.text_io;
 use  ada.text_io;
 
 with gnat.source_info,
+     ada.characters.handling,
      ada.strings.fixed,
      ada.strings.unbounded.text_io,
      pegasoft.script_io,
@@ -35,7 +36,8 @@ with gnat.source_info,
      -- deal with it later.
      scanner;
 
-use  ada.strings.unbounded.text_io,
+use  ada.characters.handling,
+     ada.strings.unbounded.text_io,
      ada.strings.fixed,
      pegasoft.strings,
      pegasoft.script_io,
@@ -1172,6 +1174,8 @@ begin
      if blockName /= null_unbounded_string then
         msg := "In " & blockName;
      end if;
+  elsif Is_Upper( contextNotes( contextNotes'first ) ) then
+     msg := to_unbounded_string( contextNotes );
   else
      msg := "While " & to_unbounded_string( contextNotes );
   end if;
