@@ -1462,8 +1462,9 @@ begin
   ParseFirstInOutInstantiatedParameter( vectors_equal_t, leftVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_equal_t, rightVectorId, vectors_vector_t );
   if not error_found then
-     genTypesOk( identifiers( leftVectorId ).genKind, identifiers( rightVectorId ).genKind );
-     genTypesOk( identifiers( leftVectorId ).genKind2, identifiers( rightVectorId ).genKind2 );
+     vectorItemIndicesOk( vectors_insert_before_t, leftVectorId, rightVectorId );
+     genElementsOk( vectors_insert_before_t, leftVectorId, rightVectorId,
+        identifiers( leftVectorId ).genKind2, identifiers( rightVectorId ).genKind2 );
   end if;
   if isExecutingCommand then
      begin
@@ -1526,7 +1527,7 @@ begin
   -- distinguish between them.  So we don't permit the element to be
   -- absent.
 
-  if token = symbol_t and identifiers( token ).value.all = "," then
+  --if token = symbol_t and identifiers( token ).value.all = "," then
      expectParameterComma( vectors_insert_t );
      ParseExpression( elemVal, elemType );
      if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
@@ -1535,7 +1536,7 @@ begin
            hasCnt := true;
         end if;
      end if;
-  end if;
+  --end if;
   expectParameterClose( vectors_insert_t );
 
   if isExecutingCommand then
@@ -1582,6 +1583,14 @@ begin
   ParseFirstInOutInstantiatedParameter( vectors_insert_vector_t, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_t, cursorId, vectors_cursor_t );
   ParseLastInOutInstantiatedParameter( vectors_insert_vector_t, vector2Id, vectors_vector_t );
+  if not error_found then
+     vectorItemIndicesOk( vectors_insert_vector_t, cursorId, vectorId );
+     genElementsOk( vectors_insert_vector_t, vectorId, cursorId,
+        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     vectorItemIndicesOk( vectors_insert_vector_t, cursorId, vectorId );
+     genElementsOk( vectors_insert_vector_t, vectorId, vector2Id,
+        identifiers( vectorId ).genKind2, identifiers( vector2Id ).genKind2 );
+  end if;
 
   if isExecutingCommand then
      declare
@@ -1632,6 +1641,11 @@ begin
   if token = symbol_t and identifiers( token ).value.all = "," then
      ParseNextNumericParameter( vectors_insert_before_t, cntExpr, cntType, containers_count_type_t );
      hasCnt := true;
+  end if;
+  if not error_found then
+     vectorItemIndicesOk( vectors_insert_before_t, cursorId, vectorId );
+     genElementsOk( vectors_insert_before_t, vectorId, cursorId,
+        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
   end if;
 
   expectParameterClose( vectors_insert_before_t );

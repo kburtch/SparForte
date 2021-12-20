@@ -1246,7 +1246,7 @@ begin
 
   if remedy /= "" then
      if boolean(verboseOpt) then
-        msg := msg & ". Perhaps " & remedy & ".";
+        msg := msg & ". Perhaps " & remedy;
      else
         needV := true;
      end if;
@@ -1258,7 +1258,9 @@ begin
 
   if remedy /= "" then
      if boolean(verboseOpt) then
-        msg := msg & ". See also " & seeAlso & ".";
+        if seeAlso /= "" then
+           msg := msg & ". See also " & seeAlso;
+        end if;
      else
         needV := true;
      end if;

@@ -24,6 +24,7 @@ Priority Issues (Fix These First)
   - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - handling of derrived types and subtypes and universal types (also in hmaps)
   - check handling of vectors of vectors, maps of maps, etc.
+  - why does ada not detect a cursor is in the wrong vector?
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
@@ -46,6 +47,8 @@ Priority Issues (Fix These First)
 - better expected token messages
   - ada95 solution recommendations.  these might benefit from the better expected messages
   - declaration locations, useful on declared but not used errors...where was it declared?
+  - when expecting a parameter, we don't get the enhanced error messages
+  - type checking does not have the advanced error messages
 - how can design mode be improved to assist with producing design diagrams?  translating
   things into design diagrams is a costly part of design.
 - refactor source code treasury index page
@@ -55,7 +58,7 @@ Priority Issues (Fix These First)
 - check on use of gen parameter functions vs. numeric in dht package
 - in out parameters for built-in subprograms should use references
 - check for TODO's
-- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash
+- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.
 
 
 - ada95 corrective recommendations
