@@ -155,7 +155,7 @@ procedure err_index( subprogram : identifier; idxExpr1, idxExpr2 : unbounded_str
 begin
   err( context => subprogram,
        subjectNotes => "the index position" & toProtectedValue( idxExpr1 ) &
-                  " or " & toProtectedValue( idxExpr2 ),
+                  " or" & toProtectedValue( idxExpr2 ),
        reason => "is",
        obstructorNotes => "not in the vector"
   );
@@ -174,12 +174,23 @@ end err_index;
 
 procedure err_count( subprogram : identifier; cntExpr : unbounded_string; cntType : identifier ) is
 begin
-   err( context => subprogram,
-        subjectNotes => "the count value of " & toSecureData( to_string( cntExpr ) ),
-        subjectType  => cntType,
-        reason => "is not valid for",
-        obstructor => containers_count_type_t,
-        remedy => "the value should be >= 0" );
+   if cntExpr = "" then
+      err( context => subprogram,
+           subjectNotes => "the count value",
+           subjectType  => cntType,
+           reason => "has",
+           obstructorNotes => "no assigned value",
+           remedy => "the value should be >= 0"
+      );
+   else
+      err( context => subprogram,
+           subjectNotes => "the count value of " & toSecureData( to_string( cntExpr ) ),
+           subjectType  => cntType,
+           reason => "is not valid for",
+           obstructor => containers_count_type_t,
+           remedy => "the value should be >= 0"
+     );
+   end if;
 end err_count;
 
 
@@ -312,6 +323,45 @@ begin
 end vectorIndexOk;
 
 
+------------------------------------------------------------------------------
+-- VECTOR INDEX OR CURSOR
+--
+-- insert_space can be a vector or a cursor
+------------------------------------------------------------------------------
+
+procedure vectorIndexOrCursorOk( subprogram, leftType, rightVectorItem : identifier ) is
+  effectiveLeftType : identifier;
+  effectiveRightType : identifier;
+begin
+  -- A universal typeless or universal numeric always matches a numeric index.
+  if leftType = uni_numeric_t and leftType = getUnitype( identifiers( rightVectorItem ).genKind ) then
+    return;
+  elsif leftType = universal_t and uni_numeric_t = getUnitype( identifiers( rightVectorItem ).genKind ) then
+    return;
+  end if;
+
+  effectiveLeftType := getBasetype( leftType );
+  effectiverightType := getBasetype( identifiers( rightVectorItem ).genKind );
+
+  -- Something derivedfrom universalnumeric also matches a numeric index
+  if effectiveLeftType = uni_numeric_t and uni_numeric_t = getUnitype( identifiers( rightVectorItem ).genKind )  then
+    return;
+  end if;
+
+  -- Otherwise, the effective types should match as normal.
+-- TODO types ok flag to avoid excessive type checking
+  if effectiveLeftType /= effectiveRightType then
+     err(
+       context => subprogram,
+       subjectNotes => "the expression",
+       subjectType => leftType,
+       reason => "is not compatible with",
+       obstructorNotes => "a cursor or the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+       obstructorType => identifiers( rightVectorItem ).genKind
+    );
+  end if;
+end vectorIndexOrCursorOk;
+
 
 ------------------------------------------------------------------------------
 --  PARSE NEXT OUT VECTOR CURSOR
@@ -344,7 +394,7 @@ begin
      ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
      -- Check the type against the vector
      if not error_found then
-        genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );
+        vectorItemIndicesOk( vectors_insert_vector_and_mark_t, cursRef.id, vectorId );
         genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind2 );
      end if;
   end if;
@@ -382,7 +432,7 @@ begin
      ParseInOutInstantiatedParameter( cursRef.id , vectors_cursor_t );
      -- Check the type against the vector
      if not error_found then
-        genTypesOk( identifiers( vectorId ).genKind, identifiers( cursRef.id ).genKind );
+        vectorItemIndicesOk( vectors_insert_vector_and_mark_t, cursRef.id, vectorId );
         genTypesOk( identifiers( vectorId ).genKind2, identifiers( cursRef.id ).genKind2 );
      end if;
   end if;
@@ -1754,8 +1804,7 @@ begin
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_and_mark_t, vector2Id, vectors_vector_t );
   ParseLastOutVectorCursor( vectors_insert_vector_and_mark_t, vectorId, cursor2Ref );
 
-  -- I haven't written a 4-way type test.  Treat c2, the return value, as
-  -- a special case as it can be auto-declared.
+  -- I haven't written a 4-way type test.
 
   if not error_found then
      -- both vectors and the cursor must be type checked
@@ -1768,6 +1817,7 @@ begin
         identifiers( cursorId ).genKind2, identifiers( vectorId ).genKind2 );
      genElementsOk( vectors_insert_vector_and_mark_t, vectorId, vector2Id,
         identifiers( vectorId ).genKind2, identifiers( vector2Id ).genKind2 );
+     -- the second cursor generic types are checked by last out vector cursor
   end if;
 
   if isExecutingCommand then
@@ -1794,7 +1844,9 @@ begin
        else
           findResource( to_resource_id( identifiers( cursor2ref.id ).value.all ), theCursor2 );
        end if;
-       -- TODO: the cursor may not exist
+
+       -- If the second cursor was auto-declared, the cursor would have been
+       -- created by LastOutVectorCursor.
 
        Vector_String_Lists.Insert(
           theVector.vslVector,
@@ -1849,6 +1901,17 @@ begin
   end if;
 
   expectParameterClose( vectors_insert_before_and_mark_t );
+
+  -- I haven't written a 4-way type test.
+
+  if not error_found then
+     -- the vector, element and cursor must be type checked
+     vectorItemIndicesOk( vectors_insert_vector_and_mark_t, vectorId, cursorId, cursor2Ref.id );
+     genElementsOk( vectors_insert_vector_and_mark_t, vectorId, cursorId,
+        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     genTypesOk( elemType, identifiers( vectorId ).genKind2 );
+     -- the second cursor generic types are checked by last out vector cursor
+  end if;
 
   if isExecutingCommand then
      declare
@@ -1929,7 +1992,7 @@ begin
      ParseNextOutVectorCursor( vectors_insert_space_t, vectorId, positionCursorRef );
   else
      ParseExpression( beforeIdxExpr, beforeIdxType );
-     baseTypesOK( beforeIdxType, identifiers( vectorId ).genKind );
+     vectorIndexOrCursorOk( vectors_insert_space_t, beforeIdxType, vectorId );
      hasIdx := true;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -2068,8 +2131,20 @@ begin
      ParseLastInOutInstantiatedParameter( vectors_swap_t, cursorId2, vectors_cursor_t );
   else
      ParseExpression( idxExpr1, idxType1 );
-     baseTypesOK( idxType1, identifiers( vectorId ).genKind );
+     vectorIndexOrCursorOk( vectors_swap_t, idxType1, vectorId );
      expectParameterComma( vectors_swap_t );
+     -- special case error to improve readability and avoid an more general
+     -- error on limited variables
+     -- TODO: types done flag
+     if identifiers( token ).kind = vectors_cursor_t then
+        err(
+          context => vectors_swap_t,
+          subjectNotes => "a second index",
+          reason => "was expected not",
+          obstructor => token,
+          obstructorType => identifiers( token ).kind
+        );
+     end if;
      ParseExpression( idxExpr2, idxType2 );
      baseTypesOK( idxType2, identifiers( vectorId ).genKind );
      hasIdx := true;

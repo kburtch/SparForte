@@ -5,5 +5,5 @@ c2  : vectors.cursor( natural, string );
 
 m : constant integer := 1;
 
-vectors.insert_vector( v1, c1, m, c2 ); -- m is not a vector
+vectors.insert_vector_and_mark( v1, c1, m, c2 ); -- m is not a vector
 
