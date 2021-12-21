@@ -3170,6 +3170,7 @@ begin
   discard := genElementsOk( contextId, leftId, rightId, leftType, rightType );
 end genElementsOk;
 
+
 -----------------------------------------------------------------------------
 --  RENAMING TYPES OK
 --

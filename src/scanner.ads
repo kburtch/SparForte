@@ -294,8 +294,11 @@ procedure genTypesOk( leftType, rightType : identifier );
 -- same as a procedure
 
 function genElementsOk( contextId, leftId, rightId, leftType, rightType : identifier ) return boolean;
-
 procedure genElementsOk( contextId, leftId, rightId, leftType, rightType : identifier );
+
+-- TODO: 3-way version
+--function genElementsOk( contextId, leftId, centerId, rightId, leftType, centerType, rightType : identifier ) return boolean;
+--procedure genElementsOk( contextId, leftId, centerId, rightId, leftType, centerType, rightType : identifier );
 
 function renamingTypesOk( renamingType, canonicalType : identifier ) return
   boolean;

@@ -217,6 +217,59 @@ begin
   end if;
 end vectorItemIndicesOk;
 
+-- 3-way version
+
+procedure vectorItemIndicesOk( subprogram, leftVectorItem, centerVectorItem, rightVectorItem : identifier ) is
+begin
+-- TODO types ok flag
+  if identifiers( leftVectorItem ).genKind /= identifiers( rightVectorItem ).genKind then
+     if identifiers( leftVectorItem ).genKind = identifiers( centerVectorItem ).genKind then
+        -- left, center match but right
+        err(
+          context => subprogram,
+          subjectNotes => "the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+          subjectType => identifiers( rightVectorItem ).genKind,
+          reason => "should have the identical type as",
+          obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ) &
+             " and " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ),
+          obstructorType => identifiers( leftVectorItem ).genKind
+        );
+     elsif identifiers( rightVectorItem ).genKind = identifiers( centerVectorItem ).genKind then
+        -- center, right match but left
+        err(
+          context => subprogram,
+          subjectNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ),
+          subjectType => identifiers( leftVectorItem ).genKind,
+          reason => "should have the identical type as",
+          obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ) &
+             " and " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+          obstructorType => identifiers( rightVectorItem ).genKind
+        );
+     else
+       -- all 3 different
+        err(
+          context => subprogram,
+          subjectNotes => "all indices",
+          reason => "should have identical types but are different for",
+          obstructorNotes => optional_yellow( to_string( identifiers( leftVectorItem ).name ) ) &
+             ", " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ) &
+             " and " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) )
+        );
+     end if;
+  elsif identifiers( leftVectorItem ).genKind /= identifiers( centerVectorItem ).genKind then
+     -- left, right match but not center
+     err(
+       context => subprogram,
+       subjectNotes => "the index of " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ),
+       subjectType => identifiers( centerVectorItem ).genKind,
+       reason => "should have the identical type as",
+       obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ) &
+          " and " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+       obstructorType => identifiers( rightVectorItem ).genKind
+    );
+  end if;
+end vectorItemIndicesOk;
+
 
 ------------------------------------------------------------------------------
 --  VECTOR INDEX OK
@@ -1583,11 +1636,16 @@ begin
   ParseFirstInOutInstantiatedParameter( vectors_insert_vector_t, vectorId, vectors_vector_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_t, cursorId, vectors_cursor_t );
   ParseLastInOutInstantiatedParameter( vectors_insert_vector_t, vector2Id, vectors_vector_t );
+
   if not error_found then
-     vectorItemIndicesOk( vectors_insert_vector_t, cursorId, vectorId );
+     -- both vectors and the cursor must be type checked
+     vectorItemIndicesOk( vectors_insert_vector_t, vectorId, cursorId, vector2Id );
+     -- TODO: should be a 3-way version of genElementsOk but would require
+     -- refactoring of uniTypesOk also.
      genElementsOk( vectors_insert_vector_t, vectorId, cursorId,
         identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
-     vectorItemIndicesOk( vectors_insert_vector_t, cursorId, vectorId );
+     genElementsOk( vectors_insert_vector_t, cursorId, vectorId,
+        identifiers( cursorId ).genKind2, identifiers( vectorId ).genKind2 );
      genElementsOk( vectors_insert_vector_t, vectorId, vector2Id,
         identifiers( vectorId ).genKind2, identifiers( vector2Id ).genKind2 );
   end if;
@@ -1695,6 +1753,22 @@ begin
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_and_mark_t, cursorId, vectors_cursor_t );
   ParseNextInOutInstantiatedParameter( vectors_insert_vector_and_mark_t, vector2Id, vectors_vector_t );
   ParseLastOutVectorCursor( vectors_insert_vector_and_mark_t, vectorId, cursor2Ref );
+
+  -- I haven't written a 4-way type test.  Treat c2, the return value, as
+  -- a special case as it can be auto-declared.
+
+  if not error_found then
+     -- both vectors and the cursor must be type checked
+     vectorItemIndicesOk( vectors_insert_vector_and_mark_t, vectorId, cursorId, vector2Id );
+     -- TODO: should be a 3-way version of genElementsOk but would require
+     -- refactoring of uniTypesOk also.
+     genElementsOk( vectors_insert_vector_and_mark_t, vectorId, cursorId,
+        identifiers( vectorId ).genKind2, identifiers( cursorId ).genKind2 );
+     genElementsOk( vectors_insert_vector_and_mark_t, cursorId, vectorId,
+        identifiers( cursorId ).genKind2, identifiers( vectorId ).genKind2 );
+     genElementsOk( vectors_insert_vector_and_mark_t, vectorId, vector2Id,
+        identifiers( vectorId ).genKind2, identifiers( vector2Id ).genKind2 );
+  end if;
 
   if isExecutingCommand then
      declare
