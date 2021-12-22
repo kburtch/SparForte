@@ -2198,7 +2198,21 @@ procedure ParseVectorsFind is
 begin
   expect( vectors_find_t );
   ParseFirstInOutInstantiatedParameter( vectors_find_t, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( vectors_find_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  -- special case error to improve readability and avoid an more general
+  -- error on limited variables.  For this reason, "NextGenItem" is not used.
+  expectParameterComma( vectors_find_t );
+  -- TODO: types done flag
+  if identifiers( token ).kind = vectors_cursor_t then
+        err(
+          context => vectors_find_t,
+          subjectNotes => "a vector element",
+          subjectType => identifiers( vectorId ).genKind2,
+          reason => "was expected not",
+          obstructor => token,
+          obstructorType => identifiers( token ).kind
+        );
+  end if;
+  ParseGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
   -- It is tricky to handle one optional cursor followed by a required one,
   -- one existing and one a reference.
   ParseNextInOutInstantiatedParameter( vectors_find_t, startCursorId, vectors_cursor_t );
@@ -2253,7 +2267,21 @@ procedure ParseVectorsReverseFind is
 begin
   expect( vectors_reverse_find_t );
   ParseFirstInOutInstantiatedParameter( vectors_reverse_find_t, vectorId, vectors_vector_t );
-  ParseNextGenItemParameter( vectors_reverse_find_t, itemExpr, itemType, identifiers( vectorId ).genKind2 );
+  -- special case error to improve readability and avoid an more general
+  -- error on limited variables.  For this reason, "NextGenItem" is not used.
+  expectParameterComma( vectors_reverse_find_t );
+  -- TODO: types done flag
+  if identifiers( token ).kind = vectors_cursor_t then
+        err(
+          context => vectors_reverse_find_t,
+          subjectNotes => "a vector element",
+          subjectType => identifiers( vectorId ).genKind2,
+          reason => "was expected not",
+          obstructor => token,
+          obstructorType => identifiers( token ).kind
+        );
+  end if;
+  ParseGenItemParameter( itemExpr, itemType, identifiers( vectorId ).genKind2 );
   -- It is tricky to handle one optional cursor followed by a required one,
   -- one existing and one a reference.
   ParseNextInOutInstantiatedParameter( vectors_reverse_find_t, startCursorId, vectors_cursor_t );
@@ -2331,8 +2359,8 @@ begin
             positionIdxRef,
             positionValue
         );
-
-
+     exception when constraint_error =>
+        err_index( vectors_find_index_t, startIdxExpr );
      end;
   end if;
 end ParseVectorsFindIndex;
@@ -2379,7 +2407,8 @@ begin
             positionIdxRef,
             positionValue
         );
-
+     exception when constraint_error =>
+        err_index( vectors_find_index_t, startIdxExpr );
      end;
   end if;
 end ParseVectorsReverseFindIndex;

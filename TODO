@@ -25,6 +25,11 @@ Priority Issues (Fix These First)
   - handling of derrived types and subtypes and universal types (also in hmaps)
   - check handling of vectors of vectors, maps of maps, etc.
   - why does ada not detect a cursor is in the wrong vector?
+  - while all vectors are limited, the user should probably be required
+    to supply "limited"...otherwise, the error messages may be confusing
+    when they say it's a limited variable but it is not declared limited
+    by the user.  This will also require updated all positive and negative
+    tests.
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
