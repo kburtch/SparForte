@@ -2434,7 +2434,12 @@ begin
   ParseFirstInOutInstantiatedParameter( vectors_increment_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_increment_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
-     err( "increment requires a numeric element type" );
+     err( context => vectors_increment_t,
+          subject => vectorId,
+          subjectType => identifiers( vectorId ).kind,
+          reason  => "must have numeric elements but the elements are type",
+          obstructor => identifiers( vectorId ).genKind2
+     );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
@@ -2442,7 +2447,11 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( context => vectors_increment_t,
+          subjectNotes => "the parameter list",
+          reason  => "expects a ')' for two parameters or ',' for three",
+          obstructorNotes => ""
+     );
   end if;
   if isExecutingCommand then
      declare
@@ -2459,13 +2468,17 @@ begin
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
          Increment( theVector.vslVector, idx, floatVal );
-       exception when constraint_error =>
-         err( "prepend count must be a natural integer" );
-       when storage_error =>
-         err_storage;
        end;
      exception when constraint_error =>
-       err( "increment value is not natural" );
+       err( context => vectors_increment_t,
+          subjectNotes => "the amount",
+          reason  => "should be a natural not",
+          obstructorNotes => toProtectedValue( numExpr ),
+          obstructorType => numType,
+          remedy => "the value should be >= 0"
+       );
+     when others =>
+       err_exception_raised;
      end;
   end if;
 end ParseVectorsIncrement;
@@ -2491,7 +2504,12 @@ begin
   ParseFirstInOutInstantiatedParameter( vectors_decrement_t, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( vectors_decrement_t, idxExpr, idxType, identifiers( vectorId ).genKind );
   if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
-     err( "decrement requires a numeric element type" );
+     err( context => vectors_decrement_t,
+          subject => vectorId,
+          subjectType => identifiers( vectorId ).kind,
+          reason  => "must have numeric elements but the elements are type",
+          obstructor => identifiers( vectorId ).genKind2
+     );
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
@@ -2499,7 +2517,11 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( context => vectors_decrement_t,
+          subjectNotes => "the parameter list",
+          reason  => "expects a ')' for two parameters or ',' for three",
+          obstructorNotes => ""
+     );
   end if;
   if isExecutingCommand then
      declare
@@ -2516,13 +2538,17 @@ begin
          findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
          idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
          Decrement( theVector.vslVector, idx, floatVal );
-       exception when constraint_error =>
-         err( "prepend count must be a natural integer" );
-       when storage_error =>
-         err_storage;
        end;
      exception when constraint_error =>
-       err( "increment value is not natural" );
+       err( context => vectors_decrement_t,
+          subjectNotes => "the amount",
+          reason  => "should be a natural not",
+          obstructorNotes => toProtectedValue( numExpr ),
+          obstructorType => numType,
+          remedy => "the value should be >= 0"
+       );
+     when others =>
+       err_exception_raised;
      end;
   end if;
 end ParseVectorsDecrement;
