@@ -7116,13 +7116,35 @@ begin
     v1 : vectors.vector( natural, string );
     v2 : vectors.vector( natural, string );
   begin
-    vectors.clear( v1 );
-    vectors.clear( v2 );
     vectors.append_elements( v1, "ant" );
     vectors.append_elements( v1, "bear" );
     vectors.move( v1, v2 );
     pragma assert( vectors.length( v1 ) = 0 );
     pragma assert( vectors.length( v2 ) = 2 );
+    vectors.clear( v2 );
+    vectors.append_elements( v2, "ant" );
+    vectors.append_elements( v2, "bear" );
+    vectors.append_elements( v2, "cat" );
+    vectors.assign( v1, v2 );
+    pragma assert( vectors.length( v1 ) = 3 );
+    pragma assert( vectors.length( v2 ) = 3 );
+  end;
+
+  -- custom functions
+
+  declare
+    v1 : vectors.vector( natural, integer );
+    --v2 : vectors.vector( natural, string );
+  begin
+    vectors.append_elements( v1, 0 );
+    vectors.increment( v1, 0 );
+    pragma assert( vectors.element( v1, 0 ) = 1 );
+    vectors.increment( v1, 0, 2 );
+    pragma assert( vectors.element( v1, 0 ) = 3 );
+    vectors.decrement( v1, 0 );
+    pragma assert( vectors.element( v1, 0 ) = 2 );
+    vectors.decrement( v1, 0, 3 );
+    pragma assert( vectors.element( v1, 0 ) = -1 );
   end;
 
   -- enumerated key

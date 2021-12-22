@@ -2545,7 +2545,7 @@ begin
   ParseFirstInOutInstantiatedParameter( vectors_assign_t, targetVectorId, vectors_vector_t );
   ParseLastInOutInstantiatedParameter( vectors_assign_t, sourceVectorId, vectors_vector_t );
   if not error_found then
-     genTypesOk( identifiers( targetVectorId ).genKind, identifiers( sourceVectorId ).genKind );
+     vectorItemIndicesOk( vectors_assign_t, sourceVectorId, targetVectorid );
      genTypesOk( identifiers( targetVectorId ).genKind2, identifiers( sourceVectorId ).genKind2 );
   end if;
   if isExecutingCommand then
