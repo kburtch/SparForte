@@ -6822,6 +6822,13 @@ begin
   pragma assert( vectors.element( c ) = "bear" );
   vectors.previous( c );
   pragma assert( vectors.element( c ) = "ant" );
+  vectors.append_elements( v, "cow" );
+  vectors.first( v, c );
+  vectors.delete( v, c );
+  pragma assert( vectors.first_element( v ) = "bear" );
+  vectors.first( v, c );
+  vectors.delete( v, c, 2 );
+  pragma assert( vectors.length( v ) = 0 );
 end;
 
   -- tests with selected data types
@@ -6934,9 +6941,11 @@ begin
     vectors.append_elements( v1, "cat" );
     vectors.last( v1, c );
     vectors.insert_before( v1, c, "bear" );
-    vectors.insert_before( v1, c, "" );
+    vectors.insert_before( v1, c, "", 2 );
     vectors.first( v1, c );
     pragma assert( vectors.element( c ) = "ant" );
+    vectors.next( c );
+    pragma assert( vectors.element( c ) = "" );
     vectors.next( c );
     pragma assert( vectors.element( c ) = "" );
     vectors.next( c );
