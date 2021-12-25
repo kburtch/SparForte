@@ -22,7 +22,7 @@ do_cgi_good_test() {
       echo "Failed - $TESTSET is missing"
    fi
    # Cookie string will be returned, so discard them if they exist.
-   RESULT=`../../spar --test --debug ./$TESTSET 2>&1 | sed '/^Set-Cookie:/d'`
+   RESULT=`../../spar --test --verbose --trace --debug ./$TESTSET 2>&1 | sed '/^Set-Cookie:/d'`
    if [ $? -ne 0 ] ; then
       echo "Failed - $TESTSET Failed"
       echo "$RESULT"
