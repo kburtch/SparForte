@@ -150,36 +150,45 @@ begin
   end if;
 
   -- remove boldface on
+  -- If not running in a tty, the term value may be empty.
 
-  timeout := 0;
-  loop
-     p := index( s, to_string( term( bold ) ) );
-  exit when p = 0 or timeout = 10;
-     delete( s, p, p - 1 + length( term( bold ) ) );
-     timeout := timeout + 1;
-  end loop;
+  if term( bold ) /= null_unbounded_string then
+     timeout := 0;
+     loop
+        p := index( s, to_string( term( bold ) ) );
+     exit when p = 0 or timeout = 10;
+        delete( s, p, p - 1 + length( term( bold ) ) );
+        timeout := timeout + 1;
+     end loop;
+  end if;
 
   -- remove inverse on
+  -- If not running in a tty, the term value may be empty.
 
-   timeout := 0;
-   loop
-      p := index( s, to_string( term( inverse ) ) );
-   exit when p = 0 or timeout = 10;
-      delete( s, p, p - 1 + length( term( inverse ) ) );
-      timeout := timeout + 1;
-   end loop;
+  if term( inverse ) /= null_unbounded_string then
+     timeout := 0;
+     loop
+        p := index( s, to_string( term( inverse ) ) );
+     exit when p = 0 or timeout = 10;
+        delete( s, p, p - 1 + length( term( inverse ) ) );
+        timeout := timeout + 1;
+     end loop;
+  end if;
 
-   -- remove boldface/inverse off
+  -- remove boldface/inverse off
+  -- If not running in a tty, the term value may be empty.
 
-   timeout := 0;
-   loop
-      p := index( s, to_string( term( normal ) ) );
-   exit when p = 0 or timeout = 10;
-      delete( s, p, p - 1 + length( term( normal ) ) );
-      timeout := timeout + 1;
-   end loop;
+  if term( normal ) /= null_unbounded_string then
+     timeout := 0;
+     loop
+        p := index( s, to_string( term( normal ) ) );
+     exit when p = 0 or timeout = 10;
+        delete( s, p, p - 1 + length( term( normal ) ) );
+        timeout := timeout + 1;
+     end loop;
+  end if;
 
-   return s;
+  return s;
  end convertToPlainText;
 
 

@@ -141,11 +141,17 @@ function tput( attr : termAttributes ) return unbounded_string is
      end if;
 
      -- Run tput and restore stdout when done
+     --
+     -- newer tput will give an error if it is not running in a tty
 
-     C_reset_errno;
-     spawn( tput_path1, ap, status, noReturn => false );
-     if C_errno > 0 then
-        spawn( tput_path2, ap, status, noReturn => false );
+     if isatty( stdin ) = 1 then
+        C_reset_errno;
+        spawn( tput_path1, ap, status, noReturn => false );
+        if C_errno > 0 then
+           spawn( tput_path2, ap, status, noReturn => false );
+        end if;
+     else
+        C_reset_errno;
      end if;
   end;
   free_list( ap );
@@ -357,6 +363,10 @@ begin
   end if;
 
   -- No tty device or other problem?  Get the defaults from tput
+  --
+  -- Newer versions of tput will not run if there's no tty and
+  -- an empty string will be returned, and 'value will fail.
+  -- They will be propagated to the exception handler.
 
   if res < 0 or displayInfo.row <= 0 then
      displayInfo.row := short_integer'value( to_string( tput( lines ) ) );

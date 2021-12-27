@@ -32,6 +32,8 @@ with ada.numerics.long_elementary_functions,
     gnat.sha224,
     gnat.sha256,
     gnat.sha512,
+    pegasoft.strings,
+    pegasoft.user_io,
     world,
     scanner,
     scanner.communications,
@@ -42,6 +44,8 @@ use ada.numerics.long_elementary_functions,
     ada.numerics.long_complex_types,
     ada.strings,
     interfaces,
+    pegasoft.strings,
+    pegasoft.user_io,
     world,
     scanner,
     scanner.communications,
@@ -1061,7 +1065,22 @@ begin
   when storage_error =>
      err( "storage_error exception raised" );
   when ada.strings.index_error =>
-     err( "ada.strings.index_error exception raised" );
+     if expr_val = null_unbounded_string then
+        err(
+          context => value_t,
+          subjectNotes => "the numeric value",
+          reason => "cannot be calculated on",
+          obstructorNotes => "an empty string"
+        );
+     else
+        err(
+          context => value_t,
+          subjectNotes => "the numeric value",
+          reason => "raised a index_error on the string value",
+          obstructorNotes => toProtectedValue( expr_val ),
+          obstructortype => expr_type
+        );
+     end if;
   when others =>
      err_exception_raised;
   end;
