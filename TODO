@@ -64,6 +64,7 @@ Priority Issues (Fix These First)
 - in out parameters for built-in subprograms should use references
 - check for TODO's
 - terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.
+- Beader: that variables with same spelling but different cases should be an error
 
 
 - ada95 corrective recommendations

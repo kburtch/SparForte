@@ -381,6 +381,60 @@ end CheckHomonyms;
 
 
 -----------------------------------------------------------------------------
+--  CHECK UNDERSCORE SIMILARITY
+--
+-- Suggested by Fedja Beader.  Identifiers should differ by more than
+-- underscores, treated as a character without value.  This is similar to
+-- Ada's use of underscores for numbers.
+-----------------------------------------------------------------------------
+
+procedure checkUnderscoreSimilarity( id : identifier ) is
+   idWithoutUnderscore     : unbounded_string;
+   tempIdWithoutUnderscore : unbounded_string;
+   ch       : character;
+   firstPos : natural;
+begin
+   if not error_found then
+      -- remove underscores, except for leading underscores
+      -- leading underscores should not be possible for a user
+      -- identifier.
+      for i in 1..length( identifiers( id ).name ) loop
+          ch := element( identifiers( id ).name, i );
+          if ch /= '_' then
+             idWithoutUnderscore := idWithoutUnderscore & ch;
+          end if;
+      end loop;
+
+      for tempId in reverse reserved_top..id-1 loop
+          -- remove underscores, except for leading underscores
+          tempIdWithoutUnderscore := null_unbounded_string;
+          firstPos := 1;
+          if identifiers( tempId ).name = null_unbounded_string then
+             if element( identifiers( tempId ).name, 1 ) = '_' then
+                firstPos := 2;
+             end if;
+          end if;
+          for i in firstPos..length( identifiers( tempId ).name ) loop
+              ch := element( identifiers( tempId ).name, i );
+              if ch /= '_' then
+                 tempIdWithoutUnderscore := tempIdWithoutUnderscore & ch;
+              end if;
+          end loop;
+          if idWithoutUnderscore = tempIdWithoutUnderscore then
+             err(
+                 contextNotes => "While checking naming style",
+                 subject => id,
+                 reason => "could be confused for",
+                 obstructor => tempId,
+                 remedy => "the identifiers should differ by more than underscores"
+             );
+          end if;
+      end loop;
+   end if;
+end checkUnderscoreSimilarity;
+
+
+-----------------------------------------------------------------------------
 --  IS TOKEN VALID IDENTIFIER
 --
 -- Common checks to make sure the token is not something other than an
@@ -564,6 +618,7 @@ begin
         -- not on execution.  Also, don't bother on unstructured scripts.
         if scriptType /= unstructured then
            checkHomonyms( id );
+           checkUnderscoreSimilarity( id );
         end if;
      end if;
 
@@ -796,6 +851,7 @@ begin
             -- not on execution.  Also, don't bother on unstructured scripts.
             if scriptType /= unstructured then
                checkHomonyms( id );
+               checkUnderscoreSimilarity( id );
             end if;
         end if;
      end;
@@ -860,6 +916,7 @@ begin
             -- not on execution.  Also, don't bother on unstructured scripts.
             if scriptType /= unstructured then
                checkHomonyms( id );
+               checkUnderscoreSimilarity( id );
             end if;
         end if;
      end;
