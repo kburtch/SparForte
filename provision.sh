@@ -22,6 +22,48 @@ if [ $# -ne 0 ] ; then
 fi
 
 
+# Runners
+# ----------------------------------------------------------------------------
+#
+# Depending on the environment, sudo may or may not be required to install
+# software.  For example, a container will not have sudo because there is
+# only one user.
+
+# Test for the presence of sudo
+
+HAS_SUDO=
+(exec sudo -h >/dev/null 2>1)
+if [ $? -eq 0 ] ; then
+   HAS_SUDO=1
+fi
+
+# Runners functions that use or not use sudo
+
+yum_install () {
+  if [ -n "$HAS_SUDO" ] ; then
+     sudo -u root yum install -q -y $@
+  else
+     yum install -q -y $@
+  fi
+}
+
+apt_install () {
+  if [ -n "$HAS_SUDO" ] ; then
+     sudo -u root apt-get -q -y install $@
+  else
+      apt-get -q -y $@
+  fi
+}
+
+zypper_install () {
+  if [ -n "$HAS_SUDO" ] ; then
+     sudo -u root zypper "--quiet" "--non-interactive" $@
+  else
+     zypper "--quiet" "--non-interactive" $@
+  fi
+}
+
+
 # Detect the Linux distribution
 # ----------------------------------------------------------------------------
 
@@ -75,92 +117,100 @@ fi
 
 case "$DISTRO" in
 redhat )
-   sudo -u root yum list installed | fgrep epel-release >/dev/null
+   if [ -n "$HAS_SUDO" ] ; then
+      sudo -u root yum list installed | fgrep epel-release >/dev/null
+   else
+      yum list installed | fgrep epel-release >/dev/null
+   fi
    if [ $? -eq 1 ] ; then
       set -e
-      sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
-      sudo -u root yum install -q -y bzip2
-      sudo -u root yum install -q -y gcc-gnat
-      sudo -u root yum install -q -y git
-      sudo -u root yum install -q -y gstreamer1
-      sudo -u root yum install -q -y gstreamer1-devel
-      sudo -u root yum install -q -y libdb-devel
-      sudo -u root yum install -q -y mariadb
-      sudo -u root yum install -q -y mariadb-devel
-      sudo -u root yum install -q -y mariadb-server
-      sudo -u root yum install -q -y mlocate
-      sudo -u root yum install -q -y postgresql
-      sudo -u root yum install -q -y postgresql-devel
-      sudo -u root yum install -q -y postgresql-server
-      sudo -u root yum install -q -y SDL
-      sudo -u root yum install -q -y SDL-devel
-      sudo -u root yum install -q -y SDL_image
-      sudo -u root yum install -q -y SDL_image-devel
-      sudo -u root yum install -q -y bc
-      sudo -u root yum install -q -y memcached
-      sudo -u root yum install -q -y readline-devel
+      if [ -n "$HAS_SUDO" ] ; then
+         sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+      else
+         rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+      fi
+      yum_install bzip2
+      yum_install gcc-gnat
+      yum_install git
+      yum_install gstreamer1
+      yum_install gstreamer1-devel
+      yum_install libdb-devel
+      yum_install mariadb
+      yum_install mariadb-devel
+      yum_install mariadb-server
+      yum_install mlocate
+      yum_install postgresql
+      yum_install postgresql-devel
+      yum_install postgresql-server
+      yum_install SDL
+      yum_install SDL-devel
+      yum_install SDL_image
+      yum_install SDL_image-devel
+      yum_install bc
+      yum_install memcached
+      yum_install readline-devel
       set +e
    fi
    ;;
 suse)
    set -e
-   sudo -u root zypper "--quiet" "--non-interactive" install mlocate
-   sudo -u root zypper "--quiet" "--non-interactive" install gcc-ada
-   sudo -u root zypper "--quiet" "--non-interactive" install git
-   sudo -u root zypper "--quiet" "--non-interactive" install gstreamer-devel
-   sudo -u root zypper "--quiet" "--non-interactive" install libopenssl-devel
-   sudo -u root zypper "--quiet" "--non-interactive" install libSDL-devel
-   sudo -u root zypper "--quiet" "--non-interactive" install libSDL_image-devel
-   sudo -u root zypper "--quiet" "--non-interactive" install libmariadb-devel 
-   sudo -u root zypper "--quiet" "--non-interactive" install postgresql
-   sudo -u root zypper "--quiet" "--non-interactive" install postgresql-devel
-   sudo -u root zypper "--quiet" "--non-interactive" install rpmlint
-   sudo -u root zypper "--quiet" "--non-interactive" install memcached
+   zypper_install mlocate
+   zypper_install gcc-ada
+   zypper_install git
+   zypper_install gstreamer-devel
+   zypper_install libopenssl-devel
+   zypper_install libSDL-devel
+   zypper_install libSDL_image-devel
+   zypper_install libmariadb-devel 
+   zypper_install postgresql
+   zypper_install postgresql-devel
+   zypper_install rpmlint
+   zypper_install memcached
    set +e
    ;;
 ubuntu )
    set -e
-   sudo -u root apt-get -q -y install libselinux-dev
-   sudo -u root apt-get -q -y install bzip2
-   sudo -u root apt-get -q -y install gnat
-   sudo -u root apt-get -q -y install git
-   sudo -u root apt-get -q -y install libdb-dev
-   sudo -u root apt-get -q -y install libmysqlclient-dev
-   sudo -u root apt-get -q -y install mysql-server
-   sudo -u root apt-get -q -y install locate
-   sudo -u root apt-get -q -y install postgresql-client
-   sudo -u root apt-get -q -y install postgresql-server-dev-all
+   apt_install libselinux-dev
+   apt_install bzip2
+   apt_install gnat
+   apt_install git
+   apt_install libdb-dev
+   apt_install libmysqlclient-dev
+   apt_install mysql-server
+   apt_install locate
+   apt_install postgresql-client
+   apt_install postgresql-server-dev-all
    #sudo -u root apt-get -q -y install libgstreamer0.10-dev
-   sudo -u root apt-get -q -y install libgstreamer1.0-dev
-   sudo -u root apt-get -q -y install libsdl1.2-dev
-   sudo -u root apt-get -q -y install libsdl-image1.2-dev
-   sudo -u root apt-get -q -y install wget
-   sudo -u root apt-get -q -y install bc
-   sudo -u root apt-get -q -y install memcached
-   sudo -u root apt-get -q -y install libreadline-dev
+   apt_install libgstreamer1.0-dev
+   apt_install libsdl1.2-dev
+   apt_install libsdl-image1.2-dev
+   apt_install wget
+   apt_install bc
+   apt_install memcached
+   apt_install libreadline-dev
    set +e
    ;;
 debian )
    set -e
-   sudo -u root apt-get -q -y install libselinux-dev
-   sudo -u root apt-get -q -y install bzip2
-   sudo -u root apt-get -q -y install gnat
-   sudo -u root apt-get -q -y install git
-   sudo -u root apt-get -q -y install libdb-dev
-   sudo -u root apt-get -q -y install libmariadbclient-dev
-   sudo -u root apt-get -q -y install libmariadb-dev-compat # R Pi 4
-   sudo -u root apt-get -q -y install mariadb-server
-   sudo -u root apt-get -q -y install locate
-   sudo -u root apt-get -q -y install postgresql-client
-   sudo -u root apt-get -q -y install postgresql-server-dev-all
-   sudo -u root apt-get -q -y install libgstreamer1.0-dev
-   sudo -u root apt-get -q -y install libsdl1.2-dev
-   sudo -u root apt-get -q -y install libsdl-image1.2-dev
-   sudo -u root apt-get -q -y install wget
-   sudo -u root apt-get -q -y install bc
-   sudo -u root apt-get -q -y install memcached
-   sudo -u root apt-get -q -y install libssl1.1
-   sudo -u root apt-get -q -y install libreadline-dev
+   apt_install libselinux-dev
+   apt_install bzip2
+   apt_install gnat
+   apt_install git
+   apt_install libdb-dev
+   apt_install libmariadbclient-dev
+   apt_install libmariadb-dev-compat # R Pi 4
+   apt_install mariadb-server
+   apt_install locate
+   apt_install postgresql-client
+   apt_install postgresql-server-dev-all
+   apt_install libgstreamer1.0-dev
+   apt_install libsdl1.2-dev
+   apt_install libsdl-image1.2-dev
+   apt_install wget
+   apt_install bc
+   apt_install memcached
+   apt_install libssl1.1
+   apt_install libreadline-dev
    set +e
    ;;
 freebsd )
@@ -204,8 +254,10 @@ if [ "$DISTRO" = "freebsd" ];then
    else
       /usr/libexec/locate.updatedb
    fi
-else
+elif [ "$HAS_SUDO" ] ; then
    sudo -u root updatedb
+else
+   updatedb
 fi
 
 # Done
