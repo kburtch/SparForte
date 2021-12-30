@@ -32,7 +32,7 @@ fi
 # Test for the presence of sudo
 
 HAS_SUDO=
-(exec sudo -h >/dev/null 2>1)
+(exec sudo -h >/dev/null 2>&1)
 if [ $? -eq 0 ] ; then
    HAS_SUDO=1
 fi
