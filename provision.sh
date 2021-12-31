@@ -170,7 +170,7 @@ suse)
    ;;
 ubuntu )
    set -e
-   apt_install ncurses
+   apt_install ncurses-bin
    apt_install libselinux-dev
    apt_install bzip2
    apt_install gnat
