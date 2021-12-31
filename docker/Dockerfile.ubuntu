@@ -1,0 +1,41 @@
+# Docker file for creating a container with SparForte with Ubuntu
+#
+# $ docker build -t sparforte .
+# $ docker run sparforte
+
+FROM ubuntu:latest
+
+# Update the installer repositories
+
+RUN apt update
+
+# Set the timezone within the container.  Some of SparForte's dependencies
+# require a timezone.
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
+
+# Bash and Git to clone the project.  Make Bash the default shell.
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y bash git
+RUN ln -sf /bin/bash /bin/sh
+
+# Download SparForte. This downloads the latest commit.
+
+RUN git clone https://github.com/kburtch/SparForte.git
+
+# Install all dependencies and build SparForte.  Provision installs all
+# possible dependencies, whether or not the support is enabled by the
+# configure script.  Here, OpenGL and GStreamer are disabled.
+
+WORKDIR /SparForte
+RUN /bin/sh provision.sh
+RUN /bin/sh configure --without-opengl --without-sound
+RUN make max
+RUN make install
+WORKDIR /
+RUN rm -rf /SparForte
+
+# Default command to run
+
+CMD ["/usr/local/bin/spar","-e","echo 'SparForte OK';" ]
+
