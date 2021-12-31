@@ -1,30 +1,28 @@
-# Docker file for creating a container with SparForte with Ubuntu
+# Docker file for creating a container with SparForte with CentOS 7
 #
-# $ docker build -t sparforte_ubuntu .
-# $ docker run sparforte_ubuntu
+# $ docker build -t sparforte_centos7 .
+# $ docker run sparforte_centos7
 
-FROM ubuntu:latest
+FROM centos:centos7
+
+# Define your timezone
+
+# ENV TZ="American/Toronto"
 
 # Update the installer repositories
 
-RUN apt update
-
-# Set the timezone within the container.  Some of SparForte's dependencies
-# require a timezone.
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
+RUN yum -q -y update
 
 # Bash and Git to clone the project.  Make Bash the default shell.
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y bash git
-RUN ln -sf /bin/bash /bin/sh
+RUN yum install -q -y git
 
 # Download SparForte. This downloads the latest commit.
 
 RUN git clone https://github.com/kburtch/SparForte.git
 
 # Install all dependencies and build SparForte.  Provision installs all
-# possible dependencies, whether or not the support is enabled by the
+# possible dpendencies, whether or not the support is enabled by the
 # configure script.  Here, OpenGL and GStreamer are disabled.
 
 WORKDIR /SparForte
