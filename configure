@@ -779,20 +779,21 @@ cd ../src/
 
 echo -n "checking for tput... "
 # was init now clear since init no longer in freebsd?!
-# in a container, TERM may not be defined.
-if [ -z "$TERM" ] ; then
-   (exec tput -Tvt100 clear >/dev/null 2>/dev/null)
+# While building a container, newer versions of tput may fail because
+# there is no tty.
+if [ -z "$HAS_SUDO" ] ;then
+   echo "skipped"
 else
    (exec tput clear >/dev/null 2>/dev/null)
-fi
-if [ $? -eq 0 ] ; then
-   echo "yes"
-else
-   echo "no"
-   echo
-   echo "tput is sometimes included with the ncurses library (e.g. Cygwin)."
-   echo "Please install ncurses or another package with the tput command."
-   exit 1
+   if [ $? -eq 0 ] ; then
+      echo "yes"
+   else
+      echo "no"
+      echo
+      echo "tput is sometimes included with the ncurses library (e.g. Cygwin)."
+      echo "Please install ncurses or another package with the tput command."
+      exit 1
+   fi
 fi
 
 # Check for libssl
