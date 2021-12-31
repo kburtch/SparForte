@@ -130,7 +130,7 @@ redhat )
          rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
       fi
       # Containres may not have these
-      yum_install gmake
+      yum_install make
       #
       yum_install bzip2
       yum_install gcc-gnat
