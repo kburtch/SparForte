@@ -51,7 +51,7 @@ apt_install () {
   if [ -n "$HAS_SUDO" ] ; then
      sudo -u root apt-get -q -y install $@
   else
-      apt-get -q -y install $@
+     DEBIAN_FRONTEND=noninteractive apt-get -q -y install $@
   fi
 }
 
@@ -170,7 +170,10 @@ suse)
    ;;
 ubuntu )
    set -e
+   # Container
+   apt_install apt-utils
    apt_install ncurses-bin
+   #
    apt_install libselinux-dev
    apt_install bzip2
    apt_install gnat
