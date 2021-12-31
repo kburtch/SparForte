@@ -51,7 +51,7 @@ apt_install () {
   if [ -n "$HAS_SUDO" ] ; then
      sudo -u root apt-get -q -y install $@
   else
-      apt-get -q -y $@
+      apt-get -q -y install $@
   fi
 }
 
