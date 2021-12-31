@@ -89,3 +89,5 @@ CHANGES SINCE 2.4.1
 
 40. Change: [Beader] identifiers must differ by more than underscores in formal scripts.
 
+41. Change: Changes to configure and provision scripts to support building in Ubuntu Docker container.  Changes not yet made for other O/S.  Example Dockerfile included with source code.
+

@@ -125,9 +125,9 @@ redhat )
    if [ $? -eq 1 ] ; then
       set -e
       if [ -n "$HAS_SUDO" ] ; then
-         sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+         sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
       else
-         rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+         rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
       fi
       yum_install bzip2
       yum_install gcc-gnat
