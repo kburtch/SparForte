@@ -56,6 +56,6 @@ procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n 
 
 procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
 
-function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string;
+procedure extract( m : in out string_hashed_maps.map; k : unbounded_string; result :out unbounded_string );
 
 end pegasoft.hmaps;

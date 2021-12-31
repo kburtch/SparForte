@@ -114,12 +114,10 @@ end decrement;
 --
 ------------------------------------------------------------------------------
 
-function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string is
-  result : unbounded_string;
+procedure extract( m : in out string_hashed_maps.map; k : unbounded_string; result : out unbounded_string ) is
 begin
   result := String_Hashed_Maps.Element( m, k );
   String_Hashed_Maps.Delete( m, k );
-  return result;
 end extract;
 
 end pegasoft.hmaps;

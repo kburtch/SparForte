@@ -808,7 +808,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        kind := identifiers( mapId ).genKind2;
-       result := extract( theMap.shmMap, keyVal );
+       extract( theMap.shmMap, keyVal, result );
      exception when constraint_error =>
        err_no_key( keyVal );
      when others =>
