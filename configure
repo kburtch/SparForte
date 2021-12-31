@@ -779,7 +779,12 @@ cd ../src/
 
 echo -n "checking for tput... "
 # was init now clear since init no longer in freebsd?!
-(exec tput clear >/dev/null 2>/dev/null)
+# in a container, TERM may not be defined.
+if [ -z "$TERM" ] ; then
+   (exec tput -Tvt100 clear >/dev/null 2>/dev/null)
+else
+   (exec tput clear >/dev/null 2>/dev/null)
+fi
 if [ $? -eq 0 ] ; then
    echo "yes"
 else
