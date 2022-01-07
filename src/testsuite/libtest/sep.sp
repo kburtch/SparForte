@@ -1,2 +1,2 @@
 separate;
-i : integer := 5;
+i : constant integer := 5;

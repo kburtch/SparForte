@@ -91,3 +91,7 @@ CHANGES SINCE 2.4.1
 
 41. Change: Changes to configure and provision scripts to support building in Ubuntu Docker container.  Changes not yet made for other O/S.  Example Dockerfile included with source code.
 
+42. Fix: use of constant on record fields vs variable fixed.
+
+43. Fix: test cases in pragma test are now syntax checked.
+

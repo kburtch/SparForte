@@ -852,11 +852,13 @@ begin
             if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
                if testOpt then
                   if identifiers( i ).class = varClass then
-                     if identifiers( i ).field_of /= eof_t then
-                        err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_yellow( "variable" ) &
-                           " but expected a " & optional_yellow( "constant" ) &
-                           " (or in mode parameter).  It (or its elements) are never written to." );
+                     if identifiers( i ).usage /= constantUsage then
+                        if identifiers( i ).field_of = eof_t then
+                           err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                              -- " is a " & optional_yellow( "variable" ) &
+                              " was expected to be " & optional_yellow( "constant" ) &
+                              " (or in mode parameter).  It (or its elements) are never written to." );
+                        end if;
                      end if;
                   end if;
                end if;

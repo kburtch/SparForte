@@ -755,6 +755,8 @@ end ParseWorkPriority;
 --  RUN TEST CASE
 --
 -- Run a test case and report the result.
+-- This needs to be run even during a syntax check so that the test case
+-- can be syntax checked.
 -----------------------------------------------------------------------------
 
 procedure run_test_case( testScript, testCaseName : unbounded_string; manual_test : boolean := false ) is
@@ -765,42 +767,45 @@ procedure run_test_case( testScript, testCaseName : unbounded_string; manual_tes
 begin
 
    -- If this is the first test, we need to initialize JUnit support
+   -- If this is a syntax check, do nothing.
 
-   if not isJunitStarted then
+   if not syntax_check then
+      if not isJunitStarted then
+         begin
+           if usingTextTestReport then
+              startJunit( myTextTestReport );
+           else
+              startJunit( myXmlTestReport, reportPath );
+           end if;
+         exception when others =>
+           err( "exception while creating test result file" );
+         end;
+      end if;
+
+      -- If this is a new test case, close off the previous test case.
+
       begin
+        if isJunitTestCaseStarted then
+           if usingTextTestReport then
+              endJunitTestCase( myTextTestReport );
+           else
+              endJunitTestCase( myXmlTestReport );
+           end if;
+        end if;
         if usingTextTestReport then
-           startJunit( myTextTestReport );
+           checkForNewTestSuite( myTextTestReport );
         else
-           startJunit( myXmlTestReport, reportPath );
+           checkForNewTestSuite( myXmlTestReport );
+        end if;
+        if usingTextTestReport then
+           startJunitTestCase( myTextTestReport, testCaseName, testCaseName );
+        else
+           startJunitTestCase( myXmlTestReport,  testCaseName, testCaseName );
         end if;
       exception when others =>
-        err( "exception while creating test result file" );
+        err( "exception while writing to test result file" );
       end;
    end if;
-
-   -- If this is a new test case, close off the previous test case.
-
-   begin
-     if isJunitTestCaseStarted then
-        if usingTextTestReport then
-           endJunitTestCase( myTextTestReport );
-        else
-           endJunitTestCase( myXmlTestReport );
-        end if;
-     end if;
-     if usingTextTestReport then
-        checkForNewTestSuite( myTextTestReport );
-     else
-        checkForNewTestSuite( myXmlTestReport );
-     end if;
-     if usingTextTestReport then
-        startJunitTestCase( myTextTestReport, testCaseName, testCaseName );
-     else
-        startJunitTestCase( myXmlTestReport,  testCaseName, testCaseName );
-     end if;
-   exception when others =>
-      err( "exception while writing to test result file" );
-   end;
 
    -- Evaluate the test result by evaluating the expression.
    -- Output the result of the test.  If an error occurred,
@@ -820,12 +825,18 @@ begin
         isTesting := true;
         CompileRunAndCaptureOutput( testScript, results );
         isTesting := isTesting_old;
-        put( results );
-        if error_found then
-           if usingTextTestReport then
-              testCaseError( myTextTestReport );
-           else
-              testCaseError( myXmlTestReport );
+
+        -- Show the result and update the text report.  If this is
+        -- a syntax check, do nothing.
+
+        if not syntax_check then
+           put( results );
+           if error_found then
+              if usingTextTestReport then
+                 testCaseError( myTextTestReport );
+              else
+                 testCaseError( myXmlTestReport );
+              end if;
            end if;
         end if;
         -- Script must continue to run even if an error occurred in the
@@ -1985,6 +1996,19 @@ begin
         allowAllTodosForRelease := true;
      elsif pragmaKind = suppress_no_empty_command_subs then
         world.suppress_no_empty_command_subs := true;
+     elsif pragmaKind = test then
+        -- the test must be syntax checked
+        if testOpt then
+           -- not clear what doing a test in an interactive session means,
+           -- and the parser isn't designed to produce a test report in
+           -- this situation.
+           if inputMode = interactive or inputMode = breakout then
+              err( "test cannot be used in an interactive session" );
+           --elsif not syntax_check then
+           else
+              run_test_case( expr_val, expr_val2, manual_test => false );
+           end if;
+        end if;
      -- Pragma volatile is checked at syntax check time because volatiles
      -- must be exempt from limited testing.  They will also be applied
      -- at run-time.
@@ -2480,8 +2504,9 @@ begin
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
               err( "test cannot be used in an interactive session" );
-           elsif not syntax_check then
-               run_test_case( expr_val, expr_val2, manual_test => false );
+           --elsif not syntax_check then
+           else
+              run_test_case( expr_val, expr_val2, manual_test => false );
            end if;
         end if;
      when test_report =>
