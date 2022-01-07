@@ -19,7 +19,7 @@ procedure sumseries is
   end inverse_square;
 
 total : long_float := 0.0;
-max_param : natural := 1000;
+max_param : constant natural := 1000;
 
 begin
   for i in 1..max_param loop
