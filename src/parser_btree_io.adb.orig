@@ -2039,6 +2039,10 @@ begin
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -2355,6 +2359,10 @@ begin
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then

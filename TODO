@@ -14,6 +14,9 @@ Priority Issues (Fix These First)
 - templates
   - templates that are not for HTTP
 - errors should support err_previous
+- check constant/limited scanner tests at end-of-block after issues found
+- check btree/hash_io get next mark the variable as written
+  with the constant check
 - eof handling in expect symbol (i.e. reached end-of-file)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.

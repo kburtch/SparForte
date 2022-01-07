@@ -1861,6 +1861,10 @@ begin
   genTypesOk( genKindId, identifiers( cursId ).genKind );
   ParseNextOutParameter( hash_get_first_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
+  if syntax_check and then not error_found then
+     identifiers( keyRef.id ).wasWritten := true;
+     identifiers( keyRef.id ).writtenByThread := getThreadName;
+  end if;
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1886,6 +1890,10 @@ begin
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -2163,6 +2171,10 @@ begin
   genTypesOk( genKindId, identifiers( cursId ).genKind );
   ParseNextOutParameter( hash_get_last_t, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
+  if syntax_check and then not error_found then
+     identifiers( keyRef.id ).wasWritten := true;
+     identifiers( keyRef.id ).writtenByThread := getThreadName;
+  end if;
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -2188,6 +2200,10 @@ begin
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
+     if syntax_check and then not error_found then
+        identifiers( valRef.id ).wasWritten := true;
+        identifiers( valRef.id ).writtenByThread := getThreadName;
+     end if;
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
