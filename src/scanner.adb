@@ -829,15 +829,12 @@ begin
                if testOpt then
                   if not onlyAda95 then -- limited not available with pragma ada_95
                      if identifiers( i ).class = varClass then
-                        if identifiers( i ).field_of = eof_t then
-                           if identifiers( i ).usage /= limitedUsage then
-                              if identifiers( i ).name /= "return value" then
-                                 err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                                    " is a " & optional_yellow( "not-limited variable" ) &
-                                    " but expected a " & optional_yellow( "limited" ) &
-                                    ".  It (or its elements) are not used in expressions nor is assigned to." );
-                              end if;
-                           end if;
+                        if not identifiers( i ).list and
+                           identifiers( i ).field_of = eof_t then
+                               err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                                  " is a " & optional_yellow( "not-limited variable" ) &
+                                  " but expected a " & optional_yellow( "limited" ) &
+                                  ".  It (or its elements) are not used in expressions nor is assigned to." );
                         end if;
                      end if;
                   end if;
@@ -848,19 +845,18 @@ begin
             -- in testing phase mode as code under development may indeed have
             -- variables like this, and many things are unwritten in design phase.
             -- Don't apply to record fields.
+            -- Arrays could be in-out parameters by necessity
 
             if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
                if testOpt then
                   if identifiers( i ).class = varClass then
-                     -- arrays could be in-out parameters by necessity
-                     if not identifiers( i ).list then
-                        if identifiers( i ).usage /= constantUsage then
-                           if identifiers( i ).field_of = eof_t then
+                     if identifiers( i ).usage /= constantUsage then
+                        if not identifiers( i ).list and
+                           identifiers( i ).field_of = eof_t then
                               err( optional_yellow( to_string( identifiers( i ).name ) ) &
                                  -- " is a " & optional_yellow( "variable" ) &
                                  " was expected to be " & optional_yellow( "constant" ) &
                                  " (or in mode parameter).  It (or its elements) are never written to." );
-                           end if;
                         end if;
                      end if;
                   end if;

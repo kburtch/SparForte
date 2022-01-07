@@ -2564,11 +2564,15 @@ begin
   identifiers( funcId ).kind := resultKind;
 
   -- Create the return result.  This is a hidden variable with a
-  -- special name and parameter number zero.
+  -- special name and parameter number zero.  Pretend it is read
+  -- and was a factor (so as not to be treated as limtied) but
+  -- don't mark it as written to as we want to detect when no
+  -- return value is assigned.
 
   declareIdent( resultId, return_value_str, resultKind, varClass );
   if syntax_check then
      identifiers( resultId ).wasReferenced := true;
+     identifiers( resultId ).wasFactor := true;
      --identifiers( formal_param_id ).referencedByThread := getThreadName;
   end if;
   updateFormalParameter( resultId, resultKind, funcId, 0, none );
