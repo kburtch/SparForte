@@ -2572,6 +2572,8 @@ begin
   declareIdent( resultId, return_value_str, resultKind, varClass );
   if syntax_check then
      identifiers( resultId ).wasReferenced := true;
+     -- This does not seem to work??  I had to hard-code the
+     -- return_value_str in the scanner tests.
      identifiers( resultId ).wasFactor := true;
      --identifiers( formal_param_id ).referencedByThread := getThreadName;
   end if;

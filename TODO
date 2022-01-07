@@ -16,6 +16,7 @@ Priority Issues (Fix These First)
 - errors should support err_previous
 - check btree/hash_io get next mark the variable as written
   with the constant check
+- investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.
 - eof handling in expect symbol (i.e. reached end-of-file)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.

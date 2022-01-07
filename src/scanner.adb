@@ -830,6 +830,7 @@ begin
                   if not onlyAda95 then -- limited not available with pragma ada_95
                      if identifiers( i ).class = varClass then
                         if not identifiers( i ).list and
+                           head( identifiers( i ).name, 13 ) /= "return result" and
                            identifiers( i ).field_of = eof_t then
                                err( optional_yellow( to_string( identifiers( i ).name ) ) &
                                   " is a " & optional_yellow( "not-limited variable" ) &
@@ -844,7 +845,7 @@ begin
             -- Test for variables that are never written to.  This is only done
             -- in testing phase mode as code under development may indeed have
             -- variables like this, and many things are unwritten in design phase.
-            -- Don't apply to record fields.
+            -- Don't apply to record fields or return results.
             -- Arrays could be in-out parameters by necessity
 
             if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
@@ -852,6 +853,7 @@ begin
                   if identifiers( i ).class = varClass then
                      if identifiers( i ).usage /= constantUsage then
                         if not identifiers( i ).list and
+                           head( identifiers( i ).name, 13 ) /= "return result" and
                            identifiers( i ).field_of = eof_t then
                               err( optional_yellow( to_string( identifiers( i ).name ) ) &
                                  -- " is a " & optional_yellow( "variable" ) &
