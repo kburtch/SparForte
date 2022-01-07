@@ -2635,6 +2635,9 @@ begin
             null_unbounded_string,
             startAt );
          exit when actual_param_t = eof_t;
+         -- because parameters cannot be limited, we pretend that they
+         -- were used in an expression.
+         identifiers( actual_param_t ).wasFactor := true;
          -- if a record, we need fields
          recordBaseTypeId := getBaseType( identifiers( actual_param_t ).kind );
          if identifiers( recordBaseTypeId ).kind = root_record_t then  -- record type?

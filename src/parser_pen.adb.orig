@@ -840,6 +840,9 @@ begin
         end if;
      end if;
   end if;
+  if syntax_check and not error_found then
+     identifiers( canvas_ref.id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      declare
         id : aCanvasID;
@@ -906,6 +909,9 @@ begin
         end if;
      end if;
   end if;
+  if syntax_check and not error_found then
+     identifiers( canvas_ref.id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      declare
         id : aCanvasID;
@@ -968,6 +974,9 @@ begin
         end if;
      end if;
   end if;
+  if syntax_check and not error_found then
+     identifiers( canvas_ref.id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      declare
         id : aCanvasID;
@@ -1029,6 +1038,9 @@ begin
            end if;
         end if;
      end if;
+  end if;
+  if syntax_check and not error_found then
+     identifiers( canvas_ref.id ).wasWritten := true;
   end if;
   if isExecutingCommand then
      declare
@@ -1097,6 +1109,9 @@ begin
      end if;
   else
      err( "positive or string expected" );
+  end if;
+  if syntax_check and not error_found then
+     identifiers( canvas_ref.id ).wasWritten := true;
   end if;
   if isExecutingCommand then
      declare

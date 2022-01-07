@@ -28,7 +28,7 @@ begin
   end if;
 
   declare
-    this_month : constant calendar.month_number := calendar.month( calendar.clock );
+    this_month : limited calendar.month_number := calendar.month( calendar.clock );
     current_month : string;
     today : string;
 

@@ -829,13 +829,15 @@ begin
                if testOpt then
                   if not onlyAda95 then -- limited not available with pragma ada_95
                      if identifiers( i ).class = varClass then
-                        if not identifiers( i ).list and
-                           head( identifiers( i ).name, 13 ) /= "return result" and
-                           identifiers( i ).field_of = eof_t then
-                               err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                                  " is a " & optional_yellow( "not-limited variable" ) &
-                                  " but expected a " & optional_yellow( "limited" ) &
-                                  ".  It (or its elements) are not used in expressions nor is assigned to." );
+                        if identifiers( i ).usage = fullUsage or identifiers( i ).usage = constantUsage then
+                           if not identifiers( i ).list and
+                              head( identifiers( i ).name, 13 ) /= "return result" and
+                              identifiers( i ).field_of = eof_t then
+                                  err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                                     " is a " & optional_yellow( "not-limited variable" ) &
+                                     " but expected a " & optional_yellow( "limited" ) &
+                                     ".  It (or its elements) are not used in expressions nor is assigned to." );
+                           end if;
                         end if;
                      end if;
                   end if;
@@ -851,7 +853,7 @@ begin
             if identifiers( i ).wasReferenced and not identifiers( i ).wasWritten then
                if testOpt then
                   if identifiers( i ).class = varClass then
-                     if identifiers( i ).usage /= constantUsage then
+                     if identifiers( i ).usage = fullUsage then
                         if not identifiers( i ).list and
                            head( identifiers( i ).name, 13 ) /= "return result" and
                            identifiers( i ).field_of = eof_t then

@@ -12,7 +12,7 @@ procedure weave is
   max_iterations : constant integer := 500;
   tail_length : constant integer := 15;
 
-  c : pen.canvas_id;
+  c : limited pen.canvas_id;
 
   -- draw four sets of reflected lines, different colours for each of
   -- the lines
