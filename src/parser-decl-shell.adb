@@ -641,7 +641,11 @@ begin
       end if;
    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
       if not suppress_word_quoting and then whitespaceOption = trim then
-         err_style( "expected double quoted word parameters in shell or SQL command to stop word splitting" );
+         err_shell(
+             "While expanding shell or SQL variables, " &
+             toProtectedValue( expansionVar ) &
+             " could split into multiple parameters unless " &
+             "double quotes are used", wordPos );
       end if;
       if isExecutingCommand then
          begin
@@ -656,8 +660,13 @@ begin
          end;
       end if;
    else
+      --if not suppress_word_quoting then
       if not suppress_word_quoting and then whitespaceOption = trim then
-         err_style( "expected double quoted word parameters in shell or SQL command to stop word splitting" );
+         err_shell(
+             "While expanding shell or SQL variables, " &
+             toProtectedValue( expansionVar ) &
+             " could split into multiple parameters unless " &
+             "double quotes are used", wordPos );
       end if;
       findIdent( expansionVar, var_id );
 
@@ -669,6 +678,10 @@ begin
       elsif identifiers( var_id ).class = enumClass then
          if syntax_check then
             identifiers( var_id ).wasReferenced := true;
+            -- Although not a SparForte expression, an expansion is an
+            -- expression of sorts: it should raise a limited required
+            -- error.
+            identifiers( var_id ).wasFactor := true;
          end if;
          subword := expansionVar;
 
@@ -686,6 +699,10 @@ begin
             err_shell( optional_yellow( to_string( expansionVar ) ) & " is a record", wordPos);
          elsif syntax_check then
             identifiers( var_id ).wasReferenced := true;
+            -- Although not a SparForte expression, an expansion is an
+            -- expression of sorts: it should raise a limited required
+            -- error.
+            identifiers( var_id ).wasFactor := true;
             --identifiers( id ).referencedByThread := getThreadName;
             subword := to_unbounded_string( "undefined" );
          else

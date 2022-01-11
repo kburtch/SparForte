@@ -47,7 +47,7 @@ CHANGES SINCE 2.4.1
 
 19. Fix: "return" no longer produces an error with pragma annotate.
 
-20. Change: style issues no longer enforced for unstructured scripts.
+20. Change: style issues no longer enforced for unstructured scripts.  Double-quoted shell word check no longer treated as a style issue.
 
 21. New: btree_io.recover, hash_io.recover.
 
