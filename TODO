@@ -11,6 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
+- review sample programs - at get_env_info
 - review parseoutparameter usage for wasWritten flag
 - templates
   - templates that are not for HTTP

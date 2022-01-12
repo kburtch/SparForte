@@ -1157,6 +1157,10 @@ begin
      => identifiers( kind_id ).name & " affirm" );
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
 
+   -- The type variable may or may not be written to and we don't want
+   -- a warning that it should be limited, constant, etc.
+   identifiers( type_value_id ).wasWritten := true;
+
    -- for now, treat as a restricted shell to reduce the risk of side-effects.
    rshOpt := true;
 

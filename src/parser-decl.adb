@@ -2205,6 +2205,7 @@ procedure ParseAffirmClause( newtype_id : identifier ) is
    blockStart    : natural;
    blockEnd      : natural;
    old_syntax_check : constant boolean := syntax_check;
+   oldRshOpt : constant commandLineOption := rshOpt;
 begin
    -- declare type_value
    if onlyAda95 then
@@ -2216,11 +2217,17 @@ begin
         newThread => identifiers( newtype_id ).name & " affirm"
       );
       declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
+      -- The type variable may or may not be written to and we don't want
+      -- a warning that it should be limited, constant, etc.
+      identifiers( type_value_id ).wasWritten := true;
+      -- for now, treat as a restricted shell to reduce the risk of side-effects.
+      rshOpt := true;
+
       blockStart := firstPos;
       syntax_check := true;
-
       ParseAffirmBlock;
 
+      rshOpt := oldRshOpt;
       syntax_check := old_syntax_check;
       blockEnd := lastPos+1; -- include EOL ASCII.NUL
       if not syntax_check then
