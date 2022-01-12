@@ -42,8 +42,8 @@ LOGNAME : <b>constant</b> import_string := "unknown";
 
 <FONT COLOR=green><EM>-- Commands we are using</EM></FONT>
 
-swapoff    : <b>constant</b> command := "/sbin/swapoff";
-rm         : <b>constant</b> command := "/bin/rm";
+swapoff    : <b>limited</b> command := "/sbin/swapoff";
+rm         : <b>limited</b> command := "/bin/rm";
 
 <FONT COLOR=green><EM>-- Command Options / Arguments</EM></FONT>
 
@@ -117,6 +117,7 @@ command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
 
   delete_swap_file;
 <b>end</b> rm_swap;
+
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>

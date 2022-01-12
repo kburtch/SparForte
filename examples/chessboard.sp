@@ -9,8 +9,8 @@ pragma restriction( no_external_commands );
 
 procedure chessboard is
 
-  c    : pen.canvas_id;
-  r    : pen.rect;
+  c    : limited pen.canvas_id;
+  r    : limited pen.rect;
   s    : string;
   fill : boolean;
 

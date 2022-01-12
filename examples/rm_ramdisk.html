@@ -42,8 +42,8 @@ LOGNAME : <b>constant</b> import_string := "unknown";
 
 <FONT COLOR=green><EM>-- Commands we are using</EM></FONT>
 
-umount : <b>constant</b> command := "/bin/umount";
-rmdir  : <b>constant</b> command := "/bin/rmdir";
+umount : <b>limited</b> command := "/bin/umount";
+rmdir  : <b>limited</b> command := "/bin/rmdir";
 
 <FONT COLOR=green><EM>-- Other Variables</EM></FONT>
 
@@ -104,4 +104,3 @@ command_error : <b>exception</b> <b>with</b> "command exception" <b>use</b> 3;
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
 
 </PRE></BODY></HTML>
-

@@ -1,8 +1,8 @@
-#!/usr/local/bin/bush
+#!/usr/local/bin/spar
 
 pragma annotate( "geometry" );
 pragma annotate( "" );
-pragma annotate( "Draw a chessboard with graphics using the Business Shell" );
+pragma annotate( "Draw geometric shapes with SparForte" );
 pragma annotate( "by Ken O. Burtch" );
 
 pragma restriction( no_external_commands );

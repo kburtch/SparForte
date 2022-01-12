@@ -27,12 +27,12 @@ pragma import( shell, LOGNAME );
 
 -- Commands we are using
 
-chmod      : constant command := "/bin/chmod";
-dd         : constant command := "/bin/dd";
-free       : constant command := "/usr/bin/free";
-mkswap     : constant command := "/sbin/mkswap";
-rm         : constant command := "/bin/rm";
-swapon     : constant command := "/sbin/swapon";
+chmod      : limited command := "/bin/chmod";
+dd         : limited command := "/bin/dd";
+free       : limited command := "/usr/bin/free";
+mkswap     : limited command := "/sbin/mkswap";
+rm         : limited command := "/bin/rm";
+swapon     : limited command := "/sbin/swapon";
 
 -- Command Options / Arguments
 

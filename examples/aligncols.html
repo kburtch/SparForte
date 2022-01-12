@@ -67,7 +67,7 @@ justified,    right   justified,   or   center justified   within      its   col
    Column : positive := 1;
    Start : positive := 1;
    <b>type</b> Alignment <b>is</b> ( Left, Center, Right );
-   str : string;
+   s : string;
    padding : natural;
 <b>begin</b>
    <FONT COLOR=green><EM>-- Zero Widths</EM></FONT>
@@ -99,24 +99,24 @@ justified,    right   justified,   or   center justified   within      its   col
           ch := strings.element( Text, I );
           <b>case</b> ch <b>is</b>
              <b>when</b> '$' | ASCII.NUL =&gt;
-                str := strings.slice( Text, Start, I-1 );
-                padding := (Width( Column ) - strings.length(str));
+                s := strings.slice( Text, Start, I-1 );
+                padding := (Width( Column ) - strings.length(s));
                 <b>case</b> Align <b>is</b>
                 <b>when</b> Left =&gt;
-                  str := @ &amp; (padding * ' ');
+                  s := @ &amp; (padding * ' ');
                 <b>when</b> Center =&gt;
                   <b>declare</b>
-                     left_padding : natural := padding/2;
-                     right_padding : natural := padding - left_padding;
+                     left_padding : <b>constant</b> natural := padding/2;
+                     right_padding : <b>constant</b> natural := padding - left_padding;
                   <b>begin</b>
-                     str := (left_padding * ' ') &amp; @ &amp; (right_padding * ' ');
+                     s := (left_padding * ' ') &amp; @ &amp; (right_padding * ' ');
                   <b>end</b>;
                 <b>when</b> Right =&gt;
-                  str := (padding * ' ') &amp; @;
+                  s := (padding * ' ') &amp; @;
                 <b>when</b> <b>others</b> =&gt;
                     <b>null</b>;
                 <b>end</b> <b>case</b>;
-                put( File, str );
+                put( File, s );
                 Start := I+1;
                 <b>if</b> ch = ASCII.NUL <b>then</b>
                    new_line( File );

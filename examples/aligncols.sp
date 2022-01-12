@@ -68,8 +68,8 @@ begin
                   s := @ & (padding * ' ');
                 when Center =>
                   declare
-                     left_padding : natural := padding/2;
-                     right_padding : natural := padding - left_padding;
+                     left_padding : constant natural := padding/2;
+                     right_padding : constant natural := padding - left_padding;
                   begin
                      s := (left_padding * ' ') & @ & (right_padding * ' ');
                   end;

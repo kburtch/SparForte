@@ -157,24 +157,24 @@ begin
 
 -- Now do the work.
     declare
-        files                   : constant string
+        rpm_files               : constant string
                                 := `rpm( "-ql", Pkg_Nm) ;` ;
         path                    : string
-                                := strings.field( files, 1, ASCII.LF )
+                                := strings.field( rpm_files, 1, ASCII.LF )
                                 ;
         dest_dir                : string ;
         path_len                : constant natural
                                 := strings.length( path )
                                 ;
         EOL                     : constant string
-            := strings.slice( files, positive( path_len ) + 1, path_len + 1 )
+            := strings.slice( rpm_files, positive( path_len ) + 1, path_len + 1 )
             ;
         file_cnt                : natural
             ;
     begin
-        file_cnt := strings.count( files, EOL ) +1 ;
+        file_cnt := strings.count( rpm_files, EOL ) +1 ;
         for i in 1 .. file_cnt loop
-            path := strings.field( files, i, ASCII.LF ) ;
+            path := strings.field( rpm_files, i, ASCII.LF ) ;
             dest_dir :=  Pkg_Nm & "/" & Pkg_Vrsn ;
             mkdir( "-p", dest_dir ) ;
             --| put_line( "dest dir is " & dest_dir ) ;

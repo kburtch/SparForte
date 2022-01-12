@@ -26,7 +26,7 @@ procedure mandel is
   z_i2 : long_float;
 
   c    : pen.canvas_id;                            -- bush drawing canvas
-  plot : pen.rect;                                 -- rectangle to draw with
+  plot : limited pen.rect;                         -- rectangle to draw with
   s    : string;
 
   bits : integer;                                  -- for determining color

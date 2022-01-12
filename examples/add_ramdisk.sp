@@ -25,9 +25,9 @@ pragma import( shell, LOGNAME );
 
 -- Commands we are using
 
-mkdir : constant command := "/bin/mkdir";
-mount : constant command := "/bin/mount";
-rmdir : constant command := "/bin/rmdir";
+mkdir : limited command := "/bin/mkdir";
+mount : limited command := "/bin/mount";
+rmdir : limited command := "/bin/rmdir";
 
 -- Other Variables
 

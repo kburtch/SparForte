@@ -51,7 +51,7 @@ procedure caesar is
    end encrypt;
 
    text:  string := get_line;
-   key: cipher_value := 3; -- Default key from "Commentarii de Bello Gallico"
+   key: constant cipher_value := 3; -- Default key from "Commentarii de Bello Gallico"
 
 begin
    put_line("Plaintext ------------>" & text);

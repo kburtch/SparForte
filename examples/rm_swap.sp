@@ -24,8 +24,8 @@ pragma import( shell, LOGNAME );
 
 -- Commands we are using
 
-swapoff    : constant command := "/sbin/swapoff";
-rm         : constant command := "/bin/rm";
+swapoff    : limited command := "/sbin/swapoff";
+rm         : limited command := "/bin/rm";
 
 -- Command Options / Arguments
 

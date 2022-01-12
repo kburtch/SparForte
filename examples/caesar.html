@@ -73,7 +73,7 @@ Decrypted Ciphertext -&gt;The five boxing wizards jump quickly
    <b>end</b> encrypt;
 
    text:  string := get_line;
-   key: cipher_value := 3; <FONT COLOR=green><EM>-- Default key from "Commentarii de Bello Gallico"</EM></FONT>
+   key: <b>constant</b> cipher_value := 3; <FONT COLOR=green><EM>-- Default key from "Commentarii de Bello Gallico"</EM></FONT>
 
 <b>begin</b>
    put_line("Plaintext <FONT COLOR=green><EM>------------&gt;" &amp; text);</EM></FONT>

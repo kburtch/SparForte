@@ -72,7 +72,6 @@
 <FONT COLOR=green><EM>-- by writing: the Free Software Foundation 59 Temple Place - Suite</EM></FONT>
 <FONT COLOR=green><EM>-- 330 Boston, MA 02111-1307, USA.</EM></FONT>
 <FONT COLOR=green><EM>-- --------------------------------------------------------------------</EM></FONT>
-    <b>pragma</b> ada_95 ;
     <b>procedure</b>
 de_RPM                          <b>is</b>
     arg_cnt                     : integer ;
@@ -162,24 +161,24 @@ de_RPM                          <b>is</b>
 
 <FONT COLOR=green><EM>-- Now do the work.</EM></FONT>
     <b>declare</b>
-        files                   : <b>constant</b> string
+        rpm_files               : <b>constant</b> string
                                 := `rpm( "-ql", Pkg_Nm) ;` ;
         path                    : string
-                                := strings.field( files, 1, ASCII.LF )
+                                := strings.field( rpm_files, 1, ASCII.LF )
                                 ;
         dest_dir                : string ;
         path_len                : <b>constant</b> natural
                                 := strings.length( path )
                                 ;
         EOL                     : <b>constant</b> string
-            := strings.slice( files, positive( path_len ) + 1, path_len + 1 )
+            := strings.slice( rpm_files, positive( path_len ) + 1, path_len + 1 )
             ;
         file_cnt                : natural
             ;
     <b>begin</b>
-        file_cnt := strings.count( files, EOL ) +1 ;
+        file_cnt := strings.count( rpm_files, EOL ) +1 ;
         <b>for</b> i <b>in</b> 1 .. file_cnt <b>loop</b>
-            path := strings.field( files, i, ASCII.LF ) ;
+            path := strings.field( rpm_files, i, ASCII.LF ) ;
             dest_dir :=  Pkg_Nm &amp; "/" &amp; Pkg_Vrsn ;
             mkdir( "-p", dest_dir ) ;
             <FONT COLOR=green><EM>--| put_line( "dest dir is " &amp; dest_dir ) ;</EM></FONT>

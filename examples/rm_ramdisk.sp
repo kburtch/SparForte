@@ -24,8 +24,8 @@ pragma import( shell, LOGNAME );
 
 -- Commands we are using
 
-umount : constant command := "/bin/umount";
-rmdir  : constant command := "/bin/rmdir";
+umount : limited command := "/bin/umount";
+rmdir  : limited command := "/bin/rmdir";
 
 -- Other Variables
 
