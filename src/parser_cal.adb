@@ -184,6 +184,12 @@ begin
   ParseNextOutParameter( cal_split_t, id2_ref, cal_month_number_t );
   ParseNextOutParameter( cal_split_t, id3_ref, cal_day_number_t );
   ParseLastOutParameter( cal_split_t, id4_ref, cal_day_duration_t );
+  if syntax_check then
+     identifiers( id1_ref.id ).wasWritten := true;
+     identifiers( id2_ref.id ).wasWritten := true;
+     identifiers( id3_ref.id ).wasWritten := true;
+     identifiers( id4_ref.id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      begin
        Split( time( to_numeric( date_val ) ), year, month, day, seconds );

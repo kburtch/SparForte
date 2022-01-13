@@ -2775,6 +2775,9 @@ begin
   if baseTypesOK( ref.kind, dbm_connection_t ) then
       null;
   end if;
+  if syntax_check and not error_found then
+     identifiers( ref.id ).wasWritten := true;
+  end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      declareResource( resId, postgresql_connection, getIdentifierBlock( ref.id ) );
@@ -2804,6 +2807,9 @@ begin
   ParseSingleOutParameter( dbm_new_query_t, ref, dbm_query_t );
   if baseTypesOK( ref.kind, dbm_query_t ) then
       null;
+  end if;
+  if syntax_check and not error_found then
+     identifiers( ref.id ).wasWritten := true;
   end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;

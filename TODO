@@ -13,6 +13,7 @@ Priority Issues (Fix These First)
 
 - review sample programs - at get_env_info
 - review parseoutparameter usage for wasWritten flag
+  - check AssignParameter uses - out parameters do not set writtenflag
 - templates
   - templates that are not for HTTP
 - errors should support err_previous
