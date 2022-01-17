@@ -1062,17 +1062,19 @@ begin
     end if;
   end if;
 
+  -- KB: 22/01/17 - re-enabled this because this pretains to built-in
+  -- functions, rather than user functions.  Original message:
   -- For an out parameter, we do not mark it as written to as we would with
   -- an in-out parameter because we want to treat not giving it a value as
   -- an error.
   --
-  --if syntax_check and then not error_found then
-  --   if identifiers( ref.id ).field_of /= eof_t then
-  --      identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
-  --   else
-  --      identifiers( ref.id ).wasWritten := true;
-  --   end if;
-  --end if;
+  if syntax_check and then not error_found then
+     if identifiers( ref.id ).field_of /= eof_t then
+        identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
+     else
+        identifiers( ref.id ).wasWritten := true;
+     end if;
+  end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite(ref.id );
      checkDoubleThreadWrite( ref.id );

@@ -61,6 +61,7 @@ Priority Issues (Fix These First)
   - type checking does not have the advanced error messages
 - how can design mode be improved to assist with producing design diagrams?  translating
   things into design diagrams is a costly part of design.
+  - graphviz / .dot generation?
 - refactor source code treasury index page
 - record field identifiers erros in a record definition are reported as
   "shell words" for string or numeric literals but should not be.  record
