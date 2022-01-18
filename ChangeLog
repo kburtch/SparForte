@@ -95,3 +95,5 @@ CHANGES SINCE 2.4.1
 
 43. Fix: test cases in pragma test are now syntax checked.
 
+44. Fix: written variable test for out parameters only applies if the variable is not auto-declared.
+

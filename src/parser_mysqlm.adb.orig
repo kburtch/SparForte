@@ -2612,9 +2612,6 @@ begin
   if baseTypesOK( ref.kind, mysqlm_connection_t ) then
       null;
   end if;
-  if syntax_check and not error_found then
-     identifiers( ref.id ).wasWritten := true;
-  end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
      declareResource( resId, mysql_connection, getIdentifierBlock( ref.id ) );
@@ -2639,9 +2636,6 @@ begin
   ParseSingleOutParameter( mysqlm_new_query_t, ref, mysqlm_query_t );
   if baseTypesOK( ref.kind, mysqlm_query_t ) then
       null;
-  end if;
-  if syntax_check and not error_found then
-     identifiers( ref.id ).wasWritten := true;
   end if;
   if isExecutingCommand then
      identifiers( ref.id ).resource := true;
