@@ -73,7 +73,7 @@ accept that they also require a connection, query or both.</p>
   <a href="#mysqlm.raise_exceptions">raise_exceptions( q [, b ] )</a> <a href="#mysqlm.report_errors">report_errors( q, b )</a>
   <a href="#mysqlm.begin_work">begin_work( q, c )</a>           <a href="#mysqlm.rollback_work">rollback_work( q, c )</a>
   <a href="#mysqlm.commit_work">commit_work( q, c )</a>          <a href="#mysqlm.rewind">rewind( q )</a>
-  <a href="#mysqlm.fetch[">fetch( q [, i] )</a>             <a href="#mysqlm.end_of_query">b := end_of_query( q )</a>
+  <a href="#mysqlm.fetch">fetch( q [, i] )</a>             <a href="#mysqlm.end_of_query">b := end_of_query( q )</a>
   <a href="#mysqlm.tuple">n := tuple( q, t )</a>           <a href="#mysqlm.tuples">n := tuples( q )</a>
   <a href="#mysqlm.columns">n := columns( q )</a>            <a href="#mysqlm.column_name">s := column_name( q, i )</a>
   <a href="#mysqlm.column_index">i := column_index( q, s ) </a>   <a href="#mysqlm.is_null">b := is_null( q, i )</a>
@@ -86,7 +86,7 @@ accept that they also require a connection, query or both.</p>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the mysqlm package</span>
+        <b>Help Command</b>: Contents of the mysqlm package
         </div>
         </div>
         </center>
@@ -129,7 +129,7 @@ accept that they also require a connection, query or both.</p>
         <center>
         <div class="code">
                 <p class="code">
-<b>type</b> db.database_type <b>is</b> ( db.engine_postgresql, db.engine_mysql, db.engine_oracle, db.engine_sybase, db.engine_db2 );</tt>
+<b>type</b> db.database_type <b>is</b> ( db.engine_postgresql, db.engine_mysql, db.engine_oracle, db.engine_sybase, db.engine_db2 );
                 </p>
         </div>
         </center>
@@ -2380,8 +2380,6 @@ columns in the list depend on the database engine.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

@@ -64,7 +64,7 @@ more reads than writes.</p>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the memcache.highread package</span>
+        <b>Help Command</b>: Contents of the memcache.highread package
         </div>
         </div>
         </center>
@@ -106,7 +106,7 @@ cane<br>
 =&gt;<br>&nbsp;<br>
                 </p>
         <div class="code_caption">
-                <b>Example</b>: Setting key "candy" to value "cane" and retrieving it again</span>
+                <b>Example</b>: Setting key "candy" to value "cane" and retrieving it again
         </div>
         </div>
         </center>
@@ -143,7 +143,7 @@ disabled with pragma restriction.</p>
 Otherwise, an error is displayed but execution continues.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.add( mc_cluster, "company_name", "PegaSoft"  );</span></p>
+<td><p><span class="code">memcache.highread.add( mc_cluster, "company_name", "PegaSoft"  );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -196,7 +196,7 @@ Otherwise, an error is displayed but execution continues.</p></td>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.highread.append">memcache.highread.append</a>( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p>
+<td><p><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.highread.append">memcache.highread.append</a>( mc_cluster, "company_name", " Inc.";<br>-- company_name is "PegaSoft Inc." </span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -249,7 +249,7 @@ memcache cluster cl.</p></td>
 flushed from memcached.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.clear_servers( cl ); -- there are now no servers in the cluster</span></p>
+<td><p><span class="code">memcache.highread.clear_servers( cl ); -- there are now no servers in the cluster</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -289,7 +289,7 @@ flushed from memcached.</p></td>
 <td><p>Remove key k from memcache cluster cl, discarding the key's value.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p>
+<td><p><span class="code">memcache.highread.delete( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name no longer exists</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -336,7 +336,7 @@ flushed from memcached.</p></td>
 marked invalid and are gradually replaced as new items are stored.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.flush( mc_cluster );-- all keys are destroyed</span></p>
+<td><p><span class="code">memcache.highread.flush( mc_cluster );-- all keys are destroyed</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -379,7 +379,7 @@ are two or more servers in the cluster, get will alternate between the servers
 with the key in order to distribute load.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.highread.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p>
+<td><p><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>? memcache.highread.get( mc_cluster, "company_name" );<br>-- displays "PegaSoft" </span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -429,7 +429,7 @@ with the key in order to distribute load.</p></td>
 servers and manage connections.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">mc_cluster := memcache.highread.new_cluster;</span></p>
+<td><p><span class="code">mc_cluster := memcache.highread.new_cluster;</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -475,7 +475,7 @@ the script execution end.</p>
 memcache cluster cl.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.highread.prepend">memcache.highread.prepend</a>( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p>
+<td><p><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.highread.prepend">memcache.highread.prepend</a>( mc_cluster, "company_name", "This is " );<br>-- company_name is "This is PegaSoft" </span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -531,7 +531,7 @@ opened: network connections are opened when data is read or written.  Do not
 register the same server twice.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.register_alpha_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p>
+<td><p><span class="code">memcache.highread.register_alpha_server( mc_cluster, "memcached1.somecompany.com", 11211 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -587,7 +587,7 @@ opened: network connections are opened when data is read or written.  Do not
 register the same server twice.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.register_beta_server( mc_cluster, "memcached2.somecompany.com", 11211 );</span></p>
+<td><p><span class="code">memcache.highread.register_beta_server( mc_cluster, "memcached2.somecompany.com", 11211 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -641,7 +641,7 @@ a value already exists.  If the key doesn't exist, a warning is displayed but
 execution continues.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.highread.replace">memcache.highread.replace</a>( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p>
+<td><p><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br><a href="#memcache.highread.replace">memcache.highread.replace</a>( mc_cluster, "company_name", "MegaCorp";<br>-- company_name is "MegaCorp"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -694,7 +694,7 @@ execution continues.</p></td>
 the key already has a value, it will be overwritten.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p>
+<td><p><span class="code">memcache.highread.set( mc_cluster, "company_name", "PegaSoft"  );<br>-- company_name is "PegaSoft" </span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -747,7 +747,7 @@ the key already has a value, it will be overwritten.</p></td>
 some error messages.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set_cluster_name( mc_cluster, "main cluster" );</span></p>
+<td><p><span class="code">memcache.highread.set_cluster_name( mc_cluster, "main cluster" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -794,7 +794,7 @@ some error messages.</p></td>
 memcache.memcache_cluster_type.normal.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">memcache.highread.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p>
+<td><p><span class="code">memcache.highread.set_cluster_type( mc_cluster, memcache.memcache_cluster_type.normal );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -842,7 +842,7 @@ first item in the row is either "alpha" or "beta" followed by the server number.
 For the meaning of the stats, consult the memcached documentation.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? memcache.highread.stats( mc_cluster );-- display all stats</span></p>
+<td><p><span class="code">? memcache.highread.stats( mc_cluster );-- display all stats</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -881,7 +881,7 @@ For the meaning of the stats, consult the memcached documentation.</p></td>
 </tr>
 </table>
 
-<a name="memcache.highread.version"><h3>s := memcache.highread.version( cl )</h3>
+<a name="memcache.highread.version"></a><h3>s := memcache.highread.version( cl )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
@@ -890,7 +890,7 @@ of memcached that is running on the server.  (It would be advisable to run
 the same version on all servers.)</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? memcache.highread.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p>
+<td><p><span class="code">? memcache.highread.version( mc_cluster ); -- displays the version e.g. 1.4.5</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" order="0" >
@@ -974,8 +974,6 @@ the same version on all servers.)</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

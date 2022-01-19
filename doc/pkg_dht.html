@@ -64,7 +64,7 @@ to create and manage simple hash tables.</p>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the dynamic_hash_tables package</span>
+        <b>Help Command</b>: Contents of the dynamic_hash_tables package
         </div>
         </div>
         </center>
@@ -113,7 +113,7 @@ inherently different from an <b>url_string</b> (an universal_string)
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Example</b>: Using dynamic_hash_tables to store URL's</span>
+        <b>Example</b>: Using dynamic_hash_tables to store URL's
         </div>
         </div>
         </center>
@@ -125,7 +125,7 @@ inherently different from an <b>url_string</b> (an universal_string)
 <td width="15%">&nbsp;</td>
 <td><p>Put value v under key k in the hash table.  If the key already exists, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.add( fruit, "apples", 15 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.add( fruit, "apples", 15 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -180,7 +180,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Append string value v to the value under key k in the hash table.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.set( fruit_unit, "apples", "bushel" );<br>doubly_linked_lists.append( fruit_unit, "apples", "s" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.set( fruit_unit, "apples", "bushel" );<br>doubly_linked_lists.append( fruit_unit, "apples", "s" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -236,7 +236,7 @@ An exception is raised if the value type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Reduce the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.decrement( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.decrement( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -292,7 +292,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Get the value under key k in the hash table.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">put_line( dynamic_hash_tables.get( fruit, "apples" ) );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">put_line( dynamic_hash_tables.get( fruit, "apples" ) );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -340,7 +340,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Iterate through the hash table.  Return the first value in the table.  Order of the values is not predictable.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.get_first( fruit, first_value, eof );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.get_first( fruit, first_value, eof );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -394,7 +394,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Iterate through the hash table.  Return the next value in the table.  Order of the values is not predictable.  Use get_first to start iterating.  If iteration breaks if the table is altered.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.get_next( fruit, next_value, eof );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.get_next( fruit, next_value, eof );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -448,7 +448,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Get the value under key k in the hash table.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if dynamic_hash_tables.has_element( fruit, "apples" ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if dynamic_hash_tables.has_element( fruit, "apples" ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -496,7 +496,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Increase the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.increment( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.increment( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -552,7 +552,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>(No longer available) Initialize a new hash table, assigning the type for the values in the table.  The value type must be a scalar type, and it may be a universal type.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.new_table( fruit, natural );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.new_table( fruit, natural );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -597,7 +597,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Prepend string value v to the value under key k in the hash table.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.set( fruit_unit, "apples", "ushels" );<br>dynamic_hash_tables.prepend( fruit_unit, "apples", "b" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.set( fruit_unit, "apples", "ushels" );<br>dynamic_hash_tables.prepend( fruit_unit, "apples", "b" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -653,7 +653,7 @@ An exception is raised if the value type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Delete a key and the associated value from the hash table.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.remove( fruit, "bad apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.remove( fruit, "bad apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -701,7 +701,7 @@ An exception is raised if the value type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Replace the value v under key k in the hash table.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.replace( fruit, "apples", 23 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.replace( fruit, "apples", 23 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -756,7 +756,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Delete all keys and associated values in the hash table..</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.reset( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.reset( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -792,7 +792,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Assign the value v to the key k in the hash table.  If the key does not exist, create it.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">dynamic_hash_tables.set( fruit, "apples", 21 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">dynamic_hash_tables.set( fruit, "apples", 21 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -880,8 +880,6 @@ An exception is raised if out of memory</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

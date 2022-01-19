@@ -42,7 +42,7 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a NAME="4.7"></a>Numerics Package</h3>
+	<a NAME="4.7"></a><h3>Numerics Package</h3>
 <p>The SparForte built-in numerics package provides math subprograms to manipulate
 numeric values.</p>
 
@@ -91,7 +91,7 @@ abs( x ) is not "numerics.abs( x )" because it's not in the numerics package
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the numerics package</span>
+        <b>Help Command</b>: Contents of the numerics package
         </div>
         </div>
         </center>
@@ -583,8 +583,8 @@ and adding one.  This is the smallest integer value that is greater than or
 equal to Y.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f1 := numerics.ceiling( 5.5 ); -- returns 6<br>
-f2 := numerics.ceiling( -5.5 ); -- returns -5</span></p>
+<td><p><span class="code">f1 := numerics.ceiling( 5.5 ); -- returns 6<br>
+f2 := numerics.ceiling( -5.5 ); -- returns -5</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1006,8 +1006,8 @@ positive) integral value less than or equal to X. When X is zero, the result
 has the sign of X; a zero result otherwise has a positive sign</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f1 := numerics.floor( 5.5 ); -- returns 5<br>
-f2 := numerics.floor( -5.5 ); -- returns -6</span></p>
+<td><p><span class="code">f1 := numerics.floor( 5.5 ); -- returns 5<br>
+f2 := numerics.floor( -5.5 ); -- returns -6</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1074,6 +1074,7 @@ f2 := numerics.floor( -5.5 ); -- returns -6</span></p>
 <td><span>required</span></td>
 <td><span>the maximum value to return</span></td>
 </tr>
+<tr>
 <td>f</td>
 <td>return value</td>
 <td>natural</td>
@@ -1169,6 +1170,7 @@ point number into its exponent and fraction parts.</p></td>
 <td><span>required</span></td>
 <td><span>the maximum value to return</span></td>
 </tr>
+<tr>
 <td>f</td>
 <td>return value</td>
 <td>natural</td>
@@ -1546,6 +1548,7 @@ a constraint_error is raised if e is zero</p></td>
 <td><span>required</span></td>
 <td><span>the maximum value to return</span></td>
 </tr>
+<tr>
 <td>f</td>
 <td>return value</td>
 <td>natural</td>
@@ -1898,7 +1901,7 @@ if exactly between two integers. That is, 5.5 will round up to 6 and 6.5
 will round to 7.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f := numerics.rounding( 5.5 ); -- returns 6</span></p>
+<td><p><span class="code">f := numerics.rounding( 5.5 ); -- returns 6</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2016,6 +2019,7 @@ will round to 7.</p></td>
 <td><span>required</span></td>
 <td><span>the maximum value to return</span></td>
 </tr>
+<tr>
 <td>f</td>
 <td>return value</td>
 <td>natural</td>
@@ -2079,8 +2083,8 @@ will round to 7.</p></td>
 <td><p>Return the NSA Secure Hash Algorithm SHA-1 digest (hash value) of string s.  It is 40 characters long.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? numerics.sha1_digest_of( "abc" );<br>
--- outputs a9993e364706816aba3e25717850c26c9cd0d89d</span></p>
+<td><p><span class="code">? numerics.sha1_digest_of( "abc" );<br>
+-- outputs a9993e364706816aba3e25717850c26c9cd0d89d</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2126,8 +2130,8 @@ will round to 7.</p></td>
 <td><p>Return the NSA Secure Hash Algorithm SHA-2 224 digest (hash value) of string s.  It is 56 characters long.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? numerics.sha224_digest_of( "abc" );<br>
--- outputs 23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7</span></p>
+<td><p><span class="code">? numerics.sha224_digest_of( "abc" );<br>
+-- outputs 23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2173,8 +2177,8 @@ will round to 7.</p></td>
 <td><p>Return the NSA Secure Hash Algorithm SHA-2 256 digest (hash value) of string s.  It is 64 characters long.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? numerics.sha256_digest_of( "abc" );<br>
--- outputs ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</span></p>
+<td><p><span class="code">? numerics.sha256_digest_of( "abc" );<br>
+-- outputs ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2220,8 +2224,8 @@ will round to 7.</p></td>
 <td><p>Return the NSA Secure Hash Algorithm SHA-2 512 digest (hash value) of string s.  It is 128 characters long.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">? numerics.sha512_digest_of( "abc" );<br>
--- outputs ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a<br>2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f</span></p>
+<td><p><span class="code">? numerics.sha512_digest_of( "abc" );<br>
+-- outputs ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a<br>2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2658,7 +2662,7 @@ each step dividing by two.  The lowest bits are discarded.</p></td>
 </table></td>
 </tr><tr>
 <td><p class="pkg_label">Exceptions</p></td>
-<td><p>a constraint_error when e is an odd multiple of the quarter cycle</p></p></td>
+<td><p>a constraint_error when e is an odd multiple of the quarter cycle</p></td>
 </tr><tr>
 <td><p class="pkg_label">See Also</p></td>
 <td><p>-</p></td>
@@ -2722,8 +2726,8 @@ e is negative, and floor(e) otherwise. A zero result has the sign of e when
 a machine has signed zeros.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f1 := numerics.truncation( 5.5 ); -- returns 5<br>
-f2 := numerics.truncation( -5.5 ); -- returns -5</span></p>
+<td><p><span class="code">f1 := numerics.truncation( 5.5 ); -- returns 5<br>
+f2 := numerics.truncation( -5.5 ); -- returns -5</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2769,7 +2773,7 @@ if exactly between two integers. That is, 5.5 will round up to 6 and 6.5
 will round down to 6.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f := numerics.unbiased_rouding( 7.5 ); -- returns 8</span></p>
+<td><p><span class="code">f := numerics.unbiased_rouding( 7.5 ); -- returns 8</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2814,7 +2818,7 @@ will round down to 6.</p></td>
 string is trimmed first.  This function only parses numbers.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">f := numerics.value( " 32.5" ) * numerics.value( "-1.2" );</span></p>
+<td><p><span class="code">f := numerics.value( " 32.5" ) * numerics.value( "-1.2" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2896,8 +2900,6 @@ cannot be converted.</span></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

@@ -74,7 +74,7 @@
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the vectors package</span>
+        <b>Help Command</b>: Contents of the vectors package
         </div>
         </div>
         </center>
@@ -97,7 +97,7 @@ type based on positive will start at index 1.</p>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Example</b>: </span>
+        <b>Example</b>: To be created
         </div>
         </div>
         </center>
@@ -108,7 +108,7 @@ type based on positive will start at index 1.</p>
 <td width="15%">&nbsp;</td>
 <td><p>Append string element e to the value under key k in the hash map.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_unit, "apple", bushel" );<br>hashed_maps.append( fruit_unit, "apple", "s" ); -- changed to "bushels"</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.insert( fruit_unit, "apple", bushel" );<br>hashed_maps.append( fruit_unit, "apple", "s" ); -- changed to "bushels"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -165,7 +165,7 @@ An exception is raised if the element type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Queue list element e at the end of the vector v.  If c is used, append c copies of e.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.append_elements( v, "zebra", 2 ); -- append 2 copies of "zebra"</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.append_elements( v, "zebra", 2 ); -- append 2 copies of "zebra"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -190,7 +190,7 @@ An exception is raised if the element type is not a string</p></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in</span></td>
-<td><span>containers.count_type</i></span></td>
+<td><span>containers.count_type</span></td>
 <td><span>1</span></td>
 <td><span>the number of copies</span></td>
 </tr>
@@ -214,7 +214,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Add the contents of vector v2 to the end of vector v1.  Vector v2 is unchanged.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">--if v1 has "a", "b", "c" and v2 has "d", "e", "f"<br>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">--if v1 has "a", "b", "c" and v2 has "d", "e", "f"<br>
 vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
@@ -251,7 +251,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <td width="15%">&nbsp;</td>
 <td><p>Return the spare element capacity of vector v.  This is the number of elements that can be inserted before the vector memory grows.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">c := vectors.capacity( animal_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">c := vectors.capacity( animal_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -290,7 +290,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <td width="15%">&nbsp;</td>
 <td><p>Delete the contents of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.clear( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.clear( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -323,7 +323,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <td width="15%">&nbsp;</td>
 <td><p>Return true if element e in the vector v.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if vectors.contains( device_vector, "router" ) then...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.contains( device_vector, "router" ) then...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -362,7 +362,7 @@ vectors.append_vector( v1 v2 ); -- v1 has "a", "b", "c", "d", "e", "f"</span></p
 <td width="15%">&nbsp;</td>
 <td><p>Reduce the numeric value under key k in the hash map m by one (or n).  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.decrement( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.decrement( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -422,7 +422,7 @@ sliding the elements toward the start of the vector by one position.  If a
 cursor is given instead of an index, delete the item at the cursor position.
 If a count of n is given, delete n elements instead of one.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">-- if char_vector contains "a", "b", "c"<br>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if char_vector contains "a", "b", "c"<br>
 vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
@@ -481,7 +481,7 @@ vectors.delete( char_vector, 2 ); -- vector is "a", "c"</span></p></td>
 <td><p>Remove an element from the start of the vector.  If a count n is
 given, delete n elements.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">-- if char_vector contains "a", "b", "c"<br>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if char_vector contains "a", "b", "c"<br>
 vectors.delete_first( char_vector, 2 ); -- vector is "c"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
@@ -525,7 +525,7 @@ vectors.delete_first( char_vector, 2 ); -- vector is "c"</span></p></td>
 <td><p>Remove an element from the end of the vector.  If a count n is
 given, delete n elements.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">-- if char_vector contains "a", "b", "c"<br>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if char_vector contains "a", "b", "c"<br>
 vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
@@ -568,7 +568,7 @@ vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the element for index position i in vector v, or the element at cursor c.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">-- if the vector has "switch", "router", "firewall"<br>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">-- if the vector has "switch", "router", "firewall"<br>
 ? vectors.element( device_vector, 1 ); -- displays "switch"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
@@ -594,7 +594,7 @@ vectors.delete_last( char_vector, 2 ); -- vector is "a"</span></p></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in</span></td>
-<td><span>vectorss.cursor</i></span></td>
+<td><span>vectors.cursor</span></td>
 <td><span>required (if no index)</span></td>
 <td><span>the cursor</span></td>
 </tr>
@@ -619,7 +619,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>True if the two vectors have identical content.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if vectors.equal( first_device_vector, second_device_vector ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.equal( first_device_vector, second_device_vector ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -659,7 +659,6 @@ An exception is raised if out of memory</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada is "=" but SparForte does not support in-line functions.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="vectors.find"></a><h3>vectors.find( v, e, c1, c2 )</h3>
@@ -668,7 +667,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor c2 to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -726,7 +725,7 @@ An exception is raised if the cursor has the wrong types</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index in the vector for element e.  Start at the position of index i1.  If the element does not exist, the index i2 will have no index.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.find_index( device_vector, "firewall", 1, position_index );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.find_index( device_vector, "firewall", 1, position_index );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -778,58 +777,13 @@ An exception is raised if the starting position value is bad</p></td>
 </tr>
 </table>
 
-<a name="vectors.first_index"></a><h3>i := vectors.first_index( v )</h3>
-<table cellspacing="0" cellpadding="0" width="98%" summary="package call">
-<tr>
-<td width="15%">&nbsp;</td>
-<td><p>Return the index to the first element in the vector.</p>
-</tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">i := vectors.first_index( device_vector );</span></p></td>
-</tr><tr>
-<td><p class="pkg_label">Parameters</p></td>
-<td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
-<tr>
-<td><span class="pkg_param">Param</span></td>
-<td><span class="pkg_param">Mode</span></td>
-<td><span class="pkg_param">Type</span></td>
-<td><span class="pkg_param">Default</span></td>
-<td><span class="pkg_param">Description</span></td>
-</tr><tr>
-<td><span>v</span></td>
-<td><span>in out</span></td>
-<td><span>vectors.vector</span></td>
-<td><span>required</span></td>
-<td><span>the vector</span></td>
-</tr><tr>
-<td><span>i</span></td>
-<td><span>return value</span></td>
-<td><span><i>vector index type</i></span></td>
-<td><span>required</span></td>
-<td><span>the index</span></td>
-</tr>
-</table></td>
-</tr><tr>
-<td><p class="pkg_label">Exceptions</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Restrictions</p></td>
-<td><p>-</p>
-</tr><tr>
-<td><p class="pkg_label">See Also</p></td>
-<td><p>-</p></td>
-</tr><tr>
-<td><p class="pkg_label">Compare With</p></td>
-<td><p>Ada: Ada.Containers.Vectors.First_Index</p></td>
-</tr>
-</table>
-
 <a name="vectors.first"></a><h3>vectors.first( v, c )</h3>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the first element in the vectors.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.first( device_map, cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.first( device_map, cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -876,7 +830,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the first element of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">e := vectors.first_element( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">e := vectors.first_element( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -921,7 +875,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the first index of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">i := vectors.first_index( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">i := vectors.first_index( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -966,7 +920,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Reverse the elements of the vector.  A renaming of vectors.reverse_elements.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.flip( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.flip( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1005,7 +959,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Insert element e into vector v before index i.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert( device_vector, 1, "firewall" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( device_vector, 1, "firewall" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1036,7 +990,7 @@ An exception is raised if the starting position value is bad</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>containers.count_type</i></span></td>
+<td><span>containers.count_type</span></td>
 <td><span>1</span></td>
 <td><span>the number of copies</span></td>
 </tr>
@@ -1059,7 +1013,6 @@ An exception is raised if the index is out-of-range</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="vectors.insert_before"></a><h3>vectors.insert_before( v, c, e [, n] )</h3>
@@ -1068,7 +1021,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Insert element e into vector v before cursor c.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert( device_vector, device_cursor, "router" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( device_vector, device_cursor, "router" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1087,7 +1040,7 @@ An exception is raised if the index is out-of-range</p></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in out</span></td>
-<td><span>vector cursor type</i></span></td>
+<td><span><i>vector cursor type</i></span></td>
 <td><span>required</span></td>
 <td><span>the position to insert before</span></td>
 </tr><tr>
@@ -1099,7 +1052,7 @@ An exception is raised if the index is out-of-range</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>containers.count_type</i></span></td>
+<td><span>containers.count_type</span></td>
 <td><span>1</span></td>
 <td><span>the number of copies</span></td>
 </tr>
@@ -1126,7 +1079,6 @@ An exception is raised if the index is out-of-range</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is split into several functions in SparForte due to implementation challenges.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="vectors.insert_before_and_mark"></a><h3>vectors.insert_before_and_mark( v, c, e, c2 [, n] )</h3>
@@ -1135,7 +1087,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Insert element e into vector v before cursor c.  Return the position in cursor c2.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert( device_vector, device_cursor, "router", insert_position );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert( device_vector, device_cursor, "router", insert_position );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1172,7 +1124,7 @@ An exception is raised if the index is out-of-range</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>containers.count_type</i></span></td>
+<td><span>containers.count_type</span></td>
 <td><span>1</span></td>
 <td><span>the number of copies</span></td>
 </tr>
@@ -1199,7 +1151,6 @@ An exception is raised if the index is out-of-range</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is split into several functions in SparForte due to implementation challenges.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="vectors.insert_space"></a><h3>insert_space( v, i [, n] ) | ( v, c, c2 [, n] )</h3>
@@ -1208,7 +1159,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Insert empty elements into vector v before index i.  If a cursor is used instead, insert the elements before cursor c.  Return the position new cursor.   If a count n is used, insert n copies of the element.  The second vector is unchanged.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert_spacee( device_vector, 1, 15 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert_spacee( device_vector, 1, 15 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1272,7 +1223,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Copy the elements of v2 into vector v before cursor c.  The second vector is unchanged.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert_vector( device_vector, vector_cursor, firewall_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert_vector( device_vector, vector_cursor, firewall_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1319,7 +1270,6 @@ An exception is raised if out of memory</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is a reserved word in SparForte.  This may be renamed in the future.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="vectors.insert_vector_and_mark"></a><h3>vectors.insert_vector_and_mark( v, c, v2, c2 )</h3>
@@ -1328,7 +1278,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Copy the elements of v2 into vector v before cursor c.  Return the position in cursor c2.  The second vector is unchanged.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.insert_vector_and_mark( device_vector, device_cursor, new_devices, insert_position );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.insert_vector_and_mark( device_vector, device_cursor, new_devices, insert_position );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1353,7 +1303,7 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><span>v2</span></td>
 <td><span>in out</span></td>
-<td><span>vectors.vector</i></span></td>
+<td><span>vectors.vector</span></td>
 <td><span>required</span></td>
 <td><span>the vector to insert</span></td>
 </tr><tr>
@@ -1385,7 +1335,6 @@ An exception is raised if out of memory</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada uses "Insert" but insert is split into several functions in SparForte due to implementation challenges.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="vectors.is_empty"></a><h3>b := vectors.is_empty( v )</h3>
@@ -1394,7 +1343,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>True if the vector has no items.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if vectors.is_empty( device_vector ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if vectors.is_empty( device_vector ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1436,7 +1385,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the last element in the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.last( device_vector, cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.last( device_vector, cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1483,7 +1432,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the last element of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">e := vectors.last_element( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">e := vectors.last_element( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1528,7 +1477,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index to the last element in the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">i := vectors.last_index( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">i := vectors.last_index( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1573,7 +1522,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the number of elements in the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">n := vectors.length( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">n := vectors.length( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1612,7 +1561,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the next element in the vector.  If there are no more items, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.next( device_cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><<p><span class="code">vectors.next( device_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1654,7 +1603,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Insert element e into vector v before the first position.   If a count n is used, insert n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.prepend( device_vector, "router" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.prepend( device_vector, "router" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1679,7 +1628,7 @@ An exception is raised if out of memory</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>containers.count_type</i></span></td>
+<td><span>containers.count_type</span></td>
 <td><span>1</span></td>
 <td><span>the number of copies</span></td>
 </tr>
@@ -1707,7 +1656,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the previous element in the vector.  If there are no more items, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.previous( device_cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.previous( device_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1749,7 +1698,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Add enough memory to the vector to handle at least c items.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.reserve_capacity( device_vector, 20 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reserve_capacity( device_vector, 20 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1788,7 +1737,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Reverse the elements of the vector.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.reverse_elements( device_vector );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_elements( device_vector );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1827,7 +1776,7 @@ An exception is raised if the index is out-of-range</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor c2 backwards to the position in the vector for element e.  Start at the position of cursor c1.  If the element does not exist, the cursor c2 will have no element.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.reverse_find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_find( device_vector, "firewall", starting_cursor, position_cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1885,7 +1834,7 @@ An exception is raised if the cursor has the wrong types</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the index in the vector for element e, searching backwards.  Start at the position of index i1.  If the element does not exist, the index i2 will have no index.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.reverse_find_index( device_vector, "firewall", 1, position_index );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.reverse_find_index( device_vector, "firewall", 1, position_index );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1943,7 +1892,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Resize the vector to n items, removing elements or adding empty elements if necessary.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.set_length( device_vector, 20 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.set_length( device_vector, 20 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1985,7 +1934,7 @@ An exception is raised if the starting position value is bad</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Exchange two elements in the vector, either by a pair of indexes or a pair of cursors.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.swap( device_vector, first_position, second_position );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.swap( device_vector, first_position, second_position );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2046,7 +1995,7 @@ An exception is raised if the cursors are in different vectors.</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Create a vector out of the element.   If a count n is used, use n copies of the element.  A count of zero inserts nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">vectors.to_vector( new_vector, "switch", 4 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">vectors.to_vector( new_vector, "switch", 4 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -2071,7 +2020,7 @@ An exception is raised if the cursors are in different vectors.</p></td>
 </tr><tr>
 <td><span>n</span></td>
 <td><span>in</span></td>
-<td><span>containers.count_type</i></span></td>
+<td><span>containers.count_type</span></td>
 <td><span>1</span></td>
 <td><span>the number of copies</span></td>
 </tr>
@@ -2142,8 +2091,6 @@ An exception is raised if the index is out-of-range</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html"><b>&nbsp;vectors</b></a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

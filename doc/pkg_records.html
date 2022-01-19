@@ -56,7 +56,7 @@ record variables or types.</p>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the records package</span>
+        <b>Help Command</b>: Contents of the records package
         </div>
         </div>
         </center>
@@ -68,10 +68,10 @@ record variables or types.</p>
 <td><p>Encode the record contents as a JSON string.</p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">type rt is record s : string; end record;<br>
+<td><p><span class="code">type rt is record s : string; end record;<br>
 r : rt;<br>
 r.s := "foo";<br>
-records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
+records.to_json( j, r ); -- j is {"s":"foo"}</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -116,11 +116,11 @@ records.to_json( j, r ); -- j is {"s":"foo"}</span></p>
 </p>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">type rt is record s : string; end record;<br>
+<td><p><span class="code">type rt is record s : string; end record;<br>
 r : rt;<br>
 r.s := "{" &amp; ASCII.Quotation &amp; "s" &amp; ASCII.Quotation &amp;<br> 
 ":" &amp; ASCII.Quotation &amp; "foo" &amp; ASCII.Quotation &amp; "}";<br>
-records.to_record( r, s ); -- r.s is "foo"</span></p>
+records.to_record( r, s ); -- r.s is "foo"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -203,8 +203,6 @@ records.to_record( r, s ); -- r.s is "foo"</span></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

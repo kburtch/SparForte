@@ -63,7 +63,7 @@ binding.  For full details on these routines, consult the APQ documentation.</p>
   <a href="#db.raise_exceptions">raise_exceptions( [ b ] )</a>   <a href="#db.report_errors">report_errors( b )</a>
   <a href="#db.begin_work">begin_work</a>                  <a href="#db.rollback_work">rollback_work</a>
   <a href="#db.commit_work">commit_work</a>                 <a href="#db.rewind">rewind</a>
-  <a href="#db.fetch[">fetch [ (i) ]</a>               <a href="#db.end_of_query">b := end_of_query</a>
+  <a href="#db.fetch">fetch [ (i) ]</a>               <a href="#db.end_of_query">b := end_of_query</a>
   <a href="#db.tuple">t := tuple</a>                  <a href="#db.tuples">n := tuples</a>
   <a href="#db.columns">n := columns</a>                <a href="#db.column_name">s := column_name( c )</a>
   <a href="#db.column_index">i := column_index( s )</a>      <a href="#db.is_null">b := is_null( c )</a>
@@ -677,7 +677,6 @@ is the equivalent of PostgreSQL "\l".</p></td>
 <td><span>db.database_type</span></td>
 <td><span>required</span></td>
 <td><span>db.engine_postgresql, etc.</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -867,7 +866,6 @@ exception.</p></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if in abort state</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -908,7 +906,6 @@ exception.</p></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if connected</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -956,7 +953,6 @@ exception.</p></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>true if null</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1064,7 +1060,6 @@ equivalent of PostgreSQL's "\dt".</p></td>
 <td><span>string</span></td>
 <td><span>required</span></td>
 <td><span>last server message</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1152,7 +1147,6 @@ not_connected, file already open, file not found exceptions may be raised</p></t
 <td><span>string</span></td>
 <td><span>required</span></td>
 <td><span>database options</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1547,7 +1541,6 @@ This is often used to show the results of a SQL SELECT statement.</p></td>
 <td><span>db.tuple_index_type</span></td>
 <td><span>required</span></td>
 <td><span>the current row number</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1588,7 +1581,6 @@ This is often used to show the results of a SQL SELECT statement.</p></td>
 <td><span>db.tuple_count_type</span></td>
 <td><span>required</span></td>
 <td><span>the number of rows</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1703,7 +1695,6 @@ columns in the list depend on the database engine.</p></td>
 <td><span>boolean</span></td>
 <td><span>required</span></td>
 <td><span>rollback will be issued on finalize</span></td>
-<td><span></span></td>
 </tr>
 </table></td>
 </tr><tr>
@@ -1765,8 +1756,6 @@ columns in the list depend on the database engine.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

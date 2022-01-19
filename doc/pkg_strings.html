@@ -83,7 +83,7 @@ and character values. (The character positions are numbered from 1.)</p>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the strings package</span>
+        <b>Help Command</b>: Contents of the strings package
         </div>
         </div>
         </center>
@@ -129,7 +129,7 @@ only test the first l characters.  The default sensitivity
 is case-sensitive.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">i := strings.compare( "apples", "oranges" ); -- i is -1</span><br><span class="code">i := strings.compare( "apples", "apples" ); -- i is 0</span><br><span class="code">i := strings.compare( "oranges", "apples" ); -- i is 1<br> i := strings.compare( "apples", "applesauce", sensitivity.sensitive, 6 ); -- i is 0</td>
+<td><p><span class="code">i := strings.compare( "apples", "oranges" ); -- i is -1</span><br><span class="code">i := strings.compare( "apples", "apples" ); -- i is 0</span><br><span class="code">i := strings.compare( "oranges", "apples" ); -- i is 1</span><br><span class="code">i := strings.compare( "apples", "applesauce", sensitivity.sensitive, 6 ); -- i is 0</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" border="0" >
@@ -540,7 +540,6 @@ is case-sensitive.</p></td>
 <td><span>required</span></td>
 <td><span>the substring to end with</span></td>
 </tr>
-<tr>
 <tr>
 <td><span>c</span></td>
 <td><span>in</span></td>
@@ -2491,7 +2490,6 @@ return an empty string.</p></td>
 <td><span>the substring to start with</span></td>
 </tr>
 <tr>
-<tr>
 <td><span>c</span></td>
 <td><span>in</span></td>
 <td><span>strings.sensitivity</span></td>
@@ -2912,8 +2910,8 @@ return an empty string.</p></td>
 <ol>
 <li>If s is an <b>unbounded_string</b>, convert unbounded string s to string r.  For compatibility with Ada 95.</li>
 <li>If s is a <b>json_string</b>, convert JSON encoding of a string into the original string r. Encoding arbitrary control characters with \u is not yet supported, though carriage returns, line feeds, etc. are supported. universal_string types (including string literals) are not accepted.</li>
-<li> If s is a <b>strings.base64_string</b>, return an arbitrary (possibly binary) string r as decoded from the base 64 characters s.</li></td>
-
+<li> If s is a <b>strings.base64_string</b>, return an arbitrary (possibly binary) string r as decoded from the base 64 characters s.</li>
+</ol></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">s := strings.to_string( some_unbounded_string );<br>r := strings.to_string( json_string( ASCII.Quotation &amp; "foobar\ntest" &amp; ASCII.Quotation ) ); -- returns a string with foobar, a line feed, and test<br>r := strings.to_string( strings.base64_string( "Zm9vcmJhcgw=" ) ); -- returns "foobar" and a form feed</span></td>
@@ -3223,7 +3221,7 @@ return an empty string.</p></td>
 <td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the string to check</span></td>
-</tr>
+</tr><tr>
 <td><span>n</span></td>
 <td><span>return value</span></td>
 <td><span>natural</span></td>
@@ -3295,8 +3293,6 @@ return an empty string.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

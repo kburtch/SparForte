@@ -68,7 +68,7 @@
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the hashed_maps package</span>
+        <b>Help Command</b>: Contents of the hashed_maps package
         </div>
         </div>
         </center>
@@ -107,7 +107,7 @@ yahoo
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Example</b>: Using dynamic_hash_tables to store URL's</span>
+        <b>Example</b>: Using dynamic_hash_tables to store URL's
         </div>
         </div>
         </center>
@@ -118,7 +118,7 @@ yahoo
 <td width="15%">&nbsp;</td>
 <td><p>Append string element e to the value under key k in the hash map.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_unit, "apple", bushel" );<br>hashed_maps.append( fruit_unit, "apple", "s" ); -- changed to "bushels"</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.insert( fruit_unit, "apple", bushel" );<br>hashed_maps.append( fruit_unit, "apple", "s" ); -- changed to "bushels"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -175,7 +175,7 @@ An exception is raised if the element type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Assign source map s to target map t, overwriting the contents of t.  s is unchanged.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.assign( old_fruit, updated_fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.assign( old_fruit, updated_fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -211,7 +211,6 @@ Java: HashMap.putAll()</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Assign fails on CentOS 7 due to a Ada bug.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="hashed_maps.capacity"></a><h3>c := hashed_maps.capacity( m )</h3>
@@ -220,7 +219,7 @@ Java: HashMap.putAll()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the spare item capacity of map m.  This is the number of items that can be inserted before the map memory grows.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">c := hashed_maps.capacity( fruit_unit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">c := hashed_maps.capacity( fruit_unit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -259,7 +258,7 @@ Java: HashMap.putAll()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Delete the contents of the hash map.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.clear( fruit_unit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.clear( fruit_unit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -293,7 +292,7 @@ Java: HashMap.clear()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return true if key k is in the map m.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.contains( fruit_unit, "apple" ) then...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hashed_maps.contains( fruit_unit, "apple" ) then...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -333,7 +332,7 @@ Java: HashMap.containsKey()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Reduce the numeric value under key k in the hash map m by one (or n).  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.decrement( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.decrement( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -390,7 +389,7 @@ An exception is raised if the key does not exist</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Remove a key and the associated element from the hash map.  If a cursor is given instead of a key, delete the item at the cursor position.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.delete( fruit, "bad apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.delete( fruit, "bad apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -444,7 +443,7 @@ An exception is raised if the key does not exist</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the value for key k in map m, or the value at cursor c.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_color, "apple", "red" )<br>f := hashed_maps.element( fruit_color, "apple" ); -- return red</span></p></td>
+	<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.insert( fruit_color, "apple", "red" )<br>f := hashed_maps.element( fruit_color, "apple" ); -- return red</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -469,7 +468,7 @@ An exception is raised if the key does not exist</p></td>
 </tr><tr>
 <td><span>c</span></td>
 <td><span>in</span></td>
-<td><span>hashed_maps.cursor</i></span></td>
+<td><span><i>hashed_maps.cursor</i></span></td>
 <td><span>required (if no map)</span></td>
 <td><span>the cursor</span></td>
 </tr>
@@ -493,7 +492,7 @@ Java: HashMap.get()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>True if the two maps have identical content.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.equals( old_fruit, updated_fruit ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hashed_maps.equals( old_fruit, updated_fruit ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -533,7 +532,6 @@ Java: HashMap.get()</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Ada is "=" but SparForte does not support in-line functions.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="hashed_maps.exclude"></a><h3>hashed_maps.exclude( m, k )</h3>
@@ -542,7 +540,7 @@ Java: HashMap.get()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Delete the value v under key k in the hash map.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -589,7 +587,7 @@ Java: HashMap.remove()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Like remove, delete the value v under key k in the hash map but return it.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.exclude( fruit, "apple" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -639,7 +637,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the position in the map for key k.  If the key does not exist, the cursor will have no element.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.find( fruit_unit, "apple", cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.find( fruit_unit, "apple", cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -691,7 +689,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the first item in the hashed map.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.first( fruit, cursor );</span></p></td>
+	<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.first( fruit, cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -739,7 +737,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>True if item under cursor has a value.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.has_element( cursor ) then ...</span></p></td>
+	<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hashed_maps.has_element( cursor ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -781,7 +779,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Insert the value v under key k in the hash map.  If the key exists, the value is overwritten.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.include( fruit, "apples", 23 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.include( fruit, "apples", 23 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -832,7 +830,7 @@ Java: HashMap.put()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Increase the numeric value under key k in the hash table by one (or n).  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.increment( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.increment( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -890,7 +888,7 @@ An exception is raised if the value type is not numeric</p></td>
 If value e exists, set the value to e.  If c exists, move the cursor to the insert position.
 If the key exists, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit, "apples", 23 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.insert( fruit, "apples", 23 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -955,7 +953,7 @@ An exception is raised if the key exists</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>True if the hashed map has no items.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.is_empty( fruit ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hashed_maps.is_empty( fruit ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -998,7 +996,7 @@ Java: HashMap.is_empty()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the key at the cursor c.  If there is no key, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hashed_maps.key( fruit_cursor ) = "apple" then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hashed_maps.key( fruit_cursor ) = "apple" then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1040,7 +1038,7 @@ Java: HashMap.is_empty()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the number of elements in the map.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">n := hashed_maps.length( fruit_unit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">n := hashed_maps.length( fruit_unit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1080,7 +1078,7 @@ Java: HashMap.size()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move source map s to target map t, overwriting the contents of t.  s is cleared.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.move( old_fruit, updated_fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.move( old_fruit, updated_fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1115,7 +1113,6 @@ An exception is raised if out of memory</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>Move fails on CentOS 7 due to a Ada bug.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="hashed_maps.next"></a><h3>hashed_maps.next( c )</h3>
@@ -1124,7 +1121,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Move the cursor to the next element in the hashed map.  If there are no more items, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.next( cursor );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.next( cursor );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1166,7 +1163,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Prepend string element e to the value under key k in the hash table.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.insert( fruit_unit, "apples", "ushels" );<br>hashed_maps.prepend( fruit_unit, "apples", "b" ); -- value is bushels</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.insert( fruit_unit, "apples", "ushels" );<br>hashed_maps.prepend( fruit_unit, "apples", "b" ); -- value is bushels</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1223,7 +1220,7 @@ An exception is raised if the value type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Replace the value v under key k in the hash map.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.replace( fruit, "apples", 23 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.replace( fruit, "apples", 23 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1274,7 +1271,7 @@ Java: HashMap.replace()</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Replace the element at cursor position c in the hash map.  If the key does not exist, raise an exception.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.replace_element( fruit_unit, cursor, "basket" ); -- changed value to "basket"</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.replace_element( fruit_unit, cursor, "basket" ); -- changed value to "basket"</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1325,7 +1322,7 @@ An exception is raised if the element type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Add enough memory to the map to handle at least c items.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hashed_maps.reserve_capacity( fruit_unit, 20 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hashed_maps.reserve_capacity( fruit_unit, 20 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1404,8 +1401,6 @@ An exception is raised if the element type is not a string</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

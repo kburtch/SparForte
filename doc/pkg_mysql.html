@@ -62,7 +62,7 @@
   <a href="#mysql.raise_exceptions">raise_exceptions( [ b ] )</a>   <a href="#mysql.report_errors">report_errors( b )</a>
   <a href="#mysql.begin_work">begin_work</a>                  <a href="#mysql.rollback_work">rollback_work</a>
   <a href="#mysql.commit_work">commit_work</a>                 <a href="#mysql.rewind">rewind</a>
-  <a href="#mysql.fetch[">fetch [ (i) ]</a>               <a href="#mysql.end_of_query">b := end_of_query</a>
+  <a href="#mysql.fetch">fetch [ (i) ]</a>               <a href="#mysql.end_of_query">b := end_of_query</a>
   <a href="#mysql.tuple">n := tuple( t )</a>             <a href="#mysql.tuples">n := tuples</a>
   <a href="#mysql.columns">n := columns</a>                <a href="#mysql.column_name">s := column_name( c )</a>
   <a href="#mysql.column_index">i := column_index( s )</a>      <a href="#mysql.is_null">b := is_null( c )</a>
@@ -72,7 +72,7 @@
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the mysql package</span>
+        <b>Help Command</b>: Contents of the mysql package
         </div>
         </div>
         </center>
@@ -115,7 +115,7 @@
         <center>
         <div class="code">
                 <p class="code">
-<b>type</b> db.database_type <b>is</b> ( db.engine_postgresql, db.engine_mysql, db.engine_oracle, db.engine_sybase, db.engine_db2 );</tt>
+<b>type</b> db.database_type <b>is</b> ( db.engine_postgresql, db.engine_mysql, db.engine_oracle, db.engine_sybase, db.engine_db2 );
                 </p>
         </div>
         </center>
@@ -1723,8 +1723,6 @@ columns in the list depend on the database engine.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

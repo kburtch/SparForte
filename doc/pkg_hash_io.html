@@ -69,12 +69,12 @@ ordered randomly.</p>
   <a href="#hash_io.get">v := get( f, k )</a>                 <a href="#hash_io.remove">remove( f, k )</a>
   <a href="#hash_io.get_first">get_first( f, c, k, v )</a>          <a href="#hash_io.replace">replace( f, k, v )</a>
   <a href="#hash_io.get_last">get_last( f, c, k, v )</a>           <a href="#hash_io.set">set( f, k, v )</a>
-  <a href="#hash_io.get_next">get_next( f, c, k, v )</a>           <a href="#hash_io.truncate">truncate( f )</a></a>
+  <a href="#hash_io.get_next">get_next( f, c, k, v )</a>           <a href="#hash_io.truncate">truncate( f )</a>
                                    <a href="#hash_io.will_raise">b := will_raise( f )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the hash_io package</span>
+        <b>Help Command</b>: Contents of the hash_io package
         </div>
         </div>
         </center>
@@ -112,7 +112,7 @@ data type but this is not recommended.</p>
 <td width="15%">&nbsp;</td>
 <td><p>Put value v under key k in the file.  If the key already exists, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.add( fruit, "apples", 15 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.add( fruit, "apples", 15 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -169,7 +169,7 @@ An exception is raised if the B-Tree is too large</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Append string value v to the value under key k in the file.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.set( fruit_unit, "apples", "bushel" );<br>hash_io.append( fruit_unit, "apples", "s" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.set( fruit_unit, "apples", "bushel" );<br>hash_io.append( fruit_unit, "apples", "s" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -227,7 +227,7 @@ An exception is raised if the value type is not a string</p></td>
 <td><p>Release memory allocated for f.  (This is automatically done when the
 variable is destroyed.)</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.clear( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.clear( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -269,7 +269,7 @@ PHP: dba_close</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Close the hash file f.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.close( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.close( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -311,7 +311,7 @@ PHP: dba_close</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Close the cursor c associated with file f.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.close( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.close( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -352,7 +352,7 @@ PHP: dba_close</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Create a new B-tree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If the database exists, it is overwritten.  If --verbose is used, BDB verbose error messages are enabled.  If the file name is an empty string, the B-tree will be stored in memory and any supporting files will be stored in the current directory.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.create( fruit, "fruit.hash", 80, 80 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.create( fruit, "fruit.hash", 80, 80 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -407,7 +407,6 @@ PHP: dba_open</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This maximum lengths are for allocating space to convert SparForte strings into the C strings used by Berkeley DB.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="hash_io.decrement"></a><h3>hash_io.decrement( f, k [,n] )</h3>
@@ -416,7 +415,7 @@ PHP: dba_open</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Reduce the numeric value under key k in the file by one (or n).  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.decrement( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.decrement( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -473,7 +472,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Delete the file and associated files.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.delete( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.delete( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -514,7 +513,7 @@ PHP: ?</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Write all cached data to disk.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.flush( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.flush( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -555,7 +554,7 @@ PHP: ?</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Get the value under key k in the file.  An exception is raised if k does not exist.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.get( fruit, "apples", val );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.get( fruit, "apples", val );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -607,7 +606,7 @@ PHP: dbm_fetch</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Iterate through the file.  Return the first value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.get_first( fruit, cursor, first_key, first_value );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.get_first( fruit, cursor, first_key, first_value );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -667,7 +666,7 @@ PHP: dbm_fetch</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Iterate through the file.  Return the last value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.get_last( fruit, cursor, last_key, last_value );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.get_last( fruit, cursor, last_key, last_value );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -727,7 +726,7 @@ PHP: dbm_fetch</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Iterate through the file.  Return the next value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.  Iteration is started with get_first.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.get_next( fruit, cursor, next_key, next_value );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.get_next( fruit, cursor, next_key, next_value );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -787,7 +786,7 @@ PHP: dbm_fetch</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Iterate through the file.  Return the previous value in the file.  The order is the alphabetical order of the keys.  An exception is thrown if the file is empty.  Iteration is started with get_last.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.get_previous( fruit, cursor, prev_key, prev_value );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.get_previous( fruit, cursor, prev_key, prev_value );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -847,7 +846,7 @@ PHP: dbm_fetch</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Determine if key k is in the file.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hash_io.has_element( fruit, "apples" ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hash_io.has_element( fruit, "apples" ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -895,7 +894,7 @@ PHP: dbm_fetch</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Increase the numeric value under key k in the file by one (or n).  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.increment( fruit, "apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.increment( fruit, "apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -951,7 +950,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>True if file f has been openned.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hash_io.is_open( fruit ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hash_io.is_open( fruit ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -993,7 +992,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Return the error code from the last Berkeley DB action.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hash_io.last_error /= hash_io.DB_OK then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hash_io.last_error /= hash_io.DB_OK then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1035,7 +1034,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Initialize a new cursor, assigning the type for the values in the file.  The type may be an array, record, scalar or a universal type.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.new_cursor( fruit, natural );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.new_cursor( fruit, natural );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1077,7 +1076,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Initialize a new file, assigning the type for the values in the file.  The type may be an array, record, scalar or a universal type.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.new_file( fruit, natural );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.new_file( fruit, natural );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1119,7 +1118,7 @@ An exception is raised if the value type is not numeric</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Open a new B-tree file f named p.  Maximum key length is kl bytes and maximum value length is vl bytes.  If no database exists, an exception is raised.  If --verbose is used, BDB verbose error messages are enabled.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.open( fruit, "fruit.hash", 80, 80 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.open( fruit, "fruit.hash", 80, 80 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1174,7 +1173,6 @@ PHP: dba_open</p></td>
 <td><p class="pkg_label">Implementation Note</p></td>
 <td><p>This maximum lengths are for allocating space to convert SparForte strings into the C strings used by Berkeley DB.</p></td>
 </tr>
-</tr>
 </table>
 
 <a name="hash_io.open_cursor"></a><h3>hash_io.open_cursor( f, c )</h3>
@@ -1183,7 +1181,7 @@ PHP: dba_open</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Associate cursor c with file f and ready the cursor for use.</p> 
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.open_cursor( customer_file, position )</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.open_cursor( customer_file, position )</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1225,7 +1223,7 @@ PHP: dba_open</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Prepend string value v to the value under key k in the file.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.set( fruit_unit, "apples", "ushels" );<br>hash_io.prepend( fruit_unit, "apples", "b" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.set( fruit_unit, "apples", "ushels" );<br>hash_io.prepend( fruit_unit, "apples", "b" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1281,7 +1279,7 @@ An exception is raised if the value type is not a string</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Determine if Berkeley errors are raised as exceptions or if the programmer will check for errors with last_error as required.  The default is to raise exceptions.  If --trace is used, the location in the SparForte source code is included with the error message.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.raise_exceptions( fruit, true );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.raise_exceptions( fruit, true );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1324,7 +1322,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Delete a key and the associated value from the file.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.remove( fruit, "bad apples" );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.remove( fruit, "bad apples" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1372,7 +1370,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Replace the value v under key k in the file.  If the key does not exist, do nothing.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.replace( fruit, "apples", 23 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.replace( fruit, "apples", 23 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1427,7 +1425,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Assign the value v to the key k in the file.  If the key does not exist, create it.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.set( fruit, "apples", 21 );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.set( fruit, "apples", 21 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1479,7 +1477,7 @@ An exception is raised if out of memory</p></td>
 <td width="15%">&nbsp;</td>
 <td><p>Erase all data from the file.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">hash_io.truncate( fruit );</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">hash_io.truncate( fruit );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1520,7 +1518,7 @@ C: DB-&gt;truncate&gt;sync<br>
 <td width="15%">&nbsp;</td>
 <td><p>True if Berkeley errors will be raised as exceptions.</p>
 </tr><tr>
-<td><p class="pkg_label">Example</td><td><span class="code">if hash_io.is_open( fruit ) then ...</span></p></td>
+<td><p class="pkg_label">Example</p></td><td><p><span class="code">if hash_io.is_open( fruit ) then ...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -1601,8 +1599,6 @@ C: DB-&gt;truncate&gt;sync<br>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>

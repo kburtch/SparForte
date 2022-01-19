@@ -52,17 +52,17 @@
         <center>
         <div class="code">
 <pre>
-  <a href="#logs.close">close</a>                             <a href="#logs.error">error( s )
-  <a href="#logs.info">info( s )</a>                         <a href="#logs.is_open">b := is_open
+  <a href="#logs.close">close</a>                             <a href="#logs.error">error( m )</a>
+  <a href="#logs.info">info( m )</a>                         <a href="#logs.is_open">b := is_open</a>
   <a href="#logs.is_rotating">b := is_rotating</a>
   <a href="#logs.level_begin">level_begin( l )</a>                  <a href="#logs.level_end">level_end( l )</a>
-  <a href="#logs.mode">m := mode</a>                         <a href="#logs.ok">ok( s )</a>
+  <a href="#logs.mode">m := mode</a>                         <a href="#logs.ok">ok( m )</a>
   <a href="#logs.open">open( p, m [, w] )</a>                <a href="#logs.rotate_begin">rotate_begin</a>
-  <a href="#logs.rotate_end">rotate_end</a>                        <a href="#logs.warning">warning</a>
+  <a href="#logs.rotate_end">rotate_end</a>                        <a href="#logs.warning">warning( m )</a>
 </pre>
         &nbsp;<br>
         <div class="code_caption">
-        <b>Help Command</b>: Contents of the logs package</span>
+        <b>Help Command</b>: Contents of the logs package
         </div>
         </div>
         </center>
@@ -141,7 +141,7 @@ to show how messages relate to one another.</p>
 <td><p>Closes the log.  Writes any outstanding log messages to the log file.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.close;</span></p>
+<td><p><span class="code">logs.close;</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -169,7 +169,7 @@ to show how messages relate to one another.</p>
 nesting level.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.error( "the disk is full" );</span></p>
+<td><p><span class="code">logs.error( "the disk is full" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -207,7 +207,7 @@ nesting level.</p></td>
 nesting level.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.info( "starting the update" );</span></p>
+<td><p><span class="code">logs.info( "starting the update" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -244,7 +244,7 @@ nesting level.</p></td>
 <td><p>Return true if the log has been opened.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">if logs.is_open then<br>&nbsp;&nbsp;logs.close;<br>end if;</span></p>
+<td><p><span class="code">if logs.is_open then<br>&nbsp;&nbsp;logs.close;<br>end if;</span></p>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -281,7 +281,7 @@ nesting level.</p></td>
 <td><p>Return true if log rotation has begun.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">if not logs.is_rotating then...</span></p>
+<td><p><span class="code">if not logs.is_rotating then...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -318,7 +318,7 @@ nesting level.</p></td>
 <td><p>Start a new nesting level.  Returns the level for use with logs.level_end.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.level_begin( nesting );</span></p>
+<td><p><span class="code">logs.level_begin( nesting );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -356,7 +356,7 @@ nesting level.</p></td>
 returned by logs.level_begin.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.level_end( nesting );</span></p>
+<td><p><span class="code">logs.level_end( nesting );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -393,7 +393,7 @@ returned by logs.level_begin.</p></td>
 <td><p>Return the logging mode.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">if logs.mode = log_mode.stderr then...</span></p>
+<td><p><span class="code">if logs.mode = log_mode.stderr then...</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -431,7 +431,7 @@ returned by logs.level_begin.</p></td>
 nesting level.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.ok( "report is complete" );</span></p>
+<td><p><span class="code">logs.ok( "report is complete" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -470,7 +470,7 @@ begin at minimum character position w.  If mode is stderr, the path
 is ignored.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.open( "/var/log/script.log", log_mode.file, 40 );</span></p>
+<td><p><span class="code">logs.open( "/var/log/script.log", log_mode.file, 40 );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -521,7 +521,7 @@ file can be safely deleted, moved or archived.
 This does not perform the rotation.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.rotate_begin;</span></p>
+<td><p><span class="code">logs.rotate_begin;</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -548,7 +548,7 @@ This does not perform the rotation.</p></td>
 <td><p>Unlock the log previously locked by logs.rotate_begin.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.rotate_end;</span></p>
+<td><p><span class="code">logs.rotate_end;</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -576,7 +576,7 @@ This does not perform the rotation.</p></td>
 nesting level.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
-<td><span class="code">logs.warning( "operation taking longer than expected" );</span></p>
+<td><p><span class="code">logs.warning( "operation taking longer than expected" );</span></p></td>
 </tr><tr>
 <td><p class="pkg_label">Parameters</p></td>
 <td><table CELLSPACING=0 CELLPADDING=0 WIDTH="100%" NOSAVE border="0" >
@@ -649,8 +649,6 @@ nesting level.</p></td>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_text_io.html">&nbsp;text_io</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_units.html">&nbsp;units</a></p>
                                 <p class="rmt"><a class="rightmenutext" href="pkg_vectors.html">&nbsp;vectors</a></p>
-</a></p>
-
 			</td>
 		</tr>
 		<tr>
