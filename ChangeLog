@@ -97,3 +97,5 @@ CHANGES SINCE 2.4.1
 
 44. Fix: written variable test for out parameters only applies if the variable is not auto-declared.
 
+45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case. [Tests required]
+

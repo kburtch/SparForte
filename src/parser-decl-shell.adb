@@ -1058,6 +1058,67 @@ end doVariableLengthExpansion;
 
 
 -----------------------------------------------------------------------------
+--  DO VARIABLE UPPERCASE EXPANSION
+--
+-- Perform a dollar variable uppercase expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableUppercaseExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+
+   globPattern := globPattern & aGlobShellWord( ToUpper( subword ) );
+end doVariableUppercaseExpansion;
+
+
+-----------------------------------------------------------------------------
+--  DO VARIABLE PROPER EXPANSION
+--
+-- Perform a dollar variable uppercase expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableProperExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+   globPattern := globPattern & aGlobShellWord( ToProper( subword ) );
+end doVariableProperExpansion;
+
+
+-----------------------------------------------------------------------------
+--  DO VARIABLE LOWERCASE EXPANSION
+--
+-- Perform a dollar variable lowercase expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableLowercaseExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+   globPattern := globPattern & aGlobShellWord( ToLower( subword ) );
+end doVariableLowercaseExpansion;
+
+
+-----------------------------------------------------------------------------
 --  DO COMMAND SUBSTITUTION
 --
 -- Perform a command substitution.  Run the specified commands and return
@@ -1157,6 +1218,9 @@ procedure parseDollarBraceExpansion(
    expansionVar : unbounded_string;
    defaultValue : unbounded_string;
    isLengthExpansion : boolean := false;
+   isUppercaseExpansion : boolean := false;
+   isProperExpansion : boolean := false;
+   isLowercaseExpansion : boolean := false;
    defaultMode  : defaultModes := none;
 
    --  GET BRACE OPERATOR DEFAULT VALUE
@@ -1262,29 +1326,14 @@ begin
             defaultMode := minus;
             expectChar( '-', rawWordValue, wordLen, wordPos  );
             getBraceOperatorDefaultValue;
-            --while not endOfShellWord loop
-            --  exit when element( rawWordValue, wordPos ) = '}';
-            --  defaultValue := defaultValue & element( rawWordValue, wordPos );
-            --  getNextChar( rawWordValue, wordLen, wordPos );
-            --end loop;
          elsif element( rawWordValue, wordPos ) = '+' then
             defaultMode := plus;
             expectChar( '+', rawWordValue, wordLen, wordPos  );
             getBraceOperatorDefaultValue;
-            --while not endOfShellWord loop
-            --  exit when element( rawWordValue, wordPos ) = '}';
-            --  defaultValue := defaultValue & element( rawWordValue, wordPos );
-            --  getNextChar( rawWordValue, wordLen, wordPos );
-            --end loop;
          elsif element( rawWordValue, wordPos ) = '?' then
             defaultMode := question;
             expectChar( '?', rawWordValue, wordLen, wordPos  );
             getBraceOperatorDefaultValue;
-            --while not endOfShellWord loop
-            --  exit when element( rawWordValue, wordPos ) = '}';
-            --  defaultValue := defaultValue & element( rawWordValue, wordPos );
-            --  getNextChar( rawWordValue, wordLen, wordPos );
-            --end loop;
          elsif element( rawWordValue, wordPos ) = '=' then
             err_shell( "assignment in curly braces not supported", wordPos );
          else
@@ -1301,6 +1350,22 @@ begin
             element( rawWordValue, wordPos ) = '+' or
             element( rawWordValue, wordPos ) = '?' then
          expectChar( ':', rawWordValue, wordLen, wordPos  );
+      elsif element( rawWordValue, wordPos ) = '^' then
+         expectChar( '^', rawWordValue, wordLen, wordPos  );
+         if element( rawWordValue, wordPos ) = '^' then
+            expectChar( '^', rawWordValue, wordLen, wordPos  );
+            isUppercaseExpansion := true;
+         else
+            isProperExpansion := true;
+         end if;
+      elsif element( rawWordValue, wordPos ) = ',' then
+         expectChar( ',', rawWordValue, wordLen, wordPos  );
+         if element( rawWordValue, wordPos ) = ',' then
+            expectChar( ',', rawWordValue, wordLen, wordPos  );
+            isLowercaseExpansion := true;
+         else
+            err_shell( "single comma lowercase is not supported", wordPos );
+         end if;
       end if;
    end if;
 
@@ -1308,6 +1373,15 @@ begin
 
    if isLengthExpansion then
       doVariableLengthExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isUppercaseExpansion then
+      doVariableUppercaseExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isProperExpansion then
+      doVariableProperExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isLowercaseExpansion then
+      doVariableLowercaseExpansion(
          expansionVar, globPattern, whitespaceOption, wordPos );
    else
       doVariableExpansion( rawWordValue, expansionVar, defaultValue, defaultMode,

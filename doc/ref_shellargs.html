@@ -234,6 +234,54 @@ in SparForte.</p>
 
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span>Variable Uppercase</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME^^}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/HOME/KEN</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Lowercase</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>${HOME,,}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>/home/ken</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>OK</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Uppercase First</span><br>
+      </td>
+      <td style="vertical-align: top;">S := "kEn" <tt>${S^}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>KEn</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>Performs proper-case (e.g. Ken)</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Lowercase First</span><br>
+      </td>
+      <td style="vertical-align: top;">S := "KeN" <tt>${S^}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>keN</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
       <td style="vertical-align: top;"><span>Variable Brace Substring Delete</span><br>
       </td>
       <td style="vertical-align: top;"><tt>${HOME#/home}</tt><br>
