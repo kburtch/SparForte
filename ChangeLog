@@ -99,3 +99,5 @@ CHANGES SINCE 2.4.1
 
 45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case. [Tests required]
 
+46: Change: default for makefile is to build with 4 threads.
+
