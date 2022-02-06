@@ -773,6 +773,13 @@ begin
     identifiers(id).inspect  := false;
     identifiers(id).deleted  := false;
     identifiers(id).passingMode  := passingMode;
+    identifiers(id).genKind  := identifiers( kind ).genKind;
+    identifiers(id).genKind2 := identifiers( kind ).genKind2;
+    -- if a limited type is used for a parameter, the formal parameter
+    -- must be also limited.
+    if identifiers( kind ).usage = limitedUsage then
+       identifiers( id ).usage := limitedUsage;
+    end if;
 end updateFormalParameter;
 
 -- DECLARE USABLE FORMAL PARAMETER
@@ -785,10 +792,12 @@ end updateFormalParameter;
 -- startAt should be identifiers_top -1 for the first iteration
 -----------------------------------------------------------------------------
 
-procedure declareUsableFormalParameter( id : out identifier;
-   proc_id : identifier; parameterNumber : integer;
-   value : unbounded_string;
-   startingAt : in out identifier ) is
+procedure declareUsableFormalParameter(
+       id : out identifier;
+       proc_id : identifier;
+       parameterNumber : integer;
+       value : unbounded_string;
+       startingAt : in out identifier ) is
    paramName : unbounded_string;
    i : identifier;
    dir : integer;
@@ -879,8 +888,8 @@ begin
                  wasCastTo => false,
                  procCB => null,
                  funcCB => null,
-                 genKind => eof_t,
-                 genKind2 => eof_t,
+                 genKind => identifiers( i ).genKind,
+                 genKind2 => identifiers( i ).genKind2,
                  openNamespace => identifiers'first,
                  nextNamespace => identifiers'first,
                  parentNamespace => identifiers'first,

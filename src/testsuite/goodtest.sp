@@ -6720,6 +6720,25 @@ begin
 
 end;
 
+-- hashed maps parameters to user procedure
+
+declare
+  type string_map is new limited hashed_maps.map( string, string );
+  sm : string_map;
+
+  function func( sm2 : in out string_map ) return string is
+  begin
+    return hashed_maps.element( sm2, "foo" );
+  end func;
+
+  res : string;
+
+begin
+  hashed_maps.include( sm, "foo", "bar" );
+  res := func( sm );
+  pragma assert( res = "bar" );
+end;
+
 -- vectors
 
 declare

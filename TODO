@@ -11,15 +11,8 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- in geometry.sp, a limited passed as an in out parameter will give an
-  error if used as a constant.
-  - during syntax check, parameters are missing their genTypes
-  - constants should not be allowed for a full-access parameter for
+- check constants should not be allowed for a full-access parameter for
     out and in out
-  - limiteds should be not be allowed for non-limited data types for
-    out and in out.  Although this means user-defined subprograms
-    cannot generate and return limited types, I will defer this issue
-    to when I create user-defined packages.
 - review sample programs - at get_env_info
 - review parseoutparameter usage for wasWritten flag
   - check AssignParameter uses - out parameters do not set writtenflag

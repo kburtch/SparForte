@@ -3228,8 +3228,24 @@ begin
     actual_param_ref,
     identifiers( formalParamId ).kind
   );
+ --put_line("HERE2"); -- DEBUG
+ --put_line( "actual" & to_string( identifiers( actual_param_ref.id ).name) ); -- DEBUG
+ --put_line( "     -" & identifiers( actual_param_ref.id ).usage'img ); -- DEBUG
+ --put_line( "formal" & to_string( identifiers( formalParamId ).name) ); -- DEBUG
+ --put_line( "     -" & identifiers( formalParamId ).usage'img ); -- DEBUG
   -- parameters may not be constants or enumerated items
-  if identifiers( actual_param_ref.id ).usage = constantUsage then
+  if identifiers( actual_param_ref.id ).usage = limitedUsage and
+     identifiers( formalParamId ).usage /= limitedUsage then
+        identifiers( formalParamId ).wasWritten := true;
+        err(
+           contextNotes => "While looking at type usage",
+           subject => actual_param_ref.id,
+           subjectType => identifiers( actual_param_ref.id ).kind,
+           reason => "is limited and limited is required for",
+           obstructor => formalParamId,
+           obstructorType => identifiers( formalParamId ).kind
+        );
+  elsif identifiers( actual_param_ref.id ).usage = constantUsage then
      err( "a constant cannot be used as an in out or out mode parameter" );
   elsif identifiers( actual_param_ref.id ).class = enumClass then
      -- TODO: I could probably get this to work for out parameters but

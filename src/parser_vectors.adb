@@ -977,9 +977,17 @@ begin
   expect( subprogramId );
   -- A cursor is a single identifier.  An index is an expression.
   expectParameterOpen( subprogramId );
-  if identifiers( token ).kind = vectors_cursor_t then
+  if identifiers( token ).class /= varClass then
+     err( context => subprogramId,
+          subject => token,
+          subjectType => identifiers( token ).kind,
+          obstructorNotes => optional_yellow( "vectors.vector" ) & " or " &
+             optional_yellow( "vectors.cursor" ),
+          reason =>  "is not compatible with the expected types"
+     );
+  elsif getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
-  elsif identifiers( token ).kind = vectors_vector_t then
+  elsif getUniType( identifiers( token ).kind ) = vectors_vector_t then
      ParseInOutInstantiatedParameter( vectorId, vectors_vector_t );
      ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
   else
@@ -1414,7 +1422,8 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   expectParameterComma( subprogramId );
-  if identifiers( token ).kind = vectors_cursor_t then
+  if identifiers( token ).class = varClass and then
+     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   else
      -- This will not stronly match natural, positive and integer, as these
@@ -1933,7 +1942,8 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   expectParameterComma( subprogramId );
-  if identifiers( token ).kind = vectors_cursor_t then
+  if identifiers( token ).class = varClass and then
+     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( beforeCursorId, vectors_cursor_t );
      ParseNextOutVectorCursor( subprogramId, vectorId, positionCursorRef );
   else
@@ -2074,7 +2084,8 @@ begin
   expect( subprogramId );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   expectParameterComma( subprogramId );
-  if identifiers( token ).kind = vectors_cursor_t then
+  if identifiers( token ).class = varClass and then
+     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
      ParseLastInOutInstantiatedParameter( subprogramId, cursorId2, vectors_cursor_t );
   else
@@ -2084,7 +2095,8 @@ begin
      -- special case error to improve readability and avoid an more general
      -- error on limited variables
      -- TODO: types done flag
-     if identifiers( token ).kind = vectors_cursor_t then
+     if identifiers( token ).class = varClass and then
+        getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
           subjectNotes => "a second index",
@@ -2151,7 +2163,8 @@ begin
   -- error on limited variables.  For this reason, "NextGenItem" is not used.
   expectParameterComma( subprogramId );
   -- TODO: types done flag
-  if identifiers( token ).kind = vectors_cursor_t then
+  if identifiers( token ).class = varClass and then
+     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
           subjectNotes => "a vector element",
@@ -2221,7 +2234,8 @@ begin
   -- error on limited variables.  For this reason, "NextGenItem" is not used.
   expectParameterComma( subprogramId );
   -- TODO: types done flag
-  if identifiers( token ).kind = vectors_cursor_t then
+  if identifiers( token ).class = varClass and then
+     getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
           subjectNotes => "a vector element",
