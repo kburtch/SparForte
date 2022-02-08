@@ -181,34 +181,6 @@ end insertTypesOk;
 ------------------------------------------------------------------------------
 
 
---procedure ParseDoublyNewList is
---  -- Syntax: doubly_linked_list.new_list( l, t );
---  -- Ada:    N/A
---  resId : resHandleId;
---  ref : reference;
---  genKindId : identifier;
---begin
---  expect( doubly_new_list_t );
---  ParseFirstOutParameter( ref, doubly_list_t );
---  baseTypesOK( ref.kind, doubly_list_t );
---  expect( symbol_t, "," );
---  ParseIdentifier( genKindId );
---  if class_ok( genKindId, typeClass, subClass ) then
---     if identifiers( genKindId ).list then
---        err( "element type should be a scalar type" );
---     elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
---        err( "element type should be a scalar type" );
---     end if;
---  end if;
---  identifiers( ref.id ).genKind := genKindId;
---  expect( symbol_t, ")" );
---  if isExecutingCommand then
---     identifiers( ref.id ).resource := true;
---     declareResource( resId, doubly_linked_string_list, getIdentifierBlock( ref.id ) );
---     AssignParameter( ref, to_unbounded_string( resId ) );
---  end if;
---end ParseDoublyNewList;
-
 procedure ParseDoublyClear is
   -- Syntax: doubly_linked_list.clear( l );
   -- Ada:    doubly_linked_list.clear( l );
@@ -734,6 +706,7 @@ procedure ParseDoublyInsertBeforeAndMark is
   resId : resHandleId;
   ref        : reference;
   b          : boolean;
+  hasOutCursor : boolean := false;
 begin
   expect( doubly_insert_before_and_mark_t );
   ParseFirstInOutInstantiatedParameter( doubly_insert_before_and_mark_t, listId, doubly_list_t );
@@ -744,8 +717,18 @@ begin
   -- is a single variable, it will either be the token or else new_t
   -- for an undeclared variable.  This assumes the undeclared variable
   -- was intended as a cursor, not intended as a data item.
-  if identifiers( token ).kind = new_t or else
-     getBaseType( identifiers( token ).kind ) = doubly_cursor_t then
+  --
+  -- We need to confirm that it is a variable before checking if it is a
+  -- a cursor type.
+  if identifiers( token ).kind = new_t then
+     hasOutCursor := true;
+  elsif identifiers( token ).class = varClass then
+     if getUniType( identifiers( token ).kind ) = doubly_cursor_t then
+        hasOutCursor := true;
+     end if;
+  end if;
+
+  if hasOutCursor then
      ParseOutParameter( ref, doubly_cursor_t );
      baseTypesOK( ref.kind, doubly_cursor_t );
      identifiers( ref.id ).genKind := identifiers( listId ).genKind;
@@ -1153,7 +1136,7 @@ begin
   -- in out and one isn't.
   expectParameterComma( doubly_splice_t );
   ParseIdentifier( tempId );
-  if getBaseType( identifiers( tempId ).kind ) = doubly_list_t then
+  if getUniType( identifiers( tempId ).kind ) = doubly_list_t then
      sourceListId := tempId;
      hasSourceId := true;
      genTypesOk( identifiers( targetListId ).genKind, identifiers( sourceListId ).genKind );
@@ -1164,7 +1147,7 @@ begin
      else
         expect( symbol_t, ")" );
      end if;
-  elsif getBaseType( identifiers( tempId ).kind ) = doubly_cursor_t then
+  elsif getUniType( identifiers( tempId ).kind ) = doubly_cursor_t then
      -- technically this is an in parameter so could be an expression.  But
      -- it never will be.
      curs2Id := tempId;

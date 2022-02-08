@@ -101,3 +101,5 @@ CHANGES SINCE 2.4.1
 
 46: Change: default for makefile is to build with 4 threads.
 
+47: Fix: doubly linked lists parameters should work correctly. [tests needed]
+
