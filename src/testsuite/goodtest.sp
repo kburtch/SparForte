@@ -3775,6 +3775,30 @@ s1 := "pwd";
 s := `echo $($s1)`;
 pragma assert( s = `pwd` );
 
+s := "fOoBaR";
+s1 := `echo "${s^^}";`;
+pragma assert( strings.to_upper( s ) = s1 );
+s1 := `echo "${s^}";`;
+pragma assert( strings.to_proper( s ) = s1 );
+s1 := `echo "${s,,}";`;
+pragma assert( strings.to_lower( s ) = s1 );
+
+s := "FoObAr";
+s1 := `echo "${s^^}";`;
+pragma assert( strings.to_upper( s ) = s1 );
+s1 := `echo "${s^}";`;
+pragma assert( strings.to_proper( s ) = s1 );
+s1 := `echo "${s,,}";`;
+pragma assert( strings.to_lower( s ) = s1 );
+
+s := "";
+s1 := `echo "${s^^}";`;
+pragma assert( "" = s1 );
+s1 := `echo "${s^}";`;
+pragma assert( "" = s1 );
+s1 := `echo "${s,,}";`;
+pragma assert( "" = s1 );
+
 -- No commands does nothing in Bourne shell
 
 s := `echo $(null)`;
@@ -6607,6 +6631,30 @@ begin
   pragma assert( doubly_linked_lists.length( list5 ) =  0 );
 end;
 
+-- doublys parameters to user procedure
+
+declare
+
+  type string_list is new limited doubly_linked_lists.list( string );
+  sl : string_list;
+
+  function func( sl2 : in out string_list ) return string is
+    type string_list_cursor is new limited doubly_linked_lists.cursor( string );
+    sc : string_list_cursor;
+  begin
+    doubly_linked_lists.first( sl2, sc );
+    return doubly_linked_lists.element( sc );
+  end func;
+
+  res : string;
+
+begin
+  doubly_linked_lists.append( sl, "bar" );
+  res := func( sl );
+  pragma assert( res = "bar" );
+end;
+
+
 -- Hashed Maps
 
 declare
@@ -7201,6 +7249,26 @@ begin
     pragma assert( vectors.element( v1, vectors.first_index( v1 ) ) = "ant" );
     pragma assert( vectors.element( v1, vectors.first_index( v1 )+1 ) = "bear" );
   end;
+end;
+
+-- vectors parameters to user procedure
+
+declare
+
+  type string_vector is new limited vectors.vector( natural, string );
+  sv : string_vector;
+
+  function func( sv2 : in out string_vector ) return string is
+  begin
+    return vectors.element( sv2, 0 );
+  end func;
+
+  res : string;
+
+begin
+  vectors.append_elements( sv, "bar" );
+  res := func( sv );
+  pragma assert( res = "bar" );
 end;
 
 -- constant specifications

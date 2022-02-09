@@ -97,9 +97,9 @@ CHANGES SINCE 2.4.1
 
 44. Fix: written variable test for out parameters only applies if the variable is not auto-declared.
 
-45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case. [Tests required]
+45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case. [Negative tests required]
 
 46: Change: default for makefile is to build with 4 threads.
 
-47: Fix: doubly linked lists parameters should work correctly. [tests needed]
+47: Fix: doubly linked lists parameters should work correctly. [additional tests needed]
 
