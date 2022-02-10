@@ -382,6 +382,22 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="luhn.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+EXPECTED="49927398716: true
+49927398717: false
+1234567812345678: false
+1234567812345670: true"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="mapping.sp"
 RESULT=`src/spar --test examples/$EXAMPLE | tail -n 4`
 EXPECTED=" 9.00000000000000E+00 maps to: -1.00000000000000E-01

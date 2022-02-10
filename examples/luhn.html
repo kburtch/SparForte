@@ -1,0 +1,81 @@
+<HEAD><TITLE>luhn.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : luhn.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar luhn
+49927398716: true
+49927398717: false
+1234567812345678: false
+1234567812345670: true
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "luhn test of credit card numbers" )
+       @( description, "The Luhn test is used by some credit card companies to " )
+       @( description, "distinguish valid credit card numbers from what could be a random selection of digits." )
+       @( see_also, "https://rosettacode.org/wiki/Luhn_test_of_credit_card_number" )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> luhn <b>is</b>
+
+  bad_digit : <b>exception</b>;
+
+  <FONT COLOR=green><EM>-- return true if the card number passes the luhn test</EM></FONT>
+
+  <b>function</b> is_luhn( card_number : string) <b>return</b> boolean <b>is</b>
+    card_num_len : <b>constant</b> natural := strings.length( card_number );
+    checksum: natural := 0;
+    ch : character;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> <b>reverse</b> 1..card_num_len <b>loop</b>
+      ch := strings.element( card_number, i );
+      <b>if</b> strings.is_digit( ch ) <b>then</b>
+         <b>declare</b>
+            ord : <b>constant</b> natural := numerics.pos(ch);
+         <b>begin</b>
+            <b>if</b> ((card_num_len-1) <b>and</b> (i-1) ) /= 0 <b>then</b>
+               checksum := @ + ord;
+            <b>else</b>
+               checksum := @ + numerics.floor(ord / 5) + ((2*ord) <b>mod</b> 10);
+            <b>end</b> <b>if</b>;
+         <b>end</b>;
+      <b>else</b>
+        <b>raise</b> bad_digit;
+      <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> checksum <b>mod</b> 10 = 0;
+  <b>end</b> is_luhn;
+
+  <FONT COLOR=green><EM>-- check a credit card and display the result</EM></FONT>
+
+  <b>procedure</b> check_card( card_number : string ) <b>is</b>
+  <b>begin</b>
+     put( card_number )
+       @( ": " )
+       @( is_luhn( card_number ) );
+     new_line;
+  <b>end</b> check_card;
+
+<b>begin</b>
+  check_card("49927398716");
+  check_card("49927398717");
+  check_card("1234567812345678");
+  check_card("1234567812345670");
+<b>end</b> luhn;
+</PRE></BODY></HTML>
