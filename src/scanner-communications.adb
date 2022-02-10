@@ -2439,13 +2439,13 @@ begin
         expectSymbol(
           expectedValue => ")",
           context => subprogram,
-          reason => "')' looks like too many parameters because the list"
+          reason => "',' looks like too many parameters because the list"
         );
      else
         expectSymbol(
           expectedValue => ")",
           contextNotes => to_string( contextNotes ),
-          reason => "')' looks like too many parameters because the list"
+          reason => "',' looks like too many parameters because the list"
         );
      end if;
   else
@@ -2528,7 +2528,7 @@ begin
      expectSymbol(
        expectedValue => ")",
        contextNotes => to_string( contextNotes ),
-       reason => "')' looks like too many parameters because the list"
+       reason => "',' looks like too many parameters because the list"
      );
   else
      expectSymbol(

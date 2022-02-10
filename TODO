@@ -18,6 +18,7 @@ Priority Issues (Fix These First)
   - check AssignParameter uses - out parameters do not set writtenflag
 - templates
   - templates that are not for HTTP
+- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
 - errors should support err_previous
 - check btree/hash_io get next mark the variable as written
   with the constant check
@@ -71,11 +72,13 @@ Priority Issues (Fix These First)
 - check on use of gen parameter functions vs. numeric in dht package
 - in out parameters for built-in subprograms should use references
 - check for TODO's
-- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.
 - Beader: that variables with same spelling but different cases should be an error
 - provision script ought to support the "without" configure options
 - provision script should search for the EPEL RPM version, not be hard-coded
+- templates
+  - templates that are not for HTTP
 
+- ${X^}, ${X^^}, ${X,}, ${X,,} to uppercase and lowercase a variable
 - ada95 corrective recommendations
 - separate subprograms need parameter verification like other forward
   specifications, or the two should be harmonized to work the same way
