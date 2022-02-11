@@ -13,7 +13,7 @@ Priority Issues (Fix These First)
 
 - check constants should not be allowed for a full-access parameter for
     out and in out
-- review sample programs - at get_env_info
+- towers of hanoi should be added to automated tests
 - review parseoutparameter usage for wasWritten flag
   - check AssignParameter uses - out parameters do not set writtenflag
 - templates

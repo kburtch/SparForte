@@ -348,6 +348,22 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="hanoi.sp"
+RESULT=`src/spar --test examples/$EXAMPLE | tail -4`
+EXPECTED="Move disk 1 from left to center
+Move disk 2 from left to right
+Move disk 1 from center to right
+Towers of Hanoi puzzle completed"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="incstr.sp"
 RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="12346"

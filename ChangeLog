@@ -103,5 +103,7 @@ CHANGES SINCE 2.4.1
 
 47: Fix: doubly linked lists parameters should work correctly. [additional tests needed]
 
-48: New: more examples: luhn.sp.
+48: Fix: recursion no longer confused by new parameters being created in some circumstances.
+
+49: New: more examples: luhn.sp, hanoi.sp.
 

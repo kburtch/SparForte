@@ -1,0 +1,69 @@
+<HEAD><TITLE>hanoi.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : hanoi.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar hanoi
+Move disk 1 from left to center
+Move disk 2 from left to right
+Move disk 1 from center to right
+Move disk 3 from left to center
+Move disk 1 from right to left
+Move disk 2 from right to center
+Move disk 1 from left to center
+Move disk 4 from left to right
+Move disk 1 from center to right
+Move disk 2 from center to left
+Move disk 1 from right to left
+Move disk 3 from center to right
+Move disk 1 from left to center
+Move disk 2 from left to right
+Move disk 1 from center to right
+Towers of Hanoi puzzle completed
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "hanoi" )
+       @( description, "Solve the Towers of Hanoi problem with recursion." )
+       @( see_also, "https://rosettacode.org/wiki/Towers_of_Hanoi" )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> hanoi <b>is</b>
+  <b>type</b> pegs <b>is</b> (left, center, right);
+
+  <FONT COLOR=green><EM>-- Determine the moves</EM></FONT>
+
+  <b>procedure</b> solve( num_disks : natural; start_peg : pegs;  end_peg : pegs; via_peg : pegs ) <b>is</b>
+  <b>begin</b>
+    <b>if</b> num_disks &gt; 0 <b>then</b>
+       solve( num_disks - 1, start_peg, via_peg, end_peg );
+       put( "Move disk" )@( num_disks )@( " from " )@( start_peg )@( " to " )@( end_peg );
+       new_line;
+       solve( num_disks - 1, via_peg, end_peg, start_peg );
+    <b>end</b> <b>if</b>;
+  <b>end</b> solve;
+
+<b>begin</b>
+  <FONT COLOR=green><EM>-- solve with 4 disks at the left</EM></FONT>
+  <FONT COLOR=green><EM>--solve( 4, left, right, center );</EM></FONT>
+  solve( 4, left, right, center );
+  put_line( "Towers of Hanoi puzzle completed" );
+<b>end</b> hanoi;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=ada</EM></FONT>
+</PRE></BODY></HTML>

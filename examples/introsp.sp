@@ -14,7 +14,7 @@ pragma annotate( summary, "introsp" )
 pragma license( unrestricted );
 
 procedure introsp is
-   bloop : integer := -5;
+   bloop : constant integer := -5;
    e     : string;
    s     : string;
 begin

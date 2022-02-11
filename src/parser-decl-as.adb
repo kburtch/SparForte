@@ -3030,6 +3030,13 @@ end ParseProcedureBlock;
 procedure ParseActualParameters( proc_id : identifier;
   declareParams : boolean := true ) is
 
+  old_identifiers_top : identifier := identifiers_top;
+  new_identifiers_top : identifier := identifiers_top;
+  -- remember the start of these parameters for cases where the parameters
+  -- we are making might overshadow earlier identifiers with the same names.
+  -- This procedure will run at old_identifier_top, restoring the true top
+  -- only when an identifier will be declared.
+
   ----------------------------------------------------------------------------
   -- Usable Parameter Helper Functions
   --
@@ -3136,8 +3143,16 @@ begin
     fieldName := delete( fieldName, 1, dotPos );
     fieldName := identifiers( usableRecordParamId ).name & "." & fieldName;
 --put_line( "field name = " & to_string( fieldName ) );
+    -- When parsing the expression to assign to the parameter, recursion can
+    -- cause a usable parameter (e.g. param1) to overshadow the actual
+    -- parameter of the embedded call (e.g. an earlier param1).  We need to
+    -- guarantee than the usable parameters we are creating are invisible to
+    -- the expression.
+    identifiers_top := new_identifiers_top;
     declareIdent( usableFieldId, fieldName, identifiers(
         recordTypeFieldId ).kind, varClass );
+    new_identifiers_top := identifiers_top;
+    identifiers_top := old_identifiers_top;
     -- fields have not been marked as children of the parent
     -- record.  However, to make sure the record is used, it
     -- is convenient to track the field.
@@ -3157,7 +3172,10 @@ begin
 
   -- We have to do another search for the actual parameter fields and
   -- link them to the usable parameter fields
+  identifiers_top := new_identifiers_top;
   FixRenamedRecordFields( actualRecordRef, usableRecordParamId );
+  new_identifiers_top := identifiers_top;
+  identifiers_top := old_identifiers_top;
 
 end updateRenamedRecordParameter;
 
@@ -3173,19 +3191,26 @@ end updateRenamedRecordParameter;
   -- Create a constant containing the value.
   ----------------------------------------------------------------------------
 
-procedure parseUsableInModeParameter( formalParamId : identifier; paramName : unbounded_string ) is
-   expr_value : unbounded_string;
-   expr_type : identifier;
+procedure parseUsableInModeParameter( formalParamId : identifier; paramName     : unbounded_string ) is
+   expr_value    : unbounded_string;
+   expr_type     : identifier;
    usableParamId : identifier;
-   typesOK : boolean;
+   typesOK       : boolean;
 begin
+  -- There is a chance that a mispelled identifier in the expression
+  -- may overwrite one or more of our parameters that we've made
+  -- (when the scanner creates a "new" type identifier for it).
+  -- However, we're in an error state at that point so it may not
+  -- matter.
   ParseExpression( expr_value, expr_type );
+
   if type_checks_done then
      typesOK := true;
   else
      typesOK := baseTypesOK( identifiers( formalParamId ).kind, expr_type );
   end if;
   if typesOK and then declareParams then
+     identifiers_top := new_identifiers_top;
      declareIdent(
          usableParamId,
          to_string( paramName ),
@@ -3212,6 +3237,10 @@ begin
               to_string( expr_value ) );
         end if;
      end if;
+     -- DoContract may create a variable so we delay until here to move the
+     -- identifier stack back to the start of the subprogram parameters.
+     new_identifiers_top := identifiers_top;
+     identifiers_top := old_identifiers_top;
   end if;
 end parseUsableInModeParameter;
 
@@ -3224,10 +3253,19 @@ procedure parseUsableInoutModeParameter( formalParamId : identifier; paramName :
    usableParamId : identifier;
 begin
   -- the reference is the actual parameter, the thing being passed...
+  --
+  -- When parsing the expression to assign to the parameter, recursion can
+  -- cause a usable parameter (e.g. param1) to overshadow the actual
+  -- parameter of the embedded call (e.g. an earlier param1).  We need to
+  -- guarantee than the usable parameters we are creating are invisible to
+  -- the expression.
+  identifiers_top := new_identifiers_top;
   ParseRenamingReference(
     actual_param_ref,
     identifiers( formalParamId ).kind
   );
+  new_identifiers_top := identifiers_top;
+  identifiers_top := old_identifiers_top;
  --put_line("HERE2"); -- DEBUG
  --put_line( "actual" & to_string( identifiers( actual_param_ref.id ).name) ); -- DEBUG
  --put_line( "     -" & identifiers( actual_param_ref.id ).usage'img ); -- DEBUG
@@ -3280,6 +3318,13 @@ begin
      -- Test for two or more "threads" writing to one unprotected variable
 
      checkDoubleThreadWrite( actual_param_ref.id );
+  
+     -- When parsing the expression to assign to the parameter, recursion can
+     -- cause a usable parameter (e.g. param1) to overshadow the actual
+     -- parameter of the embedded call (e.g. an earlier param1).  We need to
+     -- guarantee than the usable parameters we are creating are invisible to
+     -- the expression.
+     identifiers_top := new_identifiers_top;
 
        -- the actual parameter will be the canonical identifier for
        -- the renaming
@@ -3288,9 +3333,13 @@ begin
           to_string( paramName ),
           identifiers( formalParamId ).kind
        );
+
         -- TODO: actually, an update not a declaration.  But can it be
         -- combined with declareIdent?
         declareRenaming( usableParamId, actual_param_ref ); -- basic renaming
+        new_identifiers_top := identifiers_top;
+        identifiers_top := old_identifiers_top;
+
         -- Usuable parameter was "written"
         if syntax_check and then not error_found then
            identifiers( usableParamId ).wasWritten := true;
@@ -3332,6 +3381,8 @@ end parseUsableOutModeParameter;
    seenBracket : boolean := false;
 
 begin
+-- put_line( "starting" ); -- DEBUG
+-- put_line( "  identifiers_top = " & identifiers_top'img ); -- DEBUG
 
     -- In a syntax check, the formal parameters aren't created so there's
     -- no reason to look them up.  We're just reading through the parameters
@@ -3445,6 +3496,17 @@ begin
         formalParamId := identifier( integer( formalParamId ) + 1 );
      end loop;
   end if;
+
+  -- restore the identifier's top to the last usable parameter.
+-- put_line( "exiting" ); -- DEBUG
+-- put_line( "  identifiers_top = " & identifiers_top'img ); -- DEBUG
+-- put_line( "  new_identifiers_top = " & new_identifiers_top'img ); -- DEBUG
+-- put_line( "  last_token:" ); -- DEBUG
+  identifiers_top := new_identifiers_top;
+-- put_identifier( identifiers_top -4 ); -- DEBUG
+-- put_identifier( identifiers_top -3 ); -- DEBUG
+-- put_identifier( identifiers_top -2 ); -- DEBUG
+-- put_identifier( identifiers_top -1 ); -- DEBUG
 
   -- If an open bracket, we need a closing bracket
 
