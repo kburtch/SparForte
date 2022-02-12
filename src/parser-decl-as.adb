@@ -3318,7 +3318,7 @@ begin
      -- Test for two or more "threads" writing to one unprotected variable
 
      checkDoubleThreadWrite( actual_param_ref.id );
-  
+
      -- When parsing the expression to assign to the parameter, recursion can
      -- cause a usable parameter (e.g. param1) to overshadow the actual
      -- parameter of the embedded call (e.g. an earlier param1).  We need to
