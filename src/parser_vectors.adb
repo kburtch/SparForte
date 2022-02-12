@@ -197,6 +197,8 @@ end err_count;
 ------------------------------------------------------------------------------
 --  ERR CURSOR MISMATCH
 --
+-- This probably never happens because we use a single Ada vector package for
+-- everything.
 ------------------------------------------------------------------------------
 
 procedure err_cursor_mismatch is
@@ -289,38 +291,38 @@ end vectorItemIndicesOk;
 ------------------------------------------------------------------------------
 -- This should be merged into the Scanner.??
 
-procedure vectorIndexOk( subprogram, leftType, rightVectorItem : identifier ) is
-  effectiveLeftType : identifier;
-  effectiveRightType : identifier;
-begin
-  -- A universal typeless or universal numeric always matches a numeric index.
-  if leftType = uni_numeric_t and leftType = getUnitype( identifiers( rightVectorItem ).genKind ) then
-    return;
-  elsif leftType = universal_t and uni_numeric_t = getUnitype( identifiers( rightVectorItem ).genKind ) then
-    return;
-  end if;
-
-  effectiveLeftType := getBasetype( leftType );
-  effectiverightType := getBasetype( identifiers( rightVectorItem ).genKind );
-
-  -- Something derivedfrom universalnumeric also matches a numeric index
-  if effectiveLeftType = uni_numeric_t and uni_numeric_t = getUnitype( identifiers( rightVectorItem ).genKind )  then
-    return;
-  end if;
-
-  -- Otherwise, the effective types should match as normal.
--- TODO types ok flag to avoid excessive type checking
-  if effectiveLeftType /= effectiveRightType then
-     err(
-       context => subprogram,
-       subjectNotes => "the expression",
-       subjectType => leftType,
-       reason => "is not compatible with",
-       obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
-       obstructorType => identifiers( rightVectorItem ).genKind
-    );
-  end if;
-end vectorIndexOk;
+--procedure vectorIndexOk( subprogram, leftType, rightVectorItem : identifier ) is
+--  effectiveLeftType : identifier;
+--  effectiveRightType : identifier;
+--begin
+--  -- A universal typeless or universal numeric always matches a numeric index.
+--  if leftType = uni_numeric_t and leftType = getUnitype( identifiers( rightVectorItem ).genKind ) then
+--    return;
+--  elsif leftType = universal_t and uni_numeric_t = getUnitype( identifiers( rightVectorItem ).genKind ) then
+--    return;
+--  end if;
+--
+--  effectiveLeftType := getBasetype( leftType );
+--  effectiverightType := getBasetype( identifiers( rightVectorItem ).genKind );
+--
+--  -- Something derivedfrom universalnumeric also matches a numeric index
+--  if effectiveLeftType = uni_numeric_t and uni_numeric_t = getUnitype( identifiers( rightVectorItem ).genKind )  then
+--    return;
+--  end if;
+--
+--  -- Otherwise, the effective types should match as normal.
+---- TODO types ok flag to avoid excessive type checking
+--  if effectiveLeftType /= effectiveRightType then
+--     err(
+--       context => subprogram,
+--       subjectNotes => "the expression",
+--       subjectType => leftType,
+--       reason => "is not compatible with",
+--       obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+--       obstructorType => identifiers( rightVectorItem ).genKind
+--    );
+--  end if;
+--end vectorIndexOk;
 
 
 ------------------------------------------------------------------------------
@@ -985,6 +987,14 @@ begin
              optional_yellow( "vectors.cursor" ),
           reason =>  "is not compatible with the expected types"
      );
+  elsif identifiers( token ).kind = new_t then
+    -- since we are skipping the usual methods and looking at the token
+    -- directly, force an error on an undeclared identifier
+    declare
+       discardId : identifier;
+    begin
+       ParseIdentifier( discardId );
+    end;
   elsif getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   elsif getUniType( identifiers( token ).kind ) = vectors_vector_t then
@@ -1426,10 +1436,11 @@ begin
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
      ParseInOutInstantiatedParameter( cursorId, vectors_cursor_t );
   else
+     ParseGenItemParameter( idxExpr, idxType, identifiers( vectorId ).genKind );
      -- This will not stronly match natural, positive and integer, as these
      -- subtypes.  But it will detect new data types derived from integer.
-     ParseExpression( idxExpr, idxType );
-     vectorIndexOk( subprogramId, idxType, vectorId );
+     --ParseExpression( idxExpr, idxType );
+     --vectorIndexOk( subprogramId, idxType, vectorId );
      --baseTypesOK( idxType, identifiers( vectorId ).genKind );
      hasIdx := true;
   end if;

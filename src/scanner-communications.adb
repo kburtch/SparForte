@@ -1169,6 +1169,7 @@ procedure err(
   msg       : unbounded_string;
   blockName : unbounded_string;
   needV     : boolean := false;
+  subjectLocationNeedsParen : boolean := false;
 begin
 
   -- The context
@@ -1211,13 +1212,18 @@ begin
   end if;
 
   if subjectType /= eof_t then
-     msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) ) );
-     if subjectLocation = "" then
-        msg := msg & ")";
+     -- if the type is keyword, it's not really meaningful
+     if subjectType /= keyword_t then
+        msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) ) );
+        if subjectLocation = "" then
+           msg := msg & ")";
+        end if;
+     else
+       subjectLocationNeedsParen := true;
      end if;
   end if;
   if subjectLocation /= "" then
-     if subjectType = eof_t then
+     if subjectType = eof_t or subjectLocationNeedsParen then
         msg := msg & " (";
      else
         msg := msg & ", ";
