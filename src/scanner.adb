@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2021 Free Software Foundation              --
+--            Copyright (C) 2001-2022 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -801,10 +801,22 @@ begin
                if boolean( designOpt ) or boolean( testOpt ) then
                   if not identifiers( i ).wasApplied then
                      if identifiers( i ).field_of = eof_t then -- not a field of a record
-                        err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_yellow( "concrete type" ) &
-                           " but expected an " & optional_yellow( "abstract type" ) &
-                           ".  It is not used in declarations." );
+                        declare
+                           usage : unbounded_string;
+                        begin
+                           if identifiers( i ).usage = constantUsage then
+                              usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                           elsif identifiers( i ).usage = limitedUsage then
+                              usage := to_unbounded_string( "(" & optional_yellow( "limited" ) & " usage) " );
+                           end if;
+                           err(
+                              contextNotes => "While checking variables in this block",
+                              subject => i,
+                              reason => to_string( usage ) &
+                                 "is not in any declarations and should be declared",
+                              obstructorNotes => optional_yellow( "abstract" )
+                           );
+                        end;
                      end if;
                   end if;
                end if;
@@ -833,10 +845,20 @@ begin
                            if not identifiers( i ).list and
                               head( identifiers( i ).name, 13 ) /= "return result" and
                               identifiers( i ).field_of = eof_t then
-                                  err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                                     " is a " & optional_yellow( "not-limited variable" ) &
-                                     " but expected a " & optional_yellow( "limited" ) &
-                                     ".  It (or its elements) are not used in expressions nor is assigned to." );
+                                 declare
+                                    usage : unbounded_string;
+                                 begin
+                                    if identifiers( i ).usage = constantUsage then
+                                       usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                                    end if;
+                                    err(
+                                       contextNotes => "While checking variables in this block",
+                                       subject => i,
+                                       reason => to_string( usage ) &
+                                          "is not assigned to nor in any declarations and should be declared",
+                                       obstructorNotes => optional_yellow( "limited" )
+                                    );
+                                 end;
                            end if;
                         end if;
                      end if;

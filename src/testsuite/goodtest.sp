@@ -6787,6 +6787,24 @@ begin
   pragma assert( res = "bar" );
 end;
 
+-- hashed maps subtypes (spot check)
+
+declare
+  type string_map is new abstract hashed_maps.map( string, string );
+
+  subtype small_map is limited string_map;
+
+  function len( sm1 : in out small_map ) return natural is
+  begin
+    return hashed_maps.length( sm1 );
+  end len;
+
+  sm : small_map;
+begin
+  pragma assert( hashed_maps.length( sm ) = 0 );
+  pragma assert( len( sm ) = 0 );
+end;
+
 -- vectors
 
 declare
@@ -7270,6 +7288,26 @@ begin
   res := func( sv );
   pragma assert( res = "bar" );
 end;
+
+-- vector subtypes (spot check)
+
+declare
+  type string_vector is new abstract vectors.vector( natural, string );
+
+  subtype small_vector is limited string_vector;
+
+  function len( sv1 : in out small_vector ) return natural is
+  begin
+    return vectors.length( sv1 );
+  end len;
+
+  sv : small_vector;
+begin
+  pragma assert( vectors.length( sv ) = 0 );
+  pragma assert( len( sv ) = 0 );
+end;
+
+
 
 -- constant specifications
 
