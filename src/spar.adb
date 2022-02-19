@@ -90,10 +90,11 @@ begin
         Put_Line( "  --maintenance or -m - maintenance phase mode" );
         Put_Line( "  --profile or -P     - run the profile script when not logging in" );
         Put_Line( "  --pref or -p        - show performance stats" );
+        Put_Line( "  --quiet or -q       - brief error messages" );
         Put_Line( "  --restricted or -r  - restricted shell mode" );
         Put_Line( "  --test or -t        - test phase mode (default)" );
         Put_Line( "  --trace or -x       - show script lines as they run" );
-        Put_Line( "  --verbose or -v     - show shell activity and detailed messages" );
+        Put_Line( "  --verbose or -v     - show shell activity" );
         Put_Line( "  --version or -V     - show version" );
         Put_Line( "  --                  - explicitly end shell options" );
         Set_Exit_Status( 0 );
@@ -160,6 +161,8 @@ begin
             perfOpt := true;
          elsif Argument(i) = "--profile" then
             profileOpt := true;
+         elsif Argument(i) = "--quiet" then
+            quietOpt := true;
          elsif Argument(i) = "--restricted" then
             rshOpt := true;
          elsif Argument(i) = "--test" then
@@ -243,6 +246,8 @@ begin
                       perfOpt := true;
                    elsif Args(letter) = 'P' then
                       profileOpt := true;
+                   elsif Args(letter) = 'q' then
+                      quietOpt := true;
                    elsif Args(letter) = 'g' then
                       gccOpt := true;
                    elsif Args(letter) = 'r' then

@@ -1260,7 +1260,7 @@ begin
   -- Suggestions to correct the problem.
 
   if remedy /= "" then
-     if boolean(verboseOpt) then
+     if not boolean(quietOpt) then
         msg := msg & ". Perhaps " & remedy;
      else
         needV := true;
@@ -1272,7 +1272,7 @@ begin
   -- Usually a reference to the documentation.
 
   if remedy /= "" then
-     if boolean(verboseOpt) then
+     if not boolean(quietOpt) then
         if seeAlso /= "" then
            msg := msg & ". See also " & seeAlso;
         end if;
@@ -1282,7 +1282,7 @@ begin
   end if;
 
   if needV then
-     msg := msg & ". (More with -v)";
+     msg := msg & ". (More)";
   end if;
 
   err( to_string( msg ) );

@@ -3,8 +3,8 @@
 spar \- SparForte, the Business Shell
 .SH SYNOPSIS
 .B spar
-[\-bcCdDeghilLmpPrtvVx] [\-\-break] [\-\-check] [\-\-color|\-\-colour] [\-\-debug] [\-\-exec]
-[\-\-gcc-errors] [\-\-login|\-\-profile] [\-\-verbose] [\-\-version]
+[\-bcCdDeghilLmppPqrtvVx] [\-\-break] [\-\-check] [\-\-color|\-\-colour] [\-\-debug] [\-\-exec]
+[\-\-gcc-errors] [\-\-login|\-\-profile] [\-\-verbose] [\-\-quiet] [\-\-version]
 [\-\-restricted] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test][\-\-trace]
 [\-\-] [script [param1 ...] ]
 .SH DESCRIPTION
@@ -16,7 +16,7 @@ that executes commands read from the standard
 input or from a file.
 .PP
 .B SparForte
-May be embedded in CGI web templates using the <?spar tag.
+May be embedded in templates using the <?spar tag.
 .PP
 .B SparForte
 uses the high reliability AdaScript language and supports web and database
@@ -66,6 +66,9 @@ show performance stats
 .TP
 \fB\-P\fR, \fB\-\-profile\fR
 run the profile script when not logging in
+.TP
+\fB\-q\fR, \fB\-\--quiet\fR
+brief error messages
 .TP
 \fB\-r\fR, \fB\-\-restricted\fR
 restricted shell mode

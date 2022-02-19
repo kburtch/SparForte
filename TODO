@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- need a better error when a vector is passed through a user function
-  (currently getting an error by parse factor)
 - check constants should not be allowed for a full-access parameter for
     out and in out
 - review parseoutparameter usage for wasWritten flag

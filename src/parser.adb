@@ -1297,8 +1297,25 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           end if;
        end if;
     elsif identifiers( t ).usage = limitedUsage then
-       err( "limited variables cannot be used in an expression (or you may have spelled a subprogram name incorrectly)" );
+       err( contextNotes => "In the expression",
+            subject => t,
+            subjectType => identifiers( t ).kind,
+            reason => "cannot be used because",
+            obstructorNotes => "it is " & optional_yellow( "limited" ),
+            remedy => "it should not be limited, should not be used for an in mode " &
+               "parameter or a subprogram name is spelled incorrectly " &
+               "and it is mistaken for a shell command argument"
+       );
        kind := eof_t;
+    elsif identifiers( t ).class = userProcClass or
+          identifiers( t ).class = procClass then
+       err(
+          contextNotes => "In the expression",
+          subject => t,
+          reason => "cannot be used because",
+          obstructorNotes => "it is a " & optional_yellow( "procedure" ),
+          remedy => "use a function because it returns a value"
+       );
     elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
        array_id := t;                            -- array_id=array variable
        expectSymbol(                                    -- parse index part
@@ -1621,10 +1638,15 @@ begin
         end if;
         kind := string_t;
         getNextToken;
-     elsif identifiers( token ).procCB /= null then         -- a built-in procedure?
-        err( optional_yellow( to_string( identifiers( token ).name ) ) &
-           " is a built-in procedure not a function" );
-        kind := eof_t;
+     --elsif identifiers( token ).procCB /= null then         -- a built-in procedure?
+     --   err(
+     --      contextNotes => "In the expression",
+     --      subject => token,
+     --      reason => "cannot be used because",
+     --      obstructorNotes => "it is a built-in " & optional_yellow( "procedure" ),
+     --      remedy => "use a function because it returns a value"
+     --   );
+     --   kind := eof_t;
      else
         -- System package constants, etc.
         ParseFactorIdentifier;
@@ -2789,9 +2811,24 @@ begin
         getNextToken;
      -- Static expressions must not run user functions because they will
      -- may expect non-static expressions.
+    elsif identifiers( token ).class = userProcClass or
+          identifiers( token ).class = procClass then
+       err(
+          contextNotes => "In the static expression",
+          subject => token,
+          reason => "cannot be used because",
+          obstructorNotes => "it is a " & optional_yellow( "procedure" ),
+          remedy => "avoid procedures and functions because the program is loading not running"
+       );
       elsif identifiers( token ).class = userFuncClass or
             identifiers( token ).class = funcClass then
-        err( "static expressions cannot call functions" );
+       err(
+          contextNotes => "In the static expression",
+          subject => token,
+          reason => "cannot be used because",
+          obstructorNotes => "it is a " & optional_yellow( "function" ),
+          remedy => "avoid procedures and functions because the program is loading not running"
+       );
      --    declare
      --      funcToken : identifier := token;
      --    begin
