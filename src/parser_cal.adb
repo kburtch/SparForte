@@ -327,7 +327,7 @@ begin
        Year := Year_Number( I );
        Month := Month_Number( J );
        Day := Day_Number( K );
-       result := to_unbounded_string( long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img );
+       result := to_unbounded_string( long_long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img );
      exception when others =>
        err( "exception raised" );
      end;

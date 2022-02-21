@@ -3248,7 +3248,10 @@ end parseUsableInModeParameter;
   --
   ----------------------------------------------------------------------------
 
-procedure parseUsableInoutModeParameter( formalParamId : identifier; paramName : unbounded_string ) is
+procedure parseUsableInoutModeParameter(
+      subprogram : identifier;
+      formalParamId : identifier;
+      paramName : unbounded_string ) is
    actual_param_ref : renamingReference;
    usableParamId : identifier;
 begin
@@ -3276,7 +3279,7 @@ begin
      identifiers( formalParamId ).usage /= limitedUsage then
         identifiers( formalParamId ).wasWritten := true;
         err(
-           contextNotes => "While looking at type usage",
+           context => subprogram,
            subject => actual_param_ref.id,
            subjectType => identifiers( actual_param_ref.id ).kind,
            reason => "is limited and limited is required for",
@@ -3284,11 +3287,27 @@ begin
            obstructorType => identifiers( formalParamId ).kind
         );
   elsif identifiers( actual_param_ref.id ).usage = constantUsage then
-     err( "a constant cannot be used as an in out or out mode parameter" );
+     err(
+        context => subprogram,
+        subject => actual_param_ref.id,
+        subjectType => identifiers( actual_param_ref.id ).kind,
+        reason => "is " & optional_yellow( "constant" ) & " and cannot be assigned to in out or out mode parammeter",
+        obstructorNotes => optional_yellow( to_string( paramName ) ),
+        obstructorType => identifiers( formalParamId ).kind,
+        remedy => "choose a variable that can be written to"
+     );
   elsif identifiers( actual_param_ref.id ).class = enumClass then
      -- TODO: I could probably get this to work for out parameters but
      -- not yet implemented
-     err( "enumerated items cannot be used as an in out or out mode parameter" );
+     err(
+        context => subprogram,
+        subject => actual_param_ref.id,
+        subjectType => identifiers( actual_param_ref.id ).kind,
+        reason => "is an " & optional_yellow( "enumerated item" ) & " and cannot be assigned to in out or out mode parammeter",
+        obstructorNotes => optional_yellow( to_string( paramName ) ),
+        obstructorType => identifiers( formalParamId ).kind,
+        remedy => "choose a variable that can be written to"
+     );
   end if;
   if not error_found then
      -- whether declaring the params or not, during a syntax check, the actual
@@ -3370,9 +3389,12 @@ end parseUsableInoutModeParameter;
   -- For now, it's treated the same as an in out mode parameter
   ----------------------------------------------------------------------------
 
-procedure parseUsableOutModeParameter( formalParamId : identifier; paramName : unbounded_string ) is
+procedure parseUsableOutModeParameter(
+   proc_id : identifier;
+   formalParamId : identifier;
+   paramName : unbounded_string ) is
 begin
-   parseUsableInoutModeParameter( formalParamId, paramName );
+   parseUsableInoutModeParameter( proc_id, formalParamId, paramName );
 end parseUsableOutModeParameter;
 
    parameterNumber : integer;
@@ -3447,10 +3469,10 @@ begin
               parseUsableInModeParameter( formalParamId, paramName );
 
          when out_mode =>
-              parseUsableOutModeParameter( formalParamId, paramName );
+              parseUsableOutModeParameter( proc_id, formalParamId, paramName );
 
          when in_out_mode =>
-              parseUsableInoutModeParameter( formalParamId, paramName );
+              parseUsableInoutModeParameter( proc_id, formalParamId, paramName );
 
          when others =>
               err( gnat.source_info.source_location &

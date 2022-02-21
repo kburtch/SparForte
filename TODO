@@ -11,8 +11,6 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- check constants should not be allowed for a full-access parameter for
-    out and in out
 - review parseoutparameter usage for wasWritten flag
   - check AssignParameter uses - out parameters do not set writtenflag
 - templates
@@ -26,12 +24,11 @@ Priority Issues (Fix These First)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.
 - ada vectors
-  - complete
+  - complete extended subprograms
   - tests - subtypes, arrays (out param), universals
   - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
-  - handling of derrived types and subtypes and universal types (also in hmaps)
   - check handling of vectors of vectors, maps of maps, etc.
-  - why does ada not detect a cursor is in the wrong vector?
+  - can I simulate a cursor for the wrong vector, raising an exception like ada?
   - while all vectors are limited, the user should probably be required
     to supply "limited"...otherwise, the error messages may be confusing
     when they say it's a limited variable but it is not declared limited
@@ -77,8 +74,6 @@ Priority Issues (Fix These First)
 - templates
   - templates that are not for HTTP
 
-- ${X^}, ${X^^}, ${X,}, ${X,,} to uppercase and lowercase a variable
-- ada95 corrective recommendations
 - separate subprograms need parameter verification like other forward
   specifications, or the two should be harmonized to work the same way
 - locations (on declared but not used errors)
