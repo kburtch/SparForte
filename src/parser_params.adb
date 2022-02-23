@@ -60,8 +60,10 @@ discard_result : boolean;
 ------------------------------------------------------------------------------
 --  ASSIGN PARAMETER
 --
--- assign a value to the variable or array indicated by ref
--- assign value to an out or in out parameter
+-- Assign a value to the variable or array indicated by ref
+-- Assign value to an out or in out parameter
+-- Does not apply side-effect checks: this assumes you've gotten the
+-- identifier through one of the parse functions in this package.
 ------------------------------------------------------------------------------
 
 pragma inline( AssignParameter );

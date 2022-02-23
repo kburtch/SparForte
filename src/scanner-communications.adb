@@ -1168,7 +1168,7 @@ procedure err(
     seeAlso         : string := "" ) is
   msg       : unbounded_string;
   blockName : unbounded_string;
-  needV     : boolean := false;
+  needMore  : boolean := false;
   subjectLocationNeedsParen : boolean := false;
 begin
 
@@ -1177,23 +1177,25 @@ begin
   -- If an identifier is provided, use it first.  Otherwise use textual notes.
   -- If no context was provided, use the current block name for the context.
 
-  if contextNotes = "" then
-     if blocks_top > block'first then
-        blockName := getBlockName( blocks_top-1 );
+  if not quietOpt then
+     if contextNotes = "" then
+        if blocks_top > block'first then
+           blockName := getBlockName( blocks_top-1 );
+        end if;
+        if blockName /= null_unbounded_string then
+           msg := "In " & blockName;
+        end if;
+     elsif Is_Upper( contextNotes( contextNotes'first ) ) then
+        msg := to_unbounded_string( contextNotes );
+     else
+        msg := "While " & to_unbounded_string( contextNotes );
      end if;
-     if blockName /= null_unbounded_string then
-        msg := "In " & blockName;
-     end if;
-  elsif Is_Upper( contextNotes( contextNotes'first ) ) then
-     msg := to_unbounded_string( contextNotes );
-  else
-     msg := "While " & to_unbounded_string( contextNotes );
-  end if;
 
-  if contextType /= eof_t then
-     msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) & ")" );
-  elsif msg /= "" then
-    msg := msg & ",";
+     if contextType /= eof_t then
+        msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) & ")" );
+     elsif msg /= "" then
+       msg := msg & ",";
+     end if;
   end if;
 
   -- Subject
@@ -1221,14 +1223,14 @@ begin
      else
        subjectLocationNeedsParen := true;
      end if;
-  end if;
-  if subjectLocation /= "" then
-     if subjectType = eof_t or subjectLocationNeedsParen then
-        msg := msg & " (";
-     else
-        msg := msg & ", ";
+     if subjectLocation /= "" then
+        if subjectType = eof_t or subjectLocationNeedsParen then
+           msg := msg & " (";
+        else
+           msg := msg & ", ";
+        end if;
+        msg := msg & subjectLocation & ")";
      end if;
-     msg := msg & subjectLocation & ")";
   end if;
 
   -- Reason
@@ -1263,7 +1265,7 @@ begin
      if not boolean(quietOpt) then
         msg := msg & ". Perhaps " & remedy;
      else
-        needV := true;
+        needMore := true;
      end if;
   end if;
 
@@ -1275,13 +1277,15 @@ begin
      if not boolean(quietOpt) then
         if seeAlso /= "" then
            msg := msg & ". See also " & seeAlso;
+        else
+           msg := msg & ".";
         end if;
      else
-        needV := true;
+        needMore := true;
      end if;
   end if;
 
-  if needV then
+  if needMore then
      msg := msg & ". (More)";
   end if;
 
@@ -1319,7 +1323,11 @@ begin
   end if;
 
    subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
-   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   if obstructor = eof_t then
+      obstructorNotes := to_unbounded_string( optional_yellow( "end of file" ) );
+   else
+      obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   end if;
 
    err(
     userLanguage    => userLanguage,
@@ -1358,7 +1366,11 @@ procedure err(
   obstructorNotes : unbounded_string;
 begin
    subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
-   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   if obstructor = eof_t then
+      obstructorNotes := to_unbounded_string( optional_yellow( "end of file" ) );
+   else
+      obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   end if;
 
    err(
     userLanguage    => userLanguage,
@@ -1403,7 +1415,11 @@ begin
       contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
     end if;
   end if;
-   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   if obstructor = eof_t then
+      obstructorNotes := to_unbounded_string( optional_yellow( "end of file" ) );
+   else
+      obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   end if;
 
    err(
     userLanguage    => userLanguage,
@@ -1891,11 +1907,12 @@ end expect;
 -- Check for the specified identifier and value.  If the current token
 -- and its value matches, get the next token, otherwise show an error.
 -----------------------------------------------------------------------------
--- TODO: to be deprecated
+-- TODO: deprecated - to be removed
 
 procedure expect( expected_token : identifier; value : string ) is
 begin
   if token /= expected_token then
+     -- these are special tokens that won't display meaningful names
      if expected_token = keyword_t then
         err( "keyword expected" );
      elsif expected_token = number_t then
@@ -1904,6 +1921,8 @@ begin
         err( "string literal expected" );
      elsif expected_token = symbol_t then
         err( "symbol expected" );
+     elsif expected_token = eof_t then
+        err( "end of script expected" );
      else
         err( to_string( identifiers( expected_token ).name ) & " expected" );
      end if;

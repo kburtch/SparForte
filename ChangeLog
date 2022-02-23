@@ -107,3 +107,5 @@ CHANGES SINCE 2.4.1
 
 49: New: more examples: luhn.sp, hanoi.sp.
 
+50: New: -q / --quiet for brief error messages.  The default is detailed error messages.
+

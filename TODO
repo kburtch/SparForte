@@ -11,16 +11,11 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- review parseoutparameter usage for wasWritten flag
-  - check AssignParameter uses - out parameters do not set writtenflag
-- templates
-  - templates that are not for HTTP
 - terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
 - errors should support err_previous
 - check btree/hash_io get next mark the variable as written
   with the constant check
 - investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.
-- eof handling in expect symbol (i.e. reached end-of-file)
 - bug: in parser-decl-as, an include file that starts with a blank line will
   cause the compiler to raise an exception.
 - ada vectors
@@ -43,6 +38,8 @@ Priority Issues (Fix These First)
   - business process block that only supports case in (do this after vectors)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate to load such things from non-standard locations
   - with separate policy, with separate configuration, with separate process in addition to normal with separate
+- templates
+  - templates that are not for HTTP
 - pragma todo
   - these do not appear in help output when in include files
 - ada hash map support
@@ -56,8 +53,8 @@ Priority Issues (Fix These First)
 - better expected token messages
   - ada95 solution recommendations.  these might benefit from the better expected messages
   - declaration locations, useful on declared but not used errors...where was it declared?
-  - when expecting a parameter, we don't get the enhanced error messages
   - type checking does not have the advanced error messages
+  - replace all uses of deprecated expect()
 - how can design mode be improved to assist with producing design diagrams?  translating
   things into design diagrams is a costly part of design.
   - graphviz / .dot generation?
@@ -74,6 +71,8 @@ Priority Issues (Fix These First)
 - templates
   - templates that are not for HTTP
 
+- shell ulimit built-in
+  - include an option to timeout a script if it runs too long
 - separate subprograms need parameter verification like other forward
   specifications, or the two should be harmonized to work the same way
 - locations (on declared but not used errors)
