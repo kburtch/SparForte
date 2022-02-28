@@ -1254,12 +1254,28 @@ begin
     msg := msg & to_unbounded_string( obstructorNotes );
   end if;
   if obstructorType /= eof_t then
-     msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( obstructorType ).name ) ) ) ) & ")" );
+     -- In the interest of brevity, do not show the type unless it is
+     -- different than the subject type.  If the subject and obstructor
+     -- types are the same, they're probably not related to the error,
+     -- or it's implied that they are the same..
+     declare
+        obstructorTypeNeeded : boolean := false;
+     begin
+        if subjectType = eof_t then
+           obstructorTypeNeeded := true;
+        elsif obstructorType /= subjectType then
+           obstructorTypeNeeded := true;
+        end if;
+        if obstructorTypeNeeded then
+           msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( obstructorType ).name ) ) ) ) & ")" );
+        end if;
+     end;
   end if;
 
   -- Remedy
   --
-  -- Suggestions to correct the problem.
+  -- Suggestions to correct the problem.  In quiet mode, include (more)
+  -- with the message.
 
   if remedy /= "" then
      if not boolean(quietOpt) then
@@ -1273,15 +1289,11 @@ begin
   --
   -- Usually a reference to the documentation.
 
-  if remedy /= "" then
+  if seeAlso /= "" then
      if not boolean(quietOpt) then
-        if seeAlso /= "" then
-           msg := msg & ". See also " & seeAlso;
-        else
-           msg := msg & ".";
-        end if;
+         msg := msg & ". See also " & seeAlso;
      else
-        needMore := true;
+         needMore := true;
      end if;
   end if;
 

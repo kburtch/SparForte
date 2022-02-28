@@ -23,6 +23,7 @@
 
 with interfaces.c,
     ada.text_io,
+    ada.strings.fixed,
     ada.strings.unbounded.text_io,
     gnat.source_info,
     compiler,
@@ -35,6 +36,7 @@ with interfaces.c,
     world;
 use interfaces.c,
     ada.text_io,
+    ada.strings.fixed,
     ada.strings.unbounded.text_io,
     pegasoft.user_io,
     pegasoft.strings,
@@ -325,6 +327,71 @@ end showRunError;
 
 
 -----------------------------------------------------------------------------
+--  ERR CMD NOT FOUND
+--
+-- To explain why something was not found, check to see if it could be a
+-- procedure.  Also check to see if it was hashed or not.
+-----------------------------------------------------------------------------
+
+procedure err_cmd_not_found( cmd : unbounded_string ) is
+  id : identifier;
+  che : cmdHashEntry;
+  prefixStr : unbounded_string;
+  -- length hard-coded here and in builtins.adb
+  buffer : string(1..4096);
+  current_working_directory : unbounded_string;
+begin
+  -- Get the current working directory
+
+  C_reset_errno;
+  getcwd( buffer, buffer'length );
+  if C_errno = 0 then
+     current_working_directory := "in " &
+        toEscaped( to_unbounded_string( buffer( buffer'first..index( buffer, ASCII.NUL & "" ) - 1 ) ) ) ;
+  end if;
+
+  -- Check to see if there's a procedure with the same name
+
+  findIdent( cmd, id );
+  if id /= eof_t then
+     prefixStr := to_unbounded_string( "the command " );
+  else
+     prefixStr := to_unbounded_string( "a procedure or command " );
+  end if;
+
+  -- Check the command hash
+
+  getHashInfo( cmd, che );
+
+  if length( che.fullPath ) /= 0 or che.builtin then
+     err(
+        contextNotes => to_string( current_working_directory ),
+        subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
+        reason       => "was",
+        obstructorNotes => optional_yellow( "not found" ),
+        remedy       => "it was moved and is no longer in the PATH directory list, or you need to clear the command hash by restart SparForte or pragma no_command_hash"
+     );
+  elsif id /= eof_t then
+     err(
+        contextNotes => to_string( current_working_directory ),
+        subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
+        reason       => "was",
+        obstructorNotes => optional_yellow( "not found" ),
+        remedy       => "it was spelled wrong or it's directory is missing in the PATH directory list"
+     );
+  else
+     err(
+        contextNotes => to_string( current_working_directory ),
+        subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
+        reason       => "was",
+        obstructorNotes => optional_yellow( "not found" ),
+        remedy       => "it was spelled wrong or it's directory is missing in the PATH directory list"
+     );
+  end if;
+end err_cmd_not_found;
+
+
+-----------------------------------------------------------------------------
 --  SPAWN COMMAND OR RUN BUILTIN
 --
 -- Run an external command or a BUSH built-in.  When the command is finished,
@@ -424,7 +491,7 @@ begin
 
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
-      err( "'" & to_string( toEscaped( cmd ) ) & "' command not found" );
+      err_cmd_not_found( cmd );
       Success := false;
    else
       if Trace then
@@ -507,7 +574,7 @@ begin
 
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
-      err( "'" & to_string( cmd ) & "' command not found" );
+      err_cmd_not_found( cmd );
       Success := false;
    else
       if background then
@@ -614,7 +681,7 @@ begin
 
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
-      err( "'" & to_string( cmd ) & "' command not found" );
+      err_cmd_not_found( cmd );
       Success := false;
       closePipeline;
    else
@@ -732,7 +799,7 @@ begin
 
    if length( fullPath ) = 0 and not che.builtin then
       cmdpos := cmdpos - 1;
-      err( "'" & to_string( cmd ) & "' command not found" );
+      err_cmd_not_found( cmd );
       Success := false;
    else
       if background then
