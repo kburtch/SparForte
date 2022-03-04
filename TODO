@@ -11,24 +11,13 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
-- errors should support err_previous
-- check btree/hash_io get next mark the variable as written
-  with the constant check
-- investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.
-- bug: in parser-decl-as, an include file that starts with a blank line will
-  cause the compiler to raise an exception.
+- assigning a number to a string return result should be an error
 - ada vectors
-  - complete extended subprograms
+  - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals
   - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - check handling of vectors of vectors, maps of maps, etc.
   - can I simulate a cursor for the wrong vector, raising an exception like ada?
-  - while all vectors are limited, the user should probably be required
-    to supply "limited"...otherwise, the error messages may be confusing
-    when they say it's a limited variable but it is not declared limited
-    by the user.  This will also require updated all positive and negative
-    tests.
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
@@ -40,6 +29,15 @@ Priority Issues (Fix These First)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate
 - templates
   - templates that are not for HTTP
+- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
+- errors should support err_previous
+- check btree/hash_io get next mark the variable as written
+  with the constant check
+- investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.
+- affirms report the error location in the affirm but loses context for
+  where in the code the affirm was triggered
+- bug: in parser-decl-as, an include file that starts with a blank line will
+  cause the compiler to raise an exception.
 - pragma todo
   - these do not appear in help output when in include files
 - ada hash map support
@@ -402,8 +400,6 @@ Nice to Haves / Missing Functionality
     - "status board" generation option for oustanding/in-progress work
     - burndown charts option?
     - review Test concept...what other requirements are missing?
-- vectors
-  - complete vectors package
 - tinyserve
   - close tinyserve if open
   - complete tinyserve package
@@ -423,6 +419,8 @@ Nice to Haves / Missing Functionality
     currently cannot be assigned to or copied so private hasn't been
     implemented yet.
   - return arrays and records in expressions (requires records revamp)
+    -- in mode records should be supported (but first require records
+       (in expressions.
   - allow users to create their own universal types
   - record system refactor (in prep for aggregate expressions)
   - thoughts on user-defined universals

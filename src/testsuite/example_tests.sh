@@ -398,6 +398,24 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="ipv4.sp"
+RESULT=`src/spar --test examples/$EXAMPLE`
+EXPECTED="broadcast: 255.255.255.255 / 255.255.255.255
+network: 000.000.000.000 / 000.000.000.000
+host1: 192.168.001.255 / 255.255.255.000
+   subnet is 192.168.001.000
+host2: 192.168.001.002 / 255.255.000.000
+   subnet is 192.168.000.000"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="luhn.sp"
 RESULT=`src/spar --test examples/$EXAMPLE`
 EXPECTED="49927398716: true

@@ -105,7 +105,7 @@ CHANGES SINCE 2.4.1
 
 48: Fix: recursion no longer confused by new parameters being created in some circumstances.
 
-49: New: more examples: luhn.sp, hanoi.sp.
+49: New: more examples: luhn.sp, hanoi.sp, ipv4.sp.
 
 50: New: -q / --quiet for brief error messages.  The default is detailed error messages.
 

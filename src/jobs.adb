@@ -342,13 +342,18 @@ procedure err_cmd_not_found( cmd : unbounded_string ) is
   current_working_directory : unbounded_string;
 begin
   -- Get the current working directory
+  -- It is possible a file path might use confidential information so we
+  -- won't show it in production mode.
 
+  --if not boolean( MaintenanceOpt ) then
   C_reset_errno;
   getcwd( buffer, buffer'length );
   if C_errno = 0 then
-     current_working_directory := "in " &
+     current_working_directory :=
         toEscaped( to_unbounded_string( buffer( buffer'first..index( buffer, ASCII.NUL & "" ) - 1 ) ) ) ;
+     current_working_directory := "in " & to_unbounded_string( toSecureData( to_string( current_working_directory ) ) );
   end if;
+  --end if;
 
   -- Check to see if there's a procedure with the same name
 

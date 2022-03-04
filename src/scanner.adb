@@ -778,7 +778,8 @@ end recordSoftwareModelRequirements;
 -- check for unused variables and tally presence of software model req's
 -- this is normally called automatically by pullBlock but is exposed
 -- here for cases where pullBlock doesn't get run, such as simple scripts
--- with no blocks.  This should only be run during a syntax check.
+-- with no blocks.  This should only be run during the interpreter checking
+-- phase.
 -----------------------------------------------------------------------------
 
 procedure checkIdentifiersInCurrentBlock is
@@ -794,7 +795,7 @@ begin
          if not identifiers( i ).deleted then
             -- put( " id:" ); put( i'img ); -- DEBUG
             -- put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
-            -- types that are not applied out to be abstract in design or
+            -- types that are not applied ought to be abstract in design or
             -- test phase
             if identifiers( i ).class = typeClass or
                identifiers( i ).class = subClass then
@@ -1160,7 +1161,8 @@ begin
      -- If it was a block with a new scope, check the identifiers and pull
      -- (discard) any resources prior to removing the block.
      if blocks( blocks_top-1 ).newScope then -- KB: 18/01/17
-        if syntax_check and not error_found and not done then
+        --if syntax_check and not error_found and not done then
+        if interpreterPhase = checking and not error_found and not done then
           checkIdentifiersInCurrentBlock;
         end if;
         -- Resources are assigned to blocks_top (i.e. the next free block )

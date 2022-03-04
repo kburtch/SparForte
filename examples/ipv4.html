@@ -1,0 +1,302 @@
+<HEAD><TITLE>ipv4.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : ipv4.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar ipv4.sp
+broadcast: 255.255.255.255 / 255.255.255.255
+network: 000.000.000.000 / 000.000.000.000
+host1: 192.168.001.255 / 255.255.255.000
+   subnet is 192.168.001.000
+host2: 192.168.001.002 / 255.255.000.000
+   subnet is 192.168.000.000
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<HR>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "ipv4" )
+       @( description, "Demonstrate some computations with IP address and " )
+       @( description, "subnet mask pairs, using strong typing and " )
+       @( description, "programming-by-contract." )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> ipv4 <b>is</b>
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- numeric ip number and subnet mask</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <FONT COLOR=green><EM>-- a type of long integer where an error occurs if the value is not 32-bits</EM></FONT>
+
+  unsigned32bits_error : <b>exception</b>;
+
+  <b>type</b> unsigned32bits <b>is</b> <b>new</b> long_integer
+  <b>affirm</b>
+    <b>raise</b> unsigned32bits_error <b>when</b> unsigned32bits <b>not</b> <b>in</b> 0..4294967295;
+  <b>end</b> <b>affirm</b>;
+
+  <FONT COLOR=green><EM>-- a type of long integer where an error occurs if the value is not 1 byte</EM></FONT>
+
+  unsignedbyte_error : <b>exception</b>;
+
+  <b>subtype</b> unsignedbyte <b>is</b> unsigned32bits
+  <b>affirm</b>
+    <b>raise</b> unsignedbyte_error <b>when</b> unsignedbyte <b>not</b> <b>in</b> 0..255;
+  <b>end</b> <b>affirm</b>;
+
+  <FONT COLOR=green><EM>-- distinct types for IP address and subnet mask</EM></FONT>
+
+  <b>type</b> ip_address <b>is</b> <b>new</b> unsigned32bits;
+  <b>type</b> ip_subnet_mask <b>is</b> <b>new</b> unsigned32bits;
+
+
+  <FONT COLOR=green><EM>--  PUT UNSIGNED32BITS</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Display a 32-bit integer in dotted octet format (AAA.BBB.CCC.DDD).</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> put_unsigned32bits( num : unsigned32bits ) <b>is</b>
+     octet     : unsignedbyte;
+     remainder : unsigned32bits;
+  <b>begin</b>
+     remainder := num;
+     octet := numerics.floor( remainder / (256*256*256) );
+     remainder := @ - octet * (256 * 256 * 256);
+     put( octet, "999" ) @ (".");
+     octet := numerics.floor( remainder / (256*256) );
+     remainder := @ - octet * (256 * 256);
+     put( octet, "999" ) @ (".");
+     octet := numerics.floor( remainder / 256 );
+     remainder := @ - octet * 256;
+     put( octet, "999" ) @ (".");
+     octet := remainder;
+     put( octet, "999" );
+  <b>end</b> put_unsigned32bits;
+
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- hostnames</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+
+  hostname_error : <b>exception</b>;
+
+  <FONT COLOR=green><EM>-- a string for a valid Internet hostname</EM></FONT>
+
+  <b>type</b> hostname_string <b>is</b> <b>new</b> string
+  <b>affirm</b>
+    <b>raise</b> hostname_error <b>when</b> strings.length( hostname_string ) <b>not</b> <b>in</b> 1..63;
+    <b>raise</b> hostname_error <b>when</b> <b>not</b> strings.is_alphanumeric( strings.head( hostname_string, 1 ) );
+    <b>raise</b> hostname_error <b>when</b> strings.tail( hostname_string, 1 ) = '-' <b>or</b>
+                              strings.tail( hostname_string, 1 ) = '_';
+    <b>for</b> i <b>in</b> 2..strings.length( hostname_string )-1 <b>loop</b>
+        <b>if</b> <b>not</b> strings.is_alphanumeric( strings.element( hostname_string, i ) ) <b>and</b>
+           <b>not</b> ( strings.element( hostname_string, i ) = '-' ) <b>and</b>
+           <b>not</b> ( strings.element( hostname_string, i ) = '_' ) <b>then</b>
+           <b>raise</b> hostname_error;
+        <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+  <b>end</b> <b>affirm</b>;
+
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- human-readable ip number string</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+
+  format_error : <b>exception</b>;
+
+  <FONT COLOR=green><EM>-- an octet string where an error is raised if the format is wrong</EM></FONT>
+
+  <b>type</b> ip_string <b>is</b> <b>new</b> string
+  <b>affirm</b>
+    <b>raise</b> format_error <b>when</b> strings.length( ip_string ) /= 15;
+    <b>raise</b> format_error <b>when</b> strings.element( ip_string, 4 ) /= ".";
+    <b>raise</b> format_error <b>when</b> strings.element( ip_string, 8 ) /= ".";
+    <b>raise</b> format_error <b>when</b> strings.element( ip_string, 12 ) /= ".";
+    <FONT COLOR=green><EM>-- check octets</EM></FONT>
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 1, 3 ) ) &lt; 0;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 1, 3 ) ) &gt; 255;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 5, 7 ) ) &lt; 0;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 5, 7 ) ) &gt; 255;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 9, 11 ) ) &lt; 0;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 9, 11 ) ) &gt; 255;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 11, 15 ) ) &lt; 0;
+    <b>raise</b> format_error <b>when</b> numerics.value( strings.slice( ip_string, 13, 15 ) ) &gt; 255;
+  <b>end</b> <b>affirm</b>;
+
+  <FONT COLOR=green><EM>-- some standard constants</EM></FONT>
+
+  network_ip_string   : <b>constant</b> ip_string := "000.000.000.000";
+  broadcast_ip_string : <b>constant</b> ip_string := "255.255.255.255";
+
+  <FONT COLOR=green><EM>-- a type of long integer where an error occurs if the value is out of range</EM></FONT>
+
+  cidr_error : <b>exception</b>;
+
+  <b>subtype</b> cidr_mask <b>is</b> unsigned32bits
+  <b>affirm</b>
+    <b>raise</b> cidr_error <b>when</b> cidr_mask <b>not</b> <b>in</b> 0..31;
+  <b>end</b> <b>affirm</b>;
+
+
+  <FONT COLOR=green><EM>--  CIDR TO MASK</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Convert 0-32 CIDR notation to a subnet mask.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <FONT COLOR=green><EM>-- FIXME: returning an integer to a string result</EM></FONT>
+  <FONT COLOR=green><EM>--function cidr_to_mask( bits : cidr_mask ) return ip_string is</EM></FONT>
+  <b>function</b> cidr_to_mask( bits : cidr_mask ) <b>return</b> ip_subnet_mask <b>is</b>
+    tmp : unsigned32bits := bits;
+    res : ip_address := 0;
+  <b>begin</b>
+    <b>for</b> i <b>in</b> 1..32 <b>loop</b>
+        tmp := @ - 1;
+        <b>if</b> tmp &gt;= 0 <b>then</b>
+           res := numerics.shift_left( @, 1 ) + 1;
+        <b>else</b>
+           res := numerics.shift_left( @, 1 );
+        <b>end</b> <b>if</b>;
+    <b>end</b> <b>loop</b>;
+    <b>return</b> res;
+  <b>end</b> cidr_to_mask;
+
+
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- numeric ip number and subnet mask</EM></FONT>
+  <FONT COLOR=green><EM>-- ip number and subnet mask pair</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+
+  <b>type</b> ip_pair <b>is</b> <b>record</b>
+     host : hostname_string;
+     ip   : ip_address;
+     mask : ip_subnet_mask;
+  <b>end</b> <b>record</b>;
+
+
+  <FONT COLOR=green><EM>--  ASSIGN PAIR</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Create an IP pair from an IP addresss and a subnet mask strings.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> assign_pair( pair : <b>in</b> <b>out</b> ip_pair; host : hostname_string; ip : ip_string; ip_mask : ip_string ) <b>is</b>
+  <b>begin</b>
+     pair.host := host;
+     pair.ip :=
+         numerics.value( strings.slice( ip, 13, 15 ) ) +
+         numerics.value( strings.slice( ip, 9, 11 ) ) * 256 +
+         numerics.value( strings.slice( ip, 5, 7 ) ) * 256 * 256 +
+         numerics.value( strings.slice( ip, 1, 3 ) ) * 256 * 256 * 256;
+     pair.mask :=
+         numerics.value( strings.slice( ip_mask, 13, 15 ) ) +
+         numerics.value( strings.slice( ip_mask, 9, 11 ) ) * 256 +
+         numerics.value( strings.slice( ip_mask, 5, 7 ) ) * 256 * 256 +
+         numerics.value( strings.slice( ip_mask, 1, 3 ) ) * 256 * 256 * 256;
+  <b>end</b> assign_pair;
+
+
+  <FONT COLOR=green><EM>--  ASSIGN CIDR</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Create an IP pair from an IP addresss and a CIDR subnet mask.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> assign_cidr( pair : <b>in</b> <b>out</b> ip_pair; host : hostname_string; ip : ip_string; bits : cidr_mask ) <b>is</b>
+  <b>begin</b>
+     pair.host := host;
+     pair.ip :=
+         numerics.value( strings.slice( ip, 13, 15 ) ) +
+         numerics.value( strings.slice( ip, 9, 11 ) ) * 256 +
+         numerics.value( strings.slice( ip, 5, 7 ) ) * 256 * 256 +
+         numerics.value( strings.slice( ip, 1, 3 ) ) * 256 * 256 * 256;
+    pair.mask := cidr_to_mask( bits );
+  <b>end</b> assign_cidr;
+
+
+  <FONT COLOR=green><EM>--  PUT PAIR</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Display the ip address and subnet mask as octets strings.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> put_pair( pair : <b>in</b> <b>out</b> ip_pair ) <b>is</b>
+     <b>pragma</b> assumption( written, pair );
+     <FONT COLOR=green><EM>-- when this was written, a record cannot be an in parameter.</EM></FONT>
+     <FONT COLOR=green><EM>-- assume it was written, even though it was not</EM></FONT>
+  <b>begin</b>
+     put( pair.host ) @ (": ");
+     put_unsigned32bits( unsigned32bits( pair.ip ) );
+     put( " / " );
+     put_unsigned32bits( unsigned32bits( pair.mask ) );
+  <b>end</b> put_pair;
+
+
+  <FONT COLOR=green><EM>--  PUT SUBNET</EM></FONT>
+  <FONT COLOR=green><EM>--</EM></FONT>
+  <FONT COLOR=green><EM>-- Display the subnet as octets strings based on an ip address and mask.</EM></FONT>
+  <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
+
+  <b>procedure</b> put_subnet( pair : <b>in</b> <b>out</b> ip_pair ) <b>is</b>
+     <b>pragma</b> assumption( written, pair );
+     <FONT COLOR=green><EM>-- when this was written, a record cannot be an in parameter.</EM></FONT>
+     <FONT COLOR=green><EM>-- assume it was written, even though it was not</EM></FONT>
+    subnet : unsigned32bits;
+  <b>begin</b>
+    subnet := unsigned32bits( pair.ip ) <b>and</b> unsigned32bits( pair.mask );
+    put_unsigned32bits( subnet );
+  <b>end</b> put_subnet;
+
+  pair : ip_pair;
+
+<b>begin</b>
+  assign_pair( pair, "broadcast", broadcast_ip_string, broadcast_ip_string );
+  put_pair( pair );
+  new_line;
+
+  assign_pair( pair, "network", network_ip_string, network_ip_string );
+  put_pair( pair );
+  new_line;
+
+
+  assign_pair( pair, "host1", "192.168.001.255", "255.255.255.000" );
+  put_pair( pair );
+  new_line;
+
+  put( "   subnet is " ); put_subnet( pair );
+  new_line;
+
+
+  assign_cidr( pair, "host2", "192.168.001.002", 16 ); <FONT COLOR=green><EM>-- TESTING</EM></FONT>
+  put_pair( pair );
+  new_line;
+
+  put( "   subnet is " ); put_subnet( pair );
+  new_line;
+
+<b>end</b> ipv4;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+
+</PRE></BODY></HTML>

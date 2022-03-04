@@ -2416,9 +2416,24 @@ begin
    end if;
   if passingMode = in_mode then
      if identifiers( getBaseType( paramKind ) ).list then
-         err( "array parameters not yet supported" );
+        --err( "array parameters not yet supported" );
+        err(
+          context => subId,
+          subject => formalParamId,
+          subjectType => paramKind,
+          reason => "with in mode is not yet supported because",
+          obstructorNotes => "it is an " & optional_yellow( "array type" ),
+          remedy => "as a workaround use in out parameter passing mode and pragma assumption(written," & to_string( identifiers( formalParamId ).name ) & ")"
+        );
      elsif identifiers( getBaseType( paramKind ) ).kind = root_record_t then
-        err( "records not yet supported" );
+        err(
+          context => subId,
+          subject => formalParamId,
+          subjectType => paramKind,
+          reason => "with in mode is not yet supported because",
+          obstructorNotes => "it is a " & optional_yellow( "record type" ),
+          remedy => "as a workaround use in out parameter passing mode and pragma assumption(written," & to_string( identifiers( formalParamId ).name ) & ")"
+        );
      end if;
   end if;
   --elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
