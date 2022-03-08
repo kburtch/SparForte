@@ -109,3 +109,7 @@ CHANGES SINCE 2.4.1
 
 50: New: -q / --quiet for brief error messages.  The default is detailed error messages.
 
+51: Fix: function return values expressions now type checked and type casted where necessary.
+
+52. Fix: certain user functions not allowing return values fixed.
+

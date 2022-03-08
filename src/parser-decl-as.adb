@@ -2560,22 +2560,18 @@ begin
   end if;
 end ParseFunctionReturnPartProperties;
 
-procedure ParseFunctionReturnPart( funcId : identifier; abstractReturn : in out identifier ) is
-   -- Parse a function's return part.
-   -- Syntax: return type
+
+-----------------------------------------------------------------------------
+--  CREATE FUNCTION RETURN VALUE
+--
+-- Create a function return value entry in the symbol table.  This is
+-- required for a completed specification or for a regular function.
+------------------------------------------------------------------------------
+
+procedure CreateFunctionReturnValue( funcId, resultKind : identifier ) is
    resultId : identifier;
    b : boolean;
-   resultKind    : identifier;
 begin
-
-  -- Parse the return part.  Get the properties.
-
-  ParseFunctionReturnPartProperties(
-    resultKind => resultKind,
-    abstractKind => abstractReturn,
-    funcId => funcId
-  );
-
   identifiers( funcId ).kind := resultKind;
 
   -- Create the return result.  This is a hidden variable with a
@@ -2593,12 +2589,39 @@ begin
      --identifiers( formal_param_id ).referencedByThread := getThreadName;
   end if;
   updateFormalParameter( resultId, resultKind, funcId, 0, none );
+--put_line(standard_output, " ##### return" & resultId'img & "for " & to_string( identifiers(funcId).name) & " is type " & to_string( identifiers( resultKind ).name ) ); -- DEBUGRETURN
 
   -- Blow away the result variable on an error
 
   if error_found then
      b := deleteIdent( resultId );
   end if;
+end CreateFunctionReturnValue;
+
+
+------------------------------------------------------------------------------
+--  PARSE FUNCTION RETURN PART
+--
+------------------------------------------------------------------------------
+
+procedure ParseFunctionReturnPart( funcId : identifier; abstractReturn : in out identifier ) is
+   -- Parse a function's return part.
+   -- Syntax: return type
+   resultKind    : identifier;
+begin
+
+  -- Parse the return part.  Get the properties.
+
+  ParseFunctionReturnPartProperties(
+    resultKind => resultKind,
+    abstractKind => abstractReturn,
+    funcId => funcId
+  );
+
+  -- The return statement needs to know the type of the function return
+  -- result.  Create a function return result for syntax checking.  The
+  -- result when a function runs is declared in DoUserDefinedFunction.
+  CreateFunctionReturnValue( funcId, resultKind );
 end ParseFunctionReturnPart;
 
 
@@ -2811,23 +2834,28 @@ end VerifySubprogramParameters;
 -- return part of the implementation matches it.
 -----------------------------------------------------------------------------
 
-procedure VerifySubprogramReturnPart( func_id : identifier ) is
+procedure VerifySubprogramReturnPart( funcId : identifier ) is
   resultKind     : identifier;
   abstractReturn : identifier;
 begin
   ParseFunctionReturnPartProperties(
       resultKind => resultKind,
       abstractKind => abstractReturn,
-      funcId => func_id
+      funcId => funcId
    );
-  if resultKind /= identifiers( func_id ).kind then
+  if resultKind /= identifiers( funcId ).kind then
      err("function return type " &
          optional_yellow( to_string( identifiers( resultKind ).name ) ) &
-         " was " & optional_yellow( to_string( identifiers( identifiers( func_id ).kind ).name )) &
+         " was " & optional_yellow( to_string( identifiers( identifiers( funcId ).kind ).name )) &
                 " in the earlier specification (at " &
-                to_string( identifiers( func_id ).specFile) & ":" &
-                identifiers( func_id ).specAt'img & ")");
+                to_string( identifiers( funcId ).specFile) & ":" &
+                identifiers( funcId ).specAt'img & ")");
   end if;
+
+  -- The return statement needs to know the type of the function return
+  -- result.  Create a function return result for syntax checking.  The
+  -- result when a function runs is declared in DoUserDefinedFunction.
+  CreateFunctionReturnValue( funcId, resultKind );
 end VerifySubprogramReturnPart;
 
 
@@ -3445,7 +3473,7 @@ begin
 
   -- if there are no parameters and this is a function, you will run into the function's return
   -- value, which does not count as a parameter...abort the parameter search if it exists.
-  if identifiers( formalParamId ).name = "return value" then
+  if identifiers( formalParamId ).name = return_value_str then
      formalParamId := identifiers_top; -- abort search
   end if;
 
@@ -3524,7 +3552,7 @@ begin
      while formalParamId < identifiers_top loop
         if identifiers( formalParamId ).field_of = proc_id then
            -- return value is end of function's parameters
-           exit when identifiers( formalParamId ).name = "return value";
+           exit when identifiers( formalParamId ).name = return_value_str;
            if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
               err( "too few parameters" );
               exit;
@@ -3644,6 +3672,8 @@ procedure ParseFunctionBlock is
   --b : boolean;
   declarationFile : unbounded_string;
   declarationLine : natural;
+  return_id : identifier; --for deleting
+  b : boolean;
 begin
   funcStart := firstPos;
   declarationFile := getSourceFileName;
@@ -3659,8 +3689,11 @@ begin
   -- Whether forward or not, handle the parameters.  If there's a
   -- forward specification, verify the new parameters match the old
   -- ones.  Otherwise, parse the parameters as normal.
+  --
+  -- VerifySubprogramReturnPart and ParseFunctionReturnPart will declare
+  -- a return value for syntax checking.
 
-
+--put_line( " ### A - " & to_string( identifiers( func_id ).name) ); -- DEBUGRETURN
   if token = is_t then
      -- force error for this common mistake
      expect( return_t );
@@ -3668,6 +3701,7 @@ begin
      -- has parameters
      expect( symbol_t, "(" );
      if identifiers( func_id ).specAt /= noSpec then
+--put_line( " ### B - forward with parameters" ); -- DEBUGRETURN
         -- has a forward specification
         VerifySubprogramParameters( func_id, is_function => true );
         if token /= symbol_t and identifiers( token ).value.all /= ")" then
@@ -3682,6 +3716,7 @@ begin
         --findIdent( identifiers( func_id ).name, func_id );
         VerifySubprogramReturnPart( func_id );
      else
+--put_line( " ### C - normal function with parameters" ); -- DEBUGRETURN
         identifiers( func_id ).kind := new_t;
         -- normal function, no forward specification
         ParseFormalParameters( func_id, no_params, abstract_parameter,
@@ -3690,6 +3725,7 @@ begin
         ParseFunctionReturnPart( func_id, abstract_return );
      end if;
   elsif identifiers( func_id ).specAt /= noSpec then
+--put_line( " ### D - forward with no paterms" ); -- DEBUGRETURN
      -- no parameters but has a forward specification
      VerifySubprogramParameters( func_id, is_function => true );
      -- we won't be able to see the specification until we delete
@@ -3698,6 +3734,7 @@ begin
      --findIdent( identifiers( func_id ).name, func_id );
      VerifySubprogramReturnPart( func_id );
   else
+--put_line( " ### E - normal function no parameters" ); -- DEBUGRETURN
      -- no parameters and no forward specification
      identifiers( func_id ).kind := new_t;
      ParseFunctionReturnPart( func_id, abstract_return );
@@ -3787,6 +3824,15 @@ begin
      end if;
   end if;
   expectDeclarationSemicolon( context => func_id );
+
+  -- The function return result is declared outside of the pushBlock.
+  -- It is used so the return statement will know the function type.
+  findIdent( return_value_str, return_id );
+  if return_id = eof_t then
+     err( "internal_error: function return value missing" );
+  else
+     b := deleteIdent( return_id );
+  end if;
 end ParseFunctionBlock;
 
 
@@ -4044,6 +4090,7 @@ begin
         getNextToken;                         -- and params are declared
      end loop;
      expect( is_t );                          -- is
+     CreateFunctionReturnValue( func_id, identifiers(func_id).kind);  -- DEBUGRETURN
      ParseDeclarations;                       -- declaration block
      expect( begin_t );                       -- begin
      ParseBlock;                              -- executable block
@@ -4064,7 +4111,7 @@ begin
          expect( eof_t );                     -- should be nothing else
      end if;
      -- return value is top-most variable called "return value"
-     findIdent( to_unbounded_string( "return value" ), return_id );
+     findIdent( return_value_str, return_id );
      result := identifiers( return_id ).value.all;
      restoreScript( scriptState );            -- restore original script
   elsif syntax_check or exit_block then
@@ -5271,7 +5318,7 @@ begin
         if isExecutingCommand then
            -- return value only exists at run-time.  There are better ways to
            -- do this.
-           findIdent( to_unbounded_string( "return value" ), return_id );
+           findIdent( return_value_str, return_id );
            if return_id = eof_t then
               err( "procedures cannot return a value" );
            else
@@ -5279,9 +5326,12 @@ begin
            -- check the block name and derrive it that way.  Until we do,
            -- no type checking on the function result!
               ParseExpression( expr_val, expr_type );
-              identifiers( return_id ).value.all := expr_val;
-              if trace then
-                 put_trace( "returning """ & to_string( expr_val ) & """" );
+--put_line( standard_error, " ###### " & to_string( expr_val ) & " has type " & to_string( identifiers( expr_type ).name ) & " expecting " & to_string( identifiers( identifiers( return_id ).kind ).name ) & " for return" & return_id'img ); -- DEBUGRETURN
+              if baseTypesOk( expr_type, identifiers( return_id ).kind ) then
+                 identifiers( return_id ).value.all := castToType( expr_val, identifiers( return_id ).kind );
+                 if trace then
+                    put_trace( "returning """ & toSecureData( to_string( expr_val ) ) & """" );
+                 end if;
               end if;
            end if;
         else
@@ -5862,9 +5912,19 @@ begin
   elsif token = backlit_t then
      err( "unexpected backquote literal" );
   elsif token = procedure_t then
-     err( "declare procedures in declaration sections" );
+     err(
+         subject => token,
+         reason => "was not expected in",
+         obstructorNotes => optional_yellow( "executable statements" ),
+         remedy => "this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & optional_yellow( "begin" )
+     );
   elsif token = function_t then
-     err( "declare functions in declaration sections" );
+     err(
+         subject => token,
+         reason => "was not expected in",
+         obstructorNotes => optional_yellow( "executable statements" ),
+         remedy => "this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & optional_yellow( "begin" )
+     );
   elsif Token = eof_t then
      eof_flag := true;
      -- a script could be a single comment without a ;
@@ -6250,9 +6310,19 @@ begin
   elsif token = backlit_t then
      err( "unexpected backquote literal" );
   elsif token = procedure_t then
-     err( "declare procedures in declaration sections" );
+     err(
+         subject => token,
+         reason => "was not expected in",
+         obstructorNotes => optional_yellow( "general statements" ),
+         remedy => "this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & optional_yellow( "begin" )
+     );
   elsif token = function_t then
-     err( "declare functions in declaration sections" );
+     err(
+         subject => token,
+         reason => "was not expected in",
+         obstructorNotes => optional_yellow( "general statements" ),
+         remedy => "this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & optional_yellow( "begin" )
+     );
   elsif Token = eof_t then
      eof_flag := true;
      -- a script could be a single comment without a ;
@@ -6498,7 +6568,17 @@ begin
   pushBlock( newScope => true,
     newName => to_string (identifiers( program_id ).name ) );
   -- Note: pushBlock must be before "is" (single symbol look-ahead)
-  expect( is_t );
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+    err(
+      contextNotes => "For your main program procedure",
+      subject => is_t,
+      reason => "is expected not",
+      obstructorNotes => optional_yellow( "a parameter list" ),
+      remedy => "this is a procedure in an unstructured script but procedures need to be within a main program"
+    );
+  else
+    expect( is_t );
+  end if;
   ParseDeclarations;
   expect( begin_t );
   ParseBlock;

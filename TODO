@@ -11,7 +11,17 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- assigning a number to a string return result should be an error
+- procedure (  expect "is" needs a better error message
+
+- a programming-by-contract exception in a function parameter seems to
+  take effect after the function starts to run (weird).  Errors are
+  probably suppressed for some reason and may leave remaining parameters
+  undefined
+- review function return values
+  - check ParseReturn vs ParseOutParameter.  Possibly create a
+    ParseReturnValue to ensure all the checks are in one file.
+- toSecureData and put_trace check
+- memory leak tests - check to make sure that resources are being cleared
 - ada vectors
   - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals

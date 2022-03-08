@@ -164,8 +164,6 @@ host2: 192.168.001.002 / 255.255.000.000
   <FONT COLOR=green><EM>-- Convert 0-32 CIDR notation to a subnet mask.</EM></FONT>
   <FONT COLOR=green><EM>----------------------------------------------------------------------------</EM></FONT>
 
-  <FONT COLOR=green><EM>-- FIXME: returning an integer to a string result</EM></FONT>
-  <FONT COLOR=green><EM>--function cidr_to_mask( bits : cidr_mask ) return ip_string is</EM></FONT>
   <b>function</b> cidr_to_mask( bits : cidr_mask ) <b>return</b> ip_subnet_mask <b>is</b>
     tmp : unsigned32bits := bits;
     res : ip_address := 0;
@@ -278,7 +276,6 @@ host2: 192.168.001.002 / 255.255.000.000
   put_pair( pair );
   new_line;
 
-
   assign_pair( pair, "host1", "192.168.001.255", "255.255.255.000" );
   put_pair( pair );
   new_line;
@@ -286,8 +283,7 @@ host2: 192.168.001.002 / 255.255.000.000
   put( "   subnet is " ); put_subnet( pair );
   new_line;
 
-
-  assign_cidr( pair, "host2", "192.168.001.002", 16 ); <FONT COLOR=green><EM>-- TESTING</EM></FONT>
+  assign_cidr( pair, "host2", "192.168.001.002", 16 );
   put_pair( pair );
   new_line;
 

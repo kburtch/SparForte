@@ -2068,7 +2068,8 @@ begin
       end if;
    elsif token = symbol_t then
       -- This is primarily for "&"
-      err_shell( "internal error: unexpected symbol", wordPos );
+      -- e.g. `pwd` : integer; will give this error on the colon
+      err_shell( "unexpected symbol in shell command", wordPos );
    elsif identifiers( token ).kind = new_t then
       -- If there's any kind of quotation, it will be a word not an identifier.
       -- This will always be a bareword.

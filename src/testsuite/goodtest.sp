@@ -6794,7 +6794,7 @@ declare
 
   subtype small_map is limited string_map;
 
-  function len( sm1 : in out small_map ) return natural is
+  function len( sm1 : in out small_map ) return containers.count_type is
   begin
     return hashed_maps.length( sm1 );
   end len;
@@ -7296,7 +7296,7 @@ declare
 
   subtype small_vector is limited string_vector;
 
-  function len( sv1 : in out small_vector ) return natural is
+  function len( sv1 : in out small_vector ) return containers.count_type is
   begin
     return vectors.length( sv1 );
   end len;

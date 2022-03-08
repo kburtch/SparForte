@@ -192,7 +192,9 @@ begin
        result := cgi.Value( expr_val,
          positive'value( to_string( expr_val2 ) ),
          expr_val3 = identifiers( true_t ).value.all );
-     exception when others =>
+     exception when constraint_error =>
+         err( "key does not exist" );
+     when others =>
          err_exception_raised;
      end;
   end if;

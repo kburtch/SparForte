@@ -140,8 +140,6 @@ procedure ipv4 is
   -- Convert 0-32 CIDR notation to a subnet mask.
   ----------------------------------------------------------------------------
 
-  -- FIXME: returning an integer to a string result
-  --function cidr_to_mask( bits : cidr_mask ) return ip_string is
   function cidr_to_mask( bits : cidr_mask ) return ip_subnet_mask is
     tmp : unsigned32bits := bits;
     res : ip_address := 0;
@@ -254,7 +252,6 @@ begin
   put_pair( pair );
   new_line;
 
-
   assign_pair( pair, "host1", "192.168.001.255", "255.255.255.000" );
   put_pair( pair );
   new_line;
@@ -262,8 +259,7 @@ begin
   put( "   subnet is " ); put_subnet( pair );
   new_line;
 
-
-  assign_cidr( pair, "host2", "192.168.001.002", 16 ); -- TESTING
+  assign_cidr( pair, "host2", "192.168.001.002", 16 );
   put_pair( pair );
   new_line;
 

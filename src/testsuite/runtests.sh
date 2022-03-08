@@ -410,6 +410,34 @@ bad_test() {
         exit 1
      fi
   fi
+  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH INTERNAL error ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
   if [ $RESULT -eq 0 ] ; then
      echo
      echo "--- $1 TEST FAILED - status code $RESULT ---"
@@ -461,6 +489,34 @@ bad_test_wparam() {
      echo "Output was:"
      echo "$OUTPUT"
      junit_fail_core_dump
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH INTERNAL error ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
         exit 1
@@ -522,6 +578,34 @@ bad_test_testmode() {
         exit 1
      fi
   fi
+  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH INTERNAL error ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
   if [ $RESULT -eq 0 ] ; then
      echo
      echo "--- $1 TEST FAILED - status code $RESULT ---"
@@ -573,6 +657,34 @@ bad_test_gcc_errors() {
      echo "$OUTPUT"
      cat "$1"
      junit_fail_core_dump
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
+     if [ ! -z "$OPT_FAIL" ] ; then
+        end_junit
+        exit 1
+     fi
+  fi
+  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  if [ ! -z "$TMP" ] ; then
+     echo
+     echo "--- $1 FAILED WITH INTERNAL error ---"
+     echo "Test was:"
+     cat "$1"
+     echo "Output was:"
+     echo "$OUTPUT"
+     junit_fail_exception "$OUTPUT"
      if [ ! -z "$OPT_FAIL" ] ; then
         end_junit
         exit 1
