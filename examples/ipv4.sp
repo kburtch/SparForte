@@ -142,7 +142,7 @@ procedure ipv4 is
 
   function cidr_to_mask( bits : cidr_mask ) return ip_subnet_mask is
     tmp : unsigned32bits := bits;
-    res : ip_address := 0;
+    res : ip_subnet_mask := 0;
   begin
     for i in 1..32 loop
         tmp := @ - 1;

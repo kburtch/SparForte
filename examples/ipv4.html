@@ -166,7 +166,7 @@ host2: 192.168.001.002 / 255.255.000.000
 
   <b>function</b> cidr_to_mask( bits : cidr_mask ) <b>return</b> ip_subnet_mask <b>is</b>
     tmp : unsigned32bits := bits;
-    res : ip_address := 0;
+    res : ip_subnet_mask := 0;
   <b>begin</b>
     <b>for</b> i <b>in</b> 1..32 <b>loop</b>
         tmp := @ - 1;
