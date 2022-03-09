@@ -706,7 +706,7 @@ begin
 
               identifiers( return_id ).value.all := outExpr;
               if trace then
-                 put_trace( to_string( identifiers( return_id ).name ) & " := " & to_string( identifiers( return_id ).value.all ) );
+                 put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).value.all ) ) ) );
               end if;
            --end if;
         end if;
@@ -1571,7 +1571,7 @@ begin
         expect( symbol_t, ".." );                          -- ".."
         ParseExpression( expr2_val, expr2_type );          -- high range
         if verboseOpt then
-           put_trace( "in " & to_string( expr1_val ) & ".." & to_string( expr2_val ) );
+           put_trace( "in " & toSecureData( to_string( toEscaped( expr1_val ) ) ) & ".." & toSecureData( to_string( toEscaped( expr2_val ) ) ) );
         end if;
 
         --if error_found then                              -- errors?
@@ -1646,7 +1646,7 @@ begin
      if trace then
         put_trace(
             to_string( identifiers( for_var ).name ) & " := '" &
-            to_string( identifiers( for_var ).value.all ) & "'" );
+            toSecureData( to_string( toEscaped( identifiers( for_var ).value.all ) ) ) & "'" );
      end if;
      ParseBlock;                                           -- handle for block
      exit when exit_block or error_found or token = eof_t;
@@ -1697,7 +1697,7 @@ begin
           err_exception_raised;
         end;
         if trace then
-           put_trace( "duration := " & to_string( expr_val ) );
+           put_trace( "duration := " & toSecureData( to_string( toEscaped( expr_val ) ) ) );
         end if;
      end if;
   end if;
@@ -2566,6 +2566,12 @@ end ParseFunctionReturnPartProperties;
 --
 -- Create a function return value entry in the symbol table.  This is
 -- required for a completed specification or for a regular function.
+--
+-- The function result is treated as an extra function parameter.
+-- However, the return statement is not tied to a function: it merely
+-- searches for the most recent return value in the symbol table and
+-- uses it.  The return function doesn't know which function is running
+-- (unless it checks the active block).
 ------------------------------------------------------------------------------
 
 procedure CreateFunctionReturnValue( funcId, resultKind : identifier ) is
@@ -2588,8 +2594,8 @@ begin
      identifiers( resultId ).wasFactor := true;
      --identifiers( formal_param_id ).referencedByThread := getThreadName;
   end if;
+  -- The return value is treated as the function's parameter zero
   updateFormalParameter( resultId, resultKind, funcId, 0, none );
---put_line(standard_output, " ##### return" & resultId'img & "for " & to_string( identifiers(funcId).name) & " is type " & to_string( identifiers( resultKind ).name ) ); -- DEBUGRETURN
 
   -- Blow away the result variable on an error
 
@@ -3277,7 +3283,7 @@ begin
         if trace then
            put_trace(
               to_string( identifiers( usableParamId ).name ) & " := " &
-              to_string( expr_value ) );
+              toSecureData( to_string( toEscaped( expr_value ) ) ) );
         end if;
      end if;
      -- DoContract may create a variable so we delay until here to move the
@@ -3672,8 +3678,6 @@ procedure ParseFunctionBlock is
   --b : boolean;
   declarationFile : unbounded_string;
   declarationLine : natural;
-  return_id : identifier; --for deleting
-  b : boolean;
 begin
   funcStart := firstPos;
   declarationFile := getSourceFileName;
@@ -3693,7 +3697,6 @@ begin
   -- VerifySubprogramReturnPart and ParseFunctionReturnPart will declare
   -- a return value for syntax checking.
 
---put_line( " ### A - " & to_string( identifiers( func_id ).name) ); -- DEBUGRETURN
   if token = is_t then
      -- force error for this common mistake
      expect( return_t );
@@ -3701,7 +3704,6 @@ begin
      -- has parameters
      expect( symbol_t, "(" );
      if identifiers( func_id ).specAt /= noSpec then
---put_line( " ### B - forward with parameters" ); -- DEBUGRETURN
         -- has a forward specification
         VerifySubprogramParameters( func_id, is_function => true );
         if token /= symbol_t and identifiers( token ).value.all /= ")" then
@@ -3716,7 +3718,6 @@ begin
         --findIdent( identifiers( func_id ).name, func_id );
         VerifySubprogramReturnPart( func_id );
      else
---put_line( " ### C - normal function with parameters" ); -- DEBUGRETURN
         identifiers( func_id ).kind := new_t;
         -- normal function, no forward specification
         ParseFormalParameters( func_id, no_params, abstract_parameter,
@@ -3725,7 +3726,6 @@ begin
         ParseFunctionReturnPart( func_id, abstract_return );
      end if;
   elsif identifiers( func_id ).specAt /= noSpec then
---put_line( " ### D - forward with no paterms" ); -- DEBUGRETURN
      -- no parameters but has a forward specification
      VerifySubprogramParameters( func_id, is_function => true );
      -- we won't be able to see the specification until we delete
@@ -3734,7 +3734,6 @@ begin
      --findIdent( identifiers( func_id ).name, func_id );
      VerifySubprogramReturnPart( func_id );
   else
---put_line( " ### E - normal function no parameters" ); -- DEBUGRETURN
      -- no parameters and no forward specification
      identifiers( func_id ).kind := new_t;
      ParseFunctionReturnPart( func_id, abstract_return );
@@ -3824,15 +3823,6 @@ begin
      end if;
   end if;
   expectDeclarationSemicolon( context => func_id );
-
-  -- The function return result is declared outside of the pushBlock.
-  -- It is used so the return statement will know the function type.
-  findIdent( return_value_str, return_id );
-  if return_id = eof_t then
-     err( "internal_error: function return value missing" );
-  else
-     b := deleteIdent( return_id );
-  end if;
 end ParseFunctionBlock;
 
 
@@ -4090,7 +4080,11 @@ begin
         getNextToken;                         -- and params are declared
      end loop;
      expect( is_t );                          -- is
-     CreateFunctionReturnValue( func_id, identifiers(func_id).kind);  -- DEBUGRETURN
+     -- Create a place to save the return result.
+     -- Although the return result is formal parameter zero of the function,
+     -- the return statement has no idea which function is running.  It is
+     -- not recorded in the block table.  So we create a return result here.
+     CreateFunctionReturnValue( func_id, identifiers(func_id).kind);
      ParseDeclarations;                       -- declaration block
      expect( begin_t );                       -- begin
      ParseBlock;                              -- executable block
@@ -4195,7 +4189,7 @@ procedure ParseShellCommand is
               end if;
               tempStr := identifiers( id ).name & "=" & tempStr;
               if trace then
-                 put_trace( "exporting '" & to_string( tempStr ) & "'" );
+                 put_trace( "exporting '" & toSecureData( to_string( toEscaped( tempStr ) ) ) & "'" );
               end if;
               exportList( exportPos ) := new string( 1..length( tempStr )+1 );
               exportList( exportPos ).all := to_string( tempStr ) & ASCII.NUL;
@@ -5282,6 +5276,7 @@ procedure ParseReturn is
   return_id   : identifier;
   must_return : boolean;
   has_when    : boolean := false;
+  u           : identifier;
 begin
   -- Return has a special meaning in interactive modes
   if inputMode = breakout then
@@ -5316,27 +5311,44 @@ begin
         -- follows and indicates the return does not happen.
 
         if isExecutingCommand then
-           -- return value only exists at run-time.  There are better ways to
-           -- do this.
+           -- When a function runs, a return value is created.  This is
+           -- separate from the formal parameter zero return function.  The
+           -- return value we use is the one in the top of the symbol table.
            findIdent( return_value_str, return_id );
+           -- If we don't have a local return value, then it's a procedure,
+           -- not a function.
+           --
+           -- We cannot use isLocal() because a declare block with a return
+           -- inside of a function will make the return value appear to be
+           -- of a different scope to the return statement.
+           -- TODO: this needs to be redesigned
            if return_id = eof_t then
               err( "procedures cannot return a value" );
            else
-           -- at this point, we don't know the function id.  Maybe we can
-           -- check the block name and derrive it that way.  Until we do,
            -- no type checking on the function result!
               ParseExpression( expr_val, expr_type );
---put_line( standard_error, " ###### " & to_string( expr_val ) & " has type " & to_string( identifiers( expr_type ).name ) & " expecting " & to_string( identifiers( identifiers( return_id ).kind ).name ) & " for return" & return_id'img ); -- DEBUGRETURN
-              if baseTypesOk( expr_type, identifiers( return_id ).kind ) then
-                 identifiers( return_id ).value.all := castToType( expr_val, identifiers( return_id ).kind );
+              -- At this point, we don't know the function id.  Maybe we can
+              -- check the block name but the function's identifier is not
+              -- currently recorded there.  The return value should have
+              -- been assigned the correct type, though.
+              if type_checks_done or else baseTypesOk( expr_type, identifiers( return_id ).kind ) then
+                 -- Compare with ParseFirstStringParameter, etc.  Check for
+                 -- typecast where appropriate
+                 u := getUniType( identifiers( return_id ).kind );
+                 if u = uni_string_t or u = uni_numeric_t or u = universal_t then
+                    expr_val := castToType( expr_val, identifiers( return_id ).kind );
+                 end if;
+                 identifiers( return_id ).value.all := expr_val;
+                 -- Unlike a regular variable, we do not mark this as read or
+                 -- written.
                  if trace then
-                    put_trace( "returning """ & toSecureData( to_string( expr_val ) ) & """" );
+                    put_trace( "returning """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" );
                  end if;
               end if;
            end if;
         else
-              -- for syntax checking, we need to walk the expression
-              ParseExpression( expr_val, expr_type );
+           -- for syntax checking, we need to walk the expression
+           ParseExpression( expr_val, expr_type );
         end if;
      end if;
 
@@ -5599,10 +5611,10 @@ begin
            put_trace(
               to_string( identifiers( var_id ).name ) &
               "(" &
-              to_string( index_value ) &
+              toSecureData( to_string( ToEscaped( index_value ) ) ) &
               ")" &
               " := """ &
-              to_string( ToEscaped( expr_value ) ) &
+              toSecureData( to_string( ToEscaped( expr_value ) ) ) &
                  """" );
         end if;
      else
@@ -5613,7 +5625,7 @@ begin
            put_trace(
               to_string( identifiers( var_id ).name ) &
               " := """ &
-              to_string( ToEscaped( expr_value ) ) &
+              toSecureData( to_string( ToEscaped( expr_value ) ) ) &
               """" );
         end if;
      end if;

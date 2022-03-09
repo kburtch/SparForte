@@ -242,14 +242,14 @@ begin
         end if;
         if trace then
            if b then
-              put_trace( "'" & to_string( pat_val ) &
+              put_trace( "'" & toSecureData( to_string( toEscaped( pat_val ) ) ) &
                          "' pattern matches string '" &
-                         to_string( expr_val ) &
+                         toSecureData( to_string( toEscaped( expr_val ) ) ) &
                          "'" );
            else
-              put_trace( "'" & to_string( pat_val ) &
+              put_trace( "'" & toSecureData( to_string( toEscaped( pat_val ) ) ) &
                          "' pattern does not match string '" &
-                         to_string( expr_val ) &
+                         toSecureData( to_string( toEscaped( expr_val ) ) ) &
                          "'" );
            end if;
         end if;

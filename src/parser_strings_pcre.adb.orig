@@ -80,17 +80,17 @@ begin
        elsif integer(res_int) = 1 then
           result := to_unbounded_string( "1" );
           if trace then
-             put_trace( "'" & to_string( pat_val ) &
+             put_trace( "'" & toSecureData( to_string( toEscaped( pat_val ) ) ) &
                         "' pattern matches string '" &
-                        to_string( expr_val ) &
+                        toSecureData( to_string( toEscaped( expr_val ) ) ) &
                         "'" );
           end if;
        else
           result := to_unbounded_string( "0" );
           if trace then
-             put_trace( "'" & to_string( pat_val ) &
+             put_trace( "'" & toSecureData( to_string( toEscaped( pat_val ) ) ) &
                         "' pattern does not match string '" &
-                        to_string( expr_val ) &
+                        toSecureData( to_string( toEscaped( expr_val ) ) ) &
                         "'" );
           end if;
        end if;

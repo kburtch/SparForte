@@ -1190,7 +1190,7 @@ begin
       expr_val := identifiers( type_value_id ).value.all;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
-            put_trace( "value after affirm clause: " & to_string( toEscaped( expr_val ) ) );
+            put_trace( "value after affirm clause: " & toSecureData( to_string( toEscaped( expr_val ) ) ) );
          end if;
       end if;
    end if;

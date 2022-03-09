@@ -17,10 +17,6 @@ Priority Issues (Fix These First)
   take effect after the function starts to run (weird).  Errors are
   probably suppressed for some reason and may leave remaining parameters
   undefined
-- review function return values
-  - check ParseReturn vs ParseOutParameter.  Possibly create a
-    ParseReturnValue to ensure all the checks are in one file.
-- toSecureData and put_trace check
 - memory leak tests - check to make sure that resources are being cleared
 - ada vectors
   - complete extended subprograms (if time)
@@ -78,6 +74,11 @@ Priority Issues (Fix These First)
 - provision script should search for the EPEL RPM version, not be hard-coded
 - templates
   - templates that are not for HTTP
+- procedure vs function
+  - check detection for return value and procedures: an enclosing function
+    could fool a procedure call into thinking a return statement can have
+    a return value (which never gets used).  We'll need to do some redesign
+    work to solve this.
 
 - shell ulimit built-in
   - include an option to timeout a script if it runs too long

@@ -763,7 +763,7 @@ begin
                              if trace then
                                 put_trace(
                                   to_string( fieldName ) & " := " &
-                                  to_string( expr_value ) );
+                                  toSecureData( to_string( toEscaped( expr_value ) ) ) );
                              end if;
                           end if;
                        end if;
@@ -837,7 +837,7 @@ begin
                         if trace then
                           put_trace(
                             to_string( targetFieldName ) & " := " &
-                            to_string( identifiers( target_field_t ).value.all ) );
+                            toSecureData( to_string( toEscaped( identifiers( target_field_t ).value.all ) ) ) );
                         end if;
                      end if; -- right number
                   end if; -- field member
@@ -1529,7 +1529,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        if trace then
            put_trace(
               to_string( identifiers( new_const_id ).name ) & " := """ &
-              to_string( ToEscaped( expr_value ) ) & """" );
+              toSecureData( to_string( ToEscaped( expr_value ) ) ) & """" );
        end if;
     end if;
   end VerifyConstantSpec;
@@ -1965,7 +1965,7 @@ begin
         if trace then
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
-               to_string( ToEscaped( expr_value ) ) & """" );
+               toSecureData( to_string( ToEscaped( expr_value ) ) ) & """" );
         end if;
      else
         -- At compile time, constants may have assigned values.

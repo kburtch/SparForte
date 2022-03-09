@@ -2334,7 +2334,7 @@ begin
               if trace then
                   put_trace(
                      to_string( identifiers( var_id ).name ) & " := """ &
-                     to_string( ToEscaped( identifiers( var_id ).value.all ) ) &
+                     toSecureData( to_string( ToEscaped( identifiers( var_id ).value.all ) ) ) &
                      """" );
               end if;
            else
@@ -2654,7 +2654,7 @@ begin
            if trace then
                put_trace(
                   to_string( identifiers( var_id ).name ) & " := """ &
-                  to_string( ToEscaped( newValue ) ) &
+                  toSecureData( to_string( ToEscaped( newValue ) ) ) &
                   """" );
            end if;
            -- whether imported or not, set it to true because it may be used

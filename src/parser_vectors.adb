@@ -1594,7 +1594,7 @@ begin
   --if token = symbol_t and identifiers( token ).value.all = "," then
      expectParameterComma( subprogramId );
      ParseExpression( elemVal, elemType );
-     if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
+     if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
         if token = symbol_t and identifiers( token ).value.all = "," then
            ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
            hasCnt := true;
@@ -1857,7 +1857,7 @@ begin
 
   expectParameterComma( subprogramId );
   ParseExpression( elemVal, elemType );
-  if baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
+  if type_checks_done or else baseTypesOk( elemType, identifiers( vectorId ).genKind2 ) then
      ParseNextOutVectorCursor( subprogramId, vectorId, cursor2Ref );
      if token = symbol_t and identifiers( token ).value.all = "," then
         ParseNextNumericParameter( subprogramId, cntExpr, cntType, containers_count_type_t );
@@ -2117,7 +2117,9 @@ begin
         );
      end if;
      ParseExpression( idxExpr2, idxType2 );
-     baseTypesOK( idxType2, identifiers( vectorId ).genKind );
+     if not type_checks_done then
+        baseTypesOK( idxType2, identifiers( vectorId ).genKind );
+     end if;
      hasIdx := true;
      expectParameterClose( subprogramId );
   end if;

@@ -5414,7 +5414,7 @@ procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out So
   function load_include_file( include_file : file_type; path : string ) return unbounded_string is
   begin
     if trace or verboseOpt = true then
-       put_trace( "Including " & to_string( toEscaped( to_unbounded_string( path ) ) ) );
+       put_trace( "Including " & toSecureData( to_string( toEscaped( to_unbounded_string( path ) ) ) ) );
     end if;
     while not end_of_file( include_file ) loop
        includeText := includeText & ada.strings.unbounded.text_io.get_line( include_file ) & ASCII.LF;
@@ -5467,21 +5467,21 @@ begin
           close( include_file );
         exception
             when STATUS_ERROR =>
-              err( "cannot open include file" & optional_yellow( to_string( toEscaped( includeName ) ) ) &
+              err( "cannot open include file" & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
                  " - file may be locked" );
               return;
             when NAME_ERROR =>
                 if traceOpt then
-                   put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
+                   put_trace( "Cannot open " & toSecureData( to_string( toEscaped( libraryPrefix & includeName ) ) ) );
                 end if;
             when MODE_ERROR =>
-                err( "interal error: mode error on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
+                err( "interal error: mode error on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                  return;
             when END_ERROR =>
-              err( "interal error: end of file reached on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
+              err( "interal error: end of file reached on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
             return;
             when others =>
-               err( "interal error: unexpected error reading " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
+               err( "interal error: unexpected error reading " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                return;
         end;
 
@@ -5545,21 +5545,21 @@ begin
              end if;
            exception
                when STATUS_ERROR =>
-                 err( "cannot open include file" & optional_yellow( to_string( toEscaped( includeName ) ) ) &
+                 err( "cannot open include file" & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
                     " - file may be locked" );
                  return;
                when NAME_ERROR =>
                    if traceOpt then
-                      put_trace( "Cannot open " & to_string( toEscaped( libraryPrefix & includeName ) ) );
+                      put_trace( "Cannot open " & toSecureData( to_string( toEscaped( libraryPrefix & includeName ) ) ) );
                    end if;
                when MODE_ERROR =>
-                   err( "interal error: mode error on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
+                   err( "interal error: mode error on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                     return;
                when END_ERROR =>
-                 err( "interal error: end of file reached on include file " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
+                 err( "interal error: end of file reached on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                return;
                when others =>
-                  err( "interal error: unexpected error reading " & optional_yellow( to_string( toEscaped( includeName ) ) ) );
+                  err( "interal error: unexpected error reading " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                   return;
            end;
            libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix

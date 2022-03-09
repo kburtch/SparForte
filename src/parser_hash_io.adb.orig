@@ -30,6 +30,7 @@ with
     gnat.source_info,
     ada.exceptions,
     ada.strings.unbounded,
+    pegasoft.strings,
     pegasoft.user_io,
     world,
     scanner,
@@ -51,6 +52,7 @@ use
     ada.exceptions,
     ada.strings.unbounded,
     world,
+    pegasoft.strings,
     pegasoft.user_io,
     scanner,
     scanner.communications,
@@ -350,7 +352,7 @@ begin
            dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
         end if;
         if trace then
-           put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+           put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
         end if;
 
         configureBDBEnv( theFile.hash.env, to_string( dirname2 ) );
@@ -440,7 +442,7 @@ begin
            dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
         end if;
         if trace then
-           put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+           put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
         end if;
 
         configureBDBEnv( theFile.hash.env, to_string( dirname2 ) );
@@ -605,7 +607,7 @@ begin
            dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
         end if;
         if trace then
-           put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+           put_trace( "Base directory is '" & toSecuredata( to_string( toEscaped( dirname2 ) ) ) & "'" );
         end if;
 
         configureBDBEnv( theFile.hash.env, to_string( dirname2 ) );
@@ -758,7 +760,7 @@ begin
               dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
            end if;
            if trace then
-              put_trace( "Base directory is '" & to_string( dirname2 ) & "'" );
+              put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
            end if;
 
            configureBDBEnv( theFile.hash.env, to_string( dirname2 ) );
