@@ -21,7 +21,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io; use ada.text_io;
+--with ada.text_io; use ada.text_io;
 
 with ada.numerics.long_elementary_functions,
     ada.numerics.float_random,
@@ -32,7 +32,6 @@ with ada.numerics.long_elementary_functions,
     gnat.sha224,
     gnat.sha256,
     gnat.sha512,
-    pegasoft.strings,
     pegasoft.user_io,
     world,
     scanner,
@@ -42,9 +41,7 @@ with ada.numerics.long_elementary_functions,
     md5;
 use ada.numerics.long_elementary_functions,
     ada.numerics.long_complex_types,
-    ada.strings,
     interfaces,
-    pegasoft.strings,
     pegasoft.user_io,
     world,
     scanner,

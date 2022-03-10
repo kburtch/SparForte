@@ -73,7 +73,7 @@ begin
         end if;
      end if;
      declare
-       path : string := to_string( expr_val );
+       path : constant string := to_string( expr_val );
        msg : unbounded_string;
        f : file_type;
        res : integer;

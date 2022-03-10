@@ -20,18 +20,18 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.text_io; use ada.text_io;
+-- with ada.text_io; use ada.text_io;
 
 with pegasoft.gen_list,
      ada.command_line,
      gnat.directory_operations,
      gnat.regexp,
-     gnat.source_info,
      spar_os,
      pegasoft.strings,
      pegasoft.user_io,
      world,
      scanner.communications,
+     scanner.shell,
      parser.decl.as;
 
 use  world,
@@ -41,8 +41,8 @@ use  world,
      spar_os,
      pegasoft.strings,
      pegasoft.user_io,
-     scanner,
      scanner.communications,
+     scanner.shell,
      parser.decl.as;
 
 package body parser.decl.shell is
@@ -102,7 +102,7 @@ procedure doPathnameExpansion(
   bourneShellWordList : in out bourneShellWordLists.List
 ) is
 
-  originalGlobPatternLen : natural := length( originalGlobPattern );
+  originalGlobPatternLen : constant natural := length( originalGlobPattern );
 
   ---------------------------------------------------------------------------
   --  GLOB PATTERN WITHOUT ESCAPSES
@@ -149,7 +149,6 @@ procedure doPathnameExpansion(
     ch  : character;
     inBackslash : boolean := false;
   begin
-<<retry_next_segment>>
     pos := start;
     nextSegment := nullGlobShellWord;
 
@@ -252,8 +251,6 @@ procedure doPathnameExpansion(
      --
      -- if there's no parent, it's the current directory
 
-     declare
-       path : unbounded_string;
      begin
        if candidateParentPath = nullExpandedShellWord then
           open( parentDir, "." );
@@ -418,7 +415,7 @@ procedure doGlobPattern(
    originalGlobPattern: aGlobShellWord;
    bourneShellWordList : in out bourneShellWordLists.List ) is
    globLen : constant natural := length( originalGlobPattern );
-   globPos : natural := 1;
+   globPos : constant natural := 1;
    globPattern : aGlobShellWord := aGlobShellWord( originalGlobPattern );
 begin
    if trace then
@@ -468,7 +465,6 @@ procedure parseShellExpansionName(
       wordLen  : natural;
       wordPos  : in out natural ) is
    ch       : character;
-   firstPos : constant natural := wordPos;
 begin
    -- put_line( "parseShellExpansionName" ); -- DEBUG
 
@@ -968,7 +964,6 @@ procedure doVariableExpansion(
 
    subword      : unbounded_string;
    globSubword  : aGlobShellWord;
-   expandedWord : anExpandedShellWord;
 begin
    -- put_line( "doVariableExpansion" ); -- DEBUG
 
@@ -1814,7 +1809,7 @@ begin
       when '$' =>                                     -- an expansion
          parseSQLDollarExpansion( rawWordValue, wordLen, wordPos, globPattern,
             bourneShellWordList, keep, sqlDoubleNoGlob );
-         globPattern := globPattern;
+      --   globPattern := globPattern;
       -- when '`' =>
       --    -- This is permitted in double quotes in a Bourne shell
       --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,

@@ -369,17 +369,17 @@ package body reports is
   procedure renderDescription( r : in out htmlReport'class; indent : positive; s : unbounded_string ) is
   begin
     -- TOOD: indent not tested
-    if indent > 0 then
+    --if indent > 0 then
        put_line( r.outputfile, "<div style=" & ASCII.Quotation &
           "margin-left:" & positive'image(indent) & "px" &
           ASCII.Quotation & ">" );
-    end if;
+    --end if;
     put_line( r.outputfile, "<p style=" & ASCII.Quotation &
        "padding: 0px 20px 0px 20px" &
        ASCII.Quotation & ">" & html_encode( to_string( s ) ) & "</p>" );
-    if indent > 0 then
+    -- if indent > 0 then
        put_line( r.outputfile, "</div>" );
-    end if;
+    -- end if;
   end renderDescription;
 
   --  RENDER TABLE (HTML)
@@ -464,7 +464,7 @@ package body reports is
           end if;
        end loop;
        num_per_row := 120 / max_length;
-       if num_per_row < 0 then
+       if num_per_row < 1 then
           num_per_row := 1;
        end if;
 

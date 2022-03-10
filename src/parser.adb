@@ -22,6 +22,9 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
+--with ada.text_io;
+--use ada.text_io;
+
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
@@ -40,8 +43,7 @@ with ada.command_line,
     parser_sidefx,
     parser_tio,
     parser_numerics,
-    parser_cal,
-    interpreter; -- circular relationship for breakout prompt
+    parser_cal;
 use ada.command_line,
     spar_os,
     pegasoft.user_io,
@@ -57,11 +59,7 @@ use ada.command_line,
     parser_sidefx,
     parser_tio,
     parser_numerics,
-    parser_cal,
-    interpreter; -- circular relationship for breakout prompt
-
- with ada.text_io;
- use ada.text_io;
+    parser_cal;
 
 package body parser is
 

@@ -18,6 +18,7 @@ Priority Issues (Fix These First)
   probably suppressed for some reason and may leave remaining parameters
   undefined
 - memory leak tests - check to make sure that resources are being cleared
+- device_error and put_line's
 - ada vectors
   - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals
@@ -155,7 +156,7 @@ Priority Issues (Fix These First)
 - Research: enforcing strong types and/or contracts
   - Research: should import require contracts rather than custom type?
 - unsorted/misc
-    - subprogram parameter side-effects checking
+    - mysql.prepare function not implemented (proc is)
     - Verify: check that x : arraytype := (x) works correctly, both with specs
       and normal declaration.
     - Verify: finish manual test pragmas

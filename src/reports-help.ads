@@ -21,11 +21,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io,
-     ada.strings.unbounded;
+with ada.strings.unbounded;
 
-use ada.text_io,
-    ada.strings.unbounded;
+use ada.strings.unbounded;
 
 with pegasoft.gen_list;
 

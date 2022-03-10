@@ -25,7 +25,6 @@ pragma ada_2005;
 
 with unchecked_deallocation,
      ada.text_io,
-     ada.strings.fixed,
      gnat.source_info,
      spar_os.exec,
      signal_flags,
@@ -41,7 +40,7 @@ package body spar_os.tty is
 -- tput terminfo codes (ie. Linux)
 
 type tinfo_array is array(termAttributes ) of aliased unbounded_string;
-tinfo : tinfo_array := (
+tinfo : constant tinfo_array := (
   normal  => to_unbounded_string( "sgr0"  & ASCII.NUL ),
   bold    => to_unbounded_string( "bold"  & ASCII.NUL ),
   inverse => to_unbounded_string( "smso"  & ASCII.NUL ),
@@ -63,7 +62,7 @@ tinfo : tinfo_array := (
 -- tput termcap codes (ie. FreeBSD)
 
 type tcap_array is array(termAttributes ) of aliased unbounded_string;
-tcap : tcap_array := (
+tcap : constant tcap_array := (
   normal  => to_unbounded_string( "me"    & ASCII.NUL ),
   bold    => to_unbounded_string( "md"    & ASCII.NUL ),
   inverse => to_unbounded_string( "so"    & ASCII.NUL ),

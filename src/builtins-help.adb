@@ -24,41 +24,30 @@
 with interfaces.c,
      ada.characters.Latin_1,
      ada.text_io,
-     ada.strings.unbounded.text_io,
-     ada.strings.fixed,
      ada.calendar,
-     cgi,
      spar_os,
      pegasoft.strings,
      world,
      pegasoft.user_io,
      pegasoft.script_io,
      reports.help,
-     jobs,
      compiler,
      scanner.communications,
-     parser_db,
-     parser_mysql,
      parser_teams,
      parser;  -- for pragma annotate
 use  interfaces.c,
      ada.text_io,
-     ada.strings.unbounded.text_io,
-     ada.strings.fixed,
      ada.calendar,
-     cgi,
      spar_os,
      pegasoft.strings,
      world,
-     jobs,
      pegasoft.user_io,
      pegasoft.script_io,
      reports,
      reports.help,
      compiler,
+     scanner,
      scanner.communications,
-     parser_db,
-     parser_mysql,
      parser_teams,
      parser;  -- for pragma annotate
 
@@ -81,11 +70,9 @@ package body builtins.help is
      procedure DoScriptHelp( helpTopic : unbounded_string ) is
        scriptState : aScriptState;
        firstLine   : aliased unbounded_string;
-       exprVal     : unbounded_string;
        info        : unbounded_string;
        genDate     : unbounded_string;
        -- not really in another script but we'll be safe...
-       last_tag    : unbounded_string;
        closeResult : int;
 
        -- to-do's
@@ -150,7 +137,7 @@ package body builtins.help is
        todos_str       : constant unbounded_string := to_unbounded_string( "todo" );
        version_str     : constant unbounded_string := to_unbounded_string( "version" );
 
-  l : helpList.List;
+  --l : helpList.List;
        --authorId     : identifier := eof_t;
 
        function ParsePragmaKindAsHelp return unbounded_string is
@@ -638,7 +625,7 @@ package body builtins.help is
 procedure helpMain is
   e : aHelpEntry;
   r : aRootReportPtr;
-  l : helpList.List;
+  --l : helpList.List;
 begin
    --r := new longHelpReport;
    if HTMLoutput then

@@ -44,7 +44,7 @@ use  ada.strings.unbounded,
      parser,
      parser_params;
 
-with ada.text_io; use ada.text_io;
+--with ada.text_io; use ada.text_io;
 
 package body parser_arrays is
 

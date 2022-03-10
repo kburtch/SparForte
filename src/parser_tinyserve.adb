@@ -21,31 +21,23 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
+--with text_io;use text_io;
 with
     interfaces.c,
-    --spar_os,
     pegasock.tinyserve,
     pegasoft.user_io,
-    world,
     scanner,
     scanner.communications,
     scanner_res,
-    --string_util,
-    parser_aux,
     parser,
     parser_params;
 use
-    --spar_os,
     pegasock,
     pegasock.tinyserve,
-    world,
     pegasoft.user_io,
     scanner,
     scanner.communications,
     scanner_res,
-    --string_util,
-    parser_aux,
     parser,
     parser_params;
 

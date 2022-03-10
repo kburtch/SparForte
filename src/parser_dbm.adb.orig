@@ -38,8 +38,7 @@ with ada.io_exceptions,
      scanner_res,
      parser_params,
      parser_db;
-use  ada.io_exceptions,
-     ada.strings.unbounded,
+use  ada.strings.unbounded,
      ada.text_io,
 #if POSTGRES
      APQ,
@@ -142,15 +141,15 @@ begin
   end if;
 end findConnection;
 
-procedure findQuery( queryId : identifier; query : in out resPtr ) is
-  expr : constant unbounded_string := identifiers( queryId ).value.all;
-begin
-  if length( expr ) = 0 then
-     err( optional_yellow( "new_query" ) & " has not been called to initialize the query" );
-  else
-     findResource( to_resource_id( expr ), query );
-  end if;
-end findQuery;
+--procedure findQuery( queryId : identifier; query : in out resPtr ) is
+--  expr : constant unbounded_string := identifiers( queryId ).value.all;
+--begin
+--  if length( expr ) = 0 then
+--     err( optional_yellow( "new_query" ) & " has not been called to initialize the query" );
+--  else
+--     findResource( to_resource_id( expr ), query );
+--  end if;
+--end findQuery;
 
 -----------------------------------------------------------------------------
 --  CONNECT

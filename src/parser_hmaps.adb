@@ -264,7 +264,7 @@ begin
   ParseLastNumericParameter( subprogramId, capVal, capType, containers_count_type_t );
   if isExecutingCommand then
      declare
-       cap : Ada.Containers.Count_Type := Ada.Containers.Count_Type( to_numeric( capVal ) );
+       cap : constant Ada.Containers.Count_Type := Ada.Containers.Count_Type( to_numeric( capVal ) );
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
        String_Hashed_Maps.Reserve_Capacity( theMap.shmMap, cap );

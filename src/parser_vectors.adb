@@ -21,9 +21,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with text_io;use text_io;
-with pegasoft.strings;
-
 with
     Ada.Containers,
     ada.strings.unbounded,
@@ -50,6 +47,8 @@ use
     parser,
     parser_params,
     parser_containers;
+
+--with text_io;use text_io;
 
 package body parser_vectors is
 

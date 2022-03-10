@@ -1963,7 +1963,6 @@ procedure expectSymbol(
     subjectLocation : string := "";
     reason          : string := "";
     remedy          : string := "" ) is
-  msg             : unbounded_string;
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -1994,7 +1993,6 @@ procedure expectSymbol(
     subjectLocation : string := "";
     reason          : string := "";
     remedy          : string := "" ) is
-  msg             : unbounded_string;
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -2025,7 +2023,6 @@ procedure expectSymbol(
     subjectNotes    : string := "";
     reason          : string := "";
     remedy          : string := "" ) is
-  msg             : unbounded_string;
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -2056,7 +2053,6 @@ procedure expectSymbol(
     subjectNotes    : string := "";
     reason          : string := "";
     remedy          : string := "" ) is
-  msg             : unbounded_string;
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -2194,7 +2190,7 @@ begin
 end expectDeclarationSemicolon;
 
 procedure expectDeclarationSemicolon( contextNotes : string := "" ) is
-  myContextNotes : unbounded_string := to_unbounded_string( contextNotes );
+  myContextNotes : constant unbounded_string := to_unbounded_string( contextNotes );
 begin
 
   -- Common typo

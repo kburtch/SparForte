@@ -25,7 +25,6 @@
 
 with
     ada.strings.unbounded,
-    pegasoft.user_io,
     world,
     scanner,
     scanner.communications,
@@ -35,7 +34,6 @@ with
 use
     ada.strings.unbounded,
     world,
-    pegasoft.user_io,
     scanner,
     scanner.communications,
     scanner_res,

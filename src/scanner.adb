@@ -106,7 +106,6 @@ use ada.text_io,
     performance_monitoring,
     scanner.communications,
     scanner_res,
-    parser,
     parser.decl.as,
     parser_pragmas,
     parser_os,
@@ -710,11 +709,7 @@ begin
          end loop;
       end if;
   end loop;
-exception
-   -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
-   -- occurs, just stop outputing and raise to the caller (e.g. env
-   -- command).
-   when DEVICE_ERROR => raise;
+  -- TODO: DEVICE_ERROR handling
 end put_all_identifiers;
 
 
@@ -2197,7 +2192,7 @@ procedure resetScanner is
   pwd_id  : identifier;
   shell_id: identifier;
 
-  fname : unbounded_string := basename( to_unbounded_string( Ada.Command_line.Command_Name ) );
+  fname : constant unbounded_string := basename( to_unbounded_string( Ada.Command_line.Command_Name ) );
 
 begin
 
@@ -2571,7 +2566,7 @@ begin
   -- return and do nothing.  Otherwise update the end-of-life and continue.
   if identifiers( id ).volatileTTL > 0.0 then
      declare
-        now : time := clock;
+        now : constant time := clock;
      begin
         if identifiers( id ).volatileExpire >= now then
            if trace then
@@ -5444,7 +5439,7 @@ begin
      if element( includeName, 1 ) = '/' then
 
         declare
-          path : string := to_string( includeName );
+          path : constant string := to_string( includeName );
           include_file : file_type;
           includeParentDir : unbounded_string;
         begin
@@ -5515,7 +5510,7 @@ begin
            end if;
 
            declare
-             path         : string     := to_string( libraryPrefix & includeName );
+             path         : constant string     := to_string( libraryPrefix & includeName );
              include_file : file_type;
              includeParentDir : unbounded_string;
            begin

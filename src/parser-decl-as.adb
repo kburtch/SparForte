@@ -2527,8 +2527,7 @@ end ParseFormalParameters;
 
 procedure ParseFunctionReturnPartProperties(
   resultKind : out identifier;
-  abstractKind : out identifier;
-  funcId : identifier) is
+  abstractKind : out identifier ) is
   -- Parse a function's return part but do not declare it.  This is necessary
   -- for forward declarations.  Return the properties to the caller who can
   -- then declare it.
@@ -2620,8 +2619,7 @@ begin
 
   ParseFunctionReturnPartProperties(
     resultKind => resultKind,
-    abstractKind => abstractReturn,
-    funcId => funcId
+    abstractKind => abstractReturn
   );
 
   -- The return statement needs to know the type of the function return
@@ -2846,8 +2844,7 @@ procedure VerifySubprogramReturnPart( funcId : identifier ) is
 begin
   ParseFunctionReturnPartProperties(
       resultKind => resultKind,
-      abstractKind => abstractReturn,
-      funcId => funcId
+      abstractKind => abstractReturn
    );
   if resultKind /= identifiers( funcId ).kind then
      err("function return type " &
@@ -3079,7 +3076,7 @@ end ParseProcedureBlock;
 procedure ParseActualParameters( proc_id : identifier;
   declareParams : boolean := true ) is
 
-  old_identifiers_top : identifier := identifiers_top;
+  old_identifiers_top : constant identifier := identifiers_top;
   new_identifiers_top : identifier := identifiers_top;
   -- remember the start of these parameters for cases where the parameters
   -- we are making might overshadow earlier identifiers with the same names.
@@ -4264,7 +4261,6 @@ procedure ParseShellCommand is
   -- Word parsing and Parameter counting
 
   word         : unbounded_string;
-  pattern      : unbounded_string;
   inBackground : boolean;
   --wordType     : aShellWordType;
 
@@ -4275,11 +4271,11 @@ procedure ParseShellCommand is
 
   -- I/O Redirection parsing
 
-  expectRedirectInFile        : boolean := false;     -- encountered <
-  expectRedirectOutFile       : boolean := false;     -- encountered >
-  expectRedirectAppendFile    : boolean := false;     -- encountered >>
-  expectRedirectErrOutFile    : boolean := false;     -- encountered 2>
-  expectRedirectErrAppendFile : boolean := false;     -- encountered 2>>
+  -- expectRedirectInFile        : boolean := false;     -- encountered <
+  -- expectRedirectOutFile       : boolean := false;     -- encountered >
+  -- expectRedirectAppendFile    : boolean := false;     -- encountered >>
+  -- expectRedirectErrOutFile    : boolean := false;     -- encountered 2>
+  -- expectRedirectErrAppendFile : boolean := false;     -- encountered 2>>
 
   redirectedInputFd           : aFileDescriptor := 0; -- input fd (if not 0)
   redirectedOutputFd          : aFileDescriptor := 0; -- output fd (if not 0)
@@ -4320,20 +4316,20 @@ procedure ParseShellCommand is
   -- an appropriate error message.
   ----------------------------------------------------------------------------
 
-  procedure checkRedirectFile is
-  begin
-     if expectRedirectOutFile then
-        err( "expected a file path for >" );
-     elsif expectRedirectInFile then
-        err( "expected a file path for <" );
-     elsif expectRedirectAppendFile then
-        err( "expected a file path for >>" );
-     elsif expectRedirectErrOutFile then
-        err( "expected a file path for 2>" );
-     elsif expectRedirectErrAppendFile then
-        err( "expected a file path for 2>>" );
-     end if;
-  end checkRedirectFile;
+  --procedure checkRedirectFile is
+  --begin
+  --   if expectRedirectOutFile then
+  --      err( "expected a file path for >" );
+  --   elsif expectRedirectInFile then
+  --      err( "expected a file path for <" );
+  --   elsif expectRedirectAppendFile then
+  --      err( "expected a file path for >>" );
+  --   elsif expectRedirectErrOutFile then
+  --      err( "expected a file path for 2>" );
+  --   elsif expectRedirectErrAppendFile then
+  --      err( "expected a file path for 2>>" );
+  --   end if;
+  --end checkRedirectFile;
 
   wordList   : bourneShellWordLists.List;
 
@@ -4351,7 +4347,6 @@ procedure ParseShellCommand is
 -- TODO: this could be a renaming
 
   procedure ParseShellRedirectTarget( shellWord : out anExpandedShellWord ) is
-    rawWordValue : aRawShellWord;
   begin
     parseUniqueShellWord( shellWord );
   end ParseShellRedirectTarget;
@@ -4583,7 +4578,7 @@ end ParseShellErrOutputAppendRedirect;
   ----------------------------------------------------------------------------
 
 procedure DoShellErrorToOutputRedirect is
-  targetPath : anExpandedShellWord;
+  --targetPath : anExpandedShellWord;
 begin
   checkAda95Redirects;
   needToRedirectErr2Out := false;
@@ -4639,7 +4634,6 @@ begin
   end if;
 end DoShellErrorToOutputRedirect;
 
-  rawWordValue : aRawShellWord;
   shellWord  : anExpandedShellWord;
   -- TODO: refactor shellWord?
 

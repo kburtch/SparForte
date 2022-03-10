@@ -211,7 +211,7 @@ end nextCompletionSubcommand;
 
 function Ada_ipset_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( ipsetWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -287,7 +287,7 @@ end Ada_ipset_word_generator;
 
 function Ada_svn_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( svnWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -474,7 +474,7 @@ end Ada_svn_word_generator;
 
 function Ada_git_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( gitWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -550,7 +550,7 @@ end Ada_git_word_generator;
 
 function Ada_yum_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( yumWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -630,7 +630,7 @@ end Ada_yum_word_generator;
 
 function Ada_apt_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( aptWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -702,7 +702,7 @@ dockerWords : constant string :=
 
 function Ada_docker_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( dockerWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -783,7 +783,7 @@ kubernetesWords : constant string :=
 
 function Ada_k8s_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( kubernetesWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin
@@ -895,7 +895,7 @@ npmWords : constant string :=
 
 function Ada_npm_word_generator(text : chars_ptr; state : int ) return chars_ptr is
   needle : constant string := To_Ada( Value( text ) );
-  completionCandidate : string :=
+  completionCandidate : constant string :=
      nextCompletionSubcommand( npmWords, needle, state );
   subcommand : aliased char_array := To_C( completionCandidate );
 begin

@@ -22,7 +22,6 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     ada.numerics.float_random,
      world;
 use  ada.strings.unbounded,
      world;

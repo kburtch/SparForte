@@ -22,12 +22,14 @@
 ------------------------------------------------------------------------------
 with ada.strings.unbounded.text_io,
      ada.calendar,
+     ada.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io;
 use  ada.strings,
      ada.strings.unbounded.text_io,
      ada.calendar,
+     ada.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io;
@@ -364,7 +366,6 @@ package body reports.help is
   ----------------------------------------------------------------------------
 
   procedure render( r : in out longHelpReport; e : in out aHelpEntry ) is
-    s : unbounded_string;
   begin
      -- display the help topic and the header if there is one
      put( r.outputfile, optional_green( to_string( e.topic ) ) );
@@ -428,7 +429,6 @@ package body reports.help is
   -- TODO: html encoding
 
   procedure render( r : in out longHtmlHelpReport; e : in out aHelpEntry ) is
-    s : unbounded_string;
   begin
      -- display the help topic and the header if there is one
      put( r.outputfile, "<h2>" & html_encode( to_string( e.topic ) )  );
@@ -492,7 +492,6 @@ package body reports.help is
   ----------------------------------------------------------------------------
 
   procedure render( r : in out longManPageHelpReport; e : in out aHelpEntry ) is
-    s : unbounded_string;
     genDate : unbounded_string;
   begin
     genDate := to_unbounded_string( integer'image( day( ada.calendar.clock ) ) );

@@ -22,7 +22,6 @@
 ------------------------------------------------------------------------------
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
-with ada.command_line.environment;
 pragma warnings( on );
 with  ada.text_io,
     ada.strings.unbounded.text_io,
@@ -43,8 +42,6 @@ with  ada.text_io,
     parser.decl.as,
     parser_teams;
 use ada.text_io,
-    ada.command_line,
-    ada.command_line.environment,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.calendar,

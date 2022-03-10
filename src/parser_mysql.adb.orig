@@ -38,8 +38,7 @@ with ada.io_exceptions,
      parser,
      parser_params,
      parser_db;
-use  ada.io_exceptions,
-     ada.text_io,
+use  ada.text_io,
 #if MYSQL
      APQ,
      APQ.MySQL,
@@ -277,6 +276,7 @@ procedure ParseMySQLEngineOf( result : out unbounded_string; kind : out identifi
 #end if;
 #if MYSQL
 
+-- TODO: this is not visible
 procedure ParseMySQLPrepare( result : out unbounded_string ) is
   -- Syntax: mysql.prepare( sqlstmt [,after] );
   sqlExpr   : unbounded_string;

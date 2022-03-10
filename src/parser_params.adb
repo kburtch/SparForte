@@ -21,27 +21,22 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io; use ada.text_io;
-
-with ada.strings.unbounded,
-    world,
+with ada.strings,
     pegasoft.user_io,
     scanner.communications,
     performance_monitoring,
-    parser_aux,
     parser_sidefx,
     parser.decl.as;
 use ada.strings,
-    ada.strings.unbounded,
-    world,
     pegasoft.user_io,
     scanner,
     scanner.communications,
     performance_monitoring,
-    parser_aux,
     parser_sidefx,
     parser,
     parser.decl.as;
+
+-- with ada.text_io; use ada.text_io;
 
 package body parser_params is
 

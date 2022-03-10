@@ -20,26 +20,15 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.text_io; use ada.text_io; -- DEBUG
+--with ada.text_io; use ada.text_io;
 
-with gnat.bubble_sort_a,
-     gnat.heap_sort_a,
-     gnat.source_info,
-     ada.numerics.float_random,
+with gnat.source_info,
      ada.numerics.long_elementary_functions,
-     spar_os,
-     pegasoft.strings,
-     world,
      scanner.communications,
-     parser,
-     parser_aux;
+     parser;
 use  ada.numerics.long_elementary_functions,
-     spar_os,
-     pegasoft.strings,
-     world,
      scanner.communications,
-     parser,
-     parser_aux;
+     parser;
 
 --with ada.text_io; use ada.text_io;
 

@@ -38,8 +38,7 @@ with ada.io_exceptions,
      scanner_res,
      parser_params,
      parser_db;
-use  ada.io_exceptions,
-     ada.strings.unbounded,
+use  ada.strings.unbounded,
      ada.text_io,
 #if MYSQL
      APQ,

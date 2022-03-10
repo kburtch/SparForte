@@ -35,8 +35,7 @@ with ada.io_exceptions,
      scanner.communications,
      parser,
      parser_params;
-use  ada.io_exceptions,
-     ada.text_io,
+use  ada.text_io,
 #if POSTGRES
      APQ,
      APQ.PostgreSQL,

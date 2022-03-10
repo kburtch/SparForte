@@ -23,12 +23,10 @@
 
 with ada.strings.unbounded,
      pegasoft.gen_list,
-     scanner,
-     scanner.shell;
+     scanner;
 
 use  ada.strings.unbounded,
-     scanner,
-     scanner.shell;
+     scanner;
 
 package parser.decl.shell is
 

@@ -1697,84 +1697,85 @@ begin
   end if;
 end ParseGetImmediate;
 
-procedure ParseLookAhead is
+-- TODO: this is incomplete
+--procedure ParseLookAhead is
   -- Syntax: look_ahead( [file,] ch [, eol] )
   -- Source: Ada.Text_IO.Look_Ahead
   -- This is the equivalent of a Get that does not get the next character.
 --   procedure Look_Ahead
 --     (Item        : out Character;
 --      End_Of_Line : out Boolean);
-  file_ref  : reference;
-  kind      : identifier;
-  fd        : aFileDescriptor;
-  ch        : character;
-  id_ref    : reference;
-  result    : size_t;
-  fileInfo  : unbounded_string;
-begin
-  file_ref.id := eof_t;
-  expect( look_ahead_t );
-  fd := stdin;
-  expect( symbol_t, "(" );
-  if identifiers( token ).kind /= keyword_t then
-     ParseOpenFileOrSocket( file_ref, kind );
-     expectParameterComma;
-  else
-     file_ref.id := standard_input_t;
-  end if;
-  ParseOutParameter( id_ref, character_t );
-  if baseTypesOk( id_ref.kind, character_t ) then
-     expect( symbol_t, ")" );
-  end if;
-  -- TODO: second parameter
-  if isExecutingCommand then
-     if trace then
-        put_trace( "Using file descriptor " & to_string( stringField( file_ref, fd_field ) ) );
-     end if;
-     -- reading from a file?
-     if file_ref.id /= eof_t then
-        GetParameterValue( file_ref, fileInfo );
-        if kind = socket_type_t and then stringField( fileInfo, recSep, doget_field ) = "1" then
-           -- First get must update the 1 char look-ahead in the file_info
-           DoGet( file_ref );
-           GetParameterValue( file_ref, fileInfo );
-           replaceField( fileInfo, recSep, doget_field, boolean'image(false));
-        end if;
-        if stringField( fileInfo, recSep, eof_field ) = "1" then
-           err( "end of file" );
-        else
-           ch := Element( fileInfo, 1 );
-           AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
-           AssignParameter( file_ref, fileInfo );
-           -- DoGet( file_ref );
-        end if;
-     else
-        -- reading from default input
-        -- TODO: why no buffering here?
-        fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
-   <<reread>> readchar( result, fd, ch, 1 );
- -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
-         if result < 0 or result = size_t'last then
-              if C_errno = EAGAIN  or C_errno = EINTR then
-                 goto reread;
-              end if;
-              err( "unable to read file:" & OSerror( C_errno ) );
-         elsif result = 0 then
-            err( "end of file" );
-         else
-            AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
-         end if;
-      end if;
-      if ch = ASCII.LF then -- not stdin (or error)?
-         replaceField( file_ref, line_field,
-            long_integer'image( long_integer'value(
-            to_string( stringField( file_ref, line_field ) ) ) + 1 ) );
-         replaceField( file_ref, eol_field, "1" );
-      else
-         replaceField( file_ref, eol_field, "0" );
-      end if;
-  end if;
-end ParseLookAhead;
+--  file_ref  : reference;
+--  kind      : identifier;
+--  fd        : aFileDescriptor;
+--  ch        : character;
+--  id_ref    : reference;
+--  result    : size_t;
+--  fileInfo  : unbounded_string;
+--begin
+--  file_ref.id := eof_t;
+--  expect( look_ahead_t );
+--  fd := stdin;
+--  expect( symbol_t, "(" );
+--  if identifiers( token ).kind /= keyword_t then
+--     ParseOpenFileOrSocket( file_ref, kind );
+--     expectParameterComma;
+--  else
+--     file_ref.id := standard_input_t;
+--  end if;
+--  ParseOutParameter( id_ref, character_t );
+--  if baseTypesOk( id_ref.kind, character_t ) then
+--     expect( symbol_t, ")" );
+--  end if;
+--  -- TODO: second parameter
+--  if isExecutingCommand then
+--     if trace then
+--        put_trace( "Using file descriptor " & to_string( stringField( file_ref, fd_field ) ) );
+--     end if;
+--     -- reading from a file?
+--     if file_ref.id /= eof_t then
+--        GetParameterValue( file_ref, fileInfo );
+--        if kind = socket_type_t and then stringField( fileInfo, recSep, doget_field ) = "1" then
+--           -- First get must update the 1 char look-ahead in the file_info
+--           DoGet( file_ref );
+--           GetParameterValue( file_ref, fileInfo );
+--           replaceField( fileInfo, recSep, doget_field, boolean'image(false));
+--        end if;
+--        if stringField( fileInfo, recSep, eof_field ) = "1" then
+--           err( "end of file" );
+--        else
+--           ch := Element( fileInfo, 1 );
+--           AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
+--           AssignParameter( file_ref, fileInfo );
+--           -- DoGet( file_ref );
+--        end if;
+--     else
+--        -- reading from default input
+--        -- TODO: why no buffering here?
+--        fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
+--   <<reread>> readchar( result, fd, ch, 1 );
+-- -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
+--         if result < 0 or result = size_t'last then
+--              if C_errno = EAGAIN  or C_errno = EINTR then
+--                 goto reread;
+--              end if;
+--              err( "unable to read file:" & OSerror( C_errno ) );
+--         elsif result = 0 then
+--            err( "end of file" );
+--         else
+--            AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
+--         end if;
+--      end if;
+--      if ch = ASCII.LF then -- not stdin (or error)?
+--         replaceField( file_ref, line_field,
+--            long_integer'image( long_integer'value(
+--            to_string( stringField( file_ref, line_field ) ) ) + 1 ) );
+--         replaceField( file_ref, eol_field, "1" );
+--      else
+--         replaceField( file_ref, eol_field, "0" );
+--      end if;
+--  end if;
+--end ParseLookAhead;
 
 procedure StartupTextIO is
 begin
