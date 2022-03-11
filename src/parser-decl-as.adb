@@ -3975,38 +3975,41 @@ begin
      --if token = symbol_t and identifiers( token ).value.all = "(" then
      ParseActualParameters( proc_id );
      --end if;
-     parseNewCommands( scriptState, s );
-     results := null_unbounded_string;        -- no results (yet)
-     expect( procedure_t );
-     if token = abstract_t then
-        expect( abstract_t );
+     -- parseNewCommands would clear error_found.
+     if not error_found then
+        parseNewCommands( scriptState, s );
+        results := null_unbounded_string;        -- no results (yet)
+        expect( procedure_t );
+        if token = abstract_t then
+           expect( abstract_t );
+        end if;
+        ParseIdentifier( proc_id );
+        -- we already know the parameter syntax is good so skip to "is"
+        while token /= is_t loop
+           getNextToken;
+        end loop;
+        expect( is_t );
+        ParseDeclarations;
+        expect( begin_t );
+        ParseBlock;
+        if token = exception_t then
+           ParseExceptionHandler( old_error_found );
+        end if;
+        -- Check to see if we're return-ing early
+        -- TODO: Not pretty, but will work.  This should be improved.
+        if exit_block and done_sub and not error_found and not syntax_check then
+           done_sub := false;
+           exit_block := old_exit_block;  -- TODO: is this right?
+           done := false;
+        end if;
+        expect( end_t );
+        expect( proc_id );
+        expectDeclarationSemicolon( proc_id );
+        if not done then                     -- not exiting?
+            expect( eof_t );                  -- should be nothing else
+        end if;
+        restoreScript( scriptState );               -- restore original script
      end if;
-     ParseIdentifier( proc_id );
-     -- we already know the parameter syntax is good so skip to "is"
-     while token /= is_t loop
-        getNextToken;
-     end loop;
-     expect( is_t );
-     ParseDeclarations;
-     expect( begin_t );
-     ParseBlock;
-     if token = exception_t then
-        ParseExceptionHandler( old_error_found );
-     end if;
-     -- Check to see if we're return-ing early
-     -- TODO: Not pretty, but will work.  This should be improved.
-     if exit_block and done_sub and not error_found and not syntax_check then
-        done_sub := false;
-        exit_block := old_exit_block;  -- TODO: is this right?
-        done := false;
-     end if;
-     expect( end_t );
-     expect( proc_id );
-     expectDeclarationSemicolon( proc_id );
-     if not done then                     -- not exiting?
-         expect( eof_t );                  -- should be nothing else
-     end if;
-     restoreScript( scriptState );               -- restore original script
   elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
      -- because nothing executes during a syntax check, we still need
@@ -4066,45 +4069,48 @@ begin
      ParseActualParameters( func_id );
      --end if;
      -- Prepare to execute.  This should probably be a utility function.
-     parseNewCommands( scriptState, s );
-     results := null_unbounded_string;        -- no results (yet)
-     expect( function_t );                    -- function
-     if token = abstract_t then
-        expect( abstract_t );
+     -- parseNewCommands would clear error_found.
+     if not error_found then
+        parseNewCommands( scriptState, s );
+        results := null_unbounded_string;        -- no results (yet)
+        expect( function_t );                    -- function
+        if token = abstract_t then
+           expect( abstract_t );
+        end if;
+        ParseIdentifier( func_id );              -- function name
+        while token /= is_t loop                 -- skip header - syntax is good
+           getNextToken;                         -- and params are declared
+        end loop;
+        expect( is_t );                          -- is
+        -- Create a place to save the return result.
+        -- Although the return result is formal parameter zero of the function,
+        -- the return statement has no idea which function is running.  It is
+        -- not recorded in the block table.  So we create a return result here.
+        CreateFunctionReturnValue( func_id, identifiers(func_id).kind);
+        ParseDeclarations;                       -- declaration block
+        expect( begin_t );                       -- begin
+        ParseBlock;                              -- executable block
+        if token = exception_t then
+           ParseExceptionHandler( errorOnEntry );
+        end if;
+        -- Check to see if we're return-ing early
+        -- TODO: Not pretty, but will work.  This should be improved.
+        if exit_block and done_sub and not error_found and not syntax_check then
+           done_sub := false;
+           exit_block := exitBlockOnEntry;
+           done := false;
+        end if;
+        expect( end_t );                         -- end
+        expect( func_id );                       -- function_name
+        expectDeclarationSemicolon( context => func_id );
+        if not done then                         -- not exiting?
+            expect( eof_t );                     -- should be nothing else
+        end if;
+        -- return value is top-most variable called "return value"
+        findIdent( return_value_str, return_id );
+        result := identifiers( return_id ).value.all;
+        restoreScript( scriptState );            -- restore original script
      end if;
-     ParseIdentifier( func_id );              -- function name
-     while token /= is_t loop                 -- skip header - syntax is good
-        getNextToken;                         -- and params are declared
-     end loop;
-     expect( is_t );                          -- is
-     -- Create a place to save the return result.
-     -- Although the return result is formal parameter zero of the function,
-     -- the return statement has no idea which function is running.  It is
-     -- not recorded in the block table.  So we create a return result here.
-     CreateFunctionReturnValue( func_id, identifiers(func_id).kind);
-     ParseDeclarations;                       -- declaration block
-     expect( begin_t );                       -- begin
-     ParseBlock;                              -- executable block
-     if token = exception_t then
-        ParseExceptionHandler( errorOnEntry );
-     end if;
-     -- Check to see if we're return-ing early
-     -- TODO: Not pretty, but will work.  This should be improved.
-     if exit_block and done_sub and not error_found and not syntax_check then
-        done_sub := false;
-        exit_block := exitBlockOnEntry;
-        done := false;
-     end if;
-     expect( end_t );                         -- end
-     expect( func_id );                       -- function_name
-     expectDeclarationSemicolon( context => func_id );
-     if not done then                         -- not exiting?
-         expect( eof_t );                     -- should be nothing else
-     end if;
-     -- return value is top-most variable called "return value"
-     findIdent( return_value_str, return_id );
-     result := identifiers( return_id ).value.all;
-     restoreScript( scriptState );            -- restore original script
   elsif syntax_check or exit_block then
      -- at this point, we are still looking at call
      -- because nothing executes during a syntax check, we still need

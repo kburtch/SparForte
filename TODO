@@ -13,10 +13,6 @@ Priority Issues (Fix These First)
 
 - procedure (  expect "is" needs a better error message
 
-- a programming-by-contract exception in a function parameter seems to
-  take effect after the function starts to run (weird).  Errors are
-  probably suppressed for some reason and may leave remaining parameters
-  undefined
 - memory leak tests - check to make sure that resources are being cleared
 - device_error and put_line's
 - ada vectors

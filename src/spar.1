@@ -32,7 +32,7 @@ enable breakout debugging prompt
 syntax check the script but do not run
 .TP
 \fB\-C\fR, \fB\-\-coding\fR
-development phase mode
+development phase mode. Less strict error checking.
 .TP
 \fB\-\-color\fR, \fB\-\-colour\fR
 enable colour messages and UTF-8 icons
@@ -40,8 +40,8 @@ enable colour messages and UTF-8 icons
 \fB\-d\fR, \fB\-\-debug\fR
 enable pragma assert and pragma debug
 .TP
-\fB\-d\fR, \fB\-\-design\fR
-design phase mode
+\fB\-D\fR, \fB\-\-design\fR
+design phase mode. Enables design features.
 .TP
 \fB\-e\fR, \fB\-\-exec\fR
 script is a string containing SparForte commands
@@ -59,7 +59,7 @@ add directory d to the separate files search list (may be repeated)
 simulate a login shell
 .TP
 \fB\-l\fR, \fB\-\-maintenance\fR
-maintenance phase mode
+maintenance phase mode. Disables slow checks, hides data in errors.
 .TP
 \fB\-p\fR, \fB\-\-perf\fR
 show performance stats
@@ -74,7 +74,7 @@ brief error messages
 restricted shell mode
 .TP
 \fB\-t\fR, \fB\-\-test\fR
-test phase mode (default SDLC mode)
+test phase mode (default SDLC mode).  Strict error checking, unit tests enabled.
 .TP
 \fB\-x\fR, \fB\-\-trace\fR
 show script lines as they run
