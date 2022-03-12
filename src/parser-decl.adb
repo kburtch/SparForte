@@ -1100,6 +1100,9 @@ end ParseExceptionDeclarationPart;
 procedure CheckGenericParameterType( id, type_token : identifier ) is
    uniType  : constant identifier := getUniType( type_token );
 begin
+   -- Treat the generic type parameters as used types
+   identifiers( identifiers( id ).genKind ).wasApplied := true;
+   identifiers( identifiers( id ).genKind2 ).wasApplied := true;
    if uniType = doubly_list_t then
       if identifiers( id ).genKind2 /= eof_t then
          err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " should have one element type" );

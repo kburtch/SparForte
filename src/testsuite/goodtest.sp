@@ -7307,6 +7307,24 @@ begin
   pragma assert( len( sv ) = 0 );
 end;
 
+-- vector subtypes
+
+declare
+  type mytype is new integer;
+  type myvector is new vectors.vector( natural, mytype );
+begin
+  v : myvector;
+  vectors.append_elements( v, 0 );
+end;
+declare
+  subtype mytype is integer;
+  type myvector is new vectors.vector( natural, mytype );
+begin
+  v : myvector;
+  vectors.append_elements( v, 0 );
+end;
+
+
 
 
 -- constant specifications
