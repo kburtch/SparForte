@@ -20,6 +20,7 @@ Priority Issues (Fix These First)
   - tests - subtypes, arrays (out param), universals
   - append/prepend to a vector (Ada naming convention) vs. an Element - mine usage and ada conflicts with each other (I think Ada is probably wrong.)
   - check handling of vectors of vectors, maps of maps, etc.
+  - check enumerated vector index (it's a "TODO")
   - can I simulate a cursor for the wrong vector, raising an exception like ada?
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment

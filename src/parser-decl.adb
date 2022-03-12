@@ -1098,7 +1098,32 @@ end ParseExceptionDeclarationPart;
 -----------------------------------------------------------------------------
 
 procedure CheckGenericParameterType( id, type_token : identifier ) is
-   uniType  : constant identifier := getUniType( type_token );
+
+  procedure err_array_element( genTypeId, elementTypeId : identifier ) is
+  begin
+    err(
+       contextNotes => "While checking the parameters of " &
+          optional_yellow( to_string( identifiers( genTypeId ).name ) ),
+       subject => elementTypeId,
+       reason => "is an array type but",
+       obstructorNotes => "elements should be scalar",
+       remedy => "convert it to a JSON string as a workaround until support for arrays and records is written"
+   );
+  end err_array_element;
+
+  procedure err_record_element( genTypeId, elementTypeId : identifier ) is
+  begin
+    err(
+       contextNotes => "While checking the parameters of " &
+          optional_yellow( to_string( identifiers( genTypeId ).name ) ),
+       subject => elementTypeId,
+       reason => "is a record type but",
+       obstructorNotes => "elements should be scalar",
+       remedy => "convert it to a JSON string as a workaround until support for arrays and records is written"
+   );
+  end err_record_element;
+
+  uniType  : constant identifier := getUniType( type_token );
 begin
    -- Treat the generic type parameters as used types
    identifiers( identifiers( id ).genKind ).wasApplied := true;
@@ -1112,9 +1137,9 @@ begin
          begin
             if class_ok( genKindId, typeClass, subClass ) then
                if identifiers( genKindId ).list then
-                  err( "element type should be a scalar type" );
+                  err_array_element( uniType, genKindId );
                elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                  err( "element type should be a scalar type" );
+                  err_record_element( uniType, genKindId );
                end if;
             end if;
          end;
@@ -1145,9 +1170,9 @@ begin
       begin
          if class_ok( genKindId, typeClass, subClass ) then
             if identifiers( genKindId ).list then
-               err( "element type should be a scalar type" );
+               err_array_element( uniType, genKindId );
             elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-               err( "element type should be a scalar type" );
+               err_record_element( uniType, genKindId );
             end if;
          end if;
       end;
@@ -1186,9 +1211,9 @@ begin
          begin
             if class_ok( genKindId, typeClass, subClass ) then
                if identifiers( genKindId ).list then
-                  err( "element type should be a scalar type" );
+                  err_array_element( uniType, genKindId );
                elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                  err( "element type should be a scalar type" );
+                  err_record_element( unitype, genKindId );
                end if;
             end if;
          end;
@@ -1228,9 +1253,9 @@ begin
          begin
             if class_ok( genKindId, typeClass, subClass ) then
                if identifiers( genKindId ).list then
-                  err( "element type should be a scalar type" );
+                  err_array_element( uniType, genKindId );
                elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                  err( "element type should be a scalar type" );
+                  err_record_element( uniType, genKindId );
                end if;
             end if;
          end;
@@ -1257,9 +1282,9 @@ begin
          begin
             if class_ok( genKindId, typeClass, subClass ) then
                if identifiers( genKindId ).list then
-                  err( "element type should be a scalar type" );
+                  err_array_element( uniType, genKindId );
                elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                  err( "element type should be a scalar type" );
+                  err_record_element( uniType, genKindId );
                end if;
             end if;
          end;
@@ -1286,9 +1311,9 @@ begin
          begin
             if class_ok( genKindId, typeClass, subClass ) then
                if identifiers( genKindId ).list then
-                  err( "element type should be a scalar type" );
+                  err_array_element( uniType, genKindId );
                elsif identifiers( getBaseType( genKindId ) ).kind = root_record_t then
-                  err( "element type should be a scalar type" );
+                  err_record_element( uniType, genKindId );
                end if;
             end if;
          end;
