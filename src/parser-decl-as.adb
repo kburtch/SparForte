@@ -2682,9 +2682,15 @@ begin
          identifiers( actual_param_t ).wasFactor := true;
          -- if a record, we need fields
          recordBaseTypeId := getBaseType( identifiers( actual_param_t ).kind );
-         if identifiers( recordBaseTypeId ).kind = root_record_t then  -- record type?
+         if identifiers( actual_param_t ).list then  -- array type?
+            identifiers( actual_param_t ).wasWritten := true;
+         elsif identifiers( recordBaseTypeId ).kind = root_record_t then  -- record type?
             -- if identifiers( actual_param_t ).kind = root_record_t then  -- record type?
             declareRecordFields( actual_param_t, recordBaseTypeId );
+            -- currently, records must be in out parameters.  So we declare
+            -- the record parameter as written to avoid a warning that an
+            -- in mode parameter is required if it is not written to.
+            identifiers( actual_param_t ).wasWritten := true;
          end if;
          -- search for the next one starting one later
          param_no := param_no + 1;
