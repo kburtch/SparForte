@@ -14,7 +14,7 @@ Priority Issues (Fix These First)
 - procedure (  expect "is" needs a better error message
 
 - memory leak tests - check to make sure that resources are being cleared
-- device_error and put_line's
+- check the end-of-block usage checks and error messages
 - ada vectors
   - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals
@@ -35,6 +35,7 @@ Priority Issues (Fix These First)
   - templates that are not for HTTP
 - terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
 - errors should support err_previous
+- put_line may raise device_error on interrupted system calls
 - check btree/hash_io get next mark the variable as written
   with the constant check
 - investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.

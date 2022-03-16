@@ -851,8 +851,9 @@ begin
                                        contextNotes => "While checking variables in this block",
                                        subject => i,
                                        reason => to_string( usage ) &
-                                          "is not assigned to nor in any declarations and should be declared",
-                                       obstructorNotes => optional_yellow( "limited" )
+                                          "is not assigned to nor in any expressions and should be declared",
+                                       obstructorNotes => optional_yellow( "limited" ),
+                                       remedy => "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & ") as a workaround until user packages are finished"
                                     );
                                  end;
                            end if;
@@ -875,10 +876,13 @@ begin
                         if not identifiers( i ).list and
                            head( identifiers( i ).name, 13 ) /= "return result" and
                            identifiers( i ).field_of = eof_t then
-                              err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                                 -- " is a " & optional_yellow( "variable" ) &
-                                 " was expected to be " & optional_yellow( "constant" ) &
-                                 " (or in mode parameter).  It (or its elements) are never written to." );
+                              err(
+                                 contextNotes => "While checking variables in this block",
+                                 subject => i,
+                                 reason => "is not written to and should be declared",
+                                 obstructorNotes => optional_yellow( "constant" ) & " (or an in mode parameter)",
+                                 remedy => "if this is shared and not always written to, use pragma assumption( written" & ", " & to_string( identifiers( i ).name ) & ") as a workaround until user packages are finished"
+                              );
                         end if;
                      end if;
                   end if;
@@ -1003,10 +1007,20 @@ begin
 --put_line( "not ada_95" ); -- DEBUGME
                         if identifiers( i ).usage /= limitedUsage then
                            if identifiers( i ).name /= "return value" then
-                              err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                                 " is a " & optional_yellow( "not-limited variable" ) &
-                                 " but expected a " & optional_yellow( "limited" ) &
-                                 ".  It (or its elements) are not used in expressions nor is assigned to." );
+                              declare
+                                 usage : unbounded_string;
+                              begin
+                                 if identifiers( i ).usage = constantUsage then
+                                    usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                                 end if;
+                                 err(
+                                    contextNotes => "While checking variables in this block",
+                                    subject => i,
+                                    reason => to_string( usage ) &
+                                       "is not assigned to nor in any expressions and should be declared",
+                                    obstructorNotes => optional_yellow( "limited" )
+                                 );
+                              end;
                            end if;
                         end if;
                      end if;
