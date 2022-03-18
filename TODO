@@ -15,6 +15,7 @@ Priority Issues (Fix These First)
 
 - memory leak tests - check to make sure that resources are being cleared
 - check the end-of-block usage checks and error messages
+  - check each of the SDLC modes
   - review non-block tests
 - ada vectors
   - complete extended subprograms (if time)
