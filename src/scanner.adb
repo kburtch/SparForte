@@ -792,7 +792,11 @@ begin
             if identifiers( i ).class = typeClass or
                identifiers( i ).class = subClass then
                if boolean( designOpt ) or boolean( testOpt ) then
-                  if not identifiers( i ).wasApplied then
+--put_line( to_string( identifiers( i ).name ) & ":ref=" &
+--  identifiers( i ).wasReferenced'img & ":app=" &
+--  identifiers( i ).wasApplied'img ); -- DEBUG
+                  --if not identifiers( i ).wasApplied then
+                  if identifiers( i ).wasReferenced and not identifiers( i ).wasApplied then
                      if identifiers( i ).field_of = eof_t then -- not a field of a record
                         declare
                            usage : unbounded_string;
