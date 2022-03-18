@@ -1225,12 +1225,14 @@ begin
      end if;
      if subjectLocation /= "" then
         if subjectType = eof_t or subjectLocationNeedsParen then
-           msg := msg & " (";
+           msg := msg & " (at ";
         else
-           msg := msg & ", ";
+           msg := msg & ", at ";
         end if;
         msg := msg & subjectLocation & ")";
      end if;
+  elsif subjectLocation /= "" then
+     msg := msg & " (at " & subjectLocation & ")";
   end if;
 
   -- Reason

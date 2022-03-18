@@ -779,19 +779,16 @@ end recordSoftwareModelRequirements;
 
 procedure checkIdentifiersInCurrentBlock is
 begin
-  --if blocks_top > 1 then
-    -- put_line( "checkSoftwareModelRequirements: " & to_string( blocks( blocks_top-1 ).blockName ) ); -- DEBUG
-  --else
-     --put_line( "checkSoftwareModelRequirements: no block" ); -- DEBUG
-  --end if;
-
+  -- Do not check templates
   if not hasTemplate then
      for i in reverse blocks(blocks_top-1).identifiers_top..identifiers_top-1 loop
          if not identifiers( i ).deleted then
-            -- put( " id:" ); put( i'img ); -- DEBUG
-            -- put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
+
+            -- ABSTRACT TYPE TEST
+            --
             -- types that are not applied ought to be abstract in design or
             -- test phase
+
             if identifiers( i ).class = typeClass or
                identifiers( i ).class = subClass then
                if boolean( designOpt ) or boolean( testOpt ) then
@@ -810,34 +807,47 @@ begin
                               subject => i,
                               reason => to_string( usage ) &
                                  "is not in any declarations and should be declared",
-                              obstructorNotes => optional_yellow( "abstract" )
+                              obstructorNotes => optional_yellow( "abstract" ),
+                              remedy => "if this is shared and not always used, use pragma assumption( applied" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
                            );
                         end;
                      end if;
                   end if;
                end if;
-               -- Often subprogram are defined and not used (in libraries)
-               --elsif identifiers( i ).class = userProcClass or
-               --   identifiers( i ).class = userFuncClass then
-               --   if boolean( designOpt ) or boolean( testOpt ) then
-               --      if not identifiers( i ).wasReferenced then
-               --         if not identifiers( i ).noVar then
-               --            err( optional_yellow( to_string( identifiers( i ).name ) ) &
-               --               " is a " & optional_yellow( "concrete subprogram" ) &
-               --               " but expected an " & optional_yellow( "abstract subprogram" ) &
-               --               ".  It is never run." );
-               --         end if;
-               --      end if;
-               --   end if;
             end if; -- abstract test
 
+            -- ABSTRACT SUBPROGRAM TEST
+            --
+            -- Often subprogram are defined and not used (in libraries)
+            --elsif identifiers( i ).class = userProcClass or
+            --   identifiers( i ).class = userFuncClass then
+            --   if boolean( designOpt ) or boolean( testOpt ) then
+            --      if not identifiers( i ).wasReferenced then
+            --         if not identifiers( i ).noVar then
+            --            err( optional_yellow( to_string( identifiers( i ).name ) ) &
+            --               " is a " & optional_yellow( "concrete subprogram" ) &
+            --               " but expected an " & optional_yellow( "abstract subprogram" ) &
+            --               ".  It is never run." );
+            --         end if;
+            --      end if;
+            --   end if;
+
+            -- LIMITED VARIABLE TEST
+            --
             -- Do not apply to record fields as some record fields may not be
             -- accessed.
-            if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
+
+            -- wasReferenced to distinguish limited from something not used
+            -- at all
+            if identifiers( i ).wasReferenced and not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
                if testOpt then
                   if not onlyAda95 then -- limited not available with pragma ada_95
                      if identifiers( i ).class = varClass then
                         if identifiers( i ).usage = fullUsage or identifiers( i ).usage = constantUsage then
+                           -- Return Result is the function definition return
+                           -- result and is not used to return anything...a
+                           -- different return result is declared when the
+                           -- function runs.
                            if not identifiers( i ).list and
                               head( identifiers( i ).name, 13 ) /= "return result" and
                               identifiers( i ).field_of = eof_t then
@@ -853,7 +863,7 @@ begin
                                        reason => to_string( usage ) &
                                           "is not assigned to nor in any expressions and should be declared",
                                        obstructorNotes => optional_yellow( "limited" ),
-                                       remedy => "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & ") as a workaround until user packages are finished"
+                                       remedy => "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
                                     );
                                  end;
                            end if;
@@ -863,6 +873,8 @@ begin
                end if;
             end if; -- limited test
 
+            -- CONSTANT VARIABLE TEST
+            --
             -- Test for variables that are never written to.  This is only done
             -- in testing phase mode as code under development may indeed have
             -- variables like this, and many things are unwritten in design phase.
@@ -873,6 +885,10 @@ begin
                if testOpt then
                   if identifiers( i ).class = varClass then
                      if identifiers( i ).usage = fullUsage then
+                        -- Return Result is the function definition return
+                        -- result and is not used to return anything...a
+                        -- different return result is declared when the
+                        -- function runs.
                         if not identifiers( i ).list and
                            head( identifiers( i ).name, 13 ) /= "return result" and
                            identifiers( i ).field_of = eof_t then
@@ -881,7 +897,7 @@ begin
                                  subject => i,
                                  reason => "is not written to and should be declared",
                                  obstructorNotes => optional_yellow( "constant" ) & " (or an in mode parameter)",
-                                 remedy => "if this is shared and not always written to, use pragma assumption( written" & ", " & to_string( identifiers( i ).name ) & ") as a workaround until user packages are finished"
+                                 remedy => "if this is shared and not always written to, use pragma assumption( written" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
                               );
                         end if;
                      end if;
@@ -895,10 +911,15 @@ begin
             if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
-                  err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                       " has a specification but is not implemented (at " &
+                  err(
+                     contextNotes => "While checking subprograms in this block",
+                     subject => i,
+                     subjectLocation =>
                        to_string( identifiers( i ).specFile) & ":" &
-                       identifiers( i ).specAt'img & ");" );
+                       identifiers( i ).specAt'img,
+                     reason =>  "has a specification but",
+                     obstructorNotes => "is not implemented"
+                  );
                end if;
             end if;
 
@@ -910,31 +931,47 @@ begin
                if softwareModelSet then
                   recordSoftwareModelRequirements( i );
                end if;
-            -- Unused variables are always checked.  Skip record fields since there
-            -- is no guarantee that all fields will be accessed.
             else
---put_line( standard_error, "HERE 1" ); -- DEBUG
---put( standard_error, " id:" ); put( identifier'image(i-2) ); -- DEBUG
---put_line( standard_error, " " & to_string( identifiers( i-2 ).name ) ); -- DEBUG
---put( standard_error, " id:" ); put( identifier'image(i-1) ); -- DEBUG
---put_line( standard_error, " " & to_string( identifiers( i-1 ).name ) ); -- DEBUG
---put( standard_error, " id:" ); put( i'img ); -- DEBUG
---put_line( standard_error, " " & to_string( identifiers( i ).name ) ); -- DEBUG
---           if identifiers( i ).field_of = eof_t then
-              -- in design mode, only check types
+
+               -- UNUSED VARIABLE
+               --
+               -- Unused variables are always checked.  Skip record fields since there
+               -- is no guarantee that all fields will be accessed.
+
                if designOpt then
                   if identifiers( i ).class = typeClass or
                      identifiers( i ).class = subClass or
                      identifiers( i ).class = genericTypeClass then
-                     err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                     err(
+                        contextNotes => "While checking identifiers in this block",
+                        subject => i,
+                        subjectType => identifiers( i ).kind,
+                        reason => "was declared but",
+                        obstructorNotes => "was not used",
+                        remedy => "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                     );
                   end if;
                   -- when testing or maintenance, check all identifiers, even
                   -- variables
                elsif testOpt or maintenanceOpt then
-                  err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  err(
+                     contextNotes => "While checking identifiers in this block",
+                     subject => i,
+                     subjectType => identifiers( i ).kind,
+                     reason => "was declared but",
+                     obstructorNotes => "was not used",
+                     remedy => "during development, run SparForte in development phase mode to check only variables. When designing, run in design phase mode to check only types.  If this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished.  Otherwise, delete it if it is not needed"
+                  );
                   -- in development, only check variables
                elsif identifiers( i ).class = varClass then
-                  err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  err(
+                     contextNotes => "While checking identifiers in this block",
+                     subject => i,
+                     subjectType => identifiers( i ).kind,
+                     reason => "was declared but",
+                     obstructorNotes => "was not used",
+                     remedy => "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                  );
                end if;
             end if;
          end if; -- not deleted
