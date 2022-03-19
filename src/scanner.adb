@@ -768,6 +768,97 @@ end recordSoftwareModelRequirements;
 
 
 -----------------------------------------------------------------------------
+-- ABSTRACT TYPE CHECK
+--
+-----------------------------------------------------------------------------
+
+procedure abstractTypecheck( i : identifier; is_script :boolean := false ) is
+begin
+   if identifiers( i ).class = typeClass or
+      identifiers( i ).class = subClass then
+      if boolean( designOpt ) or boolean( testOpt ) then
+         if identifiers( i ).wasReferenced and not identifiers( i ).wasApplied then
+            if identifiers( i ).field_of = eof_t then -- not a field of a record
+               declare
+                  context : unbounded_string;
+                  usage : unbounded_string;
+               begin
+                  if is_script then
+                     context := to_unbounded_string( "While checking variables in this script" );
+                  else
+                     context := to_unbounded_string( "While checking variables in this block" );
+                  end if;
+                  if identifiers( i ).usage = constantUsage then
+                     usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                  elsif identifiers( i ).usage = limitedUsage then
+                     usage := to_unbounded_string( "(" & optional_yellow( "limited" ) & " usage) " );
+                  end if;
+                  err(
+                     contextNotes => to_string( context ),
+                     subject => i,
+                     reason => to_string( usage ) &
+                        "is not in any declarations and should be declared",
+                     obstructorNotes => optional_yellow( "abstract" ),
+                     remedy => "if this is shared and not always used, use pragma assumption( applied" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                  );
+               end;
+            end if;
+         end if;
+      end if;
+    end if;
+end abstractTypeCheck;
+
+
+-----------------------------------------------------------------------------
+-- LIMITED VARIABLE CHECK
+--
+-----------------------------------------------------------------------------
+
+procedure limitedVariableCheck( i : identifier; is_script :boolean := false ) is
+begin
+   if identifiers( i ).wasReferenced and not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
+      if testOpt then
+         if not onlyAda95 then -- limited not available with pragma ada_95
+            if identifiers( i ).class = varClass then
+               if identifiers( i ).usage = fullUsage or identifiers( i ).usage = constantUsage then
+                  -- Return Result is the function definition return
+                  -- result and is not used to return anything...a
+                  -- different return result is declared when the
+                  -- function runs.
+                  if not identifiers( i ).list and
+                     head( identifiers( i ).name, 13 ) /= "return result" and
+                     identifiers( i ).field_of = eof_t then
+                        declare
+                           context : unbounded_string;
+                           usage : unbounded_string;
+                        begin
+                           if is_script then
+                              context := to_unbounded_string( "While checking variables in this script" );
+                           else
+                              context := to_unbounded_string( "While checking variables in this block" );
+                           end if;
+                           if identifiers( i ).usage = constantUsage then
+                              usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                           end if;
+                           err(
+                              contextNotes => to_string( context ),
+                              subject => i,
+                              reason => to_string( usage ) &
+                                 "is not assigned to nor in any expressions and should be declared",
+                              obstructorNotes => optional_yellow( "limited" ),
+                              remedy => "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                           );
+                        end;
+                  end if;
+               end if;
+            end if;
+         end if;
+      end if;
+   end if;
+end limitedVariableCheck;
+
+
+-----------------------------------------------------------------------------
 --  CHECK IDENTIFIERS IN CURRENT BLOCK
 --
 -- check for unused variables and tally presence of software model req's
@@ -789,36 +880,7 @@ begin
             -- types that are not applied ought to be abstract in design or
             -- test phase
 
-            if identifiers( i ).class = typeClass or
-               identifiers( i ).class = subClass then
-               if boolean( designOpt ) or boolean( testOpt ) then
---put_line( to_string( identifiers( i ).name ) & ":ref=" &
---  identifiers( i ).wasReferenced'img & ":app=" &
---  identifiers( i ).wasApplied'img ); -- DEBUG
-                  --if not identifiers( i ).wasApplied then
-                  if identifiers( i ).wasReferenced and not identifiers( i ).wasApplied then
-                     if identifiers( i ).field_of = eof_t then -- not a field of a record
-                        declare
-                           usage : unbounded_string;
-                        begin
-                           if identifiers( i ).usage = constantUsage then
-                              usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
-                           elsif identifiers( i ).usage = limitedUsage then
-                              usage := to_unbounded_string( "(" & optional_yellow( "limited" ) & " usage) " );
-                           end if;
-                           err(
-                              contextNotes => "While checking variables in this block",
-                              subject => i,
-                              reason => to_string( usage ) &
-                                 "is not in any declarations and should be declared",
-                              obstructorNotes => optional_yellow( "abstract" ),
-                              remedy => "if this is shared and not always used, use pragma assumption( applied" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
-                           );
-                        end;
-                     end if;
-                  end if;
-               end if;
-            end if; -- abstract test
+            abstractTypecheck( i );
 
             -- ABSTRACT SUBPROGRAM TEST
             --
@@ -843,39 +905,8 @@ begin
 
             -- wasReferenced to distinguish limited from something not used
             -- at all
-            if identifiers( i ).wasReferenced and not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
-               if testOpt then
-                  if not onlyAda95 then -- limited not available with pragma ada_95
-                     if identifiers( i ).class = varClass then
-                        if identifiers( i ).usage = fullUsage or identifiers( i ).usage = constantUsage then
-                           -- Return Result is the function definition return
-                           -- result and is not used to return anything...a
-                           -- different return result is declared when the
-                           -- function runs.
-                           if not identifiers( i ).list and
-                              head( identifiers( i ).name, 13 ) /= "return result" and
-                              identifiers( i ).field_of = eof_t then
-                                 declare
-                                    usage : unbounded_string;
-                                 begin
-                                    if identifiers( i ).usage = constantUsage then
-                                       usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
-                                    end if;
-                                    err(
-                                       contextNotes => "While checking variables in this block",
-                                       subject => i,
-                                       reason => to_string( usage ) &
-                                          "is not assigned to nor in any expressions and should be declared",
-                                       obstructorNotes => optional_yellow( "limited" ),
-                                       remedy => "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
-                                    );
-                                 end;
-                           end if;
-                        end if;
-                     end if;
-                  end if;
-               end if;
-            end if; -- limited test
+
+            limitedVariableCheck( i );
 
             -- CONSTANT VARIABLE TEST
             --
@@ -1010,18 +1041,7 @@ begin
          if not identifiers( i ).deleted then
 --put( " id:" ); put( i'img ); -- DEBUG
 --put_line( " " & to_string( identifiers( i ).name ) ); -- DEBUG
-            if identifiers( i ).class = typeClass or
-               identifiers( i ).class = subClass then
-               if boolean( designOpt ) or boolean( testOpt ) then
-                  if not identifiers( i ).wasApplied then
-                     if identifiers( i ).field_of = eof_t then -- not a field of a record
-                        err( optional_yellow( to_string( identifiers( i ).name ) ) &
-                           " is a " & optional_yellow( "concrete type" ) &
-                           " but expected an " & optional_yellow( "abstract type" ) &
-                           ".  It is not used in declarations." );
-                     end if;
-                  end if;
-               end if;
+            abstractTypecheck( i, is_script => true );
             -- Often subprogram are defined and not used (in libraries)
             --elsif identifiers( i ).class = userProcClass or
             --   identifiers( i ).class = userFuncClass then
@@ -1035,39 +1055,8 @@ begin
             --         end if;
             --      end if;
             --   end if;
-            end if;
---put_line( to_string( identifiers( i ).name ) & "being tested" ); -- DEBUGME
---put_line( identifiers( i ).wasFactor'img ); -- DEBUGME
-            if not identifiers( i ).wasFactor and not identifiers( i ).wasWritten then
---put_line( to_string( identifiers( i ).name ) & " is not a factor" ); -- DEBUGME
-               if testOpt then
---put_line( "test opt" ); -- DEBUGME
-                  if identifiers( i ).class = varClass then
---put_line( "variable" ); -- DEBUGME
-                     if not onlyAda95 then -- limited not available with pragma ada_95
---put_line( "not ada_95" ); -- DEBUGME
-                        if identifiers( i ).usage /= limitedUsage then
-                           if identifiers( i ).name /= "return value" then
-                              declare
-                                 usage : unbounded_string;
-                              begin
-                                 if identifiers( i ).usage = constantUsage then
-                                    usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
-                                 end if;
-                                 err(
-                                    contextNotes => "While checking variables in this block",
-                                    subject => i,
-                                    reason => to_string( usage ) &
-                                       "is not assigned to nor in any expressions and should be declared",
-                                    obstructorNotes => optional_yellow( "limited" )
-                                 );
-                              end;
-                           end if;
-                        end if;
-                     end if;
-                  end if;
-               end if;
-            end if;
+
+            limitedVariableCheck( i, is_script => true );
 
             -- Test for variables that are never written to.  This is only done
             -- in testing phase mode as code under development may indeed have
