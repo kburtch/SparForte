@@ -52,13 +52,13 @@
         <center>
         <div class="code">
 <pre>
-  <a href="#logs.checkpoint">logs.checkpoint</a>                <a href="#logs.close">close</a>
-  <a href="#logs.error">error( m )</a> <a href="#logs.info">info( m )</a>
-  <a href="#logs.is_open">b := is_open</a> <a href="#logs.is_rotating">b := is_rotating</a>
+  <a href="#logs.checkpoint">checkpoint</a>                        <a href="#logs.close">close</a>
+  <a href="#logs.error">error( m )</a>                        <a href="#logs.info">info( m )</a>
+  <a href="#logs.is_open">b := is_open</a>                      <a href="#logs.is_rotating">b := is_rotating</a>
   <a href="#logs.level_begin">level_begin( l )</a>                  <a href="#logs.level_end">level_end( l )</a>
-  <a href="#logs.metrics">logs.metrics( o, i, w, e )</a> <a href="#logs.mode">m := mode</a>
-  <a href="#logs.ok">ok( m )</a> <a href="#logs.open">open( p, m [, w] )</a>
-  <a href="#logs.rotate_begin">rotate_begin</a> <a href="#logs.rotate_end">rotate_end</a>
+  <a href="#logs.metrics">metrics( o, i, w, e )</a>             <a href="#logs.mode">m := mode</a>
+  <a href="#logs.ok">ok( m )</a>                           <a href="#logs.open">open( p, m [, w] )</a>
+  <a href="#logs.rotate_begin">rotate_begin</a>                      <a href="#logs.rotate_end">rotate_end</a>
   <a href="#logs.warning">warning( m )</a>
 </pre>
         &nbsp;<br>
@@ -421,7 +421,7 @@ returned by logs.level_begin.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>Return simple metrics of what the script has written to the log.  The metrics are since the log was opened or since the last time the metrics were cleared.</p></td>
+<td><p>Return simple metrics of what the script has written to the log.  The metrics are since the log was opened or since the last time the metrics were cleared.  Does not include automated messages like those for repeated lines.</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><p><span class="code">logs.metrics( ok_count, info_count, warning_count, error_count );</span></p></td>
