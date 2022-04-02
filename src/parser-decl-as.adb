@@ -3509,7 +3509,9 @@ begin
           expect( symbol_t, "(" );
           seenBracket := true;
        else
-          err( "too few parameters" );
+          -- forced error
+          expectParameterOpen( proc_id );
+          --err( "too few parameters" );
        end if;
     end if;
 
@@ -3548,7 +3550,11 @@ begin
   -- TODO: distinguish these error messages
 
   if formalParamId = identifiers_top and seenBracket then
-     err( "parameter not found or too many parameters" );
+     -- forced error
+     -- TODO: this error actually comes one token too late as it's
+     -- looking for a formal parameter but finds none.  It should
+     -- stop on the preceeding comma.
+     expectParameterClose( proc_id );
 
   -- Check for too few formal parameters
   --
@@ -3585,7 +3591,7 @@ begin
   -- If an open bracket, we need a closing bracket
 
   if seenBracket then
-     expect( symbol_t, ")" );
+     expectParameterClose( proc_id );
   end if;
 end ParseActualParameters;
 

@@ -25,7 +25,7 @@
 pragma suppress( index_check );
 pragma suppress( range_check );
 
---with text_io; use text_io;
+-- with text_io; use text_io;
 
 with spar_os, Ada.Characters.Handling;
 with world;

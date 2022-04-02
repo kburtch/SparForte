@@ -11,12 +11,19 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- procedure (  expect "is" needs a better error message
-
+- when tab completing a partial directory containing a backslashed space,
+  after the attempted completion it resets the command line to before the
+  first space character
+  - files seem OK but...
+  - mkdir "t 1 2 3" / ls t\ 1<tab><tab> => ls ./t (dropping "space 1")
+  - issue might be in c_rl.c ... ada seems OK
 - memory leak tests - check to make sure that resources are being cleared
 - check the end-of-block usage checks and error messages
   - check each of the SDLC modes
   - review non-block tests
+- for an out parameter, it should not be 'not declared' error on unstructured script
+
+
 - ada vectors
   - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals

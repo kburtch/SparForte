@@ -1891,7 +1891,7 @@ begin
      summary( e, "hashed maps package" );
      authorKen( e );
      categoryPackage( e );
-     createdOn( e, "v2.4.2");
+     createdOn( e, "v2.5");
      description( e, "A collection of common routines for working with key-value tables (such as arrays in PHP, PERL hashes or Python dictionaries)." );
      content( e, "clear( m )", "is_empty( m )", "c := capacity( m ) ");
      content( e, "reserve_capacity( m, c )", "c := length( m )", "insert( m, k, e )" );
@@ -1989,7 +1989,7 @@ begin
      summary( e, "localization package" );
      authorKen( e );
      categoryPackage( e );
-     createdOn( e, "v2.4.2");
+     createdOn( e, "v2.5");
      description( e, "A collection of common routines for different languages and countries. " &
      " This is a binding to the GNU locale functions." );
      content( e, "s := codeset", "s := d_t_fmt", "s := d_fmt" );
@@ -2057,8 +2057,7 @@ begin
                   "Log messages are in increasing in severity: info, " &
                   "warning and error.  The ok message indicates a successful " &
                   "completion of an action." );
-                  --"completion of an action.  A chain of message procedures " &
-                  --"will make a single log entry." );
+     content( e, "logs.checkpoint" );
      content( e, "logs.close" );
      content( e, "logs.error( m )" );
      content( e, "logs.info( m )" );
@@ -2066,6 +2065,7 @@ begin
      content( e, "b := logs.is_rotating" );
      content( e, "logs.level_begin( l )" );
      content( e, "logs.level_end( l )" );
+     content( e, "logs.metrics( o, i, w, e )" );
      content( e, "m := logs.mode" );
      content( e, "logs.ok( m )" );
      content( e, "logs.open( path, mode [, width] )" );
@@ -2615,7 +2615,7 @@ begin
      summary( e, "vectors package" );
      authorKen( e );
      categoryPackage( e );
-     createdOn( e, "v2.4.2");
+     createdOn( e, "v2.5");
      description( e, "A collection of common routines for working with dynamic arrays." );
      content( e, "capacity( v )", "reserve_capacity( v, n )", "set_length( v, n )" );
      content( e, "c := length( v )", "b := is_empty( v )", "to_vector( v, e, n )" );

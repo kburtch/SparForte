@@ -113,5 +113,7 @@ CHANGES SINCE 2.4.1
 
 52. Fix: certain user functions not allowing return values fixed.
 
-53.Fix: contract failures in subprogram parameters no longer hidden or raised later.
+53. Fix: contract failures in subprogram parameters no longer hidden or raised later.
+
+54: New: new logs procedures for simple metrics: logs.metrics, logs.checkpoint
 

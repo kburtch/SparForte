@@ -91,35 +91,51 @@ dup_count       : natural;                            -- number of dup entries
 entity          : unbounded_string;  -- enclosing entity
 hasEntity       : boolean := false;
 
+-- Simple Metrics
+
+type loggingMetrics is record
+  --line_count    : natural := 0;
+  ok_count      : natural := 0;
+  info_count    : natural := 0;
+  warning_count : natural := 0;
+  error_count   : natural := 0;
+end record;
+
+checkpointMetrics : loggingMetrics;
+currentMetrics    : loggingMetrics;
+
 ------------------------------------------------------------------------------
 -- Logs package identifiers
 ------------------------------------------------------------------------------
 
-log_level_t      : identifier;
+log_level_t         : identifier;
 
 log_modes_t         : identifier;
 log_mode_stderr_t   : identifier;
 log_mode_file_t     : identifier;
 log_mode_echo_t     : identifier;
 
-logs_level_begin_t : identifier;
-logs_level_end_t   : identifier;
+logs_level_begin_t  : identifier;
+logs_level_end_t    : identifier;
 
-logs_ok_t          : identifier;
-logs_info_t        : identifier;
-logs_warning_t     : identifier;
-logs_error_t       : identifier;
-logs_open_t        : identifier;
-logs_close_t       : identifier;
+logs_ok_t           : identifier;
+logs_info_t         : identifier;
+logs_warning_t      : identifier;
+logs_error_t        : identifier;
+logs_open_t         : identifier;
+logs_close_t        : identifier;
 
-logs_is_open_t     : identifier;
-logs_mode_t        : identifier;
+logs_is_open_t      : identifier;
+logs_mode_t         : identifier;
 -- logs_level_t       : identifier;
-logs_width_t       : identifier;
+logs_width_t         : identifier;
 
-logs_rotate_begin_t : identifier;
-logs_rotate_end_t   : identifier;
-logs_is_rotating_t  : identifier;
+logs_rotate_begin_t  : identifier;
+logs_rotate_end_t    : identifier;
+logs_is_rotating_t   : identifier;
+logs_metrics_t       : identifier;
+logs_checkpoint_t    : identifier;
+
 
 ------------------------------------------------------------------------------
 -- Utility subprograms
@@ -212,6 +228,23 @@ begin
      end if;
   end if;
 end writeCurrentError;
+
+
+--  RESET METRICS
+--
+-- Reset the log counters.
+------------------------------------------------------------------------------
+
+procedure resetMetrics is
+begin
+  checkpointMetrics := currentMetrics;
+  currentMetrics.ok_count      := 0;
+  currentMetrics.info_count    := 0;
+  currentMetrics.warning_count := 0;
+  currentMetrics.error_count   := 0;
+end resetMetrics;
+
+
 --  RESET LOG
 --
 -- Set the logger in its default state, writing to standard error.
@@ -230,6 +263,7 @@ begin
   dup_count := 0;
   last_message := null_unbounded_string;
   indent_required := 0;
+  resetMetrics;
 end resetLog;
 
 
@@ -526,6 +560,10 @@ begin
            --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "OK" );
            log_first_part( "OK" );
            log_last_part( msgExpr );
+           begin
+              currentMetrics.ok_count := currentMetrics.ok_count + 1;
+           exception when others => null;
+           end;
         else
            case cc is
            when first =>
@@ -535,6 +573,10 @@ begin
               log_middle_part( msgExpr );
            when last =>
               log_last_part( msgExpr );
+              begin
+                 currentMetrics.ok_count := currentMetrics.ok_count + 1;
+              exception when others => null;
+              end;
            when others =>
               err( "internal error: unexpected chain context" );
            end case;
@@ -579,6 +621,10 @@ begin
            --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "INFO" );
            log_first_part( "INFO" );
            log_last_part( msgExpr );
+           begin
+              currentMetrics.info_count := currentMetrics.info_count + 1;
+           exception when others => null;
+           end;
         else
            case cc is
            when first =>
@@ -589,6 +635,10 @@ begin
               log_middle_part( msgExpr );
            when last =>
               log_last_part( msgExpr );
+              begin
+                 currentMetrics.info_count := currentMetrics.info_count + 1;
+              exception when others => null;
+              end;
            when others =>
               err( "internal error: unexpected chain context" );
            end case;
@@ -633,6 +683,10 @@ begin
            -- log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "WARNING" );
            log_first_part( "WARNING" );
            log_last_part( msgExpr );
+           begin
+              currentMetrics.warning_count := currentMetrics.warning_count + 1;
+           exception when others => null;
+           end;
         else
            case cc is
            when first =>
@@ -643,6 +697,10 @@ begin
               log_middle_part( msgExpr );
            when last =>
               log_last_part( msgExpr );
+              begin
+                 currentMetrics.warning_count := currentMetrics.warning_count + 1;
+              exception when others => null;
+              end;
            when others =>
               err( "internal error: unexpected chain context" );
            end case;
@@ -687,6 +745,10 @@ begin
            --log_first_part( basename( getSourceFileName ) & ":" & getLineNo, "ERROR" );
            log_first_part( "ERROR" );
            log_last_part( msgExpr );
+           begin
+              currentMetrics.error_count := currentMetrics.error_count + 1;
+           exception when others => null;
+           end;
         else
            case cc is
            when first =>
@@ -697,6 +759,10 @@ begin
               log_middle_part( msgExpr );
            when last =>
               log_last_part( msgExpr );
+              begin
+                 currentMetrics.error_count := currentMetrics.error_count + 1;
+              exception when others => null;
+              end;
            when others =>
               err( "internal error: unexpected chain context" );
            end case;
@@ -854,6 +920,38 @@ begin
   end if;
 end ParseIsRotating;
 
+procedure ParseMetrics is
+  -- Syntax: logs.metrics
+  ok_ref      : reference;
+  info_ref    : reference;
+  warning_ref : reference;
+  error_ref   : reference;
+begin
+  expect( logs_metrics_t );
+  ParseFirstOutParameter( logs_metrics_t, ok_ref, natural_t );
+  ParseNextOutParameter(  logs_metrics_t, info_ref, natural_t );
+  ParseNextOutParameter(  logs_metrics_t, warning_ref, natural_t );
+  ParseLastOutParameter(  logs_metrics_t, error_ref, natural_t );
+  if isExecutingCommand then
+     assignParameter( ok_ref,
+        to_unbounded_string( long_float( checkpointMetrics.ok_count ) ) );
+     assignParameter( info_ref,
+        to_unbounded_string( long_float( checkpointMetrics.info_count ) ) );
+     assignParameter( warning_ref,
+        to_unbounded_string( long_float( checkpointMetrics.warning_count ) ) );
+     assignParameter( error_ref,
+        to_unbounded_string( long_float( checkpointMetrics.error_count ) ) );
+  end if;
+end ParseMetrics;
+
+procedure ParseCheckpoint is
+  -- Syntax: logs.clear_metrics
+begin
+  expect( logs_checkpoint_t );
+  if isExecutingCommand then
+     resetMetrics;
+  end if;
+end ParseCheckpoint;
 
 -----------------------------------------------------------------------------
 
@@ -883,6 +981,9 @@ begin
   declareProcedure( logs_rotate_begin_t, "logs.rotate_begin", ParseRotateBegin'access );
   declareProcedure( logs_rotate_end_t,   "logs.rotate_end",   ParseRotateEnd'access );
   declareFunction(  logs_is_rotating_t, "logs.is_rotating",  ParseIsRotating'access );
+
+  declareProcedure( logs_metrics_t,   "logs.metrics",   ParseMetrics'access );
+  declareProcedure( logs_checkpoint_t,   "logs.checkpoint",   ParseCheckpoint'access );
 
   declareIdent( log_modes_t, "logs.log_modes", root_enumerated_t, typeClass );
 
