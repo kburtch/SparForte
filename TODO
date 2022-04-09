@@ -22,8 +22,9 @@ Priority Issues (Fix These First)
   - check each of the SDLC modes
   - review non-block tests
 - for an out parameter, it should not be 'not declared' error on unstructured script
-
-
+- for raspberry pi, long_float must be converted to long_long_float to
+  have enough precision for time values.  To be done throughout the
+  language.  This only affects recent Raspian Linux.
 - ada vectors
   - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals
@@ -44,14 +45,13 @@ Priority Issues (Fix These First)
   - templates that are not for HTTP
 - terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
 - errors should support err_previous
-- put_line may raise device_error on interrupted system calls
+- put_line may raise device_error on interrupted system calls, especially
+  on Raspian Linux
 - check btree/hash_io get next mark the variable as written
   with the constant check
 - investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.
 - affirms report the error location in the affirm but loses context for
   where in the code the affirm was triggered
-- bug: in parser-decl-as, an include file that starts with a blank line will
-  cause the compiler to raise an exception.
 - pragma todo
   - these do not appear in help output when in include files
 - ada hash map support

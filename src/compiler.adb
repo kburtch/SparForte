@@ -2507,8 +2507,13 @@ begin
       exit when error_found;                             -- quit on err
       exit when linePos > length( command );             -- if not beyond EOF
     end loop;
-    lastLinePos := linePos - 1;                          -- back up one
-    line2compile := to_unbounded_string( slice( command, firstLinePos, lastLinePos ) );
+    if linePos > 1 then
+       lastLinePos := linePos - 1;                       -- back up one
+       line2compile := to_unbounded_string( slice( command, firstLinePos, lastLinePos ) );
+    else                                                 -- empty line
+       lastLinePos := 1;                                 -- lowest value
+       line2compile := null_unbounded_string;            -- nothing to compile
+    end if;
     line2ByteCode( ci, line2compile );                   -- compress that slice
     if element( command, lastLinePos ) = ' ' or element( command, lastLinePos ) = ASCII.HT then
        if not maintenanceOpt then

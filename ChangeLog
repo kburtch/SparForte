@@ -117,3 +117,5 @@ CHANGES SINCE 2.4.1
 
 54: New: new logs procedures for simple metrics: logs.metrics, logs.checkpoint
 
+55: Fix: a blank line at the start of a with separate file no longer raises an exception.
+
