@@ -49,6 +49,7 @@
     new_line;
   <b>end</b> usage;
 
+  node : string;
 <b>begin</b>
 
   <FONT COLOR=green><EM>-- Make a list of your hosts here</EM></FONT>
@@ -92,9 +93,8 @@
 
   <b>for</b> n <b>in</b> arrays.first( node_name )..arrays.last( node_name ) <b>loop</b>
       <b>if</b> node_type( n ) = kind <b>then</b>
-         ssh( "-oPreferredAuthentications=publickey",
-              string(LOGNAME) &amp; "@" &amp; node_name( n ),
-              "exit" );
+         node := node_name( n );
+         ssh -n -T -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=yes "$LOGNAME"@"$node" "exit";
          <b>if</b> $? /= 0 <b>then</b>
             put( standard_error, source_info.file )
                 @( standard_error, ": cannot log into '" &amp; node_name(n) &amp; "'" );
@@ -112,9 +112,8 @@
   <b>for</b> n <b>in</b> arrays.first( node_name )..arrays.last( node_name ) <b>loop</b>
       <b>if</b> node_type( n ) = kind <b>then</b>
          ? "Running command on " &amp; node_name( n );
-         ssh( "-oPreferredAuthentications=publickey",
-              string(LOGNAME) &amp; "@" &amp; node_name( n ),
-              command_line.argument(2) );
+         node := node_name( n );
+         ssh -q -n -T -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=yes "$LOGNAME"@"$node" "$2";
          <b>if</b> $? /= 0 <b>then</b>
             put( standard_error, source_info.file )
                 @( standard_error, ": command failed on '" &amp; node_name(n) &amp; "'" );
@@ -127,5 +126,4 @@
 
 <FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
 <FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
-
 </PRE></BODY></HTML>

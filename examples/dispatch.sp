@@ -45,6 +45,7 @@ procedure dispatch is
     new_line;
   end usage;
 
+  node : string;
 begin
 
   -- Make a list of your hosts here
@@ -88,9 +89,8 @@ begin
 
   for n in arrays.first( node_name )..arrays.last( node_name ) loop
       if node_type( n ) = kind then
-         ssh( "-oPreferredAuthentications=publickey",
-              string(LOGNAME) & "@" & node_name( n ),
-              "exit" );
+         node := node_name( n );
+         ssh -n -T -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=yes "$LOGNAME"@"$node" "exit";
          if $? /= 0 then
             put( standard_error, source_info.file )
                 @( standard_error, ": cannot log into '" & node_name(n) & "'" );
@@ -108,9 +108,8 @@ begin
   for n in arrays.first( node_name )..arrays.last( node_name ) loop
       if node_type( n ) = kind then
          ? "Running command on " & node_name( n );
-         ssh( "-oPreferredAuthentications=publickey",
-              string(LOGNAME) & "@" & node_name( n ),
-              command_line.argument(2) );
+         node := node_name( n );
+         ssh -q -n -T -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=yes "$LOGNAME"@"$node" "$2";
          if $? /= 0 then
             put( standard_error, source_info.file )
                 @( standard_error, ": command failed on '" & node_name(n) & "'" );
