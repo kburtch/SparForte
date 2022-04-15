@@ -655,7 +655,7 @@ begin
    content( e, "clear" );
    content( e, "close" );
    content( e, "command_line" );
-   content( e, "configure" );
+   content( e, "configuration" );
    content( e, "create" );
    content( e, "db" );
    content( e, "dbm" );
@@ -1247,7 +1247,7 @@ begin
   content( e, "pragma suppress( all_priority_todos_for_release ) - all todo's allowed late in SDLC" );
   content( e, "pragma suppress( low_priority_todos_for_release ) - low priority todo's allowed late in SDLC" );
   content( e, "pragma suppress( suppress_no_empty_command_substitutions ) - allow empty strings in `..` and $(..)" );
-  content( e, "pragma template( css|html|js|json|text|wml|xml [, path] ) - script is acting as a template processor" );
+  content( e, "pragma template( css|html|js|json|text|wml|xml|yaml [, path] ) - script is acting as a template processor" );
   content( e, "pragma test( condition [, " & ASCII.Quotation & "description" & ASCII.Quotation & "] ) - with --test, execute test commands" );
   content( e, "pragma test_report( text|xml [, " & ASCII.Quotation & "filepath" & ASCII.Quotation & "] ) - type and location of test report" );
   content( e, "pragma test_result( condition ) - with --test, display warning on condition failure" );
@@ -1255,7 +1255,7 @@ begin
   content( e, "pragma unchecked_import( shell | cgi | local_memcache | memcache | session, var ) - import without checking for existence" );
   content( e, "pragma unchecked_volatile( var [,ttl] ) - like volatile, but not an error to use in expressions" );
   content( e, "pragma uninspect( var ) - undo pragma inspect" );
-  content( e, "pragma unrestricted_template( css|html|js|json|text|wml|xml [, path] ) - run template without a restricted shell" );
+  content( e, "pragma unrestricted_template( css|html|js|json|text|wml|xml|yaml [, path] ) - run template without a restricted shell" );
   content( e, "pragma volatile( var [,ttl] ) - load value from environment on every access" );
      seeAlso( e, "doc/ref_pragmas.html" );
      endHelp( e );
@@ -1503,8 +1503,8 @@ begin
      content( e, "set_exit_status( n )");
      seeAlso( e, "doc/pkg_cmdline.html" );
      endHelp( e );
-  elsif helpTopic = "configure" then
-     startHelp( e, "configure" );
+  elsif helpTopic = "configuration" then
+     startHelp( e, "configuration" );
      summary( e, "configuration block" );
      categoryKeyword( e );
      description( e, "Begin a new configuration block.  It contains declarations by system administrators.  Configuration blocks can automatically load from a global file (/etc/sparforte_config), which is done after a global policy file." );

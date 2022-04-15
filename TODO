@@ -25,6 +25,10 @@ Priority Issues (Fix These First)
 - for raspberry pi, long_float must be converted to long_long_float to
   have enough precision for time values.  To be done throughout the
   language.  This only affects recent Raspian Linux.
+- tests for ada 95 and strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json
+- negative tests for l10n package
+- box <> allowed in case when conditions needs negative tests
+- doubly linked lists parameters tests needed
 - ada vectors
   - complete extended subprograms (if time)
   - tests - subtypes, arrays (out param), universals
