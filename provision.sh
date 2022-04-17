@@ -57,9 +57,9 @@ apt_install () {
 
 zypper_install () {
   if [ -n "$HAS_SUDO" ] ; then
-     sudo -u root zypper "--quiet" "--non-interactive" $@
+     sudo -u root zypper "--quiet" "--non-interactive" install $@
   else
-     zypper "--quiet" "--non-interactive" $@
+     zypper "--quiet" "--non-interactive" install $@
   fi
 }
 
@@ -157,6 +157,7 @@ redhat )
    ;;
 suse)
    set -e
+   zypper_install make
    zypper_install mlocate
    zypper_install gcc-ada
    zypper_install git
@@ -167,8 +168,10 @@ suse)
    zypper_install libmariadb-devel 
    zypper_install postgresql
    zypper_install postgresql-devel
+   zypper_install postgresql-server-devel  # for pg_config
    zypper_install rpmlint
    zypper_install memcached
+   zypper_install libdb-4_8-devel
    set +e
    ;;
 ubuntu )

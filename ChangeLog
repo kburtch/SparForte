@@ -119,3 +119,5 @@ CHANGES SINCE 2.4.1
 
 55: Fix: a blank line at the start of a with separate file no longer raises an exception.
 
+56: Fix: provision.sh script updated and fixed for SuSE Linux.
+
