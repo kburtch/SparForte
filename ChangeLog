@@ -121,3 +121,5 @@ CHANGES SINCE 2.4.1
 
 56: Fix: provision.sh script updated and fixed for SuSE Linux.
 
+57: Change: provision.sh and configure script updated for FreeBSD 13.
+

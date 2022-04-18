@@ -226,10 +226,11 @@ debian )
 freebsd )
    set -e
    echo "y" | pkg install bash
+   echo "y" | pkg install gmake
    echo "y" | pkg install mysql57-client
    echo "y" | pkg install bzip2
-   echo "y" | pkg install gcc6-aux
-   echo "y" | pkg install xmlada
+   echo "y" | pkg install gcc6-aux  # Ada support expires 2022-02
+   # echo "y" | pkg install xmlada
    echo "y" | pkg install git
    # echo "y" | pkg install libdb-dev
    # echo "y" | pkg install libmysqlclient-dev
@@ -237,7 +238,7 @@ freebsd )
    echo "y" | pkg install postgresql12-client
    echo "y" | pkg install postgresql12-server
    # echo "y" | pkg install postgresql-server-dev-all
-   echo "y" | pkg install gstreamer
+   echo "y" | pkg install gstreamer1
    echo "y" | pkg install sdl # libsdl1.2-dev
    echo "y" | pkg install sdl_image # libsdl-image1.2-dev
    echo "y" | pkg install wget

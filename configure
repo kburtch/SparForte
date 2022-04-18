@@ -1671,8 +1671,16 @@ if [ -z "$NO_SOUND" ] ; then
          GSTREAMERLIBS="-I/usr/local/include/gstreamer-0.10/ -I/usr/local/include/glib-2.0/ -lgstreamer-0.10"
          GSTREAMERLIBS=`echo "$GSTREAMERLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
       else
-         echo "unable to configure gstreamer"
-         exit 192
+         # FreeBSD 13
+         TMP="/usr/local/include/gstreamer-1.0/"
+         if [ -d "$TMP" ] ; then
+            echo "warning: guessing a gstreamer config"
+            GSTREAMERLIBS="-I/usr/local/include/gstreamer-0.10/ -I/usr/local/include/glib-2.0/ -lgstreamer-0.10"
+            GSTREAMERLIBS=`echo "$GSTREAMERLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+         else
+            echo "unable to configure gstreamer"
+            exit 192
+         fi
       fi
    fi
    GSTREAMEROBJ="c_gstreamer.o"
