@@ -1195,11 +1195,21 @@ cd -;
 pragma assert( PWD = s1 );
 pragma assert( OLDPWD = s );
 cd "";
-pragma assert( PWD = HOME );
+-- On FreeBSD, /home is an alias for /usr/home
+if strings.head( PWD, 5 ) = "/usr/" then
+   pragma assert( strings.delete(PWD, 1, 4) = HOME );
+else
+   pragma assert( PWD = HOME );
+end if;
 pragma assert( OLDPWD = s1 );
 cd -;
 cd ~;
-pragma assert( PWD = HOME );
+-- On FreeBSD, /home is an alias for /usr/home
+if strings.head( PWD, 5 ) = "/usr/" then
+   pragma assert( strings.delete(PWD, 1, 4) = HOME );
+else
+   pragma assert( PWD = HOME );
+end if;
 pragma assert( OLDPWD = s1 );
 cd -;
 -- AdaScript style
@@ -1212,11 +1222,21 @@ cd( "-" );
 pragma assert( PWD = s1 );
 pragma assert( OLDPWD = s );
 cd( "" );
-pragma assert( PWD = HOME );
+-- On FreeBSD, /home is an alias for /usr/home
+if strings.head( PWD, 5 ) = "/usr/" then
+   pragma assert( strings.delete(PWD, 1, 4) = HOME );
+else
+   pragma assert( PWD = HOME );
+end if;
 pragma assert( OLDPWD = s1 );
 cd( "-" );
 cd( "~" );
-pragma assert( PWD = HOME );
+-- On FreeBSD, /home is an alias for /usr/home
+if strings.head( PWD, 5 ) = "/usr/" then
+   pragma assert( strings.delete(PWD, 1, 4) = HOME );
+else
+   pragma assert( PWD = HOME );
+end if;
 pragma assert( OLDPWD = s1 );
 cd( "-" );
 -- edge case
@@ -1256,8 +1276,6 @@ history;
 history 1;
 history 999;
 history -c;
-
--- basic pragmas (ada_95 tested below)
 
 pragma annotate( "This is a test" );
 pragma depreciated( "<This is not an error>" );
@@ -5883,7 +5901,12 @@ pragma assert( s1 = PWD & "/" );
 s1 := directory_operations.file_extension( s );
 pragma assert( s1 = ".txt" );
 s1 := directory_operations.expand_path( "$PWD/foobar.txt" );
-pragma assert( s1 = s );
+-- FreeBSD may start with /usr as HOME is an alias
+if strings.head( s, 5 ) = "/usr/" then
+   pragma assert( s1 = strings.delete( s, 1, 4 ) );
+else
+   pragma assert( s1 = s );
+end if;
 s1 := directory_operations.expand_path( "$PWD/foobar.txt", environment_style.unix );
 pragma assert( s1 /= "" ); -- can't be sure of O/S
 s1 := directory_operations.format_pathname( s );
@@ -6468,7 +6491,7 @@ pragma assert( s /= "" );
 s := l10n.codeset;
 pragma assert( s /= "" );
 s := l10n.currency_symbol;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 s := l10n.day( 1 );
 pragma assert( s /= "" );
 s := l10n.decimal_point;
@@ -6486,25 +6509,25 @@ pragma assert( s = "" );
 s := l10n.era_t_fmt;
 pragma assert( s = "" );
 s := l10n.era_year;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 i := l10n.frac_digits;
 pragma assert( i /= 0 );
 i := l10n.grouping;
 pragma assert( i = 0 );
 s := l10n.int_curr_symbol;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 i := l10n.int_frac_digits;
 pragma assert( i /= 0 );
 s := l10n.mon( 1 );
 pragma assert( s /= "" );
 s := l10n.mon_decimal_point;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 i := l10n.mon_grouping;
 pragma assert( i = 0 );
 s := l10n.mon_thousands_sep;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 s := l10n.negative_sign;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined");
 s := l10n.noexpr;
 pragma assert( s /= "" );
 i := l10n.n_cs_precedes;
@@ -6516,7 +6539,7 @@ pragma assert( i /= 0 );
 s := l10n.pmstr;
 pragma assert( s /= "" );
 s := l10n.positive_sign;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 i := l10n.p_cs_precedes;
 pragma assert( i /= 0 );
 i := l10n.p_sep_by_space;
@@ -6524,7 +6547,7 @@ pragma assert( i /= 0 );
 i := l10n.p_sign_posn;
 pragma assert( i /= 0 );
 s := l10n.thousands_sep;
-pragma assert( s = "" );
+pragma assert( s = "" or s = "undefined" );
 s := l10n.t_fmt;
 pragma assert( s /= "" );
 s := l10n.t_fmt_ampm;
@@ -7423,45 +7446,7 @@ begin
   pragma assert( x1 = xOne );
 end;
 
--- Pragma ada_95 tests
-
-pragma ada_95;
-
--- This is a comment
-
-ada95_s : string;
-ada95_i : integer := 0;
-
-ada95_s := "assigned"; -- suppress unused var warning
-
-i := (1 + 1 ) / 1;
-pragma assert( i=2 );
-
-if i = 1 then
-   null;
-elsif i = 2 then
-   null;
-else
-   null;
-end if;
-
-i := 1;
-while i < 5 loop
-   i := i+1;
-   exit when i = 3;
-end loop;
-pragma assert( i=3 ); -- ada_95 while
-
-i := 99;
-ada95_i := 0;
-for i in 1..10 loop
-    ada95_i := ada95_i + 1;
-end loop;
-pragma assert( i=99 ); -- ada_95 for
-pragma assert( ada95_i=10 );
-
--- end of tests (put new tests above the pragma ada_95 section
--- unless that's what you're testing!)
+-- this is allowd but only before ada_95 is used
 
 trace( false );
 new_line;

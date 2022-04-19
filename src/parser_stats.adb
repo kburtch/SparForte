@@ -56,6 +56,7 @@ procedure ParseStatsMax( f : out unbounded_string; kind : out identifier ) is
   max : long_float;
   max_string : unbounded_string;
 begin
+  kind := universal_t;
   expect( stats_max_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -90,8 +91,6 @@ begin
         err( gnat.source_info.source_location & ": internal error : storage error raised when maxing array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
-  elsif syntax_check then
-     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsMax;
 
@@ -102,6 +101,7 @@ procedure ParseStatsMin( f : out unbounded_string; kind : out identifier ) is
   min : long_float;
   min_string : unbounded_string;
 begin
+  kind := universal_t;
   expect( stats_min_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -136,8 +136,6 @@ begin
         err( gnat.source_info.source_location & ": internal error : storage error raised when minning array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
-  elsif syntax_check then
-     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsMin;
 
@@ -147,6 +145,7 @@ procedure ParseStatsSum( f : out unbounded_string; kind : out identifier ) is
   -- array_id : arrayID;
   sum : long_float;
 begin
+  kind := universal_t;
   expect( stats_sum_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -177,8 +176,6 @@ begin
         err( gnat.source_info.source_location & ": internal error : storage error raised when minning array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
-  elsif syntax_check then
-     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsSum;
 
@@ -189,6 +186,7 @@ procedure ParseStatsAverage( f : out unbounded_string; kind : out identifier ) i
   --array_id : arrayID;
   sum : long_float;
 begin
+  kind := universal_t;
   expect( stats_average_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -220,8 +218,6 @@ begin
         err( gnat.source_info.source_location & ": internal error : storage error raised when summing array" );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
-  elsif syntax_check then
-     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsAverage;
 
@@ -235,6 +231,7 @@ procedure ParseStatsVariance( f : out unbounded_string; kind : out identifier ) 
   mean     : long_float;
   sum_diff_sq : long_float;
 begin
+  kind := universal_t;
   expect( stats_variance_t );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
@@ -273,8 +270,6 @@ begin
      end;
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
-  elsif syntax_check then
-     kind := universal_t; -- type is not known during syntax check
   end if;
 end ParseStatsVariance;
 

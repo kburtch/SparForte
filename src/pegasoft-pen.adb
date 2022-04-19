@@ -2391,7 +2391,7 @@ end vline;
 
 procedure plot( theCanvas : aCanvas; values : plotValues ) is
 begin
-  put_line( "plot called" ); -- DEBUG
+  null; -- put_line( "plot called" ); -- DEBUG: NOT YET IMPLEMENTED
 end plot;
 
 procedure plot( canvas_id : aCanvasID; values : plotValues ) is
