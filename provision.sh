@@ -79,6 +79,9 @@ fi
 
 if test -f "/etc/freebsd-update.conf" ; then
    DISTRO="freebsd"
+   if [ "$LOGNAME" != "root" ] ; then
+      echo "you may need to run this script as root"
+   fi
 fi
 
 # Mint/Ubuntu
