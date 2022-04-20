@@ -5903,7 +5903,7 @@ pragma assert( s1 = ".txt" );
 s1 := directory_operations.expand_path( "$PWD/foobar.txt" );
 -- FreeBSD may start with /usr as HOME is an alias
 if strings.head( s, 5 ) = "/usr/" then
-   pragma assert( s1 = strings.delete( s, 1, 4 ) );
+   pragma assert( s = s1 or s1 = strings.delete( s, 1, 4 ) );
 else
    pragma assert( s1 = s );
 end if;
