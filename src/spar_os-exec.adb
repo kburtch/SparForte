@@ -26,6 +26,7 @@ with ada.text_io;
 use ada.text_io;
 
 with unchecked_deallocation;
+with gnat.source_info;
 
 
 package body spar_os.exec is
@@ -102,10 +103,12 @@ begin
       execResult := execv( Path,
           Convert_To_C_Args( Path'address, ap.all )'address );
       if execResult < 0 then
-         put_line( standard_error, "BUSH.exec: failed to execute command, " &
-           "error #" & C_errno'img );
+         put_line( standard_error, gnat.source_info.source_location &
+             ": spar_os.exec: failed to execute command, " &
+             "error #" & C_errno'img );
       else
-         put_line( standard_error, "BUSH.exec: execv unexpectedly returned" );
+         put_line( standard_error, gnat.source_info.source_location &
+             ": spar_os.exec: execv unexpectedly returned" );
       end if;
 
       raise PROGRAM_ERROR; -- this process must die

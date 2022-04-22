@@ -23,9 +23,9 @@ like a shell command, is now an error, detected by the presence of the big arrow
 
 8. New: strings.to_hexadecimal_digits
 
-9. Fix: added policy and configuration to built-in help. [docs]
+9. Fix: added policy and configuration to built-in help.
 
-10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously. [tests needed]
+10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously.
 
 11. Fix: structured scripts no longer auto-declare variables.  unstructured scripts will still auto-declare variables.
 
@@ -59,17 +59,17 @@ CHANGES SINCE 2.4.1
 
 25. Fix: to_hexadecimal_digits no longer allowed with pragma ada_95.
 
-26. New: l10n package. [negative tests needed]
+26. New: l10n package.
 
 27. New: hashed_maps package.
 
 28. New: vectors package.
 
-29. New: case in statement can have multiple test variables and return expressions. [change into a relation function]
+29. New: case in statement can have multiple test variables and return expressions.
 
 30. New: case with multiple variables (like rust, python, and some other languages).
 
-31. New: box <> allowed in case when conditions. [negative tests needed]
+31. New: box <> allowed in case when conditions.
 
 32. New: demonstration examples contracts, design_examples, scheduler, side_effects.
 
@@ -97,11 +97,11 @@ CHANGES SINCE 2.4.1
 
 44. Fix: written variable test for out parameters only applies if the variable is not auto-declared.
 
-45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case. [Negative tests required]
+45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case.
 
 46: Change: default for makefile is to build with 4 threads.
 
-47: Fix: doubly linked lists parameters should work correctly. [additional tests needed]
+47: Fix: doubly linked lists parameters should work correctly.
 
 48: Fix: recursion no longer confused by new parameters being created in some circumstances.
 
@@ -121,5 +121,5 @@ CHANGES SINCE 2.4.1
 
 56: Fix: provision.sh script updated and fixed for SuSE Linux.
 
-57: Change: provision.sh and configure script updated for FreeBSD 13.
+57: Change: Updates for FreeBSD 13.  Build successful without BDB support (FreeBSD BDB is very old).  Tests not passing, perhaps GCC Ada is too old on FreeBSD.
 
