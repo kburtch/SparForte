@@ -382,7 +382,7 @@ begin
         subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
         reason       => "was",
         obstructorNotes => optional_yellow( "not found" ),
-        remedy       => "it was spelled wrong or it's directory is missing in the PATH directory list"
+        remedy       => "it was spelled wrong or a directory is missing in the PATH directory list"
      );
   else
      err(
@@ -390,7 +390,7 @@ begin
         subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
         reason       => "was",
         obstructorNotes => optional_yellow( "not found" ),
-        remedy       => "it was spelled wrong or it's directory is missing in the PATH directory list"
+        remedy       => "it was spelled wrong or a directory is missing in the PATH directory list"
      );
   end if;
 end err_cmd_not_found;
