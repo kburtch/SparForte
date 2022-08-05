@@ -5,13 +5,13 @@ spar \- SparForte, the Business Shell
 .B spar
 [\-bcCdDeghilLmppPqrtvVx] [\-\-break] [\-\-check] [\-\-color|\-\-colour] [\-\-debug] [\-\-exec]
 [\-\-gcc-errors] [\-\-login|\-\-profile] [\-\-verbose] [\-\-quiet] [\-\-version]
-[\-\-restricted] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test][\-\-trace]
+[\-\-restricted] [\-\-session s] [\-\-perf] [\-\-design|\-\-coding|\-\-maintenance|\-\-test][\-\-trace]
 [\-\-] [script [param1 ...] ]
 .SH DESCRIPTION
 .\" Add any additional description here
 .PP
 .B SparForte
-is a sh\-compatible shell interpreter and scripting language
+is a sh\-compatible shell interpreter and safe scripting language
 that executes commands read from the standard
 input or from a file.
 .PP
@@ -73,6 +73,9 @@ brief error messages
 \fB\-r\fR, \fB\-\-restricted\fR
 restricted shell mode
 .TP
+\fB\-\-session\fR
+start a session with the name s
+.TP
 \fB\-t\fR, \fB\-\-test\fR
 test phase mode (default SDLC mode).  Strict error checking, unit tests enabled.
 .TP
@@ -107,7 +110,7 @@ Written by Ken O. Burtch and other volunteers.
 .SH "REPORTING BUGS"
 Report bugs to <ken@pegasoft.ca>.
 .SH COPYRIGHT
-SparForte is Copyright (c)2001-2021 Free Software Foundation, Inc.
+SparForte is Copyright (c)2001-2022 Free Software Foundation, Inc.
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

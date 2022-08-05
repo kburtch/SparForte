@@ -28,6 +28,7 @@ with ada.text_io,
      compiler,
      scanner,
      pegasoft.user_io,
+     pegasoft.strings,
      parser,
      interpreter,
      signal_flags;
@@ -39,6 +40,7 @@ use ada.text_io,
     compiler,
     scanner,
     pegasoft.user_io,
+    pegasoft.strings,
     parser,
     interpreter,
     signal_flags;
@@ -56,6 +58,7 @@ procedure spar is
   wasDesign : boolean := false;
   wasMaintenance : boolean := false;
   wasTest : boolean := false;
+  i : positive := 1;
 begin
   startSignalFlags;
 
@@ -73,7 +76,7 @@ begin
   if Argument_Count = 1 then
      if Argument(1) = "-h" or Argument( 1 ) = "--help" then
         Put_Line( "SparForte usage" );
-        Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
+        Put_Line( "spar [-bcCdDeghilLmprtvVx] [-Ld|-L d] [--break][--check][--debug][--exec][--gcc-errors][--login][--verbose][--version][--perf][--restricted][--session s][--coding|--design|--maintenance|--test][--trace][--] [script [param1 ...] ]" );
         Put_Line( "  --break or -b       - enable breakout debugging prompt" );
         Put_Line( "  --check or -c       - syntax check the script but do not run" );
         Put_Line( "  --coding or -C      - development phase mode" );
@@ -92,6 +95,7 @@ begin
         Put_Line( "  --pref or -p        - show performance stats" );
         Put_Line( "  --quiet or -q       - brief error messages" );
         Put_Line( "  --restricted or -r  - restricted shell mode" );
+        Put_Line( "  --session s         - start a session with the name s" );
         Put_Line( "  --test or -t        - test phase mode (default)" );
         Put_Line( "  --trace or -x       - show script lines as they run" );
         Put_Line( "  --verbose or -v     - show shell activity" );
@@ -108,8 +112,8 @@ begin
   if Argument_Count > 0 then
      optionOffset := 1;
      libraryPathNext := false;
-     for i in 1..Argument_Count loop
-
+     -- for i in 1..Argument_Count loop
+     while i <= Argument_Count loop
          if libraryPathNext then
             if Argument(i)'length = 0 then
                Put_Line( standard_error, Command_Name & ": missing argument for -L" );
@@ -168,6 +172,27 @@ begin
          elsif Argument(i) = "--test" then
             testOpt := true;
             wasTest := true;
+         elsif Argument(i) = "--session" then
+            -- For the session, we need a session name
+            if i < Argument_Count then
+               optionOffset := optionOffset + 1;
+               i := i + 1;
+               if sessionName /= "" then
+                  Put_Line( standard_error, Command_Name & ": --session was used more than once" );
+                  Set_Exit_Status( 192 );
+                  return;
+              elsif not Is_Alphanumeric(to_unbounded_string( Argument(i) ) ) then
+                  Put_Line( standard_error, Command_Name & ": --session name is not alphanumeric" );
+                  Set_Exit_Status( 192 );
+                  return;
+              else
+                  sessionName := to_unbounded_string( Argument(i) );
+              end if;
+            else
+               Put_Line( standard_error, Command_Name & ": --session should have a name" );
+               Set_Exit_Status( 192 );
+               return;
+            end if;
          elsif Argument(i) = "--trace" then
             traceOpt := true;
          --elsif Argument(i) = "--tabsize" then
@@ -278,6 +303,7 @@ begin
             exit;
          end if;
          optionOffset := optionOffset + 1;
+         i := i + 1;
      end loop;
   end if;
 

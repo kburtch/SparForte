@@ -962,7 +962,11 @@ begin
      if Element( profilePath, length( profilePath ) ) /= '/' then
         profilePath := profilePath & "/";
      end if;
-     profilePath := profilePath & ".sparforte_profile";
+     if sessionName = "" then
+        profilePath := profilePath & ".sparforte_profile";
+     else
+        profilePath := profilePath & ".sparforte_" & sessionName & "_profile";
+     end if;
      C_reset_errno;
      scriptFile := open( to_string( profilePath ) & ASCII.NUL, 0, 660 ); -- open script
      if scriptFile > 0 then                       -- profile opened OK?

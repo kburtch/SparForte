@@ -2257,8 +2257,13 @@ begin
   if optionOffset = 0 then
      findIdent( to_unbounded_string( "HOME" ), home_id );
      if home_id /= eof_t then
-        historyPath := identifiers( home_id ).value.all & directory_delimiter &
-           ".sparforte_history.txt";
+        if sessionName = "" then
+            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+               ".sparforte_history.txt";
+        else
+            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+               ".sparforte_" & sessionName & "_history.txt";
+        end if;
         if C_is_includable_file( to_string( historyPath ) & ASCII.NUL ) then
            open( historyFile, in_file, to_string( historyPath ) );
            for i in history'first..history'last loop
@@ -2330,8 +2335,13 @@ begin
   if inputMode = interactive then
      findIdent( to_unbounded_string( "HOME" ), home_id );
      if home_id /= eof_t then
-        historyPath := identifiers( home_id ).value.all & directory_delimiter &
-           ".sparforte_history.txt";
+        if sessionName = "" then
+            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+               ".sparforte_history.txt";
+        else
+            historyPath := identifiers( home_id ).value.all & directory_delimiter &
+               ".sparforte_" & sessionName & "_history.txt";
+        end if;
         create( historyFile, out_file, to_string( historyPath ) );
         for i in history'first..history'last loop
             -- TODO date conversion

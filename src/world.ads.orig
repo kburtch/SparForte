@@ -367,6 +367,8 @@ designOpt    : commandLineOption := false;           -- true if -t
 traceOpt     : commandLineOption := false;           -- true if -x
 colourOpt    : commandLineOption := false;           -- true if --colour/--color
 
+sessionName  : unbounded_string  := null_unbounded_string; -- session name
+
 --optionOffset : natural := 0;     -- character offset to script parameters
 
 terminalWindowNaming : boolean := false;
