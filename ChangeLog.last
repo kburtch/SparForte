@@ -1,96 +1,125 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Shell and Command Line Improvements
+Objective: Bug fixes following 2.4 and reducing technical debt.
 
-CHANGES SINCE 2.3.1
+CHANGES SINCE 2.4
 
-1. [Pascal B/ jrmarino] Fix: OS/x and FreeBSD patch.  
+1. New: doubly_linked_lists.parcel.
 
-CHANGES SINCE 2.3
+2. Fix: fixed "positive value is less than zero" error for a zero.
 
-2. Fix: The prompt script now reports any errors when it runs.  The prompt script uses the default prompt on an error instead of being a blank string.
+3. New: renaming a generic type.
 
-3. New: new example scripts: git_prompt_script,
+4. Fix: missing filename at end-of-line for >, 2>, < no longer produce an exception.
 
-4. Fix: missing files with 2> and 2>> now reported as an error.  (<, > and >> were working properly).
+5. Change: forgetting a "when" in a case statement with strings, which looks
+like a shell command, is now an error, detected by the presence of the big arrow
+(=>).
 
-5. Fix: file paths for redirection may not immediately follow a redirection (no longer require a space).
+6. Fix: out mode formal parameters that are not written to will have a
+"declared but not written to" error.
 
-5. New: Bourne shell dollar brace ${...} variable substitutions.
+7. Fix: . and .. directories ignored on file completions ending with a /.
 
-6. New: Bourne shell dollar parenthesis $(...) command substitution.
+8. New: strings.to_hexadecimal_digits
 
-7. New: Bourne shell length expansion ${#VAR}.
+9. Fix: added policy and configuration to built-in help.
 
-8. New: Bourne shell ~user is equivalent to /home/user.
+10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously.
 
-9. Refactor: Bourne shell parsing completely rewritten to provide the foundation for certain new features.
+11. Fix: structured scripts no longer auto-declare variables.  unstructured scripts will still auto-declare variables.
 
-10. Fix: (shell rewrite) high-ascii characters in SQL commands. [testing needed]
+12. New: tilde works with tab completions on files and commands..
 
-11. Fix: (shell rewrite) "Word" can be used as a variable name.
+13. Fix: tab completion of a single directory now works correctly.
 
-12. Fix: (shell rewrite) 2>&1 fixed to redirect in a pipeline.
+14. New: basic sudo tab completion handling.
 
-13. Fix: (shell rewrite) 2>&1 no longer redirects output for all commands in the pipeline, to match Bourne shell behaviour.
+15. Fix: tab completion of a command no longer adds "./" where there is none.
 
-14. New: (shell rewrite) ${:-}, ${:+} and ${:?}.
+16. Change: homonymn checking no longer applies to unstructured scripts.
 
-15. New: (shell rewrite) Glob patterns are allowed in directories in a path (e.g. ls /home/k*/*.txt is now possible).
+CHANGES SINCE 2.4.1
 
-16. Change: cd, env and unset no longer show the variable name in maintenance mode.  Because these are shell commands, an accidental use of a variable expansion could reveal values in production.
+17. New: umask built-in command (not octal values).
 
-14. New: (shell rewrite) $* and $@.
+18. Fix: issue with the number "2" in shell words treated as a number fixed.
 
-15. New: pragma annotate( accounts ...).
+19. Fix: "return" no longer produces an error with pragma annotate.
 
-16. New (shell rewrite) AdaScript `` may have backslash escapes.
+20. Change: style issues no longer enforced for unstructured scripts.  Double-quoted shell word check no longer treated as a style issue.
 
-17. New: variable declaration names are checked for common mispellings (e.g. "hi" vs. "high") should the similar variable exist and be visible.
+21. New: btree_io.recover, hash_io.recover.
 
-18. New: long names ought to have underscores.
+22. New: pragma volatile can have a timeout duration in seconds.
 
-19. Fix: trailing underscores not allowed in variable names.
+23. New: opengl_third, opengl_fourth examples.
 
-20. Fix: fixed constraint error on certain text_io subprocedures.
+24. New: strings.levenshtein, strings.soundex, strings.replace_all, strings.starts, strings.ends, strings.word_count, strings.compare, strings.index_set.
 
-21. Fix: shell statements in a case statement now parsed properly.
+25. Fix: to_hexadecimal_digits no longer allowed with pragma ada_95.
 
-22. New: pragma declare_constraint and pragma constraint for design constraints.
+26. New: l10n package.
 
-23. Fix: pragma restriction, suppress, software_model, license now checked for an identifier name (rather than a string, number or some other token).
+27. New: hashed_maps package.
 
-24. Fix: pragma license and software_model show the names in the error message for unknown value.
+28. New: vectors package.
 
-25. Fix: updated man page to version 2.4.  Updated version to 2.4.
+29. New: case in statement can have multiple test variables and return expressions.
 
-26. Fix: static expressions, such as used in pragmas, are now being evaluated.
+30. New: case with multiple variables (like rust, python, and some other languages).
 
-27. New: pragma declare_affinity and pragma affinity for design affinities.
+31. New: box <> allowed in case when conditions.
 
-28. New: pragma suppress( no_empty_command_substitutions ).
+32. New: demonstration examples contracts, design_examples, scheduler, side_effects.
 
-29. Fix: s := `` no longer gives a trailing whitespace error message.
+33. Fix: parent contracts which raise an exception now propogate the exception.
 
-30. Change: new support for GNU readline library (third-party areadline library removed).
+34. Change: Improved some error messages for context and ease of understanding.
 
-31. Change: new command line completion capabilities (assignment completion, executable command completion, subcommand completion for certain Linux commands).
+35. Fix: restored a unreachable code by raise test that was removed when raise..when was added.
 
-32. Fix: Updated Git prompt script example for GNU readline.
+36. Fix: [Blady] various OS/X changes.
 
-33. Fix: Files.Is_Directory no longer appends an unnecessary ASCII.NUL to the path.
+37. Fix: [Zhu] Slackware / GCC 11 fix.
 
-34. New: shell history saved as ~/.sparforte_history.
+38. New: Support for Raspian / Debian 11.1 (Bullseye) on Raspberry Pi.
 
-35. New: --color or --colour option to enable coloured messages.
+39. New: Support for YAML substitutions.
 
-36. New: --icons to enable UTF-8 icons in messages.
+40. Change: [Beader] identifiers must differ by more than underscores in formal scripts.
 
-37. Fix: --gcc-errors no longer use bold on type errors.
+41. Change: Changes to configure and provision scripts to support building in Ubuntu Docker container.  Changes not yet made for other O/S.  Example Dockerfile included with source code.
 
-38. Fix: --gcc-errors now takes effect for syntax checking, not just execution.
+42. Fix: use of constant on record fields vs variable fixed.  Fixed subsequent issues with affirm clauses.  Fixed impacted example programs.
 
-39. Fix: -e commands no longer require a trailing semi-colon.
+43. Fix: test cases in pragma test are now syntax checked.
 
-40. New: strings.null_unbounded_string.
+44. Fix: written variable test for out parameters only applies if the variable is not auto-declared.
+
+45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case.
+
+46: Change: default for makefile is to build with 4 threads.
+
+47: Fix: doubly linked lists parameters should work correctly.
+
+48: Fix: recursion no longer confused by new parameters being created in some circumstances.
+
+49: New: more examples: luhn.sp, hanoi.sp, ipv4.sp.
+
+50: New: -q / --quiet for brief error messages.  The default is detailed error messages.
+
+51: Fix: function return values expressions now type checked and type casted where necessary.
+
+52. Fix: certain user functions not allowing return values fixed.
+
+53. Fix: contract failures in subprogram parameters no longer hidden or raised later.
+
+54: New: new logs procedures for simple metrics: logs.metrics, logs.checkpoint
+
+55: Fix: a blank line at the start of a with separate file no longer raises an exception.
+
+56: Fix: provision.sh script updated and fixed for SuSE Linux.
+
+57: Change: Updates for FreeBSD 13.  Build successful without BDB support (FreeBSD BDB is very old).  Tests not passing, perhaps GCC Ada is too old on FreeBSD.
 

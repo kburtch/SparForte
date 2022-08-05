@@ -2511,6 +2511,7 @@ begin
      content( e, "System.Script_Software_Model","System.System_Version" );
      content( e, "System.Design_Phase", "System.Maintenance_Phase" );
      content( e, "System.Testing_Phase", "System.Development_Phase" );
+     content( e, "System.Session_Name" );
      seeAlso( e, "doc/pkg_system.html" );
      endHelp( e );
   elsif helpTopic = "teams" then

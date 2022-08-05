@@ -2100,6 +2100,7 @@ begin
   declareStandardConstant( "System.Maintenance_Phase", boolean_t, integer'image( commandLineOption'pos(maintenanceOpt))(2) & "" );
   declareStandardConstant( "System.Testing_Phase", boolean_t, integer'image( commandLineOption'pos(testOpt))(2) & "" );
   declareStandardConstant( "System.Development_Phase", boolean_t, integer'image( commandLineOption'pos( not testOpt and not maintenanceOpt and not designOpt ) )(2) & "" );
+  declareStandardConstant( "System.Session_Name", uni_string_t, to_string( sessionName ) );
   declareNamespaceClosed( "System" );
 end declareStandardPackage;
 
