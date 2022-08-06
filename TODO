@@ -92,6 +92,7 @@ Priority Issues (Fix These First)
     a return value (which never gets used).  We'll need to do some redesign
     work to solve this.
 
+- get_line and GNU readline autocomplete options from a user's array
 - shell ulimit built-in
   - include an option to timeout a script if it runs too long
 - separate subprograms need parameter verification like other forward
