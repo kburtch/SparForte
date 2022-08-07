@@ -11,6 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
+- logging is showing duplicate lines
 - when tab completing a partial directory containing a backslashed space,
   after the attempted completion it resets the command line to before the
   first space character
