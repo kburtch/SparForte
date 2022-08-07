@@ -27,6 +27,7 @@ with ada.text_io,
     spar_os,
     spar_os.tty,
     world,
+    pegasoft.numerics,
     pegasoft.strings;
 use ada.text_io,
     ada.strings.unbounded.text_io,
@@ -34,6 +35,7 @@ use ada.text_io,
     spar_os,
     spar_os.tty,
     world,
+    pegasoft.numerics,
     pegasoft.strings;
 
 package body pegasoft.user_io is
@@ -271,6 +273,34 @@ begin
      return optional_bold( toSecureData( to_string( toEscaped( s ) ) ) );
   end if;
 end toProtectedValue;
+
+
+-----------------------------------------------------------------------------
+--  PUT SCRAMBLED
+--
+-- Display a animated scrambled message and started a new line
+-- In the style of the "Inside Man" movie end-credits.
+-----------------------------------------------------------------------------
+
+procedure put_scrambled( msg : string ) is
+  message : unbounded_string;
+begin
+  for rand in msg'range loop
+      message := null_unbounded_string;
+      for i in msg'range loop
+          if i <= rand then
+             message := message & msg(i);
+          else
+             message := message & character'val( 64 + rnd(32) );
+          end if;
+      end loop;
+      delay 0.02;
+      put_line( message );
+      put( term( up ) );
+  end loop;
+  New_Line;
+  delay 0.5;
+end put_scrambled;
 
 
 -----------------------------------------------------------------------------

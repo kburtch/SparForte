@@ -120,6 +120,10 @@ function inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in inverse characters
 
+procedure put_scrambled( msg : string );
+-- Display an animated scrambled message and started a new line
+-- In the style of the "Inside Man" movie end-credits.
+
 procedure put_trace( msg : string; icon : string := "" );
 -- display a trace message to standard error
 
