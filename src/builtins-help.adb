@@ -2489,7 +2489,7 @@ begin
      categoryKeyword( e );
      description( e, "The subtype statement will create a type that is " &
                   "compatible with the original, as if it was a renaming of the original type. " );
-     content( e, "subtype newtype is [abstract|limited] oldtype [affirm...end affirm]" );
+     content( e, "subtype newtype is [abstract|constant|limited] oldtype [affirm...end affirm]" );
      seeAlso( e, "doc/ref_typedecl.html" );
      endHelp( e );
   elsif helpTopic = "System" then
@@ -2559,10 +2559,10 @@ begin
                   "incompatible with the original type.  It is also " &
                   "used to create array, record and enumerated types. " &
                 "See also subtypes.");
-     content( e, "type newtype is new [abstract|limited] oldtype [affirm...end affirm]" );
+     content( e, "type newtype is new [abstract|constant|limited] oldtype [affirm...end affirm]" );
      content( e, "type newtype is ( enum1 [,enum2...] [affirm...end affirm] )" );
-     content( e, "type newtype is [abstract|limited] record field1 : type1 [;field2...] end record|newtype" );
-     content( e, "type newtype is [abstract|limited] array( low..high) of item_type [:= array( item,...)]" );
+     content( e, "type newtype is [abstract|constant|limited] record field1 : type1 [;field2...] end record|newtype" );
+     content( e, "type newtype is [abstract|constant|limited] array( low..high) of item_type [:= oldarray|(item,...)]" );
      seeAlso( e, "doc/ref_typedecl.html" );
      endHelp( e );
   elsif helpTopic = "types" then
