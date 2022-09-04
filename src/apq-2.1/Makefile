@@ -4,7 +4,7 @@
 # Licensed under the ACL (Ada Community License)
 # or GPL2 :
 
-include Makeincl
+#include Makeincl
 
 DISTDIR=apq-$(VERSION)
 DISTFILE=apq-$(VERSION).tar.gz
