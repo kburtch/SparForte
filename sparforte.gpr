@@ -1,0 +1,30 @@
+project SparForte is
+
+   for Languages use ("C", "Ada");
+   for Source_Dirs use ("src", "src/pegasock", "src/adacgi-1.6");
+   for Excluded_Source_Files use ("c_pcre.c");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Main use ("spar.adb");
+   for Create_Missing_Dirs use "True";
+
+   package Compiler is
+      for Switches ("ada") use ("-gnatW8", "-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y.N",
+         "-fstack-check", "-g", "-gnato", "-gnatE", "-gnata",
+         "-gnateE", "-gnateF", "-Wall");
+      for Switches ("c_os.c") use ("-DNO_SDL");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-Es");
+   end Binder;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-s");
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-g") & external ("SPAR_LINKER_FLAGS", "");
+   end Linker;
+
+end SparForte;

@@ -66,4 +66,7 @@ src/testsuite/junit_result.xml
 src/testsuite/third_party/btree_test/
 src/parser_l10n.adb
 src/pegasoft-user_io-getline.adb
-
+/alire/
+/config/
+/bin/
+/obj/
