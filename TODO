@@ -94,6 +94,7 @@ Priority Issues (Fix These First)
     work to solve this.
 
 - get_line and GNU readline autocomplete options from a user's array
+- SparForte should scan for hard-coded passwords and encrypted secrets
 - shell ulimit built-in
   - include an option to timeout a script if it runs too long
 - separate subprograms need parameter verification like other forward
@@ -803,6 +804,7 @@ ISSUES (AdaScript)
   * strings package (AdaScript issues)
     - strings.replace_match/glob
     - strings.cvs - comma separated values - 2, 3, "hello", ... fields
+    - strings.pcre_replace
 
   * files package (AdaScript Issues)
     - should it handle ~?

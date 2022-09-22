@@ -38,6 +38,8 @@ defaultPrompt  : constant unbounded_string := to_unbounded_string("=> ");
 -- default input prompt
 promptScript   : unbounded_string := null_unbounded_string;
 -- script created by pragma prompt_script
+promptIdleScript   : unbounded_string := null_unbounded_string;
+-- script created by pragma prompt_idle_script
 prompt         : unbounded_string := defaultPrompt;
 -- the last prompt displayed (set by parser)
 

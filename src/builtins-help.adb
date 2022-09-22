@@ -1228,6 +1228,8 @@ begin
   content( e, "pragma manual_test_result( tester, date, notes, screenshots, status [, ticket] - manual test result" );
   content( e, "pragma no_command_hash - do not store command pathnames in the hash table" );
   content( e, "pragma prompt_script( `commands` ) - commands to draw command prompt" );
+  content( e, "pragma prompt_idle_script( `commands` ) - commands to run when command prompt is idle" );
+  content( e, "pragma prompt_idle_speed( interval ) - how often to commands when command prompt is idle" );
   content( e, "pragma propose( from, to, message ) - suggest a change to a program" );
   content( e, "pragma refactor( from, to, message ) - request programmer optimize program" );
   content( e, "pragma restriction( no_annotate_todos ) - must not have annotate/todo" );

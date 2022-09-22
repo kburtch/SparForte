@@ -32,7 +32,7 @@ with  ada.text_io,
     world,
     reports.test,
     pegasoft.strings,
-    pegasoft.user_io,
+    pegasoft.user_io.getline,
     pegasoft.script_io,
     compiler,
     scanner,
@@ -47,6 +47,7 @@ use ada.text_io,
     ada.calendar,
     pegasock.memcache,
     pegasoft.user_io,
+    pegasoft.user_io.getline,
     pegasoft.script_io,
     world,
     reports,
@@ -100,6 +101,8 @@ type aPragmaKind is (
      noCommandHash,
      peek,
      promptChange,
+     promptIdleChange,
+     promptIdleSpeed,
      propose,
      refactor,
      register_memcache_server,
@@ -222,6 +225,10 @@ begin
      pragmaKind := noCommandHash;
   elsif name = "prompt_script" then
      pragmaKind := promptChange;
+  elsif name = "prompt_idle_speed" then
+     pragmaKind := promptIdleSpeed;
+  elsif name = "prompt_idle_script" then
+     pragmaKind := promptIdleChange;
   elsif name = "propose" then
      pragmaKind := propose;
   elsif name = "refactor" then
@@ -1640,6 +1647,25 @@ begin
         end if;
         expect( backlit_t );
      end if;
+  when promptIdleChange =>                   -- pragma prompt_idle_script
+     if rshOpt then                          -- security precaution
+        err( "prompt scripts cannot be used in a restricted shell" );
+     else
+        expr_val := identifiers( token ).value.all;
+        if expr_val /= null_unbounded_string then
+           if tail( expr_val, 1 ) /= ";" then
+              expr_val := expr_val & ";";
+           end if;
+        end if;
+        expect( backlit_t );
+     end if;
+  when promptIdleSpeed =>                    -- pragma prompt_idle_speed
+     if rshOpt then                          -- security precaution
+        err( "prompt scripts cannot be used in a restricted shell" );
+     else
+        ParseStaticExpression( expr_val, var_id );
+        baseTypesOK( var_id, duration_t );
+     end if;
   when propose =>                           -- pragma refactor
      ParseIdentifier( var_id );
      if baseTypesOK( identifiers( var_id ).kind, teams_member_t ) then
@@ -2429,6 +2455,24 @@ begin
      when promptChange =>
         if not error_found then
            promptScript := expr_val;
+        end if;
+     when promptIdleChange =>
+        if not error_found then
+           promptIdleScript := expr_val;
+        end if;
+     when promptIdleSpeed =>
+        if not error_found then
+           declare
+              v : duration;
+           begin
+              v := duration( to_numeric( expr_val ) );
+              if v < 0.0 then
+                 err( "interval must be a natural number" );
+              end if;
+              set_readline_interval( v );
+           exception when others =>
+               err( "interval must be numeric" );
+           end;
         end if;
      when session_export_script =>
         if not error_found then

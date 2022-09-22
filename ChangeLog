@@ -8,4 +8,5 @@ CHANGES SINCE 2.5
 
 2. New: System.Session_Name to read the name from --session.
 
+3. New: pragma prompt_idle_script and prompt_idle_speed.
 
