@@ -5,6 +5,22 @@
 	a {
 	       	text-decoration: none;
 	}
+    code {
+		font-family: "Liberation Mono", monospace;
+        font-size: 0.95em;
+        background-color: #EEEEEE;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        border: 1px solid #CCCCCC;
+    }
+    tt.key {
+		font-family: "Liberation Mono", monospace;
+        font-size: 0.95em;
+        background-color: #FFFFFF;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        border: 1px solid #CCCCCC;
+    }
 	h2 {
 		font-family: "Lucida Sans", "Trebuchet MS", sans-serif;
 		font-size: 24px;
