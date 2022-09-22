@@ -75,6 +75,25 @@ package body interpreter is
 
 
 ------------------------------------------------------------------------------
+--  PROMPT IDLE_CALLBACK
+--
+-- Pegasoft.user_io will use readline to read text at the command prompt.
+-- This callback will handle readline idle events and run the user's prompt
+-- idle script.  This is a callback to keep SparForte logic out of the
+-- Pegasoft packages.
+------------------------------------------------------------------------------
+
+procedure promptIdleCallback is
+begin
+  if promptIdleScript /= null_unbounded_string then
+     CompileAndRun( promptIdleScript, fragment => false );
+     if error_found then
+        put_line( current_error, fullErrorMessage );
+     end if;
+  end if;
+end promptIdleCallback;
+
+------------------------------------------------------------------------------
 --  PUT COMMAND PROMPT
 --
 -- Process the command prompt script if necessary.  Show the command prompt.
@@ -1224,7 +1243,7 @@ begin
   if pwd /= eof_t then
      identifiers( pwd ).value.all := current_working_directory;
   end if;
-  pegasoft.user_io.getline.startupGetline( optionOffset );
+  pegasoft.user_io.getline.startupGetline( optionOffset, promptIdleCallback'access );
 end startInterpreter;
 
 

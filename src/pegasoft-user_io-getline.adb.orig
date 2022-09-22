@@ -107,6 +107,16 @@ end getPromptExtraLines;
 #end if;
 
 #if READLINE
+
+-----------------------------------------------------------------------------
+--
+-- READLINE IDLE CALLBACK
+--
+-----------------------------------------------------------------------------
+
+readline_idle_callback : a_readline_callback;
+readline_idle_timeout  : duration;
+
 -----------------------------------------------------------------------------
 --
 -- COMPLETION LIST
@@ -1444,6 +1454,20 @@ begin
 
   return res;
 end Ada_parameter_word_generator;
+
+function Ada_readline_timeout return int is
+begin
+  -- type idle_states is (first, waiting, calling);
+  readline_idle_callback.all;
+  return 0;
+end Ada_readline_timeout;
+
+procedure set_readline_interval( interval : duration ) is
+  discard : int;
+begin
+  readline_idle_timeout := interval;
+  discard := rl_set_keyboard_input_timeout(int(interval*1000000.0));
+end set_readline_interval;
 #end if;
 
 #if READLINE
@@ -2205,8 +2229,16 @@ begin
   return Null_Ptr;
 end Ada_parameter_word_generator;
 
-#end if;
+function Ada_readline_timeout return int is
+begin
+  return 0;
+end Ada_readline_timeout;
 
+procedure set_readline_interval( interval : duration ) is
+begin
+  null;
+end set_readline_interval;
+#end if;
 
 -----------------------------------------------------------------------------
 --  HAS READLINE
@@ -2239,7 +2271,9 @@ end has_readline;
 -----------------------------------------------------------------------------
 
 #if READLINE
-procedure startupGetline( optionOffset : natural) is
+procedure startupGetline(
+     optionOffset : natural;
+     idle_callback : a_readline_callback) is
   historyPath : unbounded_string;
   historyFile : file_type;
   temp        : unbounded_string;
@@ -2249,6 +2283,7 @@ procedure startupGetline( optionOffset : natural) is
   day         : day_number;
   seconds     : day_duration;
 begin
+  readline_idle_callback := idle_callback;
   C_init_readline;
   --if inputMode = interactive then
   -- We do not know if this is interactive or not when this is called.
@@ -2307,7 +2342,9 @@ when others => -- end_error = out of data
   historyNext := 1;
 end startupGetline;
 #else
-procedure startupGetline( optionOffset : natural) is
+procedure startupGetline(
+  optionOffset : natural;
+  idle_callback : a_readline_callback) is
 begin
   null;
 end startupGetline;
