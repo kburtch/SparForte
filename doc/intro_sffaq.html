@@ -50,13 +50,13 @@
 
 <h4>What does Sparforte Stand For?</h4>
 
-<img class="padded_left" src="pictures/sf2_ryu.png" width="128" height="103" alt="[Ryu]" \>
+<img class="padded_left" src="pictures/sf2_ryu.png" width="128" height="103" alt="[Ryu]" />
 
-<p>To "Spar" is to duel.  "Forte" (pronounced FORE-tay) is a music term
+<p>To "spar" is to duel.  "Forte" (pronounced FORE-tay) is a music term
 for loudness.  If you are going to spar, spar loud.  Together "Sparforte"
 expresses "sound design".</p>
 
-<img class="padded_right" src="pictures/roosevelt_bridge.jpg" width="128" height="92" alt="[Roosevelt Bridge]" \>
+<img class="padded_right" src="pictures/roosevelt_bridge.jpg" width="128" height="92" alt="[Roosevelt Bridge]" />
 <p>"Spar" is also a stout naval mast or boom and "Forte" is a proficiency
 or skill.  So, alternatively, "Sparforte" can also mean a proficient or
 skillful programming framework.</p>
@@ -81,14 +81,14 @@ new name for the project.</p>
 <h4>Can Sparforte run Bush (Business Shell) scripts?</h4>
 
 <p>Yes.  The only exception is that web template tags must be
-&lt;?spar instead of &lt;?bush.</p>
+<code>&lt;?spar</code> instead of <code>&lt;?bush</code>.</p>
 
 <h4>What is AdaScript?  How does it relate to Sparforte?</h4>
 
 <p>AdaScript is the programming language used by Sparforte.  Sparforte
 is the original AdaScript interpreter.  Since the language and the
 interpreter names are different, other projects can be developed using
-AdaScript--even other interpeters.</p>
+AdaScript&mdash;even other interpeters.</p>
 
 <h4>Do I need to know Ada to learn AdaScript?</h4>
 
@@ -106,19 +106,12 @@ background, you'll notice some key differences:</p>
 <li>Numeric and character literals are universal types.</li>
 <li>String literals are unbounded_strings not fixed strings / arrays.</li>
 <li>Ada attributes are implemented as built-in package functions.</li>
-<li>"with" and "use" are not available.  Built-in functions have similar
+<li><code>with</code> and <code>use</code> are not available.  Built-in functions have similar
 package names but may not be identical.</li>
 </ol>
 
-<h4>What is Sparforte/BUSH 2.0?</h4>
-
-<p>This is an advanced protoptype for upcoming features.  The prototype
-is prerelease and unstable: it may not compile or function.  It is
-intended for use by Sparforte developers.  Periodic snapshots are put
-on the Sparforte home page.</p>
-
 <h4>Is Sparforte a "cloud" language or an "agile" language?  Is there a
-single thing it excells at?  What is it's "killer app"?</h4>
+single thing it excels at?  What is it's "killer app"?</h4>
 
 <p>Sparforte is designed to improve speed and quality in development over
 rival tools while managing the SDLC, scaling and code aging better.  These, of
@@ -129,9 +122,6 @@ a marketer and I don't have trendy buzzwords word attach to Sparforte.</p>
 <h3>Using Sparforte</h3>
 
 <h4>How Do I Use Vim with Sparforte?</h4>
-
-<p>Even with many popular IDE's available, vi continues to be the most
-commonly used editor for writing programs on Linux/UNIX systems.</p>
 
 <p>The Sparforte download page has a file called "spar.vim".  If you have
 access to the vim syntax folder (usually /usr/share/vim/.../syntax),
@@ -146,7 +136,6 @@ configuration file.</p>
 <pre>
 syntax on
 filetype on
-vim autoload it for spar files with au BufNewFile,BufRead *.sp set filetype=spar.
 </pre>
 
 <p>Or enable modeline support with "set modeline"  in your .vimrc</p>
@@ -185,7 +174,7 @@ if you can configure one of these plug-ins to recognize Sparforte scripts
 as Ada.  This may give you 90% of the hilighting and other features you are
 looking for.</p>
 
-<h4>How Do I Use Microsoft VS Code with SparForte</h4>
+<h4>How Do I Use Microsoft VS Code with SparForte?</h4>
 
 <p>Ada support will give you most of the features you are looking for.
 Install the Ada support plug-in.  Then change the user settings in
@@ -205,13 +194,6 @@ an Ada Plug-in.  See if you can configure the plug-in to recognize
 Sparforte scripts as Ada.  This may give you 90% of the hilighting and
 other features you are looking for.</p>
 
-<h4>Why are the documentation colours wrong in Firefox on Linux?</h4>
-
-<p>Firefox colour correction feature behaves oddly with certain graphics
-drivers on Linux.  Try opening the URL about:config, confirm the warning
-and change gfx.color_management.mode from 2 to 0 to disable colour
-management.</p>
-
 <h4>When I use spar as a login shell, why can't I use Control-D to log out?</h4>
 
 <p>This is the same behaviour as in the Bash shell if you use the
@@ -225,14 +207,11 @@ your download.</p>
 
 <h4>Can I build SparForte without any database engine?</h4>
 
-<p>Currently, no, but I hope to add that feature.  The APQ library
-used to access the databases isn't designed to be built with no
-database selected, and there are internal variables related to
-the current database which will break if no database is selected.</p>
+<p>Yes.</p>
 
 <h4>Can I build SparForte without SDL/OpenGL support?</h4>
 
-<p>Currently, no, but I hope to add that feature in the future.</p>
+<p>Yes.</p>
 
 <h4>Are there any Linux distributions that carry Sparforte?</h4>
 
@@ -245,19 +224,6 @@ ArchLinux and Fedora Linux.</p>
 documentation.</p>
 
 <h3>Programming Questions</h3>
-
-<h4>Why do I get an error when I run commands in backquotes?</h4>
-
-<p>Sparforte requires all commands to be terminated with a semi-colon.
-With more recent versions, a semi-colon is provided for you if the
-commands do not end with one.  However, this added semi-colon is
-useless if the command contains a comment&mdash;it will be hidden
-as part of the comment.  For example,</p>
-
-<p><tt>files : string := `ls;`;</tt> -- good</p>
-<p><tt>files : string := `ls`;</tt> -- good (with recent versions)</p>
-<p><tt>files : string := `ls; -- comment`;</tt> --good</p>
-<p><tt>files : string := `ls -- comment`;</tt> --this will fail</p>
 
 <h4>Why do I get an error when I run a command with a long option on the command prompt?</h4>
 
@@ -273,7 +239,7 @@ backslashes before each minus sign, or use AdaScript parameters.</p>
 <p>There are 3 kinds of subprograms in Sparforte: commands, procedures
 and functions.  Commands can have the I/O redirected.  Functions can
 be used in expressions.  Procedures are stand-alone.  put_line and
-related are procedures so they can't be used in a command pipeline.</p>
+related features are procedures so they can't be used in a command pipeline.</p>
 
 <h4>I declared a variable inside of a pragma debug but it wasn't declared.
 Why not?</h4>
@@ -286,15 +252,14 @@ executed yet so the variable doesn't exist.</p>
 to happen.  Why not?</h4>
 
 <p>The commands in the backquotes are a small script.  When the commands
-run, the "with separate" subscript is loaded into the running script...the
-small script in the backquotes not the main script.</p>
+run, the "with separate" subscript is loaded into the running script, the
+small script in the backquotes, instead of the main script.</p>
 
 <h4>How do I convert strings to numbers?</h4>
 
-<p>There are built-in functions to do this.  <tt>numerics.value</tt> converts
-a string to its equivalent value: numerics.value("5") returns 5.
-<tt>numerics.pos</tt> returns the Latin-1 value: numerics.pos( "A" )
-returns 65.</p>
+<p>There are built-in functions to do this.
+<p><code>numerics.value</code> converts a string to its equivalent value: <code>numerics.value("5")</code> returns 5.</p>
+<p><code>numerics.pos</code> returns the Latin-1 value <code>numerics.pos( "A" )</code> returns 65.</p>
 
 <h4>When I convert numbers to strings, why do they sometimes have a leading space character?</h4>
 
@@ -304,11 +269,11 @@ also follows this convention for GCC Ada compatibility.  So "?",
 strings.image, put_line, etc. will put a leading space before a
 positive number.</p>
 
-<p>To remove the leading space, use strings.trim().</p>
+<p>To remove the leading space, use <code>strings.trim()</code>.</p>
 
 <h4>How do I read in a number like scanf, readln, etc?</h4>
 
-<p><tt>get_line</tt> returns a universal type, not a string,
+<p><code>get_line</code> returns a universal type, not a string,
 so it can save to a string or numeric variable.
 
 <p><tt>n : integer := get_line</tt></p>
@@ -317,11 +282,11 @@ so it can save to a string or numeric variable.
 
 <p><tt>n := numerics.value( get_line );</tt></p>
 
-<h4>How do I format numbers like printf?</tt>?</h4>
+<h4>How do I format numbers like <tt>printf</tt>?</h4>
 
-<p>The built-in <tt>put</tt> procedure (not <tt>put_line</tt>) can
+<p>The built-in <code>put</code> procedure (not <code>put_line</code>) can
 do this.  The optional final parameter is a picture string
-describing the number's layout.  See the put in the package
+describing the number's layout.  See <code>put</code> in the "text_io" package
 section.</p>
 
 <h4>How do I create a C-style string?</h4>
@@ -339,9 +304,8 @@ section.</p>
 statement.  It can still be used in paramters.  Typically a limited
 type is used to protect against "shallow copying" of data structures.
 Although Sparforte has no pointers and thus no shallow copying issues,
-some types are treated as limited
-for compatibility with GCC Ada. An example is the
-<tt>file_type</tt> type.</p>
+limited types are used for sharing tokens or id numbers which should
+not be altered. An example is the <code>file_type</code> type.</p>
 
 <h4>How do I use an environment variable like <tt>LOGNAME</tt>?</h4>
 
@@ -355,17 +319,17 @@ environment variable, you'll also have to <tt>export</tt> it.</p>
 <h4>What's the difference between an <tt>in</tt>, <tt>out</tt> and
 <tt>in out</tt> parameters?</h4>
 
-<p>An <tt>in</tt> parameter is one that is used by a subprogram but
-will not be altered.  An <tt>out</tt> parameter is one that is
+<p>An <code>in</code> parameter is one that is used by a subprogram but
+will not be altered.  An <code>out</code> parameter is one that is
 created by the subprogram and any initial value is ignored.  An
-<tt>in out</tt> parameter is one that is used by the subprogram but
+<code>in out</code> parameter is one that is used by the subprogram but
 may be altered by the time the subprogram is finished.</p>
 
 <p>There is no equivalent of pass-by-value or pass-by-reference.</p>
 
 <h4>How do I change my command prompt?</h4>
 
-<p>Use <tt>pragma prompt_script</tt>.  More information is in the
+<p>Use <code>pragma prompt_script</code>.  More information is in the
 reference section.</p>
 
 <h4>How do I run a command with spaces in the name?</h4>
@@ -374,30 +338,15 @@ reference section.</p>
 
 <h4>How do I write a shell command over multiple lines?</h4>
 
-<p>Sparforte supports shell commands over multiple lines.  You do not use
+<p>The command prompt commands must be on a single line.</p>
+
+<p>Sparforte scripts support shell commands over multiple lines.  You do not use
 a backslash at the end of a line as in a Bourne Shell.  For example,
 these commands are the same:</p>
 
 <span><tt>ls -l;</tt></span><br>
 <span><tt>ls</tt></span><br>
 <span><tt>-l;</tt></span><br>
-
-<h4>Can I use out or in out mode parameters?</h4>
-
-<p>The current version supports only in parameters in user-defined
-subprograms.  Other parameter modes will be implemented in the
-future.</p>
-
-<h4>How do I create session variables?</h4>
-
-<p>Web session variables are on our to-do list.  In the meantime,
-you can create your session variables yourself.  Create a file
-in the /tmp directory.  Use a filename that is secure and
-consistent for the user's session: for example,
-the filename can be the MD5 value of the user's id.  Read and
-write variables to this file.  Write a cron task to periodically
-clean old files out of /tmp.  If performance is an issue, it
-is a common trick on web servers to move /tmp to a ramdisk.</p>
 
 <h4>Why can I only import and export string variables?</h4>
 
@@ -414,6 +363,10 @@ to/from a string, which is inconvenient.  It is possible that
 the importing/exporting other types of variables will be done in the
 future.</p>
 
+<P>As a security feature, SparForte requires all imported variables
+to be imported to a user-defined type.  You can add an
+<code>affirm</code> clause to validate the incoming data.</p>
+
 <h4>Can you do Continuous Integration with Sparforte?</h4>
 
 <p>CI is a technique were tests are automatically run on a regular basis to
@@ -429,13 +382,14 @@ code.</p>
 
 <p>You can get a rough idea of test coverage by running Sparforte with
 the trace feature turned on.  This displays the lines the language reads,
-not the lines it executes, but it will give you and idea a script is
-doing during a test.</p>
+not the lines it executes, but you can use the lines in the report
+to estimate which lines ran a test.</p>
 
 <h4>Can you do Test-driven Development with SparForte?</h4>
 
-<p>Develop your programs with "spar --test", treating them as permanently
-in the testing phase.</p>
+<p>SparForte runs in test phase mode of the SDLC.  It will
+run automated tests by default unless you switch to another phase of the
+SDLC.</p>
 
 <h4>Is there a libspar I can call to run Spar scripts from another
 language, like I can with lua?</h4>
@@ -443,9 +397,7 @@ language, like I can with lua?</h4>
 <p>AdaScript is an interpreted language: the "spar" interpreter must be used
 to run a program.</p>
 
-<p>Business Shell 2.0 had a "libbush" that could be called to run
-scripts from C.  Expect this feature to be backported eventually
-into Sparforte 1.x.</p>
+<p>A "libspar" is expected in the future.</p>
 
 <h4>Is there something like "use" or "static with" so I can use "length" instead of "strings.length"?</h4>
 
@@ -458,11 +410,6 @@ allowed by the language but may cause debugging or maintenance problems.
 These can rules of common sense based on the human nature.  For example,
 lowercase L cannot be used as a variable name (it looks like a one),
 nor can the name "NULL" (it looks like a reserved word).</p>
-
-<h4>Can you do Test-driven Development with SparForte?</h4>
-
-<p>Develop your programs with "spar --test", treating them as permanently
-in the testing phase.</p>
 
 <h3>Design Questions</h3>
 
@@ -477,7 +424,7 @@ a preprocessor for another shell.</p>
 Perl's zoidberg.  These attempt to create shells with a structure
 famillar to practicioners of those languages.</p>
 
-<p>SpareForte chose compatibility with Ada because Ada was the only
+<p>SparForte chose compatibility with Ada because Ada was the only
 top 20 language that had the capability to meet Sparforte's vision.
 This is the same reason that NASA, aerospace, air traffic control,
 robotics, and financial institutions chose Ada over Java, Perl, etc.</p>
@@ -525,7 +472,7 @@ lasting decades.  It can also be turned off.</p>
 
 <p>The command line SQL support is an attempt to address the problem
 of "mode errors" (right command typed in the wrong interpeter or
-"mode".   This also can be turned off.</p>
+"mode").   This also can be turned off.</p>
 
 <h4>Is AdaScript an enterprise language?</h4>
 
@@ -553,7 +500,7 @@ variables at the command prompt.</p>
 First, restrictions may be applied for security purposes.  Allowing them
 to be undone would be a security risk.  Second, restrictions may be applied
 for style or design reasons by architects or team leaders.  For example,
-they might use pragma ada_95 make source code as reuseable as possible.  In
+they might use <code>pragma ada_95</code> make source code as reuseable as possible.  In
 either case, the restrictions should not be undone.</p>
 
 <h4>Where does the idea of "itself" come from?</h4>
@@ -580,15 +527,16 @@ point out their convenience for short scripts, how large parameter lists
 with repeated variables are difficult to read and maintain, and that
 globals can be safely used by tacit agreement between programmers.</p>
 
-<p>Since AdaScript is a shell and scripting language, global variables are
+<p>SparForte implements safety features for working with global variables.
+Since AdaScript is a shell and scripting language, global variables are
 often useful.  They are also necessary for compatibility with Ada.</p>
 
-<h4>Why does AdaScript lack goto statments?  Some experts say they are bad.</h4>
+<h4>Why does AdaScript lack <tt>goto</tt> statments?  Some experts say they are bad.</h4>
 
-<p>AdaScript doesn't have a goto statements because of the complexity of
-implementing gotos.</p>
+<p>AdaScript doesn't have a <code>goto</code> statements because of the
+complexity of implementing <code>goto</code>.</p>
 
-<p>The goto has had opponents back to the 1960's when programming languages were
+<p>The <code>goto</code> has had opponents back to the 1960's when programming languages were
 less developed.  The belief was that an inexperienced programmer could misuse
 the statement and create programs that were difficult to read and maintain.
 Supporters of goto believe that the statement can improve readability and
@@ -596,9 +544,9 @@ maintenance in some cases: it is useful for breaking out of deeply nested loops,
 handing certain types of errors (like retry conditions), implementing alternate
 entry/exit points for initialization/cleanup (eliminating duplicate code),
 that labels can improve readability by documenting intent. They also
-believe that goto statements can improve performance as a result.</p>
+believe that <code>goto</code> statements can improve performance as a result.</p>
 
-<p>The goto statement may be implemented in the future.</p>
+<p>The <code>goto</code> statement may be implemented in the future.</p>
 
 <h4>Does SparForte catch Side-Effects?</h4>
 
@@ -619,11 +567,14 @@ that other languages may find difficult.</p>
 <h4>Won't big project features slow development of small nimble project?</h4>
 
 <p>While reducing keystrokes is not a goal of Sparforte, it does have
-several convenience features for the command prompt.  However, outside of
-the command prompt, the number of keystokes has little to do with the
-speed of project development.  Projects are dominated by reading,
-debugging, maintenance, etc. and these are managed by Sparforte's
-design.</p>
+several convenience features for the command prompt.  It also has the
+concept of an "unstructured script", intended for small solutions,
+which relax some of SparForte's requirements.</p>
+
+<p>However, with a typical real-world project, the number of keystokes
+has little to do with the speed of project development.  Projects are
+dominated by reading, debugging, maintenance, etc. and these are managed
+by Sparforte's design.</p>
 
 <h4>Why target code reading, debugging and maintenance?  A programming
 language cannot make a person think faster.</h4>
@@ -688,7 +639,7 @@ kind of time-consuming issues that other languages neglect.</p>
 <p>Sparforte programs will likely run slower than other languages you are
 used to.  There are several reasons for this.</p>
 
-<p>First, Sparforte version 1.x is focused on implementing core features,
+<p>First, Sparforte focused on developing core features,
 not on optimizing performance.  Some features are not optmized for speed.</p>
 
 <p>Second, Sparforte is built with the maximum error checking possible.
@@ -701,10 +652,8 @@ features may require more setup to use.  As a general rule, the simpler
 the language, the faster the interpreter will run.  Sparforte is more
 high level than many languages.</p>
 
-<p>These things mean that your scripts will probably run slower.  For example,
-Sparforte takes around twice as long as PHP 5.3 to initialize prior to running
-a program.  A simple test of a palindrome checker took about twice as long as
-PHP to run.</p>
+<p>However, SparForte typically runs over 10,000 to 40,000 commands per second,
+depending on your hardware and the nature of the commands.</p>
 
 <p>When evaluating performance, consider the trade-offs for loss of
 execution speed compared to Sparforte's other benefits.</p>

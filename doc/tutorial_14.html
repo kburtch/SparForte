@@ -82,12 +82,12 @@ designated as incompatible in some circumstances.</p>
 <h3>Creating New Types</h3>
 
 <p>New data types can be created using two different statements.  The
-<b>type</b> statement creates a new type derived from an existing type.
-The <b>subtype</b> statement creates a renaming of an existing type.
+<code>type</code> statement creates a new type derived from an existing type.
+The <code>subtype</code> statement creates a renaming of an existing type.
 Using type and subtype, you can create a hierarchy or tree of types
 without using object classes.</p>
 
-<p>With a new type (created with the type statement), the new type and
+<p>With a new type (created with the <code>type</code> statement), the new type and
 the parent type are structurally equivalent.  You can create any number
 of new types derived from the parent type but each new type is incompatible
 with its sibling or its parent types.  Although they are all structurally
@@ -126,7 +126,7 @@ be discovered before anything executes.</p>
 
 <h3>Creating Subtypes</h3>
 
-<p>The <b>subtype</b> statement works much the same way as the type statement
+<p>The <code>subtype</code> statement works much the same way as the type statement
 except that a subtype acts like a renaming of the existing type.  The
 new type and the parent type are structurally equivalent.  You can
 create any number of new types derived from the parent type and each
@@ -161,7 +161,7 @@ and one for plain HTML strings.</p>
                 <p class="code"><b>type</b> html_encoded_string <b>is</b> <b>new</b> string;<br>
 <b>type</b> html_plain_string <b>is</b> <b>new</b> string;<br>
 ...<br>
-title : constant html_plain_string := "My Page Title";<br>
+title : <b>constant</b> html_plain_string := "My Page Title";<br>
 web_page : html_encoded_string;<br>
         </div>
         </center>
@@ -227,12 +227,12 @@ SparForte's typing system.</p>
 <p>There are three universal types.</p>
 
 <ul>
-<li><b>universal_typeless</b> is the root type of string and numeric types.
+<li><code>universal_typeless</code> is the root type of string and numeric types.
 It will be treated as a string or number depending on context.  If
 the context is ambiguous, it will be treated as a string.</li>
-<li><b>universal_string</b> is the root type of all strings and characters.
+<li><code>universal_string</code> is the root type of all strings and characters.
 It automatically matches any string or character type.</li>
-<li><b>universal_numeric</b> is the root type of all number types.  It
+<li><code>universal_numeric</code> is the root type of all number types.  It
 automatically matches any integer, float or other number type.</li>
 </ul>
 

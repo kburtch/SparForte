@@ -40,9 +40,9 @@
 			<td align="left" valign="top">
 				<!-- Content Area -->
 
-<h2><a name="2.1"></a>Command Prompt Tutorial 1: SparForte as a Calculator</h3>
+<h2><a name="2.1"></a>Command Prompt Tutorial 1: SparForte as a Calculator</h2>
 
-<img class="padded_left" src="pictures/popeye_punch.png" width="128" height="186" alt="[Popeye]" \>
+<img class="padded_left" src="pictures/popeye_punch.png" width="128" height="186" alt="[Popeye]" />
 
 <p>Thanks for taking the time to look at the SparForte.&nbsp; This
 tutorial is a simple introduction to SparForte by using SparForte to perform
@@ -80,19 +80,19 @@ UNIX/Linux environment variables are also case-sensitive.&nbsp; This
 means that SparForte treats "IF", "if" and "If" as three different words.<br>
 </p>
 <p>SparForte will <b>terminate your session</b> by the
-command <b>return</b> (or <b>logout</b> for a login shell).&nbsp;
+command <code>return</code> (or <code>logout</code> for a login shell).&nbsp;
 
 You can also terminate your session by typing a Control-D (the UNIX
 end-of-file character).<br>
 </p>
-<p>The <span style="font-weight: bold;">help</span> command presents a
+<p>The <code>help</code> command presents a
 short summary of recognized SparForte commands.
 </p>
 <p><img src="pictures/sparforte_help.gif" alt="[SparForte help command]" width="616" height="421"><br>
 <b style="font-style: italic;">Figure:</b><span
  style="font-style: italic;"> Screenshot of an interactive SparForte session</span>
 </p>
-<p>For a brief description of a particular topic or command, use <b>help</b>
+<p>For a brief description of a particular topic or command, use <code>help</code>
 
 and the topic name.
 </p>
@@ -106,7 +106,7 @@ and the topic name.
 		delay secs<br>&nbsp;<br>
 		</p>
         <div class="code_caption">
-                <b>Example</b>: The Help Command: Help for the Delay Statement</span>
+                <b>Example</b>: The Help Command: Help for the Delay Statement
         </div>
         </div>
         </center>
@@ -139,14 +139,10 @@ to group subexpressions.</p>
         <div class="code">
 		<p class="code">=&gt; ? 5.5+2.5
 		<br>
-		8
-		<br>
-		=&gt; ? (25-4)*6
-		<br>
-		126</tt>
-		<br>
-		=&gt; ? 12/4
-		<br>
+		8<br>
+		=&gt; ? (25-4)*6<br>
+		126<br>
+		=&gt; ? 12/4<br>
 		3<br>&nbsp;<br>
 		</p>
         <div class="code_caption">
@@ -203,10 +199,10 @@ shell.&nbsp; This is discussed in other tutorials.<br>
 </p>
 <p>The "?" command is a quick way to display a result in a readable
 format to standard output.&nbsp; SparForte has other output commands.&nbsp;
-The <b>put</b> and <b>put_line</b> procedures will also display results.&nbsp;
+The <code>put</code> and <code>put_line</code> procedures will also display results.&nbsp;
 
 These procedures have more options than "?".&nbsp; The parameters are
-enclosed in parentheses and separated by commas.&nbsp; The put
+enclosed in parentheses and separated by commas.&nbsp; The <code>put</code>
 procedure, for example, can format the result using a picture string.<br>
 </p>
 
@@ -377,7 +373,7 @@ a variable, giving it type of your choosing.</p>
 <p>SparForte will not permit a string to be assigned to the variable "x"
 because x is a numeric variable.<br>
 </p>
-<p>Type <b>help type</b> to see a list of standard SparForte types.&nbsp; Besides
+<p>Type <code>help type</code> to see a list of standard SparForte types.&nbsp; Besides
 the usual types like "boolean" or "string", SparForte also has 3 universal
 types.  You can use universal types to override some or all of SparForte's strong
 typing during an interactive session and create variables that are similar to

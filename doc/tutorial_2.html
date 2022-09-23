@@ -42,7 +42,7 @@
 
 <h2><a name="2.2"></a>Command Prompt Tutorial 2: Basic Shell Commands</h2>
 
-<img class="padded_left" src="pictures/flintstone_golf.png" width="128" height="94" alt="[Flintstone Golf]" \>
+<img class="padded_left" src="pictures/flintstone_golf.png" width="128" height="94" alt="[Flintstone Golf]" />
 
 <p>Tutorial 1 demonstrated how SparForte can be used to do command line
 calculations.&nbsp; It introduced the concepts of expressions, types,
@@ -134,7 +134,7 @@ standard with most UNIX-based operating systems like Linux.</p>
 
         <center>
         <div class="code">
-		<p class="code">=&gt; date --universal<br>
+		<p class="code">=&gt; date "--universal"<br>
 		Sat Jan&nbsp; 1 17:23:16 UTC 2005<br>&nbsp;<br>
                </p>
         <div class="code_caption">
@@ -154,7 +154,7 @@ use because the POSIX arguments follow completely different rules.</p>
 
 <h3>Shell Word Expansions (Bourne Arguments)</h3>
 
-<p>Using Bourne shell arguments, 
+<p>Using Bourne shell arguments,
 dollar sign ($) expansions substitute the value of a SparForte variable into
 the command.&nbsp; Unlike AdaScript arguments which evaluate
 expressions for the arguments, dollar expansions substitute the text of
@@ -163,7 +163,7 @@ a variable into the command prior to executing the command.</p>
         <center>
         <div class="code">
 		<p class="code">=&gt; s : string := "--universal"<br>
-		=&gt; date $s<br>
+		=&gt; date "$s"<br>
 		Sat Jan&nbsp; 1 17:23:16 UTC 2005<br>&nbsp;<br>
                </p>
         <div class="code_caption">
@@ -171,8 +171,6 @@ a variable into the command prior to executing the command.</p>
         </div>
         </div>
 	</center>
-
-</p>
 
 <p>Each item separated by spaces in a POSIX format command is called a <span
  style="font-weight: bold;">shell word</span>.</p>
@@ -203,11 +201,14 @@ escape most characters as well as the dollar sign</li>
 to be included in the word.&nbsp; Single quotes also allow spaces in
 the word but prevent dollar expansions from taking place.&nbsp; Sets of
 quotes can be placed next to each other to form a single word.&nbsp;
-Individual letters can be escaped using a backslash (\).</p>
+Individual letters can be escaped using a backslash (\).  To show
+all these variations, we'll temporarily disable SparForte's word
+quoting checks.</p>
 
         <center>
         <div class="code">
-		<p class="code"> =&gt; echo s&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s<br>
+		<p class="code">=&gt; <b>pragma</b> suppress( word_quoting )<br>
+        =&gt; echo s&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s<br>
 		s is --universal<br>
 		=&gt; echo "s&nbsp;&nbsp;is&nbsp;&nbsp;&nbsp; $s"<br>
 		s&nbsp;&nbsp;is &nbsp;--universal<br>
@@ -407,11 +408,11 @@ Environment variables must be "imported" into SparForte or "exported" so
 that
 the programs you run can see them.</p>
 
-<p align="center"><img src="pictures/bush_ie.gif" width="256" height="256" summary="[import and export]"></p>
+<p align="center"><img src="pictures/bush_ie.gif" width="256" height="256" alt="[import and export]"></p>
 <p>On startup, SparForte automatically imports basic environment variables
-like HOME (the name of your home directory).&nbsp; You can see that
+like <code>HOME</code> (the name of your home directory).&nbsp; You can see that
 they are imported using the env command.
-Import other environment variables using "pragma import".
+Import other environment variables using <code>pragma import</code>.
 </p>
 
         <center>
@@ -447,8 +448,8 @@ the point of view of the program that started SparForte.</p>
         </div>
 	</center>
 
-<p>To restore the original value, LOGNAME must be re-imported from the
-environment variables using <b>pragma import</b>.</p>
+<p>To restore the original value, <code>LOGNAME</code> must be re-imported from the
+environment variables using <code>pragma import</code>.</p>
 
         <center>
         <div class="code">
@@ -462,10 +463,10 @@ environment variables using <b>pragma import</b>.</p>
         </div>
 	</center>
 
-<p>LOGNAME is restored to its original value.</p>
+<p><code>LOGNAME</code> is restored to its original value.</p>
 
 <p>To provide a variable to a program you run, it must be exported out
-of SparForte using <b>pragma export</b>.&nbsp; SparForte will take the variable
+of SparForte using <code>pragma export</code>.&nbsp; SparForte will take the variable
 and
 convert it to a form that can be placed the environment of the new
 program.&nbsp;
@@ -514,7 +515,6 @@ variables other than string variables.</p>
 </ol>
 &nbsp;<br />
 
-</p>
 <p><br>
 </p>
 			</td>

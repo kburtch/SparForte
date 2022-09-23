@@ -41,7 +41,7 @@
 				<!-- Content Area -->
 
 <h2><a name="2.4"></a>Script Tutorial 1: Basic Commands Scripts</h2>
-</p>
+
 <p>This section discusses how to assemble SparForte into runnable
 programs called "scripts".  It also covers basic features related
 to writing scripts.</p>
@@ -121,7 +121,7 @@ in an interactive session:</p>
 value
 to an undeclared variable is an error. (In an interactive session, SparForte
 can automatically declare the variable with a warning.)</li>
-  <li> <b>logout</b> will not stop a script. Use <b>return</b> or let
+  <li> <code>logout</code> will not stop a script. Use <code>return</code> or let
 the
 script
 reach the end of file.</li>
@@ -150,16 +150,16 @@ a message on the screen.
 	command_line.set_exit_status( 0 );<br>&nbsp;<br>
 	</p>
         <div class="code_caption">
-        <b>Example</b>: A First Script</span>
+        <b>Example</b>: A First Script
         </div>
         </div>
 	</center>
 
-<p>put_line and set_exit_status are built-in procedures. put_line, part
+<p><code>put_line</code> and <code>set_exit_status</code> are built-in procedures. put_line, part
 of
 the Text_IO package, displays a message on the screen. 
-set_exit_status(0) informs the program which ran your shell script
-that the script ran successfully.  </p>
+<code>set_exit_status(0)</code> informs the program which ran your shell script
+that the script ran successfully.</p>
 
 <p>You can run your shell script</p>
 
@@ -180,8 +180,8 @@ that the script ran successfully.  </p>
 <h3>Flow of Control</h3>
 
 <p><b>Conditional statements</b> are SparForte constructs for making choices and
-providing alternative instructions.  Use the <b>if</b> statement to make
-choices.  The if statement can have optional <b>elsif</b> or <b>else</b>
+providing alternative instructions.  Use the <code>if</code> statement to make
+choices.  The if statement can have optional <code>elsif</code> or <code>else</code>
 parts.</p>
 
         <center>
@@ -192,13 +192,13 @@ parts.</p>
 	<b>end if</b>;<br>&nbsp;<br>
 	</p>
         <div class="code_caption">
-        <b>Example</b>: A First If Statement</span>
+        <b>Example</b>: A First If Statement
         </div>
         </div>
 	</center>
 
-<p>The <b>case</b> statement can be used for decisions involving many
-individual values.  The final "when" must always be "when others", which
+<p>The <code>case</code> statement can be used for decisions involving many
+individual values.  The final <code>when</code> must always be <code>when others</code>, which
 includes all other values not covered by the other "when"'s.</p>
 
         <center>
@@ -223,12 +223,12 @@ includes all other values not covered by the other "when"'s.</p>
 	put_line( " day of the month" );<br>&nbsp;<br>
 	</p>
         <div class="code_caption">
-        <b>Example</b>: A First Case Statement</span>
+        <b>Example</b>: A First Case Statement
         </div>
         </div>
 	</center>
 
-<p>The @ character (pronounced "itself") has two different uses in SparForte.
+<p>The <code>@</code> character (pronounced "itself") has two different uses in SparForte.
 When used at the end of a command or procedure call, @ will call the
 command or procedure again with a new set of parameters.  Combining parameter
 lists with @ is called a <b>chain</b>.  @ is especially useful with the
@@ -237,13 +237,13 @@ conversions and a long, hard to read expression.</p>
 
 <h3>Loops</h3>
 
-<p>There are several looping statements.  The <b>for</b> loop will repeat
+<p>There are several looping statements.  The <code>for</code> loop will repeat
 a set of commands a specific number of times or over a specific range of
 numbers.  The variable in the for loop doesn't need to be declared: SparForte will
-declare it for you automatically.  A <b>while</b> loop will repeat a set of
+declare it for you automatically.  A <code>while</code> loop will repeat a set of
 commands until something
-becomes true.  A <b>loop</b> loop will loop indefinitely until you break out
-of the loop with an <b>exit</b> command.</p>
+becomes true.  A <code>loop</code> loop will loop indefinitely until you break out
+of the loop with an <code>exit</code> command.</p>
 
         <center>
         <div class="code">
@@ -253,25 +253,25 @@ of the loop with an <b>exit</b> command.</p>
 	<b>end loop</b>;<br>&nbsp;<br>
 	</p>
         <div class="code_caption">
-        <b>Example</b>: A First For Statement</span>
+        <b>Example</b>: A First For Statement
         </div>
         </div>
 	</center>
 
 <h3>The End of a Script</h3>
 
-<p>The <b>logout</b> command, which ends an interactive login session,
+<p>The <code>logout</code> command, which ends an interactive login session,
 cannot be used to stop a script. (After all, a script is not a login
 session.) Instead, use the <b>return</b> command to unconditionally
 stop a script and return control to the calling program or person. Set
 the exit status to zero to indicate there is no error.</p>
 
 <p>Scripts automatically stop when it reaches its end as if there was an
-implicit "return" typed there.</p>
+implicit <code>return</code> typed there.</p>
 
 <h3>The Delay Command</h3>
 
-<p>Scripts can be paused using the built-in delay command. delay will
+<p>Scripts can be paused using the built-in <code>delay</code> command. delay will
 suspend
 the script for a specific number of seconds after which it will wake up
 and resume the next statement after the delay command. The number of
@@ -284,7 +284,7 @@ can include a fractional part.
 	<p class="code"><b>delay</b> 5.5; -- wait for 5 1/2 seconds<br>&nbsp;<br>
 	</p>
         <div class="code_caption">
-        <b>Example</b>: The Delay Statement</span>
+        <b>Example</b>: The Delay Statement
         </div>
         </div>
 	</center>

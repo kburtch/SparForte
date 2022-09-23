@@ -94,28 +94,28 @@ languages and countries.  This is a binding to the GNU locale functions.</p>
 
         <center>
         <div class="code">
-<pre>
-<b>=&gt;</b> ? l10n.getlocale( l10n.lc_all )
+<p class="code">
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_all )<br>
 LC_CTYPE=en_CA.UTF-8;LC_NUMERIC=C;LC_TIME=C;LC_COLLATE=C;LC_MONETARY=C;LC_MESSAG
 ES=C;LC_PAPER=C;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=C;LC_IDENTI
-FICATION=C
-<b>=&gt;</b> ? l10n.currency_symbol
-
-<b>=&gt;</b> l10n.setlocale( l10n.lc_monetary, "en_US.UTF-8" )
-<b>=&gt;</b> ? l10n.getlocale( l10n.lc_monetary )
-en_US.UTF-8
-<b>=&gt;</b> ? l10n.currency_symbol
-$
-<b>=&gt;</b> ? l10n.int_curr_symbol
-USD
-<b>=&gt;</b> ? l10n.day(1)
-Sunday
-<b>=&gt;</b> l10n.setlocale( l10n.lc_time, "fr_CA.UTF-8" )
-<b>=&gt;</b> ? l10n.getlocale( l10n.lc_time)
-fr_CA.UTF-8
-<b>=&gt;</b> ? l10n.day(1)
-dimanche
-</pre>
+FICATION=C<br>
+<b>=&gt;</b> ? l10n.currency_symbol<br>
+<br>
+<b>=&gt;</b> l10n.setlocale( l10n.lc_monetary, "en_US.UTF-8" )<br>
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_monetary )<br>
+en_US.UTF-8<br>
+<b>=&gt;</b> ? l10n.currency_symbol<br>
+$<br>
+<b>=&gt;</b> ? l10n.int_curr_symbol<br>
+USD<br>
+<b>=&gt;</b> ? l10n.day(1)<br>
+Sunday<br>
+<b>=&gt;</b> l10n.setlocale( l10n.lc_time, "fr_CA.UTF-8" )<br>
+<b>=&gt;</b> ? l10n.getlocale( l10n.lc_time)<br>
+fr_CA.UTF-8<br>
+<b>=&gt;</b> ? l10n.day(1)<br>
+dimanche<br>
+</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Example</b>: Using localization
