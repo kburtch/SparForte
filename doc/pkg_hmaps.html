@@ -85,26 +85,25 @@ in the table.  The ken and element types must be scalar</p>
 
         <center>
         <div class="code">
-<pre>
-<b>=&gt;</b> type url_string is new string
-<b>=&gt;</b> type website is new string
-<b>=&gt;</b> urls : hashed_maps.map( website, url_string )
-<b>=&gt;</b> hashed_maps.insert( urls, "google", "https://www.google.com" )
-<b>=&gt;</b> hashed_maps.insert( urls, "yahoo", "https://www.yahoo.com" )
-<b>=&gt;</b> hashed_maps.insert( urls, "amazon", "https://www.amazon" )
-<b>=&gt;</b> hashed_maps.append( urls, "amazon", ".com" )
-<b>=&gt;</b> ? hashed_maps.contains( urls, "amazon" )
-true
-<b>=&gt;</b> ? hashed_maps.element( urls, "amazon" )
-https://www.amazon.com
-<b>=&gt;</b> c : hashed_maps.cursor( website, url_string )
-<b>=&gt;</b> hashed_maps.first( urls, c )
-<b>=&gt;</b> ? hashed_maps.has_element( c )
-true
-<b>=&gt;</b> ? hashed_maps.key( c )
-yahoo
-
-</pre>
+<p class="code">
+<b>=&gt;</b> <b>type</b> url_string <b>is</b> <b>new</b> string<br>
+<b>=&gt;</b> <b>type</b> website <b>is</b> <b>new</b> string<br>
+<b>=&gt;</b> urls : hashed_maps.map( website, url_string )<br>
+<b>=&gt;</b> hashed_maps.insert( urls, "google", "https://www.google.com" )<br>
+<b>=&gt;</b> hashed_maps.insert( urls, "yahoo", "https://www.yahoo.com" )<br>
+<b>=&gt;</b> hashed_maps.insert( urls, "amazon", "https://www.amazon" )<br>
+<b>=&gt;</b> hashed_maps.append( urls, "amazon", ".com" )<br>
+<b>=&gt;</b> ? hashed_maps.contains( urls, "amazon" )<br>
+true<br>
+<b>=&gt;</b> ? hashed_maps.element( urls, "amazon" )<br>
+https://www.amazon.com<br>
+<b>=&gt;</b> c : hashed_maps.cursor( website, url_string )<br>
+<b>=&gt;</b> hashed_maps.first( urls, c )<br>
+<b>=&gt;</b> ? hashed_maps.has_element( c )<br>
+true<br>
+<b>=&gt;</b> ? hashed_maps.key( c )<br>
+yahoo<br>
+</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Example</b>: Using dynamic_hash_tables to store URL's

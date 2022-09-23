@@ -97,23 +97,23 @@ through the list.  List positions are designated by cursors.</p>
 
         <center>
         <div class="code">
-<pre>
-<b>=&gt;</b> type fruit_string is new string
-<b>=&gt;</b> fruit : doubly_linked_lists.list( fruit_string )
-<b>=&gt;</b> doubly_linked_lists.append( fruit, "apple" );
-<b>=&gt;</b> doubly_linked_lists.append( fruit, "blueberry" ) @ ( fruit, "cherry" )
-<b>=&gt;</b> ? doubly_linked_lists.length( fruit )
- 3
-<b>=&gt;</b> ? doubly_linked_lists.first_element( fruit )
-apple
-<b>=&gt;</b> ? doubly_linked_lists.contains( fruit, "pineapple" )
-false
-<b>=&gt;</b> c : doubly_linked_lists.cursor( fruit_string )
-<b>=&gt;</b> doubly_linked_lists.first( fruit, c )
-<b>=&gt;</b> doubly_linked_lists.next( c )
-<b>=&gt;</b> ? doubly_linked_lists.element( c )
-blueberry
-</pre>
+<p class="code">
+<b>=&gt;</b> type fruit_string is new string<br>
+<b>=&gt;</b> fruit : doubly_linked_lists.list( fruit_string )<br>
+<b>=&gt;</b> doubly_linked_lists.append( fruit, "apple" );<br>
+<b>=&gt;</b> doubly_linked_lists.append( fruit, "blueberry" ) @ ( fruit, "cherry" )<br>
+<b>=&gt;</b> ? doubly_linked_lists.length( fruit )<br>
+ 3<br>
+<b>=&gt;</b> ? doubly_linked_lists.first_element( fruit )<br>
+apple<br>
+<b>=&gt;</b> ? doubly_linked_lists.contains( fruit, "pineapple" )<br>
+false<br>
+<b>=&gt;</b> c : doubly_linked_lists.cursor( fruit_string )<br>
+<b>=&gt;</b> doubly_linked_lists.first( fruit, c )<br>
+<b>=&gt;</b> doubly_linked_lists.next( c )<br>
+<b>=&gt;</b> ? doubly_linked_lists.element( c )<br>
+blueberry<br>
+</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Example</b>: Using doubly_linked_lists to create a list of fruit

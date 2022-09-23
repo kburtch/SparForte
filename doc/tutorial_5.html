@@ -84,7 +84,7 @@ server.</p>
 <p>For example, if you are working in a company that uses the Ada
 programming language a lot, you may want to make all SparForte scripts
 conform as closely as possible to Ada to make it easier to reuse program
-code.  You could make that a global policy by putting <b>pragma ada_95</b>
+code.  You could make that a global policy by putting <code>pragma ada_95</code>
 into the global policy file.</p>
 
         <center>
@@ -94,7 +94,7 @@ into the global policy file.</p>
         <b>end</b> my_policy;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple /etc/sparforte_policy file</span>
+        <b>Example</b>: A Simple /etc/sparforte_policy file
         </div>
         </div>
         </center>
@@ -115,7 +115,7 @@ do the job:</p>
 	<b>end</b> <b>if</b>;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple Unstructured Script</span>
+        <b>Example</b>: A Simple Unstructured Script
         </div>
         </div>
         </center>
@@ -166,7 +166,7 @@ SparForte script:</p>
 	<b>end</b> checkfiles;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple Structured Script</span>
+        <b>Example</b>: A Simple Structured Script
         </div>
         </div>
         </center>
@@ -195,7 +195,7 @@ command to find it:
 	spar: /usr/local/bin/spar<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: How to Find the Interpreter's Path</span>
+        <b>Example</b>: How to Find the Interpreter's Path
         </div>
         </div>
         </center>
@@ -203,7 +203,7 @@ command to find it:
 <p>The header line is followed by <b>annotations</b> describing the purpose of
 the
 script and who wrote it. This is important in case your script needs to
-be debugged in an emergency situation.  The <b>help</b> command can
+be debugged in an emergency situation.  The <code>help</code> command can
 read the annotations in scripts.</p>
 
         <center>
@@ -253,7 +253,7 @@ closed or deleted and the script should return a status code to the
 person
 or program running the script. In this case, there are no files to
 clean
-up. All that is necessary is the set_exit_status command( 0 ) which
+up. All that is necessary is the <code>set_exit_status command( 0 )</code> which
 indicates
 that the script ran successfully.</p>
 
@@ -284,7 +284,7 @@ itself can be contained in a <span style="font-weight: bold;">main procedure</sp
 <b>end</b> Bottles;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Script Enclosed in a Main Procedure Named "Bottles"</span>
+        <b>Example</b>: A Script Enclosed in a Main Procedure Named "Bottles"
         </div>
         </div>
         </center>
@@ -326,7 +326,7 @@ the declaration section of the procedure.<br>
 <b>end</b> math1;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Procedure Inside of a Main Procedure</span>
+        <b>Example</b>: A Procedure Inside of a Main Procedure
         </div>
         </div>
         </center>
@@ -363,12 +363,12 @@ is discussed in the reference section.</p>
 
 <p>When starting a large project or a project involving more than one
 programmer, SparForte has a design mode that is turned on
-with the command line option <span style="font-weight: bold;">--design</span>.</p>
+with the command line option <code>--design</code>.</p>
 
 <p>In design phase mode, you can "spec out" (or create a high level
 design) for your project.  You can declaring types, global
 variables and empty functions and procedures.  Unfinished items can
-be declared using the word <span style="font-weight: bold;">abstract</span>,
+be declared using the word <code>abstract</code>,
 which means they are not ready for use.  Subprograms that do nothing
 are called "stubs".  Using stubs creates a skeleton program that has
 enough structure to be tested by SparForte.</p>
@@ -433,12 +433,11 @@ code from one file to another.  See the
 <a href="ref_pragmas.html">pragma reference page</a> for more information.</p>
 
 <p>Explain your unfinished work with
-<span style="font-weight: bold;">pragma todo</span>, describing
+<code>pragma todo</code>, describing
 the work owner, effort and priority.  Use this pragma to
 generate estimates of the amount of work.</p>
 
-<span style="font-weight: bold;">pragma annotate( todo )</span>.
-Then run syntax checking to confirm that your overall design is
+<p>Then run syntax checking to confirm that your overall design is
 well-crafted.</p>
 
         <center>
@@ -493,7 +492,7 @@ team_awesome : teams.member;
         </div>
         </center>
 
-<p>The work report can be created with the help command:</p>
+<p>The work report can be created with the <code>help</code> command:</p>
 
         <center>
         <div class="code">
@@ -543,7 +542,7 @@ the top of your project.  Also create a team member for the team itself.
 This will be used to identify who is working on a task.  If nobody
 is working on a task, just assign it to the team.</p>
 
-<p>Use <span style="font-weight: bold;">pragma todo</span> to mark places in a program where work needs
+<p>Use <code>pragma todo</code> to mark places in a program where work needs
 to be done.  With this pragma, you can assign the work to a team member,
 provide a description and record the estimated effort and the priority of
 the work.</p>
@@ -555,7 +554,7 @@ team : teams.member;<br>
 fred_smith : teams.member;<br>
 ...<br>
 <span style="font-weight: bold;">function</span> get_stock_holdings <span style="font-weight: bold;">return</span> float <span style="font-weight: bold;">is</span><br>
-&nbsp;&nbsp;<span style="font-weight: bold;">pragma</span> todo( team, "create get_stock_holdings", work_measure.story_points, 5, work_priority.level, 'm' );<br>
+&nbsp;&nbsp;<b>pragma</b> todo( team, "create get_stock_holdings", work_measure.story_points, 5, work_priority.level, 'm' );<br>
 <span style="font-weight: bold;">begin</span><br>
 &nbsp;&nbsp;<span style="font-weight: bold;">return</span> 0;<br>
 <span style="font-weight: bold;">end</span> get_stock_holdings;<br>&nbsp;<br>
@@ -578,7 +577,7 @@ the ticket id to the pragma.</p>
         <center>
         <div class="code">
         <p class="code">
-&nbsp;&nbsp;<span style="font-weight: bold;">pragma</span> todo( fred_smith, "create get_stock_holdings", work_measure.story_points, 5, work_priority.level, 'm', "DEV-3742" );</p>
+&nbsp;&nbsp;<b>pragma</b> todo( fred_smith, "create get_stock_holdings", work_measure.story_points, 5, work_priority.level, 'm', "DEV-3742" );</p>
         </div>
         </center>
 
@@ -590,7 +589,7 @@ syntax, data types and values in the todo.</p>
 
 <p>In testing or maintenance modes, SparForte will confirm that all todo's
 have been completed and the project is ready for release.  (Low priority
-tasks can optionally be permitted with <span style="font-weight: bold;">pragma suppress</span>).
+tasks can optionally be permitted with <code>pragma suppress</code>).
 This way, missing functionality or outstanding bugs are treated
 as serious errors, just like serious syntax errors.</p>
 
@@ -660,7 +659,7 @@ release purposes.</p>
         </div>
         </center>
 
-<p>The <span style="font-weight: bold;">help -t</span> command will scan a project and create an unfinished
+<p>The <code>help -t</code> command will scan a project and create an unfinished
 work report.  The start of the report is a list of outstanding tasks in
 CSV format.  These can
 be imported into a spreadsheet or any ticket system supporting CSV
@@ -699,26 +698,24 @@ system within the project, team members can propose changes, request
 assistance and so forth.  This is particularly useful in open source
 projects or teams with geographically remote members.</p>
 
-<p>The help command will display these messages, which can be filtered
-with a command like <span style="font-weight: bold;">grep</span> and <span style="font-weight: bold;">sort</span> to see the ones you are
+<p>The <code>help</code> command will display these messages, which can be filtered
+with a command like <code>grep</code> and <code>sort</code> to see the ones you are
 interested in.</p>
 
 <p>During development, you can suppress test phase mode (the default)
-by using "--coding" or "-C".  This will disable unit tests and
+by using <code>--coding</code> or <code>-C</code>.  This will disable unit tests and
 will not perform certain tests that assume a program is complete.
 There is more on test phase mode below.</p>
 
 <h3>Debugging</h3>
 
-<p>The <span style="font-weight: bold;">trace</span> command will show each line of a script as
+<p>The <code>trace</code> command will show each line of a script as
 SparForte reads it.</p>
 
-<p>There are two pragmas for debugging.&nbsp; <span
- style="font-weight: bold;">pragma assert</span> tests for a condition
-and stops the script if the condition is false.&nbsp; <span
- style="font-weight: bold;">pragma debug</span> will run a backquoted
+<p>There are two pragmas for debugging.&nbsp; <code>pragma assert</code> tests for a condition
+and stops the script if the condition is false.&nbsp; <code>pragma debug</code> will run a backquoted
 command.&nbsp; This debugging statements only run if SparForte is in
-debugging mode with the --debug option (or pragma debug with no
+debugging mode with the <code>--debug</code> option (or <code>pragma debug</code> with no
 parameters).&nbsp; With these pragmas, you won't need to remove
 or comment out your debugging statements and risk changing your script's
 behaviour.</p>
@@ -747,7 +744,7 @@ for more info</p>
 <h3>Automated Testing</h3>
 
 <p>SparForte has a testing mode which can be turned on with with the
-command line option "--test". (As of SparForte 2.2.1, testing mode
+command line option <code>--test</code>. (As of SparForte 2.2.1, testing mode
 is the default).</p>
 
 <h4>Source Code Analysis</h4>
@@ -760,17 +757,18 @@ report things like unused types, procedures or functions.</p>
 
 <p>If you have specified a software model for your script, SparForte
 will check the model's requirements and inform you of any requirements
-missing from your script.  See the <b>pragma software_model</b> in the
+missing from your script.  See the <code>pragma software_model</code> in the
 reference for more information.</p>
 
 <h4>Embedded Tests</h4>
 
-<p>Testing mode runs any <b>pragma assert</b>'s found in your
-script.  It also runs any instructions found in <b>pragma test</b>.  These
+<p>Testing mode runs any <code>pragma assert</code>'s found in your
+script.  It also runs any instructions found in <code>pragma test</code>.  These
 tests instructions can be used to set up, tear down or run unit tests.
-Check the results of your tests with <b>pragma test_result</b>.
-Without the --test option, pragma test and pragma test_assert has no effect.
-pragma assert may still have an effect if in debugging mode.</p>
+Check the results of your tests with <code>pragma test_result</code>.
+Without the <code>--test</code> option, <code>pragma test</code> and
+<code>pragma test_assert</code> has no effect.
+<code>pragma assert</code> may still have an effect if in debugging mode.</p>
 
         <center>
         <div class="code">
@@ -796,7 +794,7 @@ pragma assert may still have an effect if in debugging mode.</p>
         </div>
         </center>
 
-<p>If a script is started with the <b>--test</b> (or <b>-t</b>) option,
+<p>If a script is started with the <code>--test</code> (or <code>-t</code>) option,
 SparForte runs the script in testing mode.</p>
 
         <center>
@@ -820,7 +818,7 @@ pipes and other shell features you use, the more difficult it will be to port
 your scripts to other tools.&nbsp; At the same time, these special features
 make writing scripts easier.</p>
 <p>GCC, JGNAT, A# and SparForte are all designed for compatibility with ISO-standard
-Ada.  If your source code needs to be portable, use <span style="font-weight: bold;">pragma ada_95</span>.
+Ada.  If your source code needs to be portable, use <code>pragma ada_95</code>.
 This pragma will disallow most of the Bourne shell features and will make
 your script as compatible as possible with the ISO-standard Ada language.&nbsp;
 This does not mean that your script can no longer perform its job but you may
@@ -830,7 +828,7 @@ rewrite "?" commands to use put_line which is supported by GCC and other Ada-
 based tools.  You lose the convenience of some features but gain source code
 reusability without a major rewrite of your work.</p>
 <p>To further improve the portability of the script, you can turn off
-unnecessary features with <b>pragma restriction</b>.&nbsp; For example, pragma
+unnecessary features with <code>pragma restriction</code>.&nbsp; For example, pragma
 restriction( no_external_commands ) will prevent any external operating system
 commands from running.</p>
 
@@ -842,15 +840,15 @@ commands from running.</p>
 	&nbsp;<br>
 	<span style="font-weight: bold;">procedure</span> math <span style="font-weight: bold;">is</span><br>
 	&nbsp;<br>
-	&nbsp; <span style="font-weight: bold;">pragma</span> ada_95;</span><br>
-	&nbsp; <span style="font-weight: bold;">pragma</span> restriction( no_external_commands );</span><br>
+	&nbsp; <span style="font-weight: bold;">pragma</span> ada_95;<br>
+	&nbsp; <span style="font-weight: bold;">pragma</span> restriction( no_external_commands );<br>
 	&nbsp; <span style="font-weight: bold;">pragma</span> annotate( "This script
-performs some simple math" );</span><br>
+performs some simple math" );<br>
 	&nbsp;<br>
 	&nbsp; <span style="font-weight: bold;">function</span> double( n : integer ) <span style="font-weight: bold;">return</span> integer <span style="font-weight: bold;">is</span><br>
 	&nbsp;&nbsp;&nbsp; -- multiply the parameter by two<br>
 	&nbsp; <span style="font-weight: bold;">begin</span><br>
-	&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;">return</span> 2*n;</span><br>
+	&nbsp;&nbsp;&nbsp; <span style="font-weight: bold;">return</span> 2*n;<br>
 	&nbsp; <span style="font-weight: bold;">end</span> double;<br>
 	&nbsp;<br>
 	&nbsp; ten : integer := double( 5);<br>
@@ -869,8 +867,8 @@ performs some simple math" );</span><br>
 <h3>Retiring a Script</h3>
 
 <p>When a script becomes obsolete, use
-<span style="font-weight: bold;">pragma deprecated</span>
-(or depreciated) to specify name of the new
+<code>pragma deprecated</code>
+(or <code>depreciated</code>) to specify name of the new
 script which makes the current script obsolete.&nbsp; The old script
 will continue to run but when it completes a warning message will
 announce that the script is obsolete and SparForte will give the name of the
