@@ -45,6 +45,7 @@ LDCONFIG_SUDO=
 # NO_POSTGRES - request to disable PostgreSQL
 # NO_READLINE - request to use old Ada input routines not readline
 # NO_SOUND    - request to disable sound support
+# NO_SDL      - request to disable SDL support
 
 NO_GCGI=1
 # Gnat.CGI is default "no"
@@ -83,7 +84,7 @@ while [ $# -gt 0 ] ; do
       echo "  --without-pcre        disable PCRE library support"
       echo "  --without-postgres    disable PostgreSQL support"
       echo "  --without-readline    disable GNU readline support"
-#      echo "  --without-sdl"
+      echo "  --without-sdl         disable SDL and SDLImage support"
       echo "  --without-sound       disable OSS sound support"
       echo
       echo "Read INSTALL for further information on these options"
@@ -127,6 +128,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --without-readline)
       NO_READLINE=1
+      ;;
+  --without-sdl)
+      NO_SDL=1
       ;;
   # gnatmake -D copies files to a new directory, but does not delete them
   # afterwards.  So using /dev/shm doesn't seem to speedup compilation.
@@ -850,6 +854,7 @@ fi
 
 # Check for the libSDL (Simple DirectMedia Layer) Library
 
+if [ -z "$NO_SDL" ] ; then
 echo -n "checking for libSDL (ldconfig -p, Linux)... "
 TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL`
 if [ -z "$TMP" ] ; then
@@ -984,6 +989,7 @@ else
       echo "Do you have libSDL installed?"
       exit 192
    fi
+   cp -f spar_os_sdl.adb spar_os-sdl.adb
 fi
 
 # Check for the libSDL_image (Simple DirectMedia Layer image loading) Library
@@ -1063,6 +1069,11 @@ fi
 #  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_ttf\ "
 #  echo "yes"
 #fi
+else
+echo No SDL support
+cp -f spar_os_nosdl.ads spar_os-sdl.ads
+cp -f spar_os_nosdl.adb spar_os-sdl.adb
+fi
 
 # Check for OpenGL
 #

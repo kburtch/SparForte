@@ -43,6 +43,7 @@ pegasock/tester
 scanner_res.adb
 scanner_res.ads
 spar_os-sdl.ads
+spar_os-sdl.adb
 spar_os.ads
 rpm/RPMS/
 rpm/SRPMS/

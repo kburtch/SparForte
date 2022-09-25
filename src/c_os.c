@@ -519,6 +519,7 @@ void C_pcre( const char *regex, const char* str, char *errmsg, size_t errmax,
 }
 */
 
+#ifndef NO_SDL
 // SDL TESTING
 // FREEBSD possibly should be __FreeBSD__
 #ifdef FREEBSD
@@ -1350,5 +1351,6 @@ void SDL_EXT_get_pixel_masks( int res, Uint32 *Rmask, Uint32 *Gmask, Uint32 *Bma
     *Amask = 0xff000000;
 #endif
 }
+#endif
 
 /* end of c_os.c */
