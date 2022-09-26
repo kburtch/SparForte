@@ -134,6 +134,17 @@ if [ $? -ne 0 ] ; then
 fi
 # TODO: opengl not checked by running spar.
 
+# Make without SDL
+# ---------------------------------------------------------------------------
+
+make distclean
+./configure --without-sdl
+make all
+if [ $? -ne 0 ] ; then
+   echo "without-sdl failed"
+fi
+# TODO: pcre not checked by running spar.
+
 # Make without PCRE
 # ---------------------------------------------------------------------------
 
