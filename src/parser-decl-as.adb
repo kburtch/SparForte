@@ -1794,6 +1794,7 @@ begin
 end ParseVm;
 
 procedure ParseProcedureBlock;
+procedure ParseCaseProcedureBlock;
 procedure ParseFunctionBlock;
 
 
@@ -3056,6 +3057,132 @@ begin
   end if;
   expectDeclarationSemicolon( context => proc_id );
 end ParseProcedureBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE PROCEDURE BLOCK
+--
+-- Syntax: case procedure [abstract] p [(param1...)] OR procedure [abstract] p [(param1...)] is block
+-- end p;
+-- Handle decision table declarations, including forward declarations.
+-- Note: DoUserDefinedCaseProcedure executes a user-defined procedure created by
+-- this routine.  Although it is functionally a procedure, it has a different
+-- syntax than a standard procedure.
+-----------------------------------------------------------------------------
+
+procedure ParseCaseProcedureBlock is
+  proc_id   : identifier;
+  procStart : natural;
+  procEnd   : natural;
+  no_params   : integer := 0;  -- TODO: delete this
+  old_error_found : constant boolean := error_found;
+  abstract_parameter : identifier := eof_t;
+  declarationFile : unbounded_string;
+  declarationLine : natural;
+begin
+  procStart := firstPos;
+  declarationFile := getSourceFileName;
+  declarationLine := getLineNo;
+
+  expect( case_t );
+  expect( procedure_t );
+  ParseProcedureIdentifier( proc_id );
+
+  -- Whether forward or not, handle the parameters.  If there's a
+  -- forward specification, verify the new parameters match the old
+  -- ones.  Otherwise, parse the parameters as normal.
+
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     if identifiers( proc_id ).specAt /= noSpec then
+        VerifySubprogramParameters( proc_id );
+        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+           err( "too many parameters compared to earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
+        end if;
+     else
+     --no_params := 0;
+        ParseFormalParameters( proc_id, no_params, abstract_parameter );
+        --identifiers( proc_id ).value := to_unbounded_string( no_params );
+     end if;
+     expect( symbol_t, ")" );
+  elsif identifiers( proc_id ).specAt /= noSpec then
+     VerifySubprogramParameters( proc_id );
+  end if;
+
+  -- Is it a forward declaration?
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     if identifiers( proc_id ).specAt /= noSpec then
+        err( "already declared specification for " & optional_yellow( to_string( identifiers( proc_id ).name ) ) & " (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")");
+     end if;
+     identifiers( proc_id ).class := userProcClass;
+     identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specFile := declarationFile;
+     identifiers( proc_id ).specAt := declarationLine;
+  else
+     identifiers( proc_id ).class := userProcClass;
+     identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specFile := null_unbounded_string;
+     identifiers( proc_id ).specAt := noSpec;
+     pushBlock( newScope => true,
+       newName => to_string (identifiers( proc_id ).name ) );
+     DeclareActualParameters( proc_id );
+     expect( is_t );
+     if token = null_t then                               -- null abstract
+        expect( null_t );
+        expect( abstract_t );
+        identifiers( proc_id ).usage := abstractUsage;
+        if syntax_check then
+           identifiers( proc_id ).wasReferenced := true;
+           --identifiers( proc_id ).referencedByThread := getThreadName;
+        end if;
+        pullBlock;
+     else
+        if token = separate_t then
+           if rshOpt then
+              err( "subunits are not allowed in a " & optional_yellow( "restricted shell" ) );
+           end if;
+           expect( separate_t );
+           -- "is separate" is effectively an include
+           -- only insert include on a syntax check
+           if syntax_check then
+              insertInclude( identifiers( proc_id ).name & ".sp" );
+           end if;
+           ParseSeparateProcHeader( proc_id, procStart );
+        elsif token = abstract_t then
+           expect( abstract_t );
+           identifiers( proc_id ).usage := abstractUsage;
+           if syntax_check then
+              identifiers( proc_id ).wasReferenced := true;
+              --identifiers( proc_id ).referencedByThread := getThreadName;
+           end if;
+        elsif abstract_parameter /= eof_t then
+           err( "procedure must be abstract because parameter type " &
+              optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
+              " is abstract" );
+        end if;
+        ParseDeclarations;
+        expect( begin_t );
+        skipBlock;                                       -- never execute now
+        if token = exception_t then
+           ParseExceptionHandler( old_error_found );
+        end if;
+        pullBlock;
+        expect( end_t );
+        expect( proc_id );
+        procEnd := lastPos+1; -- include EOL ASCII.NUL
+        identifiers( proc_id ).value.all := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
+        -- fake initial indent of 1 for byte code (SOH)
+        -- we don't know what the initial indent is (if any) since it may
+        -- not be the first token on the line (though it usually is)
+     end if;
+  end if;
+  expectDeclarationSemicolon( context => proc_id );
+end ParseCaseProcedureBlock;
 
 
 -----------------------------------------------------------------------------
