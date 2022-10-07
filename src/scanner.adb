@@ -366,6 +366,11 @@ begin
            put( "abstract " );
         end if;
         put( "function return " );
+     when userCaseProcClass =>
+        if ident.usage = abstractUsage then
+           put( "abstract " );
+        end if;
+        put( "case procedure " );
      when mainProgramClass =>
         put( "main program " );
      when exceptionClass =>
@@ -418,6 +423,7 @@ begin
            ident.class /= procClass and
            ident.class /= userProcClass and
            ident.class /= userFuncClass and
+           ident.class /= userCaseProcClass and
            ident.class /= mainProgramClass and
            ident.class /= namespaceClass then
            put( "keyword" );
@@ -582,7 +588,15 @@ begin
                 put( ToEscaped( ident.value.all ) );
                 put( '"' );
                 -- (should really used root type to determine quoting)
-             elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
+            elsif ident.class = userCaseProcClass then
+                put( '"' );
+                put( ToEscaped( ident.value.all ) );
+                put( '"' );
+            elsif ident.class = userFuncClass then
+                put( '"' );
+                put( ToEscaped( ident.value.all ) );
+                put( '"' );
+            elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
                 put( "(" );
                 declare
                    field_id  : identifier;
@@ -600,10 +614,6 @@ begin
                    end loop;
                 end;
                 put( ")" );
-            elsif ident.class = userFuncClass then
-                put( '"' );
-                put( ToEscaped( ident.value.all ) );
-                put( '"' );
             elsif ident.kind = string_t then
                 put( '"' );
                 put( ToEscaped( ident.value.all ) );
@@ -943,7 +953,9 @@ begin
             -- Unimplemented subprogram or constant specifications
             -- This need to occur before the unused identifier test.
 
-            if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
+            if identifiers( i ).class = userProcClass or
+               identifiers( i ).class = userFuncClass or
+               identifiers( i ).class = userCaseProcClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
                   err(
@@ -1080,7 +1092,9 @@ begin
             -- This need to occur before the unused identifier test.
             -- In simple scripts, these would be in a declare block.
 
-            if identifiers( i ).class = userProcClass or identifiers( i ).class = userFuncClass or
+            if identifiers( i ).class = userProcClass or
+               identifiers( i ).class = userFuncClass or
+               identifiers( i ).class = userCaseProcClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
                   err( optional_yellow( to_string( identifiers( i ).name ) ) &

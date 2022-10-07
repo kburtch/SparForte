@@ -567,11 +567,12 @@ begin
            --     optional_yellow( "field of a record type" ) );
         -- if old, don't redeclare if it was a forward declaration
         elsif identifiers( token ).class = userProcClass or         -- a proc?
-              identifiers( token ).class = userFuncClass then       -- or func?
+              identifiers( token ).class = userFuncClass or        -- or func?
+              identifiers( token ).class = userCaseProcClass then -- case proc?
            if isLocal( token ) then                                 -- local?
-              if length( identifiers( token ).value.all ) = 0 then      -- forward?
-                 id := token;                                       -- then it's
-              else                                                  -- not fwd?
+              if length( identifiers( token ).value.all ) = 0 then -- forward?
+                 id := token;                                      -- then it's
+              else                                                 -- not fwd?
                  err( subject => token,
                       reason => "is already defined",
                       obstructorNotes => "and should be unique in the same block",

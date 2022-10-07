@@ -1080,6 +1080,7 @@ begin
                        index( identifiers( identifierIdx ).name, " " ) = 0 and
                      ( identifiers( identifierIdx ).class = procClass or
                        identifiers( identifierIdx ).class = userProcClass or
+                       identifiers( identifierIdx ).class = userCaseProcClass or
                        identifiers( identifierIdx ).class = varclass or
                        identifierIdx <= reserved_top ) then
                 return C_strdup( To_Chars_Ptr( haystack_cstr'unchecked_access ) );

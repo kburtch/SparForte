@@ -2493,20 +2493,20 @@ declare
    type a_rebate is (none, small, medium, large);
    customer_loyalty : a_customer_loyalty := loyal;
    rebate           : a_rebate;
-begin
-   case in customer_loyalty out rebate is
+
+   case procedure mycase( my_customer_loyalty : a_customer_loyalty; my_rebate : out a_rebate ) is
+   case in my_customer_loyalty out my_rebate is
       when recent           =>  small;
       when loyal            =>  large;
       when others           =>  none;
-   end case;
+   end mycase;
+
+begin
+   mycase( customer_loyalty, rebate );
    pragma assert( rebate = large );
 
    customer_loyalty := unknown;
-   case in customer_loyalty out rebate is
-      when recent           =>  small;
-      when loyal            =>  large;
-      when others           =>  none;
-   end case;
+   mycase( customer_loyalty, rebate );
    pragma assert( rebate = none );
 end;
 
@@ -2517,26 +2517,23 @@ declare
    type a_outage_duration is (short, long);
    type a_rebate is (none, small, medium, large);
    customer_loyalty : a_customer_loyalty := recent;
-   outage_duration  : limited a_outage_duration := long;
+   outage_duration  : a_outage_duration := long;
    rebate           : a_rebate;
-begin
-   case in customer_loyalty, outage_duration out rebate is
+
+   case procedure mycase( my_customer_loyalty : a_customer_loyalty; my_outage_duration : a_outage_duration; my_rebate : out a_rebate ) is
+   case in my_customer_loyalty, my_outage_duration out my_rebate is
       when recent,           short           =>  small;
       when recent,           long            =>  medium;
       when loyal,            short           =>  medium;
       when loyal,            long            =>  large;
       when others                            =>  none;
-   end case;
+   end mycase;
+begin
+   mycase( customer_loyalty, outage_duration, rebate );
    pragma assert( rebate = medium );
 
    customer_loyalty := unknown;
-   case in customer_loyalty, outage_duration out rebate is
-      when recent,           short           =>  small;
-      when recent,           long            =>  medium;
-      when loyal,            short           =>  medium;
-      when loyal,            long            =>  large;
-      when others                            =>  none;
-   end case;
+   mycase( customer_loyalty, outage_duration, rebate );
    pragma assert( rebate = none );
 end;
 
@@ -2547,30 +2544,28 @@ declare
    type a_outage_duration is (short, long);
    type a_rebate is (none, small, medium, large);
    customer_loyalty : a_customer_loyalty := loyal;
-   outage_duration  : limited a_outage_duration := short;
+   outage_duration  : a_outage_duration := short;
    rebate           : a_rebate;
    rebate_days      : natural;
-begin
-   case in customer_loyalty, outage_duration out rebate, rebate_days is
+
+   case procedure mycase( my_customer_loyalty : a_customer_loyalty; my_outage_duration : a_outage_duration; my_rebate : out a_rebate; my_rebate_days : out natural ) is
+   case in my_customer_loyalty, my_outage_duration out my_rebate, my_rebate_days is
       when recent,           short           =>  small, 10;
       when recent,           long            =>  medium, 20;
       when loyal,            short           =>  medium, 30;
       when loyal,            long            =>  large, 40;
       when others                            =>  none, 50;
-   end case;
+   end mycase;
+
+begin
+   mycase( customer_loyalty, outage_duration, rebate, rebate_days );
    pragma assert( rebate = medium );
    pragma assert( rebate_days = 30 );
 
    customer_loyalty := unknown;
-   case in customer_loyalty, outage_duration out rebate, rebate_days is
-      when recent,           short           =>  small, 10;
-      when recent,           long            =>  medium, 20;
-      when loyal,            short           =>  medium, 30;
-      when loyal,            long            =>  large, 40;
-      when others                            =>  none, 0;
-   end case;
+   mycase( customer_loyalty, outage_duration, rebate, rebate_days );
    pragma assert( rebate = none );
-   pragma assert( rebate_days = 0 );
+   pragma assert( rebate_days = 50 );
 end;
 
 -- case with <>
@@ -2597,122 +2592,6 @@ begin
   when others => b := false;
   end case;
   pragma assert( b );
-end;
-
--- case in
-
--- case in : 1 and 1
-
-declare
-   type a_customer_loyalty is (unknown, recent, loyal);
-   type a_rebate is (none, small, medium, large);
-   customer_loyalty : a_customer_loyalty := loyal;
-   rebate           : a_rebate;
-begin
-   case in customer_loyalty out rebate is
-      when recent           =>  small;
-      when loyal            =>  large;
-      when others           =>  none;
-   end case;
-   pragma assert( rebate = large );
-
-   customer_loyalty := unknown;
-   case in customer_loyalty out rebate is
-      when recent           =>  small;
-      when loyal            =>  large;
-      when others           =>  none;
-   end case;
-   pragma assert( rebate = none );
-end;
-
--- case in : 2 and 1
-
-declare
-   type a_customer_loyalty is (unknown, recent, loyal);
-   type a_outage_duration is (short, long);
-   type a_rebate is (none, small, medium, large);
-   customer_loyalty : a_customer_loyalty := recent;
-   outage_duration  : limited a_outage_duration := long;
-   rebate           : a_rebate;
-begin
-   case in customer_loyalty, outage_duration out rebate is
-      when recent,           short           =>  small;
-      when recent,           long            =>  medium;
-      when loyal,            short           =>  medium;
-      when loyal,            long            =>  large;
-      when others                            =>  none;
-   end case;
-   pragma assert( rebate = medium );
-
-   customer_loyalty := unknown;
-   case in customer_loyalty, outage_duration out rebate is
-      when recent,           short           =>  small;
-      when recent,           long            =>  medium;
-      when loyal,            short           =>  medium;
-      when loyal,            long            =>  large;
-      when others                            =>  none;
-   end case;
-   pragma assert( rebate = none );
-end;
-
--- case in : 2 and 2
-
-declare
-   type a_customer_loyalty is (unknown, recent, loyal);
-   type a_outage_duration is (short, long);
-   type a_rebate is (none, small, medium, large);
-   customer_loyalty : a_customer_loyalty := loyal;
-   outage_duration  : limited a_outage_duration := short;
-   rebate           : a_rebate;
-   rebate_days      : natural;
-begin
-   case in customer_loyalty, outage_duration out rebate, rebate_days is
-      when recent,           short           =>  small, 10;
-      when recent,           long            =>  medium, 20;
-      when loyal,            short           =>  medium, 30;
-      when loyal,            long            =>  large, 40;
-      when others                            =>  none, 50;
-   end case;
-   pragma assert( rebate = medium );
-   pragma assert( rebate_days = 30 );
-
-   customer_loyalty := unknown;
-   case in customer_loyalty, outage_duration out rebate, rebate_days is
-      when recent,           short           =>  small, 10;
-      when recent,           long            =>  medium, 20;
-      when loyal,            short           =>  medium, 30;
-      when loyal,            long            =>  large, 40;
-      when others                            =>  none, 0;
-   end case;
-   pragma assert( rebate = none );
-   pragma assert( rebate_days = 0 );
-end;
-
--- case in : 2 and 1
-
-declare
-   type a_customer_loyalty is (unknown, recent, loyal);
-   type a_rebate is (none, small, medium, large);
-   customer_loyalty : a_customer_loyalty := recent;
-   rebate           : a_rebate;
-   rebate_days      : natural;
-begin
-   case in customer_loyalty out rebate, rebate_days is
-      when recent           =>  medium, 20;
-      when loyal            =>  large, 40;
-      when others           =>  none, 50;
-   end case;
-   pragma assert( rebate = medium );
-   pragma assert( rebate_days = 20 );
-
-   customer_loyalty := unknown;
-   case in customer_loyalty out rebate, rebate_days is
-      when recent           =>  medium, 20;
-      when loyal            =>  large, 40;
-      when others           =>  none, 0;
-   end case;
-   pragma assert( rebate = none );
-   pragma assert( rebate_days = 0 );
 end;
 
 -- while loop and exit statement

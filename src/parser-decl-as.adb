@@ -852,7 +852,7 @@ end ParseCaseWhenPart;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCaseInBlock is
+procedure ParseCaseProcedureCaseBlock is
   test_ids : vector_identifier_lists.vector;
   test_len : count_type := 0;
   return_ids : vector_identifier_lists.vector;
@@ -860,6 +860,7 @@ procedure ParseCaseInBlock is
   handled  : boolean := false;
   b2       : boolean := false;
 begin
+  expect( case_t );
 
   ParseCaseInHeaderPart( test_ids, test_len, return_ids, return_len );
 
@@ -882,7 +883,8 @@ begin
 
   ParseCaseInBigArrowPart( return_ids, return_len, true, handled );
 
-end ParseCaseInBlock;
+  -- end case is not used
+end ParseCaseProcedureCaseBlock;
 
 
 -----------------------------------------------------------------------------
@@ -1012,11 +1014,11 @@ procedure ParseCaseBlock is
 begin
   expect( case_t );
 
-  if token = in_t then
-     ParseCaseInBlock;
-  else
+  --if token = in_t then
+  --   ParseCaseInBlock;
+  --else
      ParseStandardcaseBlock;
-  end if;
+  --end if;
 
   -- end case
 
@@ -1874,6 +1876,12 @@ begin
         save_syntax_check := syntax_check;
         syntax_check := true;
         ParseFunctionBlock;
+        syntax_check := save_syntax_check;
+     elsif token = case_t then
+        -- When parsing a decision table declaration, we never want to run it.
+        save_syntax_check := syntax_check;
+        syntax_check := true;
+        ParseCaseProcedureBlock;
         syntax_check := save_syntax_check;
      else
         ParseVariableIdentifier( var_id );
@@ -2903,6 +2911,7 @@ begin
      end if;
      i := i - 1;
    end loop;
+   -- Case Procedure not included here because it cannot contain other subprograms
    if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
          err( "parent unit should be a subprogram" );
    elsif identifiers( parent_id ).name /= pu then
@@ -3062,7 +3071,11 @@ end ParseProcedureBlock;
 -----------------------------------------------------------------------------
 --  PARSE CASE PROCEDURE BLOCK
 --
--- Syntax: case procedure [abstract] p [(param1...)] OR procedure [abstract] p [(param1...)] is block
+-- Syntax:
+-- case procedure p [(param1...)] is [abstract|separate]
+--   OR
+-- case procedure p [(param1...)] is
+--   multi-case statement
 -- end p;
 -- Handle decision table declarations, including forward declarations.
 -- Note: DoUserDefinedCaseProcedure executes a user-defined procedure created by
@@ -3119,12 +3132,12 @@ begin
                 to_string( identifiers( proc_id ).specFile) & ":" &
                 identifiers( proc_id ).specAt'img & ")");
      end if;
-     identifiers( proc_id ).class := userProcClass;
+     identifiers( proc_id ).class := userCaseProcClass;
      identifiers( proc_id ).kind := procedure_t;
      identifiers( proc_id ).specFile := declarationFile;
      identifiers( proc_id ).specAt := declarationLine;
   else
-     identifiers( proc_id ).class := userProcClass;
+     identifiers( proc_id ).class := userCaseProcClass;
      identifiers( proc_id ).kind := procedure_t;
      identifiers( proc_id ).specFile := null_unbounded_string;
      identifiers( proc_id ).specAt := noSpec;
@@ -3161,15 +3174,15 @@ begin
               --identifiers( proc_id ).referencedByThread := getThreadName;
            end if;
         elsif abstract_parameter /= eof_t then
-           err( "procedure must be abstract because parameter type " &
+           err( "case procedure must be abstract because parameter type " &
               optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
               " is abstract" );
         end if;
-        ParseDeclarations;
-        expect( begin_t );
-        skipBlock;                                       -- never execute now
+        ParseCaseProcedureCaseBlock;                       -- never execute now
+        --expectDeclarationSemicolon( context => case_t );
+        -- no exception handler for a case procedure
         if token = exception_t then
-           ParseExceptionHandler( old_error_found );
+           err( "case producedures do not have an exception handler" );
         end if;
         pullBlock;
         expect( end_t );
@@ -4259,6 +4272,213 @@ begin
   end if;
   pullBlock;                                  -- discard locals
 end DoUserDefinedFunction;
+
+
+-----------------------------------------------------------------------------
+--  DO USER DEFINED CASE PROCEDURE
+--
+-- Execute a user-defined procedure.  Based on interpretScript.
+-- procedure_name [(param1 [,param2...])]
+-- Note: ParseProcedureBlock compiles / creates the user-defined procedure.
+-- This routines runs the previously compiled procedure.
+-----------------------------------------------------------------------------
+
+procedure DoUserDefinedCaseProcedure( s : unbounded_string ) is
+  scriptState : aScriptState;
+  results     : unbounded_string;
+  proc_id     : identifier;
+
+  -- chain contexts
+  chain_count_id   : identifier := eof_t;
+  last_in_chain_id : identifier := eof_t;
+  in_chain     : boolean := false;
+  has_context  : boolean := false;
+  last_in_chain: boolean := false;
+  contextName  : unbounded_string;
+  old_error_found : constant boolean := error_found;
+  old_exit_block : constant boolean := exit_block;
+begin
+  proc_id := token;
+  if syntax_check then
+     -- for declared but not used checking
+     --When blocks are pulled, this will be checked.
+     identifiers( proc_id ).wasReferenced := true;
+     --identifiers( proc_id ).referencedByThread := getThreadName;
+     if identifiers( proc_id ).usage = abstractUsage then
+        err( optional_yellow( to_string( identifiers( proc_id ).name ) ) &
+          " is abstract and cannot be run" );
+     end if;
+  end if;
+  getNextToken;
+
+  -- TODO: check for pre-existing chain context
+  -- TODO: destroy chain context
+
+  -- To check for a chain, the parameters must be read and the @ located
+  -- (if it exists).  This must be done in syntax check mode since we
+  -- don't want anything actually declared.  Then return to the start of
+  -- the parameters and create a chain context block _prior_ to creating
+  -- the procedure block.
+  declare
+    old_syntax_check : constant boolean := syntax_check;
+    paramStart   : aScannerState;
+  begin
+    -- do we have a chain context?  Then we must be in a chain.
+    contextName := identifiers( proc_id ).name & " chain";
+    -- if we already have a context block, don't create another
+    if blocks_top > 1 then
+       has_context := ( getBlockName( blocks_top-1 ) = contextName );
+       in_chain := has_context;
+    end if;
+
+    -- check for itself.  If it exists, we must be in a chain
+    markScanner( paramStart );
+    syntax_check := true;
+    ParseActualParameters( proc_id, declareParams => false );
+    if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+       in_chain := true;
+    end if;
+    if has_context then
+       if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = ";" then
+          if trace then
+             put_trace( "Last call in chain" );
+          end if;
+          last_in_chain := true;
+       end if;
+    end if;
+    resumeScanning( paramStart );
+    syntax_check := old_syntax_check;
+
+    if in_chain then
+       -- if we have a context?  then update the content of the context
+       if has_context then
+--put_line( "DEBUG: has context " );
+          findIdent( chain_count_str, chain_count_id );
+          if chain_count_id = eof_t then
+             err( gnat.source_info.source_location &
+                ": internal error: chain count not found" );
+          else
+             if isExecutingCommand then
+                -- values only exist if not syntax check
+                identifiers( chain_count_id ).value.all :=
+                  to_unbounded_string(
+                    to_numeric( identifiers( chain_count_id ).value.all ) + 1.0
+                  );
+                  findIdent( last_in_chain_str, last_in_chain_id );
+                  if last_in_chain_id = eof_t then
+                     err( gnat.source_info.source_location &
+                        ": internal error: last in chain not found" );
+                  end if;
+                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+             end if;
+--put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
+--put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
+          end if;
+       -- no context?  then we have to create a new context
+       else
+--put_line( "DEBUG: new context " );
+          if trace then
+             put_trace( "Creating chain context " & to_string( contextName ) );
+          end if;
+          pushBlock( newScope => true, newName => to_string( contextName ) );
+          declareIdent( chain_count_id, chain_count_str, natural_t, varClass );
+          declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, varClass );
+          if syntax_check then
+             identifiers( chain_count_id ).wasReferenced := true;
+             --identifiers( chain_count_id ).referencedByThread := getThreadName;
+             identifiers( chain_count_id ).wasWritten := true;
+             identifiers( chain_count_id ).wasFactor := true;
+             identifiers( last_in_chain_id ).wasReferenced := true;
+             --identifiers( last_in_chain_id ).referencedByThread := getThreadName;
+             identifiers( last_in_chain_id ).wasWritten := true;
+             identifiers( last_in_chain_id ).wasFactor := true;
+          else
+             if isExecutingCommand then
+                -- values only exist if not syntax check
+                identifiers( chain_count_id ).value.all := to_unbounded_string( " 1" );
+                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+                -- TODO: we only want to export these if we are the current chain.
+                -- Otherwise, they will always be exported even if the chain was further
+                -- down the block stack
+                --identifiers( chain_count_id ).export := true;
+                --identifiers( last_in_chain_id ).export := true;
+--put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value ) );
+--put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value ) );
+             end if;
+          end if;
+       end if;
+    end if;
+    -- put_all_identifiers; -- DEBUG
+  end;
+
+  pushBlock( newScope => true,
+     newName => to_string (identifiers( proc_id ).name ) );
+  -- token will be @ here if in a chain but the final ; may or may not
+  -- indicate a chain
+  -- declareIdent( formal_param_id, to_unbounded_string( "chain count" ), type_token, varClass );
+  -- if syntax_check then
+  --    identifiers( formal_param_id ).wasReferenced := true;
+  -- end if;
+  if isExecutingCommand then
+  -- Notice nothing gets executed during syntax check.  Any variables/parameters
+  -- will have wasReferenced as false.
+  -- TODO: perhaps using syntax_check inside PAP would fix this.
+     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     ParseActualParameters( proc_id );
+     --end if;
+     -- parseNewCommands would clear error_found.
+     if not error_found then
+        parseNewCommands( scriptState, s );
+        results := null_unbounded_string;        -- no results (yet)
+        expect( case_t );
+        expect( procedure_t );
+        if token = abstract_t then
+           expect( abstract_t );
+        end if;
+        ParseIdentifier( proc_id );
+        -- we already know the parameter syntax is good so skip to "is"
+        while token /= is_t loop
+           getNextToken;
+        end loop;
+        expect( is_t );
+        -- ParseDeclarations;
+        -- expect( begin_t );
+        ParseCaseProcedureCaseBlock;
+        -- no exception handler in a case procedure
+        --if token = exception_t then
+        --   ParseExceptionHandler( old_error_found );
+        --end if;
+        -- Check to see if we're return-ing early
+        -- TODO: Not pretty, but will work.  This should be improved.
+        if exit_block and done_sub and not error_found and not syntax_check then
+           done_sub := false;
+           exit_block := old_exit_block;  -- TODO: is this right?
+           done := false;
+        end if;
+        expect( end_t );
+        expect( proc_id );
+        expectDeclarationSemicolon( proc_id );
+        if not done then                     -- not exiting?
+            expect( eof_t );                  -- should be nothing else
+        end if;
+        restoreScript( scriptState );               -- restore original script
+     end if;
+  elsif syntax_check or exit_block then
+     -- at this point, we are still looking at call
+     -- because nothing executes during a syntax check, we still need
+     -- to parse the parameters to check for errors, but don't declare
+     -- anything because wasReferenced will be false.
+     ParseActualParameters( proc_id, declareParams => false );
+  end if;
+  pullBlock;
+
+  if last_in_chain and has_context then
+     if trace then
+        put_trace( "Destroying chain context " & to_string( contextName ) );
+     end if;
+     pullBlock;
+  end if;
+end DoUserDefinedCaseProcedure;
 
 
 -----------------------------------------------------------------------------
@@ -6090,6 +6310,8 @@ begin
      itself_type := new_t;                 -- except for token type...
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
      DoUserDefinedProcedure( identifiers( token ).value.all );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
+     DoUserDefinedCaseProcedure( identifiers( token ).value.all );
   else
 
      -- we need to check the next token then back up
@@ -6488,6 +6710,8 @@ begin
      itself_type := new_t;                 -- except for token type...
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
      DoUserDefinedProcedure( identifiers( token ).value.all );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
+     DoUserDefinedCaseProcedure( identifiers( token ).value.all );
   else
 
      -- we need to check the next token then back up

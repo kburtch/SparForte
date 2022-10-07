@@ -417,7 +417,8 @@ lastChild : aPID := 0;
 type anIdentifierClass is ( subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   exceptionClass, varClass, namespaceClass, enumClass, policyClass,
-  configurationClass, genericTypeClass, formalParamClass, otherClass );
+  configurationClass, genericTypeClass, formalParamClass, userCaseProcClass,
+  otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 

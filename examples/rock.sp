@@ -5,7 +5,7 @@
 pragma annotate( summary, "rock" )
        @( description, "Adapted from Basic Computer Games" )
        @( description, "Game of Rock, Scissors, Paper" )
-       @( description, "Creative Computing, Morristown, New Jersey" )
+       @( description, "Creative Computing, Morristown, New Jersey, 1978" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 

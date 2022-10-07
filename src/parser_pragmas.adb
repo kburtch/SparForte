@@ -2146,6 +2146,8 @@ begin
               err( "procedures cannot be exported" );
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be exported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( "case procedures cannot be exported" );
            elsif identifiers( var_id ).export then
               err( "variable is already exported" );
            end if;
@@ -2155,6 +2157,8 @@ begin
               err( "procedures cannot be exported" );
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be exported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( "case procedures cannot be exported" );
            elsif identifiers( var_id ).list then
               err( "arrays cannot be exported without export_json or arrays.to_json" );
            elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
@@ -2196,6 +2200,8 @@ begin
               err( "procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( "case procedures cannot be imported" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
            -- KLUDGE: there are so many standard types...
@@ -2208,6 +2214,8 @@ begin
               err( "procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( "case procedures cannot be imported" );
            elsif identifiers( var_id ).list then
               err( "arrays cannot be imported without import_json or arrays.to_json" );
            elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
@@ -2584,6 +2592,8 @@ begin
               err( "procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( "case procedures cannot be imported" );
            elsif identifiers( var_id ).import then
               err( "variable is already imported" );
            end if;
@@ -2593,6 +2603,8 @@ begin
               err( "procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
               err( "functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( "case procedures cannot be imported" );
            elsif identifiers( var_id ).list then
               err( "arrays cannot be imported without import_json or arrays.to_json" );
            elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then

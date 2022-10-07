@@ -2014,6 +2014,7 @@ begin
   when configurationClass => return "configuration block";
   when genericTypeClass => return "generic type";
   when formalParamClass => return "formal parameter";
+  when userCaseProcClass => return "user-defined case procedure";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;
