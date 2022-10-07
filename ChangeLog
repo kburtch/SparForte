@@ -12,3 +12,5 @@ CHANGES SINCE 2.5
 
 4. New: New examples rock.sp.
 
+5. New: case in is now case procedure. [docs needed, negative tests needed]
+
