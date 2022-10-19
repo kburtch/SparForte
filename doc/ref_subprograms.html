@@ -128,6 +128,84 @@ block.</p>
 <p><b>Ada</b>: AdaScript doesn't support creating new arithmetic
 operators by defining functions with operator symbols.</p>
 
+<h3>The Case Procedure</h3>
+
+<p>A Case Procedure implements business decision tables.  These tables
+represent conditions and the return values defined by business policy.
+The tables describe values more complex than simple constants.</p>
+
+<p>Case procedures are intended for business analysts.  They require
+only a small enough of AdaScript and are easier to show business people
+an understanding of their policy.  However, they can also be used by
+developers as a form of named case statements.</p>
+
+<p>There is a list of variables to test after <code>in</code> and a list of variables
+to update after <code>out</code>.  Each when has a list of values corresponding to
+the <code>in</code> list.  Each value must match for the list of expressions after
+the <code>=&gt;</code> to run.</p>
+
+<p>This version of the case statement is especially useful when
+creating lookup tables as commonly used in business programming.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+
+<b>declare</b><br>
+&nbsp;&nbsp;<b>type</b> a_customer_loyalty is (unknown, recent, loyal);<br>
+&nbsp;&nbsp;<b>type</b> a_rebate <b>is</b> (none, small, medium, large);<br>
+&nbsp;&nbsp;customer_loyalty : a_customer_loyalty := loyal;<br>
+&nbsp;&nbsp;rebate           : a_rebate;<br>
+<br>
+&nbsp;&nbsp;<b>case</b> <b>procedure</b> decide_customer_rebate( my_customer_loyalty : a_customer_loyalty; my_rebate : <b>out</b> a_rebate ) <b>is</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> recent =&gt; small;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> loyal =&gt; large;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> others =&gt; none;<br>
+&nbsp;&nbsp;<b>end</b> decide_customer_rebate;<br>
+<br>
+<b>begin</b><br>
+&nbsp;&nbsp;decide_customer_rebate( customer_loyalty, rebate );<br>
+<b>end</b>;<br>
+        <div class="code_caption">
+                <b>Example</b>: A Case Procedure
+        </div>
+        </div>
+        </center>
+
+<p>Out identifiers must be previously declared (they will not be automatically
+declared if new).  Out identifiers cannot be commands, exceptions, arrays or
+records.</p>
+
+<p>Case procedures have no declaration section and they cannot have
+exception handlers.</p>
+
+<p>Like other forms of a case statement, the <code>when others</code>
+is required.</p>
+
+<p><b>Ada</b>: Case Procedures are not allowed with <code>pragma ada_95</code>.</p>
+
+<h3>The While Loop Statement</h3>
+
+<p>The while loop is a pre-test loop.&nbsp; The commands in the loop
+are
+repeat while the condition is true and the condition is tested each
+time
+the first line of the loop is executed.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>while</b> x &lt; y <b>loop</b><br>
+&nbsp; x := @ + 1;<br>
+<b>end</b> <b>loop</b>;<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: The While Statement
+        </div>
+        </div>
+        </center>
+
+
+
 <h3>The Return Statement</h3>
 
 <p>A procedure may be terminated early using a <code>return</code>

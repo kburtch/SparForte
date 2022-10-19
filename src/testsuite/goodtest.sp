@@ -2495,7 +2495,7 @@ declare
    rebate           : a_rebate;
 
    case procedure mycase( my_customer_loyalty : a_customer_loyalty; my_rebate : out a_rebate ) is
-   case in my_customer_loyalty out my_rebate is
+   --case in my_customer_loyalty out my_rebate is
       when recent           =>  small;
       when loyal            =>  large;
       when others           =>  none;
@@ -2521,7 +2521,7 @@ declare
    rebate           : a_rebate;
 
    case procedure mycase( my_customer_loyalty : a_customer_loyalty; my_outage_duration : a_outage_duration; my_rebate : out a_rebate ) is
-   case in my_customer_loyalty, my_outage_duration out my_rebate is
+   --case in my_customer_loyalty, my_outage_duration out my_rebate is
       when recent,           short           =>  small;
       when recent,           long            =>  medium;
       when loyal,            short           =>  medium;
@@ -2549,7 +2549,7 @@ declare
    rebate_days      : natural;
 
    case procedure mycase( my_customer_loyalty : a_customer_loyalty; my_outage_duration : a_outage_duration; my_rebate : out a_rebate; my_rebate_days : out natural ) is
-   case in my_customer_loyalty, my_outage_duration out my_rebate, my_rebate_days is
+   --case in my_customer_loyalty, my_outage_duration out my_rebate, my_rebate_days is
       when recent,           short           =>  small, 10;
       when recent,           long            =>  medium, 20;
       when loyal,            short           =>  medium, 30;

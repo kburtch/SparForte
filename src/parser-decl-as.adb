@@ -577,77 +577,109 @@ end ParseStandardCaseHeaderPart;
 -----------------------------------------------------------------------------
 --  PARSE CASE IN HEADER PART
 --
--- ... in id [, id ...] out id [, id ...] is
---
--- Parse the list of identifiers after "in" and after "out".  Consume "is"
--- as well.
+-- There is no actual header now that the "case in" has been changed to a
+-- "case procedure.  Parse the procedure parameters and construct lists
+-- of identifiers that go "in" or "out" of the when clauses.
 -----------------------------------------------------------------------------
 
 procedure ParseCaseInHeaderPart(
+  proc_id : identifier;
   test_ids : in out vector_identifier_lists.vector;
   test_len : out count_type;
   return_ids : in out vector_identifier_lists.vector;
   return_len : out count_type
 ) is
-  test_id   : identifier;
-  return_id : identifier;
+     n : identifier := 1;
+     first_out_param : identifier := eof_t;
+     actual_name : unbounded_string;
+     actual_id : identifier := eof_t;
+     formal_id : identifier := eof_t;
 begin
   test_len := 0;
   return_len := 0;
 
-  if onlyAda95 then
-     err( "case in is not allowed with " & optional_yellow( "pragma ada_95" ) );
-  end if;
-  expect( in_t );                                          -- "in"
-
- -- expect one or more test identifiers
+  -- Loop through the procedure's formal parameters and find the actual
+  -- parameters.  Add in mode parameters to the list of identifiers to test
+  -- and out mode parameters to the list of return identifiers
+  --
+  -- any errors here will highlight the first "when" because the checks
+  -- are occurring after all the parameters have been processed
 
   loop
-      ParseIdentifier( test_id );                          -- identifier to test
-      if type_checks_done or else class_ok( test_id, varClass ) then
-         vector_identifier_lists.append( test_ids, test_id );
-         identifiers( test_id ).wasReferenced := true;
-         test_len := test_len + 1;
-      end if;
-  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expectParameterComma;
+     formal_id := proc_id + n;
+  exit when identifiers( formal_id ).field_of /= proc_id;
+    actual_name := identifiers( formal_id ).name;
+    actual_name := delete( actual_name, 1, index( actual_name, "." ));
+    findIdent( actual_name, actual_id );
+    if actual_id /= eof_t then
+       case identifiers( formal_id ).passingMode is
+       when in_mode =>
+          if first_out_param /= eof_t then
+             err( contextNotes => "in the parameter list",
+                subject => actual_id,
+                reason => "should be between the start and",
+                obstructor => first_out_param,
+                remedy => 
+                       "the parameters should be declared in the same order " &
+                       "as they are used in the when clauses, or a parameter " &
+                       "passing mode is incorrect"
+             );
+          else
+             -- put_line( "in " & identifiers( actual_id ).name );
+             vector_identifier_lists.append( test_ids, actual_id );
+             test_len := test_len + 1;
+             -- because of the tabular structure, it is safe to assume everything
+             -- was read...otherwise there would be when list errors
+             identifiers( actual_id ).wasReferenced := true;
+          end if;
+       when out_mode =>
+          if first_out_param = eof_t then
+             first_out_param := actual_id;
+          end if;
+          if identifiers( actual_id ).list then
+             err( context => proc_id,
+                  subject => actual_id,
+                  subjectType => identifiers( actual_id ).kind,
+                  reason => "is not yet supported because it is",
+                  obstructorNotes => "an array" );
+          elsif identifiers( getBaseType( identifiers( actual_id ).kind ) ).kind = root_record_t then
+             err( context => proc_id,
+                  subject => actual_id,
+                  subjectType => identifiers( actual_id ).kind,
+                  reason => "is not yet supported because it is",
+                  obstructorNotes => "a record" );
+          elsif getBaseType( identifiers( actual_id ).kind ) = command_t then
+             err( context => proc_id,
+                  subject => actual_id,
+                  subjectType => identifiers( actual_id ).kind,
+                  reason => "is not yet supported because it is",
+                  obstructorNotes => "a command" );
+          else
+             -- put_line( "out " & identifiers( actual_id ).name );
+             vector_identifier_lists.append( return_ids, actual_id );
+             return_len := return_len + 1;
+             -- because of the tabular structure, it is safe to assume everything
+             -- was read...otherwise there would be big arrow list errors
+             identifiers( actual_id ).wasReferenced := true;
+             identifiers( actual_id ).wasWritten := true;
+          end if;
+       when in_out_mode =>
+          err( contextNotes => "in the parameter list",
+               subject => actual_id,
+               reason => "should be in or out not",
+               obstructorNotes => "in out" );
+       when others =>
+          err( gnat.source_info.source_location &
+               ": internal error: unexpected passing mode " &
+               identifiers( formal_id ).passingMode'img );
+       end case;
+       n := n + 1;
+    else
+       err( gnat.source_info.source_location &
+            ": internal error: actual param not found for " &
+            to_string( identifiers( formal_id ).name ) );
+    end if;
   end loop;
-
-  -- for a decision table, there is an out part
-
-  expect( out_t );
-  loop
-      if type_checks_done or else class_ok( token, varClass ) then
-
-         -- TODO: Refactor with ParseAssignment
-         -- Not all identifiers can be written to
-
-         checkVarUsageQualifier( token );                       -- no constants
-
-         if identifiers( token ).list then
-            err( "array parameters not yet supported" );
-         elsif identifiers( getBaseType( identifiers( token ).kind ) ).kind = root_record_t then
-            err( "records not yet supported" );
-         elsif getBaseType( identifiers( token ).kind ) = command_t then
-            err( "commands not yet supported" );
-         end if;
-
-         if not error_found then
-            return_len := return_len + 1;                       -- count idents
-
-            -- add to list
-
-            ParseIdentifier( return_id );
-            vector_identifier_lists.append( return_ids, return_id );
-            identifiers( return_id ).wasWritten := true;
-         end if;
-      end if;
-  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expectParameterComma;
-  end loop;
-
-  expect( is_t );                                       -- "is"
-
 end ParseCaseInHeaderPart;
 
 
@@ -835,6 +867,7 @@ begin
      expectParameterComma;                                      -- expect alternate
      test_idx := test_idx + 1;
      if test_idx > test_len then
+        -- TODO: update this message so it makes for sense with case procedures 
         err("too many cases compared to case identifier list" );
      end if;
   end loop;
@@ -852,7 +885,7 @@ end ParseCaseWhenPart;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCaseProcedureCaseBlock is
+procedure ParseCaseProcedureCaseBlock( proc_id : identifier ) is
   test_ids : vector_identifier_lists.vector;
   test_len : count_type := 0;
   return_ids : vector_identifier_lists.vector;
@@ -860,9 +893,9 @@ procedure ParseCaseProcedureCaseBlock is
   handled  : boolean := false;
   b2       : boolean := false;
 begin
-  expect( case_t );
+  --expect( case_t );
 
-  ParseCaseInHeaderPart( test_ids, test_len, return_ids, return_len );
+  ParseCaseInHeaderPart( proc_id, test_ids, test_len, return_ids, return_len );
 
   -- this will have an error during compilation.
   if token /= when_t then                                 -- first when missing?
@@ -3097,6 +3130,10 @@ begin
   declarationFile := getSourceFileName;
   declarationLine := getLineNo;
 
+  if onlyAda95 then
+     err( "case in is not allowed with " & optional_yellow( "pragma ada_95" ) );
+  end if;
+
   expect( case_t );
   expect( procedure_t );
   ParseProcedureIdentifier( proc_id );
@@ -3178,7 +3215,7 @@ begin
               optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
               " is abstract" );
         end if;
-        ParseCaseProcedureCaseBlock;                       -- never execute now
+        ParseCaseProcedureCaseBlock( proc_id );            -- never execute now
         --expectDeclarationSemicolon( context => case_t );
         -- no exception handler for a case procedure
         if token = exception_t then
@@ -4443,7 +4480,7 @@ begin
         expect( is_t );
         -- ParseDeclarations;
         -- expect( begin_t );
-        ParseCaseProcedureCaseBlock;
+        ParseCaseProcedureCaseBlock( proc_id );
         -- no exception handler in a case procedure
         --if token = exception_t then
         --   ParseExceptionHandler( old_error_found );

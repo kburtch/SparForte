@@ -649,6 +649,7 @@ begin
    content( e, "arrays" );
    content( e, "calendar" );
    content( e, "case" );
+   content( e, "case procedure" );
    content( e, "cd" );
    content( e, "cgi" );
    content( e, "chains" );
@@ -1411,8 +1412,28 @@ begin
         "each case in the list must match.   If no conditions match, the " &
         "others case will run." );
      content( e, "case var [, var ...] is when literal|const[|...][, ...] => ...when others => ...end case" );
-     content( e, "case in var [, var ...] out var [,var...] is when literal|const|<>[|...][, ...] => ...when others => ...end case" );
      seeAlsoFlowControl( e );
+     endHelp( e );
+  elsif helpTopic = "case procedure" then
+     startHelp( e, "case procedure" );
+     summary( e, "case procedure statement" );
+     authorKen( e );
+     categoryKeyword( e );
+     description( e, "A user-defined case procedure is a decision table " &
+                  "with inputs and outputs.  Parameter " &
+                "modes can be in or out.  A case procedure specification " &
+                "is a procedure without a body.  It must be completed later " &
+                "with a full definition.  A case procedure only contains " &
+                "when clauses.  The values are returned the cases that " &
+                "If there are multiple variables, each case in the list must " &
+                "match.  If no conditions match, the others case will run.");
+     content( e, "case procedure p is [abstract] ...when...end p" );
+     content( e, "case procedure p( p : [mode] type [; p2...] )is [abstract] ...when...end p" );
+     content( e, "case procedure p...is null abstract" );
+     content( e, "case procedure p...is separate" );
+     content( e, "case procedure p;" );
+     examples( e, "case procedure rebate(...) is / when new_client => small_rebate; ... / end rebate;" );
+     seeAlso( e, "doc/ref_subprograms.html" );
      endHelp( e );
   elsif helpTopic = "cd" then
      startHelp( e, "cd" );

@@ -142,53 +142,6 @@ we assume that everyone in Brazil speaks Portugeuse.</p>
 
 <p><b>Ada</b>: <code>pragma ada_95</code> does not allow multiple cases identifiers.</p>
 
-<p><b>Implementation Note</b>: The case in statement is experimental and the box symbol may change in the next version of SparForte.</p>
-
-<h3>The Case In Statement</h3>
-
-<p>The case in statement implements business decision tables.
-There is a list of variables to test after "in" and a list of variables
-to update after "out".  Each when has a list of values corresponding to
-the "in" list.  Each value must match for the list of expressions after
-the "=&gt;" to run.</p>
-
-<p>This version of the case statement is especially useful when
-creating lookup tables as commonly used in business programming.</p>
-
-        <center>
-        <div class="code">
-                <p class="code">
-<b>type</b> a_customer_loyalty <b>is</b> (recent, loyal);<br>
-<b>type</b> a_outage_duration <b>is</b> (short, long);<br>
-<b>type</b> a_rebate <b>is</b> (none, small, medium, large);<br>
-<br>
-customer_loyalty : <b>limited</b> a_customer_loyalty := recent;<br>
-outage_duration  : <b>limited</b> a_outage_duration := long;<br>
-rebate           : a_rebate;<br>
-<br>
-<b>case</b> <b>in</b> customer_loyalty, outage_duration <b>out</b> rebate <b>is</b><br>
-&nbsp;&nbsp;&nbsp;<b>when</b> recent,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;small;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> recent,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;medium;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> loyal,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;medium;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> loyal,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;large;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> <b>others</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;none;<br>
-<b>end</b> <b>case</b>;<br>
-<br>
-? "rebate is " @  rebate;<br>
-        <div class="code_caption">
-                <b>Example</b>: The Case In Statement
-        </div>
-        </div>
-        </center>
-
-<p>Out identifiers must be previously declared (they will not be automatically
-declared if new).  Out identifiers cannot be commands, exceptions, arrays or
-records.</p>
-
-<p><b>Ada</b>: The case in statement is not allowed with <code>pragma ada_95</code>.</p>
-
-<p><b>Implementation Note</b>: The case in statement is experimental and will likely change in the next version of SparForte.</p>
-
 <h3>The While Loop Statement</h3>
 
 <p>The while loop is a pre-test loop.&nbsp; The commands in the loop
