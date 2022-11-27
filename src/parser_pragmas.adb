@@ -1942,7 +1942,7 @@ begin
         end if;
      elsif pragmaKind = assumption_used then
         identifiers( var_id ).wasReferenced := true;
-        --identifiers( var_id ).referencedByThread := getThreadName;
+        --identifiers( var_id ).referencedByFlow := getDataFlowName;
      elsif pragmaKind = assumption_written then
         if identifiers( var_id ).field_of /= eof_t and
            -- KLUDGE: should never be zero...should be eof_t
@@ -2037,6 +2037,13 @@ begin
      -- at run-time.
      elsif pragmaKind = volatile then
         identifiers( var_id ).volatile := checked;
+        -- Volatiles cannot be used in an expression but are usually
+        -- not limited.  Pretend that the volatile was used in an expression
+        -- to prevent a "should be limited" error.  If explicitly limited,
+        -- act normally.
+        if identifiers( var_id ).usage /= limitedUsage then
+           identifiers( var_id ).wasFactor := true;
+        end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
@@ -2051,6 +2058,13 @@ begin
         end if;
      elsif pragmaKind = unchecked_volatile then
         identifiers( var_id ).volatile := unchecked;
+        -- Volatiles cannot be used in an expression but are usually
+        -- not limited.  Pretend that the volatile was used in an expression
+        -- to prevent a "should be limited" error.  If explicitly limited,
+        -- act normally.
+        if identifiers( var_id ).usage /= limitedUsage then
+           identifiers( var_id ).wasFactor := true;
+        end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
@@ -2721,6 +2735,13 @@ begin
         identifiers( var_id ).inspect := false;
      when volatile =>
         identifiers( var_id ).volatile := checked;
+       -- Volatiles cannot be used in an expression but are usually
+       -- not limited.  Pretend that the volatile was used in an expression
+       -- to prevent a "should be limited" error.  If explicitly limited,
+       -- act normally.
+       if identifiers( var_id ).usage /= limitedUsage then
+          identifiers( var_id ).wasFactor := true;
+       end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
@@ -2735,6 +2756,13 @@ begin
         end if;
      when unchecked_volatile =>
         identifiers( var_id ).volatile := unchecked;
+       -- Volatiles cannot be used in an expression but are usually
+       -- not limited.  Pretend that the volatile was used in an expression
+       -- to prevent a "should be limited" error.  If explicitly limited,
+       -- act normally.
+       if identifiers( var_id ).usage /= limitedUsage then
+          identifiers( var_id ).wasFactor := true;
+       end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );

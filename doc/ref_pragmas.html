@@ -1184,9 +1184,13 @@ both pragmas.</p>
 <p><b>Pragma volatile</b> will mark a variable as "volatile", meaning that its
 value can change unexpectedly and SparForte should reload the value from the
 environment whenever it is referenced.  Although you can make volatile
-environment variables, it probably won't be useful: these variables are owned
-by the running process, which is SparForte, so it is virtually impossible
-to change their values except using the SparForte itself.</p>
+environment variables imported by pragma import( shell,...), it probably
+won't be useful: these variables are owned by the running process, which is
+SparForte, so it is virtually impossible to change their values except using
+the SparForte or the script itself.</p>
+
+<p>As a special exception, volatiles not declared as limited are not required
+to be limited when since no volatile can be used in expressions anyway.</p>
 
 <h3>CGI Variables</h3>
 

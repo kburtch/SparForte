@@ -14,3 +14,8 @@ CHANGES SINCE 2.5
 
 5. New: case in is now case procedure. [negative tests needed]
 
+6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
+
+7. Fix: non-limited volatiles, which cannot be used in expressions, no longer have an error for not being declared limited.
+
+
