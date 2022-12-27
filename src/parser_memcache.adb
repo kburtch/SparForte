@@ -130,7 +130,7 @@ begin
   theMemcacheClusterEntry.id := cluster_id;
   memcacheClusterList.Find( memcacheCluster, theMemcacheClusterEntry, 1, clusterIndex );
   if clusterIndex = 0 then
-     err( "cluster id " & cluster_id'img & " not found" );
+     err( pl( "cluster id " & cluster_id'img & " not found" ) );
   else
      memcacheClusterList.Find( memcacheCluster, clusterIndex, theMemcacheClusterEntry );
   end if;
@@ -181,7 +181,7 @@ begin
   theMemcacheClusterEntry.id := cluster_id;
   memcacheDualClusterList.Find( memcacheDualCluster, theMemcacheClusterEntry, 1, clusterIndex );
   if clusterIndex = 0 then
-     err( "cluster id " & cluster_id'img & " not found" );
+     err( pl( "cluster id " & cluster_id'img & " not found" ) );
   else
      memcacheDualClusterList.Find( memcacheDualCluster, clusterIndex, theMemcacheClusterEntry );
   end if;
@@ -190,14 +190,14 @@ end GetCluster;
 procedure checkMemcacheRestriction is
 begin
   if restriction_no_memcache then
-     err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+     err( +"not allowed with " & em( "pragma restriction( no_memcache )" ) );
   end if;
 end checkMemcacheRestriction;
 
 procedure checkRestrictedShell is
 begin
   if rshOpt then
-     err( "not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"not allowed in a " & em( "restricted shell" ) );
   end if;
 end checkRestrictedShell;
 
@@ -355,7 +355,7 @@ begin
      begin
         mct := aMemcacheClusterType'val( natural( to_numeric( expr_val ) ) );
      exception when constraint_error =>
-        err( "constraint error" );
+        err( +"constraint error" );
      when others =>
         err_exception_raised;
      end;
@@ -401,7 +401,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -435,7 +435,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -563,7 +563,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -594,7 +594,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -650,7 +650,7 @@ begin
            memcacheClusterList.Replace( memcacheCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -852,7 +852,7 @@ begin
      begin
         mct := aMemcacheClusterType'val( natural( to_numeric( expr_val ) ) );
      exception when constraint_error =>
-        err( "constraint error" );
+        err( +"constraint error" );
      when others =>
         err_exception_raised;
      end;
@@ -898,7 +898,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -932,7 +932,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -1060,7 +1060,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -1091,7 +1091,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;
@@ -1147,7 +1147,7 @@ begin
            memcacheDualClusterList.Replace( memcacheDualCluster, clusterIndex, cluster_entry );
         end if;
      exception when constraint_error =>
-        err( "no memcache servers registered" );
+        err( +"no memcache servers registered" );
      when others =>
         err_exception_raised;
      end;

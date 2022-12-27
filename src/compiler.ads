@@ -145,9 +145,10 @@ function getSourceFileName return unbounded_string;
 function getLineNo return natural;
 -- Determine the current line number as stored against the byte code line.
 
-function getCommandLine return unbounded_string;
-procedure getCommandLine ( cmdline : out unbounded_string;
-  token_firstpos, token_lastpos, line_number, file_number : out natural );
+function getCommandLine( template : templateTypes := noTemplate ) return messageStrings;
+procedure getCommandLine ( cmdline : out messageStrings;
+  token_firstpos, token_lastpos, line_number, file_number : out natural;
+  template : templateTypes := noTemplate );
 -- de-tokenize and return the original command string
 
 ------------------------------------------------------------------------------

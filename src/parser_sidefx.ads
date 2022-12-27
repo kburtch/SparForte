@@ -98,9 +98,9 @@ procedure checkExpressionFactorVolatilityOnWrite( id: identifier );
 -- Example: In x := y + f1(), if f1 changes y.
 -- This is Case #2.
 
-procedure checkDoubleThreadWrite( id : identifier );
--- Check to see if, at run-time, two different "threads" write to the same
--- unprotected variable.  Also updates writtenByThread.
+procedure checkDoubleDataFlowWrite( id : identifier );
+-- Check to see if, at run-time, two different data flows write to the same
+-- unprotected variable.  Also updates writtenByFlow.
 -- This is Case #3.
 
 --procedure checkDoubleGlobalWrite( id : identifier );

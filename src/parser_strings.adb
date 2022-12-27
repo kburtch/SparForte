@@ -179,13 +179,13 @@ begin
              case_sensitive => true );
        b := match( to_string( expr_val ), re );
      exception when expression_error =>
-       err( "bad globbing expression '" & to_string( pat_val ) & "'" );
+       err( pl( "bad globbing expression '" & to_string( pat_val ) & "'" ) );
        b := false;
      when storage_error =>
-       err( "formula too complex (storage_error exception)" );
+       err( +"formula too complex (storage_error exception)" );
        b := false;
      when others =>
-       err( "exception raised in gnat.regexp.match" );
+       err( +"exception raised in gnat.regexp.match" );
        b := false;
      end;
      if not error_found then
@@ -222,16 +222,16 @@ begin
      begin
        b := match( to_string( pat_val ), to_string( expr_val ) );
      exception when expression_error =>
-       err( "bad regular expression '" & to_string( pat_val ) & "'" );
+       err( pl( "bad regular expression '" & to_string( pat_val ) & "'" ) );
        b := false;
      when storage_error =>
-       err( "formula too complex (storage_error exception)" );
+       err( pl( "formula too complex (storage_error exception)" ) );
        b := false;
      when program_error =>
-       err( "program_error exception raised gnat.regpat.match" );
+       err( pl( "program_error exception raised gnat.regpat.match" ) );
        b := false;
      when others =>
-       err( "exception raised in gnat.regpat.match" );
+       err( pl( "exception raised in gnat.regpat.match" ) );
        b := false;
      end;
      if not error_found then
@@ -344,7 +344,7 @@ begin
   -- no value if syntax check
   if isExecutingCommand then
      if length( pat_val ) = 0 then
-        err( "search string is empty" );
+        err( +"search string is empty" );
      end if;
   end if;
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -574,7 +574,7 @@ begin
   begin
      if isExecutingCommand then
         if length( needle_val ) = 0 then
-           err( "search substring is an empty string" );
+           err( +"search substring is an empty string" );
         else
            result := replaceAll( str_val, needle_val, newstr_val, sensitivity_val = "1" );
         end if;
@@ -864,7 +864,7 @@ begin
   begin
      if isExecutingCommand then
         if length( head_val ) = 0 then
-           err( "head substring is an empty string" );
+           err( +"head substring is an empty string" );
         else
            if sensitivity_val = "1"  then
               result := to_bush_boolean( head( str_val, length( head_val ) ) = head_val );
@@ -907,7 +907,7 @@ begin
   begin
      if isExecutingCommand then
         if length( tail_val ) = 0 then
-           err( "tail substring is an empty string" );
+           err( +"tail substring is an empty string" );
         else
            if sensitivity_val = "1"  then
               result := to_bush_boolean( tail( str_val, length( tail_val ) ) = tail_val );
@@ -1046,7 +1046,7 @@ begin
        result := null_unbounded_string;
        mkstemp( mkstemp_result, LinuxPath );
        if mkstemp_result < 0 then
-          err( "mkstemp failed " & OSError( C_errno ) );
+          err( pl( "mkstemp failed " & OSError( C_errno ) ) );
        else
           -- not the best.  mkstemp is secure because it leaves the
           -- file open but we're closing it anyway.
@@ -1119,8 +1119,8 @@ begin
   elsif identifiers( getBaseType( expr_type ) ).kind = root_enumerated_t then
      isEnum := true;
   elsif getUniType( expr_type ) /= uni_numeric_t then
-     err( optional_yellow( to_string( identifiers(expr_type).name ) ) &
-          " is not an enumerated or numeric type" );
+     err( name_em( expr_type ) &
+          pl( " is not an enumerated or numeric type" ) );
   end if;
 
   -- If it's an enumerated, return the name, not the value.
@@ -1181,13 +1181,13 @@ procedure ParseStringsToString( result : out unbounded_string; kind : out identi
      ada.streams.stream_io.delete( rawFile );
      ada.text_io.delete( base64File );
    exception when MODE_ERROR =>
-     err( "internal_error: file mode error" );
+     err( +"internal_error: file mode error" );
    when status_error =>
-     err( "internal_error: status error - cannot open file" );
+     err( +"internal_error: status error - cannot open file" );
    when name_error =>
-     err( "internal_error: name error - cannot open fie" );
+     err( +"internal_error: name error - cannot open fie" );
    when end_error =>
-     err( "internal_error: end error - end of file reached" );
+     err( +"internal_error: end error - end of file reached" );
    when others =>
      err_exception_raised;
   end DoBase64ToString;
@@ -1199,7 +1199,7 @@ begin
   baseType := getBaseType( expr_type );
   if baseType /= unbounded_string_t and baseType /= json_string_t and
      baseType /= base64_string_t then
-     err( "unbounded_string, json_string or strings.base64_string expected" );
+     err( +"unbounded_string, json_string or strings.base64_string expected" );
   end if;
   begin
     if isExecutingCommand then
@@ -1874,13 +1874,13 @@ begin
        ada.text_io.delete( base64file );
     end if;
   exception when MODE_ERROR =>
-    err( "internal_error: file mode error" );
+    err( +"internal_error: file mode error" );
   when status_error =>
-    err( "internal_error: status error - cannot open file" );
+    err( +"internal_error: status error - cannot open file" );
   when name_error =>
-    err( "internal_error: name error - cannot open fie" );
+    err( +"internal_error: name error - cannot open fie" );
   when end_error =>
-    err( "internal_error: end error - end of file reached" );
+    err( +"internal_error: end error - end of file reached" );
   when others =>
     err_exception_raised;
   end;

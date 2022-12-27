@@ -57,7 +57,7 @@ begin
   kind := boolean_t;
   result := null_unbounded_string;
   if onlyAda95 then
-     err( optional_yellow( "pragma ada_95" ) & " doesn't allow perl_match" );
+     err( em( "pragma ada_95" ) & pl( " doesn't allow perl_match" ) );
   end if;
   expect( perl_match_t );
   ParseFirstStringParameter( perl_match_t, pat_val, pat_type );
@@ -76,7 +76,7 @@ begin
               exit when interfaces.C.To_Ada( regex_errmsg(i) ) = ASCII.NUL;
               errmsg := errmsg & interfaces.C.To_Ada( regex_errmsg(i) );
           end loop;
-          err( to_string( toescaped( errmsg ) ) );
+          err( unb_pl( toescaped( errmsg ) ) );
        elsif integer(res_int) = 1 then
           result := to_unbounded_string( "1" );
           if trace then
@@ -98,7 +98,7 @@ begin
        err_exception_raised;
      end;
      #else
-     err( "pcre support not configured" );
+     err( +"pcre support not configured" );
      #end if;
   end if;
 end ParseStringsPerlMatch;

@@ -30,11 +30,16 @@ pragma warnings( on );
 with system,
     ada.text_io,
     ada.strings.unbounded.text_io,
-    gnat.source_info;
+    gnat.source_info,
+    CGI,
+    pegasoft.strings,
+    pegasoft.user_io;
 use ada.text_io,
     ada.command_line,
     ada.command_line.environment,
-    ada.strings.unbounded.text_io;
+    ada.strings.unbounded.text_io,
+    pegasoft.strings,
+    pegasoft.user_io;
 
 package body world is
 
@@ -528,6 +533,28 @@ begin
   -- end if;
 end findEnumImage;
 
+procedure fixUsableParametersInAbstractSubprogram( sub_id : identifier ) is
+-- Mark usable parameters as read/written in a null abstract subprogram
+   paramCnt : natural := 0;
+begin
+   -- count the parameters
+   -- this assumes the parameters immediately follow the subprogram
+   -- id
+   for i in sub_id+1..identifiers_top loop
+       exit when identifiers( i ).field_of /= sub_id;
+       paramCnt := paramCnt + 1;
+   end loop;
+   -- the usable parameters are never actually used in a null
+   -- subprogram but they must be marked as used/written
+   for i in identifier(natural(sub_id)+paramCnt)..identifier(natural(sub_id)+paramCnt*2) loop
+       identifiers( i ).wasReferenced := true;
+       if identifiers( i ).passingMode = out_mode or
+          identifiers( i ).passingMode = in_out_mode then
+          identifiers( i ).wasWritten := true;
+       end if;
+   end loop;
+end fixUsableParametersInAbstractSubprogram;
+
 procedure init_env_ident( s : string ) is
 -- Declare an operating system environment variable. 's' is the
 -- variable string returned by get_env ("var=value" format).
@@ -572,7 +599,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -638,7 +665,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -697,7 +724,7 @@ begin
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
        sc.value := sc.svalue'access;
-       sc.writtenByThread := noThread;
+       sc.writtenByFlow := noDataFlow;
        sc.writtenOn := 0;
       -- since this is only called at startup, the default
        -- values for the other fields should be OK
@@ -740,7 +767,7 @@ begin
        sc.usage := fullUsage;
        sc.field_of := eof_t;
        sc.value := sc.svalue'access;
-       sc.writtenByThread := noThread;
+       sc.writtenByFlow := noDataFlow;
        sc.writtenOn := 0;
        -- since this is only called at startup, the default
        -- values for the other fields should be OK
@@ -881,7 +908,7 @@ begin
                  wasReferenced => false,
                  --referencedByThread => noThread,
                  wasWritten => false,
-                 writtenByThread => noThread,
+                 writtenByFlow => noDataFlow,
                  writtenOn => 0,
                  wasApplied => false,
                  wasFactor => false,
@@ -965,7 +992,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -1060,7 +1087,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -1131,7 +1158,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -1268,7 +1295,7 @@ begin
            identifiers( field_id ).wasReferenced := true;
            --identifiers( field_id ).referencedByThread := noThread;
            identifiers( field_id ).wasWritten := true;
-           identifiers( field_id ).writtenByThread := noThread;
+           identifiers( field_id ).writtenByFlow := noDataFlow;
            identifiers( field_id ).wasApplied := false;
            identifiers( field_id ).wasFactor := false;
            identifiers( field_id ).wasCastTo := false;
@@ -1327,7 +1354,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -1465,7 +1492,7 @@ begin
        wasReferenced => false,
        --referencedByThread => noThread,
        wasWritten => false,
-       writtenByThread => noThread,
+       writtenByFlow => noDataFlow,
        writtenOn => 0,
        wasApplied => false,
        wasFactor => false,
@@ -2137,5 +2164,279 @@ begin
   put( s & ASCII.CR & ASCII.LF );
 
 end putTemplateHeader;
+
+
+------------------------------------------------------------------------------
+--
+-- Message "mark up" functions
+--
+------------------------------------------------------------------------------
+
+
+--  ESCAPE CHAR (local)
+--
+-- Render a character for the output format, escaping or converting
+-- characters as needed.  Currently, the escaping does not support UTF-8.
+----------------------------------------------------------------------------
+
+function escapeChar( ch : character ) return messageStrings is
+  newText : messageStrings;
+begin
+  case templateHeader.templateType  is
+  when htmlTemplate  | wmlTemplate =>
+    -- spaces and line feeds are special cases
+    if ch = ' ' then
+       newText.templateMessage := to_unbounded_string( "&nbsp;" );
+    elsif ch = ASCII.LF then
+       newText.templateMessage := to_unbounded_string( "<br>" );
+    else
+       newText.templateMessage := to_unbounded_string(
+         CGI.html_encode(
+           to_string(
+             toEscaped(
+               to_unbounded_string( "" & ch )
+             )
+           )
+         )
+       );
+    end if;
+  when textTemplate =>
+    newText.templateMessage := null_unbounded_string & ch;
+  when others => -- including noTemplate
+     newText.templateMessage := toEscaped( to_unbounded_string( "" & ch ) );
+  end case;
+  newText.textMessage := newText.textMessage & ch;
+  return newText;
+end escapeChar;
+
+
+-----------------------------------------------------------------------------
+-- Concatenation
+-----------------------------------------------------------------------------
+
+function "&"( left, right : messageStrings ) return messageStrings is
+  new_strings : messageStrings;
+begin
+  new_strings.templateMessage := left.templateMessage & right.templateMessage;
+  new_strings.textMessage     := left.textMessage & right.textMessage;
+  return new_strings;
+end "&";
+
+
+-----------------------------------------------------------------------------
+--  PL (plain text)
+--
+-- Return the text escaped for the current output context.
+-----------------------------------------------------------------------------
+
+function pl( s : string ) return messageStrings is
+  msg : messageStrings;
+begin
+  for i in s'range loop
+      msg := msg & escapeChar( s(i) );
+  end loop;
+  if gccOpt then
+      msg.templateMessage := msg.textMessage;
+  end if;
+  return msg;
+end pl;
+
+function pl( c : character ) return messageStrings is
+begin
+  return pl( "" & c );
+end pl;
+
+
+
+-----------------------------------------------------------------------------
+--  UNB (unbounded string) PL (plain)
+--
+-- This does not use overloading because of the ambiguity that often happens
+-- in strings expressions.
+-----------------------------------------------------------------------------
+
+function unb_pl( us : unbounded_string ) return messageStrings is
+begin
+  return pl( to_string( us ) );
+end unb_pl;
+
+-----------------------------------------------------------------------------
+--  INV (inverse)
+--
+-- Return the text as red, inverse or italic in the current output context.
+-- If GCC errors, return as-is.  If console, return as red or bold.  If an
+-- HTML template, italic (not bold).
+-----------------------------------------------------------------------------
+
+function inv( s : string ) return messageStrings is
+begin
+  if gccOpt then
+     return messageStrings'(
+        to_unbounded_string(s),
+        to_unbounded_string(s)
+     );
+  elsif hasTemplate then
+     case templateHeader.templateType is
+     when htmlTemplate =>
+        return messageStrings'(
+           to_unbounded_string( "<span style=""font-style:italic"">" &
+             CGI.html_encode( s ) & "</span>" ),
+           to_unbounded_string( s )
+        );
+     when others =>
+        return messageStrings'(
+           to_unbounded_string(s),
+           to_unbounded_string(s)
+        );
+     end case;
+  elsif colourOpt then
+     return messageStrings'(
+        to_unbounded_string( optional_red( s ) ),
+        to_unbounded_string( s )
+     );
+  end if;
+  return messageStrings'(
+     to_unbounded_string( inverse( s ) ),
+     to_unbounded_string( s )
+  );
+end inv;
+
+
+-----------------------------------------------------------------------------
+--  OK (success text)
+--
+-- Return the text as green in the current output context.
+-- If GCC errors, return as-is.  If console, return as green or bold.  If an
+-- HTML template, bold.
+-----------------------------------------------------------------------------
+
+function ok( s : string ) return messageStrings is
+begin
+  if gccOpt then
+     return messageStrings'(
+        to_unbounded_string(s),
+        to_unbounded_string(s)
+     );
+  elsif hasTemplate then
+     case templateHeader.templateType is
+     when htmlTemplate =>
+        return messageStrings'(
+           to_unbounded_string( "<span style=""font-style:bold"">" &
+             CGI.html_encode( s ) & "</span>" ),
+           to_unbounded_string( s )
+        );
+     when others =>
+        return messageStrings'(
+           to_unbounded_string(s),
+           to_unbounded_string(s)
+        );
+     end case;
+  elsif colourOpt then
+     return messageStrings'(
+        to_unbounded_string( optional_green( s ) ),
+        to_unbounded_string( s )
+     );
+  end if;
+  return messageStrings'(
+     to_unbounded_string( inverse( s ) ),
+     to_unbounded_string( s )
+  );
+end ok;
+
+
+-----------------------------------------------------------------------------
+--  EM (emphasis)
+--
+-- Return the text as emphasized in the current output context.  If GCC
+-- errors, return as-is.  If console, returns as colour or bold.  If
+-- a HTML template, bold (not italics).
+-----------------------------------------------------------------------------
+
+function em( s : string ) return messageStrings is
+begin
+  if gccOpt then
+     return messageStrings'(
+        to_unbounded_string(s),
+        to_unbounded_string(s)
+     );
+  elsif hasTemplate then
+     case templateHeader.templateType is
+     when htmlTemplate =>
+        return messageStrings'(
+            to_unbounded_string( "<span style=""font-weight:bold"">"  &
+            CGI.html_encode( s ) &
+            "</span>" ),
+            to_unbounded_string(s)
+        );
+     when others =>
+        return messageStrings'(
+           to_unbounded_string(s),
+           to_unbounded_string(s)
+        );
+     end case;
+  elsif colourOpt then
+     return messageStrings'(
+        to_unbounded_string( optional_yellow( s ) ),
+        to_unbounded_string( s )
+     );
+  end if;
+  return messageStrings'(
+     to_unbounded_string( bold( s ) ),
+     to_unbounded_string( s )
+  );
+end em;
+
+
+-----------------------------------------------------------------------------
+--  UNB (unbounded string) EM (emphasis)
+--
+-- This does not use overloading because of the ambiguity that often happens
+-- in strings expressions.
+-----------------------------------------------------------------------------
+
+function unb_em( us : unbounded_string ) return messageStrings is
+begin
+  return em( to_string( us ) );
+end unb_em;
+
+
+-----------------------------------------------------------------------------
+--  (identifier) NAME EM (emphasis)
+--
+-- This happens a lot.
+-----------------------------------------------------------------------------
+
+function name_em( id : identifier ) return messageStrings is
+begin
+  return em( to_string( identifiers( id ).name ) );
+end name_em;
+
+
+-----------------------------------------------------------------------------
+--  EM (emphasis) plus ESC (escape)
+--
+-----------------------------------------------------------------------------
+
+function em_esc( s : unbounded_string ) return messageStrings is
+begin
+  return em( to_string( toEscaped( s ) ) );
+end em_esc;
+
+
+-----------------------------------------------------------------------------
+--  EM (emphasis) VALUE
+--
+-- combines bold, secure data and escaped.  A null value will
+-- return double single quotes.
+-----------------------------------------------------------------------------
+
+function em_value( s : unbounded_string ) return messageStrings is
+begin
+ if s = "" then
+     return pl( "''" );
+  else
+     return em( toSecureData( to_string( toEscaped( s ) ) ) );
+  end if;
+end em_value;
 
 end world;

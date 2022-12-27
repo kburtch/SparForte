@@ -43,7 +43,7 @@ procedure getNextChar(
    wordPos : in out natural ) is
 begin
    if endOfShellWord then
-      err( "end of characters in shell command" );
+      err( +"end of characters in shell command" );
    elsif wordPos = wordLen then
       endOfShellWord := true;
    else
@@ -63,17 +63,17 @@ procedure expectChar(
    wordPos : in out natural ) is
 begin
    if endOfShellWord then
-      err( "'" & expectedChar & "' expected" );
+      err( pl( "'" & expectedChar & "' expected" ) );
    elsif expectedChar = element( rawWordValue, wordPos ) then
       getNextChar( rawWordValue, wordLen, wordPos );
    elsif expectedChar = ''' then
-      err( "missing single quote" );
+      err( +"missing single quote" );
    elsif expectedChar = '"' then
-      err( "missing double quote" );
+      err( +"missing double quote" );
    elsif expectedChar = '`' then
-      err( "missing backquote" );
+      err( +"missing backquote" );
    else
-      err( "'" & expectedChar & "' expected" );
+      err( pl( "'" & expectedChar & "' expected" ) );
    end if;
 end expectChar;
 

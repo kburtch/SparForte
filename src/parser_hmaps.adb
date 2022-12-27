@@ -94,7 +94,7 @@ hashed_maps_equal_t     : identifier;
 
 procedure err_storage is
 begin
-  err( "storage_error raised" );
+  err( +"storage_error raised" );
 end err_storage;
 
 
@@ -106,9 +106,9 @@ end err_storage;
 procedure err_no_key( subprogram : identifier; keyName : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => "the key " & optional_yellow( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
-       reason => "is",
-       obstructorNotes => "not in the map" );
+       subjectNotes => +"the key " & em( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
+       reason => +"is",
+       obstructorNotes => +"not in the map" );
 end err_no_key;
 
 
@@ -120,9 +120,9 @@ end err_no_key;
 procedure err_key_exists( subprogram : identifier; keyName : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => "the key " & optional_yellow( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
-       reason => "is",
-       obstructorNotes => "already in the map" );
+       subjectNotes => +"the key " & em( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
+       reason => +"is",
+       obstructorNotes => +"already in the map" );
 end err_key_exists;
 
 
@@ -563,12 +563,12 @@ begin
   if identifiers( token ).class /= varClass then
      err(
          context => subprogramId,
-         subjectNotes => optional_yellow( "hashed_maps.map" ) & " or " &
-             optional_yellow( "hashed_maps.cursor" ),
-         reason => "or compatible type expected but found",
+         subjectNotes => em( "hashed_maps.map" ) & pl( " or " ) &
+             em( "hashed_maps.cursor" ),
+         reason => +"or compatible type expected but found",
          obstructor => token,
          obstructorType => identifiers( token ).kind,
-         remedy => "declare a new limited type"
+         remedy => +"declare a new limited type"
      );
   else
      firstParamUniType := getUniType( token );
@@ -583,12 +583,12 @@ begin
      else
         err(
             context => subprogramId,
-            subjectNotes => optional_yellow( "hashed_maps.map" ) & " or " &
-                optional_yellow( "hashed_maps.cursor" ),
-            reason => "or compatible type expected but found",
+            subjectNotes => em( "hashed_maps.map" ) & pl( " or " ) &
+                em( "hashed_maps.cursor" ),
+            reason => +"or compatible type expected but found",
             obstructor => token,
             obstructorType => identifiers( token ).kind,
-            remedy => "declare a new limited type"
+            remedy => +"declare a new limited type"
         );
      end if;
   end if;
@@ -663,10 +663,10 @@ procedure ParseHashedMapsAppend is
   elemType : identifier;
   subprogramId : constant identifier := hashed_maps_append_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
-     err( "append requires a string element type" );
+     err( +"append requires a string element type" );
   end if;
   ParseNextGenItemParameter( subprogramId, keyVal, keyType, identifiers( mapId ).genKind );
   ParseLastStringParameter( subprogramId, elemVal, elemType, identifiers( mapId ).genKind2 );
@@ -701,10 +701,10 @@ procedure ParseHashedMapsPrepend is
   elemType : identifier;
   subprogramId : constant identifier := hashed_maps_prepend_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_string_t then
-     err( "prepend requires a string element type" );
+     err( +"prepend requires a string element type" );
   end if;
   ParseNextGenItemParameter( subprogramId, keyVal, keyType, identifiers( mapId ).genKind );
   ParseLastStringParameter( subprogramId, elemVal, elemType, identifiers( mapId ).genKind2 );
@@ -741,10 +741,10 @@ procedure ParseHashedMapsIncrement is
   hasAmt  : boolean := false;
   subprogramId : constant identifier := hashed_maps_increment_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
-     err( "increment requires a numeric element type" );
+     err( +"increment requires a numeric element type" );
   end if;
   ParseNextGenItemParameter( subprogramId, keyVal, keyType, identifiers( mapId ).genKind );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -753,7 +753,7 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
@@ -763,7 +763,7 @@ begin
           floatVal := 1.0;
        end if;
      exception when constraint_error =>
-       err( "increment value is not natural" );
+       err( +"increment value is not natural" );
      end;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
@@ -797,10 +797,10 @@ procedure ParseHashedMapsDecrement is
   hasAmt  : boolean := false;
   subprogramId : constant identifier := hashed_maps_decrement_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   if getUniType( identifiers( mapId ).genKind2 ) /= uni_numeric_t then
-     err( "decrement requires a numeric element type" );
+     err( +"decrement requires a numeric element type" );
   end if;
   ParseNextGenItemParameter( subprogramId, keyVal, keyType, identifiers( mapId ).genKind );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -809,7 +809,7 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      begin
@@ -819,7 +819,7 @@ begin
           floatVal := 1.0;
        end if;
      exception when constraint_error =>
-       err( "decrement value is not natural" );
+       err( +"decrement value is not natural" );
      end;
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
@@ -851,7 +851,7 @@ procedure ParseHashedMapsExtract( result : out unbounded_string; kind : out iden
 begin
   -- in the event of an error, we don't know what the data type is
   kind := eof_t;
-  expectAdaScript( subject => subprogramId, remedy => "use element and delete" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and delete" );
   ParseFirstInOutInstantiatedParameter( subprogramId, mapId, hashed_maps_map_t );
   ParseLastGenItemParameter( subprogramId, keyVal, keyType, identifiers( mapId ).genKind );
   if not error_found then
@@ -1017,7 +1017,7 @@ begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        result := String_Hashed_Maps.Key( theCursor.shmCursor );
      exception when constraint_error =>
-       err( "cursor position has no element" );
+       err( +"cursor position has no element" );
      when storage_error =>
        err_storage;
      when others =>
@@ -1091,9 +1091,9 @@ begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
        String_Hashed_Maps.Replace_Element( theMap.shmMap, theCursor.shmCursor , newVal );
      exception when constraint_error =>
-       err( "cursor position has no element" );
+       err( +"cursor position has no element" );
      when program_error =>
-       err( "cursor position not in map" );
+       err( +"cursor position not in map" );
      when storage_error =>
        err_storage;
      when others =>

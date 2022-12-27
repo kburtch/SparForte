@@ -50,7 +50,7 @@ package body parser_tinyserve is
 procedure CheckServerIsInitialized( serverId : identifier ) is
 begin
   if identifiers( serverId ).genKind = eof_t then
-     err( "new_server has not been called to initialize the file" );
+     err( +"new_server has not been called to initialize the file" );
   end if;
 end CheckServerIsInitialized;
 
@@ -69,7 +69,7 @@ end ParseFirstServerParameter;
 procedure findServer( serverExpr : unbounded_string; server : in out resPtr ) is
 begin
   if length( serverExpr ) = 0 then
-     err( optional_yellow( "new_socket_server" ) & " has not been called to initialize the connection" );
+     err( em( "new_socket_server" ) & pl( " has not been called to initialize the connection" ) );
   else
      findResource( to_resource_id( serverExpr ), server );
   end if;
@@ -122,8 +122,8 @@ procedure ParseTSStartUp is
   server     : resPtr := null;
 begin
   if rshOpt then
-     err( optional_yellow( "tinyserve.startup" ) & " is not permitted in a " &
-        optional_yellow( "restricted shell" ) );
+     err( em( "tinyserve.startup" ) & pl( " is not permitted in a " ) &
+        em( "restricted shell" ) );
   else
      expect( tinyserve_startup_t );
      ParseFirstServerParameter( tinyserve_startup_t, serverId );

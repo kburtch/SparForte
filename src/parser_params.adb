@@ -71,7 +71,7 @@ begin
       identifiers( ref.id ).avalue( ref.index ) := value; --NEWARRAY
    end if;
 exception when storage_error =>
-   err( "internal error: storage error raised in AssignParameter" );
+   err( +"internal error: storage error raised in AssignParameter" );
 end AssignParameter;
 
 
@@ -139,7 +139,7 @@ begin
         ParseExpression( expr_value, expr_kind );
         if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
            identifiers( getBaseType( expr_kind ) ).list then
-           err( "array index must be a scalar type" );
+           err( +"array index must be a scalar type" );
         end if;
         expect( symbol_t, ")" );
      else
@@ -166,7 +166,9 @@ begin
             if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then
                -- TODO: probably needs a better error message
                if arrayIndex not in identifiers( ref.id ).avalue'range then
-                  err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
+                  err( pl( "array index " & to_string( trim( expr_value, ada.strings.both ) ) &
+                     " not in" & identifiers( ref.id ).avalue'first'img & " .." &
+                     identifiers( ref.id ).avalue'last'img ) );
                else
                  ref.index := arrayIndex;
                end if;
@@ -348,7 +350,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -375,7 +377,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -406,7 +408,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -433,7 +435,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -457,7 +459,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -481,7 +483,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -514,7 +516,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -544,7 +546,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -571,7 +573,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -598,7 +600,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -626,7 +628,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( param_id );
-     checkDoubleThreadWrite( param_id );
+     checkDoubleDataFlowWrite( param_id );
      --checkDoubleGlobalWrite( param_id );
      identifiers( param_id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -965,7 +967,7 @@ begin
   if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found and (inputMode = interactive or inputMode = breakout) then
      ParseNewIdentifier( ref.id );
      if index( identifiers( ref.id ).name, "." ) /= 0 then
-        err( "Identifier not declared.  Cannot auto-declare a record field" );
+        err( +"Identifier not declared.  Cannot auto-declare a record field" );
      else
         identifiers( ref.id ).kind := defaultType;
         identifiers( ref.id ).class := varClass;
@@ -992,7 +994,7 @@ begin
      ParseExpression( expr_value, expr_kind );
      if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
         identifiers( getBaseType( expr_kind ) ).list then
-        err( "array index must be a scalar type" );
+        err( +"array index must be a scalar type" );
      end if;                                   -- variables are not
      if isExecutingCommand then                -- declared in syntax chk
          begin
@@ -1003,7 +1005,9 @@ begin
          end;
          if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
             if arrayIndex not in identifiers( ref.id ).avalue'range then
-               err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
+               err( pl( "array index " & to_string( trim( expr_value, ada.strings.both ) ) &
+                  " not in" & identifiers( ref.id ).avalue'first'img & " .." &
+                  identifiers( ref.id ).avalue'last'img ) );
             else
               ref.index := arrayIndex;
             end if;
@@ -1071,17 +1075,17 @@ begin
      if syntax_check and then not error_found then
         if identifiers( ref.id ).field_of /= eof_t then
            identifiers( identifiers( ref.id ).field_of ).wasWritten := true;
-           identifiers( identifiers( ref.id ).field_of ).writtenByThread := getThreadName;
+           identifiers( identifiers( ref.id ).field_of ).writtenByFlow := getDataFlowName;
         else
            identifiers( ref.id ).wasWritten := true;
-           identifiers( ref.id ).writtenByThread := getThreadName;
+           identifiers( ref.id ).writtenByFlow := getDataFlowName;
         end if;
      end if;
   end if;
 
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite(ref.id );
-     checkDoubleThreadWrite( ref.id );
+     checkDoubleDataFlowWrite( ref.id );
      --checkDoubleGlobalWrite( ref.id );
      identifiers( ref.id ).writtenOn := perfStats.lineCnt;
   end if;
@@ -1179,7 +1183,7 @@ begin
      ParseExpression( expr_value, expr_kind );
      if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
         identifiers( getBaseType( expr_kind ) ).list then
-        err( "array index must be a scalar type" );
+        err( +"array index must be a scalar type" );
      end if;                                   -- variables are not
      if isExecutingCommand then                -- declared in syntax chk
          begin
@@ -1190,7 +1194,9 @@ begin
          end;
          if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
             if arrayIndex not in identifiers( ref.id ).avalue'range then
-               err( "array index " & to_string( trim( expr_value, ada.strings.both ) ) & " not in" & identifiers( ref.id ).avalue'first'img & " .." & identifiers( ref.id ).avalue'last'img );
+               err( pl( "array index " & to_string( trim( expr_value, ada.strings.both ) ) &
+                  " not in" & identifiers( ref.id ).avalue'first'img & " .." &
+                  identifiers( ref.id ).avalue'last'img ) );
             else
               ref.index := arrayIndex;
             end if;
@@ -1249,7 +1255,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite(ref.id );
-     checkDoubleThreadWrite( ref.id );
+     checkDoubleDataFlowWrite( ref.id );
      --checkDoubleGlobalWrite( ref.id );
      identifiers( ref.id ).writtenOn := perfStats.lineCnt;
   end if;

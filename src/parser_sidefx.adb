@@ -155,15 +155,15 @@ begin
      if identifiers( id ).field_of /= eof_t then
         -- we don't track record fields, only the record
         if lastExpressionInstruction < identifiers( identifiers( id ).field_of ).writtenOn then
-           err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) &
+           err( pl( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) &
                 " was read after written within " &
-                "an expression.  Perhaps a copy should be used." );
+                "an expression.  Perhaps a copy should be used." ) );
         end if;
      else
         if lastExpressionInstruction < identifiers( id ).writtenOn then
-           err( "side-effects: " & to_string( identifiers( id ).name ) &
+           err( pl( "side-effects: " & to_string( identifiers( id ).name ) &
                 " was read after written to within " &
-                "an expression.  Perhaps a copy should be used." );
+                "an expression.  Perhaps a copy should be used." ) );
         end if;
      end if;
   end if;
@@ -201,9 +201,9 @@ begin
         -- we don't track record fields, only the record
         if isActiveExpressionId( identifiers( id ).field_of ) then
         --if lastExpressionInstruction <= identifiers( identifiers( id ).field_of ).factorOn then
-           err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) &
+           err( pl( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name ) &
                 " was written after read " &
-                "within an expression.  Perhaps a copy should be used." );
+                "within an expression.  Perhaps a copy should be used." ) );
         end if;
      else
 --put_line("Written after read test" );
@@ -211,9 +211,9 @@ begin
 --put_line( "  " & to_string(identifiers(id).name) & ".factorOn=" & identifiers( id ).factorOn'img );
         if isActiveExpressionId( id ) then
         --if lastExpressionInstruction <= identifiers( id ).factorOn then
-           err( "side-effects: " & to_string( identifiers( id ).name ) &
+           err( pl( "side-effects: " & to_string( identifiers( id ).name ) &
                 " was written after read " &
-                "within an expression.  Perhaps a copy should be used." );
+                "within an expression.  Perhaps a copy should be used." ) );
         end if;
      end if;
   end if;
@@ -226,50 +226,50 @@ end checkExpressionFactorVolatilityOnWrite;
 -- by two different expression-tasks (functions, contracts) during an
 -- expression and report an error if at least two use it.
 
-procedure checkDoubleThreadWrite( id : identifier ) is
+procedure checkDoubleDataFlowWrite( id : identifier ) is
 begin
   -- Is this a record?
   if identifiers( id ).field_of /= eof_t then
      -- Was this written since the start of the expression?
      if lastExpressionInstruction < identifiers( identifiers( id ).field_of ).writtenOn then
         -- If never been written, we don't test yet.
-        if identifiers( identifiers( id  ).field_of ).writtenByThread /= noThread then
+        if identifiers( identifiers( id  ).field_of ).writtenByFlow /= noDataFlow then
            -- Is the name of the writer function, contract or task different?
-           if identifiers( identifiers( id ).field_of ).writtenByThread /= getThreadName then
+           if identifiers( identifiers( id ).field_of ).writtenByFlow /= getDataFlowName then
               -- Unless it is volatile, it is an error.
               if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
-                 err( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
-                      " used here in " & optional_yellow( to_string( getThreadName ) ) &
-                      " is also changed by " &
-                      optional_yellow( to_string( identifiers( identifiers( id ).field_of ).writtenByThread ) ) ) &
-                      ".  Perhaps refactor so one is a procedure, or break up the shared expression or use pragma unchecked_volatile." );
+                 err( pl( "side-effects: " & to_string( identifiers( identifiers( id ).field_of ).name &
+                      " used here in " ) ) & unb_em( getDataFlowName ) &
+                      pl( " is also changed by " ) &
+                      em( to_string( identifiers( identifiers( id ).field_of ).writtenByFlow ) ) &
+                      pl( ".  Perhaps refactor so one is a procedure, or break up the shared expression or use pragma unchecked_volatile." ) );
               end if;
            end if;
         end if;
-        identifiers( identifiers( id ).field_of ).writtenByThread := getThreadName;
+        identifiers( identifiers( id ).field_of ).writtenByFlow := getDataFlowName;
      end if;
   else
      -- Else if this is not a record,
      -- Was this written since the start of the expression?
      if lastExpressionInstruction < identifiers( id ).writtenOn then
         -- If never been written, we don't test yet.
-        if identifiers( id ).writtenByThread /= noThread then
+        if identifiers( id ).writtenByFlow /= noDataFlow then
            -- Is the name of the writer function, contract or task different?
-           if identifiers( id ).writtenByThread /= getThreadName then
+           if identifiers( id ).writtenByFlow /= getDataFlowName then
               -- Unless it is volatile, it is an error.
               if identifiers( identifiers( id ).field_of ).volatile /= unchecked then
-                 err( "side-effects: " & to_string( identifiers( id ).name &
-                      " used here in " & optional_yellow( to_string( getThreadName ) ) &
-                      " is also changed by " &
-                      optional_yellow( to_string( identifiers( id ).writtenByThread ) ) ) &
-                      ".  Perhaps refactor so one is a procedure, or break up the shared expression or use pragma unchecked_volatile." );
+                 err( pl( "side-effects: " & to_string( identifiers( id ).name &
+                      " used here in " ) ) & unb_em( getDataFlowName ) &
+                      pl( " is also changed by " ) &
+                      em( to_string( identifiers( id ).writtenByFlow ) ) &
+                      pl( ".  Perhaps refactor so one is a procedure, or break up the shared expression or use pragma unchecked_volatile." ) );
               end if;
            end if;
         end if;
-        identifiers( id ).writtenByThread := getThreadName;
+        identifiers( id ).writtenByFlow := getDataFlowName;
      end if;
   end if;
-end checkDoubleThreadWrite;
+end checkDoubleDataFlowWrite;
 
 
 --  CHECK DOUBLE GLOBAL WRITE

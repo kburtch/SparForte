@@ -108,7 +108,7 @@ begin
        result := null_unbounded_string & dir_separator;
     end if;
   exception when directory_error =>
-    err( "directory not accessible" );
+    err( +"directory not accessible" );
   when others =>
     err_exception_raised;
   end;
@@ -127,7 +127,7 @@ begin
        Change_Dir( dir_name_str( to_string( expr_val ) ) );
     end if;
   exception when directory_error =>
-    err( "directory not accessible" );
+    err( +"directory not accessible" );
   when others =>
     err_exception_raised;
   end;
@@ -146,7 +146,7 @@ begin
        Make_Dir( dir_name_str( to_string( expr_val ) ) );
     end if;
   exception when directory_error =>
-    err( "directory not accessible" );
+    err( +"directory not accessible" );
   when others =>
     err_exception_raised;
   end;
@@ -174,7 +174,7 @@ begin
        Remove_Dir( dir_name_str( to_string( expr_val ) ), recursive);
     end if;
   exception when directory_error =>
-    err( "directory cannot be removed" );
+    err( +"directory cannot be removed" );
   when others =>
     err_exception_raised;
   end;
@@ -191,7 +191,7 @@ begin
        result := to_unbounded_string( get_current_dir );
     end if;
   exception when directory_error =>
-    err( "directory not accessible" );
+    err( +"directory not accessible" );
   when others =>
     err_exception_raised;
   end;
@@ -325,7 +325,7 @@ begin
        result := to_unbounded_string( format_pathname( path_name( to_string( expr_val ) ), style ) );
     end if;
   exception when directory_error =>
-    err( "directory not accessible" );
+    err( +"directory not accessible" );
   when others =>
     err_exception_raised;
   end;
@@ -364,7 +364,7 @@ begin
        result := to_unbounded_string( expand_path( path_name( to_string( expr_val ) ), style ) );
     end if;
   exception when directory_error =>
-    err( "directory not accessible" );
+    err( +"directory not accessible" );
   when others =>
     err_exception_raised;
   end;
@@ -415,7 +415,7 @@ begin
        end if;
        Open( theDir.dir, to_string( expr_val ) );
      exception when DIRECTORY_ERROR =>
-       err( "directory does not exist" );
+       err( +"directory does not exist" );
      when others =>
        err_exception_raised;
      end;
@@ -436,12 +436,12 @@ begin
           findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
           Close( theDir.dir );
         exception when DIRECTORY_ERROR =>
-          err( "directory is not open" );
+          err( +"directory is not open" );
         when others =>
           err_exception_raised;
         end;
      else
-        err( "directory is not open" );
+        err( +"directory is not open" );
      end if;
   end if;
 end ParseDirOpsClose;
@@ -494,7 +494,7 @@ begin
        AssignParameter( strRef, to_unbounded_string( s(1..Last) ) );
        --AssignParameter( lastRef, to_unbounded_string( last'img ) ); -- STRIP?
      exception when DIRECTORY_ERROR =>
-       err( "directory is not open" );
+       err( +"directory is not open" );
      when others =>
        err_exception_raised;
      end;

@@ -22,8 +22,10 @@
 ------------------------------------------------------------------------------
 
 with ada.calendar,
-     ada.strings.unbounded;
-use  ada.strings.unbounded;
+     ada.strings.unbounded,
+     world;
+use  ada.strings.unbounded,
+     world;
 
 
 package pegasoft.user_io is
@@ -109,10 +111,6 @@ function optional_bold( s : string ) return string;
 function bold( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in bold characters
-
-function toProtectedValue( s : unbounded_string ) return string;
--- combines optional bold, secure data and escaped.  A null value will
--- return double single quotes.
 
 function optional_inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string

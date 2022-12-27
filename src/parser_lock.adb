@@ -111,7 +111,7 @@ begin
           );
        end if;
      exception when lock_error =>
-       err( "File cannot be locked" );
+       err( +"File cannot be locked" );
      when others =>
        err_exception_raised;
      end;

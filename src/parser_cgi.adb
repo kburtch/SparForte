@@ -193,7 +193,7 @@ begin
          positive'value( to_string( expr_val2 ) ),
          expr_val3 = identifiers( true_t ).value.all );
      exception when constraint_error =>
-         err( "key does not exist" );
+         err( +"key does not exist" );
      when others =>
          err_exception_raised;
      end;
@@ -300,7 +300,7 @@ begin
      begin
        result := cgi.key( positive( to_numeric( expr_val ) ) );
      exception when constraint_error =>
-       err( "no key at this position" );
+       err( +"no key at this position" );
      when others =>
        err_exception_raised;
      end;
@@ -329,7 +329,7 @@ begin
      begin
        result := cgi.value( positive( to_numeric( expr_val ) ) );
      exception when constraint_error =>
-       err( "no key at this position" );
+       err( +"no key at this position" );
      when others =>
        err_exception_raised;
      end;

@@ -40,6 +40,9 @@ package spar_os is
 directory_delimiter : constant character := '/';
 -- O/S pathname directory separator (O/S dependant)
 
+eol_characters : constant string := "" & ASCII.LF;
+-- O/S end-of-line characters in text files
+
 type byte is new short_short_integer range -128..127;
 for byte'size use 8;
 -- 8-bit signed byte

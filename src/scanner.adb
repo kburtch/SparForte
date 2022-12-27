@@ -325,7 +325,7 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
+           err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
         end case;
      when typeClass =>
         if not ident.list then
@@ -342,7 +342,7 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
+           err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
         end case;
      when funcClass =>
         put( "built-in " );
@@ -396,7 +396,7 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
+           err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
         end case;
         put( "identifier of the type " );
      end case;
@@ -412,7 +412,7 @@ begin
         null;
      when others =>
         -- bastract should not occur
-        err( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img );
+        err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
      end case;
 
      -- Show the type
@@ -737,7 +737,7 @@ end put_all_identifiers;
 -- actually happened before it.  Just mark start of current token.
 -----------------------------------------------------------------------------
 
-procedure err_previous( msg : string ) is
+procedure err_previous( msg : messageStrings ) is
   savepos : integer;
 begin
   savepos := lastpos;     -- save current token's last character position
@@ -791,7 +791,7 @@ begin
             if identifiers( i ).field_of = eof_t then -- not a field of a record
                declare
                   context : unbounded_string;
-                  usage : unbounded_string;
+                  usage : messageStrings;
                begin
                   if is_script then
                      context := to_unbounded_string( "While checking variables in this script" );
@@ -799,17 +799,17 @@ begin
                      context := to_unbounded_string( "While checking variables in this block" );
                   end if;
                   if identifiers( i ).usage = constantUsage then
-                     usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                     usage := +"(" & em( "constant" ) & pl( " usage) " );
                   elsif identifiers( i ).usage = limitedUsage then
-                     usage := to_unbounded_string( "(" & optional_yellow( "limited" ) & " usage) " );
+                     usage := +"(" & em( "limited" ) & pl( " usage) " );
                   end if;
                   err(
-                     contextNotes => to_string( context ),
+                     contextNotes => pl( to_string( context ) ),
                      subject => i,
-                     reason => to_string( usage ) &
-                        "is not in any declarations and should be declared",
-                     obstructorNotes => optional_yellow( "abstract" ),
-                     remedy => "if this is shared and not always used, use pragma assumption( applied" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                     reason => usage &
+                        pl( "is not in any declarations and should be declared" ),
+                     obstructorNotes => em( "abstract" ),
+                     remedy => pl( "if this is shared and not always used, use pragma assumption( applied" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                   );
                end;
             end if;
@@ -840,7 +840,7 @@ begin
                      identifiers( i ).field_of = eof_t then
                         declare
                            context : unbounded_string;
-                           usage : unbounded_string;
+                           usage : messageStrings;
                         begin
                            if is_script then
                               context := to_unbounded_string( "While checking variables in this script" );
@@ -848,15 +848,15 @@ begin
                               context := to_unbounded_string( "While checking variables in this block" );
                            end if;
                            if identifiers( i ).usage = constantUsage then
-                              usage := to_unbounded_string( "(" & optional_yellow( "constant" ) & " usage) " );
+                              usage := +"(" & em( "constant" ) & pl( " usage) " );
                            end if;
                            err(
-                              contextNotes => to_string( context ),
+                              contextNotes => pl( to_string( context ) ),
                               subject => i,
-                              reason => to_string( usage ) &
-                                 "is not assigned to nor in any expressions and should be declared",
-                              obstructorNotes => optional_yellow( "limited" ),
-                              remedy => "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                              reason => usage & pl(
+                                 "is not assigned to nor in any expressions and should be declared" ),
+                              obstructorNotes => em( "limited" ),
+                              remedy => pl( "if this is shared and not always written to, use pragma assumption( factor" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                            );
                         end;
                   end if;
@@ -938,11 +938,11 @@ begin
                            head( identifiers( i ).name, 13 ) /= "return result" and
                            identifiers( i ).field_of = eof_t then
                               err(
-                                 contextNotes => "While checking variables in this block",
+                                 contextNotes => pl( "While checking variables in this block" ),
                                  subject => i,
-                                 reason => "is not written to and should be declared",
-                                 obstructorNotes => optional_yellow( "constant" ) & " (or an in mode parameter)",
-                                 remedy => "if this is shared and not always written to, use pragma assumption( written" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                                 reason => pl( "is not written to and should be declared" ),
+                                 obstructorNotes => em( "constant" ) & pl( " (or an in mode parameter)" ),
+                                 remedy => pl( "if this is shared and not always written to, use pragma assumption( written" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                               );
                         end if;
                      end if;
@@ -959,13 +959,13 @@ begin
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
                   err(
-                     contextNotes => "While checking subprograms in this block",
+                     contextNotes => pl( "While checking subprograms in this block" ),
                      subject => i,
                      subjectLocation =>
-                       to_string( identifiers( i ).specFile) & ":" &
-                       identifiers( i ).specAt'img,
-                     reason =>  "has a specification but",
-                     obstructorNotes => "is not implemented"
+                       pl( to_string( identifiers( i ).specFile) & ":" &
+                          identifiers( i ).specAt'img ),
+                     reason => pl( "has a specification but" ),
+                     obstructorNotes => pl( "is not implemented" )
                   );
                end if;
             end if;
@@ -982,42 +982,43 @@ begin
 
                -- UNUSED VARIABLE
                --
-               -- Unused variables are always checked.  Skip record fields since there
-               -- is no guarantee that all fields will be accessed.
+               -- Unused variables are always checked.  wasReferenced is
+               -- false.  Skip record fields since there is no guarantee that
+               -- all fields will be accessed.
 
                if designOpt then
                   if identifiers( i ).class = typeClass or
                      identifiers( i ).class = subClass or
                      identifiers( i ).class = genericTypeClass then
                      err(
-                        contextNotes => "While checking identifiers in this block",
+                        contextNotes => pl( "While checking identifiers in this block" ),
                         subject => i,
                         subjectType => identifiers( i ).kind,
-                        reason => "was declared but",
-                        obstructorNotes => "was not used",
-                        remedy => "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                        reason => pl( "was declared but" ),
+                        obstructorNotes => pl( "was not used" ),
+                        remedy => pl( "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                      );
                   end if;
                   -- when testing or maintenance, check all identifiers, even
                   -- variables
                elsif testOpt or maintenanceOpt then
                   err(
-                     contextNotes => "While checking identifiers in this block",
+                     contextNotes => pl( "While checking identifiers in this block" ),
                      subject => i,
                      subjectType => identifiers( i ).kind,
-                     reason => "was declared but",
-                     obstructorNotes => "was not used",
-                     remedy => "during development, run SparForte in development phase mode to check only variables. When designing, run in design phase mode to check only types.  If this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished.  Otherwise, delete it if it is not needed"
+                     reason => pl( "was declared but" ),
+                     obstructorNotes => pl( "was not used" ),
+                     remedy => pl( "during development, run SparForte in development phase mode to check only variables. When designing, run in design phase mode to check only types.  If this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished.  Otherwise, delete it if it is not needed" )
                   );
                   -- in development, only check variables
                elsif identifiers( i ).class = varClass then
                   err(
-                     contextNotes => "While checking identifiers in this block",
+                     contextNotes => pl( "While checking identifiers in this block" ),
                      subject => i,
                      subjectType => identifiers( i ).kind,
-                     reason => "was declared but",
-                     obstructorNotes => "was not used",
-                     remedy => "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished"
+                     reason => pl( "was declared but" ),
+                     obstructorNotes => pl( "was not used" ),
+                     remedy => pl( "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                   );
                end if;
             end if;
@@ -1097,10 +1098,10 @@ begin
                identifiers( i ).class = userCaseProcClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
-                  err( optional_yellow( to_string( identifiers( i ).name ) ) &
+                  err( name_em( i ) & pl(
                        " has a specification but is not implemented (at " &
                        to_string( identifiers( i ).specFile) & ":" &
-                       identifiers( i ).specAt'img & ");" );
+                       identifiers( i ).specAt'img & ")" ) );
                end if;
             end if;
 
@@ -1118,7 +1119,13 @@ begin
 --put_line( standard_error, "HERE 2 - not a field" ); -- DEBUG
 --put( standard_error, " id:" ); put( i'img ); -- DEBUG
 --put_line( standard_error, " " & to_string( identifiers( i ).name ) ); -- DEBUG
-                 err( optional_yellow( to_string( identifiers( i ).name ) ) & " is declared but never used" );
+                  err(
+                     contextNotes => pl( "While checking identifiers in this block" ),
+                     subject => i,
+                     subjectType => identifiers( i ).kind,
+                     reason => pl( "was declared but" ),
+                     obstructorNotes => pl( "was not used" )
+                  );
 --           end if;
             end if;
          end if; -- not deleted
@@ -1159,7 +1166,7 @@ end completeSoftwareModelRequirements;
 -----------------------------------------------------------------------------
 
 procedure pushBlock( newScope : boolean := false;
-  newName : string := ""; newThread : aThreadName := noThread ) is
+  newName : string := ""; newFlow : aDataFlowName := noDataFlow ) is
 begin
   if blocks_top = block'last then                               -- no room?
      raise block_table_overflow with Gnat.Source_Info.Source_Location &
@@ -1173,15 +1180,15 @@ begin
         theBlock.identifiers_top := identifiers_top;               -- last ident
         theBlock.newScope := newScope;                             -- scope flag
         theBlock.blockName := To_Unbounded_String( newName );      -- name if any
-        if newThread = noThread then
+        if newFlow = noDataFlow then
            if blocks_top = block'first then
-              theBlock.threadName := mainThread;
+              theBlock.flowName := mainDataFlow;
            else
               -- inheret name from parent
-              theBlock.threadName := blocks( blocks_top-1 ).threadName;
+              theBlock.flowName := blocks( blocks_top-1 ).flowName;
            end if;
         else
-           theBlock.threadName := newThread;
+           theBlock.flowName := newFlow;
         end if;
         markScanner( theBlock.state );                            -- scanner pos
      end;
@@ -1248,10 +1255,10 @@ procedure topOfBlock is
   lastpos  : natural;
   lineno   : natural;
   fileno   : natural;
-  cmdLine  : unbounded_string;
+  cmdLine  : messageStrings;
 begin
    if blocks_top = blocks'first then                            -- in a block?
-      err( gnat.source_info.source_location & ": internal error: topOfBlock: not in a block" );
+      err( pl( gnat.source_info.source_location & ": internal error: topOfBlock: not in a block" ) );
    else
       resumeScanning( blocks( blocks_top-1 ).state );           -- move to top
       if inputMode /= interactive and inputMode /= breakout then -- in a script?
@@ -1259,7 +1266,7 @@ begin
          if trace and not exit_block and not error_found then   -- display
             put( standard_error, "=> " & '"' );                 -- line if
             getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
-            put( standard_error, toEscaped( cmdline ) );
+            put( standard_error, toEscaped( cmdline.textMessage ) );
             put( standard_error, """ [" );
             put( standard_error, lineno'img );
             put_line( standard_error, "]" );
@@ -1364,25 +1371,25 @@ end getIdentifierBlock;
 -----------------------------------------------------------------------------
 --  GET THREAD NAME
 --
--- Return the name of the given thread.  If in doubt, presume the main
--- program is the thread.
+-- Return the name of the given flow.  If in doubt, presume the main
+-- program is the flow.
 -----------------------------------------------------------------------------
 
-function getThreadName return aThreadName is
+function getDataFlowName return aDataFlowName is
 begin
   if blocks_top = block'first then
-     return mainThread;
+     return mainDataFlow;
   end if;
-  return blocks( blocks_top-1 ).threadName;
-end getThreadName;
+  return blocks( blocks_top-1 ).flowName;
+end getDataFlowName;
 
-function getThreadName( b : block ) return aThreadName is
+function getDataFlowName( b : block ) return aDataFlowName is
 begin
   if b >= blocks_top then
-     return mainThread;
+     return mainDataFlow;
   end if;
-  return blocks( b ).threadName;
-end getThreadName;
+  return blocks( b ).flowName;
+end getDataFlowName;
 
 
 -----------------------------------------------------------------------------
@@ -1456,7 +1463,7 @@ begin
      -- the position in the symbol table undefined
      blocks( blocks_top-1 ).occurrence_message := err_message;
      blocks( blocks_top-1 ).occurrence_status := last_status;
-     blocks( blocks_top-1 ).occurrence_full := fullErrorMessage;
+     blocks( blocks_top-1 ).occurrence_full := fullErrorMessage.textMessage;
   end if;
 end startExceptionHandler;
 
@@ -1513,7 +1520,7 @@ begin
         b := b - 1;                                       -- keep looking
      end loop;
   else
-     err( gnat.source_info.source_location & ": internal error: getting exception but not in an exception block" );
+     err( pl( gnat.source_info.source_location & ": internal error: getting exception but not in an exception block" ) );
   end if;
 end getBlockException;
 
@@ -2699,9 +2706,13 @@ begin
         end loop;
      end if;
      if not refreshed then
-        err( "unable to find volatile " &
-             optional_yellow( to_string( identifiers( id ).name ) ) &
-             "in the O/S environment" );
+        err(
+             contextNotes => pl( "While looking for volatiles to refresh" ),
+             subject => id,
+             reason => pl( "was not found in" ),
+             obstructorNotes => pl( "the O/S environment" ),
+             remedy => pl ("Perhaps it is spelled differently or the wrong variable is marked volatile" )
+        );
      end if;
   else
      -- KB: 20/03/18 - hack have no effect
@@ -2747,9 +2758,14 @@ function getUniType( original : identifier ) return identifier is
 begin
 
   -- safety check: eof_t is often returned on an error in the parser
+  -- this should normally not be seen by the user
 
   if identifiers( original ).kind = eof_t then
-        err( "type expected" );
+        err(
+            contextNotes => pl( "Checking root types" ),
+            subjectNotes => pl( "a missing value" ),
+            reason => pl( "is not a" ),
+            obstructorNotes => pl( "a type or subtype" ) );
         return universal_t;
 
   -- new identifiers declared by the scanner have no type yet
@@ -2770,9 +2786,20 @@ begin
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
-        err( "type expected, not the keyword " &
-           optional_yellow( to_string( identifiers( original ).name ) ) );
-        return universal_t;
+     if original = keyword_t then
+        err(
+            contextNotes => +"Checking root types",
+            subjectNotes => +"a keyword",
+            reason => +"is not a",
+            obstructorNotes => +"a type or subtype" );
+     else
+        err(
+            contextNotes => +"Checking root types",
+            subject=> original,
+            reason => +"is not a",
+            obstructorNotes => +"a type or subtype" );
+     end if;
+     return universal_t;
   end if;
 
   -- "Dereference" types/subtypes, moving up type hierarchy,
@@ -2787,7 +2814,8 @@ begin
      temp_id := identifiers( temp_id ).kind;
      count := count + 1;
      if count >= 100 then
-        err( "circular type relationship" );
+        err( pl( gnat.source_info.source_location &
+             ": internal error: circular type relationship when checking root types" ) );
         exit;
      end if;
   end loop;
@@ -2812,9 +2840,14 @@ function getBaseType( original : identifier ) return identifier is
 begin
 
   -- safety check: eof_t is often returned on an error in the parser
+  -- this should normally not be seen by the user
 
   if identifiers( original ).kind = eof_t then
-        err( "type expected" );
+        err(
+            contextNotes => +"Checking base types",
+            subjectNotes => +"a missing value",
+            reason => +"is not a",
+            obstructorNotes => +"a type or subtype" );
         return universal_t;
 
   -- new identifiers declared by the scanner have no type yet
@@ -2830,9 +2863,20 @@ begin
   -- safety check: keywords have no type
 
   elsif identifiers( original ).kind = keyword_t then
-        err( "type expected, not the keyword " &
-           optional_yellow( to_string( identifiers( original ).name ) ) );
-        return universal_t;
+     if original = keyword_t then
+        err(
+            contextNotes => +"Checking base types",
+            subjectNotes => +"a keyword",
+            reason => +"is not a",
+            obstructorNotes => +"a type or subtype" );
+     else
+        err(
+            contextNotes => +"Checking base types",
+            subject => original,
+            reason => +"is not a not",
+            obstructorNotes => +"a type or subtype" );
+     end if;
+     return universal_t;
   end if;
 
   -- "Dereference" subtypes, moving up type hierarchy,
@@ -2846,7 +2890,8 @@ begin
      temp_id := identifiers( temp_id ).kind;
      count := count + 1;
      if count >= 100 then
-        err( "circular type relationship" );
+        err( pl( gnat.source_info.source_location &
+             ": internal error: circular type relationship when checking base types" ) );
         exit;
      end if;
   end loop;
@@ -2867,21 +2912,25 @@ function class_ok( id : identifier; class : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
-        err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(1)" );
+        err( pl( gnat.source_info.source_location &
+             ": internal error: eof given as the identifier to class_ok(1)" ) );
      elsif id = exception_t then
-        err_previous( "an " & optional_yellow( "exception" ) &
-           " is not a " &
-           getIdentifierClassImage( class ) );
+        err_previous( pl( "While checking the identifier category," &
+           "an " ) & em( "exception" ) &
+           pl( " is not a " &
+           getIdentifierClassImage( class ) ) );
      elsif id < reserved_top then
-        err_previous( "a " & optional_yellow( "keyword" ) &
-           " is not a " &
-           getIdentifierClassImage( class ) );
+        err_previous( pl( "While checking the identifier category," &
+           "a " ) & em( "keyword" ) &
+           pl( " is not a " &
+           getIdentifierClassImage( class ) ) );
      else
-        err_previous( optional_yellow( to_string( identifiers( id ).name ) ) &
-           " is a " &
-           getIdentifierClassImage( identifiers( id ).class ) &
-           ", not a " &
-           getIdentifierClassImage( class ) );
+        err_previous( pl( "While checking the identifier category," ) &
+           name_em( id ) &
+           pl( " is a " &
+           getIdentifierClassImage( identifiers( id ).class ) ) &
+           pl( ", not a " &
+           getIdentifierClassImage( class ) ) );
      end if;
      return false;
   end if;
@@ -2902,27 +2951,30 @@ function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
-        err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(2)" );
+        err( pl( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(2)" ) );
      elsif id = exception_t then
-        err_previous( "an " & optional_yellow( "exception" ) &
-           " is not a " &
+        err_previous( pl( "While checking the identifier category," &
+           "an " ) & em( "exception" ) &
+           pl( " is not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
-           getIdentifierClassImage( c2 ) );
+           getIdentifierClassImage( c2 ) ) );
      elsif id < reserved_top then
-        err_previous( "a " & optional_yellow( "keyword" ) &
+        err_previous( pl( "While checking the identifier category," &
+           "a " ) & em( "keyword" ) & pl(
            " is not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
-           getIdentifierClassImage( c2 ) );
+           getIdentifierClassImage( c2 ) ) );
      else
-        err_previous( optional_yellow( to_string( identifiers( id ).name ) ) &
-           " is a " &
+        err_previous( +"While checking the identifier category," &
+           name_em( id ) &
+           pl( " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
            getIdentifierClassImage( c1 ) &
            " or a " &
-           getIdentifierClassImage( c2 ) );
+           getIdentifierClassImage( c2 ) ) );
      end if;
      return false;
   end if;
@@ -2943,33 +2995,36 @@ function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolea
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
-        err( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(3)" );
+        err( pl( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(3)" ) );
      elsif id = exception_t then
-        err_previous( "an " & optional_yellow( "exception" ) &
-           " is not a " &
+        err_previous( pl( "While checking the identifier category," &
+           "an " ) & em( "exception" ) &
+           pl( " is not a " &
            getIdentifierClassImage( c1 ) &
            ", " &
            getIdentifierClassImage( c2 ) &
            " or a " &
-           getIdentifierClassImage( c3 ) );
+           getIdentifierClassImage( c3 ) ) );
      elsif id < reserved_top then
-        err_previous( "a " & optional_yellow( "keyword" ) &
-           " is not a " &
+        err_previous( pl( "While checking the identifier category," &
+           "a " ) & em( "keyword" ) &
+           pl( " is not a " &
            getIdentifierClassImage( c1 ) &
            ", " &
            getIdentifierClassImage( c2 ) &
            " or a " &
-           getIdentifierClassImage( c3 ) );
+           getIdentifierClassImage( c3 ) ) );
      else
-        err_previous( optional_yellow( to_string( identifiers( id ).name ) ) &
-           " is a " &
+        err_previous( pl( "While checking the identifier category," ) &
+           name_em( id ) &
+           pl( " is a " &
            getIdentifierClassImage( identifiers( id ).class ) &
            ", not a " &
            getIdentifierClassImage( c1 ) &
            ", " &
            getIdentifierClassImage( c2 ) &
            " or a " &
-           getIdentifierClassImage( c3 ) );
+           getIdentifierClassImage( c3 ) ) );
      end if;
      return false;
   end if;
@@ -2988,7 +3043,7 @@ end class_ok;
 function uniTypesOk( leftType, rightType : identifier ) return boolean is
   effectiveLeftType : identifier;
   effectiveRightType : identifier;
-  msg : unbounded_string;
+  msg : messageStrings;
 begin
 
   -- Basic checks: we're expecting a type, subtype or array type.  Unversal
@@ -3018,35 +3073,33 @@ begin
   -- the type as well as the root type.
 
   if identifiers( leftType ).list and not identifiers( rightType ).list then
-    msg := "type " & optional_yellow( to_string( identifiers( leftType ).name ) ) &
-           "is an array but type " & to_unbounded_string(
-           optional_yellow( to_string( identifiers( rightType ).name ) ) &
-           " is not an array" );
+    msg := +"type " & name_em( leftType ) &
+           pl( "is an array but type " ) &
+           name_em( rightType) &
+           pl( " is not an array" );
   elsif not identifiers( leftType ).list and identifiers( rightType ).list then
-    msg := "type " & optional_yellow( to_string( identifiers( leftType ).name ) ) &
-           "is not an array but type " & to_unbounded_string(
-           optional_yellow( to_string( identifiers( rightType ).name ) ) &
-           " is an array" );
+    msg := +"type " & name_em( leftType ) &
+           pl( "is not an array but type " ) & name_em( rightType ) &
+           pl( " is an array" );
   elsif effectiveLeftType /= effectiveRightType then
-    msg := to_unbounded_string( "type " & optional_yellow( to_string( identifiers(
-      leftType ).name ) ) );
+    msg := +"type " & name_em( leftType );
     if effectiveLeftType = root_enumerated_t then
-       msg := msg & " (an enumerated type)";
+       msg := msg & pl( " (an enumerated type)" );
     elsif identifiers( leftType ).kind /= variable_t then
-       msg := msg & " ("
-          & AorAN( identifiers( effectiveLeftType ).name )
-          & ")";
+       msg := msg & pl( " (" )
+          & unb_pl( AorAN( identifiers( effectiveLeftType ).name ) )
+          & pl( ")" );
     end if;
-    msg := msg & " is inherently different from the expected type " &
-        optional_yellow( to_string( AorAN( identifiers( rightType ).name ) ) );
+    msg := msg & pl( " is inherently different from the expected type " ) &
+        unb_em( AorAN( identifiers( rightType ).name ) );
     if effectiveRightType = root_enumerated_t then
-       msg := msg & " (an enumerated type)";
+       msg := msg & pl( " (an enumerated type)" );
     elsif identifiers( rightType ).kind /= variable_t then
-       msg := msg & " ("
-           & AorAN( identifiers( effectiveRightType ).name )
-           & ")";
+       msg := msg & pl( " (" )
+           & unb_pl( AorAN( identifiers( effectiveRightType ).name ) )
+           & pl( ")" );
     end if;
-    err_previous( to_string( msg ) );
+    err_previous( msg );
     return false;
   end if;
   return true;
@@ -3098,9 +3151,9 @@ begin
   -- Otherwise, the types must be identical.
 
   if effectiveLeftType /= effectiveRightType then
-     err_previous( "type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
-          " is not compatible with the expeced type " &
-          optional_yellow( to_string( identifiers( rightType ).name ) ) );
+     err_previous( pl( "type " ) & name_em( leftType ) &
+          pl( " is not compatible with the expeced type " ) &
+          name_em( rightType ) );
      return false;
   end if;
   return true;
@@ -3170,9 +3223,9 @@ begin
   -- Otherwise, the types must be identical.
 
   if effectiveLeftType /= effectiveRightType then
-     err_previous( "item type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
-          " is not compatible with expected item type " &
-          optional_yellow( to_string( identifiers( rightType ).name ) ) );
+     err_previous( pl( "item type " ) & name_em( leftType ) &
+          pl( " is not compatible with expected item type " ) &
+          name_em( rightType ) );
      return false;
   end if;
   return true;
@@ -3231,10 +3284,10 @@ begin
   if effectiveLeftType /= effectiveRightType then
         err(
           context => contextId,
-          subjectNotes => "the element of " & optional_yellow( to_string( identifiers( leftId ).name ) ),
+          subjectNotes => +"the element of " & name_em( leftId ),
           subjectType => leftType,
-          reason => "should have the compatible type to",
-          obstructorNotes => "the element of " & optional_yellow( to_string( identifiers( rightId ).name ) ),
+          reason => +"should have the compatible type to",
+          obstructorNotes => +"the element of " & name_em( rightId ),
           obstructorType => rightType
        );
      -- err_previous( "item type " & optional_yellow( to_string( identifiers( leftType ).name) ) &
@@ -3287,9 +3340,9 @@ begin
   -- not represent.
 
   if effectiveRenamingType /= effectiveCanonicalType then
-     err_previous( "renaming or copying type " & optional_yellow( to_string( identifiers( renamingType ).name) ) &
-          " is not equivalent to canonical identifier's type " &
-          optional_yellow( to_string( identifiers( canonicalType ).name ) ) );
+     err_previous( pl( "renaming or copying type " ) & name_em( renamingType ) &
+          pl( " is not equivalent to canonical identifier's type " ) &
+          name_em( canonicalType ) );
      return false;
   end if;
   return true;
@@ -3327,14 +3380,22 @@ begin
   elsif kind = natural_t then
      roundedVal := long_long_integer( val );
      if roundedVal < 0 then
-        err( "natural value is less than zero" );
+        err(
+            contextNotes => +"casting types",
+            subject => kind,
+            reason => +"values should be",
+            obstructorNotes => +"greater or equal to zero" );
      end if;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's a positive type, round it and check for negative or zero
   elsif kind = positive_t then
      roundedVal := long_long_integer( val );
      if roundedVal <= 0 then
-        err( "positive value is less than one" );
+        err(
+            contextNotes => +"casting types",
+            subject => kind,
+            reason => +"values should be",
+            obstructorNotes => +"greater than zero" );
      end if;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's anything else, including universals, don't do anything
@@ -3365,7 +3426,7 @@ begin
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
      exception when constraint_error =>
-       err( "a variable has no value or a value is out-of-range" );
+       err( +"a variable has no value or a value is out-of-range" );
      when others =>
        err_exception_raised;
      end;
@@ -3376,12 +3437,16 @@ begin
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
      exception when constraint_error =>
-       err( "a variable has no value or a value is out-of-range" );
+       err( +"a variable has no value or a value is out-of-range" );
      when others =>
        err_exception_raised;
      end;
      if roundedVal < 0 then
-        err( "natural value is less than zero" );
+        err(
+            contextNotes => +"casting types",
+            subject => kind,
+            reason => +"values should be",
+            obstructorNotes => +"greater or equal to zero" );
      end if;
      begin
        str := to_unbounded_string( long_long_integer'image( roundedVal ) );
@@ -3394,19 +3459,33 @@ begin
      begin
        roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
      exception when constraint_error =>
-       err( "a variable has no value or a value is out-of-range" );
+       --err( "a variable has no value or a value is out-of-range" );
+        err(
+            contextNotes => +"casting types",
+            subjectNotes => +"the value",
+            reason => +"is out-of-range of a",
+            obstructor => kind,
+            remedy => +"it has no value assigned, is too big, or is too small" );
      when others =>
        err_exception_raised;
      end;
      if roundedVal <= 0 then
-        err( "positive value is less than zero" );
+        err(
+            contextNotes => +"casting types",
+            subject => kind,
+            reason => +"values should be",
+            obstructorNotes => +"greater than zero" );
      end if;
      str := to_unbounded_string( long_long_integer'image( roundedVal ) );
   -- If it's anything else, including universals, don't do anything
   -- except convert to a string
   elsif baseType = character_t then
      if length( val ) /= 1 then
-        err( "character value must be one character long" );
+        err(
+            contextNotes => +"casting types",
+            subject => kind,
+            reason => +"values should be",
+            obstructorNotes => +"one character long" );
      end if;
      str := val;
   else
@@ -3447,7 +3526,7 @@ function deleteIdent( id : identifier ) return boolean is
     elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
         null; -- for numbers, JSON is as-is
     else
-        err( "json export not yet written for this type" );
+        err( +"json export not yet written for this type" );
     end if;
     return tempStr;
   end ConvertValueToJson;
@@ -3489,7 +3568,7 @@ function deleteIdent( id : identifier ) return boolean is
         end;
     when session =>
         if length( sessionExportScript ) = 0 then
-           err( "session export script not defined" );
+           err( +"session export script not defined" );
         else
            declare
              old_rshOpt : constant commandLineOption := rshOpt;
@@ -3535,7 +3614,7 @@ function deleteIdent( id : identifier ) return boolean is
     when http_cgi =>
         null; -- does not save on variable destruction
     when others =>
-        err( gnat.source_info.source_location & ": internal error: unexpected export mapping in ExportValue" );
+        err( pl( gnat.source_info.source_location & ": internal error: unexpected export mapping in ExportValue" ) );
     end case;
   end ExportValue;
 
@@ -3561,8 +3640,8 @@ begin
              identifiers( derefed_id ).renamed_count :=
               identifiers( derefed_id ).renamed_count - 1;
           else
-              err( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
-                 "unexpectedly zero  for "  & optional_yellow( to_string( identifiers( derefed_id ).name ) ) );
+              err( pl( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
+                 "unexpectedly zero  for " )  & name_em( derefed_id ) );
           end if;
         end;
      end if;
@@ -3611,8 +3690,8 @@ begin
           identifiers( derefed_id ).renamed_count :=
              identifiers( derefed_id ).renamed_count - 1;
        else
-           err( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
-                "unexpectedly zero  for "  & optional_yellow( to_string( identifiers( derefed_id ).name ) ) );
+           err( pl( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
+                "unexpectedly zero  for " ) & name_em( derefed_id ) );
        end if;
      end;
   end if;
@@ -3725,10 +3804,10 @@ begin
      if ch = expectedChar then
          start := start + 1;
      else
-         err( expectedChar & " expected in JSON string at" & start'img );
+         err( pl( expectedChar & " expected in JSON string at" & start'img ) );
      end if;
   else
-     err( expectedChar & " expected in JSON string at" & start'img );
+     err( pl( expectedChar & " expected in JSON string at" & start'img ) );
   end if;
 end JSONexpect;
 
@@ -3893,7 +3972,7 @@ begin
      end if;
   end if;
   if not ok then
-     err( optional_yellow( "JSON string value" ) & " expected in string """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" );
+     err( em( "JSON string value" ) & pl( " expected in string """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" ) );
      return;
   end if;
   i := i + 1;
@@ -3975,7 +4054,7 @@ begin
                elsif enum_val = 1 then
                   item := to_unbounded_string( "true" );
                else
-                  err( gnat.source_info.source_location & ": internal error: unexpect boolean position" & enum_val'img );
+                  err( pl( gnat.source_info.source_location & ": internal error: unexpect boolean position" & enum_val'img ) );
                end if;
                if arrayElementPos /= source_last then
                   result := result & item & to_unbounded_string( "," );
@@ -4018,12 +4097,12 @@ begin
         result := result & data & to_unbounded_string( "]" );
      else
         -- private types are unique types extending variable_t
-        err( "private type elements cannot be encoded as JSON" );
+        err( +"private type elements cannot be encoded as JSON" );
      end if;
 exception when CONSTRAINT_ERROR =>
-  err( gnat.source_info.source_location & ": internal error: constraint_error" );
+  err( pl( gnat.source_info.source_location & ": internal error: constraint_error" ) );
 when STORAGE_ERROR =>
-  err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
+  err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
 end DoArrayToJson;
 
 
@@ -4069,11 +4148,11 @@ begin
        if length( source_val ) > 0 then
           ch := element( source_val, i );
           if ch = '{' then
-            err( "JSON array expected but found object" );
+            err( pl( "JSON array expected but found object" ) );
           elsif ch /= '[' then
-             err( optional_yellow( "JSON array expected" ) & " but found string """ & toSecureData( to_string( toEscaped( source_val ) ) ) & '"' );
+             err( em( "JSON array expected" ) & pl( " but found string """ & toSecureData( to_string( toEscaped( source_val ) ) ) & '"' ) );
           elsif element( source_val, length( source_val ) ) /= ']' then
-             err( "expected trailing ]" );
+             err( pl( "expected trailing ]" ) );
           end if;
        end if;
      end;
@@ -4112,13 +4191,13 @@ begin
                      exit;
                   end if;
                else
-                  err( "JSON parse error on character" & i'img );
+                  err( pl( "JSON parse error on character" & i'img ) );
                   exit;
                end if;
             end if;
           end loop;
        else
-          err( "JSON parse error on character" & i'img );
+          err( pl( "JSON parse error on character" & i'img ) );
        end if;
      end;
 
@@ -4130,10 +4209,10 @@ begin
      if sourceLen = 0 and target_len = 0 then
         null;
      elsif sourceLen /= target_len then
-       err( "array has" &
+       err( pl( "array has" &
             target_len'img &
             " item(s) but JSON string has" &
-            sourceLen'img );
+            sourceLen'img ) );
      elsif kind = root_enumerated_t then
 
         -- In JSON, booleans are stored by the name,
@@ -4157,7 +4236,7 @@ begin
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   else
-                     err( optional_yellow( toSecureData( to_string( item ) ) ) & " is neither JSON true nor false" );
+                     err( em( toSecureData( to_string( item ) ) ) & pl( " is neither JSON true nor false" ) );
                   end if;
                else
                   item := item & ch;
@@ -4193,10 +4272,10 @@ begin
                   if ch = ',' or ch = ']' then
                      enumVal := integer'value( ' ' & to_string( item ) );
                      if enumVal < 0 or enumVal > maxEnum then
-                        err( "enumerated position " &
-                             optional_yellow( to_string( item ) ) &
-                             " is out of range for " &
-                             optional_yellow( to_string( identifiers( elementKind ).name ) ) );
+                        err( +"enumerated position " &
+                             unb_em( item ) &
+                             pl( " is out of range for " ) &
+                             name_em( elementKind ) );
                      else
                         -- assignElement( targetArrayId, arrayElement, ' ' & item );
                         identifiers( target_var_id ).avalue( arrayElement ) := ' ' & item;
@@ -4234,7 +4313,7 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( "JSON parse error on character" & i'img );
+                      err( pl( "JSON parse error on character" & i'img ) );
                    end if;
                end if;
 
@@ -4246,7 +4325,7 @@ begin
                if i <= length( source_val ) then
                   ch := element( source_val, i );
                   if ch /= '"' then
-                     err( "JSON string value expected" );
+                     err( +"JSON string value expected" );
                   end if;
                end if;
 
@@ -4287,7 +4366,7 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( "JSON parse error on character" & i'img );
+                      err( pl( "JSON parse error on character" & i'img ) );
                    end if;
                end if;
 
@@ -4332,7 +4411,7 @@ begin
                exception when others => null;
                end;
                if not ok then
-                  err( optional_yellow( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( item ) ) ) & """" );
+                  err( em( "JSON number value" ) & pl( " expected in string """ & toSecureData( to_string( toEscaped( item ) ) ) & """" ) );
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).avalue( arrayElement ) := item;
@@ -4343,25 +4422,25 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( "JSON parse error on character" & i'img );
+                      err( pl( "JSON parse error on character" & i'img ) );
                    end if;
                else
-                   err( "JSON parse error on character" & i'img );
+                   err( pl( "JSON parse error on character" & i'img ) );
                    exit;
                end if;
              end loop;
           else
-             err( "JSON parse error on character" & i'img );
+             err( pl( "JSON parse error on character" & i'img ) );
           end if;
         end;
      else
         -- private types are unique types extending variable_t
-        err( "private type elements cannot be used to store JSON data" );
+        err( +"private type elements cannot be used to store JSON data" );
      end if;
 exception when CONSTRAINT_ERROR =>
-  err( gnat.source_info.source_location & ": internal error: constraint_error" );
+  err( pl( gnat.source_info.source_location & ": internal error: constraint_error" ) );
 when STORAGE_ERROR =>
-  err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
+  err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
 end DoJsonToArray;
 
 
@@ -4397,8 +4476,8 @@ begin
                       fieldName := identifiers( source_var_id ).name & "." & jsonFieldName;
                       findIdent( fieldName, field_t );
                       if field_t = eof_t then
-                         err( "unable to find record field " &
-                            optional_yellow( to_string( fieldName ) ) );
+                         err( pl( "unable to find record field " ) &
+                            unb_em( fieldName ) );
                       else
                          if firstField then
                             firstField := false;
@@ -4416,10 +4495,10 @@ begin
                                   result := result & "true";
                                end if;
                             exception when others =>
-                               err( "unable to parse boolean value " &
+                               err( pl( "unable to parse boolean value " &
                                   ASCII.Quotation &
                                   toSecureData( to_string( identifiers( field_t ).value.all ) ) &
-                                  ASCII.Quotation );
+                                  ASCII.Quotation ) );
                             end;
                          elsif uniFieldType = uni_numeric_t then
 -- trim?
@@ -4436,9 +4515,9 @@ begin
                             result := result & item;
                          else
                             -- private types are unique types extending variable_t
-                            err( "private type fields like " &
-                                optional_yellow( to_string( fieldName ) ) &
-                                " cannot be encoded as JSON" );
+                            err( pl( "private type fields like " ) &
+                                unb_em( fieldName ) &
+                                pl( " cannot be encoded as JSON" ) );
                          end if;
                       end if;
                 end if;
@@ -4482,11 +4561,11 @@ begin
        if length( item ) > 0 then
           ch := element( item, i );
           if ch = '[' then
-            err( "JSON object expected but found array" );
+            err( pl( "JSON object expected but found array" ) );
           elsif ch /= '{' then
-             err( optional_yellow( "JSON object expected" ) & " but found string """ & toSecureData( to_string( toEscaped( item ) ) ) & '"' );
+             err( em( "JSON object expected" ) & pl( " but found string """ & toSecureData( to_string( toEscaped( item ) ) ) & '"' ) );
           elsif element( item, length( item ) ) /= '}' then
-             err( "expected trailing }" );
+             err( pl( "expected trailing }" ) );
           end if;
        end if;
      end;
@@ -4518,12 +4597,12 @@ begin
                   end if;
                end if;
             else
-               err( "JSON parse error on character" & i'img );
+               err( pl( "JSON parse error on character" & i'img ) );
                exit;
             end if;
           end loop;
         else
-          err( "JSON parse error on character" & i'img );
+          err( pl( "JSON parse error on character" & i'img ) );
        end if;
      end;
 --put_line( "new length = " & sourceLen'img ); -- DEBUG
@@ -4584,7 +4663,9 @@ begin
                        elsif decodedItemValue = "false" then
                           identifiers( j ).value.all :=  to_unbounded_string( "0" );
                        else
-                          err( optional_yellow( to_string( toEscaped( decodedItemName ) ) ) & " has a value of " & optional_yellow( toSecureData( to_string( toEscaped( decodedItemValue ) ) ) ) & " but expected JSON true or false" );
+                          err( unb_em( toEscaped( decodedItemName ) ) & pl( " has a value of " ) &
+                            em( toSecureData( to_string( toEscaped( decodedItemValue ) ) ) ) &
+                            pl( " but expected JSON true or false" ) );
                        end if;
 
 -- range check the valuse for enumerateds
@@ -4608,10 +4689,10 @@ begin
                         end loop;
                         enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
                         if enumVal < 0 or enumVal > maxEnum then
-                           err( "enumerated position " &
-                                optional_yellow( to_string( toEscaped( decodedItemValue ) ) ) &
-                                " is out of range for " &
-                                optional_yellow( to_string( identifiers( elementKind ).name ) ) );
+                           err( pl( "enumerated position " ) &
+                                em_esc( decodedItemValue ) &
+                                pl( " is out of range for " ) &
+                                name_em( elementKind) );
                         end if;
                         -- Space is required for findEnumImage.  Values are
                         -- stored with leading space.
@@ -4625,7 +4706,7 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( optional_yellow( "JSON string value" ) & " expected for " & toSecureData( to_string( ToEscaped( searchName ) ) ) );
+                            err( em( "JSON string value" ) & pl( " expected for " & toSecureData( to_string( ToEscaped( searchName ) ) ) ) );
                          end if;
                          -- strip of quotes and un-escape any characters.
                          if length( decodedItemValue ) > 0 then
@@ -4644,15 +4725,15 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( optional_yellow( "JSON number value" ) & " expected in """ & toSecureData( to_string( toEscaped( searchName ) ) ) & """" );
+                         err( em( "JSON number value" ) & pl( " expected in """ & toSecureData( to_string( toEscaped( searchName ) ) ) & """" ) );
                       end if;
                       identifiers( j ).value.all := castToType( decodedItemValue,
                          identifiers( j ).kind );
                     else
                        -- private types are unique types extending variable_t
-                       err( "private type fields like " &
-                             optional_yellow( to_string( identifiers( j ).name ) ) &
-                             " cannot store JSON data" );
+                       err( pl( "private type fields like " ) &
+                             name_em( j ) &
+                             pl( " cannot store JSON data" ) );
                     end if;
                  end if;
                  exit; -- the searchName may occur more than once.  stop when found first match
@@ -4660,7 +4741,7 @@ begin
               end if;
           end loop; -- j
           if not found then
-             err( to_string( toEscaped( searchName ) ) & " not declared" );
+             err( pl( to_string( toEscaped( searchName ) ) & " not declared" ) );
           end if;
 
           if i <= length( sourceVal ) then
@@ -4674,10 +4755,10 @@ begin
        end loop; -- i
        end;
     else
-       err( "record has" &
-            to_string( identifiers( identifiers( target_var_id ).kind ).value.all ) &
-            " field(s) but JSON string has" &
-            sourceLen'img );
+       err( pl( "record has" ) &
+            unb_pl( identifiers( identifiers( target_var_id ).kind ).value.all  ) &
+            pl( " field(s) but JSON string has" &
+            sourceLen'img ) );
     end if;
 end DoJsonToRecord;
 
@@ -4739,7 +4820,7 @@ begin
   if ok then
      expr_val := jsonString;
   else
-     err( optional_yellow( "JSON number value" ) & " expected in string """ & toSecureData( to_string( toEscaped( jsonString ) ) ) & """" );
+     err( em( "JSON number value" ) & pl( " expected in string """ & toSecureData( to_string( toEscaped( jsonString ) ) ) & """" ) );
   end if;
 end DoJsonToNumber;
 
@@ -4761,7 +4842,7 @@ end DoJsonToNumber;
 -- to return end-of-file tokens forever.
 -----------------------------------------------------------------------------
 
-gnt_commandLine : unbounded_string;
+gnt_commandLine : messageStrings;
 
 procedure getNextToken is
   id   : identifier;
@@ -4796,7 +4877,7 @@ begin
             cmdpos := cmdpos + 2; -- first character of next command
             put( standard_error, "=> " & '"' );
             getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, fileno );
-            put( standard_error, toEscaped( gnt_commandLine ) );
+            put( standard_error, toEscaped( gnt_commandLine.textMessage ) );
             put( standard_error, """ [" );
             if fileno > 1 then -- don't bother naming main file
                sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( fileno ), sfr );
@@ -4817,7 +4898,7 @@ begin
          exception when constraint_error =>
             -- at 50,000 lines per second, this theoretically happens at
             -- 5.8 million years on my 64-bit Linux laptop computer.
-            err( "performance stats: line count overflow" );
+            err( +"performance stats: line count overflow" );
          end;
       end if;
       cmdpos := cmdpos+nextScriptCommandOffset; -- line header and indent marker
@@ -5010,7 +5091,7 @@ begin
      end loop;
      lastpos := lastpos - 1;
      if script( lastpos ) = '.' then
-        err( "no digits after decimal" );
+        err( +"no digits after decimal" );
         cmdpos := lastpos+1;                                 -- advance posn
         return;
      end if;
@@ -5019,7 +5100,7 @@ begin
            identifiers( number_t ).value.all := to_unbounded_string(
               natural'image( natural'value( ' ' & script( cmdpos..lastpos ) ) ) );
         exception when others =>
-           err( "invalid based numeric literal" );
+           err( +"invalid based numeric literal" );
         end;
      else
         identifiers( number_t ).value.all := To_Unbounded_String( -- extract number
@@ -5208,12 +5289,12 @@ begin
              cmdpos := cmdpos + 1;
           end if;
      when '_' =>                                              -- _ test
-          err( "Leading underscores not allowed in identifiers" );
+          err( +"Leading underscores not allowed in identifiers" );
           cmdpos := cmdpos+1;                                 -- advance posn
           return;
      when '!' =>                                              -- ! / != test
           if script( cmdpos+1 ) = '=' then
-             err( "/= expected" );
+             err( +"/= expected" );
           end if;
           cmdpos := cmdpos+2;                                 -- advance posn
           return;
@@ -5333,7 +5414,7 @@ end isValid;
 procedure saveScript( scriptState : out aScriptState ) is
 begin
   if script = null then
-     err( gnat.source_info.source_location & ": Internal error: saveScript has no script to save" );
+     err( pl( gnat.source_info.source_location & ": Internal error: saveScript has no script to save" ) );
   end if;
   markScanner( scriptState.scannerState );
   scriptState.script := script;
@@ -5354,7 +5435,7 @@ end saveScript;
 procedure restoreScript( scriptState : in out aScriptState ) is
 begin
   if scriptState.script = null then
-     err( gnat.source_info.source_location & ": Internal error: restoreScript has no script to restore" );
+     err( pl( gnat.source_info.source_location & ": Internal error: restoreScript has no script to restore" ) );
   end if;
   if script /= null then
      free( script );
@@ -5487,7 +5568,7 @@ begin
      end if;
   elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
      -- 255 is one byte minus 0, which is reserved
-     err( optional_red( "too many include files and subunits" ) );
+     err( inv( "too many include files and subunits" ) );
   else                                                     -- new file
 
      includeFileGood := true;
@@ -5521,21 +5602,21 @@ begin
           close( include_file );
         exception
             when STATUS_ERROR =>
-              err( "cannot open include file" & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
-                 " - file may be locked" );
+              err( +"cannot open include file" & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
+                 pl( " - file may be locked" ) );
               return;
             when NAME_ERROR =>
                 if traceOpt then
                    put_trace( "Cannot open " & toSecureData( to_string( toEscaped( libraryPrefix & includeName ) ) ) );
                 end if;
             when MODE_ERROR =>
-                err( "interal error: mode error on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+                err( pl( "interal error: mode error on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                  return;
             when END_ERROR =>
-              err( "interal error: end of file reached on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+              err( pl( "interal error: end of file reached on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
             return;
             when others =>
-               err( "interal error: unexpected error reading " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+               err( pl( "interal error: unexpected error reading " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                return;
         end;
 
@@ -5599,21 +5680,21 @@ begin
              end if;
            exception
                when STATUS_ERROR =>
-                 err( "cannot open include file" & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
-                    " - file may be locked" );
+                 err( pl( "cannot open include file" ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
+                    pl( " - file may be locked" ) );
                  return;
                when NAME_ERROR =>
                    if traceOpt then
                       put_trace( "Cannot open " & toSecureData( to_string( toEscaped( libraryPrefix & includeName ) ) ) );
                    end if;
                when MODE_ERROR =>
-                   err( "interal error: mode error on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+                   err( pl( "interal error: mode error on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                     return;
                when END_ERROR =>
-                 err( "interal error: end of file reached on include file " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+                 err( pl( "interal error: end of file reached on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                return;
                when others =>
-                  err( "interal error: unexpected error reading " & optional_yellow( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+                  err( pl( "interal error: unexpected error reading " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
                   return;
            end;
            libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
@@ -5625,14 +5706,14 @@ begin
      -- existing file.
 
      if not includeFileGood then
-        err( "with separate file " & optional_yellow( to_string( toEscaped( includeName ) ) ) &
-             " is not readable, is world writable, is not a file or is empty" );
+        err( pl( "with separate file " ) & em_esc( includeName ) &
+             pl( " is not readable, is world writable, is not a file or is empty" ) );
      elsif not includeDirGood then
-        err( "with separate file " & optional_yellow( to_string( toEscaped( includeName ) ) ) &
-             " is in a directory that not readable, is world writable, or is not a directory" );
+        err( pl( "with separate file " ) & em_esc( includeName ) &
+             pl( " is in a directory that not readable, is world writable, or is not a directory" ) );
      elsif not includeFileOpened then
-        err( "with separate file " & optional_yellow( to_string( toEscaped( includeName ) ) ) &
-             " doesn't exist or is not readable" );
+        err( pl( "with separate file " ) & em_esc( includeName ) &
+             pl( " doesn't exist or is not readable" ) );
         fileLocation := SourceFilesList.aListIndex'last;
      end if;
   end if;
@@ -5655,7 +5736,7 @@ procedure insertInclude( includeName : unbounded_string ) is
   includeText : unbounded_string;
 begin
   if script = null then                                       -- no script?
-     err( Gnat.Source_Info.Source_Location & "internal_error: no script" );
+     err( pl( Gnat.Source_Info.Source_Location & "internal_error: no script" ) );
   else
 
      -- includes are based on a byte code position (the file name is not

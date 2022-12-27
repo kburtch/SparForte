@@ -171,9 +171,7 @@ function isVerifiedOpenFile( fileId : identifier; theFile : resPtr ) return bool
   result : boolean := true;
 begin
    if not theFile.btree.isOpen then
-      err( "file " &
-      optional_yellow( to_string( identifiers( fileId ).name ) ) &
-      " is not open" );
+      err( +"file " & name_em( fileId ) & pl( " is not open" ) );
       result := false;
    end if;
    return result;
@@ -197,17 +195,17 @@ begin
       begin
          set_data_dir( env, dirname );
       exception when msg: berkeley_error =>
-         err( exception_message( msg ) & " on setting the data directory" );
+         err( pl( exception_message( msg ) & " on setting the data directory" ) );
       end;
       begin
          set_tmp_dir( env, dirname );
       exception when msg: berkeley_error =>
-         err( exception_message( msg ) & " on setting the temp directory"  );
+         err( pl( exception_message( msg ) & " on setting the temp directory" ) );
       end;
       begin
          set_lg_dir( env, dirname );
       exception when msg: berkeley_error =>
-         err( exception_message( msg ) & " on setting the logging directory"  );
+         err( pl( exception_message( msg ) & " on setting the logging directory" ) );
       end;
       begin
          if verboseOpt then
@@ -217,7 +215,7 @@ begin
             set_verbose( env, DB_VERB_WAITSFOR, 1 );
          end if;
       exception when msg: berkeley_error =>
-         err( exception_message( msg ) & " on changing verbose setting"  );
+         err( pl( exception_message( msg ) & " on changing verbose setting" ) );
       end;
    end if;
 end configureBDBEnv;
@@ -272,12 +270,12 @@ pragma warnings( off );
 
 procedure not_configured is
 begin
-  err( "Berkeley DB support not configured" );
+  err( +"Berkeley DB support not configured" );
 end not_configured;
 
 procedure not_configured( result : out unbounded_string; kind : out identifier ) is
 begin
-  err( "Berkeley DB support not configured" );
+  err( +"Berkeley DB support not configured" );
 end not_configured;
 
 --procedure ParseBtreeNewFile renames not_configured;
@@ -309,7 +307,7 @@ begin
           theFile.btree.isOpen := false;
        end if;
      exception when msg: berkeley_error =>
-       err( exception_message( msg ) );
+       err( pl( exception_message( msg ) ) );
      end;
   end if;
 end ParseBTreeClear;
@@ -335,7 +333,7 @@ procedure ParseBTreeRecover is
   fname_type : identifier;
 begin
   if rshOpt then
-     err( "recover not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"recover not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_recover_t );
   ParseFirstFileParameter( btree_recover_t, fileId );
@@ -379,7 +377,7 @@ begin
                    0 );
            close( theFile.btree.env );
         exception when msg: berkeley_error =>
-            err( exception_message( msg ) & " on recovering the environment" );
+            err( pl( exception_message( msg ) & " on recovering the environment" ) );
         end;
      end;
   end if; -- is executing command
@@ -413,7 +411,7 @@ procedure ParseBTreeCreate is
   valLenType : identifier;
 begin
   if rshOpt then
-     err( "create not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"create not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_create_t );
   -- NOTE: normally this is an out parameter but it is a resource so it
@@ -426,12 +424,12 @@ begin
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
      exception when others =>
-        err( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img );
+        err( pl( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
      begin
         valLen := Interfaces.C.size_t'value( to_string( valLenExpr ) );
      exception when others =>
-        err( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img );
+        err( pl( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
 
      declare
@@ -463,10 +461,10 @@ begin
         -- Create an environment
 
         if theFile.btree.isOpen then
-           err( "file " &
-              optional_yellow( to_string( identifiers( fileId ).name ) ) &
-              "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
-              " is already open" );
+           err( pl( "file " ) &
+              name_em( fileId ) &
+              pl( "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
+              " is already open" ) );
         else
            begin
               create( theFile.btree.env,
@@ -478,7 +476,7 @@ begin
                    0 );
               theFile.btree.envhome := dirname2;
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on creating the environment" );
+                 err( pl( exception_message( msg ) & " on creating the environment" ) );
               end;
 
            -- Create the file
@@ -490,7 +488,7 @@ begin
            begin
               create( theFile.btree.session, filename, "", DB_BTREE, 0, 0 );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on creating the data file"  );
+              err( pl( exception_message( msg ) & " on creating the data file" ) );
            end;
 
            -- Do not truncate if create failed
@@ -506,7 +504,7 @@ begin
                     put_trace( cnt'img & " records were erased" );
                  end if;
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on truncating the data file"  );
+                 err( pl( exception_message( msg ) & " on truncating the data file" ) );
               end;
           end if;
        end if;
@@ -544,13 +542,13 @@ begin
            close( theFile.btree.env );
            theFile.btree.isOpen := false;
         else
-           err( "file " &
-              optional_yellow( to_string( identifiers( fileId ).name ) ) &
-              "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
-               " is not open" );
+           err( +"file " &
+              name_em( fileId ) &
+              pl( "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
+               " is not open" ) );
         end if;
       exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
+        err( pl( exception_message( msg ) ) );
      end;
   end if;
 end ParseBTreeClose;
@@ -594,12 +592,12 @@ begin
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
      exception when others =>
-        err( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img );
+        err( pl( "key length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
      begin
         valLen := Interfaces.C.size_t'value( to_string( valLenExpr ) );
      exception when others =>
-        err( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img );
+        err( pl( "value length must be" & Interfaces.C.size_t'first'img & ".." & Interfaces.C.size_t'last'img ) );
      end;
 
      declare
@@ -623,7 +621,7 @@ begin
            dirname2 := null_unbounded_string;
         elsif rshOpt then
            -- TODO: probably could be in directories in current PATH as well
-           err( "file must be in current directory in a " & optional_yellow( "restricted shell" ) );
+           err( +"file must be in current directory in a " & em( "restricted shell" ) );
         elsif element( dirname2, 1 ) /= '/' then
            findIdent( to_unbounded_string( "PWD" ), pwdId );
            dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
@@ -635,10 +633,10 @@ begin
         configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
 
         if theFile.btree.isOpen then
-           err( "file " &
-              optional_yellow( to_string( identifiers( fileId ).name ) ) &
-              "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
-              " is already open" );
+           err( +"file " &
+              name_em( fileId ) &
+              pl( "(" & ASCII.Quotation & to_string( theFile.btree.name ) & ASCII.Quotation & ") " &
+              " is already open" ) );
         else
            begin
               open( theFile.btree.env,
@@ -650,7 +648,7 @@ begin
                    0 );
               theFile.btree.envhome := dirname2;
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on opening the environment" );
+                 err( pl( exception_message( msg ) & " on opening the environment" ) );
               end;
 
            if not error_found then
@@ -666,7 +664,7 @@ begin
                  theFile.btree.isOpen := true;
                  theFile.btree.name := fname_val;
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on opening the data file"  );
+                 err( pl( exception_message( msg ) & " on opening the data file" ) );
               end;
            end if;
         end if;
@@ -755,7 +753,7 @@ procedure ParseBTreeDelete is
   dirname2 : unbounded_string;
 begin
   if rshOpt then
-     err( "delete not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"delete not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_delete_t );
   ParseSingleFileParameter( btree_delete_t, fileId );
@@ -766,7 +764,7 @@ begin
            begin
               close( theFile.btree.session );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) & " on closing the data file"  );
+              err( pl( exception_message( msg ) & " on closing the data file" ) );
            end;
         end if;
 
@@ -792,7 +790,7 @@ begin
               dirname2 := null_unbounded_string;
            elsif rshOpt then
               -- TODO: probably could be in directories in current PATH as well
-              err( "file must be in current directory in a " & optional_yellow( "restricted shell" ) );
+              err( +"file must be in current directory in a " & em( "restricted shell" ) );
            elsif element( dirname2, 1 ) /= '/' then
               findIdent( to_unbounded_string( "PWD" ), pwdId );
               dirname2 := identifiers( pwdId ).value.all & "/" & dirname;
@@ -812,24 +810,24 @@ begin
               begin
                  set_data_dir( theFile.btree.env, to_string( dirname2 ) );
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on setting the data directory" );
+                 err( pl( exception_message( msg ) & " on setting the data directory" ) );
               end;
               begin
                  set_tmp_dir( theFile.btree.env, to_string( dirname2 ) );
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on setting the temp directory"  );
+                 err( pl( exception_message( msg ) & " on setting the temp directory" ) );
               end;
               begin
                  set_lg_dir( theFile.btree.env, to_string( dirname2 ) );
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on setting the logging directory"  );
+                 err( pl( exception_message( msg ) & " on setting the logging directory" ) );
               end;
               begin
                  if verboseOpt then
                     set_verbose( theFile.btree.env, 1, 1 );
                  end if;
               exception when msg: berkeley_error =>
-                 err( exception_message( msg ) & " on changing verbose setting"  );
+                 err( pl( exception_message( msg ) & " on changing verbose setting" ) );
               end;
            end if;
         end;
@@ -844,7 +842,7 @@ begin
                 0 );
            theFile.btree.envhome := dirname2;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on opening the environment" );
+           err( pl( exception_message( msg ) & " on opening the environment" ) );
         end;
 
         begin
@@ -855,7 +853,7 @@ begin
              "",
              0 );
         exception when msg: berkeley_error =>
-            err( exception_message( msg ) & " on removing the data file"  );
+            err( pl( exception_message( msg ) & " on removing the data file" ) );
         end;
 
         begin
@@ -863,13 +861,13 @@ begin
            close( theFile.btree.env );
            --remove( theFile.btree.env, to_string( theFile.btree.envhome ) );
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) & " on removing the environment"  );
+           err( pl( exception_message( msg ) & " on removing the environment" ) );
         end;
         theFile.btree.isOpen := false;
      exception when storage_error =>
-        err( "storage_error raised" );
+        err( +"storage_error raised" );
      when constraint_error =>
-        err( "constraint_error raised" );
+        err( +"constraint_error raised" );
      when others =>
         err_exception_raised;
      end;
@@ -903,7 +901,7 @@ procedure ParseBTreeSet is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "set not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"set not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_set_t );
   ParseFirstFileParameter( btree_set_t, fileId );
@@ -936,9 +934,9 @@ begin
               DoRecordToJson( jsonString, valId );
               put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
-              err( "constraint_error: value too big" );
+              err( +"constraint_error: value too big" );
            end;
         end if;
      elsif isArray then
@@ -950,9 +948,9 @@ begin
               DoArrayToJson( jsonString, valId );
               put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
-              err( "constraint_error: value too big" );
+              err( +"constraint_error: value too big" );
            end;
         end if;
      else
@@ -962,11 +960,11 @@ begin
            begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
            when CONSTRAINT_ERROR =>
-              err( "constraint_error: value too big" );
+              err( +"constraint_error: value too big" );
            when STORAGE_ERROR =>
-              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
+              err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
            end;
         end if;
      end if;
@@ -1017,10 +1015,10 @@ begin
      if syntax_check and then not error_found then
         if identifiers( itemRef.id ).field_of /= eof_t then
            identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
-           identifiers( identifiers( itemRef.id ).field_of ).writtenByThread := getThreadName;
+           identifiers( identifiers( itemRef.id ).field_of ).writtenByFlow := getDataFlowName;
         else
            identifiers( itemRef.id ).wasWritten := true;
-           identifiers( itemRef.id ).writtenByThread := getThreadName;
+           identifiers( itemRef.id ).writtenByFlow := getDataFlowName;
         end if;
      end if;
   -- array?
@@ -1034,10 +1032,10 @@ begin
      if syntax_check and then not error_found then
         if identifiers( itemRef.id ).field_of /= eof_t then
            identifiers( identifiers( itemRef.id ).field_of ).wasWritten := true;
-           identifiers( identifiers( itemRef.id ).field_of ).writtenByThread := getThreadName;
+           identifiers( identifiers( itemRef.id ).field_of ).writtenByFlow := getDataFlowName;
         else
            identifiers( itemRef.id ).wasWritten := true;
-           identifiers( itemRef.id ).writtenByThread := getThreadName;
+           identifiers( itemRef.id ).writtenByFlow := getDataFlowName;
         end if;
      end if;
   else
@@ -1056,12 +1054,12 @@ begin
               DoJsonToRecord( itemRef.id, jsonString );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                 err( "key not found" );
+                 err( +"key not found" );
               else
-                  err( exception_message( msg ) );
+                  err( pl( exception_message( msg ) ) );
               end if;
            when STORAGE_ERROR =>
-              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
+              err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
            end;
         end if;
      elsif isArray then
@@ -1074,12 +1072,12 @@ begin
               DoJsonToArray( itemRef.id, jsonString );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                 err( "key not found" );
+                 err( +"key not found" );
               else
-                  err( exception_message( msg ) );
+                  err( pl( exception_message( msg ) ) );
               end if;
            when STORAGE_ERROR =>
-              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
+              err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
            end;
         end if;
      else
@@ -1092,12 +1090,12 @@ begin
               AssignParameter( itemRef, result );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                 err( "key not found" );
+                 err( +"key not found" );
               else
-                  err( exception_message( msg ) );
+                  err( pl( exception_message( msg ) ) );
               end if;
            when STORAGE_ERROR =>
-              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
+              err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
            end;
         end if;
      end if;
@@ -1137,7 +1135,7 @@ begin
         exception when berkeley_error =>
            result := to_bush_boolean( false );
         when STORAGE_ERROR =>
-           err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
+           err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
         end;
      end if;
   end if;
@@ -1166,7 +1164,7 @@ procedure ParseBTreeRemove is
   keyType    : identifier;
 begin
   if rshOpt then
-     err( "remove not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"remove not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_remove_t );
   ParseFirstFileParameter( btree_remove_t, fileId );
@@ -1187,19 +1185,19 @@ begin
              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
              delete( theFile.btree.session, theCurs.btree_cur.cursor );
            exception when msg: berkeley_error =>
-               err( exception_message( msg ) );
+               err( pl( exception_message( msg ) ) );
            end;
         else
            begin
               delete( theFile.btree.session, to_string( keyExpr ) );
            exception when msg: berkeley_error =>
               if last_error( theFile.btree.session ) = DB_NOTFOUND then
-                 err( "key not found" );
+                 err( +"key not found" );
               else
-                 err( exception_message( msg ) );
+                 err( pl( exception_message( msg ) ) );
               end if;
            when STORAGE_ERROR =>
-              err( gnat.source_info.source_location & ": internal error: unable to reference BDB session" );
+              err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
            end;
         end if;
      end if;
@@ -1232,12 +1230,12 @@ procedure ParseBtreeIncrement is
   oldItemValue : long_float;
 begin
   if rshOpt then
-     err( "increment not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"increment not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_increment_t );
   ParseFirstFileParameter( btree_increment_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
-     err( "increment requires a numeric item type" );
+     err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( btree_increment_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1246,7 +1244,7 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -1263,14 +1261,14 @@ begin
           end if;
          --end if;
         exception when storage_error =>
-          err( "storage error raised" );
+          err( +"storage error raised" );
         when constraint_error =>
-          err( "constraint error raised" );
+          err( +"constraint error raised" );
         when msg: berkeley_error =>
           if last_error( theFile.btree.session ) = DB_NOTFOUND then
-             err( "key not found" );
+             err( +"key not found" );
           else
-             err( exception_message( msg ) );
+             err( pl( exception_message( msg ) ) );
           end if;
         end;
      end if;
@@ -1303,12 +1301,12 @@ procedure ParseBtreeDecrement is
   oldItemValue : long_float;
 begin
   if rshOpt then
-     err( "decrement not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"decrement not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_decrement_t );
   ParseFirstFileParameter( btree_decrement_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
-     err( "increment requires a numeric item type" );
+     err( +"increment requires a numeric item type" );
   end if;
   ParseNextStringParameter( btree_decrement_t, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1317,7 +1315,7 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -1334,14 +1332,14 @@ begin
             end if;
          --end if;
        exception when storage_error =>
-         err( "storage error raised" );
+         err( +"storage error raised" );
        when constraint_error =>
-         err( "constraint error raised" );
+         err( +"constraint error raised" );
        when msg: berkeley_error =>
          if last_error( theFile.btree.session ) = DB_NOTFOUND then
-            err( "key not found" );
+            err( +"key not found" );
          else
-            err( exception_message( msg ) );
+            err( pl( exception_message( msg ) ) );
          end if;
        end;
      end if;
@@ -1375,7 +1373,7 @@ procedure ParseBtreeAdd is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "add not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"add not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_add_t );
   ParseFirstFileParameter( btree_add_t, fileId );
@@ -1408,17 +1406,17 @@ begin
               findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
               exists( theFile.btree.session, to_string( keyExpr ) );
            exception when storage_error =>
-             err( "storage error raised" );
+             err( +"storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
                 begin
                    DoRecordToJson( jsonString, itemId );
                    put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
                 exception when CONSTRAINT_ERROR =>
-                   err( "constraint_error: value too big" );
+                   err( +"constraint_error: value too big" );
                 end;
              else
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
              end if;
            end;
         end if;
@@ -1430,17 +1428,17 @@ begin
            begin
               exists( theFile.btree.session, to_string( keyExpr ) );
            exception when storage_error =>
-             err( "storage error raised" );
+             err( +"storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
                 begin
                    DoArrayToJson( jsonString, itemId );
                    put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
                 exception when CONSTRAINT_ERROR =>
-                   err( "constraint_error: value too big" );
+                   err( +"constraint_error: value too big" );
                 end;
              else
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
              end if;
            end;
         end if;
@@ -1451,16 +1449,16 @@ begin
            begin
               exists( theFile.btree.session, to_string( keyExpr ) );
            exception when storage_error =>
-             err( "storage error raised" );
+             err( +"storage error raised" );
            when msg: berkeley_error =>
              if last_error( theFile.btree.session ) = DB_NOTFOUND then
                 begin
                    put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
                 exception when CONSTRAINT_ERROR =>
-                   err( "constraint_error: value too big" );
+                   err( +"constraint_error: value too big" );
                 end;
              else
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
              end if;
            end;
         end if;
@@ -1498,7 +1496,7 @@ procedure ParseBtreeReplace is
   theCurs  : resPtr;
 begin
   if rshOpt then
-     err( "replace not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"replace not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_replace_t );
   ParseFirstFileParameter( btree_replace_t, fileId );
@@ -1554,9 +1552,9 @@ begin
                       DB_C_PUT_CURRENT );
                 end if;
               exception when msg: berkeley_error =>
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
               when CONSTRAINT_ERROR =>
-                 err( "constraint_error: value too big" );
+                 err( +"constraint_error: value too big" );
               end;
            end if;
         elsif isArray then
@@ -1582,9 +1580,9 @@ begin
                         DB_C_PUT_CURRENT );
                 end if;
               exception when msg: berkeley_error =>
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
               when CONSTRAINT_ERROR =>
-                 err( "constraint_error: value too big" );
+                 err( +"constraint_error: value too big" );
               end;
            end if;
         else
@@ -1608,9 +1606,9 @@ begin
                        DB_C_PUT_CURRENT );
                end if;
              exception when msg: berkeley_error =>
-               err( exception_message( msg ) );
+               err( pl( exception_message( msg ) ) );
              when CONSTRAINT_ERROR =>
-                err( "constraint_error: value too big" );
+                err( +"constraint_error: value too big" );
              end;
            end if;
         end if;
@@ -1626,13 +1624,13 @@ begin
                 DoRecordToJson( jsonString, itemId );
                 put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
               exception when storage_error =>
-                err( "storage error raised" );
+                err( +"storage error raised" );
               when msg: berkeley_error =>
                  if last_error( theFile.btree.session ) /= DB_NOTFOUND then
-                    err( exception_message( msg ) );
+                    err( pl( exception_message( msg ) ) );
                  end if;
               when CONSTRAINT_ERROR =>
-                 err( "constraint_error: value too big" );
+                 err( +"constraint_error: value too big" );
               end;
            end if;
         elsif isArray then
@@ -1645,13 +1643,13 @@ begin
                 DoArrayToJson( jsonString, itemId );
                 put( theFile.btree.session, to_string( keyExpr ), to_string( jsonString ) );
               exception when storage_error =>
-                err( "storage error raised" );
+                err( +"storage error raised" );
               when msg: berkeley_error =>
                  if last_error( theFile.btree.session ) /= DB_NOTFOUND then
-                    err( exception_message( msg ) );
+                    err( pl( exception_message( msg ) ) );
                  end if;
               when CONSTRAINT_ERROR =>
-                 err( "constraint_error: value too big" );
+                 err( +"constraint_error: value too big" );
               end;
            end if;
         else
@@ -1661,13 +1659,13 @@ begin
                exists( theFile.btree.session, to_string( keyExpr ) );
                put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
              exception when storage_error =>
-               err( "storage error raised" );
+               err( +"storage error raised" );
              when msg: berkeley_error =>
                 if last_error( theFile.btree.session ) /= DB_NOTFOUND then
-                   err( exception_message( msg ) );
+                   err( pl( exception_message( msg ) ) );
                 end if;
              when CONSTRAINT_ERROR =>
-                err( "constraint_error: value too big" );
+                err( +"constraint_error: value too big" );
              end;
            end if;
         end if;
@@ -1699,12 +1697,12 @@ procedure ParseBtreeAppend is
   oldItem  : unbounded_string;
 begin
   if rshOpt then
-     err( "append not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"append not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_append_t );
   ParseFirstFileParameter( btree_append_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
-     err( "append requires a string item type" );
+     err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( btree_append_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( btree_append_t, itemExpr, itemType, identifiers( fileId ).genKind );
@@ -1715,13 +1713,13 @@ begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           put( theFile.btree.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
         exception when storage_error =>
-          err( "storage error raised" );
+          err( +"storage error raised" );
         when msg: berkeley_error =>
           if last_error( theFile.btree.session ) /= DB_NOTFOUND then
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
           end if;
         when CONSTRAINT_ERROR =>
-          err( "constraint_error: value too big" );
+          err( +"constraint_error: value too big" );
         end;
      end if;
   end if;
@@ -1751,12 +1749,12 @@ procedure ParseBtreePrepend is
   oldItem  : unbounded_string;
 begin
   if rshOpt then
-     err( "prepend not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"prepend not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_prepend_t );
   ParseFirstFileParameter( btree_prepend_t, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
-     err( "append requires a string item type" );
+     err( +"append requires a string item type" );
   end if;
   ParseNextStringParameter( btree_prepend_t, keyExpr, keyType, uni_string_t );
   ParseLastGenItemParameter( btree_prepend_t, itemExpr, itemType, identifiers( fileId ).genKind );
@@ -1767,13 +1765,13 @@ begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
         exception when storage_error =>
-          err( "storage error raised" );
+          err( +"storage error raised" );
         when msg: berkeley_error =>
           if last_error( theFile.btree.session ) /= DB_NOTFOUND then
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
           end if;
         when CONSTRAINT_ERROR =>
-          err( "constraint_error: value too big" );
+          err( +"constraint_error: value too big" );
         end;
      end if;
   end if;
@@ -1805,7 +1803,7 @@ begin
         begin
            sync( theFile.btree.session );
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         end;
      end if;
   end if;
@@ -1830,7 +1828,7 @@ procedure ParseBTreeTruncate is
   theFile    : resPtr;
 begin
   if rshOpt then
-     err( "truncate not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"truncate not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_truncate_t );
   ParseSingleFileParameter( btree_truncate_t, fileId );
@@ -1845,7 +1843,7 @@ begin
               put_trace( cnt'img & " records were erased" );
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         end;
      end if;
   end if;
@@ -1919,9 +1917,9 @@ begin
      if isVerifiedOpenFile( fileId, theFile ) then
         findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
         if theCurs.btree_cur.isOpen then
-           err( "cursor " &
-              optional_yellow( to_string( identifiers( cursId ).name ) ) &
-              " is already open" );
+           err( +"cursor " &
+              name_em( cursId ) &
+              pl( " is already open" ) );
         else
            new_berkeley_cursor( theFile.btree.session, theCurs.btree_cur.cursor );
            theCurs.btree_cur.session := theFile.btree.session;
@@ -1960,16 +1958,16 @@ begin
         if isVerifiedOpenFile( fileId, theFile ) then
            findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            if not theCurs.btree_cur.isOpen then
-              err( "cursor " &
-                 optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                " is not open" );
+              err( +"cursor " &
+                 name_em( cursId ) &
+                 pl( " is not open" ) );
            else
               close( theFile.btree.session, theCurs.btree_cur.cursor );
               theCurs.btree_cur.isOpen := false;
            end if;
         end if;
      exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
+        err( pl( exception_message( msg ) ) );
      end;
   end if;
 end ParseBTreeCloseCursor;
@@ -2002,7 +2000,7 @@ procedure ParseBTreeGetFirst is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_first not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"get_first not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_get_first_t );
   ParseFirstFileParameter( btree_get_first_t, fileId );
@@ -2013,7 +2011,7 @@ begin
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
      identifiers( keyRef.id ).wasWritten := true;
-     identifiers( keyRef.id ).writtenByThread := getThreadName;
+     identifiers( keyRef.id ).writtenByFlow := getDataFlowName;
   end if;
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
@@ -2025,7 +2023,7 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   -- array?
   elsif identifiers( genKindId ).list then
@@ -2035,14 +2033,14 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -2056,9 +2054,9 @@ begin
            begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                   " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2071,9 +2069,9 @@ begin
                  end if;
               end if;
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
-              err( "storage_error raised" );
+              err( +"storage_error raised" );
            end;
         end if;
      elsif isArray then
@@ -2085,9 +2083,9 @@ begin
            begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                   " is not open" );
+                 err( +"cursor " &
+                      name_em( cursId ) &
+                      pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2100,9 +2098,9 @@ begin
                  end if;
               end if;
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
-              err( "storage_error raised" );
+              err( +"storage_error raised" );
            end;
         end if;
      else
@@ -2114,9 +2112,9 @@ begin
            begin
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                   " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2129,9 +2127,9 @@ begin
                  end if;
               end if;
            exception when msg: berkeley_error =>
-              err( exception_message( msg ) );
+              err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
-              err( "storage_error raised" );
+              err( +"storage_error raised" );
            end;
         end if;
      end if;
@@ -2166,7 +2164,7 @@ procedure ParseBTreeGetNext is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_next not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"get_next not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_get_next_t );
   ParseFirstFileParameter( btree_get_next_t, fileId );
@@ -2185,7 +2183,7 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   -- array?
   elsif identifiers( genKindId ).list then
@@ -2195,7 +2193,7 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   else
      -- This will still auto-declare scalar values
@@ -2212,9 +2210,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2228,9 +2226,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      elsif isArray then
         declare
@@ -2241,9 +2239,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2257,9 +2255,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      else
         declare
@@ -2270,9 +2268,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2286,9 +2284,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      end if;
   end if;
@@ -2322,7 +2320,7 @@ procedure ParseBTreeGetLast is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_last not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"get_last not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_get_last_t );
   ParseFirstFileParameter( btree_get_last_t, fileId );
@@ -2333,7 +2331,7 @@ begin
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
      identifiers( keyRef.id ).wasWritten := true;
-     identifiers( keyRef.id ).writtenByThread := getThreadName;
+     identifiers( keyRef.id ).writtenByFlow := getDataFlowName;
   end if;
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
@@ -2345,7 +2343,7 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   -- array?
   elsif identifiers( genKindId ).list then
@@ -2355,14 +2353,14 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   else
      -- This will still auto-declare scalar values
      ParseOutParameter(  valRef, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -2376,9 +2374,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2392,9 +2390,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      elsif isArray then
         declare
@@ -2405,9 +2403,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2421,9 +2419,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      else
         declare
@@ -2434,9 +2432,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2450,9 +2448,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      end if;
   end if;
@@ -2486,7 +2484,7 @@ procedure ParseBTreeGetPrevious is
   genKindId  : identifier;
 begin
   if rshOpt then
-     err( "get_previous not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"get_previous not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( btree_get_previous_t );
   ParseFirstFileParameter( btree_get_previous_t, fileId );
@@ -2505,7 +2503,7 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   -- array?
   elsif identifiers( genKindId ).list then
@@ -2515,7 +2513,7 @@ begin
      genTypesOk( identifiers( valRef.id ).kind, genKindId );
      if syntax_check and then not error_found then
         identifiers( valRef.id ).wasWritten := true;
-        identifiers( valRef.id ).writtenByThread := getThreadName;
+        identifiers( valRef.id ).writtenByFlow := getDataFlowName;
      end if;
   else
      -- This will still auto-declare scalar values
@@ -2532,9 +2530,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2548,9 +2546,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( pl( "storage_error raised" ) );
         end;
      elsif isArray then
         declare
@@ -2561,9 +2559,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2577,9 +2575,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      else
         declare
@@ -2590,9 +2588,9 @@ begin
            if isVerifiedOpenFile( fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
-                 err( "cursor " &
-                    optional_yellow( to_string( identifiers( cursId ).name ) ) &
-                    " is not open" );
+                 err( +"cursor " &
+                    name_em( cursId ) &
+                    pl( " is not open" ) );
               else
                  get( theFile.btree.session,
                    theCurs.btree_cur.cursor,
@@ -2606,9 +2604,9 @@ begin
               end if;
            end if;
         exception when msg: berkeley_error =>
-           err( exception_message( msg ) );
+           err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
-           err( "storage_error raised" );
+           err( +"storage_error raised" );
         end;
      end if;
   end if;
@@ -2674,7 +2672,7 @@ begin
           result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
        end if;
      exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
+        err( pl( exception_message( msg ) ) );
      end;
   end if;
 end ParseBTreeLastError;
@@ -2712,7 +2710,7 @@ begin
            raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
         end if;
      exception when msg: berkeley_error =>
-        err( exception_message( msg ) );
+        err( pl( exception_message( msg ) ) );
      end;
   end if;
 end ParseBtreeRaiseExceptions;

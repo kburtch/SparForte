@@ -61,6 +61,19 @@ random_generator : ada.numerics.float_random.generator;
 
 type line_count is new long_long_integer;
 
+
+------------------------------------------------------------------------------
+-- Console Messages (e.g. error messages)
+------------------------------------------------------------------------------
+
+type messageStrings is record
+   templateMessage : unbounded_string;
+   textMessage  : unbounded_string;
+end record;
+
+nullMessageStrings : constant messageStrings := messageStrings'(
+   null_unbounded_string, null_unbounded_string);
+
 ------------------------------------------------------------------------------
 -- Unbounded String Constants
 ------------------------------------------------------------------------------
@@ -424,15 +437,15 @@ function getIdentifierClassImage( c : anIdentifierClass ) return string;
 
 ------------------------------------------------------------------------------
 --
--- Threads
+-- DataFlows (renamed from Threads)
 --
 -- Not actually threads, but for tracking asynchronous actions for
 -- side-effects.  Threads include contracts.
 
-subtype aThreadName is unbounded_string;
+subtype aDataFlowName is unbounded_string;
 
-noThread : aThreadName := to_unbounded_string( "none" );
-mainThread : aThreadName := to_unbounded_string( "main task" );
+noDataFlow : aDataFlowName := to_unbounded_string( "none" );
+mainDataFlow : aDataFlowName := to_unbounded_string( "main task" );
 
 -- Expression Instruction
 --
@@ -536,7 +549,7 @@ type declaration is record
                        := Null_Unbounded_String;
      wasReferenced   : boolean := false;        -- true if ref'd in syn chk
      wasWritten      : boolean := false;        -- true if written in syn chk
-     writtenByThread : aThreadName;
+     writtenByFlow   : aDataFlowName;
      writtenOn       : line_count;              -- side-effect protection
                                                 --   when last written to
      wasApplied      : boolean := false;        -- true if type was used
@@ -581,7 +594,7 @@ end record;
 
 -- error_type    : anExceptionType;                       -- type of exception
 err_message      : unbounded_string;                     -- last error message
-fullErrorMessage : unbounded_string;                -- same with location info
+fullErrorMessage : messageStrings;                  -- same with location info
 fullTemplateErrorMessage : unbounded_string;        -- same with location info
                                                       -- in format of template
 err_exception    : declaration;           -- the exception else eof_t for none
@@ -994,6 +1007,9 @@ procedure findEnumImage( val : unbounded_string; kind : identifier; name : out u
 -- Find the name of the enumerated item of enumerated type kind with value
 -- val.
 
+procedure fixUsableParametersInAbstractSubprogram( sub_id : identifier );
+-- Mark usable parameters as read/written in a null abstract subprogram
+
 procedure init_env_ident( s : string );
 -- initialize an environment variable
 
@@ -1145,5 +1161,43 @@ procedure checkAndInitializeDistributedMemcacheCluster;
 -----------------------------------------------------------------------------
 
 procedure putTemplateHeader( header : in out templateHeaders );
+
+
+------------------------------------------------------------------------------
+-- Message "mark up" and escaping functions
+------------------------------------------------------------------------------
+
+function "&"( left, right : messageStrings ) return messageStrings;
+-- concatenation
+
+function pl( s : string ) return messageStrings;
+function pl( c : character ) return messageStrings;
+function "+"( s : string ) return messageStrings renames pl;
+-- plain text
+
+function unb_pl( us : unbounded_string ) return messageStrings;
+-- unbounded plain text
+
+function ok( s : string ) return messageStrings;
+-- success text (usually green)
+
+function inv( s : string ) return messageStrings;
+-- inverse text
+
+function em( s : string ) return messageStrings;
+-- emphasized text
+
+function unb_em( us : unbounded_string ) return messageStrings;
+-- unbounded string emphasized text
+
+function name_em( id : identifier ) return messageStrings;
+-- identifier name field, emphasized
+
+function em_esc( s : unbounded_string ) return messageStrings;
+-- escape plus emphasize
+
+function em_value( s : unbounded_string ) return messageStrings;
+-- combines bold, secured data and escaped.  A null value will
+-- return double single quotes.
 
 end world;

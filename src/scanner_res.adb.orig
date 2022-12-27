@@ -127,7 +127,7 @@ begin
   begin
     resHandleList.Queue( resHandles, rp );
   exception when storage_error =>
-      err( "out of memory" );
+      err( +"out of memory" );
       id := 0;
       return;
   end;
@@ -137,7 +137,7 @@ begin
      put_trace( "There are" & resHandleList.length( resHandles )'img & " resource handles declared" );
   end if;
   exception when storage_error =>
-      err( "out of memory" );
+      err( +"out of memory" );
       id := 0;
       return;
 end declareResource;
@@ -396,7 +396,7 @@ begin
   --   put_trace( "Resource handle" & id'img & " memory freed" );
   --end if;
   exception when STORAGE_ERROR =>
-    err( gnat.source_info.source_location & ": internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img );
+    err( pl( gnat.source_info.source_location & ": internal error: STORAGE_ERROR raised when clearning resource" & id'img & " a " & rp.rt'img ) );
 end clearResource;
 
 

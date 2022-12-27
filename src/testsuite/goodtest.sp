@@ -2568,6 +2568,42 @@ begin
    pragma assert( rebate_days = 50 );
 end;
 
+-- case procedures: abstract
+
+declare
+   case procedure cproc( i : integer; j : out integer ) is null abstract;
+begin
+   null;
+end;
+
+declare
+
+case procedure abstract_cproc( i : integer; j : out integer ) is abstract
+   when 1 => 2;
+   when others => 0;
+end abstract_cproc;
+
+begin
+   null;
+end;
+
+-- case procedures: forward
+
+declare
+
+  case procedure forward_cproc( i : integer; j : out integer );
+
+  case procedure forward_cproc( i : integer; j : out integer ) is
+     when 1 => 2;
+     when others => 0;
+  end forward_cproc;
+
+  res : integer := 0;
+begin
+  forward_cproc( 1, res );
+  pragma assert( res = 2 );
+end;
+
 -- case with <>
 
 declare
@@ -5952,7 +5988,7 @@ begin
   null;
 end abstract2;
 
---procedure abstract3( a1 : abstract_type ) is null abstract;
+procedure abstract3( a1 : abstract_type ) is null abstract;
 
 procedure abstract4( a2 : abstract_type ) is abstract
 begin
@@ -5964,7 +6000,7 @@ begin
   return false;
 end abstract5;
 
---function abstract6( a3 : abstract_type ) return boolean is null abstract;
+function abstract6( a3 : abstract_type ) return boolean is null abstract;
 
 function abstract7( a4 : abstract_type ) return boolean is abstract
 begin

@@ -384,7 +384,7 @@ package body builtins.help is
                      pragmaKind := parsePragmaKindAsHelp;
                   end if;
                else
-                  err( "'@' or ';' expected" );
+                  err( +"'@' or ';' expected" );
                end if;
             end loop;
             expect( end_t );
@@ -430,7 +430,7 @@ package body builtins.help is
              error_found := false;                         -- no error found
              exit_block := false;                          -- not exit-ing a block
              if not LineRead( firstLine'access ) then        -- read first line
-                err( "help command is unable to read first line of script" );
+                err( +"help command is unable to read first line of script" );
              end if;
              if script = null then
                 if verboseOpt then

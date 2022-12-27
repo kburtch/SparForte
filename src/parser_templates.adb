@@ -62,14 +62,14 @@ begin
   baseTypesOK( exprKind, natural_t );
   if isExecutingCommand then
      if templateHeader.templateHeaderSent then
-        err( "HTTP header already sent" );
+        err( +"HTTP header already sent" );
      else
         begin
            templateHeader.status := httpStatusCodes( to_numeric( exprVal ) );
         exception when constraint_error =>
-           err( "status code is out-of-range" &
+           err( pl( "status code is out-of-range" &
                 httpStatusCodes'first'img & " .." &
-                httpStatusCodes'last'img );
+                httpStatusCodes'last'img ) );
         end;
      end if;
   end if;
@@ -87,14 +87,14 @@ begin
   baseTypesOK( exprKind, string_t );
   if isExecutingCommand then
      if templateHeader.templateHeaderSent then
-        err( "HTTP header already sent" );
+        err( +"HTTP header already sent" );
      elsif length( exprval ) = 0 then
-        err( "HTTP location string is empty" );
+        err( +"HTTP location string is empty" );
      else
         begin
            templateHeader.location := exprVal;
         exception when storage_error =>
-           err( "out of memory" );
+           err( +"out of memory" );
         when others =>
           err_exception_raised;
         end;
@@ -111,7 +111,7 @@ begin
      begin
        putTemplateHeader( templateHeader );
      exception when constraint_error =>
-       err( "constraint error - did you use pragma template?" );
+       err( +"constraint error - did you use pragma template?" );
      when others =>
        err_exception_raised;
      end;

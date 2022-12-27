@@ -141,7 +141,7 @@ procedure ParseMySQLConnect is
 begin
   expect( mysql_connect_t );
   if engineOpen then
-     err( "only one database connection may be open" );
+     err( +"only one database connection may be open" );
      return;
   end if;
   ParseFirstStringParameter( mysql_connect_t, dbnameExpr, dbnameType, string_t );
@@ -164,55 +164,65 @@ begin
 
   if isExecutingCommand then
      if restriction_no_mysql_database then
-        err( "not allowed with " & bold( "pragma restriction( no_mysql_database )" ) );
+        err( +"not allowed with " & em( "pragma restriction( no_mysql_database )" ) );
      end if;
      begin
        begin
          Set_DB_Name( C, to_string( dbnameExpr ) );
        exception when others =>
-         err( to_string( "Internal error: set_db_name " & dbnameExpr &
-              " failed" ) );
+         err( pl( "Internal error: set_db_name " ) &
+              em_value( dbnameExpr ) &
+              pl( " failed" )
+         );
        end;
        if hasUser then
           begin
             Set_User_Password( C, to_string( userExpr ), to_string( pswdExpr ) );
           exception when others =>
-             err( to_string( "Internal error: set_user_password " & userExpr &
-                  "/" & pswdExpr & " failed" ) );
+             err( pl( "Internal error: set_user_password " ) &
+                  em_value( userExpr ) &
+                  pl( "/" ) &
+                  em_value( pswdExpr ) &
+                  pl( " failed" )
+             );
           end;
        end if;
        if hasHost then
           begin
              Set_Host_Name( C, to_string( hostExpr ) );
           exception when others =>
-             err( to_string( "Internal error: set_host_name " & hostExpr &
-                  " failed" ) );
+             err( pl( "Internal error: set_host_name " ) &
+                  em_value( hostExpr ) &
+                  pl( " failed" )
+             );
           end;
        end if;
        if hasPort then
           begin
             Set_Port( C, integer( to_numeric( portExpr ) ) );
           exception when others =>
-             err( to_string( "Internal error: set_port " & portExpr &
-                  " failed" ) );
+             err( pl( "Internal error: set_port " ) &
+                  em_value( portExpr ) &
+                  pl( " failed" )
+             );
           end;
        end if;
        Connect( C );
        engineOpen := true;
        currentEngine := Engine_MySQL;
      exception when not_connected =>
-        if hasHost and hasPort then
-           err( "database connection failed - User " & User( C ) & ", Password " & Password( C )
-           & ", Host " & Host_Name( C ) & "and Port " & integer'image( Port( C ) ) & " " & DB_Name( C ) );
+        if hasHost and hasPort and not boolean( maintenanceOpt) then
+           err( pl( "database connection failed - User " & User( C ) & ", Password " & Password( C )
+           & ", Host " & Host_Name( C ) & "and Port " & integer'image( Port( C ) ) & " " & DB_Name( C ) ) );
         else
-          err( "database connection failed" );
+          err( +"database connection failed" );
         end if;
      when already_connected =>
-        err( "already connected to database" );
+        err( +"already connected to database" );
      when STORAGE_ERROR =>
-        err( "out-of-memory or bad pointer" );
+        err( +"out-of-memory or bad pointer" );
      when CONSTRAINT_ERROR =>
-        err( "constraint error exception" );
+        err( +"constraint error exception" );
      when others =>
         err_exception_raised;
      end;
@@ -226,22 +236,22 @@ pragma warnings( off );
 
 procedure not_configured is
 begin
-  err( "mysql support not configured" );
+  err( +"mysql support not configured" );
 end not_configured;
 
 procedure not_configured( result : out unbounded_string ) is
 begin
-  err( "mysql support not configured" );
+  err( +"mysql support not configured" );
 end not_configured;
 
 procedure not_configured_do( result : unbounded_string ) is
 begin
-  err( "mysql support not configured" );
+  err( +"mysql support not configured" );
 end not_configured_do;
 
 procedure not_configured( result : out unbounded_string; kind : out identifier ) is
 begin
-  err( "mysql support not configured" );
+  err( +"mysql support not configured" );
 end not_configured;
 
 procedure ParseMySQLConnect renames not_configured;
@@ -459,11 +469,11 @@ begin
      begin
        Execute( Q, C );
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -497,11 +507,11 @@ begin
           Execute_Checked( Q, C );
        end if;
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -537,9 +547,9 @@ begin
         Disconnect( C );
         engineOpen := false;
      exception when not_connected =>
-        err( "no database connection" );
+        err( +"no database connection" );
      when already_connected =>
-        err( "already connected to database" );
+        err( +"already connected to database" );
      when others =>
         err_exception_raised;
      end;
@@ -642,7 +652,7 @@ begin
      begin
        result := to_bush_boolean( In_Abort_State( C ) );
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -753,11 +763,11 @@ begin
           Open_DB_Trace( C, to_string( fnameExpr ) );
        end if;
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when tracing_state =>
-       err( "file already open" );
+       err( +"file already open" );
      when Ada.IO_Exceptions.Name_Error =>
-       err( "file not found" );
+       err( +"file not found" );
      when others =>
        err_exception_raised;
      end;
@@ -849,7 +859,7 @@ begin
     begin
       Clear( Q );
     exception when CONSTRAINT_ERROR =>
-      err( "constraint error exception" );
+      err( +"constraint error exception" );
     when others =>
       err_exception_raised;
     end;
@@ -932,9 +942,9 @@ begin
      begin
        Begin_Work( Q, C );
      exception when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -957,9 +967,9 @@ begin
      begin
        Rollback_Work( Q, C );
      exception when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -982,9 +992,9 @@ begin
      begin
        Commit_Work( Q, C );
      exception when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -1039,9 +1049,9 @@ begin
           Fetch( Q );
        end if;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1087,7 +1097,7 @@ begin
      begin
        result := to_unbounded_string( Tuple_Index_Type'image( Tuple( Q ) ) );
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when others =>
        err_exception_raised;
      end;
@@ -1111,7 +1121,7 @@ begin
      begin
        result := to_unbounded_string( Tuple_Count_Type'image( Tuples( Q ) ) );
      exception when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1135,7 +1145,7 @@ begin
      begin
        result := to_unbounded_string( Natural'image( Columns( Q ) ) );
      exception when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1164,7 +1174,7 @@ begin
           Column_Name( Q, Column_Index_Type( to_numeric( exprVal ) ) )
        );
      exception when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when others =>
        err_exception_raised;
      end;
@@ -1193,7 +1203,7 @@ begin
            Column_Index( Q, to_string( exprVal ) )
        ) );
      exception when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when others =>
        err_exception_raised;
      end;
@@ -1252,9 +1262,9 @@ begin
           Column_Index_Type( to_numeric( exprVal ) ) )
        );
      exception when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1281,13 +1291,13 @@ begin
      begin
        result := Value( Q, Column_Index_Type( to_numeric( exprVal ) ) );
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1451,15 +1461,15 @@ begin
         new_line;
      end if;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -1668,15 +1678,15 @@ begin
      end if;
      new_line;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -1737,8 +1747,8 @@ begin
         -- No result? Then table was not found.
 
         if end_of_query( Q ) then
-           err( "Did not find any relation named " &
-              optional_yellow( to_string( exprVal ) ) );
+           err( +"Did not find any relation named " &
+              unb_em( exprVal ) );
            return;
         end if;
 
@@ -1943,15 +1953,15 @@ begin
      end if;
 
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -2143,15 +2153,15 @@ begin
      end if;
      new_line;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -2339,15 +2349,15 @@ begin
      end if;
      new_line;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -2383,11 +2393,11 @@ begin
      begin
        Execute( Q, C );
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;

@@ -27,7 +27,8 @@ pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
 
-with ada.text_io,
+with CGI,
+    ada.text_io,
     ada.integer_text_io,
     ada.strings.unbounded.text_io,
     ada.characters.handling,
@@ -142,8 +143,9 @@ end resetLineNo;
 -- of the current token on the expanded line.
 -----------------------------------------------------------------------------
 
-procedure getCommandLine ( cmdline : out unbounded_string;
-  token_firstpos, token_lastpos, line_number, file_number : out natural ) is
+procedure getCommandLine ( cmdline : out messageStrings;
+  token_firstpos, token_lastpos, line_number, file_number : out natural;
+  template : templateTypes := noTemplate ) is
   line_firstpos : natural;                           -- start of compiled line
   line_lastpos  : natural;                           -- end of compiled line
   indent        : natural;
@@ -153,14 +155,82 @@ procedure getCommandLine ( cmdline : out unbounded_string;
   i             : natural;
   id            : identifier;
   adv           : integer;
+
+  --  ESCAPE CHAR
+  --
+  -- Render a character for the output format, escaping or converting
+  -- characters as needed.  Currently, the escaping does not support UTF-8.
+  ----------------------------------------------------------------------------
+
+--  function escapeChar( ch : character ) return unbounded_string is
+--    newText : unbounded_string;
+--  begin
+--    case template is
+--    when htmlTemplate  | wmlTemplate =>
+--      -- spaces and line feeds are special cases
+--      if ch = ' ' then
+--         newText := to_unbounded_string( "&nbsp;" );
+--      elsif ch = ASCII.LF then
+--         newText := to_unbounded_string( "<br>" );
+--      else
+--         newText := to_unbounded_string(
+--           CGI.html_encode(
+--            to_string(
+--               toEscaped(
+--                to_unbounded_string( "" & script( i ) )
+--               )
+--             )
+--           )
+--         );
+--      end if;
+--    when textTemplate =>
+--      newText := null_unbounded_string & script( i );
+--    when others => -- including noTemplate
+--      newText := toEscaped( to_unbounded_string( "" & script( i ) ) );
+--    end case;
+--    return newText;
+--  end escapeChar;
+
+  --  ESCAPE IDENT
+  --
+  -- Render an identifier for the output format, escaping or converting
+  -- characters as needed.  Also highlights the identifier.  Currently, the
+  -- escaping does not support UTF-8.
+  ----------------------------------------------------------------------------
+
+--  function escapeIdent( id : identifier ) return unbounded_string is
+--    newText : unbounded_string;
+--  begin
+--    case template is
+--    when noTemplate =>
+--      newText := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( id ).name ) ) ) );
+--    when htmlTemplate | wmlTemplate =>
+--      newText := to_unbounded_string(
+--        "<strong>" &
+--          CGI.html_encode(
+--            to_string(
+--              toEscaped(
+--               identifiers( id ).name
+--              )
+--            )
+--         )
+--      & "</strong>" );
+--    when textTemplate =>
+--      newText := identifiers( id ).name;
+--    when others =>
+--      newText := toEscaped( identifiers( id ).name );
+--    end case;
+--    return newText;
+--  end escapeIdent;
+
 begin
 
-  -- Script unexpectedly null?  Print a message an let an exception be raised
-  -- later.
+  -- Script unexpectedly null?  It is possible that someone is trying to run
+  -- an empty file.  It is not really an internal error and reporting one will
+  -- cause the test case of an empty file to fail.
 
   if script = null then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: getCommandLine: script is null" );
-     cmdline        := null_unbounded_string;
+     cmdline        := nullMessageStrings;
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
      line_number    := natural'last;
@@ -173,7 +243,7 @@ begin
 
   if cmdpos > script'length then
      put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: getCommandLine: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
-     cmdline        := null_unbounded_string;
+     cmdline        := nullMessageStrings;
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
      line_number    := natural'last;
@@ -202,7 +272,7 @@ begin
      end loop;                                       -- or this one if
   end if;                                            -- on one
   if line_lastpos - line_firstpos <= 2 then          -- a blank line?
-     cmdLine := null_unbounded_string;               -- return null string
+     cmdLine := nullMessageStrings;                  -- return null string
      token_firstpos := 1;
      token_lastpos := 1;
      return;
@@ -225,7 +295,7 @@ begin
   if firstpos >= line_firstpos then                 -- token on line?
      token_firstpos := firstpos-line_firstpos+1;    -- position in
      token_lastpos := lastpos-line_firstpos+1;      -- returned string
-     cmdline := null_unbounded_string;              -- begin decompression
+     cmdline := nullMessageStrings;                 -- begin decompression
      --for i in line_firstpos..line_lastpos loop      -- for bytes in script
      i := line_firstpos;
      while i <= line_lastpos loop
@@ -234,16 +304,21 @@ begin
                if not is_escaping then
                   is_escaping := true;
                else                                 -- escaping itself?
-                  cmdline := cmdline & script( i ); -- add it
+                  cmdline := cmdline & pl( script( i ) );
                   is_escaping := false;             -- and no longer escape
                end if;
+               i := i + 1;
+            elsif script( i ) = immediate_word_delimiter or
+                  script( i ) = immediate_sql_word_delimiter or
+                  script( i ) = immediate_symbol_delimiter then
+               -- these characters have no visible representation
                i := i + 1;
             else
                if not is_escaping then              -- not escaping?
                   --cmdline := cmdline & identifiers( character'pos( script(i) )-128 ).name;
                   --len := length( identifiers( character'pos( script(i) ) - 128 ).name );
                   toIdentifier( script(i), script(i+1), id, adv );
-                  cmdline := cmdline & identifiers( id ).name;
+                  cmdline := cmdline & name_em( id );
                   len := length( identifiers( id ).name );
                   if firstpos = lastpos and firstpos = i then -- tokenized keyword?
                      token_lastpos := token_lastpos + len-1; -- adjust end position
@@ -255,13 +330,13 @@ begin
                   end if;
                   i := i + adv;
                else
-                  cmdline := cmdline & script( i );
+                  cmdline := cmdline & pl( script( i ) );
                   is_escaping := false;
                   i := i + 1;
                end if;
             end if;
          else                                             -- not a code?
-            cmdline := cmdline & script( i );             -- just add
+            cmdline := cmdline & pl( script( i ) );
             i := i + 1;
          end if;
      end loop;                                            -- for all codes
@@ -270,22 +345,27 @@ begin
   else                                                    -- not processed yet?
      token_firstpos := 1;                                 -- position at
      token_lastpos := 1;                                  -- first character
-     cmdline := null_unbounded_string;                    -- same, without
+     cmdline := nullMessageStrings;                       -- same, without
      --for i in line_firstpos..line_lastpos loop            -- token stuff...
      i := line_firstpos;
      while i <= line_lastpos loop
          if script( i ) = ASCII.HT then                   -- embedded tab?
-            while (length( cmdline )) mod 8 /= 0 loop     -- move to a column
-               cmdline := cmdline & " ";                  -- of 8
+            while (length( cmdline.textMessage )) mod 8 /= 0 loop     -- move to a column
+               cmdline := cmdline & pl( " " );            -- of 8
             end loop;
          elsif script( i ) > ASCII.DEL then               -- keyword token?
             if script( i ) = high_ascii_escape then       -- escaping
                if not is_escaping then
                   is_escaping := true;
                else                                       -- escaping itself?
-                  cmdline := cmdline & script( i );       -- add it
+                  cmdline := cmdline & pl( script( i ) );
                   is_escaping := false;                   -- and not escape
                end if;
+               i := i + 1;
+            elsif script( i ) = immediate_word_delimiter or
+                  script( i ) = immediate_sql_word_delimiter or
+                  script( i ) = immediate_symbol_delimiter then
+               -- these characters have no visible representation
                i := i + 1;
             else
                if not is_escaping then                    -- not escaping?
@@ -294,7 +374,7 @@ begin
                   --len := length(
                   --    identifiers( character'pos( script(i) ) - 128 ).name );
                   toIdentifier( script(i), script(i+1), id, adv );
-                  cmdline := cmdline & identifiers( id ).name;
+                  cmdline := cmdline & unb_pl( identifiers( id ).name );
                   len := length( identifiers( id ).name );
                   if firstpos = lastpos and firstpos = i then -- token keyword?
                      token_lastpos := token_lastpos + len-1;  -- adj end posn
@@ -306,34 +386,44 @@ begin
                   end if;
                   i := i + adv;
                else
-                  cmdline := cmdline & script( i );
+                  cmdline := cmdline & pl( script( i ) );
                   is_escaping := false;
                   i := i + 1;
                end if;
             end if;
          else                                             -- other character?
-            cmdline := cmdline & script( i );
+            cmdline := cmdline & pl( script( i ) );
             i := i + 1;
          end if;
      end loop;
   end if;
-  insert( cmdline, 1, to_string( indent * " " ) );        -- expand indentation
-  if token_firstpos > length( cmdline ) then              -- past end of cmd?
+
+  -- indent the line.  how depends on the template type
+
+  if template = htmlTemplate or template = wmlTemplate then
+    cmdLine := unb_pl( indent * "&nbsp;" ) & cmdLine;
+    -- insert( cmdline, 1, to_string( indent * "&nbsp;" ) );
+  else
+    cmdLine := unb_pl( indent * " " ) & cmdLine;
+    -- insert( cmdline, 1, to_string( indent * " " ) );
+  end if;
+
+  if token_firstpos > length( cmdline.textMessage ) then  -- past end of cmd?
      token_firstpos := line_lastpos+1-line_firstpos;      -- treat token as
      token_lastpos := token_firstpos;                     -- one char past end
   end if;
 end getCommandLine;
 
-function getCommandLine return unbounded_string is
+function getCommandLine( template : templateTypes := noTemplate ) return messageStrings is
   -- Return current command line, fully indented, but not including
   -- the LF separating lines.  This function version doesn't compute
   -- the token position on the expanded line.
   firstpos, lastpos : natural;
-  cmdline : unbounded_string;
+  cmdline : messageStrings;
   line_number : natural;
   file_number : natural;
 begin
-  getCommandLine( cmdline, firstpos, lastpos, line_number, file_number );
+  getCommandLine( cmdline, firstpos, lastpos, line_number, file_number, template );
   return cmdline;
 end getCommandLine;
 

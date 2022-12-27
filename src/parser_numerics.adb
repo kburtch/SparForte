@@ -1058,23 +1058,23 @@ begin
      end if;
   exception
   when constraint_error =>
-     err( "constraint_error exception raised" );
+     err( +"constraint_error exception raised" );
   when storage_error =>
-     err( "storage_error exception raised" );
+     err( +"storage_error exception raised" );
   when ada.strings.index_error =>
      if expr_val = null_unbounded_string then
         err(
           context => value_t,
-          subjectNotes => "the numeric value",
-          reason => "cannot be calculated on",
-          obstructorNotes => "an empty string"
+          subjectNotes => +"the numeric value",
+          reason => +"cannot be calculated on",
+          obstructorNotes => +"an empty string"
         );
      else
         err(
           context => value_t,
-          subjectNotes => "the numeric value",
-          reason => "raised a index_error on the string value",
-          obstructorNotes => toProtectedValue( expr_val ),
+          subjectNotes => +"the numeric value",
+          reason => +"raised a index_error on the string value",
+          obstructorNotes => em_value( expr_val ),
           obstructortype => expr_type
         );
      end if;

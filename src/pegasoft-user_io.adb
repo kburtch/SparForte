@@ -26,7 +26,6 @@ with ada.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
-    world,
     pegasoft.numerics,
     pegasoft.strings;
 use ada.text_io,
@@ -34,7 +33,6 @@ use ada.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
-    world,
     pegasoft.numerics,
     pegasoft.strings;
 
@@ -256,23 +254,6 @@ begin
   end if;
   return to_string( term( inverse ) ) & s & to_string( term( normal ) );
 end optional_inverse;
-
-
------------------------------------------------------------------------------
---  TO PROTECTED VALUE
---
--- combines optional bold, secure data and escaped.  A null value will
--- return double single quotes.
------------------------------------------------------------------------------
-
-function toProtectedValue( s : unbounded_string ) return string is
-begin
-  if s = "" then
-     return "''";
-  else
-     return optional_bold( toSecureData( to_string( toEscaped( s ) ) ) );
-  end if;
-end toProtectedValue;
 
 
 -----------------------------------------------------------------------------
@@ -650,7 +631,6 @@ begin
   end if;
   return "-";
 end utf_diamond;
-
 
 end pegasoft.user_io;
 

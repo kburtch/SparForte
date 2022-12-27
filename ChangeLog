@@ -18,4 +18,9 @@ CHANGES SINCE 2.5
 
 7. Fix: non-limited volatiles, which cannot be used in expressions, no longer have an error for not being declared limited.
 
+8. Fix: usable parameters in null subprograms no longer report an error if they are not used or are not referenced.
+
+9. Refactor: end-of-line CR/LF definitions are now in the os_binding files.
+
+10. Fix: --gcc-errors no longer hides error messages at an interactive prompt.
 

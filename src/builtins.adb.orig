@@ -78,8 +78,8 @@ begin
   C_reset_errno;
   getcwd( buffer, buffer'length );
   if C_errno /= 0 then
-     err( "findPwd: error getting current working directory, errno "
-       & C_errno'img );
+     err( pl( "findPwd: error getting current working directory, errno "
+       & C_errno'img ) );
      current_working_directory := null_unbounded_string;
   end if;
   current_working_directory := to_unbounded_string(
@@ -179,7 +179,7 @@ begin
         identifiers( pwd ).value.all := current_working_directory;
      end if;
   else
-     err( "cannot access " & toProtectedValue( path ) );
+     err( pl( "cannot access " ) & em_value( path ) );
   end if;
   if showPath then
      put_line( current_working_directory );
@@ -199,26 +199,26 @@ procedure alter( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( "no database connection open" );
+        err( +"no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "alter " & tempStr );
 #else
-        err( "postgresql support not configured" );
+        err( +"postgresql support not configured" );
 #end if;
      elsif currentEngine = Engine_MySQL then
 #if MYSQL
         DoMySQLSQLStatement( "alter " & tempStr );
 #else
-        err( "mysql support not configured" );
+        err( +"mysql support not configured" );
 #end if;
      else
-        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
+        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
      end if;
   end if;
 end alter;
@@ -235,7 +235,7 @@ procedure clear( ap : argumentListPtr ) is
   term_id : identifier;
 begin
   if ap'length /= 0 then
-     err( "zero argument expected" );
+     err( +"zero argument expected" );
   elsif isExecutingCommand then
      findIdent( to_unbounded_string( "TERM" ), term_id );
      terminalClear( identifiers( term_id ).value.all );
@@ -257,9 +257,9 @@ procedure umask( ap : argumentListPtr ) is
   discard  : mode_t;
 begin
   if rshOpt then
-     err( "umask is not allowed in a " & optional_bold( "restricted shell" ) );
+     err( +"umask is not allowed in a " & em( "restricted shell" ) );
   elsif ap'length > 1 then
-     err( "zero or one argument expected" );
+     err( +"zero or one argument expected" );
   elsif ap'length = 0 then
      if isExecutingCommand then
         -- umask never fails
@@ -277,13 +277,13 @@ begin
         -- At least in Linux,the umask can only be the file
         -- permission bits (0777 = 511).
         if newMask > 511 then
-           err( "value should be in range 0..511" );
+           err( +"value should be in range 0..511" );
         else
            -- umask never fails
            discard := spar_os.umask( newMask );
         end if;
      exception when constraint_error =>
-        err( toSecureData( to_string( tempstr ) ) & " is not numeric");
+        err( pl( toSecureData( to_string( tempstr ) ) & " is not numeric" ) );
      when others =>
         err_exception_raised;
      end;
@@ -302,26 +302,26 @@ procedure delete( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( "no database connection open" );
+        err( +"no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "delete " & tempStr );
 #else
-        err( "postgres support not configured" );
+        err( +"postgres support not configured" );
 #end if;
      elsif currentEngine = Engine_MySQL then
 #if MYSQL
         DoMySQLSQLStatement( "delete " & tempStr );
 #else
-        err( "mysql support not configured" );
+        err( +"mysql support not configured" );
 #end if;
      else
-        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
+        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
      end if;
   end if;
 end delete;
@@ -344,7 +344,7 @@ begin
   if ap'length = 0 then
      null;
   elsif ap'length /= 1 then
-     err( "zero or one argument expected" );
+     err( +"zero or one argument expected" );
      return;
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
@@ -419,26 +419,26 @@ procedure insert( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( "no database connection open" );
+        err( +"no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "insert " & tempStr );
 #else
-        err( "postgres support not configured" );
+        err( +"postgres support not configured" );
 #end if;
      elsif currentEngine = Engine_MySQL then
 #if MYSQL
         DoMySQLSQLStatement( "insert " & tempStr );
 #else
-        err( "mysql support not configured" );
+        err( +"mysql support not configured" );
 #end if;
      else
-        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
+        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
      end if;
   end if;
 end insert;
@@ -455,9 +455,9 @@ procedure cd( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if rshOpt then
-     err( "cd is not allowed in a " & optional_bold( "restricted shell" ) );
+     err( +"cd is not allowed in a " & em( "restricted shell" ) );
   elsif ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
@@ -477,7 +477,7 @@ procedure jobs( ap : argumentListPtr ) is
 -- jobs: list running jobs
 begin
   if ap'length /= 0 then
-     err( "no arguments expected" );
+     err( +"no arguments expected" );
   elsif isExecutingCommand then
      putJobList;
   end if;
@@ -495,7 +495,7 @@ procedure pwd( ap : argumentListPtr ) is
 -- pwd: present working directory (also updated current_working_directory)
 begin
   if ap'length /= 0 then
-     err( "no arguments expected" );
+     err( +"no arguments expected" );
   elsif isExecutingCommand then
      put_line( old_pwd );
   end if;
@@ -517,26 +517,26 @@ begin
    -- put_line( "param = " & ap( 1 ).all );
 -- end if;
   if ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( "no database connection open" );
+        err( +"no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLSelect( "select " & tempStr );
 #else
-        err( "postgresql support not supported" );
+        err( +"postgresql support not supported" );
 #end if;
      elsif currentEngine = Engine_MySQL then
 #if MYSQL
         DoMySQLSQLSelect( "select " & tempStr );
 #else
-        err( "mysql support not supported" );
+        err( +"mysql support not supported" );
 #end if;
      else
-        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
+        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
      end if;
   end if;
 end SQLselect;
@@ -552,9 +552,9 @@ end SQLselect;
 procedure step( ap : argumentListPtr ) is
 begin
   if ap'length /= 0 then
-     err( "zero arguments expected" );
+     err( +"zero arguments expected" );
   elsif inputMode /= breakout then
-     err( "step can only be used when you break out of a script" );
+     err( +"step can only be used when you break out of a script" );
   elsif isExecutingCommand then
      done := true;
      breakoutContinue := true;
@@ -583,7 +583,7 @@ begin
         end if;
      end if;
   elsif ap'length > 1 then
-     err( "zero or one argument expected" );
+     err( +"zero or one argument expected" );
   elsif isExecutingCommand then -- or syntax_check then -- when debugging
      -- true (boolean) will be a value of 1, but true (shell word) will be
      -- "true".  This is not ideal since it should really check types.
@@ -597,7 +597,7 @@ begin
         -- it in continuous integration before going to production.
         -- GCC Ada 7.4 gives a conversion warning but is incorrect.
         if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
-           err( "the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+           err( +"the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
         else
            trace := true;
            put_line( "Trace is on" );
@@ -606,7 +606,7 @@ begin
         trace := false;
         put_line( "Trace is off" );
      else
-        err( "expected true or false" );
+        err( +"expected true or false" );
      end if;
   end if;
 end do_trace;
@@ -626,32 +626,32 @@ procedure unset( ap : argumentListPtr ) is
   identToUnset : identifier;
 begin
   if rshOpt then
-     err( "unset is not allowed in a " & optional_bold( "restricted shell" ) );
+     err( +"unset is not allowed in a " & em( "restricted shell" ) );
   elsif ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif inputMode /= interactive and inputMode /= breakout then
-     err( "unset is only allowed in an interactive session" );
+     err( +"unset is only allowed in an interactive session" );
   elsif onlyAda95 then
-     err( "unset is not allowed with " & optional_bold( "pragma ada_95" ) );
+     err( +"unset is not allowed with " & em( "pragma ada_95" ) );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      findIdent( tempStr, identToUnset );
      if identToUnset = eof_t then
         -- it is possible a mistaken variable substitution could reveal data
-        err( "identifier " & toProtectedValue(( tempStr )) & " not declared" );
+        err( pl( "identifier " ) & em_value( tempStr ) & pl( " not declared" ) );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
-        err( "unsetting PATH is not allowed in a " &
-          optional_bold( "restricted shell" ) );
+        err( pl( "unsetting PATH is not allowed in a " ) &
+          em( "restricted shell" ) );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "HOME" then
-        err( "unsetting HOME is not allowed in a " &
-          optional_bold( "restricted shell" ) );
+        err( +"unsetting HOME is not allowed in a " &
+          em( "restricted shell" ) );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PWD" then
-        err( "unsetting PWD is not allowed in a " &
-          optional_bold( "restricted shell" ) );
+        err( pl( "unsetting PWD is not allowed in a " ) &
+          em( "restricted shell" ) );
      elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "OLDPWD" then
-        err( "unsetting OLDPWD is not allowed in a " &
-          optional_bold( "restricted shell" ) );
+        err( pl( "unsetting OLDPWD is not allowed in a " ) &
+          em( "restricted shell" ) );
      elsif identifiers( identToUnset ).renamed_count > 0 then
         err_renaming( identToUnset );
      elsif isExecutingCommand then
@@ -660,7 +660,7 @@ begin
            for i in keywords_top..identifiers_top - 1 loop
                if identifiers( i ).field_of = identToUnset and not identifiers( i ).deleted then
                 if not deleteIdent( i ) then
-                     err( "unable to unset identifier field " & toProtectedValue( identifiers( i ).name ) );
+                     err( pl( "unable to unset identifier field " ) & em_value( identifiers( i ).name ) );
                   end if;
                end if;
            end loop;
@@ -670,7 +670,7 @@ begin
         --   clearArray( arrayID( to_numeric( identifiers( identToUnset ).value ) ) );
         end if;
         if not deleteIdent( identToUnset ) then
-           err( "unable to unset identifier" );
+           err( +"unable to unset identifier" );
         end if;
      end if;
   end if;
@@ -691,37 +691,37 @@ procedure env( ap : argumentListPtr ) is
   identToShow : identifier;
 begin
   if rshOpt then
-     err( "env is not allowed in a " & optional_bold( "restricted shell" ) );
+     err( pl( "env is not allowed in a " ) & em( "restricted shell" ) );
   elsif ap'length > 1 then
-     err( "zero or one argument expected" );
+     err( +"zero or one argument expected" );
   -- elsif inputMode /= interactive and inputMode /= breakout then
-  --    err( "env is only allowed in an interactive session" );
+  --    err( +"env is only allowed in an interactive session" );
   elsif isExecutingCommand then
      if ap'length = 0 then
         put_all_identifiers;
      else
         tempStr := to_unbounded_string( ap( 1 ).all );
         if length( tempStr ) <= 1 then
-           err( gnat.source_info.source_location & ": internal error: name of identifier to find is empty" );
+           err( pl( gnat.source_info.source_location & ": internal error: name of identifier to find is empty" ) );
         else
            -- remove ASCII.NUL from C string
            delete( tempStr, length( tempStr ), length( tempStr ) );
            findIdent( tempStr, identToShow );
            if identToShow = eof_t then
               -- it is possible a mistaken variable substitution could reveal data
-              err( "identifier " & toProtectedValue( tempStr ) & " not declared" );
+              err( pl( "identifier " ) & em_value( tempStr ) & pl( " not declared" ) );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
-              err( "env PATH is not allowed in a " &
-                optional_bold( "restricted shell" ) );
+              err( pl( "env PATH is not allowed in a " ) &
+                em( "restricted shell" ) );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name = "HOME" then
-              err( "env HOME is not allowed in a " &
-                 optional_bold( "restricted shell" ) );
+              err( pl( "env HOME is not allowed in a " ) &
+                 em( "restricted shell" ) );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name = "PWD" then
-              err( "env PWD is not allowed in a " &
-                optional_bold( "restricted shell" ) );
+              err( pl( "env PWD is not allowed in a " ) &
+                em( "restricted shell" ) );
            elsif boolean(rshOpt) and then identifiers( identToShow ).name = "OLDPWD" then
-              err( "env OLDPWD is not allowed in a " &
-                optional_bold( "restricted shell" ) );
+              err( pl( "env OLDPWD is not allowed in a " ) &
+                em( "restricted shell" ) );
            elsif isExecutingCommand then
               Put_Identifier( identToShow );
            end if;
@@ -746,26 +746,26 @@ procedure update( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( "one argument expected" );
+     err( +"one argument expected" );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( "no database connection open" );
+        err( +"no database connection open" );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "update " & tempStr );
 #else
-        err( "postgresql support not supported" );
+        err( +"postgresql support not supported" );
 #end if;
      elsif currentEngine = Engine_MySQL then
 #if MYSQL
         DoMySQLSQLStatement( "update " & tempStr );
 #else
-        err( "mysql support not supported" );
+        err( +"mysql support not supported" );
 #end if;
      else
-        err( gnat.source_info.source_location & ": internal error: unrecognized database engine" );
+        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
      end if;
   end if;
 end update;
@@ -781,7 +781,7 @@ end update;
 procedure wait( ap : argumentListPtr ) is
 begin
   if ap'length /= 0 then
-     err( "zero arguments expected" );
+     err( +"zero arguments expected" );
   elsif isExecutingCommand then
      wait4children;
   end if;
@@ -799,7 +799,7 @@ end wait;
 procedure vm( regtype, regnum : unbounded_string ) is
 --  r : aVMRegister;
 begin
-   err( "not yet written" );
+   err( +"not yet written" );
 --  if to_string( regtype ) = "nr" then
 --     r := aVMRegister'value( " " & to_string( regnum ) );
 --     put( "numeric register " & r'img & " = " );

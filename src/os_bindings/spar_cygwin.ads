@@ -41,6 +41,9 @@ package spar_os is
 directory_delimiter : constant character := '/';
 -- O/S pathname directory separator (O/S dependant)
 
+eol_characters : constant string := ASCII.CR & ASCII.LF;
+-- O/S end-of-line characters in text files
+
 type unsigned32 is mod 2**32;
 -- mod type allows boolean operations on bits
 

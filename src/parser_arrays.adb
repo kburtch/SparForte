@@ -94,10 +94,10 @@ begin
      identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
+        err( +"Array or array type expected" );
      end if;
   elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -107,9 +107,9 @@ begin
         begin
            f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'first ) );
         exception when CONSTRAINT_ERROR =>
-           err( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           err( pl( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
         when STORAGE_ERROR =>
-           err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
+           err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
         end;
      end if;
      kind := identifiers( var_id ).genKind;
@@ -145,10 +145,10 @@ begin
      identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
+        err( +"Array or array type expected" );
      end if;
   elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -158,9 +158,9 @@ begin
         begin
            f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'last ) );
         exception when CONSTRAINT_ERROR =>
-           err( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           err( pl( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
         when STORAGE_ERROR =>
-           err( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" );
+           err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
         end;
      end if;
      kind := identifiers( var_id ).genKind;
@@ -196,10 +196,10 @@ begin
   if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
-        err( "Array or array type expected" );
+        err( +"Array or array type expected" );
      end if;
   elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -381,7 +381,7 @@ begin
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -390,7 +390,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
@@ -408,7 +408,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
         else
-           err( "unable to sort this element type" );
+           err( +"unable to sort this element type" );
         end if;
      end if;
   end if;
@@ -435,7 +435,7 @@ begin
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -444,7 +444,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
@@ -462,7 +462,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
         else
-           err( "unable to sort this element type" );
+           err( +"unable to sort this element type" );
         end if;
      end if;
   end if;
@@ -489,7 +489,7 @@ begin
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -498,7 +498,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
@@ -516,7 +516,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
         else
-           err( "unable to sort this element type" );
+           err( +"unable to sort this element type" );
         end if;
      end if;
   end if;
@@ -543,7 +543,7 @@ begin
   --   end if;
   --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -552,7 +552,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
@@ -570,7 +570,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
         else
-           err( "unable to sort this element type" );
+           err( +"unable to sort this element type" );
         end if;
      end if;
   end if;
@@ -595,7 +595,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -604,7 +604,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      len   := identifiers( var_id ).avalue'length;
@@ -628,9 +628,9 @@ begin
             identifiers( var_id ).avalue( newpos ) := tmp;
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( pl( gnat.source_info.source_location & ": internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when shuffling array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when shuffling array" ) );
      end;
   end if;
 end ParseArraysShuffle;
@@ -653,7 +653,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -662,7 +662,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      first   := identifiers( var_id ).avalue'first;
@@ -682,9 +682,9 @@ begin
            end loop;
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : index out of range when copying" & oldpos'img & " and" & newpos'img & " in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( pl( gnat.source_info.source_location & ": internal error : index out of range when copying" & oldpos'img & " and" & newpos'img & " in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when flipping arrays" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when flipping arrays" ) );
      end;
   end if;
 end ParseArraysFlip;
@@ -704,7 +704,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   -- mark as being altered for later tests
   if syntax_check then
@@ -713,7 +713,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -727,9 +727,9 @@ begin
             --moveElement( integer(i), integer(i+1) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( pl( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" ) );
      end;
   end if;
 end ParseArraysShiftRight;
@@ -749,7 +749,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -758,7 +758,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -772,9 +772,9 @@ begin
             --moveElement( integer(i+1), integer(i) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( pl( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" ) );
      end;
   end if;
 end ParseArraysShiftLeft;
@@ -795,7 +795,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -804,7 +804,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -824,9 +824,9 @@ begin
         end if;
         --moveElement( 0, 1 );
      exception when CONSTRAINT_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( pl( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" ) );
      end;
   end if;
 end ParseArraysRotateRight;
@@ -847,7 +847,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -856,7 +856,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( var_id );
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
@@ -879,9 +879,9 @@ begin
            identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+        err( pl( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img  ));
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" ) );
      end;
   end if;
 end ParseArraysRotateLeft;
@@ -915,7 +915,7 @@ begin
   --   end if;
   --elsif not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
   if not (class_ok( target_var_id, varClass ) and identifiers( target_var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   expectParameterComma;
   ParseExpression( source_val, source_type );
@@ -928,7 +928,7 @@ begin
   end if;
   if isExecutingCommand then
      checkExpressionFactorVolatilityOnWrite( target_var_id );
-     checkDoubleThreadWrite( target_var_id );
+     checkDoubleDataFlowWrite( target_var_id );
      --checkDoubleGlobalWrite( target_var_id );
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
@@ -936,7 +936,7 @@ begin
      begin
        DoJsonToArray( target_var_id, source_val );
      exception when constraint_error =>
-       err( "bad JSON string " & to_string( toEscaped( source_val ) ) );
+       err( pl( "bad JSON string " & to_string( toEscaped( source_val ) ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -970,7 +970,7 @@ begin
   --   end if;
   --elsif not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
   if not (class_ok( source_var_id, varClass ) and identifiers( source_var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then

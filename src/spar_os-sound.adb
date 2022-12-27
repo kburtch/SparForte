@@ -369,12 +369,12 @@ begin
    end if;
    cdrom_fd := open( to_string( CDPath ) & ASCII.NUL, O_RDONLY+O_NONBLOCK, 0 );
    if cdrom_fd < 0 then
-      err( "Error openning CD-ROM drive: " & OSError( C_errno ) );
+      err( pl( "Error openning CD-ROM drive: " & OSError( C_errno ) ) );
       StopCD;
    end if;
    ioctl_cdromstart( ioctl_result, cdrom_fd, CDROMSTART, dummy );
    if ioctl_result < 0 then
-      err( "Error spinning up the CDROM drive: " & OSError( C_errno ) );
+      err( pl( "Error spinning up the CDROM drive: " & OSError( C_errno ) ) );
       StopCD;
    end if;
    playinfo.start_track := 1; -- first track
@@ -384,9 +384,9 @@ begin
    ioctl_playtrkind( ioctl_result, cdrom_fd, CDROMPLAYTRKIND, playinfo );
    if ioctl_result < 0 then
       if C_errno = EINVAL then
-         err( "CD is not an audio CD" );
+         err( pl( "CD is not an audio CD" ) );
       else
-         err( "Error starting audio CD music: " & OSError( C_errno ) );
+         err( pl( "Error starting audio CD music: " & OSError( C_errno ) ) );
       end if;
       StopCD;
    end if;
@@ -398,12 +398,12 @@ procedure StopCD is
    res          : int;
 begin
    if cdrom_fd <= 0 then
-      err( "CD-ROM drive is not in use" );
+      err( pl("CD-ROM drive is not in use" ) );
       return;
    end if;
    ioctl_cdromstop( ioctl_result, cdrom_fd, CDROMSTOP, dummy );
    if ioctl_result < 0 then
-      err( "Error stopping audio CD: " & OSError( C_errno ) );
+      err( pl( "Error stopping audio CD: " & OSError( C_errno ) ) );
    end if;
 <<retry>>
    res := close( cdrom_fd );

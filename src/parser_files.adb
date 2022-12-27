@@ -279,7 +279,7 @@ begin
      if filesize >= 0 then
         f := to_unbounded_string( long_integer'image( filesize ) );
      else
-        err( "unable to get file size: " & OSError( spar_os.C_errno ) );
+        err( pl( "unable to get file size: " & OSError( spar_os.C_errno ) ) );
      end if;
   end if;
 end ParseFileSize;
@@ -358,10 +358,10 @@ begin
         begin -- exception is possible but very unlikely
            f := to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) );
         exception when others =>
-           err( "execption raised when getting file modified time" );
+           err( +"execption raised when getting file modified time" );
         end;
      else
-        err( "unable to get file modify time: " & OSError( spar_os.C_errno ) );
+        err( pl( "unable to get file modify time: " & OSError( spar_os.C_errno ) ) );
      end if;
   end if;
 end ParseFileLastModified;
@@ -386,10 +386,10 @@ begin
         begin -- exception is possible but very unlikely
            f := to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) );
         exception when others =>
-           err( "execption raised when getting file modified time" );
+           err( +"execption raised when getting file modified time" );
         end;
      else
-        err( "unable to get file change time: " & OSError( spar_os.C_errno ) );
+        err( pl( "unable to get file change time: " & OSError( spar_os.C_errno ) ) );
      end if;
   end if;
 end ParseFileLastChanged;
@@ -414,10 +414,10 @@ begin
         begin -- exception is possible but very unlikely
            f := to_unbounded_string( time'image( time_of( year, month, day, day_duration( seconds ) ) ) );
         exception when others =>
-           err( "execption raised when getting file modified time" );
+           err( +"execption raised when getting file modified time" );
         end;
      else
-        err( "unable to get file access time: " & OSError( spar_os.C_errno ) );
+        err( pl( "unable to get file access time: " & OSError( spar_os.C_errno ) ) );
      end if;
   end if;
 end ParseFileLastAccessed;

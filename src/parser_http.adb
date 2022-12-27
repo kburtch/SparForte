@@ -148,14 +148,14 @@ end GetCluster;
 procedure checkMemcacheRestriction is
 begin
   if restriction_no_memcache then
-     err( "not allowed with " & bold( "pragma restriction( no_memcache )" ) );
+     err( "not allowed with " & em( "pragma restriction( no_memcache )" ) );
   end if;
 end checkMemcacheRestriction;
 
 procedure checkRestrictedShell is
 begin
   if rshOpt then
-     err( "not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( "not allowed in a " & em( "restricted shell" ) );
   end if;
 end checkRestrictedShell;
 

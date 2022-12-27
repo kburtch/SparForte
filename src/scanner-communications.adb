@@ -42,12 +42,20 @@ use  ada.characters.handling,
      pegasoft.strings,
      pegasoft.script_io,
      pegasoft.user_io,
+     spar_os,
      spar_os.tty,
      scanner;
 
 package body scanner.communications is
 
 templateErrorHeader : constant unbounded_string := to_unbounded_string( "SparForte says" );
+
+
+-----------------------------------------------------------------------------
+--
+-- SUPPORT FUNCTIONS FOR MESSAGES
+--
+-----------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------
@@ -67,24 +75,24 @@ function convertToHTML( oldString : unbounded_string ) return unbounded_string i
    -- infinite loops.  The string s is updated with the changes.
    --------------------------------------------------------------------------
 
-   procedure stripTerminalChars(
-         s : in out unbounded_string;
-         controlSeq : unbounded_string;
-         replacementHTML : string ) is
-      timeout : natural;
-   begin
-      if controlSeq = "" then
-         return;
-      end if;
-      timeout := 0;
-      loop
-         p := index( s, to_string( controlSeq ) );
-      exit when p = 0 or timeout = 10;
-         delete( s, p, p - 1 + length( controlSeq ) );
-         insert( s, p, replacementHTML );
-         timeout := timeout + 1;
-      end loop;
-   end stripTerminalChars;
+   -- procedure stripTerminalChars(
+   --      s : in out unbounded_string;
+   --      controlSeq : unbounded_string;
+   --      replacementHTML : string ) is
+   --   timeout : natural;
+   --begin
+   --   if controlSeq = "" then
+   --      return;
+   --   end if;
+   --   timeout := 0;
+   --   loop
+   --      p := index( s, to_string( controlSeq ) );
+   --   exit when p = 0 or timeout = 10;
+   --      delete( s, p, p - 1 + length( controlSeq ) );
+   --      insert( s, p, replacementHTML );
+   --      timeout := timeout + 1;
+   --   end loop;
+   --end stripTerminalChars;
 
 begin
 
@@ -105,17 +113,17 @@ begin
 
    -- Replace boldface on
 
-   stripTerminalChars(  s, term( bold ), "<span style=""font-weight:bold"">" );
-   stripTerminalChars(  s, term( inverse ), "<span style=""font-style:italic"">" );
-   stripTerminalChars(  s, term( normal ), "</span>" );
+   -- stripTerminalChars(  s, term( bold ), "<span style=""font-weight:bold"">" );
+   -- stripTerminalChars(  s, term( inverse ), "<span style=""font-style:italic"">" );
+   -- stripTerminalChars(  s, term( normal ), "</span>" );
 
    -- Colour sequences: convert to bold and italic.  Green does nothing.
    -- White is treated as closing a colour.
 
-   stripTerminalChars(  s, term( green ), "<span>" );
-   stripTerminalChars(  s, term( yellow ), "<span style=""font-weight:bold"">" );
-   stripTerminalChars(  s, term( red ), "<span style=""font-style:italic"">" );
-   stripTerminalChars(  s, term( white ), "</span>" );
+   -- stripTerminalChars(  s, term( green ), "<span>" );
+   -- stripTerminalChars(  s, term( yellow ), "<span style=""font-weight:bold"">" );
+   -- stripTerminalChars(  s, term( red ), "<span style=""font-style:italic"">" );
+   -- stripTerminalChars(  s, term( white ), "</span>" );
 
    return s;
 end convertToHTML;
@@ -133,7 +141,33 @@ type plainTextOptions is ( no_lf, with_lf );
 function convertToPlainText( oldString : unbounded_string; options : plainTextOptions := no_lf ) return unbounded_string is
   s : unbounded_string := oldString;
   p : natural;
-  timeout : natural;
+  -- timeout : natural;
+
+   --  STRIP TERMINAL CHARS
+   --
+   -- Search for and remove occurrences of terminal control sequences.  If
+   -- the control sequence is nothing, then do nothing.  A timeout prevents
+   -- infinite loops.
+   --------------------------------------------------------------------------
+
+   procedure stripTerminalChars(
+         s : in out unbounded_string;
+         controlSeq : unbounded_string ) is
+      timeout : natural;
+   begin
+      if controlSeq = "" then
+         return;
+      end if;
+      timeout := 0;
+      loop
+         p := index( s, to_string( controlSeq ) );
+      exit when p = 0 or timeout = 10;
+         delete( s, p, p - 1 + length( controlSeq ) );
+         -- insert( s, p, replacementHTML );
+         timeout := timeout + 1;
+      end loop;
+   end stripTerminalChars;
+
 begin
 
   -- remove any end-of-lines to ensure message is on one line
@@ -149,67 +183,410 @@ begin
      end loop;
   end if;
 
+
+   -- Replace boldface on
+
+   -- stripTerminalChars(  s, term( bold ) );
+   -- stripTerminalChars(  s, term( inverse ) );
+   -- stripTerminalChars(  s, term( normal ) );
+
+   -- Colour sequences: convert to bold and italic.  Green does nothing.
+   -- White is treated as closing a colour.
+
+   -- stripTerminalChars(  s, term( green ) );
+   -- stripTerminalChars(  s, term( yellow ) );
+   -- stripTerminalChars(  s, term( red ) );
+   -- stripTerminalChars(  s, term( white ) );
+
   -- remove boldface on
   -- If not running in a tty, the term value may be empty.
 
-  if term( bold ) /= null_unbounded_string then
-     timeout := 0;
-     loop
-        p := index( s, to_string( term( bold ) ) );
-     exit when p = 0 or timeout = 10;
-        delete( s, p, p - 1 + length( term( bold ) ) );
-        timeout := timeout + 1;
-     end loop;
-  end if;
+
+  --if term( bold ) /= null_unbounded_string then
+  --   timeout := 0;
+  --   loop
+  --      p := index( s, to_string( term( bold ) ) );
+  --   exit when p = 0 or timeout = 10;
+  --      delete( s, p, p - 1 + length( term( bold ) ) );
+  ---      timeout := timeout + 1;
+  --   end loop;
+  --end if;
 
   -- remove inverse on
   -- If not running in a tty, the term value may be empty.
 
-  if term( inverse ) /= null_unbounded_string then
-     timeout := 0;
-     loop
-        p := index( s, to_string( term( inverse ) ) );
-     exit when p = 0 or timeout = 10;
-        delete( s, p, p - 1 + length( term( inverse ) ) );
-        timeout := timeout + 1;
-     end loop;
-  end if;
+  --if term( inverse ) /= null_unbounded_string then
+  --   timeout := 0;
+  --   loop
+  --      p := index( s, to_string( term( inverse ) ) );
+  --   exit when p = 0 or timeout = 10;
+  --      delete( s, p, p - 1 + length( term( inverse ) ) );
+  --      timeout := timeout + 1;
+  --   end loop;
+  --end if;
 
   -- remove boldface/inverse off
   -- If not running in a tty, the term value may be empty.
 
-  if term( normal ) /= null_unbounded_string then
-     timeout := 0;
-     loop
-        p := index( s, to_string( term( normal ) ) );
-     exit when p = 0 or timeout = 10;
-        delete( s, p, p - 1 + length( term( normal ) ) );
-        timeout := timeout + 1;
-     end loop;
-  end if;
+  --if term( normal ) /= null_unbounded_string then
+  --   timeout := 0;
+  --   loop
+  --      p := index( s, to_string( term( normal ) ) );
+  --   exit when p = 0 or timeout = 10;
+  --      delete( s, p, p - 1 + length( term( normal ) ) );
+  --      timeout := timeout + 1;
+  --   end loop;
+  --end if;
 
   return s;
- end convertToPlainText;
+end convertToPlainText;
+
+
+-----------------------------------------------------------------------------
+--  GET ERROR ICON
+--
+-- Return an appropriate error message icon, depending on the display context.
+-- With --colour on the comand line, show a UTF icon.  When in a template,
+-- the icon depends on the template.
+-----------------------------------------------------------------------------
+
+function getErrorIcon return messageStrings is
+  errorIcon : messageStrings;
+begin
+  if not gccOpt then
+     -- For different documents, fill in the error icon below
+     -- An HTML template MIGHT use UTF-8 but we don't know for certain
+     if hasTemplate then
+        case templateHeader.templateType is
+        when others =>
+           null;
+        end case;
+     elsif colourOpt then
+        errorIcon.templateMessage := to_unbounded_string( utf_ballot );
+     end if;
+  end if;
+  -- no icon for text messages
+  return errorIcon;
+end getErrorIcon;
+
+
+-----------------------------------------------------------------------------
+--  GET CARET ICON
+--
+-- Return an appropriate caret message icon, depending on the display context.
+-- With --colour on the comand line, show a UTF icon.  When in a template,
+-- the icon depends on the template.
+-----------------------------------------------------------------------------
+
+function getCaretIcon return messageStrings is
+  caretIcon : messageStrings;
+begin
+  if not gccOpt then
+     -- For different documents, fill in the error icon below
+     -- An HTML template MIGHT use UTF-8 but we don't know for certain
+     if hasTemplate then
+        case templateHeader.templateType is
+        when others =>
+           caretIcon.templateMessage := to_unbounded_string( "^" );
+        end case;
+     elsif colourOpt then
+        caretIcon.templateMessage := to_unbounded_string( utf_triangle );
+     else
+        caretIcon.templateMessage := to_unbounded_string( "^" );
+     end if;
+     caretIcon.textMessage := to_unbounded_string( "^" );
+  end if;
+  return caretIcon;
+end getCaretIcon;
+
+
+-----------------------------------------------------------------------------
+--  GET LEFT CARET ICON
+--
+-- Return an appropriate caret message icon, depending on the display context.
+-- With --colour on the comand line, show a UTF icon.  When in a template,
+-- the icon depends on the template.
+-----------------------------------------------------------------------------
+
+function getLeftCaretIcon return messageStrings is
+  caretIcon : messageStrings;
+begin
+  if not gccOpt then
+     -- For different documents, fill in the error icon below
+     -- An HTML template MIGHT use UTF-8 but we don't know for certain
+     if hasTemplate then
+        case templateHeader.templateType is
+        when others =>
+           caretIcon.templateMessage := to_unbounded_string( "^" );
+        end case;
+     elsif colourOpt then
+        caretIcon.templateMessage := to_unbounded_string( utf_left );
+     else
+        caretIcon.templateMessage := to_unbounded_string( "^" );
+     end if;
+     caretIcon.textMessage := to_unbounded_string( "^" );
+  end if;
+  return caretIcon;
+end getLeftCaretIcon;
+
+
+-----------------------------------------------------------------------------
+--  GET RIGHT CARET ICON
+--
+-- Return an appropriate caret message icon, depending on the display context.
+-- With --colour on the comand line, show a UTF icon.  When in a template,
+-- the icon depends on the template.
+-----------------------------------------------------------------------------
+
+function getRightCaretIcon return messageStrings is
+  caretIcon : messageStrings;
+begin
+  if not gccOpt then
+     -- For different documents, fill in the error icon below
+     -- An HTML template MIGHT use UTF-8 but we don't know for certain
+     if hasTemplate then
+        case templateHeader.templateType is
+        when others =>
+           caretIcon.templateMessage := to_unbounded_string( "^" );
+        end case;
+     elsif colourOpt then
+        caretIcon.templateMessage := to_unbounded_string( utf_right );
+     else
+        caretIcon.templateMessage := to_unbounded_string( "^" );
+     end if;
+     caretIcon.textMessage := to_unbounded_string( "^" );
+  end if;
+  return caretIcon;
+end getRightCaretIcon;
+
+
+-----------------------------------------------------------------------------
+--  GET HORIZONTAL LINE ICON
+--
+-- Return an appropriate horizontal line, depending on the display context.
+-- With --colour on the comand line, show a UTF character.  When in a
+-- template, the icon depends on the template.
+-----------------------------------------------------------------------------
+
+function getHorizontalLineIcon( width : natural ) return messageStrings is
+  lineIcon : messageStrings;
+begin
+  if not gccOpt then
+     -- For different documents, fill in the error icon below
+     -- An HTML template MIGHT use UTF-8 but we don't know for certain
+     if hasTemplate then
+        case templateHeader.templateType is
+        when others =>
+           lineIcon.templateMessage := to_unbounded_string( width * "-" );
+        end case;
+     elsif colourOpt then
+        lineIcon.templateMessage := to_unbounded_string( width * utf_horizontalLineOnly );
+     else
+        lineIcon.templateMessage := to_unbounded_string( width * "-" );
+     end if;
+     lineIcon.textMessage := to_unbounded_string( width * "-" );
+  end if;
+  return lineIcon;
+end getHorizontalLineIcon;
+
+
+-----------------------------------------------------------------------------
+--  GET NEW LINE
+--
+-- Return a new line as appropriate for the output context.
+-----------------------------------------------------------------------------
+
+function getNewLine return messageStrings is
+  nl : messageStrings;
+begin
+  if hasTemplate then
+     case templateHeader.templateType is
+     when htmlTemplate | wmlTemplate =>
+         nl.templateMessage := to_unbounded_string( "<br>" & ASCII.CR & ASCII.LF );
+     when others =>
+         nl.templateMessage := to_unbounded_string( eol_characters );
+     end case;
+   else
+     nl.templateMessage := to_unbounded_string( eol_characters );
+   end if;
+   nl.textMessage := to_unbounded_string( eol_characters );
+   return nl;
+end getNewLine;
+
+
+-----------------------------------------------------------------------------
+--  GET STACK TRACE
+--
+-- Return the active nested blocks for the current execution context in the
+-- form of "x in y in z...".
+-----------------------------------------------------------------------------
+
+function getStackTrace return messageStrings is
+  stackTrace : messageStrings;
+begin
+  if blocks_top > blocks'first then                            -- in a block?
+     for i in reverse blocks'first..blocks_top-1 loop             -- show the
+         if i /= blocks_top-1 then                              -- simplified
+            stackTrace := stackTrace & pl( " in " );             -- traceback
+         end if;
+         stackTrace := stackTrace & unb_pl( ToEscaped( blocks( i ).blockName ) );
+     end loop;
+  else                                                        -- if no blocks
+     stackTrace := pl( "in script" );                     -- just "in script"
+  end if;
+  return stackTrace;
+end getStackTrace;
+
+
+-----------------------------------------------------------------------------
+--  GET COMMAND POINTER
+--
+-- Return a pointer to the message in the line where an event occurred.  This
+-- includes the indent to the given position, draws the pointer in either
+-- ASCII or UTF characters, and a trailing UTF icon intended to go before
+-- the message (if in colour mode).  For a shell word, provide a non-zero
+-- offset to the position on the line.
+-----------------------------------------------------------------------------
+
+function getLinePointer( iconText : messageStrings; firstPos, lastPos : natural;
+     wordOffset : natural := 0 ) return messageStrings is
+  cmdPointer : messageStrings;
+begin
+  if script /= null then
+     -- special case: a shell word offsets to the word position
+     if wordOffset > 0 then
+        cmdPointer :=
+           unb_pl( ada.strings.unbounded.to_unbounded_string( (wordOffset-1) * " " ) );
+        cmdPointer := cmdPointer & getCaretIcon;
+     else
+        -- the indent (first character is zero indent)
+        cmdPointer :=
+           unb_pl( ada.strings.unbounded.to_unbounded_string( (firstPos-1) * " " ) );
+        -- the underline, if a range of characters
+        if lastpos > firstpos then
+           cmdPointer := cmdPointer & getLeftCaretIcon;
+           cmdPointer := cmdPointer &
+                 getHorizontalLineIcon(lastpos-firstPos-1);
+           cmdPointer := cmdPointer & getRightCaretIcon;
+        else
+           -- the point, if a single character
+           cmdPointer := cmdPointer & getCaretIcon;
+       end if;
+       -- the space after the pointer
+       cmdPointer := cmdPointer & pl( " " );
+    end if;
+  end if;
+  -- the message icon
+  if iconText.templateMessage /= "" then
+     cmdPointer := cmdPointer & iconText & pl( " " );
+  end if;
+  return cmdPointer;
+end getLinePointer;
+
+
+-----------------------------------------------------------------------------
+--  GET GCC FORMAT ERROR MESSAGE
+--
+-- Return an error message in GCC format based on the given context.
+-----------------------------------------------------------------------------
+
+function getGCCFormatErrorMessage( lineno, firstpos, fileno : natural; msg : messageStrings ) return messageStrings is
+  gccMsg      : unbounded_string;
+  lineStr     : unbounded_string;
+  firstPosStr : unbounded_string;
+  sfr         : aSourceFile;
+begin
+  lineStr := to_unbounded_string( lineno'img );             -- remove leading
+  if length( lineStr ) > 0 then                             -- space (if any)
+     if element( lineStr, 1 ) = ' ' then
+        delete( lineStr, 1, 1 );
+     end if;
+  end if;
+  firstposStr := to_unbounded_string( firstpos'img );
+  if length( firstposStr ) > 0 then                             -- here, too
+     if element( firstposStr, 1 ) = ' ' then
+        delete( firstposStr, 1, 1 );
+     end if;
+  end if;
+  sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+  gccMsg := sfr.name
+     & ":" & lineStr
+     & ":" & firstposStr
+     & ":";                                                  -- no traceback
+     gccMsg := gccMsg & ' ';                                  -- token start
+     gccMsg := gccMsg & msg.textMessage;
+  return unb_pl( gccMsg );
+end getGCCFormatErrorMessage;
+
+
+-----------------------------------------------------------------------------
+--  GET GCC FORMAT ERROR MESSAGE
+--
+-- Return the message location.
+-----------------------------------------------------------------------------
+
+function getSparFormatMessageHeader( lineno, firstpos, fileno : natural ) return messageStrings is
+  sparHeader : messageStrings;
+  sfr        : aSourceFile;
+begin
+  sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+  sparHeader := unb_pl( sfr.name
+     & ":" & lineno'img
+     & ":" & firstpos'img
+     & ": ");
+  return sparHeader;
+end getSparFormatMessageHeader;
+
+
+-----------------------------------------------------------------------------
+--  GET FORMATTED MESSAGE
+--
+-- Return an error message based on the output context.
+-----------------------------------------------------------------------------
+
+function getFormattedMessage( original : string ) return unbounded_string is
+  formattedMsg : unbounded_string;
+begin
+  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
+     case templateHeader.templateType is
+     when htmlTemplate | wmlTemplate =>
+        formattedMsg := convertToHTML( to_unbounded_string( original ) );
+     when others =>
+        formattedMsg := convertToPlainText( to_unbounded_string( original ) );
+     end case;
+  else
+     -- normal case, leave colour text alone
+     formattedMsg := to_unbounded_string( original );
+  end if;
+  return formattedMsg;
+end getFormattedMessage;
+
+
+-----------------------------------------------------------------------------
+--
+-- BASIC ERROR MESSAGES (and similar messages)
+--
+-----------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------
 --  GET SCRIPT POSITION MESSAGE
 --
+-- This is the form of a notification used in breakout mode for displaying
+-- messages to standard error like "break" or "resuming", including the
+-- script position.
 -----------------------------------------------------------------------------
 
-function get_script_execution_position( msg : string ) return unbounded_string is
-  cmdline    : unbounded_string;
+function get_script_execution_position( msg : messageStrings; utf_icon : string ) return unbounded_string is
+  cmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
-  lineStr    : unbounded_string;
-  firstposStr : unbounded_string;
   lineno     : natural;
   fileno     : natural;
-  outLine    : unbounded_string;
-  gccOutLine : unbounded_string;
-  sfr        : aSourceFile;
+  gccFormatMsg : messageStrings;
   needGccVersion : boolean := false;
-  fullErrorMessage : unbounded_string;
+  fullErrorMessage : messageStrings;
+  -- this hides the global fullErrorMessage
 begin
   -- Only create the abbreviated GCC-style error message if we need it
   --
@@ -223,121 +600,74 @@ begin
   -- the current token position and the line number.
 
   if script /= null then
-     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
   else
      -- can't use optional_inverse here because the text will be
      -- escaped later
-     cmdLine := to_unbounded_string( "<No executable line to show> in <no script loaded>" );
+     cmdLine := pl( "<No executable line to show> in <no script loaded>" );
   end if;
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
 
-  fullErrorMessage := null_unbounded_string;
+  fullErrorMessage := nullMessageStrings;
+  fullTemplateErrorMessage := null_unbounded_string;
+
+  -- Generate a Gcc-formatted error message (if we need one)
+
+  if needGccVersion then
+     if script /= null then
+        gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
+      end if;
+  end if;
 
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, if we're just at
   -- the command prompt, don't bother with the location/traceback.
 
   if inputMode /= interactive and inputMode /= breakout then
-
-  -- Get the location information.  If gcc option, strip the leading
-  -- blanks form the location information.  Use outLine to generate a full
-  -- line of text because individual Put's are shown as individual lines
-  -- in Apache's error logs for templates...a real mess.
-  --
-  -- The basic GCC message will be recorded in a separate "out line"
-  -- as we may need both message formats for a web template.
-
      if script /= null then
-
-        if needGccVersion then                            -- gcc style?
-           lineStr := to_unbounded_string( lineno'img );  -- remove leading
-           if length( lineStr ) > 0 then                  -- space (if any)
-              if element( lineStr, 1 ) = ' ' then
-                 delete( lineStr, 1, 1 );
-              end if;
-           end if;
-           firstposStr := to_unbounded_string( firstpos'img );
-           if length( firstposStr ) > 0 then              -- here, too
-              if element( firstposStr, 1 ) = ' ' then
-                 delete( firstposStr, 1, 1 );
-              end if;
-           end if;
-           sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-           gccOutLine := sfr.name
-             & ":" & lineStr
-             & ":" & firstposStr
-             & ":";                                       -- no traceback
-           gccOutLine := gccOutLine & ' ';                -- token start
-           gccOutLine := gccOutLine & msg;
-        end if;
-
-        -- For the regular format, show the location and traceback
-
-        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        outLine := sfr.name                               -- location
-           & ":" & lineno'img
-           & ":" & firstpos'img
-           & ": ";
-
-        -- TODO: we're using UNIX eof's but should ideally be o/s
-        -- independent
-
-        if blocks_top > blocks'first then                 -- in a block?
-           for i in reverse blocks'first..blocks_top-1 loop -- show the
-               if i /= blocks_top-1 then                  -- simplified
-                  outLine := outLine & " in ";            -- traceback
-               end if;
-               outLine := outLine & ToEscaped( blocks( i ).blockName );
-           end loop;
-           fullErrorMessage := outLine & ASCII.LF;
-           outLine := null_unbounded_string;
-        else                                              -- if no blocks
-           outLine := outLine & "in script";              -- just say
-           fullErrorMessage := outLine & ASCII.LF;        -- "in script"
-           outLine := null_unbounded_string;
-        end if;
-     else
-        -- no script?
-        outLine := null_unbounded_string;
-     end if; -- a script exists
-  end if;
-
-  -- For the normal version, we must follow the traceback with the
-  -- message, error underline and show the error message.
-  -- Output only full lines to avoid messy Apache error logs.
-  --
-  -- First, add the line the error occurred in
-
-  fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
-
-  -- Draw the underline error pointer
-
-  if script /= null then
-     outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
-     outLine := outLine & '^';                                  -- token start
-     if lastpos > firstpos then                                 -- multi chars?
-        outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
-        outLine := outLine & '^';                               -- token end
+        -- For the regular format, show the location and traceback in script
+        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
+          getStackTrace;
      end if;
-     outLine := outLine & ' ';                                  -- token start
   end if;
-  outLine := outLine & msg;
+  fullErrorMessage := fullErrorMessage & getNewLine;
 
-  -- Even for a template, if the user selected gccOpt specifically,
-  -- use it.
+  -- header : stack trace <-- this is compete
+  -- source line <-- doing this
+  -- message
 
-  -- Pick which format the user wants for the full message.
+  -- Second, add the line the error occurred in
+
+  declare
+     formattedCmdline : messageStrings;
+  begin
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+    fullErrorMessage := fullErrorMessage & formattedCmdline;
+  end;
+
+  -- header : stack trace <-- this is compete
+  -- source line <-- this is complete
+  -- message <-- doing this
+
+  -- Third, add the error message
   --
-  -- TODO: we're using UNIX eof's but should ideally be o/s
-  -- independent
+  -- Draw the underline error pointer
+  -- Pick the output format based on the user's preference and the template
+  -- type.  If the user requests GCC format, use it even when in a template.
 
   if gccOpt then
-     fullErrorMessage := gccOutLine;
+     fullErrorMessage := gccFormatMsg;
   else
-     fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+     fullErrorMessage := fullErrorMessage & getNewLine;
+     fullErrorMessage := fullErrorMessage & getLinePointer( getErrorIcon, firstPos, lastPos );
+     fullErrorMessage := fullErrorMessage & msg;
   end if;
+
+  -- header : stack trace <-- this is compete
+  -- source line <-- this is complete
+  -- message <-- this is complete
 
   -- If we are in any mode of the development cycle except maintenance
   -- mode, create an error message to display.  If we're in maintenance
@@ -346,24 +676,24 @@ begin
   if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
-        fullErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
-           "<p>" & convertToHTML( fullErrorMessage ) & "</p>" &
+           "<p>" & fullErrorMessage.templateMessage & "</p>" &
            "</div>" &
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
+        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
-        fullErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
+        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
      when yamlTemplate =>
-        fullErrorMessage := "# " & convertToPlainText( fullErrorMessage );
+        fullTemplateErrorMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
-        fullErrorMessage := convertToPlainText( fullErrorMessage );
+        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -373,9 +703,9 @@ begin
      -- format this for Apache by stripping out the boldface or
      -- other effects.
      --
-     fullErrorMessage := ConvertToPlainText( gccOutLine );
+     return gccFormatMsg.textMessage;
   end if;
-  return fullErrorMessage;
+  return fullErrorMessage.templateMessage;
 end get_script_execution_position;
 
 
@@ -388,17 +718,13 @@ end get_script_execution_position;
 -- Only display the first error/exception encounted.
 -----------------------------------------------------------------------------
 
-procedure err_shell( msg : string; wordOffset : natural ) is
-  cmdline    : unbounded_string;
+procedure err_shell( msg : messageStrings; wordOffset : natural ) is
+  cmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
-  lineStr    : unbounded_string;
-  firstposStr : unbounded_string;
   lineno     : natural;
   fileno     : natural;
-  outLine    : unbounded_string;
-  gccOutLine : unbounded_string;
-  sfr        : aSourceFile;
+  gccFormatMsg : messageStrings;
   needGccVersion : boolean := false;
 begin
 
@@ -421,146 +747,86 @@ begin
   -- the current token position and the line number.
 
   if script /= null then
-     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
   else
      -- can't use optional_inverse here because the text will be
      -- escaped later
-     cmdLine := to_unbounded_string( "<No executable line to show> in <no script loaded>" );
+     cmdLine := pl( "<No executable line to show> in <no script loaded>" );
   end if;
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
 
-  fullErrorMessage := null_unbounded_string;
+  fullErrorMessage := nullMessageStrings;
   fullTemplateErrorMessage := null_unbounded_string;
+
+  -- Generate a Gcc-formatted error message (if we need one)
+
+  if needGccVersion then
+     if script /= null then
+        gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
+      end if;
+  end if;
 
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, if we're just at
   -- the command prompt, don't bother with the location/traceback.
 
   if inputMode /= interactive and inputMode /= breakout then
-
-  -- Get the location information.  If gcc option, strip the leading
-  -- blanks form the location information.  Use outLine to generate a full
-  -- line of text because individual Put's are shown as individual lines
-  -- in Apache's error logs for templates...a real mess.
-  --
-  -- The basic GCC message will be recorded in a separate "out line"
-  -- as we may need both message formats for a web template.
-
      if script /= null then
-
-        if needGccVersion then                            -- gcc style?
-           lineStr := to_unbounded_string( lineno'img );  -- remove leading
-           if length( lineStr ) > 0 then                  -- space (if any)
-              if element( lineStr, 1 ) = ' ' then
-                 delete( lineStr, 1, 1 );
-              end if;
-           end if;
-           firstposStr := to_unbounded_string( firstpos'img );
-           if length( firstposStr ) > 0 then              -- here, too
-              if element( firstposStr, 1 ) = ' ' then
-                 delete( firstposStr, 1, 1 );
-              end if;
-           end if;
-           sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-           gccOutLine := sfr.name
-             & ":" & lineStr
-             & ":" & firstposStr
-             & ":";                                       -- no traceback
-           gccOutLine := gccOutLine & ' ';                -- token start
-           gccOutLine := gccOutLine & msg;
-        end if;
-
-        -- For the regular format, show the location and traceback
-
-        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        outLine := sfr.name                               -- location
-           & ":" & lineno'img
-           & ":" & firstpos'img
-           & ": ";
-
-        -- TODO: we're using UNIX eof's but should ideally be o/s
-        -- independent
-
-        if blocks_top > blocks'first then                 -- in a block?
-           for i in reverse blocks'first..blocks_top-1 loop -- show the
-               if i /= blocks_top-1 then                  -- simplified
-                  outLine := outLine & " in ";            -- traceback
-               end if;
-               outLine := outLine & ToEscaped( blocks( i ).blockName );
-           end loop;
-           fullErrorMessage := outLine & ASCII.LF;
-           outLine := null_unbounded_string;
-        else                                              -- if no blocks
-           outLine := outLine & "in script";              -- just say
-           fullErrorMessage := outLine & ASCII.LF;        -- "in script"
-           outLine := null_unbounded_string;
-        end if;
-     else
-        -- no script?
-        outLine := null_unbounded_string;
-     end if; -- a script exists
-  end if;
-
-  -- For the normal version, we must follow the traceback with the
-  -- message, error underline and show the error message.
-  -- Output only full lines to avoid messy Apache error logs.
-  --
-  -- First, add the line the error occurred in
-
-  fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
-
-  -- Draw the underline error pointer
-  -- If it's a shell word with an offset into the word, just show a single
-  -- caret.
-
-  if script /= null then
-     outLine := outLine & ada.strings.unbounded.to_unbounded_string( (firstPos-1) * " " );      -- indent
-     if wordOffset > 0 then
-        outLine := outLine & ada.strings.unbounded.to_unbounded_string( (wordOffset-1) * " " );
-        outLine := outLine & '^';
-     else
-        if lastpos > firstpos then                              -- multi chars?
-           if colourOpt then
-              outLine := outLine & utf_left;                         -- token start
-              outLine := outLine & ada.strings.unbounded.to_unbounded_string( (lastpos-firstPos-1) * utf_horizontalLineOnly );
-              outLine := outLine & utf_right;                       -- token end
-           else
-              outLine := outLine & '^';
-              outLine := outLine & ada.strings.unbounded.to_unbounded_string( (lastpos-firstPos-1) * "-" );
-              outLine := outLine & '^';
-           end if;
-        else
-           if colourOpt then
-              outLine := outLine & utf_triangle;                         -- token start
-           else
-              outLine := outLine & '^';
-           end if;
-        end if;
+        -- For the regular format, show the location and traceback in script
+        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
+          getStackTrace;
      end if;
-     outLine := outLine & ' ';                                  -- token start
   end if;
+  fullErrorMessage := fullErrorMessage & getNewLine;
 
-  if colourOpt then
-     outLine := outLine & utf_ballot & " " & msg;
-  else
-     outLine := outLine & msg;
-  end if;
+  -- header : stack trace <-- this is compete
+  -- source line <-- doing this
+  -- message
 
-  -- Even for a template, if the user selected gccOpt specifically,
-  -- use it.
+  -- Second, add the line the error occurred in
 
-  -- Pick which format the user wants for the full message.
+  --declare
+  --   formattedCmdline : unbounded_string;
+  --begin
+  --  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
+  --     getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+  --     fullErrorMessage := fullErrorMessage & formattedCmdline;
+  --  else
+  --     getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, noTemplate );
+  --     fullErrorMessage := fullErrorMessage & formattedCmdline;
+  --  end if;
+  --end;
+
+  declare
+     formattedCmdline : messageStrings;
+  begin
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+    fullErrorMessage := fullErrorMessage & formattedCmdline;
+  end;
+
+  -- header : stack trace <-- this is compete
+  -- source line <-- this is complete
+  -- message <-- doing this
+
+  -- Third, add the error message
   --
-  -- TODO: we're using UNIX eof's but should ideally be o/s
-  -- independent
+  -- Draw the underline error pointer
+  -- Pick the output format based on the user's preference and the template
+  -- type.  If the user requests GCC format, use it even when in a template.
 
   if gccOpt then
-     fullErrorMessage := gccOutLine;
+     fullErrorMessage := gccFormatMsg;
   else
-     fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+     fullErrorMessage := fullErrorMessage & getNewLine;
+     fullErrorMessage := fullErrorMessage & getLinePointer( getErrorIcon, firstPos, lastPos, wordOffset );
+     fullErrorMessage := fullErrorMessage & msg;
   end if;
+
+  -- header : stack trace <-- this is compete
+  -- source line <-- this is complete
+  -- message <-- this is complete
 
   -- If we are in any mode of the development cycle except maintenance
   -- mode, create an error message to display.  If we're in maintenance
@@ -573,20 +839,20 @@ begin
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
-           "<p>" & convertToHTML( fullErrorMessage ) & "</p>" &
+           "<p>" & fullErrorMessage.templateMessage & "</p>" &
            "</div>" &
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
+        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
-        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage, with_lf );
+        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & convertToPlainText( fullErrorMessage );
+        fullTemplateErrorMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
-        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage );
+        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -596,8 +862,8 @@ begin
      -- format this for Apache by stripping out the boldface or
      -- other effects.
      --
-     -- TODO: document this
-     fullErrorMessage := ConvertToPlainText( gccOutLine );
+
+     fullErrorMessage := gccFormatMsg;
   end if;
 
   -- Show that this is an error, not an exception
@@ -610,7 +876,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace_error( "error: " & msg );
+     put_trace_error( "error: " & to_string( msg.textMessage ) );
   end if;
 end err_shell;
 
@@ -624,7 +890,7 @@ end err_shell;
 -- Only display the first error/exception encounted.
 -----------------------------------------------------------------------------
 
-procedure err( msg : string ) is
+procedure err( msg : messageStrings ) is
 begin
    err_shell( msg, 0 );
 end err;
@@ -640,7 +906,7 @@ end err;
 
 procedure err_symbol_table_overflow  is
 begin
-  err( optional_red( "there are too many identifiers for SparForte to handle (symbol table overflow)" ) );
+  err( inv( "there are too many identifiers for SparForte to handle (symbol table overflow)" ) );
 end err_symbol_table_overflow;
 
 
@@ -650,10 +916,10 @@ end err_symbol_table_overflow;
 -- Display a style error.  It is not an error if the script is unstructured.
 -----------------------------------------------------------------------------
 
-procedure err_style( msg : string ) is
+procedure err_style( msg : messageStrings ) is
 begin
    if scriptType = structured then
-      err_shell( "style issue: " & msg, 0 );
+      err_shell( +"style issue: " & msg, 0 );
    end if;
 end err_style;
 
@@ -666,7 +932,7 @@ end err_style;
 
 procedure err_exception_raised is
 begin
-  err( "an unexpected exception was raised" );
+  err( +"an unexpected exception was raised" );
 end err_exception_raised;
 
 
@@ -688,15 +954,15 @@ begin
         end if;
   end loop;
   if identifiers( ident ).renamed_count = 1 then
-     err( "renaming " &
-          optional_yellow( to_string( identifiers( renaming_id ).name ) ) &
-          " still refers to " &
-          optional_yellow( to_string( identifiers( ident ).name ) ) );
+     err( +"renaming " &
+          name_em( renaming_id ) &
+          pl( " still refers to " ) &
+          name_em( ident ) );
   else
-     err( "renaming " &
-          optional_yellow( to_string( identifiers( renaming_id ).name ) ) &
-          " (and others) still refer to " &
-          optional_yellow( to_string( identifiers( ident ).name ) ) );
+     err( +"renaming " &
+          name_em( renaming_id ) &
+          pl( " (and others) still refer to " ) &
+          name_em( ident) );
   end if;
 end err_renaming;
 
@@ -708,8 +974,8 @@ end err_renaming;
 -- exception.  Set the error_found and exception-related global values.
 -----------------------------------------------------------------------------
 
-procedure raise_exception( msg : string ) is
-  cmdline    : unbounded_string;
+procedure raise_exception( msg : messageStrings ) is
+  cmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
   lineStr    : unbounded_string;
@@ -718,8 +984,8 @@ procedure raise_exception( msg : string ) is
   fileno     : natural;
   outLine    : unbounded_string;
   gccOutLine : unbounded_string;
-  sfr        : aSourceFile;
   needGccVersion : boolean := false;
+  gccFormatMsg : messageStrings;
 begin
 
   -- Already displayed one error or script is complete?
@@ -740,13 +1006,28 @@ begin
   -- Decode a copy of the command line to show the error.  Also returns
   -- the current token position and the line number.
 
-  getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+  --getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+  if script /= null then
+     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
+  else
+     -- can't use optional_inverse here because the text will be
+     -- escaped later
+     cmdLine := pl( "<No executable line to show> in <no script loaded>" );
+  end if;
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
 
-  fullErrorMessage := null_unbounded_string;
+  fullErrorMessage := nullMessageStrings;
   fullTemplateErrorMessage := null_unbounded_string;
+
+  -- Generate a Gcc-formatted error message (if we need one)
+
+  if needGccVersion then
+     --if script /= null then
+        gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
+      --end if;
+  end if;
 
   -- If in a script (that is, a non-interactive input mode) then
   -- show the location and traceback.  Otherwise, if we're just at
@@ -754,61 +1035,12 @@ begin
 
   if inputMode /= interactive and inputMode /= breakout then
 
-  -- Get the location information.  If gcc option, strip the leading
-  -- blanks form the location information.  Use outLine to generate a full
-  -- line of text because individual Put's are shown as individual lines
-  -- in Apache's error logs for templates...a real mess.
-  --
-  -- The basic GCC message will be recorded in a separate "out line"
-  -- as we may need both message formats for a web template.
-
-     if needGccVersion then                            -- gcc style?
-        lineStr := to_unbounded_string( lineno'img );  -- remove leading
-        if length( lineStr ) > 0 then                  -- space (if any)
-           if element( lineStr, 1 ) = ' ' then
-              delete( lineStr, 1, 1 );
-           end if;
-        end if;
-        firstposStr := to_unbounded_string( firstpos'img );
-        if length( firstposStr ) > 0 then              -- here, too
-           if element( firstposStr, 1 ) = ' ' then
-              delete( firstposStr, 1, 1 );
-           end if;
-        end if;
-        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        gccOutLine := sfr.name
-          & ":" & lineStr
-          & ":" & firstposStr
-          & ":";                  -- no traceback
-        gccOutLine := gccOutLine & ' ';                -- token start
-        gccOutLine := gccOutLine & msg;
-     end if;
-
-     -- For the regular format, show the location and traceback
-
-     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-     outLine := sfr.name               -- otherwise
-        & ":" & lineno'img
-        & ":" & firstpos'img
-        & ": ";
-
-     -- TODO: we're using UNIX eof's but should ideally be o/s
-     -- independent
-
-     if blocks_top > blocks'first then                     -- in a block?
-        for i in reverse blocks'first..blocks_top-1 loop   -- show the
-            if i /= blocks_top-1 then                      -- simplified
-               outLine := outLine & " in ";                -- traceback
-            end if;
-            outLine := outLine & ToEscaped( blocks( i ).blockName );
-        end loop;
-        fullErrorMessage := outLine & ASCII.LF;
-        outLine := null_unbounded_string;
-     else                                                  -- otherwise
-        outLine := outLine & "in script";                  -- just say
-        fullErrorMessage := outLine & ASCII.LF;            -- "in script"
-        outLine := null_unbounded_string;
-     end if;
+     --if script /= null then
+        -- For the regular format, show the location and traceback in script
+        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
+          getStackTrace;
+     --end if;
+     fullErrorMessage := fullErrorMessage & getNewLine;
   end if;
 
   -- For the normal version, we must follow the traceback with the
@@ -817,18 +1049,19 @@ begin
   --
   -- First, add the line the exception occurred in.  As a precaution,
   -- escape the command line.
-  fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
+  --fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
 
   -- Draw the underline error pointer
 
-  outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
-  outLine := outLine & '^';                                  -- token start
-  if lastpos > firstpos then                                 -- multi chars?
-     outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
-     outLine := outLine & '^';                               -- token end
+  --outLine := outLine & getLinePointer( getErrorIcon, firstPos, lastPos ) & msg;
+  if gccOpt then
+     fullErrorMessage := gccFormatMsg;
+  else
+     fullErrorMessage := fullErrorMessage & getNewLine;
+     fullErrorMessage := fullErrorMessage & getLinePointer( getErrorIcon, firstPos, lastPos );
+     fullErrorMessage := fullErrorMessage & msg;
   end if;
-  outLine := outLine & ' ';                                  -- token start
-  outLine := outLine & msg;
+
   -- DEBUG
   -- fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
 
@@ -840,11 +1073,11 @@ begin
   -- TODO: we're using UNIX eof's but should ideally be o/s
   -- independent
 
-  if gccOpt then
-     fullErrorMessage := gccOutLine;
-  else
-     fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
-  end if;
+  --if gccOpt then
+  --   fullErrorMessage := gccOutLine;
+  --else
+  --   fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
+  --end if;
 
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
      case templateHeader.templateType is
@@ -853,18 +1086,18 @@ begin
            "<div style=""float:left;font: 32px Times New Roman,serif; font-weight:bold; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#9f6000; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">!</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #9F6000; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
-           "<p>" & convertToHTML( fullErrorMessage ) & "</p>" &
+           "<p>" & fullErrorMessage.templateMessage & "</p>" &
            "</div>" &
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) &  " */";
+        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( fullErrorMessage ) & " -->";
+        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & convertToPlainText( fullErrorMessage );
+        fullTemplateErrorMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | textTemplate | jsonTemplate =>
-        fullTemplateErrorMessage := convertToPlainText( fullErrorMessage );
+        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -875,7 +1108,7 @@ begin
      -- other effects.
      --
      -- TODO: document this
-     fullErrorMessage := ConvertToPlainText( gccOutLine );
+     fullErrorMessage := gccFormatMsg;
 
   end if;
 
@@ -889,7 +1122,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace_error( "exception: " & msg );
+     put_trace_error( "exception: " & to_string( fullErrorMessage.textMessage ) );
   end if;
 end raise_exception;
 
@@ -901,7 +1134,7 @@ end raise_exception;
 -----------------------------------------------------------------------------
 
 procedure err_test_result is
-  cmdline    : unbounded_string;
+  cmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
   lineStr    : unbounded_string;
@@ -909,12 +1142,12 @@ procedure err_test_result is
   lineno     : natural;
   fileno     : natural;
   outLine    : unbounded_string;
-  gccOutLine : unbounded_string;
-  sfr        : aSourceFile;
+  gccOutLine : messageStrings;
   needGccVersion : boolean := false;
-  msg        : constant unbounded_string := to_unbounded_string( "test failed" );
-  ourFullErrorMessage : unbounded_string;
+  msg        : constant messageStrings := +"test failed";
+  ourFullErrorMessage : messageStrings;
   ourFullTemplateErrorMessage : unbounded_string;
+  gccFormatMsg : messageStrings;
 begin
   -- determine if gcc format is requested or required
   needGccVersion := boolean( gccOpt ) or hasTemplate;
@@ -927,65 +1160,102 @@ begin
          ": internal error: script unexpectly empty";
   end if;
 
-  if inputMode /= interactive and inputMode /= breakout then
-        if needGccVersion then                            -- gcc style?
-           lineStr := to_unbounded_string( lineno'img );  -- remove leading
-           if length( lineStr ) > 0 then                  -- space (if any)
-              if element( lineStr, 1 ) = ' ' then
-                 delete( lineStr, 1, 1 );
-              end if;
-           end if;
-           firstposStr := to_unbounded_string( firstpos'img );
-           if length( firstposStr ) > 0 then              -- here, too
-              if element( firstposStr, 1 ) = ' ' then
-                 delete( firstposStr, 1, 1 );
-              end if;
-           end if;
-           sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-           gccOutLine := sfr.name
-             & ":" & lineStr
-             & ":" & firstposStr
-             & ":";                                       -- no traceback
-           gccOutLine := gccOutLine & ' ';                -- token start
-           gccOutLine := gccOutLine & msg;
-        end if;
+  -- Generate a Gcc-formatted error message (if we need one)
 
-
-        sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-        outLine := sfr.name                               -- location
-           & ":" & lineno'img
-           & ":" & firstpos'img
-           & ": ";
-        -- TODO: we're using UNIX eof's but should ideally be o/s
-        -- independent
-        if blocks_top > blocks'first then                 -- in a block?
-           for i in reverse blocks'first..blocks_top-1 loop -- show the
-               if i /= blocks_top-1 then                  -- simplified
-                  outLine := outLine & " in ";            -- traceback
-               end if;
-               outLine := outLine & ToEscaped( blocks( i ).blockName );
-           end loop;
-           ourFullErrorMessage := outLine & ASCII.LF;
-           outLine := null_unbounded_string;
-        else                                              -- if no blocks
-           outLine := outLine & "in script";              -- just say
-           ourFullErrorMessage := outLine & ASCII.LF;        -- "in script"
-           outLine := null_unbounded_string;
-        end if;
+  if needGccVersion then
+     if script /= null then
+        gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
+      end if;
   end if;
 
-  ourFullErrorMessage := ourFullErrorMessage & toEscaped( cmdline );
+  -- If in a script (that is, a non-interactive input mode) then
+  -- show the location and traceback.  Otherwise, if we're just at
+  -- the command prompt, don't bother with the location/traceback.
+
+  if inputMode /= interactive and inputMode /= breakout then
+     if script /= null then
+        -- For the regular format, show the location and traceback in script
+        ourFullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
+          getStackTrace;
+     end if;
+     ourFullErrorMessage := ourFullErrorMessage & getNewLine;
+  end if;
+
+  --if inputMode /= interactive and inputMode /= breakout then
+        --if needGccVersion then                            -- gcc style?
+           --lineStr := to_unbounded_string( lineno'img );  -- remove leading
+           --if length( lineStr ) > 0 then                  -- space (if any)
+           --   if element( lineStr, 1 ) = ' ' then
+           --      delete( lineStr, 1, 1 );
+           --   end if;
+           --end if;
+           --firstposStr := to_unbounded_string( firstpos'img );
+           --if length( firstposStr ) > 0 then              -- here, too
+           --   if element( firstposStr, 1 ) = ' ' then
+           --      delete( firstposStr, 1, 1 );
+           --   end if;
+           --end if;
+           --sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+           --gccOutLine := sfr.name
+           --  & ":" & lineStr
+           --  & ":" & firstposStr
+           --  & ":";                                       -- no traceback
+           --gccOutLine := gccOutLine & ' ';                -- token start
+           --gccOutLine := gccOutLine & msg;
+           --gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
+        --end if;
+
+
+       -- sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+      --  outLine := sfr.name                               -- location
+      --     & ":" & lineno'img
+      --     & ":" & firstpos'img
+      --     & ": ";
+        -- TODO: we're using UNIX eof's but should ideally be o/s
+        -- independent
+      --  if blocks_top > blocks'first then                 -- in a block?
+      --     for i in reverse blocks'first..blocks_top-1 loop -- show the
+      --         if i /= blocks_top-1 then                  -- simplified
+      --            outLine := outLine & " in ";            -- traceback
+      --         end if;
+      --         outLine := outLine & ToEscaped( blocks( i ).blockName );
+      --     end loop;
+      --     ourFullErrorMessage := outLine & ASCII.LF;
+      --     outLine := null_unbounded_string;
+      --  else                                              -- if no blocks
+      --     outLine := outLine & "in script";              -- just say
+      --     ourFullErrorMessage := outLine & ASCII.LF;        -- "in script"
+      --     outLine := null_unbounded_string;
+      --  end if;
+  --end if;
+
+ -- ourFullErrorMessage := ourFullErrorMessage & toEscaped( cmdline );
 
   -- Draw the underline error pointer
 
-  outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
-  outLine := outLine & '^';                                  -- token start
-  if lastpos > firstpos then                                 -- multi chars?
-     outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
-     outLine := outLine & '^';                               -- token end
+  --outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
+  --outLine := outLine & '^';                                  -- token start
+  --if lastpos > firstpos then                                 -- multi chars?
+  --   outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
+  --   outLine := outLine & '^';                               -- token end
+  --end if;
+  --outLine := outLine & ' ';                                  -- token start
+  --outLine := outLine & msg;
+
+  declare
+     formattedCmdline : messageStrings;
+  begin
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+    ourFullErrorMessage := ourFullErrorMessage & formattedCmdline;
+  end;
+
+  if gccOpt then
+     ourFullErrorMessage := gccFormatMsg;
+  else
+     ourFullErrorMessage := ourFullErrorMessage & getNewLine;
+     ourFullErrorMessage := ourFullErrorMessage & getLinePointer( getErrorIcon, firstPos, lastPos );
+     ourFullErrorMessage := ourFullErrorMessage & msg;
   end if;
-  outLine := outLine & ' ';                                  -- token start
-  outLine := outLine & msg;
 
   -- Even for a template, if the user selected gccOpt specifically,
   -- use it.
@@ -995,11 +1265,11 @@ begin
   -- TODO: we're using UNIX eof's but should ideally be o/s
   -- independent
 
-  if gccOpt then
-     ourFullErrorMessage := gccOutLine;
-  else
-     ourFullErrorMessage := ourFullErrorMessage & ASCII.LF & outLine;
-  end if;
+  --if gccOpt then
+  --   ourFullErrorMessage := gccOutLine;
+  --else
+   --  ourFullErrorMessage := ourFullErrorMessage & ASCII.LF & outLine;
+  --end if;
 
   -- If we are in any mode of the development cycle except maintenance
   -- mode, create an error message to display.  If we're in maintenance
@@ -1012,18 +1282,18 @@ begin
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
-           "<p>" & convertToHTML( ourFullErrorMessage ) & "</p>" &
+           "<p>" & ourFullErrorMessage.templateMessage & "</p>" &
            "</div>" &
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        ourFullTemplateErrorMessage := "/* " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) &  " */";
+        ourFullTemplateErrorMessage := "/* " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & convertToPlainText( ourFullErrorMessage ) & " -->";
+        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage & " -->";
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & convertToPlainText( ourFullErrorMessage );
+        fullTemplateErrorMessage := "# " & ourFullErrorMessage.templateMessage;
      when noTemplate | textTemplate | jsonTemplate =>
-        ourFullTemplateErrorMessage := convertToPlainText( ourFullErrorMessage );
+        ourFullTemplateErrorMessage := ourFullErrorMessage.templateMessage;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -1034,7 +1304,7 @@ begin
      -- other effects.
      --
      -- TODO: document this
-     ourFullErrorMessage := ConvertToPlainText( gccOutLine );
+     ourFullErrorMessage := gccFormatMsg;
   end if;
 
   -- Show that this is an error, not an exception
@@ -1048,7 +1318,7 @@ begin
 
   -- Show the test result message immediately
 
-  put_line( standard_error, ourFullErrorMessage );
+  put_line( standard_error, ourFullErrorMessage.textMessage );
   -- may or may not have a template at this point, so check
   if hasTemplate then
      putTemplateHeader( templateHeader );
@@ -1077,12 +1347,12 @@ end err_test_result;
 -- preference and is not stored.
 -----------------------------------------------------------------------------
 
-procedure warn( msg : string ) is
+procedure warn( msg : messageStrings ) is
   location : unbounded_string;
   fullMsg  : unbounded_string;
 begin
   location := scriptFilePath & ":" & getLineNo'img & ": ";
-  fullMsg  := location & "warning--" & msg;
+  fullMsg  := location & "warning--" & msg.templateMessage;
 
   put_line( standard_error, fullMsg );
 
@@ -1117,7 +1387,7 @@ end warn;
 -- actually happened before it.  Just mark start of current token.
 -----------------------------------------------------------------------------
 
-procedure err_previous( msg : string ) is
+procedure err_previous( msg : messageStrings ) is
   savepos : integer;
 begin
   savepos := lastpos;     -- save current token's last character position
@@ -1156,17 +1426,17 @@ end err_previous;
 
 procedure err(
     userLanguage    : englishUserLanguage;
-    contextNotes    : string;                  -- the parent or situation
+    contextNotes    : messageStrings;                  -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  msg       : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  msg       : messageStrings;
   blockName : unbounded_string;
   needMore  : boolean := false;
   subjectLocationNeedsParen : boolean := false;
@@ -1178,23 +1448,25 @@ begin
   -- If no context was provided, use the current block name for the context.
 
   if not quietOpt then
-     if contextNotes = "" then
+     if contextNotes = nullMessageStrings then
         if blocks_top > block'first then
            blockName := getBlockName( blocks_top-1 );
         end if;
         if blockName /= null_unbounded_string then
-           msg := "In " & blockName;
+           msg := unb_pl( "In " & blockName );
         end if;
-     elsif Is_Upper( contextNotes( contextNotes'first ) ) then
-        msg := to_unbounded_string( contextNotes );
+     elsif Is_Upper( head( contextNotes.textMessage, 1 ) ) then
+        msg := contextNotes;
      else
-        msg := "While " & to_unbounded_string( contextNotes );
+        msg := pl( "While " ) & contextNotes;
      end if;
 
      if contextType /= eof_t then
-        msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) & ")" );
-     elsif msg /= "" then
-       msg := msg & ",";
+        msg := msg & pl( " (" ) &
+         ( em( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) &
+         pl( ")" ) );
+     elsif msg /= nullMessageStrings then
+       msg := msg & pl( "," );
      end if;
   end if;
 
@@ -1203,44 +1475,48 @@ begin
   -- This is the identifier the error refers to.  If no identifier is provided,
   -- use textual notes.
 
-  if subjectNotes /= "" then
-     if msg /= "" then
-        msg := msg & " " & subjectNotes;
+  if subjectNotes /= nullMessageStrings then
+     if msg /= nullMessageStrings then
+        msg := msg & pl(" ") & subjectNotes;
      else
         -- if not context, upper-case first letter of subject notes
-        msg := msg & ToUpper( to_unbounded_string( subjectNotes( subjectNotes'first ) & "" ) );
-        msg := msg & subjectNotes( subjectNotes'first+1..subjectNotes'last );
+        msg.templateMessage := msg.templateMessage &
+           ToUpper( Head( subjectNotes.templateMessage, 1 ) & "" ) &
+           Slice( subjectNotes.templateMessage, 2, length( subjectNotes.templateMessage ) ) ;
+        msg.textMessage     := msg.textMessage &
+           ToUpper( Head( subjectNotes.textMessage, 1 ) & "" ) &
+           Slice( subjectNotes.textMessage, 2, length( subjectNotes.textMessage ) ) ;
      end if;
   end if;
 
   if subjectType /= eof_t then
      -- if the type is keyword, it's not really meaningful
      if subjectType /= keyword_t then
-        msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) ) );
-        if subjectLocation = "" then
-           msg := msg & ")";
+        msg := msg & pl( " (" ) & em( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) );
+        if subjectLocation = nullMessageStrings then
+           msg := msg & pl( ")" );
         end if;
      else
        subjectLocationNeedsParen := true;
      end if;
-     if subjectLocation /= "" then
+     if subjectLocation /= nullMessageStrings then
         if subjectType = eof_t or subjectLocationNeedsParen then
-           msg := msg & " (at ";
+           msg := msg & pl( " (at " );
         else
-           msg := msg & ", at ";
+           msg := msg & pl( ", at " );
         end if;
-        msg := msg & subjectLocation & ")";
+        msg := msg & subjectLocation & pl( ")" );
      end if;
-  elsif subjectLocation /= "" then
-     msg := msg & " (at " & subjectLocation & ")";
+  elsif subjectLocation /= nullMessageStrings then
+     msg := msg & pl( " (at " ) & subjectLocation & pl( ")" );
   end if;
 
   -- Reason
   --
   -- The error message.
 
-  if msg /= "" then
-     msg := msg & " ";
+  if msg /= nullMessageStrings then
+     msg := msg & pl( " " );
   end if;
   msg := msg & reason;
 
@@ -1249,11 +1525,11 @@ begin
   -- The identifier causing the error for the subject.  If no identifier is
   -- given, use the textual notes.
 
-  if obstructorNotes /= "" then
-     if msg /= "" then
-        msg := msg & " ";
+  if obstructorNotes /= nullMessageStrings then
+     if msg /= nullMessageStrings then
+        msg := msg & pl( " " );
      end if;
-    msg := msg & to_unbounded_string( obstructorNotes );
+    msg := msg & obstructorNotes;
   end if;
   if obstructorType /= eof_t then
      -- In the interest of brevity, do not show the type unless it is
@@ -1269,7 +1545,7 @@ begin
            obstructorTypeNeeded := true;
         end if;
         if obstructorTypeNeeded then
-           msg := msg & " (" & ( optional_yellow( to_string( toEscaped( AorAN( identifiers( obstructorType ).name ) ) ) ) & ")" );
+           msg := msg & pl( " (" ) & ( em( to_string( toEscaped( AorAN( identifiers( obstructorType ).name ) ) ) ) & pl( ")" ) );
         end if;
      end;
   end if;
@@ -1279,9 +1555,9 @@ begin
   -- Suggestions to correct the problem.  In quiet mode, include (more)
   -- with the message.
 
-  if remedy /= "" then
+  if remedy /= nullMessageStrings then
      if not boolean(quietOpt) then
-        msg := msg & ". Perhaps " & remedy;
+        msg := msg & pl( ". Perhaps " ) & remedy;
      else
         needMore := true;
      end if;
@@ -1291,19 +1567,19 @@ begin
   --
   -- Usually a reference to the documentation.
 
-  if seeAlso /= "" then
+  if seeAlso /= nullMessageStrings then
      if not boolean(quietOpt) then
-         msg := msg & ". See also " & seeAlso;
+         msg := msg & pl( ". See also " ) & seeAlso;
      else
          needMore := true;
      end if;
   end if;
 
   if needMore then
-     msg := msg & ". (More)";
+     msg := msg & pl( ". (More)" );
   end if;
 
-  err( to_string( msg ) );
+  err( msg );
 end err;
 
 -----------------------------------------------------------------------------
@@ -1318,41 +1594,41 @@ procedure err(
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  contextNotes    : unbounded_string;
-  subjectNotes    : unbounded_string;
-  obstructorNotes : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  contextNotes    : messageStrings;
+  subjectNotes    : messageStrings;
+  obstructorNotes : messageStrings;
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
 
-   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
    if obstructor = eof_t then
-      obstructorNotes := to_unbounded_string( optional_yellow( "end of file" ) );
+      obstructorNotes := em( "end of file" );
    else
-      obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+      obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
    end if;
 
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
-    contextNotes    => to_string( contextNotes ),
+    contextNotes    => contextNotes,
     subjectType     => subjectType,
     subjectLocation => subjectLocation,
-    subjectNotes    => to_string( subjectNotes ),
+    subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
-    obstructorNotes => to_string( obstructorNotes ),
+    obstructorNotes => obstructorNotes,
     remedy          => remedy,
     seeAlso         => seeAlso
   );
@@ -1366,24 +1642,24 @@ end err;
 
 procedure err(
     userLanguage    : englishUserLanguage;
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  subjectNotes    : unbounded_string;
-  obstructorNotes : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  subjectNotes    : messageStrings;
+  obstructorNotes : messageStrings;
 begin
-   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
    if obstructor = eof_t then
-      obstructorNotes := to_unbounded_string( optional_yellow( "end of file" ) );
+      obstructorNotes := em( "end of file" );
    else
-      obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+      obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
    end if;
 
    err(
@@ -1392,10 +1668,10 @@ begin
     contextNotes    => contextNotes,
     subjectType     => subjectType,
     subjectLocation => subjectLocation,
-    subjectNotes    => to_string( subjectNotes ),
+    subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
-    obstructorNotes => to_string( obstructorNotes ),
+    obstructorNotes => obstructorNotes,
     remedy          => remedy,
     seeAlso         => seeAlso
   );
@@ -1411,40 +1687,40 @@ procedure err(
     userLanguage    : englishUserLanguage;
     context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                   -- which
+    subjectNotes    : messageStrings;                   -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  contextNotes    : unbounded_string;
-  obstructorNotes : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  contextNotes    : messageStrings;
+  obstructorNotes : messageStrings;
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
    if obstructor = eof_t then
-      obstructorNotes := to_unbounded_string( optional_yellow( "end of file" ) );
+      obstructorNotes := em( "end of file" );
    else
-      obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+      obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
    end if;
 
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
-    contextNotes    => to_string( contextNotes ),
+    contextNotes    => contextNotes,
     subjectType     => subjectType,
     subjectLocation => subjectLocation,
     subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
-    obstructorNotes => to_string( obstructorNotes ),
+    obstructorNotes => obstructorNotes,
     remedy          => remedy,
     seeAlso         => seeAlso
   );
@@ -1462,31 +1738,31 @@ procedure err(
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  contextNotes    : unbounded_string;
-  subjectNotes    : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  contextNotes    : messageStrings;
+  subjectNotes    : messageStrings;
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
-   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
 
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
-    contextNotes    => to_string( contextNotes ),
+    contextNotes    => contextNotes,
     subjectType     => subjectType,
     subjectLocation => subjectLocation,
-    subjectNotes    => to_string( subjectNotes ),
+    subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
     obstructorNotes => obstructorNotes,
@@ -1503,19 +1779,19 @@ end err;
 
 procedure err(
     userLanguage    : englishUserLanguage;
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  obstructorNotes : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  obstructorNotes : messageStrings;
 begin
-   obstructorNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( obstructor ).name ) ) ) );
+   obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
@@ -1525,7 +1801,7 @@ begin
     subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
-    obstructorNotes => to_string( obstructorNotes ),
+    obstructorNotes => obstructorNotes,
     remedy          => remedy,
     seeAlso         => seeAlso
   );
@@ -1539,19 +1815,19 @@ end err;
 
 procedure err(
     userLanguage    : englishUserLanguage;
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  subjectNotes    : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  subjectNotes    : messageStrings;
 begin
-   subjectNotes := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( subject ).name ) ) ) );
+   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
 
    err(
     userLanguage    => userLanguage,
@@ -1559,7 +1835,7 @@ begin
     contextNotes    => contextNotes,
     subjectType     => subjectType,
     subjectLocation => subjectLocation,
-    subjectNotes    => to_string( subjectNotes ),
+    subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
     obstructorNotes => obstructorNotes,
@@ -1578,28 +1854,28 @@ procedure err(
     userLanguage    : englishUserLanguage;
     context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
-  contextNotes    : unbounded_string;
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
+  contextNotes    : messageStrings;
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := "In this " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := "In " & to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( context ).name ) ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
 
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
-    contextNotes    => to_string( contextNotes ),
+    contextNotes    => contextNotes,
     subjectType     => subjectType,
     subjectLocation => subjectLocation,
     subjectNotes    => subjectNotes,
@@ -1626,16 +1902,16 @@ end err;
 -----------------------------------------------------------------------------
 
 procedure err(
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
     err(
        userLanguage => userLanguage.all,
@@ -1663,12 +1939,12 @@ procedure err(
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1693,16 +1969,16 @@ end err;
 ------------------------------------------------------------------------------
 
 procedure err(
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1728,14 +2004,14 @@ end err;
 procedure err(
     context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1763,12 +2039,12 @@ procedure err(
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1793,16 +2069,16 @@ end err;
 ------------------------------------------------------------------------------
 
 procedure err(
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
     obstructor      : identifier;              -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1827,16 +2103,16 @@ end err;
 ------------------------------------------------------------------------------
 
 procedure err(
-    contextNotes    : string := "";            -- the parent or situation
+    contextNotes    : messageStrings := nullMessageStrings;            -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier;              -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1863,14 +2139,14 @@ end err;
 procedure err(
     context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
-    subjectNotes    : string;                  -- which
+    subjectNotes    : messageStrings;                  -- which
     subjectType     : identifier := eof_t;     -- which kind
-    subjectLocation : string := "";            -- where it was
-    reason          : string;                  -- problem description
-    obstructorNotes : string;                  -- ident causing problem
+    subjectLocation : messageStrings := nullMessageStrings;            -- where it was
+    reason          : messageStrings;                  -- problem description
+    obstructorNotes : messageStrings;                  -- ident causing problem
     obstructorType  : identifier := eof_t;     -- its type
-    remedy          : string := "";            -- suggested solutions
-    seeAlso         : string := "" ) is
+    remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
+    seeAlso         : messageStrings := nullMessageStrings ) is
 begin
    err(
        userLanguage    => userLanguage.all,
@@ -1900,15 +2176,15 @@ procedure expect( expected_token : identifier ) is
 begin
   if token /= expected_token then
      if expected_token = keyword_t then
-        err( "keyword expected" );
+        err( +"keyword expected" );
      elsif expected_token = number_t then
-        err( "number expected" );
+        err( +"number expected" );
      elsif expected_token = strlit_t then
-        err( "string literal expected" );
+        err( +"string literal expected" );
      elsif expected_token = symbol_t then
-        err( "symbol expected" );
+        err( +"symbol expected" );
      else
-        err( to_string( identifiers( expected_token ).name ) & " expected" );
+        err( pl( to_string( identifiers( expected_token ).name ) & " expected" ) );
      end if;
   end if;
   getNextToken;
@@ -1928,21 +2204,21 @@ begin
   if token /= expected_token then
      -- these are special tokens that won't display meaningful names
      if expected_token = keyword_t then
-        err( "keyword expected" );
+        err( +"keyword expected" );
      elsif expected_token = number_t then
-        err( "number expected" );
+        err( +"number expected" );
      elsif expected_token = strlit_t then
-        err( "string literal expected" );
+        err( +"string literal expected" );
      elsif expected_token = symbol_t then
-        err( "symbol expected" );
+        err( +"symbol expected" );
      elsif expected_token = eof_t then
-        err( "end of script expected" );
+        err( +"end of script expected" );
      else
-        err( to_string( identifiers( expected_token ).name ) & " expected" );
+        err( pl( to_string( identifiers( expected_token ).name ) & " expected" ) );
      end if;
   end if;
   if value /= to_string( identifiers( token ).value.all ) then
-      err( "'" & value & "' expected" );
+      err( pl( "'" & value & "' expected" ) );
   end if;
   getNextToken;
 end expect;
@@ -1962,9 +2238,9 @@ procedure expectSymbol(
     context         : identifier;
     subject         : identifier;
     subjectType     : identifier := eof_t;
-    subjectLocation : string := "";
-    reason          : string := "";
-    remedy          : string := "" ) is
+    subjectLocation : messageStrings := nullMessageStrings;
+    reason          : messageStrings := nullMessageStrings;
+    remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -1978,8 +2254,8 @@ begin
         subject => subject,
         subjectType => subjectType,
         subjectLocation => subjectLocation,
-        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
-        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        reason => reason & pl( " " ) &  unb_em( expectOrExpects ),
+        obstructorNotes =>  em( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
         remedy => remedy
      );
   end if;
@@ -1989,12 +2265,12 @@ end expectSymbol;
 procedure expectSymbol(
     expectedValue   : string;
     expectPlural    : boolean := false;
-    contextNotes    : string := "";
+    contextNotes    : messageStrings := nullMessageStrings;
     subject         : identifier;
     subjectType     : identifier := eof_t;
-    subjectLocation : string := "";
-    reason          : string := "";
-    remedy          : string := "" ) is
+    subjectLocation : messageStrings := nullMessageStrings;
+    reason          : messageStrings := nullMessageStrings;
+    remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -2008,8 +2284,8 @@ begin
         subject => subject,
         subjectType => subjectType,
         subjectLocation => subjectLocation,
-        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
-        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        reason => reason & pl( " " ) &  unb_em( expectOrExpects ),
+        obstructorNotes =>  em( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
         remedy => remedy
      );
   end if;
@@ -2021,10 +2297,10 @@ procedure expectSymbol(
     expectPlural    : boolean := false;
     context         : identifier;
     subjectType     : identifier := eof_t;
-    subjectLocation : string := "";
-    subjectNotes    : string := "";
-    reason          : string := "";
-    remedy          : string := "" ) is
+    subjectLocation : messageStrings := nullMessageStrings;
+    subjectNotes    : messageStrings := nullMessageStrings;
+    reason          : messageStrings := nullMessageStrings;
+    remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -2038,8 +2314,8 @@ begin
         subjectNotes=> subjectNotes,
         subjectType => subjectType,
         subjectLocation => subjectLocation,
-        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
-        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        reason => reason & pl( " " ) &  unb_em( expectOrExpects ),
+        obstructorNotes =>  em( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
         remedy => remedy
      );
   end if;
@@ -2049,12 +2325,12 @@ end expectSymbol;
 procedure expectSymbol(
     expectedValue   : string;
     expectPlural    : boolean := false;
-    contextNotes    : string := "";
+    contextNotes    : messageStrings := nullMessageStrings;
     subjectType     : identifier := eof_t;
-    subjectLocation : string := "";
-    subjectNotes    : string := "";
-    reason          : string := "";
-    remedy          : string := "" ) is
+    subjectLocation : messageStrings := nullMessageStrings;
+    subjectNotes    : messageStrings := nullMessageStrings;
+    reason          : messageStrings := nullMessageStrings;
+    remedy          : messageStrings := nullMessageStrings ) is
   expectOrExpects : unbounded_string := to_unbounded_string( "expect" );
 begin
   if token /= symbol_t or else expectedValue /= to_string( identifiers( token ).value.all ) then
@@ -2068,8 +2344,8 @@ begin
         subjectNotes=> subjectNotes,
         subjectType => subjectType,
         subjectLocation => subjectLocation,
-        reason => reason & " " &  optional_yellow( to_string( expectOrExpects ) ),
-        obstructorNotes =>  optional_yellow( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
+        reason => reason & pl( " " ) &  unb_em( expectOrExpects ),
+        obstructorNotes =>  em( to_string( toEscaped( to_unbounded_string( "'" & expectedValue & "'" ) ) ) ),
         remedy => remedy
      );
   end if;
@@ -2085,9 +2361,9 @@ end expectSymbol;
 procedure expectIdentifier( what, receivedDescription : string ) is
 begin
   if what /= "" then
-     err( "an " & optional_yellow( "identifier") & " for " & what & " was expected but this looks like " & optional_yellow( receivedDescription ) );
+     err( +"an " & em( "identifier") & pl( " for " & what & " was expected but this looks like " ) & em( receivedDescription ) );
   else
-     err( "an " & optional_yellow( "identifier") & " was expected but this looks like " & optional_yellow( receivedDescription ) );
+     err( +"an " & em( "identifier") & pl( " was expected but this looks like " ) & em( receivedDescription ) );
   end if;
 end expectIdentifier;
 
@@ -2112,8 +2388,8 @@ begin
      expectSymbol(
        expectedValue => ";",
        context => context,
-       reason => "the end of statement",
-       remedy => "a comment or unescaped '--' has hidden a ';'"
+       reason =>+ "the end of statement",
+       remedy => +"a comment or unescaped '--' has hidden a ';'"
      );
   end if;
   -- Common typo
@@ -2121,18 +2397,18 @@ begin
      expectSymbol(
        expectedValue => ";",
        context => context,
-       reason => "':' could be a mistake because the end of the statement"
+       reason => +"':' could be a mistake because the end of the statement"
      );
   else
      expectSymbol(
        expectedValue => ";",
        context => context,
-       reason => "the end of the statement"
+       reason => +"the end of the statement"
     );
   end if;
 end expectStatementSemicolon;
 
-procedure expectStatementSemicolon( contextNotes : string := "" ) is
+procedure expectStatementSemicolon( contextNotes : messageStrings := nullMessageStrings ) is
 begin
   -- in interactive modes, a comment will hide the semi-colon automatically
   -- added by SparForte.  This can also happen with `..`
@@ -2140,8 +2416,8 @@ begin
      expectSymbol(
        expectedValue => ";",
        contextNotes => contextNotes,
-       reason => "the end of statement",
-       remedy => "a comment or unescaped '--' has hidden a ';'"
+       reason => +"the end of statement",
+       remedy => +"a comment or unescaped '--' has hidden a ';'"
      );
   end if;
   -- Common typo
@@ -2149,13 +2425,13 @@ begin
      expectSymbol(
        expectedValue => ";",
        contextNotes => contextNotes,
-       reason => "':' could be a mistake because the end of the statement"
+       reason => +"':' could be a mistake because the end of the statement"
      );
   else
      expectSymbol(
        expectedValue => ";",
        contextNotes => contextNotes,
-       reason => "the end of the statement"
+       reason => +"the end of the statement"
     );
   end if;
 end expectStatementSemicolon;
@@ -2169,48 +2445,48 @@ end expectStatementSemicolon;
 -----------------------------------------------------------------------------
 
 procedure expectDeclarationSemicolon( context : identifier := eof_t ) is
-  myContextNotes : unbounded_string;
+  myContextNotes : messageStrings;
 begin
   if context /= eof_t then
-     myContextNotes := to_unbounded_string( "in the declaration of " & optional_yellow( to_string( identifiers( context ).name ) ) );
+     myContextNotes := pl( "in the declaration of " ) &
+       name_em( context );
   end if;
 
   -- Common typo
   if token = symbol_t and identifiers( token ).value.all = ":" then
      expectSymbol(
        expectedValue => ";",
-       contextNotes => to_string( myContextNotes ),
-       reason => "':' could be a mistake because the end of the declaration"
+       contextNotes => myContextNotes,
+       reason => +"':' could be a mistake because the end of the declaration"
      );
   else
      expectSymbol(
        expectedValue => ";",
-       contextNotes => to_string( myContextNotes ),
-       reason => "the end of the declaration"
+       contextNotes => myContextNotes,
+       reason => +"the end of the declaration"
     );
   end if;
 end expectDeclarationSemicolon;
 
-procedure expectDeclarationSemicolon( contextNotes : string := "" ) is
-  myContextNotes : constant unbounded_string := to_unbounded_string( contextNotes );
+procedure expectDeclarationSemicolon( contextNotes : messageStrings := nullMessageStrings ) is
+  myContextNotes : constant messageStrings := contextNotes;
 begin
 
   -- Common typo
   if token = symbol_t and identifiers( token ).value.all = ":" then
      expectSymbol(
        expectedValue => ";",
-       contextNotes => to_string( myContextNotes ),
-       reason => "':' could be a mistake because the end of the declaration"
+       contextNotes => myContextNotes,
+       reason => +"':' could be a mistake because the end of the declaration"
      );
   else
      expectSymbol(
        expectedValue => ";",
-       contextNotes => to_string( myContextNotes ),
-       reason => "the end of the declaration"
+       contextNotes => myContextNotes,
+       reason => +"the end of the declaration"
     );
   end if;
 end expectDeclarationSemicolon;
-
 
 
 -----------------------------------------------------------------------------
@@ -2223,7 +2499,7 @@ end expectDeclarationSemicolon;
 
 procedure expectReturnSemicolon is
   blockName : unbounded_string;
-  myContextNotes : unbounded_string;
+  myContextNotes : messageStrings;
 begin
 
   -- Get the name of the current block, the one this return applies to.
@@ -2232,23 +2508,23 @@ begin
      blockName := getBlockName( blocks_top-1 );
   end if;
   if blockName /= null_unbounded_string then
-     myContextNotes := "in this return for " & blockName;
+     myContextNotes := unb_pl( "in this return for " & blockName );
   else
-     myContextNotes := to_unbounded_string( "in this return" );
+     myContextNotes := +"in this return";
   end if;
 
   -- Common typo
   if token = symbol_t and identifiers( token ).value.all = ":" then
      expectSymbol(
        expectedValue => ";",
-       contextNotes => to_string( myContextNotes ),
-       reason => "':' could be a mistake because the end of the statement"
+       contextNotes => myContextNotes,
+       reason => +"':' could be a mistake because the end of the statement"
      );
   else
      expectSymbol(
        expectedValue => ";",
-       contextNotes => to_string( myContextNotes ),
-       reason => "the end of the statement"
+       contextNotes => myContextNotes,
+       reason => +"the end of the statement"
     );
   end if;
 end expectReturnSemicolon;
@@ -2269,7 +2545,7 @@ end expectReturnSemicolon;
 -----------------------------------------------------------------------------
 
 procedure expectParameterComma( subprogram : identifier := eof_t ) is
-  contextNotes : unbounded_string;
+  contextNotes : messageStrings;
 begin
 
   -- If we know the name of the subprogram, include it in the error message.
@@ -2277,7 +2553,7 @@ begin
   -- explains which function it is concerned about.
 
   if subprogram = eof_t then
-     contextNotes := to_unbounded_string( "in the parameter list" );
+     contextNotes := +"in the parameter list";
   end if;
 
   -- Semi-colon may not happen because it may abort earlier due to
@@ -2285,53 +2561,57 @@ begin
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if subprogram = eof_t then
         expectSymbol(
-          contextNotes => to_string( contextNotes ),
+          contextNotes => contextNotes,
           expectedValue => ",",
-          reason => "';' could be a mistake because the parameters");
+          reason => +"';' could be a mistake because the parameters"
+        );
      else
         expectSymbol(
           context => subprogram,
           expectedValue => ",",
-          reason => "';' could be a mistake because the parameters");
+          reason => +"';' could be a mistake because the parameters"
+        );
      end if;
   elsif token = symbol_t and identifiers( token ).value.all = "." then
      if subprogram = eof_t then
         expectSymbol(
-          contextNotes => to_string( contextNotes ),
+          contextNotes => contextNotes,
           expectedValue => ",",
-          reason => "'.' could be a mistake because the parameters");
+          reason => +"'.' could be a mistake because the parameters"
+        );
      else
         expectSymbol(
           context => subprogram,
           expectedValue => ",",
-          reason => "'.' could be a mistake because the parameters");
+          reason => +"'.' could be a mistake because the parameters"
+        );
      end if;
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      if subprogram = eof_t then
         expectSymbol(
           expectedValue => ",",
-          contextNotes => to_string( contextNotes ),
-          reason => "there are too few parameters because the list"
+          contextNotes => contextNotes,
+          reason => +"there are too few parameters because the list"
         );
      else
         expectSymbol(
           expectedValue => ",",
           context => subprogram,
-          reason => "there are too few parameters because the list"
+          reason => +"there are too few parameters because the list"
         );
      end if;
   else
      if subprogram = eof_t then
         expectSymbol(
-          contextNotes => to_string( contextNotes ),
+          contextNotes => contextNotes,
           expectedValue => ",",
-          reason  => "to separate parameters the list"
+          reason  => +"to separate parameters the list"
         );
      else
         expectSymbol(
           context => subprogram,
           expectedValue => ",",
-          reason  => "to separate parameters the list"
+          reason  => +"to separate parameters the list"
         );
      end if;
   end if;
@@ -2350,27 +2630,27 @@ procedure expectPragmaComma is
 begin
   if token = symbol_t and identifiers( token ).value.all = ";" then
      expectSymbol(
-       contextNotes => contextNotes,
+       contextNotes => pl( contextNotes ),
        expectedValue => ",",
-       reason => "';' could be a mistake because the list"
+       reason => +"';' could be a mistake because the list"
      );
   elsif token = symbol_t and identifiers( token ).value.all = "." then
      expectSymbol(
        expectedValue => ",",
-       contextNotes => contextNotes,
-       reason => "'.' could be a mistake because the list"
+       contextNotes => pl( contextNotes ),
+       reason => +"'.' could be a mistake because the list"
      );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expectSymbol(
        expectedValue => ",",
-       contextNotes => contextNotes,
-       reason => "there are too few parameters because the list"
+       contextNotes => pl( contextNotes ),
+       reason => +"there are too few parameters because the list"
      );
   else
      expectSymbol(
-       contextNotes => contextNotes,
+       contextNotes => pl( contextNotes ),
        expectedValue => ",",
-       reason  => "to separate parameters the list"
+       reason  => +"to separate parameters the list"
      );
   end if;
 end expectPragmaComma;
@@ -2399,7 +2679,7 @@ begin
      expectSymbol(
        expectedValue => "(",
        context => subprogram,
-       reason => "';' looks like parameters are missing because the list"
+       reason => +"';' looks like parameters are missing because the list"
      );
   else
      if contextNotes = "" then
@@ -2407,33 +2687,33 @@ begin
           expectedValue => "(",
           expectPlural => true,
           context => subprogram,
-          subjectNotes => "the parameters",
-          reason => "are starting and"
+          subjectNotes => +"the parameters",
+          reason => +"are starting and"
         );
      else
         expectSymbol(
           expectedValue => "(",
           expectPlural => true,
-          contextNotes => to_string( contextNotes ),
-          subjectNotes => "the parameters",
-          reason => "are starting and"
+          contextNotes => unb_pl( contextNotes ),
+          subjectNotes => +"the parameters",
+          reason => +"are starting and"
         );
      end if;
   end if;
   if token = symbol_t and identifiers( token ).value.all = ")" then
      if contextNotes = "" then
         err( context => subprogram,
-             subjectNotes => "the parameters",
-             obstructorNotes => "",
-             reason => "are missing",
-             remedy => "omit the parentheses if there are no required parameters"
+             subjectNotes => +"the parameters",
+             obstructorNotes => +"",
+             reason => +"are missing",
+             remedy => +"omit the parentheses if there are no required parameters"
        );
      else
-        err( contextNotes => to_string( contextNotes ),
-             subjectNotes => "the parameters",
-             obstructorNotes => "",
-             reason => "are missing",
-             remedy => "omit the parentheses if there are no required parameters"
+        err( contextNotes => unb_pl( contextNotes ),
+             subjectNotes => +"the parameters",
+             obstructorNotes => +"",
+             reason => +"are missing",
+             remedy => +"omit the parentheses if there are no required parameters"
         );
     end if;
   end if;
@@ -2460,13 +2740,13 @@ begin
         expectSymbol(
           expectedValue => ")",
           context => subprogram,
-          reason => "';' looks like a symbol is missing because the list"
+          reason => +"';' looks like a symbol is missing because the list"
         );
      else
         expectSymbol(
           expectedValue => ")",
-          contextNotes => to_string( contextNotes ),
-          reason => "';' looks like a symbol is missing because the list"
+          contextNotes => unb_pl( contextNotes ),
+          reason => +"';' looks like a symbol is missing because the list"
         );
      end if;
   elsif token = symbol_t and identifiers( token ).value.all = "," then
@@ -2474,13 +2754,13 @@ begin
         expectSymbol(
           expectedValue => ")",
           context => subprogram,
-          reason => "',' looks like too many parameters because the list"
+          reason => +"',' looks like too many parameters because the list"
         );
      else
         expectSymbol(
           expectedValue => ")",
-          contextNotes => to_string( contextNotes ),
-          reason => "',' looks like too many parameters because the list"
+          contextNotes => unb_pl( contextNotes ),
+          reason => +"',' looks like too many parameters because the list"
         );
      end if;
   else
@@ -2488,13 +2768,13 @@ begin
         expectSymbol(
           expectedValue => ")",
           context => subprogram,
-          reason => "the end of the parameters"
+          reason => +"the end of the parameters"
         );
      else
         expectSymbol(
           expectedValue => ")",
-          contextNotes => to_string( contextNotes ),
-          reason => "the end of the parameters"
+          contextNotes => unb_pl( contextNotes ),
+          reason => +"the end of the parameters"
         );
      end if;
   end if;
@@ -2509,28 +2789,28 @@ end expectParameterClose;
 -- Unlike subprograms, pragmas have a kind string, not an id.
 -----------------------------------------------------------------------------
 
-procedure expectPragmaParameterOpen( pragmaKind : string ) is
-  contextNotes : unbounded_string;
+procedure expectPragmaParameterOpen( pragmaKind : messageStrings ) is
+  contextNotes : messageStrings;
 begin
-  if pragmaKind = "" then
-     contextNotes := to_unbounded_string( "in the pragma parameter list" );
+  if pragmaKind = nullMessageStrings then
+     contextNotes := pl( "in the pragma parameter list" );
   else
-     contextNotes := to_unbounded_string( "in the pragma " & pragmaKind & " parameter list" );
+     contextNotes := pl( "in the pragma " ) & pragmaKind & pl( " parameter list" );
   end if;
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      expectSymbol(
        expectedValue => "(",
-       contextNotes => to_string( contextNotes ),
-       reason => "';' looks like parameters are missing because the list"
+       contextNotes => contextNotes,
+       reason => +"';' looks like parameters are missing because the list"
      );
   else
      expectSymbol(
        expectedValue => "(",
        expectPlural => true,
-       contextNotes => to_string( contextNotes ),
-       subjectNotes => "the parameters",
-       reason => "are starting and"
+       contextNotes => contextNotes,
+       subjectNotes => +"the parameters",
+       reason => +"are starting and"
      );
   end if;
 end expectPragmaParameterOpen;
@@ -2544,32 +2824,32 @@ end expectPragmaParameterOpen;
 -- subprogram.
 -----------------------------------------------------------------------------
 
-procedure expectPragmaParameterClose( pragmaKind : string ) is
-  contextNotes : unbounded_string;
+procedure expectPragmaParameterClose( pragmaKind : messageStrings ) is
+  contextNotes : messageStrings;
 begin
-  if pragmaKind = "" then
-     contextNotes := to_unbounded_string( "in the pragma parameter list" );
+  if pragmaKind = nullMessageStrings then
+     contextNotes := pl( "in the pragma parameter list" );
   else
-     contextNotes := to_unbounded_string( "in the pragma " & pragmaKind & " parameter list" );
+     contextNotes := pl( "in the pragma " ) & pragmaKind & pl( " parameter list" );
   end if;
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      expectSymbol(
        expectedValue => ")",
-       contextNotes => to_string( contextNotes ),
-       reason => "';' looks like a symbol is missing because the list"
+       contextNotes => contextNotes,
+       reason => +"';' looks like a symbol is missing because the list"
      );
   elsif token = symbol_t and identifiers( token ).value.all = "," then
      expectSymbol(
        expectedValue => ")",
-       contextNotes => to_string( contextNotes ),
-       reason => "',' looks like too many parameters because the list"
+       contextNotes => contextNotes,
+       reason => +"',' looks like too many parameters because the list"
      );
   else
      expectSymbol(
        expectedValue => ")",
-       contextNotes => to_string( contextNotes ),
-       reason => "the end of the pragma parameters"
+       contextNotes => contextNotes,
+       reason => +"the end of the pragma parameters"
      );
   end if;
 end expectPragmaParameterClose;
@@ -2591,7 +2871,7 @@ procedure expectAdaScript(
     context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier := eof_t;     -- which
-    remedy          : string := "" ) is        -- suggested solutions
+    remedy          : messageStrings := nullMessageStrings ) is        -- suggested solutions
 begin
   if onlyAda95 then
      err(
@@ -2599,8 +2879,8 @@ begin
         context => context,
         contextType => contextType,
         subject => subject,
-        reason => "is not compatible with",
-        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        reason => +"is not compatible with",
+        obstructorNotes => em( "pragma ada_95" ),
         remedy => remedy
      );
   end if;
@@ -2609,9 +2889,9 @@ end expectAdaScript;
 
 procedure expectAdaScript(
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
+    contextNotes    : messageStrings := nullMessageStrings;            -- notes
     subject         : identifier := eof_t;     -- which
-    remedy          : string := "" ) is        -- suggested solutions
+    remedy          : messageStrings := nullMessageStrings ) is        -- suggested solutions
 begin
   if onlyAda95 then
      err(
@@ -2619,8 +2899,8 @@ begin
         contextType => contextType,
         contextNotes => contextNotes,
         subject => subject,
-        reason => "is not compatible with",
-        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        reason => +"is not compatible with",
+        obstructorNotes => em( "pragma ada_95" ),
         remedy => remedy
      );
   end if;
@@ -2639,7 +2919,7 @@ procedure expectAdaScriptDifferences(
     context         : identifier;              -- the parent or situation
     contextType     : identifier := eof_t;     -- associated type (if any)
     subject         : identifier := eof_t;     -- which
-    remedy          : string := "" ) is        -- suggested solutions
+    remedy          : messageStrings := nullMessageStrings ) is        -- suggested solutions
 begin
   if onlyAda95 then
      err(
@@ -2647,8 +2927,8 @@ begin
         context => context,
         contextType => contextType,
         subject => subject,
-        reason => "has differences with Ada's version and is not fully compatible with" ,
-        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        reason => +"has differences with Ada's version and is not fully compatible with" ,
+        obstructorNotes => em( "pragma ada_95" ),
         remedy => remedy
      );
   end if;
@@ -2657,9 +2937,9 @@ end expectAdaScriptDifferences;
 
 procedure expectAdaScriptDifferences(
     contextType     : identifier := eof_t;     -- associated type (if any)
-    contextNotes    : string := "";            -- notes
+    contextNotes    : messageStrings := nullMessageStrings;            -- notes
     subject         : identifier := eof_t;     -- which
-    remedy          : string := "" ) is        -- suggested solutions
+    remedy          : messageStrings := nullMessageStrings ) is        -- suggested solutions
 begin
   if onlyAda95 then
      err(
@@ -2667,8 +2947,8 @@ begin
         contextType => contextType,
         contextNotes => contextNotes,
         subject => subject,
-        reason => "has differences with Ada's version and is not fully compatible with" ,
-        obstructorNotes => optional_yellow( "pragma ada_95" ),
+        reason => +"has differences with Ada's version and is not fully compatible with" ,
+        obstructorNotes => em( "pragma ada_95" ),
         remedy => remedy
      );
   end if;

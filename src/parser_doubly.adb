@@ -170,7 +170,7 @@ begin
   -- Otherwise, the types must be identical.
 
   if effectiveLeftType /= effectiveRightType then
-     err( "doubly_linked_lists.cursor or list item expected" );
+     err( +"doubly_linked_lists.cursor or list item expected" );
      return false;
   end if;
   return true;
@@ -271,9 +271,9 @@ begin
           Doubly_Linked_String_Lists.Append( theList.dlslList, itemExpr );
        end if;
      exception when constraint_error =>
-       err( "append count must be a natural integer" );
+       err( +"append count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err( +"storage error raised" );
      end;
   end if;
 end ParseDoublyAppend;
@@ -316,9 +316,9 @@ begin
           Doubly_Linked_String_Lists.Prepend( theList.dlslList, itemExpr );
        end if;
      exception when constraint_error =>
-       err( "append count must be a natural integer" );
+       err( +"append count must be a natural integer" );
      when storage_error =>
-       err( "storage error raised" );
+       err( +"storage error raised" );
      end;
   end if;
 end ParseDoublyPrepend;
@@ -400,7 +400,7 @@ begin
           Doubly_Linked_String_Lists.Delete_First( theList.dlslList );
        end if;
      exception when constraint_error =>
-       err( "no more elements" );
+       err( +"no more elements" );
      end;
   end if;
 end ParseDoublyDeleteFirst;
@@ -436,7 +436,7 @@ begin
           Doubly_Linked_String_Lists.Delete_Last( theList.dlslList );
        end if;
      exception when constraint_error =>
-       err( "no more elements" );
+       err( +"no more elements" );
      end;
   end if;
 end ParseDoublyDeleteLast;
@@ -571,7 +571,7 @@ begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
        result := Doubly_Linked_String_Lists.Element( theCursor.dlslCursor );
      exception when constraint_error =>
-       err( "position cursor has no element" );
+       err( +"position cursor has no element" );
      end;
   end if;
 end ParseDoublyElement;
@@ -661,7 +661,7 @@ begin
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
-     err( ", or ) expected" );
+     err( +", or ) expected" );
   end if;
   if isExecutingCommand then
      declare
@@ -676,9 +676,9 @@ begin
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, itemExpr );
        end if;
      exception when program_error =>
-       err( "the cursor refers to a different list" );
+       err( +"the cursor refers to a different list" );
      when storage_error =>
-       err( "storage_error raised" );
+       err( +"storage_error raised" );
      end;
   end if;
 end ParseDoublyInsertBefore;
@@ -739,7 +739,7 @@ begin
      elsif token = symbol_t and identifiers( token ).value.all = ")" then
         expect( symbol_t, ")" );
      else
-        err( ", or ) expected" );
+        err( +", or ) expected" );
      end if;
   else
      -- If it's a new item value, check the generic item type and
@@ -758,7 +758,7 @@ begin
      elsif token = symbol_t and identifiers( token ).value.all = ")" then
         expect( symbol_t, ")" );
      else
-        err( ", or ) expected" );
+        err( +", or ) expected" );
      end if;
   end if;
 
@@ -786,9 +786,9 @@ begin
           Doubly_Linked_String_Lists.Insert( theList.dlslList, theCursor.dlslCursor, theSecondCursor.dlslCursor );
        end if;
      exception when program_error =>
-       err( "the cursor refers to a different list" );
+       err( +"the cursor refers to a different list" );
      when storage_error =>
-       err( "storage_error raised" );
+       err( +"storage_error raised" );
      end;
   end if;
 end ParseDoublyInsertBeforeAndMark;
@@ -832,14 +832,14 @@ begin
           begin
             cnt := Ada.Containers.Count_Type( to_numeric( cntExpr ) );
           exception when constraint_error =>
-            err( "constraint error raised" );
+            err( +"constraint error raised" );
           end;
           Doubly_Linked_String_Lists.Delete( theList.dlslList, theCursor.dlslCursor, cnt );
        else
           Doubly_Linked_String_Lists.Delete( theList.dlslList, theCursor.dlslCursor );
        end if;
      exception when constraint_error =>
-       err( "position cursor has no element" );
+       err( +"position cursor has no element" );
      end;
   end if;
 end ParseDoublyDelete;
@@ -1061,11 +1061,11 @@ begin
        findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
-       err( "a cursor has no element" );
+       err( +"a cursor has no element" );
      when program_error =>
-       err( "a cursor refers to a different list" );
+       err( +"a cursor refers to a different list" );
      when storage_error =>
-       err( "storage_error: an invalid access occurred" );
+       err( +"storage_error: an invalid access occurred" );
      end;
   end if;
 end ParseDoublySwap;
@@ -1102,11 +1102,11 @@ begin
        findResource( to_resource_id( identifiers( secondCursId ).value.all ), theSecondCursor );
        Doubly_Linked_String_Lists.Swap_Links( theList.dlslList, theFirstCursor.dlslCursor, theSecondCursor.dlslCursor );
      exception when constraint_error =>
-       err( "a cursor has no element" );
+       err( +"a cursor has no element" );
      when program_error =>
-       err( "a cursor refers to a different list" );
+       err( +"a cursor refers to a different list" );
      when storage_error =>
-       err( "storage_error: an invalid access occurred" );
+       err( +"storage_error: an invalid access occurred" );
      end;
   end if;
 end ParseDoublySwapLinks;
@@ -1155,7 +1155,7 @@ begin
      genTypesOk( identifiers( targetListId ).genKind, identifiers( curs2Id ).genKind );
      expect( symbol_t, ")" );
   else
-     err( "list or cursor expected" );
+     err( +"list or cursor expected" );
   end if;
 
   if isExecutingCommand then
@@ -1179,9 +1179,9 @@ begin
                  theCursor.dlslCursor,
                  theSourceList.dlslList );
           exception when constraint_error =>
-             err( "a cursor has no element" );
+             err( +"a cursor has no element" );
           when program_error =>
-             err( "a cursor refers to a different list" );
+             err( +"a cursor refers to a different list" );
           end;
 
        -- doubly_linked_list.splice( l1, c, l2, c2 );
@@ -1193,9 +1193,9 @@ begin
                  theSourceList.dlslList,
                  theSecondCursor.dlslCursor );
           exception when constraint_error =>
-             err( "a cursor has no element" );
+             err( +"a cursor has no element" );
           when program_error =>
-             err( "a cursor refers to a different list" );
+             err( +"a cursor refers to a different list" );
           end;
 
        -- doubly_linked_list.splice( l1, c, c2 );
@@ -1206,13 +1206,13 @@ begin
                  theCursor.dlslCursor,
                  theSecondCursor.dlslCursor );
           exception when constraint_error =>
-             err( "a cursor has no element" );
+             err( +"a cursor has no element" );
           when program_error =>
-             err( "a cursor refers to a different list" );
+             err( +"a cursor refers to a different list" );
           end;
 
        else
-          err( "internal error: unexpected splice variation" );
+          err( +"internal error: unexpected splice variation" );
        end if;
 
      end;
@@ -1293,7 +1293,7 @@ begin
           result := result & finalExpr;
        end if;
      exception when storage_error =>
-       err( "storage error raised" );
+       err( +"storage error raised" );
      end;
   end if;
 end ParseDoublyAssemble;
@@ -1384,7 +1384,7 @@ begin
           Doubly_Linked_String_Lists.Append( theList.dlslList, tempStr );
        end if;
      exception when storage_error =>
-       err( "storage error raised" );
+       err( +"storage error raised" );
      end;
   end if;
 end ParseDoublyDisassemble;
@@ -1408,7 +1408,7 @@ procedure ParseDoublyParcel is
   elemType : identifier;
 begin
   if onlyAda95 then
-     err( "subprogram not available with " & optional_yellow( "pragma ada_95" ) );
+     err( +"subprogram not available with " & em( "pragma ada_95" ) );
   end if;
   expect( doubly_parcel_t );
   ParseFirstStringParameter( doubly_parcel_t, strExpr, strType, uni_string_t );
@@ -1416,7 +1416,7 @@ begin
   ParseLastListParameter( doubly_parcel_t, listId );
   elemType := getUniType( identifiers( listId ).genKind );
   if elemType /= uni_string_t and elemType /= universal_t then
-     err( "list elements should be strings or typeless" );
+     err( +"list elements should be strings or typeless" );
   end if;
   if isExecutingCommand then
      begin
@@ -1438,7 +1438,7 @@ begin
            firstPos := lastPos + 1;
         end loop;
      exception when storage_error =>
-       err( "storage error raised" );
+       err( +"storage error raised" );
      end;
   end if;
 end ParseDoublyParcel;
