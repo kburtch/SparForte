@@ -113,6 +113,9 @@ function ToBasic( s : unbounded_string ) return unbounded_string;
 function ToEscaped( s : unbounded_string ) return unbounded_string;
 -- convert special characters in string to ASCII codes
 
+function ToCtrlEscaped( s : unbounded_string ) return unbounded_string;
+-- convert only control characters in string to ASCII codes
+
 function ToJSONEscaped( s : unbounded_string ) return unbounded_string;
 -- convert special characters in string to JSON escape codes
 

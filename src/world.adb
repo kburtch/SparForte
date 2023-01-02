@@ -2183,7 +2183,7 @@ function escapeChar( ch : character ) return messageStrings is
   newText : messageStrings;
 begin
   case templateHeader.templateType  is
-  when htmlTemplate  | wmlTemplate =>
+  when htmlTemplate  | xmlTemplate | wmlTemplate =>
     -- spaces and line feeds are special cases
     if ch = ' ' then
        newText.templateMessage := to_unbounded_string( "&nbsp;" );
@@ -2193,19 +2193,35 @@ begin
        newText.templateMessage := to_unbounded_string(
          CGI.html_encode(
            to_string(
-             toEscaped(
+             ToCtrlEscaped(
                to_unbounded_string( "" & ch )
              )
            )
          )
        );
     end if;
-  when textTemplate =>
-    newText.templateMessage := null_unbounded_string & ch;
-  when others => -- including noTemplate
-     newText.templateMessage := toEscaped( to_unbounded_string( "" & ch ) );
+  when jsonTemplate =>
+    newText.templateMessage := toJSONEscaped( to_unbounded_string( "" & ch ) );
+  when YAMLTemplate =>
+    -- this escapes comments, quotes, newlines.  It is not exhaustive.
+    if ch = '#' then
+       newText.templateMessage := to_unbounded_string( "\#" );
+    elsif ch = ASCII.LF then
+       newText.templateMessage := to_unbounded_string( "\n" );
+    elsif ch = ASCII.CR then
+       newText.templateMessage := to_unbounded_string( "\r" );
+    elsif ch = ASCII.Quotation then
+       newText.templateMessage := to_unbounded_string( "\""" );
+    elsif ch = ''' then
+       newText.templateMessage := to_unbounded_string( "\'" );
+    else
+       newText.templateMessage := ToCtrlEscaped( to_unbounded_string( "" & ch ) );
+    end if;
+  when others => -- including noTemplate, textTemplate escape control chars
+     newText.templateMessage := ToCtrlEscaped( to_unbounded_string( "" & ch ) );
   end case;
-  newText.textMessage := newText.textMessage & ch;
+  -- the text alternative also escapes control characters
+       newText.textMessage := ToCtrlEscaped( to_unbounded_string( "" & ch ) );
   return newText;
 end escapeChar;
 

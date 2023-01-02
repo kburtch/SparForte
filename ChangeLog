@@ -24,3 +24,7 @@ CHANGES SINCE 2.5
 
 10. Fix: --gcc-errors no longer hides error messages at an interactive prompt.
 
+11. Fix: with APQ, Makeincl no longer aborts a make clean because this generated file was removed in a previous make clean.
+
+12. Refactor: error reporting functions have been redesigned for better security and support for European characters.
+

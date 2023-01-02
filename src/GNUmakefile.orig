@@ -227,6 +227,10 @@ clean:
 	$(MAKE) -C pegasock clean
 	-rm -f *.o *.ali t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	-rm -f *.gcda *.gcno *.gcov coverage.info gmon.out testsuite/templates/gmon.out testsuite/goodsuite/gmon.out testsuite/helpsuite/gmon.out testsuite/third_party/gmon.out testsuite/gmon.out testsuite/testsuite010_pragmas/gmon.out testsuite/testsuite015_arrays/gmon.out testsuite/testsuite012_calendar/gmon.out
+	@echo
+	@echo "Some configuration files left in place"
+	@echo "Use 'make distclean' (distribution clean) to remove these files also"
+
 
 distclean:
 	#-$(MAKE) -C areadline clean

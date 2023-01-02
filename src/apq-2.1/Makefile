@@ -4,7 +4,9 @@
 # Licensed under the ACL (Ada Community License)
 # or GPL2 :
 
-include Makeincl
+# On a make clean, this will fail if this generated file was removed.
+# already.  We ignore errors here when including it.
+-include Makeincl
 
 DISTDIR=apq-$(VERSION)
 DISTFILE=apq-$(VERSION).tar.gz
