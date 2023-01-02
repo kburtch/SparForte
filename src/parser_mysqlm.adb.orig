@@ -135,7 +135,7 @@ procedure findConnection( connectId : identifier; connection : in out resPtr ) i
   expr : constant unbounded_string := identifiers( connectId ).value.all;
 begin
   if length( expr ) = 0 then
-     err( optional_bold( "new_connnection" ) & " has not been called to initialize the connection" );
+     err( em( "new_connnection" ) & pl( " has not been called to initialize the connection" ) );
   else
      findResource( to_resource_id( expr ), connection );
   end if;
@@ -145,7 +145,7 @@ procedure findQuery( queryId : identifier; query : in out resPtr ) is
   expr : constant unbounded_string := identifiers( queryId ).value.all;
 begin
   if length( expr ) = 0 then
-     err( optional_bold( "new_query" ) & " has not been called to initialize the query" );
+     err( em( "new_query" ) & pl( " has not been called to initialize the query" ) );
   else
      findResource( to_resource_id( expr ), query );
   end if;
@@ -190,55 +190,65 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      if restriction_no_mysql_database then
-        err( "not allowed with " & bold( "pragma restriction( no_mysql_database )" ) );
+        err( +"not allowed with " & em( "pragma restriction( no_mysql_database )" ) );
      end if;
      begin
        findConnection( connectId, connection );
        begin
          Set_DB_Name( connection.C, to_string( dbnameExpr ) );
        exception when others =>
-         err( to_string( "Internal error: set_db_name " & dbnameExpr &
-              " failed" ) );
+         err( pl( "Internal error: set_db_name " ) &
+              em_value( dbnameExpr ) &
+              pl( " failed" )
+         );
        end;
        if hasUser then
           begin
             Set_User_Password( connection.C, to_string( userExpr ), to_string( pswdExpr ) );
           exception when others =>
-             err( to_string( "Internal error: set_user_password " & userExpr &
-                  "/" & pswdExpr & " failed" ) );
+             err( pl( "Internal error: set_user_password " ) &
+                  em_value( userExpr ) &
+                  pl( "/" ) &
+                  em_value( pswdExpr ) &
+                  pl( " failed" )
+             );
           end;
        end if;
        if hasHost then
           begin
              Set_Host_Name( connection.C, to_string( hostExpr ) );
           exception when others =>
-             err( to_string( "Internal error: set_host_name " & hostExpr &
-                  " failed" ) );
+             err( pl( "Internal error: set_host_name " ) &
+                  em_value( hostExpr ) &
+                  pl( " failed" )
+             );
           end;
        end if;
        if hasPort then
           begin
             Set_Port( connection.C, integer( to_numeric( portExpr ) ) );
           exception when others =>
-             err( to_string( "Internal error: set_port " & portExpr &
-                  " failed" ) );
+             err( pl( "Internal error: set_port " ) &
+                  em_value( portExpr ) &
+                  pl( " failed" )
+             );
           end;
        end if;
        Connect( connection.C );
        currentEngine := Engine_MySQL;
      exception when not_connected =>
-        if hasHost and hasPort then
-           err( "database connection failed - User " & User( connection.C ) & ", Password " & Password( connection.C )
-           & ", Host " & Host_Name( connection.C ) & "and Port " & integer'image( Port( connection.C ) ) & " " & DB_Name( connection.C ) );
+        if hasHost and hasPort and not boolean( maintenanceOpt ) then
+           err( pl( "database connection failed - User " & User( connection.C ) & ", Password " & Password( connection.C )
+           & ", Host " & Host_Name( connection.C ) & "and Port " & integer'image( Port( connection.C ) ) & " " & DB_Name( connection.C ) ) );
         else
-          err( "database connection failed" );
+          err( +"database connection failed" );
         end if;
      when already_connected =>
-        err( "already connected to database" );
+        err( +"already connected to database" );
      when STORAGE_ERROR =>
-        err( "out-of-memory or bad pointer" );
+        err( +"out-of-memory or bad pointer" );
      when CONSTRAINT_ERROR =>
-        err( "constraint error exception" );
+        err( +"constraint error exception" );
      when others =>
         err_exception_raised;
      end;
@@ -252,12 +262,12 @@ pragma warnings( off );
 
 procedure not_configured is
 begin
-  err( "mysql support not configured" );
+  err( +"mysql support not configured" );
 end not_configured;
 
 procedure not_configured( result : out unbounded_string; kind : out identifier ) is
 begin
-  err( "mysql support not configured" );
+  err( +"mysql support not configured" );
 end not_configured;
 
 procedure ParseMySQLMConnect renames not_configured;
@@ -508,11 +518,11 @@ begin
        findQuery( queryId, query );
        Execute( query.Q, connection.C );
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when sql_error =>
-       err( Error_Message( query.Q ) );
+       err( pl( Error_Message( query.Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -554,11 +564,11 @@ begin
           Execute_Checked( query.Q, connection.C );
        end if;
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when sql_error =>
-       err( Error_Message( query.Q ) );
+       err( pl( Error_Message( query.Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -596,9 +606,9 @@ begin
         findConnection( connectId, connection );
         Disconnect( connection.C );
      exception when not_connected =>
-        err( "no database connection" );
+        err( +"no database connection" );
      when already_connected =>
-        err( "already connected to database" );
+        err( +"already connected to database" );
      when others =>
         err_exception_raised;
      end;
@@ -716,7 +726,7 @@ begin
        findConnection( connectId, connection );
        result := to_bush_boolean( In_Abort_State( connection.C ) );
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -842,11 +852,11 @@ begin
           Open_DB_Trace( connection.C, to_string( fnameExpr ) );
        end if;
      exception when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when tracing_state =>
-       err( "file already open" );
+       err( +"file already open" );
      when Ada.IO_Exceptions.Name_Error =>
-       err( "file not found" );
+       err( +"file not found" );
      when others =>
        err_exception_raised;
      end;
@@ -954,7 +964,7 @@ begin
        findQuery( queryId, query );
        Clear( query.Q );
      exception when CONSTRAINT_ERROR =>
-       err( "constraint error exception" );
+       err( +"constraint error exception" );
      when others =>
        err_exception_raised;
      end;
@@ -1055,9 +1065,9 @@ begin
        findConnection( connectId, connection );
        Begin_Work( query.Q, connection.C );
      exception when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -1088,9 +1098,9 @@ begin
        findQuery( queryId, query );
        Rollback_Work( query.Q, connection.C );
      exception when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -1121,9 +1131,9 @@ begin
        findQuery( queryId, query );
        Commit_Work( query.Q, connection.C );
      exception when abort_state =>
-       err( "in abort state" );
+       err( +"in abort state" );
      when not_connected =>
-       err( "not connected" );
+       err( +"not connected" );
      when others =>
        err_exception_raised;
      end;
@@ -1187,9 +1197,9 @@ begin
           Fetch( query.Q );
        end if;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1243,7 +1253,7 @@ begin
        findQuery( queryId, query );
        result := to_unbounded_string( Tuple_Index_Type'image( Tuple( query.Q ) ) );
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when others =>
        err_exception_raised;
      end;
@@ -1271,7 +1281,7 @@ begin
        findQuery( queryId, query );
        result := to_unbounded_string( Tuple_Count_Type'image( Tuples( query.Q ) ) );
      exception when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1299,7 +1309,7 @@ begin
        findQuery( queryId, query );
        result := to_unbounded_string( Natural'image( Columns( query.Q ) ) );
      exception when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1332,7 +1342,7 @@ begin
           Column_Name( query.Q, Column_Index_Type( to_numeric( exprVal ) ) )
        );
      exception when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when others =>
        err_exception_raised;
      end;
@@ -1365,7 +1375,7 @@ begin
            Column_Index( query.Q, to_string( exprVal ) )
        ) );
      exception when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when others =>
        err_exception_raised;
      end;
@@ -1427,9 +1437,9 @@ begin
           Column_Index_Type( to_numeric( exprVal ) ) )
        );
      exception when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1460,13 +1470,13 @@ begin
        findQuery( queryId, query );
        result := Value( query.Q, Column_Index_Type( to_numeric( exprVal ) ) );
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when others =>
        err_exception_raised;
      end;
@@ -1631,15 +1641,15 @@ begin
         new_line;
      end if;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -1865,15 +1875,15 @@ begin
      end if;
      new_line;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -1935,8 +1945,8 @@ begin
         -- No result? Then table was not found.
 
         if end_of_query( Q ) then
-           err( "Did not find any relation named " &
-              optional_bold( to_string( exprVal ) ) );
+           err( +"Did not find any relation named " &
+              unb_em( exprVal ) );
            return;
         end if;
 
@@ -2141,15 +2151,15 @@ begin
      end if;
 
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -2346,15 +2356,15 @@ begin
      end if;
      new_line;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -2547,15 +2557,15 @@ begin
      end if;
      new_line;
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      when sql_error =>
-       err( Error_Message( Q ) );
+       err( pl( Error_Message( Q ) ) );
      when others =>
        err_exception_raised;
      end;
@@ -2669,7 +2679,7 @@ begin
   ParseLastInOutRecordParameter( mysqlm_fetch_values_t, id  );
 -- TODO: is kind in the reference?
   if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
-     err( "Record type expected" );
+     err( +"Record type expected" );
   end if;
   if isExecutingCommand then
      declare
@@ -2692,7 +2702,7 @@ begin
 --put_line( "fields in record = " &fieldsInRecord'img ); -- DEBUG
 --put_line( "fields in query = " & integer'image( columns( query.Q ) ) ); -- DEBUG
        if long_integer( columns( query.Q ) ) /= fieldsInRecord then
-          err( "record has" & fieldsInRecord'img & " field(s) but the query returns" & integer'image( columns( query.Q ) ) );
+          err( pl( "record has" & fieldsInRecord'img & " field(s) but the query returns" & integer'image( columns( query.Q ) ) ) );
        else
           for fieldNumber in 1..fieldsInRecord loop
 
@@ -2723,7 +2733,7 @@ begin
                                identifiers( j ).value.all := identifiers( true_t ).value.all;
                             end if;
                           exception when constraint_error =>
-                            err( to_string( searchName ) & " is boolean but query value is not numeric" );
+                            err( unb_pl( searchName & " is boolean but query value is not numeric" ) );
                           end;
                        --elsif getUniType( elementKind ) = root_enumerated_t then
                        -- TODO: non-boolean enumerated.  See scanner.adb
@@ -2744,30 +2754,30 @@ begin
                             identifiers( j ).value.all := castToType( field,
                               identifiers( j ).kind );
                           exception when constraint_error =>
-                            err( to_string( searchName ) & " is numeric but query value is not numeric" );
+                            err( unb_pl( searchName & " is numeric but query value is not numeric" ) );
                           end;
                        elsif getUniType( elementKind ) = universal_t then
                             identifiers( j ).value.all := field;
                        else
-                          err( "unsupported data type" );
+                          err( +"unsupported data type" );
                        end if;
                     end if;
                  end if;
              end loop;
              if not found then
-                err( optional_bold( to_string( searchName ) ) & " does not exist" );
+                err( unb_em( searchName ) & pl( " does not exist" ) );
              end if;
           end loop;
        end if;
 
      exception when no_tuple =>
-       err( "no tuple" );
+       err( +"no tuple" );
      when null_value =>
-       err( "null value" );
+       err( +"null value" );
      when no_column =>
-       err( "no column" );
+       err( +"no column" );
      when no_result =>
-       err( "no result" );
+       err( +"no result" );
      --when sql_error =>
      --  err( Error_Message( Q ) );
      when others =>
@@ -2803,7 +2813,7 @@ begin
   ParseLastInOutRecordParameter( mysqlm_append_for_insert_t, id  );
 -- TODO: is kind in the reference?
   if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
-     err( "Record type expected" );
+     err( +"Record type expected" );
   end if;
   if isExecutingCommand then
      declare
@@ -2884,7 +2894,7 @@ begin
                      elsif elementUniKind = universal_t then
                         Append_Quoted( query.Q, connection.C, to_string( identifiers( field_t ).value.all ) );
                      else
-                         err( "unsupported data type" );
+                         err( +"unsupported data type" );
                      end if;
                   end if;
                end if;
@@ -2922,7 +2932,7 @@ begin
   ParseLastInOutRecordParameter( mysqlm_append_for_update_t, id  );
 -- TODO: is kind in the reference?
   if identifiers( getBaseType( identifiers( id ).kind ) ).kind /= root_record_t then
-     err( "Record type expected" );
+     err( +"Record type expected" );
   end if;
   if isExecutingCommand then
      declare
@@ -2976,7 +2986,7 @@ begin
                    elsif getUniType( elementKind ) = universal_t then
                       Append_Quoted( query.Q, connection.C, identifiers( field_t ).value.all );
                    else
-                       err( "unsupported data type" );
+                       err( +"unsupported data type" );
                    end if;
                  end if;
              end if;

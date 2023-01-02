@@ -39,7 +39,7 @@
 		<tr>
 			<td align="left" valign="top">
 	<!-- Content Area -->
-<h2><a name="3.26"></a>Interpreter Directives</font></h2>
+<h2><a name="3.26"></a>Interpreter Directives</h2>
 
 <p>Pragmas, or interpreter directives, provide additional instructions to
 AdaScript.  This section also contains information on importing variables to
@@ -76,6 +76,8 @@ environment.</p>
   <b>pragma</b> license( license_name [, extra] )
   <b>pragma</b> no_command_hash
   <b>pragma</b> prompt_script( `commands` )
+  <b>pragma</b> prompt_idle_script( `commands` )
+  <b>pragma</b> prompt_idle_speed( interval )
   <b>pragma</b> propose( from, message )
   <b>pragma</b> refactor( from, message )
   <b>pragma</b> restriction( no_annotate_todos )
@@ -219,7 +221,7 @@ with the given value for the current file.  There is an optional float weight
 which is added to the constraint each time it is used.  There will be an
 error if the total weight exceeds the weight limit.
 The affect of the constraint depends on the constraint mode:</li>
-<ul>
+<li><ul>
 <li> <b>unique</b>  If the constraint is declared as a unique constraint,
 it cannot be enforced twice in a file or an error will occur.</li>
 <li><b>file</b> If the constraint is declared as a file
@@ -230,7 +232,7 @@ error will occur.</li>
 <li> <b>subprogram</b>  If the constraint is declared as a subprogram constraint,
 it is enforced in the scope of the subprogram where it is used.</li>
 </ul>
-</ul>
+</li></ul>
 
 <p>These are the predefined constraint/value pairs are:</p>
 
@@ -340,7 +342,7 @@ for the current file.  There is an optional float weight
 which is added to the affinity each time it is used.  There will be an
 error if the total weight is more than the weight limitl.
 The affect of the affinity depends on the affinity mode:</li>
-<ul>
+<li><ul>
 <li><b>file</b> If the affinity is declared as a file
 affinity, every use must be in the same file.  If the
 affinity is enforced in two different files, an error will occur.</li>
@@ -348,7 +350,7 @@ affinity is enforced in two different files, an error will occur.</li>
 affinity, every use must be in the same procedure or function.  If the
 affinity is enforced in two different subprograms, an error will occur.</li>
 </ul>
-</ul>
+</li></ul>
 
         <center>
         <div class="code">
@@ -561,7 +563,6 @@ a
 variable's description whenever a user breaks to a command prompt. Has
 no
 effect if --break option isn't used.</li>
-  </li>
 </ul>
 
 <h4>Testing Pragmas</h4>
@@ -666,7 +667,7 @@ sure the final command ends with a semi-colon.  The description
 is an optional explanation of the test.</li>
   <li> <b>pragma test_report( text|xml [, "filepath" ] )</b> - select the
 format of the test/test_result test report, and the path to the
-report file.  The path is a static expression so it can use constants.</p>
+report file.  The path is a static expression so it can use constants.</li>
   <li> <b>pragma test_result( expression )</b> - evaluates the Boolean
 expression.
 If it isn't true, a "test failed" message is written to standard error.
@@ -967,8 +968,8 @@ Some common tasks:</p>
 
 <ul>
 <li>Your username - import LOGNAME or USER from the O/S environment.</li>
-<li>Your current directory - use the <tt>pwd</tt> command or the PWD variable</li>
-<li>No boldface - use <tt>tput sgr0</tt></li>
+<li>Your current directory - use the <code>pwd</code> command or the <code>PWD</code> variable</li>
+<li>No boldface - use <code>tput sgr0</code></li>
 <li>To use colour - use the character codes for your terminal (usually ANSI)</li>
 <li>To restore the default prompt - use an empty command list</li>
 </ul>
@@ -1069,6 +1070,8 @@ prompt will also change the title of your terminal window.</p>
 set each time you start SparForte.</p>
 
   </li>
+  <li><b>pragma prompt_idle_script( `commands` )</b> - commands to run when command prompt is idle</li>
+  <li><b>pragma prompt_idle_speed( interval )</b> - how often to run the prompt idle script when command prompt is idle.  The interval is a duration type.</li>
   <li> <b>pragma error( static-expression )</b> - always raise an error
 with the static expression in the message.</li>
 </ul>
@@ -1181,9 +1184,13 @@ both pragmas.</p>
 <p><b>Pragma volatile</b> will mark a variable as "volatile", meaning that its
 value can change unexpectedly and SparForte should reload the value from the
 environment whenever it is referenced.  Although you can make volatile
-environment variables, it probably won't be useful: these variables are owned
-by the running process, which is SparForte, so it is virtually impossible
-to change their values except using the SparForte itself.</p>
+environment variables imported by pragma import( shell,...), it probably
+won't be useful: these variables are owned by the running process, which is
+SparForte, so it is virtually impossible to change their values except using
+the SparForte or the script itself.</p>
+
+<p>As a special exception, volatiles not declared as limited are not required
+to be limited when since no volatile can be used in expressions anyway.</p>
 
 <h3>CGI Variables</h3>
 
@@ -1393,7 +1400,7 @@ For example:</p>
 		<b>begin</b><br>
 		-- do some other work here<br>
 		&nbsp;&nbsp;user_count := strings.image( integer( numerics.value( @ ) + 1 ) );<br>
-  		<b>end</b></b>;<br>&nbsp;<br>
+  		<b>end</b>;<br>&nbsp;<br>
                 </p>
         <div class="code_caption">
                 <b>Example</b>: Using import, export and volatile</span>

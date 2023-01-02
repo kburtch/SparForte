@@ -4,7 +4,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
-tion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>SparForte - Tutorials - Template Tutorial 2: Intermediate Templates</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
@@ -41,7 +40,7 @@ tion">
 			<td align="left" valign="top">
 				<!-- Content Area -->
 
-<h2><a name="2.7"></a>Template Tutorial 2: Intermediate Templates</h3>
+<h2><a name="2.7"></a>Template Tutorial 2: Intermediate Templates</h2>
 
 <p>Some web experts recommend using a <b>MVC</b> (model, view, controller) layout
 for web templates.  What they mean by that is that the business logic
@@ -74,7 +73,7 @@ forms.</p>
 <p>There are two ways to read HTML variables in SparForte.  The first method is to
 import the variable.  In the same way as you import shell environment variables,
 
-<b>pragma import</b> can import HTML variables by using "cgi" instead of
+<code>pragma import</code> can import HTML variables by using "cgi" instead of
 "shell".</p>
 
         <center>
@@ -87,7 +86,7 @@ import the variable.  In the same way as you import shell environment variables,
         </div>
 	</center>
 
-<p>The second method is to use the builtin cgi package.  <b>cgi.value</b>
+<p>The second method is to use the builtin cgi package.  <code>cgi.value</code>
 will retrieve the value of a HTML variable in a form.  The value function
 requires the name the variable, the instance (because there may be multiple
 variables with the same name), and whether or not to raise an exception if
@@ -108,7 +107,7 @@ template will stop before it can execute the main script.  The CGI method
 can load HTML variables on demand to improve performance, and is compatible
 with GCC.</p>
 
-<p><b>cgi.input_received</b> is true if form data was received.  You can use this
+<p><code>cgi.input_received</code> is true if form data was received.  You can use this
 function to check for form data before trying to read the values.</p>
 
 <h3>Web Server Variables</h3>
@@ -212,7 +211,6 @@ ok_to_post := REMOTE_ADDR = allowed_host_address;  -- is this host OK?<br>
                 <b>Example</b>: Guest Book Example (guestbook.cgi, CGI Portion)
         </div>
         </div>
-        </div>
 	</center>
 
         <center>
@@ -299,7 +297,7 @@ ok_to_post := REMOTE_ADDR = allowed_host_address;  -- is this host OK?<br>
         </div>
 	</center>
 
-<img src="pictures/bush_5.gif" width="777" height="667" summary="screenshot">
+<!-- img src="pictures/bush_.gif" width="777" height="667" summary="screenshot" -->
 
 
 <h3>Conditional Output</h3>

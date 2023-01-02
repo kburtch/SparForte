@@ -66,46 +66,46 @@ and represent cursor movement and editing functions.</p>
 <p>The <b>emacs mode</b> key bindings are:
 </p>
 <ul>
-  <li> <b>control-b</b> - move back (left) one character</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">b</tt> - move back (left) one character</li>
 
-  <li> <b>control-f</b> - move forward (right) one character</li>
-  <li> <b>control-p</b> - move to the previous command line you typed</li>
-  <li> <b>control-n</b> - move to the next command line you typed</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">f</tt> - move forward (right) one character</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">p</tt> - move to the previous command line you typed</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">n</tt> - move to the next command line you typed</li>
 
-  <li> <b>control-x</b> - erase the command line</li>
-  <li> <b>control-a</b> - move to start of the line</li>
-  <li> <b>control-e</b> - move to end of the line</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">x</tt> - erase the command line</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">a</tt> - move to start of the line</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">e</tt> - move to end of the line</li>
 
-  <li> <b>control-r</b> - search command lines (history) backwards</li>
-  <li> <b>control-u</b> - delete under cursor (SparForte addition)</li>
-  <li> <b>control-]</b> - character search forwards. (Follow with the
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">r</tt> - search command lines (history) backwards</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">u</tt> - delete under cursor (SparForte addition)</li>
+  <li> <tt class="key">Ctrl</tt> - <tt class="key">]</tt> - character search forwards. (Follow with the
 key to search for.)</li>
-  <li> <b>tab</b> - complete the filename</li>
+  <li> <tt class="key">Tab</tt> - complete the filename</li>
 
-  <li> <b>backspace/delete</b> - delete a character</li>
+  <li> <tt class="key">Backspace</tt> / <tt class="key">Delete</tt> - delete a character</li>
 </ul>
 
-<p>If you prefer to use <b>vi cursor movement</b> instead, press the
-escape
-key to enter vi mode. Press escape again to return to emacs mode. In vi
+<p>If you prefer to use <b>vi cursor movement</b> instead, press
+<tt class="key">Esc</tt>
+to enter vi mode. Press <tt class="key">Esc</tt> again to return to emacs mode. In vi
 mode, you can use lower-case 'h', 'j', 'k', 'l', 'x' (delete under cursor),
 '^' and '$'. Filename
-completion is accomplished with two escape key presses in a row.
+completion is accomplished with two <tt class="key">Esc</tt> presses in a row.
 </p>
 
 <h3>Command History</h3>
 
 <p>SparForte remembers up to 100 command lines for the current session, and you
-can cycle through them using control-p and control-n.  The <tt>history</tt>
+can cycle through them using control-p and control-n.  The <code>history</code>
 command will show your command history.</p>
 
 <h3>Filename Completion</h3>
 
-<p>Pressing a tab (or ESC twice) on the command line will cause SparForte
+<p>Pressing <tt class="key">Tab</tt> (or <tt class="key">Esc</tt> twice) on the command line will cause SparForte
 to search for filenames to complete a command.</p>
 
 <p>If there are multiple matches, SparForte will complete as much of the
-filename as matches all cases.  Pressing tab again will show a list of
+filename as matches all cases.  Pressing <tt class="key">Tab</tt> again will show a list of
 the possible matches.  A maximum of 10 are shown.  If there are 10 or
 more matches in the list, the message "[Maybe More]" is shown.</p>
 
@@ -114,9 +114,9 @@ path to your home directory.</p>
 
 <h3>SIGINT Handling</h3>
 
-<p>Typing a control-c (sending a SIGINT signal) at the command prompt
-acts
-the same as a control-x.&nbsp; Pressing control-c while a script or
+<p>Typing <tt class="key">Ctrl</tt> - <tt class="key">c</tt>
+(sending a SIGINT signal) at the command prompt acts
+the same as a <tt class="key">Ctrl</tt> - <tt class="key">x</tt>.&nbsp; Pressing <tt class="key">Ctrl</tt> - <tt class="key">c</tt> while a script or
 command
 is running will cause it to stop.
 </p>
@@ -166,14 +166,13 @@ bar character (|).&nbsp; Pipelines are a command line convenience feature
 and are not intended for use in scripts (this is true in other Linux shells
 as well).</li>
 
-<li>The <tt>typeset</tt> and <tt>unset</tt> commands can only be used
+<li>The <code>typeset</code> and <code>unset</code> commands can only be used
 in an interactive session.</li>
 
 <li>Interactive login sessions can only be terminated with the logout command.</li>
 
 </ul>
 <br>
-</p>
 
 <br>&nbsp;
 &nbsp;<br>

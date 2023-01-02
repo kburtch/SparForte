@@ -118,7 +118,7 @@ vectors_decrement_t     : identifier;
 
 procedure err_storage is
 begin
-  err( "storage_error raised" );
+  err( +"storage_error raised" );
 end err_storage;
 
 
@@ -131,8 +131,8 @@ procedure err_empty( subprogram : identifier; vectorId : identifier) is
 begin
   err( context => subprogram,
        subject => vectorId,
-       reason =>"is",
-       obstructorNotes => "empty" );
+       reason => +"is",
+       obstructorNotes => +"empty" );
 end err_empty;
 
 
@@ -144,19 +144,19 @@ end err_empty;
 procedure err_index( subprogram : identifier; idxExpr : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => "the index position" & toProtectedValue( idxExpr ),
-       reason => "is",
-       obstructorNotes => "not in the vector"
+       subjectNotes => pl( "the index position" ) & em_value( idxExpr ),
+       reason => +"is",
+       obstructorNotes => +"not in the vector"
   );
 end err_index;
 
 procedure err_index( subprogram : identifier; idxExpr1, idxExpr2 : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => "the index position" & toProtectedValue( idxExpr1 ) &
-                  " or" & toProtectedValue( idxExpr2 ),
-       reason => "is",
-       obstructorNotes => "not in the vector"
+       subjectNotes => pl( "the index position" ) & em_value( idxExpr1 ) &
+                  pl( " or" ) & em_value( idxExpr2 ),
+       reason => +"is",
+       obstructorNotes => +"not in the vector"
   );
 end err_index;
 
@@ -175,19 +175,19 @@ procedure err_count( subprogram : identifier; cntExpr : unbounded_string; cntTyp
 begin
    if cntExpr = "" then
       err( context => subprogram,
-           subjectNotes => "the count value",
+           subjectNotes => +"the count value",
            subjectType  => cntType,
-           reason => "has",
-           obstructorNotes => "no assigned value",
-           remedy => "the value should be >= 0"
+           reason => +"has",
+           obstructorNotes => +"no assigned value",
+           remedy => +"the value should be >= 0"
       );
    else
       err( context => subprogram,
-           subjectNotes => "the count value of " & toSecureData( to_string( cntExpr ) ),
+           subjectNotes => pl("the count value of " & toSecureData( to_string( cntExpr ) ) ),
            subjectType  => cntType,
-           reason => "is not valid for",
+           reason => +"is not valid for",
            obstructor => containers_count_type_t,
-           remedy => "the value should be >= 0"
+           remedy => +"the value should be >= 0"
      );
    end if;
 end err_count;
@@ -202,7 +202,7 @@ end err_count;
 
 procedure err_cursor_mismatch is
 begin
-  err( "the cursor does not match this vector" );
+  err( +"the cursor does not match this vector" );
 end err_cursor_mismatch;
 
 
@@ -220,10 +220,10 @@ begin
   if identifiers( leftVectorItem ).genKind /= identifiers( rightVectorItem ).genKind then
      err(
        context => subprogram,
-       subjectNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ),
+       subjectNotes => +"the index of " & name_em( leftVectorItem ),
        subjectType => identifiers( leftVectorItem ).genKind,
-       reason => "should have the identical type as",
-       obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+       reason => +"should have the identical type as",
+       obstructorNotes => +"the index of " & name_em( rightVectorItem ),
        obstructorType => identifiers( rightVectorItem ).genKind
     );
   end if;
@@ -239,44 +239,44 @@ begin
         -- left, center match but right
         err(
           context => subprogram,
-          subjectNotes => "the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+          subjectNotes => +"the index of " & name_em( rightVectorItem ),
           subjectType => identifiers( rightVectorItem ).genKind,
-          reason => "should have the identical type as",
-          obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ) &
-             " and " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ),
+          reason => +"should have the identical type as",
+          obstructorNotes => +"the index of " & name_em( leftVectorItem ) &
+             pl( " and " ) & name_em( centerVectorItem ),
           obstructorType => identifiers( leftVectorItem ).genKind
         );
      elsif identifiers( rightVectorItem ).genKind = identifiers( centerVectorItem ).genKind then
         -- center, right match but left
         err(
           context => subprogram,
-          subjectNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ),
+          subjectNotes => +"the index of " & name_em( leftVectorItem ),
           subjectType => identifiers( leftVectorItem ).genKind,
-          reason => "should have the identical type as",
-          obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ) &
-             " and " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+          reason => +"should have the identical type as",
+          obstructorNotes => +"the index of " & name_em( centerVectorItem ) &
+             pl( " and " ) & name_em( rightVectorItem ),
           obstructorType => identifiers( rightVectorItem ).genKind
         );
      else
        -- all 3 different
         err(
           context => subprogram,
-          subjectNotes => "all indices",
-          reason => "should have identical types but are different for",
-          obstructorNotes => optional_yellow( to_string( identifiers( leftVectorItem ).name ) ) &
-             ", " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ) &
-             " and " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) )
+          subjectNotes => +"all indices",
+          reason => +"should have identical types but are different for",
+          obstructorNotes => name_em( leftVectorItem ) &
+             pl( ", " ) & name_em( centerVectorItem ) &
+             pl( " and " ) & name_em( rightVectorItem )
         );
      end if;
   elsif identifiers( leftVectorItem ).genKind /= identifiers( centerVectorItem ).genKind then
      -- left, right match but not center
      err(
        context => subprogram,
-       subjectNotes => "the index of " & optional_yellow( to_string( identifiers( centerVectorItem ).name ) ),
+       subjectNotes => pl( "the index of " ) & name_em( centerVectorItem ),
        subjectType => identifiers( centerVectorItem ).genKind,
-       reason => "should have the identical type as",
-       obstructorNotes => "the index of " & optional_yellow( to_string( identifiers( leftVectorItem ).name ) ) &
-          " and " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+       reason => +"should have the identical type as",
+       obstructorNotes => +"the index of " & name_em( leftVectorItem ) &
+          pl( " and " ) & name_em( rightVectorItem ),
        obstructorType => identifiers( rightVectorItem ).genKind
     );
   end if;
@@ -354,10 +354,10 @@ begin
   if effectiveLeftType /= effectiveRightType then
      err(
        context => subprogram,
-       subjectNotes => "the expression",
+       subjectNotes => +"the expression",
        subjectType => leftType,
-       reason => "is not compatible with",
-       obstructorNotes => "a cursor or the index of " & optional_yellow( to_string( identifiers( rightVectorItem ).name ) ),
+       reason => +"is not compatible with",
+       obstructorNotes => +"a cursor or the index of " & name_em( rightVectorItem ),
        obstructorType => identifiers( rightVectorItem ).genKind
     );
   end if;
@@ -473,16 +473,16 @@ begin
          elsif kind = integer_t or baseKind = integer_t then
             convertedIdx := vector_index( UserIdx-integer'first );
          else
-            err( "internal error: unsupported index type" );
+            err( +"internal error: unsupported index type" );
          end if;
       elsif uniKind = uni_string_t then
-         err( "internal error: string for a vector index");
+         err( +"internal error: string for a vector index");
       else
          -- for an enumerated, asuume it starts at zero
          convertedIdx := vector_index( UserIdx );
       end if;
    exception when constraint_error =>
-      err( "internal error: index out-of-range" );
+      err( +"internal error: index out-of-range" );
    end;
    return convertedIdx;
 end toRealVectorIndex;
@@ -514,16 +514,16 @@ begin
          elsif kind = integer_t or baseKind = integer_t then
             convertedIdx := integer(realIdx ) + integer'first;
          else
-            err( "internal error: unsupported integer type" );
+            err( +"internal error: unsupported integer type" );
          end if;
       elsif uniKind = uni_string_t then
-         err( "internal error: string for a vector index");
+         err( +"internal error: string for a vector index");
       else
          -- for an enumerated, asuume it starts at zero
          convertedIdx := integer( realIdx );
       end if;
    exception when constraint_error =>
-      err( "internal error: index out-of-range" );
+      err( +"internal error: index out-of-range" );
    end;
    return convertedIdx;
 end toUserVectorIndex;
@@ -639,11 +639,11 @@ begin
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
-            subjectNotes => "the capacity count value of " & toSecureData( to_string( cntExpr ) ),
+            subjectNotes => pl( "the capacity count value of " & toSecureData( to_string( cntExpr ) ) ),
             subjectType  => cntType,
-            reason => "is not valid for",
+            reason => +"is not valid for",
             obstructor => containers_count_type_t,
-            remedy => "the value should be >= 0" );
+            remedy => +"the value should be >= 0" );
      when storage_error =>
        err_storage;
      end;
@@ -702,11 +702,11 @@ begin
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
-            subjectNotes => "the capacity count value of " & toSecureData( to_string( cntExpr ) ),
+            subjectNotes => pl( "the capacity count value of " & toSecureData( to_string( cntExpr ) ) ),
             subjectType  => cntType,
-            reason => "is not valid for",
+            reason => +"is not valid for",
             obstructor => containers_count_type_t,
-            remedy => "the value should be >= 0" );
+            remedy => +"the value should be >= 0" );
      when storage_error =>
        err_storage;
      end;
@@ -848,7 +848,7 @@ procedure ParseVectorsAppend is
   strType   : identifier;
   subprogramId : constant identifier := vectors_append_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( subprogramId, strExpr, strType, identifiers( vectorId ).genKind2 );
@@ -860,7 +860,7 @@ begin
        idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
        Append( theVector.vslVector, idx, strExpr );
      exception when constraint_error =>
-       err( "append index is wrong type" );
+       err( +"append index is wrong type" );
      when storage_error =>
        err_storage;
      end;
@@ -884,7 +884,7 @@ procedure ParseVectorsPrepend is
   strType   : identifier;
   subprogramId : constant identifier := vectors_prepend_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
   ParseLastStringParameter( subprogramId, strExpr, strType, identifiers( vectorId ).genKind2 );
@@ -896,7 +896,7 @@ begin
        idx := toRealVectorIndex( vectorId, integer( to_numeric( idxExpr ) ) );
        Prepend( theVector.vslVector, idx, strExpr );
      exception when constraint_error =>
-       err( "prepend count must be a natural integer" );
+       err( +"prepend count must be a natural integer" );
      when storage_error =>
        err_storage;
      end;
@@ -982,9 +982,9 @@ begin
      err( context => subprogramId,
           subject => token,
           subjectType => identifiers( token ).kind,
-          obstructorNotes => optional_yellow( "vectors.vector" ) & " or " &
-             optional_yellow( "vectors.cursor" ),
-          reason =>  "is not compatible with the expected types"
+          obstructorNotes => em( "vectors.vector" ) & pl( " or " ) &
+             em( "vectors.cursor" ),
+          reason => +"is not compatible with the expected types"
      );
   elsif identifiers( token ).kind = new_t then
     -- since we are skipping the usual methods and looking at the token
@@ -1003,9 +1003,9 @@ begin
      err( context => subprogramId,
           subject => token,
           subjectType => identifiers( token ).kind,
-          obstructorNotes => optional_yellow( "vectors.vector" ) & " or " &
-             optional_yellow( "vectors.cursor" ),
-          reason =>  "is not compatible with the expected types"
+          obstructorNotes => em( "vectors.vector" ) & pl( " or " ) &
+             em( "vectors.cursor" ),
+          reason => +"is not compatible with the expected types"
      );
   end if;
   expectParameterClose( subprogramId );
@@ -1281,7 +1281,7 @@ procedure ParseVectorsFlip is
   theVector : resPtr;
   subprogramId : constant identifier := vectors_flip_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use reverse_elements" );
+  expectAdaScript( subject => subprogramId, remedy => +"use reverse_elements" );
   ParseSingleInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   if isExecutingCommand then
      begin
@@ -2109,8 +2109,8 @@ begin
         getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
-          subjectNotes => "a second index",
-          reason => "was expected not",
+          subjectNotes => +"a second index",
+          reason => +"was expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
@@ -2179,9 +2179,9 @@ begin
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
-          subjectNotes => "a vector element",
+          subjectNotes => +"a vector element",
           subjectType => identifiers( vectorId ).genKind2,
-          reason => "was expected not",
+          reason => +"was expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
@@ -2250,9 +2250,9 @@ begin
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
-          subjectNotes => "a vector element",
+          subjectNotes => +"a vector element",
           subjectType => identifiers( vectorId ).genKind2,
-          reason => "was expected not",
+          reason => +"was expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
@@ -2409,14 +2409,14 @@ procedure ParseVectorsIncrement is
   hasAmt    : boolean := false;
   subprogramId : constant identifier := vectors_increment_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
   if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
      err( context => subprogramId,
           subject => vectorId,
           subjectType => identifiers( vectorId ).kind,
-          reason  => "must have numeric elements but the elements are type",
+          reason  => +"must have numeric elements but the elements are type",
           obstructor => identifiers( vectorId ).genKind2
      );
   end if;
@@ -2427,9 +2427,9 @@ begin
      expect( symbol_t, ")" );
   else
      err( context => subprogramId,
-          subjectNotes => "the parameter list",
-          reason  => "expects a ')' for two parameters or ',' for three",
-          obstructorNotes => ""
+          subjectNotes => +"the parameter list",
+          reason  => +"expects a ')' for two parameters or ',' for three",
+          obstructorNotes => +""
      );
   end if;
   if isExecutingCommand then
@@ -2450,11 +2450,11 @@ begin
        end;
      exception when constraint_error =>
        err( context => subprogramId,
-          subjectNotes => "the amount",
-          reason  => "should be a natural not",
-          obstructorNotes => toProtectedValue( numExpr ),
+          subjectNotes => +"the amount",
+          reason  => +"should be a natural not",
+          obstructorNotes => em_value( numExpr ),
           obstructorType => numType,
-          remedy => "the value should be >= 0"
+          remedy => +"the value should be >= 0"
        );
      when others =>
        err_exception_raised;
@@ -2480,14 +2480,14 @@ procedure ParseVectorsDecrement is
   hasAmt    : boolean := false;
   subprogramId : constant identifier := vectors_decrement_t;
 begin
-  expectAdaScript( subject => subprogramId, remedy => "use element and replace_element" );
+  expectAdaScript( subject => subprogramId, remedy => +"use element and replace_element" );
   ParseFirstInOutInstantiatedParameter( subprogramId, vectorId, vectors_vector_t );
   ParseNextGenItemParameter( subprogramId, idxExpr, idxType, identifiers( vectorId ).genKind );
   if getUniType( identifiers( vectorId ).genKind2 ) /= uni_numeric_t then
      err( context => subprogramId,
           subject => vectorId,
           subjectType => identifiers( vectorId ).kind,
-          reason  => "must have numeric elements but the elements are type",
+          reason  => +"must have numeric elements but the elements are type",
           obstructor => identifiers( vectorId ).genKind2
      );
   end if;
@@ -2498,9 +2498,9 @@ begin
      expect( symbol_t, ")" );
   else
      err( context => subprogramId,
-          subjectNotes => "the parameter list",
-          reason  => "expects a ')' for two parameters or ',' for three",
-          obstructorNotes => ""
+          subjectNotes => +"the parameter list",
+          reason  => +"expects a ')' for two parameters or ',' for three",
+          obstructorNotes => +""
      );
   end if;
   if isExecutingCommand then
@@ -2521,11 +2521,11 @@ begin
        end;
      exception when constraint_error =>
        err( context => subprogramId,
-          subjectNotes => "the amount",
-          reason  => "should be a natural not",
-          obstructorNotes => toProtectedValue( numExpr ),
+          subjectNotes => +"the amount",
+          reason  => +"should be a natural not",
+          obstructorNotes => em_value( numExpr ),
           obstructorType => numType,
-          remedy => "the value should be >= 0"
+          remedy => +"the value should be >= 0"
        );
      when others =>
        err_exception_raised;

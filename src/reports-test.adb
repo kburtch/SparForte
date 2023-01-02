@@ -124,7 +124,7 @@ package body reports.test is
 
   procedure startJUnitTestCase( report: in out textTestReport ;
     name, description : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -212,7 +212,7 @@ package body reports.test is
   begin
     jtc.errorCnt := jtc.errorCnt + 1;
     wasTestErrorOrFailure := true;
-    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage ) );
+    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage.textMessage ) );
   end testCaseError;
 
   -- TEST CASE FAILURE
@@ -220,7 +220,7 @@ package body reports.test is
   -- Record a test case failure.
 
   procedure testCaseFailure( report : in out textTestReport; test_message : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -239,7 +239,7 @@ package body reports.test is
        else
           -- TODO: if the test was multi-line, this will only show
           -- the final line.
-          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine ) );
+          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine.textMessage ) );
        end if;
     elsif jtc.errorCnt = 1 then
        failureList.Clear( jtc.failureMsgs );
@@ -270,7 +270,7 @@ package body reports.test is
   procedure startJUnitTestSuite( report: in out textTestReport;
     name : unbounded_string := null_unbounded_string;
     test_name : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -328,7 +328,7 @@ package body reports.test is
 
   procedure checkForNewTestSuite( report : in out textTestReport;
     test_name : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -385,7 +385,7 @@ package body reports.test is
 
   procedure startJUnitTestCase( report: in out xmlTestReport;
      name, description : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -477,11 +477,11 @@ package body reports.test is
   begin
     jtc.errorCnt := jtc.errorCnt + 1;
     wasTestErrorOrFailure := true;
-    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage ) );
+    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage.textMessage ) );
   end testCaseError;
 
   procedure testCaseFailure( report: in out xmlTestReport; test_message : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -500,7 +500,7 @@ package body reports.test is
        else
           -- TODO: if the test was multi-line, this will only show
           -- the final line.
-          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine ) );
+          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine.textMessage ) );
        end if;
     elsif jtc.errorCnt = 1 then
        failureList.Clear( jtc.failureMsgs );
@@ -517,7 +517,7 @@ package body reports.test is
   end testCaseSuccess;
 
   procedure startJUnitTestSuite( report: in out xmlTestReport; name : unbounded_string := null_unbounded_string ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
@@ -569,7 +569,7 @@ package body reports.test is
   end endJunitTestSuite;
 
   procedure checkForNewTestSuite( report: in out xmlTestReport ) is
-    cmdline    : unbounded_string;
+    cmdline    : messageStrings;
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;

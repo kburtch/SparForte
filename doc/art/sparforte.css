@@ -5,6 +5,23 @@
 	a {
 	       	text-decoration: none;
 	}
+    code {
+		font-family: "Liberation Mono", monospace;
+        font-size: 0.95em;
+        background-color: #EEEEEE;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        border: 1px solid #CCCCCC;
+    }
+    tt.key {
+		font-family: "Liberation Mono", monospace;
+        font-size: 0.95em;
+        background-color: #FFFFFF;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        border: 1px solid #CCCCCC;
+        box-shadow: 0.1em 0.1em 0.2em;
+    }
 	h2 {
 		font-family: "Lucida Sans", "Trebuchet MS", sans-serif;
 		font-size: 24px;
@@ -32,13 +49,25 @@
         	border-bottom: 2px solid #000099;
         	line-height: 1.2em;
         }
-	p,span {
+	span {
         	/* margin-left: 3.0em 0 0 0; */
 		font-family: Verdana, Arial, Helvetica, Sans-Serif;
 		font-size: 14px;
 		font-weight: normal;
 		font-style: normal;
 		text-align: left;
+		color: black;
+	}
+	p {
+        	/* margin-left: 3.0em 0 0 0; */
+		font-family: Verdana, Arial, Helvetica, Sans-Serif;
+		font-size: 14px;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+        line-height: 1.4em;
+        margin-left: 5px;
+        margin-right: 5px;
 		color: black;
 	}
 	ol,ul {
@@ -49,6 +78,7 @@
 		font-style: normal;
 		text-align: left;
 		color: black;
+        line-height: 1.4em;
 	}
 	.menutext {
 		font-family: sans-serif;
@@ -73,10 +103,19 @@
 	p.rmt {
 		margin: 10px;
 	}
-	.code { /* the div makes the border */
+	p.code { /* the div makes the border */
 		margin: 0px 0;
-        	padding: 0;
-        	color: black;
+        padding: 5px;
+        color: black;
+		font-family: courier;
+		font-size: 12pt;
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+	}
+	span.code {
+		margin: 0px 0;
+        color: black;
 		font-family: courier;
 		font-size: 12pt;
 		font-weight: normal;
@@ -107,6 +146,7 @@
 		font-weight: normal;
 		font-style: normal;
 		text-align: left;
+        padding: 5px;
 		color: black;
 		cursor: pointer;
 	}

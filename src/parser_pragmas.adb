@@ -32,7 +32,7 @@ with  ada.text_io,
     world,
     reports.test,
     pegasoft.strings,
-    pegasoft.user_io,
+    pegasoft.user_io.getline,
     pegasoft.script_io,
     compiler,
     scanner,
@@ -47,6 +47,7 @@ use ada.text_io,
     ada.calendar,
     pegasock.memcache,
     pegasoft.user_io,
+    pegasoft.user_io.getline,
     pegasoft.script_io,
     world,
     reports,
@@ -100,6 +101,8 @@ type aPragmaKind is (
      noCommandHash,
      peek,
      promptChange,
+     promptIdleChange,
+     promptIdleSpeed,
      propose,
      refactor,
      register_memcache_server,
@@ -159,7 +162,7 @@ function parsePragmaKind return aPragmaKind is
 begin
    -- just an error message...if ( with no name
    if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "(" ) then
-      err( "pragma name missing" );
+      err( +"pragma name missing" );
   elsif name = "ada_95" then
      pragmaKind := ada_95;
   elsif name = "advise" then
@@ -222,6 +225,10 @@ begin
      pragmaKind := noCommandHash;
   elsif name = "prompt_script" then
      pragmaKind := promptChange;
+  elsif name = "prompt_idle_speed" then
+     pragmaKind := promptIdleSpeed;
+  elsif name = "prompt_idle_script" then
+     pragmaKind := promptIdleChange;
   elsif name = "propose" then
      pragmaKind := propose;
   elsif name = "refactor" then
@@ -232,7 +239,7 @@ begin
      pragmaKind := restriction;
   elsif name = "restrictions" then
      discardUnusedIdentifier( token );
-     err( "pragma restriction not restrictions" );
+     err( +"pragma restriction not restrictions" );
   elsif name = "session_export_script" then
      pragmaKind := session_export_script;
   elsif name = "session_import_script" then
@@ -265,7 +272,7 @@ begin
      pragmaKind := volatile;
   else
      discardUnusedIdentifier( token );
-     err( "unknown pragma" );
+     err( +"unknown pragma" );
   end if;
   discardUnusedIdentifier( token );
   -- don't declare a new identifier for a pragma
@@ -311,7 +318,7 @@ begin
         name /= "summary" and
         name /= "todo" and
         name /= "version" then
-        err( "unknown annotation field type" );
+        err( +"unknown annotation field type" );
      else
         ParsePragmaIdentifier;
         expectPragmaComma;
@@ -357,7 +364,7 @@ begin
   else
      assumeKind := assumption;
      discardUnusedIdentifier( token );
-     err( "only 'applied', 'factor', 'used', 'written' assumptions supported" );
+     err( +"only 'applied', 'factor', 'used', 'written' assumptions supported" );
   end if;
 end ParseAssumptionKind;
 
@@ -383,7 +390,7 @@ begin
      ParseIdentifier( var_id );
   elsif name = "local_memcache" then
      if restriction_no_memcache then
-        err( "cannot be used " & bold( "pragma restriction( no_memcache )" ) );
+        err( +"cannot be used " & em( "pragma restriction( no_memcache )" ) );
      end if;
      importKind := name_unbounded;
      ParsePragmaIdentifier;
@@ -391,7 +398,7 @@ begin
      ParseIdentifier( var_id );
   elsif name = "memcache" then
      if restriction_no_memcache then
-        err( "cannot be used " & bold( "pragma restriction( no_memcache )" ) );
+        err( +"cannot be used " & em( "pragma restriction( no_memcache )" ) );
      end if;
      importKind := name_unbounded;
      ParsePragmaIdentifier;
@@ -405,7 +412,7 @@ begin
   else
      importKind := null_unbounded_string;
      discardUnusedIdentifier( token );
-     err( "only 'cgi', 'shell', 'local_memcache', 'memcache', 'session' convention supported" );
+     err( +"only 'cgi', 'shell', 'local_memcache', 'memcache', 'session' convention supported" );
   end if;
 end ParseImportKind;
 
@@ -442,7 +449,7 @@ begin
   else
      exportKind := null_unbounded_string;
      discardUnusedIdentifier( token );
-     err( "only 'shell', 'local_memcache', 'memcache', 'session' convention supported" );
+     err( +"only 'shell', 'local_memcache', 'memcache', 'session' convention supported" );
   end if;
 end ParseExportKind;
 
@@ -520,7 +527,7 @@ begin
         expr_val := name_unbounded;
         ParseLicenseExtra;
      else
-        err( "unknown license " & bold( name ) );
+        err( +"unknown license " & em( name ) );
      end if;
    end;
 end ParseLicenseKind;
@@ -595,7 +602,7 @@ begin
         expr_val := name_unbounded;
      end if;
      if length( expr_val ) = 0 then
-        err( "unknown software model " & bold( name ) );
+        err( +"unknown software model " & em( name ) );
      end if;
   end;
 end ParseSoftwareModelName;
@@ -632,7 +639,7 @@ begin
         identifiers( token ).value.all /= "m" and
         identifiers( token ).value.all /= "l" and
         identifiers( token ).value.all /= "xl" then
-        err( "expected ""s"", ""m"", ""l"" or ""xl""" );
+        err( +"expected ""s"", ""m"", ""l"" or ""xl""" );
      end if;
     expect( strlit_t );
   elsif var_id = teams_work_measure_hours_t or
@@ -641,7 +648,7 @@ begin
         var_id = teams_work_measure_sloc_t then
     expect( number_t );
   else
-     err( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work measure value" );
+     err( pl( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work measure value" ));
   end if;
   expectPragmaComma;
 end ParseWorkEstimate;
@@ -676,7 +683,7 @@ begin
      if identifiers( token ).value.all /= "l" and
         identifiers( token ).value.all /= "m" and
         identifiers( token ).value.all /= "h" then
-        err( "expected 'l', 'm' or 'h'" );
+        err( +"expected 'l', 'm' or 'h'" );
      end if;
      if is_todo then
         if not work_estimate_unknown and not allowAllTodosForRelease then
@@ -684,7 +691,7 @@ begin
               if allowLowPriorityTodosForRelease and identifiers( token ).value.all = "l" then
                  null;
               else
-                 err( "priority todo task not yet completed" );
+                 err( +"priority todo task not yet completed" );
               end if;
            end if;
         end if;
@@ -693,7 +700,7 @@ begin
   elsif var_id = teams_work_priority_severity_t then
      if identifiers( token ).value.all < " 1" or
         identifiers( token ).value.all > " 5" then
-        err( "expected 1..5" );
+        err( +"expected 1..5" );
      end if;
      if is_todo then
         if not work_estimate_unknown and not allowAllTodosForRelease then
@@ -701,7 +708,7 @@ begin
               if allowLowPriorityTodosForRelease and identifiers( token ).value.all < " 2" then
                  null;
               else
-                 err( "priority todo task not yet completed" );
+                 err( +"priority todo task not yet completed" );
               end if;
            end if;
         end if;
@@ -713,7 +720,7 @@ begin
            if boolean( testOpt ) or boolean( maintenanceOpt ) then
               -- any financial risk
               if identifiers( token ).value.all /= " 0" then
-                 err( "priority todo task not yet completed" );
+                 err( +"priority todo task not yet completed" );
               end if;
            end if;
         end if;
@@ -725,7 +732,7 @@ begin
      begin
         v1 := to_numeric( identifiers( token ).value.all );
         if v1 < 0.0 or v1 > 10.0 then
-           err( "expected 1..10" );
+           err( +"expected 1..10" );
         end if;
         if is_todo then
            -- CVSS 2 says a score of 3.9 or lower is low risk
@@ -734,7 +741,7 @@ begin
                  if allowLowPriorityTodosForRelease and v1 < 4.0 then
                     null;
                  elsif v1 > 0.0 then
-                    err( "priority todo task not yet completed" );
+                    err( +"priority todo task not yet completed" );
                  end if;
               end if;
            end if;
@@ -743,7 +750,7 @@ begin
      end;
      expect( number_t );
   else
-     err( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work priority value" );
+     err( pl( gnat.source_info.source_location & ": internal error: don't know how to handle this type of work priority value" ) );
   end if;
 end ParseWorkPriority;
 
@@ -775,7 +782,7 @@ begin
               startJunit( myXmlTestReport, reportPath );
            end if;
          exception when others =>
-           err( "exception while creating test result file" );
+           err( +"exception while creating test result file" );
          end;
       end if;
 
@@ -800,7 +807,7 @@ begin
            startJunitTestCase( myXmlTestReport,  testCaseName, testCaseName );
         end if;
       exception when others =>
-        err( "exception while writing to test result file" );
+        err( +"exception while writing to test result file" );
       end;
    end if;
 
@@ -860,7 +867,7 @@ end run_test_case;
 procedure record_test_result( result_status : boolean; test_message : unbounded_string ) is
 begin
   if not isJunitStarted then
-     err( optional_yellow( "pragma test" ) & " must be used before pragma test_result" );
+     err( em( "pragma test" ) & pl( " must be used before pragma test_result" ) );
   elsif result_status then
      if usingTextTestReport then
         testCaseFailure( myTextTestReport, test_message );
@@ -896,11 +903,11 @@ begin
   -- Weight must be non-zero
 
   if weight < 0.0 then
-     err( "weight " & optional_yellow( weight'img ) & " is less than zero" );
+     err( +"weight " & em( weight'img ) & pl( " is less than zero" ) );
      return;
   end if;
   if name = "" then
-      err( "constraint name should not be an empty string" );
+      err( +"constraint name should not be an empty string" );
       return;
   end if;
 
@@ -912,11 +919,11 @@ begin
   dc.limit := 0.0;
   DesignConstraintLists.Find( designConstraintList, dc, foundAt => dcPos  );
   if dcPos = 0 then
-     err( "constraint " &
-          optional_yellow( to_string( constraint ) ) &
-          ", " &
-          optional_yellow( to_string( name ) ) &
-          " is not declared" );
+     err( +"constraint " &
+          em( to_string( constraint ) ) &
+          pl( ", " ) &
+          em( to_string( name ) ) &
+          pl( " is not declared" ) );
     return;
   end if;
   DesignConstraintLists.Find( designConstraintList, dcPos, dc  );
@@ -981,15 +988,15 @@ begin
         -- We don't accumulate weight because it's an automatic error to
         -- have two unique constraints.
 
-        err( "unique constraint " &
-              optional_yellow( to_string( edc.constraint ) ) &
-              " value " &
-              optional_yellow( to_string( name ) ) &
-              " conflicts with " &
-              optional_yellow( to_string( edc.name ) ) &
-              " (at " &
+        err( +"unique constraint " &
+              unb_em( edc.constraint ) &
+              pl( " value ") &
+              unb_em( name ) &
+              pl( " conflicts with " ) &
+              unb_em( edc.name ) &
+              pl( " (at " &
                 to_string( edc.enforcedFile ) & ":" &
-              edc.enforcedAt'img & ")" );
+              edc.enforcedAt'img & ")" ) );
 
     -- For an exclusive constraint, if the category exists but has a different
     -- name, it is a failure.  The identical category and name is permitted.
@@ -1003,23 +1010,23 @@ begin
 
         --if edc.constraint = constraint and edc.name /= name then
         if edc.name /= name then
-           err( "file constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " value " &
-                optional_yellow( to_string( name ) ) &
-                " conflicts with " &
-                optional_yellow( to_string( edc.name ) ) &
-                " (at " &
+           err( +"file constraint " &
+                unb_em( edc.constraint ) &
+                pl( " value " ) &
+                unb_em( name ) &
+                pl( " conflicts with " ) &
+                unb_em( edc.name ) &
+                pl( " (at " &
                   to_string( edc.enforcedFile ) & ":" &
-                edc.enforcedAt'img & ")" );
+                edc.enforcedAt'img & ")" ));
         --elsif edc.constraint = constraint and edc.name = name and
         elsif edc.weight > dc.limit then
-           err( "file constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " accumulated weight" &
-                optional_yellow( edc.weight'img ) &
-                " exceeds the limit of" &
-                optional_yellow( dc.limit'img ) );
+           err( +"file constraint " &
+                unb_em( edc.constraint ) &
+                pl( " accumulated weight" ) &
+                em( edc.weight'img ) &
+                pl( " exceeds the limit of" ) &
+                em( dc.limit'img ) );
         elsif edc.weight /= weight then
            EnforcedDesignConstraintLists.Replace( enforcedDesignConstraintList, edcPos, edc );
         end if;
@@ -1037,28 +1044,28 @@ begin
         if edc.name /= name then
            err( -- optional_yellow( to_string( edc.enforcedUnit ) ) &
                 -- " local constraint " &
-                "local constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " value " &
-                optional_yellow( to_string( name ) ) &
-                " conflicts with " &
-                optional_yellow( to_string( edc.name ) ) &
-                " (at " &
+                +"local constraint " &
+                unb_em( edc.constraint ) &
+                pl( " value ") &
+                unb_em( name ) &
+                pl(" conflicts with " ) &
+                unb_em( edc.name ) &
+                pl( " (at " &
                   to_string( edc.enforcedFile ) & ":" &
-                edc.enforcedAt'img & ")" );
+                edc.enforcedAt'img & ")" ) );
         elsif edc.weight > dc.limit then
-           err( "local constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " accumulated weight" &
-                optional_yellow( edc.weight'img ) &
-                " exceeds the limit of" &
-                optional_yellow( dc.limit'img ) );
+           err( +"local constraint " &
+                unb_em( edc.constraint ) &
+                pl( " accumulated weight" ) &
+                em( edc.weight'img ) &
+                pl(" exceeds the limit of" ) &
+                em( dc.limit'img ) );
         elsif edc.weight /= weight then
            EnforcedLocalDesignConstraintLists.Replace( enforcedLocalDesignConstraintList, edcPos, edc );
         end if;
 
     when others =>
-       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected constraint mode" );
+       err( pl( Gnat.Source_Info.Source_Location & "internal_error: unexpected constraint mode" ) );
     end case;
 
   else
@@ -1079,40 +1086,40 @@ begin
         -- Even though unique constraints can only be used once, they can still
         -- have a weight too high on their first use.
         if edc.weight > dc.limit then
-           err( "unique constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " weight" &
-                optional_yellow( weight'img ) &
-                " exceeds limit of" &
-                optional_yellow( dc.limit'img ) );
+           err( +"unique constraint " &
+                unb_em( edc.constraint ) &
+                pl( " weight" ) &
+                em( weight'img ) &
+                pl( " exceeds limit of" ) &
+                em( dc.limit'img ) );
         else
            EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
         end if;
      when file =>
         if edc.weight > dc.limit then
-           err( "file constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " weight" &
-                optional_yellow( weight'img ) &
-                " exceeds limit of" &
-                optional_yellow( dc.limit'img ) );
+           err( +"file constraint " &
+                unb_em( edc.constraint ) &
+                pl( " weight" ) &
+                em( weight'img ) &
+                pl( " exceeds limit of" ) &
+                em( dc.limit'img ) );
         else
            EnforcedDesignConstraintLists.Queue( enforcedDesignConstraintList, edc );
         end if;
      when subprogram =>
         if edc.weight > dc.limit then
-           err( "file constraint " &
-                optional_yellow( to_string( edc.constraint ) ) &
-                " weight" &
-                optional_yellow( weight'img ) &
-                " exceeds limit of" &
-                optional_yellow( dc.limit'img ) );
+           err( +"file constraint " &
+                unb_em(  edc.constraint ) &
+                pl( " weight" ) &
+                em( weight'img ) &
+                pl( " exceeds limit of" ) &
+                em( dc.limit'img ) );
         else
            edc.enforcedUnit := fullUnitName;
            EnforcedLocalDesignConstraintLists.Queue( enforcedLocalDesignConstraintList, edc );
         end if;
     when others =>
-       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected constraint mode" );
+       err( pl( Gnat.Source_Info.Source_Location & "internal_error: unexpected constraint mode" ) );
     end case;
 
     -- if dc.mode = local then
@@ -1144,7 +1151,7 @@ procedure declareConstraint( mode : designConstraintModes; constraint, name : un
   pos : DesignConstraintLists.aListIndex := 0;
 begin
   if limit < 0.0 then
-     err( "limit " & optional_yellow( limit'img ) & " is less than zero" );
+     err( +"limit " & em( limit'img ) & pl( " is less than zero" ) );
   else
      dc.mode := mode;
      dc.constraint := constraint;
@@ -1152,11 +1159,11 @@ begin
      dc.limit := limit;
      DesignConstraintLists.Find( designConstraintList, dc, foundAt => pos  );
      if pos > 0 then
-        err( "constraint " &
-             optional_yellow( to_string( constraint ) ) &
-             ", " &
-             optional_yellow( to_string( name ) ) &
-             " is already declared" );
+        err( +"constraint " &
+             unb_em( constraint ) &
+             pl( ", " ) &
+             unb_em( name ) &
+             pl( " is already declared" ) );
      else
         DesignConstraintLists.Queue( designConstraintList, dc );
      end if;
@@ -1183,7 +1190,7 @@ begin
   -- Weight must be non-zero
 
   if weight < 0.0 then
-     err( "weight " & optional_yellow( weight'img ) & " is less than zero" );
+     err( +"weight " & em( weight'img ) & pl( " is less than zero" ) );
      return;
   end if;
 
@@ -1194,9 +1201,9 @@ begin
   da.limit := 0.0;
   DesignAffinityLists.Find( designAffinityList, da, foundAt => daPos  );
   if daPos = 0 then
-     err( "affinity " &
-          optional_yellow( to_string( affinity ) ) &
-          " is not declared" );
+     err( +"affinity " &
+          unb_em( affinity ) &
+          pl( " is not declared" ) );
     return;
   end if;
   DesignAffinityLists.Find( designAffinityList, daPos, da  );
@@ -1243,18 +1250,18 @@ begin
         eda.weight := eda.weight + weight;
 
         if eda.enforcedFile /= getSourceFileName then
-           err( "file affinity " &
-                optional_yellow( to_string( eda.affinity ) ) &
-                " is enforced in at least two files (at " &
+           err( +"file affinity " &
+                unb_em( eda.affinity ) &
+                pl( " is enforced in at least two files (at " &
                   to_string( eda.enforcedFile ) & ":" &
-                eda.enforcedAt'img & ")" );
+                eda.enforcedAt'img & ")" )  );
         elsif eda.weight > da.limit then
-           err( "file affinity " &
-                optional_yellow( to_string( eda.affinity ) ) &
-                " accumulated weight" &
-                optional_yellow( eda.weight'img ) &
-                " exceeds the limit of" &
-                optional_yellow( da.limit'img ) );
+           err( +"file affinity " &
+                unb_em( eda.affinity ) &
+                pl( " accumulated weight" ) &
+                em( eda.weight'img ) &
+                pl( " exceeds the limit of" ) &
+                em( da.limit'img ) );
         elsif eda.weight /= weight then
            EnforcedDesignAffinityLists.Replace( enforcedDesignAffinityList, edaPos, eda );
         end if;
@@ -1266,24 +1273,24 @@ begin
         eda.weight := eda.weight + weight;
 
         if eda.enforcedUnit /= fullUnitName then
-           err( "subprogram affinity " &
-                optional_yellow( to_string( eda.affinity ) ) &
-                " is enforced in at least two subprograms (at " &
+           err( +"subprogram affinity " &
+                unb_em( eda.affinity ) &
+                pl( " is enforced in at least two subprograms (at " &
                   to_string( eda.enforcedFile ) & ":" &
-                eda.enforcedAt'img & ")" );
+                eda.enforcedAt'img & ")" ) );
         elsif eda.weight > da.limit then
-           err( "local affinity " &
-                optional_yellow( to_string( eda.affinity ) ) &
-                " accumulated weight" &
-                optional_yellow( eda.weight'img ) &
-                " exceeds the limit of" &
-                optional_yellow( da.limit'img ) );
+           err( +"local affinity " &
+                unb_em( eda.affinity ) &
+                pl( " accumulated weight" ) &
+                em( eda.weight'img ) &
+                pl( " exceeds the limit of" ) &
+                em( da.limit'img ) );
         elsif eda.weight /= weight then
            EnforcedLocalDesignAffinityLists.Replace( enforcedLocalDesignAffinityList, edaPos, eda );
         end if;
 
     when others =>
-       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected affinity mode" );
+       err( pl( Gnat.Source_Info.Source_Location & "internal_error: unexpected affinity mode" ) );
     end case;
 
   else
@@ -1301,29 +1308,29 @@ begin
      case eda.mode is
      when file =>
         if eda.weight > da.limit then
-           err( "file affinity " &
-                optional_yellow( to_string( eda.affinity ) ) &
-                " weight" &
-                optional_yellow( weight'img ) &
-                " exceeds limit of" &
-                optional_yellow( da.limit'img ) );
+           err( +"file affinity " &
+                unb_em( eda.affinity ) &
+                pl( " weight" ) &
+                em( weight'img ) &
+                pl( " exceeds limit of" ) &
+                em( da.limit'img ) );
         else
            EnforcedDesignAffinityLists.Queue( enforcedDesignAffinityList, eda );
         end if;
      when subprogram =>
         if eda.weight > da.limit then
-           err( "subprogram affinity " &
-                optional_yellow( to_string( eda.affinity ) ) &
-                " weight" &
-                optional_yellow( weight'img ) &
-                " exceeds limit of" &
-                optional_yellow( da.limit'img ) );
+           err( +"subprogram affinity " &
+                unb_em( eda.affinity ) &
+                pl( " weight" ) &
+                em( weight'img ) &
+                pl( " exceeds limit of" ) &
+                em( da.limit'img ) );
         else
            eda.enforcedUnit := fullUnitName;
            EnforcedLocalDesignAffinityLists.Queue( enforcedLocalDesignAffinityList, eda );
         end if;
     when others =>
-       err( Gnat.Source_Info.Source_Location & "internal_error: unexpected affinity mode" );
+       err( pl( Gnat.Source_Info.Source_Location & "internal_error: unexpected affinity mode" ) );
     end case;
 
   end if;
@@ -1341,16 +1348,16 @@ procedure declareAffinity( mode : designAffinityModes; affinity : unbounded_stri
   pos : DesignAffinityLists.aListIndex := 0;
 begin
   if limit < 0.0 then
-     err( "limit " & optional_yellow( limit'img ) & " is less than zero" );
+     err( +"limit " & em( limit'img ) & pl( " is less than zero" ) );
   else
      da.mode := mode;
      da.affinity := affinity;
      da.limit := limit;
      DesignAffinityLists.Find( designAffinityList, da, foundAt => pos  );
      if pos > 0 then
-        err( "affinity " &
-             optional_yellow( to_string( affinity ) ) &
-             " is already declared" );
+        err( +"affinity " &
+             unb_em( affinity ) &
+             pl( " is already declared" ) );
      else
         DesignAffinityLists.Queue( designAffinityList, da );
      end if;
@@ -1391,7 +1398,7 @@ begin
      if pragmaKind = debug and (token /= symbol_t or identifiers( token ).value.all /= "(") then
         pragmaKind := debug_on;
      else
-        expectPragmaParameterOpen( pragmaKind'img );
+        expectPragmaParameterOpen( pl( pragmaKind'img ) );
         --expect( symbol_t, "(" );
      end if;
   end if;
@@ -1501,7 +1508,7 @@ begin
      expectPragmaComma;
      if token = strlit_t then
         if identifiers( token ).value.all = "" then
-           err( "constraint name should not be an empty string" );
+           err( +"constraint name should not be an empty string" );
         else
            expr_val2 := identifiers( token ).value.all;
         end if;
@@ -1546,7 +1553,7 @@ begin
      pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
      pragma warnings( on );
-         err( "inspection_point is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+         err( +"inspection_point is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
      end if;
   when manual_test =>                        -- pragma manual_test
      ParseIdentifier( var_id );                -- test owner
@@ -1582,7 +1589,7 @@ begin
         ParseStaticExpression( expr_val, var_id );  -- work ticket / user story
         baseTypesOK( var_id, uni_string_t );
      else
-        err( "team.member expected" );
+        err( +"team.member expected" );
      end if;
   when manual_test_result =>                 -- pragma manual_test_result
       ParseIdentifier( var_id );                -- tester
@@ -1608,7 +1615,7 @@ begin
               test_result_status := true;
               expect( false_t );
            else
-              err( "true or false expected for the test status" );
+              err( +"true or false expected for the test status" );
            end if;
           if token = symbol_t and identifiers( token ).value.all = "," then
              getNextToken;
@@ -1617,20 +1624,20 @@ begin
              test_message := test_message & "; Ticket: " & expr_val;
           end if;
      else
-        err( "team.member expected" );
+        err( +"team.member expected" );
      end if;
   when peek =>                               -- pragma inspection peek
      -- GCC Ada 7.4 falsely says conversion is not needed
      pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
      pragma warnings( on );
-         err( "inspection_peek cannot be used with testing or maintenance phase mode unless at the breakout prompt" );
+         err( +"inspection_peek cannot be used with testing or maintenance phase mode unless at the breakout prompt" );
      end if;
   when noCommandHash =>                      -- pragma no_command_hash
      null;
   when promptChange =>                       -- pragma prompt_script
      if rshOpt then                          -- security precaution
-        err( "prompt scripts cannot be used in a restricted shell" );
+        err( +"prompt scripts cannot be used in a restricted shell" );
      else
         expr_val := identifiers( token ).value.all;
         if expr_val /= null_unbounded_string then
@@ -1639,6 +1646,25 @@ begin
            end if;
         end if;
         expect( backlit_t );
+     end if;
+  when promptIdleChange =>                   -- pragma prompt_idle_script
+     if rshOpt then                          -- security precaution
+        err( +"prompt scripts cannot be used in a restricted shell" );
+     else
+        expr_val := identifiers( token ).value.all;
+        if expr_val /= null_unbounded_string then
+           if tail( expr_val, 1 ) /= ";" then
+              expr_val := expr_val & ";";
+           end if;
+        end if;
+        expect( backlit_t );
+     end if;
+  when promptIdleSpeed =>                    -- pragma prompt_idle_speed
+     if rshOpt then                          -- security precaution
+        err( +"prompt scripts cannot be used in a restricted shell" );
+     else
+        ParseStaticExpression( expr_val, var_id );
+        baseTypesOK( var_id, duration_t );
      end if;
   when propose =>                           -- pragma refactor
      ParseIdentifier( var_id );
@@ -1691,7 +1717,7 @@ begin
      elsif expr_val = "no_declarations_in_executable_statements" then
         pragmaKind := restriction_declarations;
      else
-        err( "unknown restriction" );
+        err( +"unknown restriction" );
         return;
      end if;
   when inspect_var =>                        -- pragma inspect
@@ -1699,7 +1725,7 @@ begin
      pragma warnings( off );
      if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
      pragma warnings( on );
-         err( "inspect cannot be used in testing or maintenance phase mode unless at the breakout prompt" );
+         err( +"inspect cannot be used in testing or maintenance phase mode unless at the breakout prompt" );
      end if;
      ParseIdentifier( var_id );
   when license =>                            -- pragma license
@@ -1708,13 +1734,13 @@ begin
      ParseSoftwareModelName( expr_val );
   when session_export_script =>              -- pragma session_export_script
      if rshOpt then                          -- security precaution
-        err( "session scripts cannot be defined in a " & optional_yellow( "restricted shell" ) );
+        err( +"session scripts cannot be defined in a " & em( "restricted shell" ) );
      end if;
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
   when session_import_script =>              -- pragma session_import_script
      if rshOpt then                          -- security precaution
-        err( "session scripts cannot be defined in a " & optional_yellow( "restricted shell" ) );
+        err( +"session scripts cannot be defined in a " & em( "restricted shell" ) );
      end if;
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );
@@ -1729,12 +1755,12 @@ begin
      elsif expr_val = "no_empty_command_substitutions" then
         pragmaKind := suppress_no_empty_command_subs;
      else
-        err( "unknown error type" );
+        err( +"unknown error type" );
         return;
      end if;
   when template | unrestricted_template =>   -- pragma (unrestricted) template
      if rshOpt then
-        err( "templates cannot be used in a restricted shell" );
+        err( +"templates cannot be used in a restricted shell" );
      else
         ParsePragmaIdentifier( expr_val );
         if token = symbol_t and identifiers( token ).value.all = "," then
@@ -1772,7 +1798,7 @@ begin
         elsif expr_val = "yaml" then
            templateHeader.templateType := yamlTemplate;
         else
-           err( "unknown template type" );
+           err( +"unknown template type" );
         end if;
      end if;
   when test =>                               -- pragma test
@@ -1793,16 +1819,16 @@ begin
      elsif expr_val = "xml" then
         getNextToken;
      else
-        err( "unknown test report type '" & to_string( expr_val ) & "'" );
+        err( pl( "unknown test report type '" & to_string( expr_val ) & "'" ) );
      end if;
      if token = symbol_t and identifiers( token ).value.all = "," then
         getNextToken;
         ParseStaticExpression( reportPath, expr_type );
         baseTypesOK( expr_type, uni_string_t );
         if expr_val = "text" and length( reportPath ) > 0 then
-           err( "text reports currently cannot be written to a file" );
+           err( +"text reports currently cannot be written to a file" );
         elsif expr_val = "xml" and length( reportPath ) = 0 then
-           err( "file path is empty" );
+           err( +"file path is empty" );
         end if;
      else
         reportPath := null_unbounded_string;
@@ -1862,7 +1888,7 @@ begin
      ParseIdentifier( var_id );
   when volatile =>                           -- pragma volatile
      if restriction_no_volatiles then
-        err( "pragma restriction( no_volatiles ) does not allow pragma volatile" );
+        err( +"pragma restriction( no_volatiles ) does not allow pragma volatile" );
      end if;
      ParseIdentifier( var_id );
      expr_val := null_unbounded_string;
@@ -1873,7 +1899,7 @@ begin
      end if;
   when unchecked_volatile =>                 -- pragma volatile
      if restriction_no_volatiles then
-        err( "pragma restriction( no_volatiles ) does not allow pragma unchecked_volatile" );
+        err( +"pragma restriction( no_volatiles ) does not allow pragma unchecked_volatile" );
      end if;
      ParseIdentifier( var_id );
      expr_val := null_unbounded_string;
@@ -1883,13 +1909,13 @@ begin
         baseTypesOK( expr_type, duration_t );
      end if;
   when others =>
-     err( gnat.source_info.source_location & ": Internal error: can't handle pragma" );
+     err( pl( gnat.source_info.source_location & ": Internal error: can't handle pragma" ) );
   end case;
 
   if pragmaKind /= ada_95 and pragmaKind /= inspection and pragmaKind /=
      noCommandHash and pragmaKind /= debug_on and pragmaKind /= peek and
      pragmaKind /= gcc_errors and pragmaKind /= colour_messages then
-     expectPragmaParameterClose( pragmaKind'img );
+     expectPragmaParameterClose( pl( pragmaKind'img ) );
      --expect( symbol_t, ")" );
   end if;
 
@@ -1916,7 +1942,7 @@ begin
         end if;
      elsif pragmaKind = assumption_used then
         identifiers( var_id ).wasReferenced := true;
-        --identifiers( var_id ).referencedByThread := getThreadName;
+        --identifiers( var_id ).referencedByFlow := getDataFlowName;
      elsif pragmaKind = assumption_written then
         if identifiers( var_id ).field_of /= eof_t and
            -- KLUDGE: should never be zero...should be eof_t
@@ -1928,13 +1954,13 @@ begin
      elsif pragmaKind = assumption_applied then
         if identifiers( var_id ).class /= typeClass and
            identifiers( var_id ).class /= subClass then
-           err( "concrete type or subtype expected" );
+           err( +"concrete type or subtype expected" );
         else
            identifiers( var_id ).wasApplied := true;
         end if;
      elsif pragmaKind = assumption_factor then
         if identifiers( var_id ).class /= varClass then
-           err( "variable expected" );
+           err( +"variable expected" );
         else
            identifiers( var_id ).wasFactor := true;
         end if;
@@ -2000,7 +2026,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "test cannot be used in an interactive session" );
+              err( +"test cannot be used in an interactive session" );
            --elsif not syntax_check then
            else
               run_test_case( expr_val, expr_val2, manual_test => false );
@@ -2011,30 +2037,44 @@ begin
      -- at run-time.
      elsif pragmaKind = volatile then
         identifiers( var_id ).volatile := checked;
+        -- Volatiles cannot be used in an expression but are usually
+        -- not limited.  Pretend that the volatile was used in an expression
+        -- to prevent a "should be limited" error.  If explicitly limited,
+        -- act normally.
+        if identifiers( var_id ).usage /= limitedUsage then
+           identifiers( var_id ).wasFactor := true;
+        end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
-                err( "volatile TTL is less than zero" );
+                err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
                 identifiers( var_id ).volatileExpire := clock;
              end if;
            exception when others =>
-             err("bad value for volatile TTL" );
+             err( +"bad value for volatile TTL" );
            end;
         end if;
      elsif pragmaKind = unchecked_volatile then
         identifiers( var_id ).volatile := unchecked;
+        -- Volatiles cannot be used in an expression but are usually
+        -- not limited.  Pretend that the volatile was used in an expression
+        -- to prevent a "should be limited" error.  If explicitly limited,
+        -- act normally.
+        if identifiers( var_id ).usage /= limitedUsage then
+           identifiers( var_id ).wasFactor := true;
+        end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
-                err( "volatile TTL is less than zero" );
+                err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
                 identifiers( var_id ).volatileExpire := clock;
              end if;
            exception when others =>
-             err("bad value for volatile TTL" );
+             err( +"bad value for volatile TTL" );
            end;
         end if;
      end if;
@@ -2048,14 +2088,14 @@ begin
         null;
      when affinity =>                               -- pragma constraint
         if inputMode = interactive or inputMode = breakout then
-            err( "pragma affinity cannot be used in an interactive session" );
+            err( +"pragma affinity cannot be used in an interactive session" );
         end if;
      when asserting =>
         if debugOpt or testOpt then
            if not syntax_check then   -- has no meaning during syntax check
               if baseTypesOk( boolean_t, var_id ) then
                  if expr_val = "0" then
-                    err( "assertion failed" );
+                    err( +"assertion failed" );
                  end if;
               end if;
            end if;
@@ -2074,7 +2114,7 @@ begin
         colourOpt := true;
      when constraint =>                            -- pragma constraint
         if inputMode = interactive or inputMode = breakout then
-            err( "pragma constraint cannot be used in an interactive session" );
+            err( +"pragma constraint cannot be used in an interactive session" );
         end if;
      when debug =>
         if debugOpt then
@@ -2094,11 +2134,11 @@ begin
         debugOpt := true;
      when declare_affinity =>                      -- pragma declare_affinity
         if inputMode = interactive or inputMode = breakout then
-            err( "pragma declare_affinity cannot be used in an interactive session" );
+            err( +"pragma declare_affinity cannot be used in an interactive session" );
         end if;
      when declare_constraint =>                    -- pragma declare_constraint
         if inputMode = interactive or inputMode = breakout then
-            err( "pragma declare_constraint cannot be used in an interactive session" );
+            err( +"pragma declare_constraint cannot be used in an interactive session" );
         end if;
      when depreciated =>
         -- TODO: this should create a list of depreciation message
@@ -2106,37 +2146,41 @@ begin
         -- It is an error in the design phase to run a deprecated script.
         depreciatedMsg := "This script made obsolete by " & expr_val & '.';
         if designOpt then
-           err( to_string( depreciatedMsg ) );
+           err( unb_pl( depreciatedMsg ) );
            depreciatedMsg := null_unbounded_string;
         end if;
      when dispute =>
         null;
      when error =>
-        err( "error: " & to_string( expr_val ) );
+        err( pl( "error: " & to_string( expr_val )) );
      when export | export_json  =>
         if pragmaKind = export_json then
            identifiers( var_id ).mapping := json;
            if identifiers( var_id ).class = userProcClass then
-              err( "procedures cannot be exported" );
+              err( +"procedures cannot be exported" );
            elsif identifiers( var_id ).class = userFuncClass then
-              err( "functions cannot be exported" );
+              err( +"functions cannot be exported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( +"case procedures cannot be exported" );
            elsif identifiers( var_id ).export then
-              err( "variable is already exported" );
+              err( +"variable is already exported" );
            end if;
         else
            identifiers( var_id ).mapping := none; -- should not be necessary
            if identifiers( var_id ).class = userProcClass then
-              err( "procedures cannot be exported" );
+              err( +"procedures cannot be exported" );
            elsif identifiers( var_id ).class = userFuncClass then
-              err( "functions cannot be exported" );
+              err( +"functions cannot be exported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( +"case procedures cannot be exported" );
            elsif identifiers( var_id ).list then
-              err( "arrays cannot be exported without export_json or arrays.to_json" );
+              err( +"arrays cannot be exported without export_json or arrays.to_json" );
            elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
-              err( "records cannot be exported without export_json or records.to_json" );
+              err( +"records cannot be exported without export_json or records.to_json" );
            elsif identifiers( var_id ).export then
-              err( "variable is already exported" );
+              err( +"variable is already exported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-              err( "only string variables exported" );
+              err( +"only string variables exported" );
            end if;
         end if;
         if not error_found then
@@ -2149,13 +2193,13 @@ begin
               checkAndInitializeLocalMemcacheCluster;
            elsif exportType = "cgi" then
               -- this should have been caught earlier
-              err( "cgi variables cannot be exported" );
+              err( +"cgi variables cannot be exported" );
            elsif exportType = "session" then
               identifiers( var_id ).method := session;
            elsif exportType = "shell" then
               identifiers( var_id ).method := shell;
            else
-              err( "unexpected export method" );
+              err( +"unexpected export method" );
            end if;
         end if;
      when gcc_errors =>
@@ -2167,34 +2211,42 @@ begin
         if pragmaKind = import_json then
            identifiers( var_id ).mapping := json;
            if identifiers( var_id ).class = userProcClass then
-              err( "procedures cannot be imported" );
+              err( +"procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
-              err( "functions cannot be imported" );
+              err( +"functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( +"case procedures cannot be imported" );
            elsif identifiers( var_id ).import then
-              err( "variable is already imported" );
+              err( +"variable is already imported" );
            -- KLUDGE: there are so many standard types...
            elsif getBaseType( identifiers( var_id ).kind ) <= complex_imaginary_t then
-              err( "security issue: import variable " & optional_yellow( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_yellow( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
+              err( +"security issue: import variable " & name_em( var_id ) &
+                   pl( " should be a derived type not a predefined type (or a subtype of one) like " ) &
+                   name_em( identifiers( var_id ).kind ) );
            end if;
         else
            identifiers( var_id ).mapping := none;
            if identifiers( var_id ).class = userProcClass then
-              err( "procedures cannot be imported" );
+              err( +"procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
-              err( "functions cannot be imported" );
+              err( +"functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( +"case procedures cannot be imported" );
            elsif identifiers( var_id ).list then
-              err( "arrays cannot be imported without import_json or arrays.to_json" );
+              err( +"arrays cannot be imported without import_json or arrays.to_json" );
            elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
-              err( "records cannot be imported without import_json or records.to_json" );
+              err( +"records cannot be imported without import_json or records.to_json" );
            elsif identifiers( var_id ).import then
-              err( "variable is already imported" );
+              err( +"variable is already imported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-              err( "only string variables exported" );
+              err( +"only string variables exported" );
            -- Force users to import to use a derived type as a way of
            -- tracking imported untrusted data.
            elsif getBaseType( identifiers( var_id ).kind ) = string_t or
                  getBaseType( identifiers( var_id ).kind ) = unbounded_string_t then
-              err( "security issue: import variable " & optional_yellow( to_string( identifiers( var_id ).name ) ) & " should be a derived type not a predefined type (or a subtype of one) like " & optional_yellow( to_string( identifiers( identifiers( var_id ).kind ).name ) ) );
+              err( +"security issue: import variable " & name_em( var_id ) &
+                   pl( " should be a derived type not a predefined type (or a subtype of one) like " ) &
+                   name_em( identifiers( var_id ).kind ) );
            end if;
         end if;
         -- All clear? Get the value
@@ -2208,9 +2260,9 @@ begin
                       identifiers( var_id ).name,
                       newValue );
                  if length( newValue ) = 0 then
-                    err( "unable to find variable " &
+                    err( pl( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
-                         " in the local memcache" );
+                         " in the local memcache" ) );
                     identifiers( var_id ).import := false;
                  end if;
               exception when others =>
@@ -2224,9 +2276,9 @@ begin
                       identifiers( var_id ).name,
                       newValue );
                  if length( newValue ) = 0 then
-                    err( "unable to find variable " &
+                    err( pl( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
-                         " in memcached" );
+                         " in memcached" ) );
                     identifiers( var_id ).import := false;
                     -- just for pragma import, mark as not imported if there
                     -- was an error (otherwise on the command prompt the
@@ -2261,20 +2313,20 @@ begin
                            DoJsonToNumber( newValue, identifiers( var_id ).value.all );
                            -- identifiers( var_id ).value := newValue;
                         else
-                           err( gnat.source_info.source_location & ": internal error: unexpected import translation type" );
+                           err( pl( gnat.source_info.source_location & ": internal error: unexpected import translation type" ) );
                         end if;
                      else                                                           -- no mapping
                         identifiers( var_id ).value.all := newValue;
                      end if;
                   else
-                    err( "unable to find variable " &
+                    err( pl( "unable to find variable " &
                          to_string( identifiers( var_id ).name ) &
-                         " in the cgi variables" );
+                         " in the cgi variables" ) );
                   end if;
               end;
            elsif importType = "session" then
               if length( sessionImportScript ) = 0 then
-                 err( "session import script not defined" );
+                 err( +"session import script not defined" );
               else
                  declare
                    temp1_t    : identifier;
@@ -2313,12 +2365,12 @@ begin
                          elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
                             DoJsonToNumber( importValue, identifiers( var_id ).value.all );
                          else
-                            err( gnat.source_info.source_location & ": internal error: unexpected import translation type" );
+                            err( pl( gnat.source_info.source_location & ": internal error: unexpected import translation type" ) );
                          end if;
                       when none =>
                          identifiers( var_id ).value.all := importValue;
                       when others =>
-                         err( gnat.source_info.source_location & ": internal error: unexpected mapping type" );
+                         err( pl( gnat.source_info.source_location & ": internal error: unexpected mapping type" ) );
                       end case;
                    --end if;
                  end;
@@ -2335,7 +2387,7 @@ begin
                      """" );
               end if;
            else
-              err( gnat.source_info.source_location & ": internal error: unexpected import method '" & to_string( importType ) & "'" );
+              err( pl( gnat.source_info.source_location & ": internal error: unexpected import method '" & to_string( importType ) & "'" ) );
            end if;
         end if;
      when inspection =>
@@ -2344,7 +2396,7 @@ begin
         end if;
      when license =>
         if licenseSet then
-           err( "license already set" );
+           err( +"license already set" );
         else
           declare
             id : identifier;
@@ -2364,7 +2416,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "manual_test cannot be used in an interactive session" );
+              err( +"manual_test cannot be used in an interactive session" );
            elsif not syntax_check then
               -- for a manual test case, there's nothing to run
               run_test_case( null_unbounded_string, testCaseName, manual_test => true );
@@ -2376,7 +2428,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "manual_test_result cannot be used in an interactive session" );
+              err( +"manual_test_result cannot be used in an interactive session" );
            elsif not syntax_check then
               record_test_result( test_result_status, test_message );
            end if;
@@ -2402,7 +2454,7 @@ begin
                expr_val,
                natural'value( ' ' & to_string( expr_val2 ) ) );
          exception when name_error =>
-            err( "server already registered or too many servers registered" );
+            err( +"server already registered or too many servers registered" );
          when others =>
             err_exception_raised;
          end;
@@ -2430,12 +2482,30 @@ begin
         if not error_found then
            promptScript := expr_val;
         end if;
+     when promptIdleChange =>
+        if not error_found then
+           promptIdleScript := expr_val;
+        end if;
+     when promptIdleSpeed =>
+        if not error_found then
+           declare
+              v : duration;
+           begin
+              v := duration( to_numeric( expr_val ) );
+              if v < 0.0 then
+                 err( +"interval must be a natural number" );
+              end if;
+              set_readline_interval( v );
+           exception when others =>
+               err( +"interval must be numeric" );
+           end;
+        end if;
      when session_export_script =>
         if not error_found then
            if length( sessionExportScript ) = 0 then
               sessionExportScript := expr_val;
            else
-              err( "session_export_script is already defined" );
+              err( +"session_export_script is already defined" );
            end if;
         end if;
      when session_import_script =>
@@ -2443,12 +2513,12 @@ begin
            if length( sessionImportScript ) = 0 then
               sessionImportScript := expr_val;
            else
-              err( "session_import_script is already defined" );
+              err( +"session_import_script is already defined" );
            end if;
         end if;
      when software_model =>
         if softwareModelSet then
-           err( "software model already set" );
+           err( +"software model already set" );
         else
            declare
              id : identifier;
@@ -2472,9 +2542,9 @@ begin
         world.suppress_no_empty_command_subs := true;
      when template | unrestricted_template =>
         if processingTemplate then
-           err( "template already used" );
+           err( +"template already used" );
         elsif inputMode = interactive or inputMode = breakout then
-           err( "template cannot be used in an interactive session" );
+           err( +"template cannot be used in an interactive session" );
         end if;
         if var_id = eof_t  then
            templatePath := basename( scriptFilePath );
@@ -2500,7 +2570,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "test cannot be used in an interactive session" );
+              err( +"test cannot be used in an interactive session" );
            --elsif not syntax_check then
            else
               run_test_case( expr_val, expr_val2, manual_test => false );
@@ -2509,13 +2579,13 @@ begin
      when test_report =>
         -- TODO: should be a syntax-time tests, not a run-time test.
         if isJunitStarted then
-           err( "test report has already been started" );
+           err( +"test report has already been started" );
         elsif expr_val = "text" then
            usingTextTestReport := true;
         elsif expr_val = "xml" then
            usingTextTestReport := false;
         else
-           err( gnat.source_info.source_location & ": internal error: unexpected test report type '" & to_string( expr_val ) & "'" );
+           err( pl( gnat.source_info.source_location & ": internal error: unexpected test report type '" & to_string( expr_val ) & "'" ) );
         end if;
      when test_result =>
         if testOpt then
@@ -2523,7 +2593,7 @@ begin
            -- and the parser isn't designed to produce a test report in
            -- this situation.
            if inputMode = interactive or inputMode = breakout then
-              err( "test_result cannot be used in an interactive session" );
+              err( +"test_result cannot be used in an interactive session" );
            elsif not syntax_check then
               if baseTypesOk( boolean_t, var_id ) then
                  record_test_result( test_result_status, null_unbounded_string );
@@ -2537,26 +2607,30 @@ begin
         if pragmaKind = unchecked_import_json then
            identifiers( var_id ).mapping := json;
            if identifiers( var_id ).class = userProcClass then
-              err( "procedures cannot be imported" );
+              err( +"procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
-              err( "functions cannot be imported" );
+              err( +"functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( +"case procedures cannot be imported" );
            elsif identifiers( var_id ).import then
-              err( "variable is already imported" );
+              err( +"variable is already imported" );
            end if;
         else
            identifiers( var_id ).mapping := none;
            if identifiers( var_id ).class = userProcClass then
-              err( "procedures cannot be imported" );
+              err( +"procedures cannot be imported" );
            elsif identifiers( var_id ).class = userFuncClass then
-              err( "functions cannot be imported" );
+              err( +"functions cannot be imported" );
+           elsif identifiers( var_id ).class = userCaseProcClass then
+              err( +"case procedures cannot be imported" );
            elsif identifiers( var_id ).list then
-              err( "arrays cannot be imported without import_json or arrays.to_json" );
+              err( +"arrays cannot be imported without import_json or arrays.to_json" );
            elsif identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_record_t then
-              err( "records cannot be imported without import_json or records.to_json" );
+              err( +"records cannot be imported without import_json or records.to_json" );
            elsif identifiers( var_id ).import then
-              err( "variable is already imported" );
+              err( +"variable is already imported" );
            elsif not uniTypesOK( identifiers( var_id ).kind, uni_string_t ) then
-              err( "only string variables exported" );
+              err( +"only string variables exported" );
            end if;
         end if;
         -- All clear? Get the value
@@ -2626,7 +2700,7 @@ begin
                         elsif  identifiers( getBaseType( identifiers( var_id ).kind ) ).kind  = root_enumerated_t then -- enum
                            DoJsonToNumber( newValue, identifiers(var_id ).value.all );
                         else
-                           err( gnat.source_info.source_location & ": internal error: unexpected import translation type" );
+                           err( pl( gnat.source_info.source_location & ": internal error: unexpected import translation type" ) );
                         end if;
                      else                                                           -- no mapping
                         identifiers( var_id ).value.all := newValue;
@@ -2636,7 +2710,7 @@ begin
            elsif importType = "session" then
               identifiers( var_id ).import := true;
               identifiers( var_id ).method := session;
-              err( "session import not yet implemented" );
+              err( +"session import not yet implemented" );
            --elsif not processingTemplate and importType = "cgi" then
            --    err( "import type cgi must be used in a template" );
            else
@@ -2665,34 +2739,48 @@ begin
         identifiers( var_id ).inspect := false;
      when volatile =>
         identifiers( var_id ).volatile := checked;
+       -- Volatiles cannot be used in an expression but are usually
+       -- not limited.  Pretend that the volatile was used in an expression
+       -- to prevent a "should be limited" error.  If explicitly limited,
+       -- act normally.
+       if identifiers( var_id ).usage /= limitedUsage then
+          identifiers( var_id ).wasFactor := true;
+       end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
-                err( "volatile TTL is less than zero" );
+                err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
                 identifiers( var_id ).volatileExpire := clock;
              end if;
            exception when others =>
-             err("bad value for volatile TTL" );
+             err( +"bad value for volatile TTL" );
            end;
         end if;
      when unchecked_volatile =>
         identifiers( var_id ).volatile := unchecked;
+       -- Volatiles cannot be used in an expression but are usually
+       -- not limited.  Pretend that the volatile was used in an expression
+       -- to prevent a "should be limited" error.  If explicitly limited,
+       -- act normally.
+       if identifiers( var_id ).usage /= limitedUsage then
+          identifiers( var_id ).wasFactor := true;
+       end if;
         if expr_val /= "" then
            begin
              identifiers( var_id ).volatileTTL := duration( to_numeric( expr_val ) );
              if identifiers( var_id ).volatileTTL <= 0.0 then
-                err( "volatile TTL is less than zero" );
+                err( +"volatile TTL is less than zero" );
              elsif identifiers( var_id ).volatileTTL > 0.0 then
                 identifiers( var_id ).volatileExpire := clock;
              end if;
            exception when others =>
-             err("bad value for volatile TTL" );
+             err( +"bad value for volatile TTL" );
            end;
         end if;
      when others =>
-        err( gnat.source_info.source_location & ": Internal error: unable to execute pragma" );
+        err( pl( gnat.source_info.source_location & ": Internal error: unable to execute pragma" ) );
      end case;
   end if;
 end ParsePragmaStatement;
@@ -2711,15 +2799,15 @@ begin
   expect( pragma_t );
   if token = is_t then
      if onlyAda95 then
-        err( "pragma block cannot be used with " & optional_yellow( "pragma ada_95" ) );
+        err( +"pragma block cannot be used with " & em( "pragma ada_95" ) );
      end if;
      -- a pragma block
      expect( is_t );
      -- empty block?
      if token = end_t then
-        err( "pragma name missing" );
+        err( +"pragma name missing" );
      elsif token = pragma_t then
-        err( "single pragma in a pragma block" );
+        err( +"single pragma in a pragma block" );
      end if;
      -- examine the name of the pragma and return a pragma kind matching the
      -- name
@@ -2729,20 +2817,20 @@ begin
         ParsePragmaStatement( pragmaKind );
         if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "@" ) then
            if onlyAda95 then
-              err( "@ cannot be used with " & optional_yellow( "pragma ada_95" ) );
+              err( +"@ cannot be used with " & em( "pragma ada_95" ) );
            end if;
            expect( symbol_t, "@" );
         elsif token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( ";" ) then
            expect( symbol_t, ";" );
            if token = pragma_t then
-              err( "single pragma in a pragma block" );
+              err( +"single pragma in a pragma block" );
            end if;
            if token /= end_t then
               pragmaKind := parsePragmaKind;
            end if;
         else
            -- bit of a more descriptive error
-           err( "'@' or ';' expected" );
+           err( +"'@' or ';' expected" );
         end if;
      end loop;
      expect( end_t );
@@ -2754,11 +2842,11 @@ begin
         ParsePragmaStatement( pragmaKind );
         -- bit of a more descriptive error
         if token = symbol_t and identifiers( symbol_t ).value.all = to_unbounded_string( "(" ) then
-           err( "'@' or ';' expected" );
+           err( +"'@' or ';' expected" );
         end if;
         exit when done or error_found or token = eof_t or (token = symbol_t and identifiers( symbol_t ).value.all /= to_unbounded_string( "@" ) );
         if onlyAda95 then
-           err( "@cannot be used with " & optional_yellow( "pragma ada_95" ) );
+           err( +"@cannot be used with " & em( "pragma ada_95" ) );
         end if;
         expect( symbol_t, "@" );
      end loop;

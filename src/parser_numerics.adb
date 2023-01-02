@@ -33,6 +33,7 @@ with ada.numerics.long_elementary_functions,
     gnat.sha256,
     gnat.sha512,
     pegasoft.user_io,
+    pegasoft.numerics,
     world,
     scanner,
     scanner.communications,
@@ -43,6 +44,7 @@ use ada.numerics.long_elementary_functions,
     ada.numerics.long_complex_types,
     interfaces,
     pegasoft.user_io,
+    pegasoft.numerics,
     world,
     scanner,
     scanner.communications,
@@ -51,8 +53,6 @@ use ada.numerics.long_elementary_functions,
     md5;
 
 package body parser_numerics is
-
-type hash_integer is mod 2**32;
 
 serialNumber : long_float := 0.0;
 
@@ -1058,23 +1058,23 @@ begin
      end if;
   exception
   when constraint_error =>
-     err( "constraint_error exception raised" );
+     err( +"constraint_error exception raised" );
   when storage_error =>
-     err( "storage_error exception raised" );
+     err( +"storage_error exception raised" );
   when ada.strings.index_error =>
      if expr_val = null_unbounded_string then
         err(
           context => value_t,
-          subjectNotes => "the numeric value",
-          reason => "cannot be calculated on",
-          obstructorNotes => "an empty string"
+          subjectNotes => +"the numeric value",
+          reason => +"cannot be calculated on",
+          obstructorNotes => +"an empty string"
         );
      else
         err(
           context => value_t,
-          subjectNotes => "the numeric value",
-          reason => "raised a index_error on the string value",
-          obstructorNotes => toProtectedValue( expr_val ),
+          subjectNotes => +"the numeric value",
+          reason => +"raised a index_error on the string value",
+          obstructorNotes => em_value( expr_val ),
           obstructortype => expr_type
         );
      end if;
@@ -1163,22 +1163,14 @@ procedure ParseNumericsRnd( result : out unbounded_string; kind : out identifier
   -- Source: N/A
   expr_val    : unbounded_string;
   expr_type   : identifier;
-  randomFloat : float;
 begin
   kind := positive_t;
   expect( rnd_t );
   ParseSingleNumericParameter( rnd_t, expr_val, expr_type, positive_t );
   begin
      if isExecutingCommand then
-        -- Kludge: Random produces 0..1.0, but 1.0 is too large.  Probably a
-        -- better way to handle this...
-        loop
-           randomFloat := Ada.Numerics.Float_Random.Random( random_generator );
-        exit when randomFloat /= 1.0;
-        end loop;
-        result := to_unbounded_string(  1.0 +
-           long_float'truncation( to_numeric( expr_val ) *
-              long_float( randomFloat  ) ) );
+        -- from pegasoft.numerics
+        result := to_unbounded_string( long_float( rnd( positive( to_numeric( expr_val ) ) ) ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1496,15 +1488,10 @@ begin
   ParseLastNumericParameter( hash_of_t, expr2_val, expr2_type, natural_t );
   declare
     limit : hash_integer;
-    hash : hash_integer := 5381;
   begin
-    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
-       for i in 1..length(expr1_val) loop
-           hash := (hash*37 + hash) + character'pos(element(expr1_val,i));
-       end loop;
-       hash := (hash mod limit) + 1;
-       result := to_unbounded_string( long_float( hash ) );
+       limit := hash_integer( to_numeric( expr2_val ) );
+       result := to_unbounded_string( long_float( hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1524,16 +1511,10 @@ begin
   ParseLastNumericParameter( sdbm_hash_of_t, expr2_val, expr2_type, natural_t );
   declare
     limit : hash_integer;
-    hash : hash_integer := 0;
   begin
-    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
-       for i in 1..length(expr1_val) loop
-           hash := character'pos(element(expr1_val,i)) + (hash*64) + (hash*65536
-) - hash;
-       end loop;
-       hash := (hash mod limit) + 1;
-       result := to_unbounded_string( long_float( hash ) );
+       limit := hash_integer( to_numeric( expr2_val ) );
+       result := to_unbounded_string( long_float( sdbm_hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1552,22 +1533,11 @@ begin
   ParseFirstNumericParameter( fnv_hash_of_t, expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( fnv_hash_of_t, expr2_val, expr2_type, natural_t );
   declare
-    hash   : hash_integer := 16#811c9dc5#;
-    k      : hash_integer;
     limit  : hash_integer;
   begin
-    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
-       for data in 1..length(expr1_val)-3 loop
-           k := character'pos( element(expr1_val, data) ) +
-                character'pos( element(expr1_val, data+1) ) * 256 +     -- 8
-                character'pos( element(expr1_val, data+2) ) * 65536 +   -- 16
-                character'pos( element(expr1_val, data+3) ) * 16777216; -- 24
-            hash := hash xor k;
-            hash := hash * 16#01000193#;
-       end loop;
-       hash := (hash mod limit) + 1;
-       result := to_unbounded_string( long_float( hash ) );
+       limit := hash_integer( to_numeric( expr2_val ) );
+       result := to_unbounded_string( long_float( fnv_hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1586,61 +1556,11 @@ begin
   ParseFirstNumericParameter( murmur_hash_of_t, expr1_val, expr1_type, string_t );
   ParseLastNumericParameter( murmur_hash_of_t, expr2_val, expr2_type, natural_t );
   declare
-    seed : constant hash_integer := 16#811c9dc5#;
-    m : constant hash_integer := 16#5bd1e995#;
-    r : constant hash_integer := 24;
-    hash : hash_integer;
-    data : integer := 1;
-    k    : hash_integer;
-    limit : hash_integer;
-    s    : constant string := to_string( expr1_val );
-    len  : integer := s'length;
+    limit  : hash_integer;
   begin
-    limit := hash_integer( to_numeric( expr2_val ) );
     if isExecutingCommand then
-       -- this seed could be more elegnat - random seed here xor len
-       hash := hash_integer( s'length ) xor seed;
-       while len >= 4 loop
-          k := character'pos( s(data) ) +
-               character'pos( s(data+1) ) * 256 +      -- 8
-               character'pos( s(data+2) ) * 65536 +    -- 16
-               character'pos( s(data+3) ) * 16777216;  -- 24
-          k := k * m;
-          k := k xor (k / (2**integer(r)));
-          k := k * m;
-          hash := hash * m;
-          hash := hash xor k;
-
-          data := data + 4;
-          len := len - 4;
-       end loop;
-
-       -- Handle the last few bytes of the input array
-
-       case len is
-       when 3 => hash := hash xor ( character'pos( s(data+2) ) * 65536 );
-                 hash := hash xor ( character'pos( s(data+1) ) * 256 );
-                 hash := hash xor ( character'pos( s(data) ) );
-                 hash := hash * m;
-       when 2 => hash := hash xor ( character'pos( s(data+1) ) * 256 );
-                 hash := hash xor ( character'pos( s(data) ) );
-                 hash := hash * m;
-       when 1 => hash := hash xor ( character'pos( s(data) ) );
-                 hash := hash * m;
-       when others => null;
-       end case;
-
-       -- Do a few final mixes of the hash to ensure the last few
-       -- bytes are well-incorporated.
-
-       hash := hash xor ( hash / 8192 ); -- 13
-       hash := hash * m;
-       hash := hash xor ( hash / 32768 ); -- 15
-
-       hash := (hash mod limit) + 1;
-
-       result := to_unbounded_string( long_float( hash ) );
-
+       limit := hash_integer( to_numeric( expr2_val ) );
+       result := to_unbounded_string( long_float( murmur_hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;

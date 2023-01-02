@@ -194,7 +194,7 @@ type blockDeclaration is private;      -- Ident Scope: eg. for a for loop
 blocks_top : block := block'first;     -- scope stack next position
 
 procedure pushBlock( newScope : boolean := false;
-  newName : string := "" ; newThread : aThreadName := noThread );
+  newName : string := "" ; newFlow : aDataFlowName := noDataFlow );
 -- start a new identifier scope, remember where we "parked"
 -- if newScope is false, the new block is the start of a
 -- multi-line statement (eg. an "if"); if true, the new
@@ -226,9 +226,9 @@ function isLocal( id : identifier ) return boolean;
 function getIdentifierBlock( id : identifier ) return block;
 -- return the block number for an identifier
 
-function getThreadName return aThreadName;
-function getThreadName( b : block ) return aThreadName;
--- return the name of the given thread
+function getDataFlowName return aDataFlowName;
+function getDataFlowName( b : block ) return aDataFlowName;
+-- return the name of the given flow
 
 function getBlockName( b : block ) return unbounded_string;
 -- return the name of the given block
@@ -478,7 +478,7 @@ type blockDeclaration is record
   identifiers_top : identifier;       -- where block declarations begin
   newScope        : boolean := false; -- true if new identifier scope
   blockName       : unbounded_string := Null_Unbounded_String;
-  threadName      : aThreadName := noThread;
+  flowName        : aDataFlowName := noDataFlow;
   state           : aScannerState;    -- the position on the line
   hasReturn       : boolean := false; -- true if return was seen (for fn's)
   inHandler       : boolean := false; -- true if in exception handler

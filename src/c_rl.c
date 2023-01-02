@@ -20,6 +20,8 @@ extern char * Ada_docker_word_generator(const char *text, int state);
 extern char * Ada_k8s_word_generator(const char *text, int state);
 extern char * Ada_npm_word_generator(const char *text, int state);
 
+extern int    Ada_readline_timeout();
+
 // types of completions
 
 const int completion_type_none       = -1;
@@ -390,7 +392,7 @@ int backslash_check( char *line, int index ) {
  * Initialize the GNU readline library.
  */
 
-void C_init_readline() {
+void C_init_readline(int idle_timeout) {
   // This identifies SparForte configurations in inputrc files
 
   rl_readline_name = "SparForte";
@@ -423,6 +425,9 @@ void C_init_readline() {
 #ifndef __APPLE__
     rl_char_is_quoted_p = &backslash_check;
 #endif
+
+  rl_event_hook = Ada_readline_timeout;
+  // rl_set_keyboard_input_timeout(idle_timeout);
 }
 
 

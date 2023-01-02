@@ -4,7 +4,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
-tion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>SparForte - Reference - Block Statements and Subprograms</title>
 	<link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
@@ -45,9 +44,9 @@ tion">
 <p>SparForte scripts can be organized using declare blocks, procedures and
 functions.  This enables pieces of a program to be easily reused.
 A procedure is a routine that can be called but returns no value.
-For example, <tt>put_line</tt> is a procedure.  A function always
+For example, <code>put_line</code> is a procedure.  A function always
 returns a value so it can be used as part of an expression.
-<tt>strings.length</tt> is an example of a function which responds
+<code>strings.length</code> is an example of a function which responds
 with the length of a string.</p>
 
 <h3>Overall Structure</h3>
@@ -58,7 +57,7 @@ a "library" unit.  The basic library unit is a main procedure (or
 sometimes called a main program or main subprogram).  Other library
 units may be introduced in the future (such as packages).</p>
 
-<p>If <tt>pragma ada_95</tt> is used, the statements must be enclosed in a
+<p>If <code>pragma ada_95</code> is used, the statements must be enclosed in a
 library unit.</p>
 
 <p>Some features may not be available with a simple list of
@@ -69,8 +68,8 @@ statements.</p>
 <p>Declare blocks (also called block statements) contains a sequence of
 statements or commands that can include locally declared variables.
 Declare blocks are located in the executable part
-of a script.  Between <tt>declare</tt> and <tt>begin</tt>, declarations can be made.
-Between <tt>begin</tt> and <tt>end</tt> are executable statements.  The declarations
+of a script.  Between <code>declare</code> and <code>begin</code>, declarations can be made.
+Between <code>begin</code> and <code>end</code> are executable statements.  The declarations
 are visible to these executable statements.</p>
 
 <p>A new block can be created without declaration any
@@ -94,17 +93,17 @@ variables by using begin...end without the declare section.<br>
 <h3>Procedure and Function Blocks</h3>
 
 <p>Repeatable blocks of a series of instructions (like Perl sub or Python def) can
-be created with the word <tt>procedure</tt> or <tt>function</tt>.&nbsp; A procedure is a
+be created with the word <code>procedure</code> or <code>function</code>.&nbsp; A procedure is a
 set of instructions with a name.&nbsp; A function is a set of
 instructions with a name that computes and returns a value and can be
 used in an expression.&nbsp; Like a declare block, local variables can
 be declared
-before the word <tt>begin</tt>.  Procedure and function subprograms
-must finish with <tt>end</tt> and the name of the subprogram: this is
+before the word <code>begin</code>.  Procedure and function subprograms
+must finish with <code>end</code> and the name of the subprogram: this is
 to clarify the structure of the program.</p>
 
 <p><b>Ada</b>: In Ada, the name of the subprogram is optional after
-<tt>end</tt>.  In AdaScript, the name is required.</p>
+<code>end</code>.  In AdaScript, the name is required.</p>
 
         <center>
         <div class="code">
@@ -129,15 +128,93 @@ block.</p>
 <p><b>Ada</b>: AdaScript doesn't support creating new arithmetic
 operators by defining functions with operator symbols.</p>
 
+<h3>The Case Procedure</h3>
+
+<p>A Case Procedure implements business decision tables.  These tables
+represent conditions and the return values defined by business policy.
+The tables describe values more complex than simple constants.</p>
+
+<p>Case procedures are intended for business analysts.  They require
+only a small enough of AdaScript and are easier to show business people
+an understanding of their policy.  However, they can also be used by
+developers as a form of named case statements.</p>
+
+<p>There is a list of variables to test after <code>in</code> and a list of variables
+to update after <code>out</code>.  Each when has a list of values corresponding to
+the <code>in</code> list.  Each value must match for the list of expressions after
+the <code>=&gt;</code> to run.</p>
+
+<p>This version of the case statement is especially useful when
+creating lookup tables as commonly used in business programming.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+
+<b>declare</b><br>
+&nbsp;&nbsp;<b>type</b> a_customer_loyalty is (unknown, recent, loyal);<br>
+&nbsp;&nbsp;<b>type</b> a_rebate <b>is</b> (none, small, medium, large);<br>
+&nbsp;&nbsp;customer_loyalty : a_customer_loyalty := loyal;<br>
+&nbsp;&nbsp;rebate           : a_rebate;<br>
+<br>
+&nbsp;&nbsp;<b>case</b> <b>procedure</b> decide_customer_rebate( my_customer_loyalty : a_customer_loyalty; my_rebate : <b>out</b> a_rebate ) <b>is</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> recent =&gt; small;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> loyal =&gt; large;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>when</b> others =&gt; none;<br>
+&nbsp;&nbsp;<b>end</b> decide_customer_rebate;<br>
+<br>
+<b>begin</b><br>
+&nbsp;&nbsp;decide_customer_rebate( customer_loyalty, rebate );<br>
+<b>end</b>;<br>
+        <div class="code_caption">
+                <b>Example</b>: A Case Procedure
+        </div>
+        </div>
+        </center>
+
+<p>Out identifiers must be previously declared (they will not be automatically
+declared if new).  Out identifiers cannot be commands, exceptions, arrays or
+records.</p>
+
+<p>Case procedures have no declaration section and they cannot have
+exception handlers.</p>
+
+<p>Like other forms of a case statement, the <code>when others</code>
+is required.</p>
+
+<p><b>Ada</b>: Case Procedures are not allowed with <code>pragma ada_95</code>.</p>
+
+<h3>The While Loop Statement</h3>
+
+<p>The while loop is a pre-test loop.&nbsp; The commands in the loop
+are
+repeat while the condition is true and the condition is tested each
+time
+the first line of the loop is executed.</p>
+
+        <center>
+        <div class="code">
+                <p class="code">
+<b>while</b> x &lt; y <b>loop</b><br>
+&nbsp; x := @ + 1;<br>
+<b>end</b> <b>loop</b>;<br>&nbsp;<br></p>
+        <div class="code_caption">
+                <b>Example</b>: The While Statement
+        </div>
+        </div>
+        </center>
+
+
+
 <h3>The Return Statement</h3>
 
-<p>A procedure may be terminated early using a <tt>return</tt>
-statement.  A function uses <tt>return</tt> to return back a
+<p>A procedure may be terminated early using a <code>return</code>
+statement.  A function uses <code>return</code> to return back a
 value.</p>
 
-<p>A <tt>return</tt> statement may contain an optional <b>when</b> clause, similar
-to a loop <tt>exit</tt> statement.  The main advantage of the <tt>when</tt> clause over an
-<tt>if</tt> statement is to execution jumps in the source code more obvious.</p>
+<p>A <code>return</code> statement may contain an optional <code>when</code> clause, similar
+to a loop <code>exit</code> statement.  The main advantage of the <code>when</code> clause over an
+<code>if</code> statement is to execution jumps in the source code more obvious.</p>
 
 <h3>Procedure and Function Parameters</h3>
 
@@ -200,14 +277,14 @@ or declare blocks).</p>
         </center>
 
 <p>The built-in procedures and functions found in the SparForte
-packages may include parameters with other modes.  <tt>in out</tt> mode
+packages may include parameters with other modes.  <code>in out</code> mode
 means the value of the parameter is used by the subprogram and
-may be changed.  <tt>out</tt> mode means the parameter is not read by
+may be changed.  <code>out</code> mode means the parameter is not read by
 the subprogram but a value will be returned using the parameter.
 Functions may only use in mode.  The modes are described on the front
 page of the <b>Packages</b> section of this documentation.</p>
 
-<p><b>Ada</b>: <tt>access</tt>
+<p><b>Ada</b>: <code>access</code>
 mode parameters are not supported for user-defined subprograms.
 Named parameters are not supported.  Default values are not
 supported.</p>
@@ -328,7 +405,7 @@ with the name of the subprogram.  For example, if you have a
 separate procedure called "t2", put it in a file called "t2.sp".
 The filename must match the name of the subprogram.</p>
 
-<p>Separate subprograms must begin with a <tt>separate</tt> statement as
+<p>Separate subprograms must begin with a <code>separate</code> statement as
 the first line in the file.  This indicates that the file is not
 an executable script.  The separate statement should include
 the name of the parent script.  Each separate subprogram belongs
@@ -352,7 +429,7 @@ to a single, specific parent script.</p>
 
 <p>In the parent script (the one that will load the subprogram),
 declare the subprogram but replace the body of the subprogram
-with the word <tt>separate</tt>.</p>
+with the word <code>separate</code>.</p>
 
         <center>
         <div class="code">
@@ -660,10 +737,10 @@ exception.</p>
 
 <p>When SparForte is used as a login shell, it checks for the existence
 of two files: "/etc/sparforte_profile" and ".sparforte_profile" in the
-user's home directory.  The first is a system-wide initialization file.   
-The second is for initializing personal preferences.  The personal file 
-always run after the system-wide file.  These are only read on login, or 
-if SparForte simulates a login when it is started with <tt>--login</tt>.</p>
+user's home directory.  The first is a system-wide initialization file.
+The second is for initializing personal preferences.  The personal file
+always run after the system-wide file.  These are only read on login, or
+if SparForte simulates a login when it is started with <code>--login</code>.</p>
 
 <p>SparForte checks these files before opening them.  They must meet the
 following conditions:</p>
@@ -680,7 +757,7 @@ reported and the profile file will not be run.  The login session will
 be aborted.</p>
 
 <p>For multiple local profile files in one home directory, use the
-<tt>--session</tt> option to give each file a different name in the form
+<code>--session</code> option to give each file a different name in the form
 of ".sparforte_<i>session_name</i>_profile.  Each session will also have
 a different shell history file.</p>
 
@@ -708,7 +785,7 @@ applied twice.</p>
         <b>end</b> web_app_policy;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple Policy Block</span>
+        <b>Example</b>: A Simple Policy Block
         </div>
         </div>
         </center>
@@ -791,7 +868,7 @@ files.</p>
         <b>end</b> dev_environment;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple /etc/sparforte_config File</span>
+        <b>Example</b>: A Simple /etc/sparforte_config File
         </div>
         </div>
         </center>

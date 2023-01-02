@@ -80,37 +80,36 @@ in the table.</p>
 
         <center>
         <div class="code">
-<pre>
-<b>=&gt;</b> type url_string is new string
-<b>=&gt;</b> urls : dynamic_hash_tables.table( url_string )
-<b>=&gt;</b> u : url_string
-<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
-=&gt; (Assuming eof is a new boolean variable)
-<b>=&gt;</b> ? eof
-true
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "google", "http://www.google.com" )
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "yahoo", "http://www.yahoo.com" )
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", "http://www.amazon.com" )
-<b>=&gt;</b> ? dynamic_hash_tables.has_element( urls, "google" )
-true
-<b>=&gt;</b> ? dynamic_hash_tables.get( urls, "google" )
-http://www.google.com
-<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )
-<b>=&gt;</b> ? eof
-false
-<b>=&gt;</b> ? u
-http://www.amazon.com
-<b>=&gt;</b> dynamic_hash_tables.get_next( urls, u, eof )
-<b>=&gt;</b> ? eof
-false
-<b>=&gt;</b> ? u
-http://www.google.com
-<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", 12345 )
-dynamic_hash_tables.set( urls, "amazon", 12345 );
-                                                ^ type <b>universal_numeric</b> is
-inherently different from an <b>url_string</b> (an universal_string)
-
-</pre>
+<p class="code">
+<b>=&gt;</b> <b>type</b> url_string <b>is</b> <b>new</b> string<br>
+<b>=&gt;</b> urls : dynamic_hash_tables.table( url_string )<br>
+<b>=&gt;</b> u : url_string<br>
+<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )<br>
+=&gt; (Assuming eof is a new boolean variable)<br>
+<b>=&gt;</b> ? eof<br>
+true<br>
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "google", "http://www.google.com" )<br>
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "yahoo", "http://www.yahoo.com" )<br>
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", "http://www.amazon.com" )<br>
+<b>=&gt;</b> ? dynamic_hash_tables.has_element( urls, "google" )<br>
+true<br>
+<b>=&gt;</b> ? dynamic_hash_tables.get( urls, "google" )<br>
+http://www.google.com<br>
+<b>=&gt;</b> dynamic_hash_tables.get_first( urls, u, eof )<br>
+<b>=&gt;</b> ? eof<br>
+false<br>
+<b>=&gt;</b> ? u<br>
+http://www.amazon.com<br>
+<b>=&gt;</b> dynamic_hash_tables.get_next( urls, u, eof )<br>
+<b>=&gt;</b> ? eof<br>
+false<br>
+<b>=&gt;</b> ? u<br>
+http://www.google.com<br>
+<b>=&gt;</b> dynamic_hash_tables.set( urls, "amazon", 12345 )<br>
+dynamic_hash_tables.set( urls, "amazon", 12345 );<br>
+                                                ^ type <b>universal_numeric</b> is<br>
+inherently different from an <b>url_string</b> (an universal_string)<br>
+</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Example</b>: Using dynamic_hash_tables to store URL's

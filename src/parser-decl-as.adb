@@ -123,15 +123,15 @@ begin
 
      case identifiers( identifiers( var_id ).field_of ).usage is
      when abstractUsage =>
-        err( gnat.source_info.source_location &
-             ": internal error: variables should not have abstract types" );
+        err( pl( gnat.source_info.source_location &
+             ": internal error: variables should not have abstract types" ) );
      when limitedUsage =>
         if isTesting then
            null;
         elsif inputMode = breakout then
            put_trace( "Warning: assigning a new value to a limited record field" );
         else
-           err( "limited record fields cannot be assigned a value" );
+           err( +"limited record fields cannot be assigned a value" );
         end if;
      when constantUsage =>
         if isTesting then
@@ -139,7 +139,7 @@ begin
         elsif inputMode = breakout then
            put_trace( "Warning: assigning a new value to a constant record field" );
         else
-           err( "constant record fields cannot be assigned a value" );
+           err( +"constant record fields cannot be assigned a value" );
         end if;
      when fullUsage =>
 
@@ -158,7 +158,7 @@ begin
            elsif inputMode = breakout then
               put_trace( "Warning: assigning a new value to a limited record field" );
            else
-              err( "limited record fields cannot be assigned a value" );
+              err( +"limited record fields cannot be assigned a value" );
            end if;
         when constantUsage =>
            if isTesting then
@@ -166,19 +166,19 @@ begin
            elsif inputMode = breakout then
               put_trace( "Warning: assigning a new value to a constant record field" );
            else
-              err( "constant record fields cannot be assigned a value" );
+              err( +"constant record fields cannot be assigned a value" );
            end if;
         when fullUsage =>
            null;
         when others =>
-           err( gnat.source_info.source_location &
-                ": internal error: unexpected usage qualifier" );
+           err( pl( gnat.source_info.source_location &
+                ": internal error: unexpected usage qualifier" ) );
         end case;
 
      when others =>
-        err( gnat.source_info.source_location &
+        err( pl( gnat.source_info.source_location &
              ": internal error: unexpected usage qualifier " &
-             identifiers( identifiers( var_id ).field_of ).usage'img );
+             identifiers( identifiers( var_id ).field_of ).usage'img ) );
      end case;
 
   end if;
@@ -191,8 +191,8 @@ begin
   case identifiers( var_id ).usage is
 
   when abstractUsage =>
-     err( gnat.source_info.source_location &
-          ": internal error: variables should not be abstract" );
+     err( pl( gnat.source_info.source_location &
+          ": internal error: variables should not be abstract" ) );
 
   when limitedUsage =>
      if isTesting then
@@ -200,7 +200,7 @@ begin
      elsif inputMode = breakout then
         put_trace( "Warning: assigning a new value to a limited variable" );
      else
-        err( "limited variables cannot be assigned a value" );
+        err( pl( "limited variables cannot be assigned a value" ) );
      end if;
 
   -- constants can only be assigned values if they are specs
@@ -211,16 +211,16 @@ begin
      elsif inputMode = breakout then
         put_trace( "Warning: assigning a new value to a constant variable" );
      elsif identifiers( var_id ).specAt = noSpec then
-        err( "constant variables cannot be assigned a value" );
+        err( pl( "constant variables cannot be assigned a value" ) );
      end if;
 
   when fullUsage =>
      null;
 
   when others =>
-     err( gnat.source_info.source_location &
+     err( pl( gnat.source_info.source_location &
           ":  internal error: unexpected usage qualifier " &
-          identifiers( var_id ).usage'img );
+          identifiers( var_id ).usage'img ) );
   end case;
 end checkVarUsageQualifier;
 
@@ -251,19 +251,19 @@ begin
 
   expect( if_t );                                          -- "if"
   if token = if_t then                                     -- this error is
-     err( "redundant " & optional_yellow( "if" ) );          -- from GNAT
+     err( +"redundant " & em( "if" ) );                    -- from GNAT
   end if;
   ParseExpression( expr_val, expr_type );                  -- expression
   if type_checks_done then
      b := expr_val = "1";                                  -- to real boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
-     err( "boolean expression expected" );
+     err( +"boolean expression expected" );
   else                                                     -- else convert bool
      b := expr_val = "1";                                  -- to real boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
-     err( "redundant " & optional_yellow( "then" ) );        -- from GNAT
+     err( +"redundant " & em( "then" ) );                  -- from GNAT
   end if;
   if b then                                                -- was true?
      ParseBlock( elsif_t, else_t );                        -- handle if block
@@ -284,13 +284,13 @@ begin
      end if;
      expect( elsif_t );                                    -- "elsif"
      if token = elsif_t then                               -- this error is
-        err( "redundant " & optional_yellow( "elsif" ) );    -- from GNAT
+        err( +"redundant " & em( "elsif" ) );              -- from GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
      if type_checks_done then
         b := expr_val = "1";                               -- to real boolean
      elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
-        err( "boolean expression expected" );
+        err( +"boolean expression expected" );
      else                                                  -- else convert bool
         b := expr_val = "1";                               -- to real boolean
      end if;
@@ -299,7 +299,7 @@ begin
      end if;                                               -- for SkipBlock
      expect( then_t );                                     -- "then"
      if token = then_t then                                -- this is from
-        err( "redundant " & optional_yellow( "then" ) );     -- GNAT
+        err( +"redundant " & em( "then" ) );               -- GNAT
      end if;
      if b and not handled then                             -- true (and not previously done)
         ParseBlock( elsif_t, else_t );                     -- handle the elsif block
@@ -323,7 +323,7 @@ begin
         syntax_check := backup_sc;                         -- restore flag
      end if;                                               -- for SkipBlock
      if token = else_t then                                -- this is from
-        err( "redundant " & optional_yellow( "else" ) );     -- GNAT
+        err( +"redundant " & em( "else" ) );               -- GNAT
      end if;
      if not handled then                                   -- nothing handled yet?
         ParseBlock;                                        -- handle else block
@@ -352,7 +352,7 @@ procedure ParseStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   -- Syntax: block = "general-stmt [general-stmt...] termid1 | termid2"
 begin
   if token = end_t or token = eof_t or token = termid1 or token = termid2 then
-     err( "missing statement or command" );
+     err( +"missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= termid1 and token /= termid2 loop
      if token = pragma_t then
@@ -383,7 +383,7 @@ procedure SkipStaticBlock( termid1, termid2 : identifier := keyword_t ) is
   old_skipping : boolean;
 begin
   if token = end_t or token = eof_t or token = termid1 or token = termid2 then
-     err( "missing statement or command" );
+     err( +"missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
      ParseStaticBlock( termid1, termid2 ); -- must process the block to look
@@ -430,19 +430,19 @@ begin
 
   expect( if_t );                                          -- "if"
   if token = if_t then                                     -- this error is
-     err( "redundant " & optional_yellow( "if" ) );          -- from GNAT
+     err( +"redundant " & em( "if" ) );                    -- from GNAT
   end if;
   ParseStaticExpression( expr_val, expr_type );            -- expression
   if type_checks_done then
      b := expr_val = "1";                                  -- to real boolean
-  elsif not baseTypesOK( boolean_t, expr_type ) then          -- not a bool result?
-     err( "boolean expression expected" );
+  elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
+     err( +"boolean expression expected" );
   else                                                     -- else convert bool
      b := expr_val = "1";                                  -- to real boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
-     err( "redundant " & optional_yellow( "then" ) );        -- from GNAT
+     err( +"redundant " & em( "then" ) );                  -- from GNAT
   end if;
   if b then                                                -- was true?
      ParseStaticBlock( elsif_t, else_t );                  -- handle if block
@@ -463,13 +463,13 @@ begin
      end if;
      expect( elsif_t );                                    -- "elsif"
      if token = elsif_t then                               -- this error is
-        err( "redundant " & optional_yellow( "elsif" ) );    -- from GNAT
+        err( +"redundant " & em( "elsif" ) );              -- from GNAT
      end if;
      ParseStaticExpression( expr_val, expr_type );         -- expression
      if type_checks_done then
         b := expr_val = "1";                               -- to real boolean
      elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
-        err( "boolean expression expected" );
+        err( +"boolean expression expected" );
      else                                                  -- else convert bool
         b := expr_val = "1";                               -- to real boolean
      end if;
@@ -478,7 +478,7 @@ begin
      end if;                                               -- for SkipBlock
      expect( then_t );                                     -- "then"
      if token = then_t then                                -- this is from
-        err( "redundant " & optional_yellow( "then" ) );     -- GNAT
+        err( +"redundant " & em( "then" ) );               -- GNAT
      end if;
      if b and not handled then                             -- true (and not previously done)
         ParseStaticBlock( elsif_t, else_t );               -- handle the elsif block
@@ -502,7 +502,7 @@ begin
         syntax_check := backup_sc;                         -- restore flag
      end if;                                               -- for SkipBlock
      if token = else_t then                                -- this is from
-        err( "redundant " & optional_yellow( "else" ) );     -- GNAT
+        err( +"redundant " & em( "else" ) );               -- GNAT
      end if;
      if not handled then                                   -- nothing handled yet?
         ParseStaticBlock;                                  -- handle else block
@@ -552,20 +552,20 @@ begin
             identifiers( test_id ).wasReferenced := true;
             test_len := test_len + 1;
          else
-            err( optional_yellow( to_string( identifiers( test_id ).name) ) &
-                 " is already in the case identifier list" );
+            err( name_em( test_id ) &
+                 pl( " is already in the case identifier list" ) );
          end if;
       end if;
   exit when token /= symbol_t and identifiers( token ).value.all /= ",";
       expectParameterComma;
       if token = is_t then
-         err( "missing case identifier" );
+         err( +"missing case identifier" );
       end if;
   end loop;
 
   if test_len > 1 then
      if onlyAda95 then
-        err( "case must have one identifier only with " & optional_yellow( "pragma ada_95" ) );
+        err( +"case must have one identifier only with " & em( "pragma ada_95" ) );
      end if;
   end if;
 
@@ -577,77 +577,109 @@ end ParseStandardCaseHeaderPart;
 -----------------------------------------------------------------------------
 --  PARSE CASE IN HEADER PART
 --
--- ... in id [, id ...] out id [, id ...] is
---
--- Parse the list of identifiers after "in" and after "out".  Consume "is"
--- as well.
+-- There is no actual header now that the "case in" has been changed to a
+-- "case procedure.  Parse the procedure parameters and construct lists
+-- of identifiers that go "in" or "out" of the when clauses.
 -----------------------------------------------------------------------------
 
 procedure ParseCaseInHeaderPart(
+  proc_id : identifier;
   test_ids : in out vector_identifier_lists.vector;
   test_len : out count_type;
   return_ids : in out vector_identifier_lists.vector;
   return_len : out count_type
 ) is
-  test_id   : identifier;
-  return_id : identifier;
+     n : identifier := 1;
+     first_out_param : identifier := eof_t;
+     actual_name : unbounded_string;
+     actual_id : identifier := eof_t;
+     formal_id : identifier := eof_t;
 begin
   test_len := 0;
   return_len := 0;
 
-  if onlyAda95 then
-     err( "case in is not allowed with " & optional_yellow( "pragma ada_95" ) );
-  end if;
-  expect( in_t );                                          -- "in"
-
- -- expect one or more test identifiers
+  -- Loop through the procedure's formal parameters and find the actual
+  -- parameters.  Add in mode parameters to the list of identifiers to test
+  -- and out mode parameters to the list of return identifiers
+  --
+  -- any errors here will highlight the first "when" because the checks
+  -- are occurring after all the parameters have been processed
 
   loop
-      ParseIdentifier( test_id );                          -- identifier to test
-      if type_checks_done or else class_ok( test_id, varClass ) then
-         vector_identifier_lists.append( test_ids, test_id );
-         identifiers( test_id ).wasReferenced := true;
-         test_len := test_len + 1;
-      end if;
-  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expectParameterComma;
+     formal_id := proc_id + n;
+  exit when identifiers( formal_id ).field_of /= proc_id;
+    actual_name := identifiers( formal_id ).name;
+    actual_name := delete( actual_name, 1, index( actual_name, "." ));
+    findIdent( actual_name, actual_id );
+    if actual_id /= eof_t then
+       case identifiers( formal_id ).passingMode is
+       when in_mode =>
+          if first_out_param /= eof_t then
+             err( contextNotes => +"in the parameter list",
+                subject => actual_id,
+                reason => +"should be between the start and",
+                obstructor => first_out_param,
+                remedy => pl( 
+                       "the parameters should be declared in the same order " &
+                       "as they are used in the when clauses, or a parameter " &
+                       "passing mode is incorrect" )
+             );
+          else
+             -- put_line( "in " & identifiers( actual_id ).name );
+             vector_identifier_lists.append( test_ids, actual_id );
+             test_len := test_len + 1;
+             -- because of the tabular structure, it is safe to assume everything
+             -- was read...otherwise there would be when list errors
+             identifiers( actual_id ).wasReferenced := true;
+          end if;
+       when out_mode =>
+          if first_out_param = eof_t then
+             first_out_param := actual_id;
+          end if;
+          if identifiers( actual_id ).list then
+             err( context => proc_id,
+                  subject => actual_id,
+                  subjectType => identifiers( actual_id ).kind,
+                  reason => +"is not yet supported because it is",
+                  obstructorNotes => +"an array" );
+          elsif identifiers( getBaseType( identifiers( actual_id ).kind ) ).kind = root_record_t then
+             err( context => proc_id,
+                  subject => actual_id,
+                  subjectType => identifiers( actual_id ).kind,
+                  reason => +"is not yet supported because it is",
+                  obstructorNotes => +"a record" );
+          elsif getBaseType( identifiers( actual_id ).kind ) = command_t then
+             err( context => proc_id,
+                  subject => actual_id,
+                  subjectType => identifiers( actual_id ).kind,
+                  reason => +"is not yet supported because it is",
+                  obstructorNotes => +"a command" );
+          else
+             -- put_line( "out " & identifiers( actual_id ).name );
+             vector_identifier_lists.append( return_ids, actual_id );
+             return_len := return_len + 1;
+             -- because of the tabular structure, it is safe to assume everything
+             -- was read...otherwise there would be big arrow list errors
+             identifiers( actual_id ).wasReferenced := true;
+             identifiers( actual_id ).wasWritten := true;
+          end if;
+       when in_out_mode =>
+          err( contextNotes => +"in the parameter list",
+               subject => actual_id,
+               reason => +"should be in or out not",
+               obstructorNotes => +"in out" );
+       when others =>
+          err( pl( gnat.source_info.source_location &
+               ": internal error: unexpected passing mode " &
+               identifiers( formal_id ).passingMode'img ) );
+       end case;
+       n := n + 1;
+    else
+       err( pl( gnat.source_info.source_location &
+            ": internal error: actual param not found for " &
+            to_string( identifiers( formal_id ).name ) ) );
+    end if;
   end loop;
-
-  -- for a decision table, there is an out part
-
-  expect( out_t );
-  loop
-      if type_checks_done or else class_ok( token, varClass ) then
-
-         -- TODO: Refactor with ParseAssignment
-         -- Not all identifiers can be written to
-
-         checkVarUsageQualifier( token );                       -- no constants
-
-         if identifiers( token ).list then
-            err( "array parameters not yet supported" );
-         elsif identifiers( getBaseType( identifiers( token ).kind ) ).kind = root_record_t then
-            err( "records not yet supported" );
-         elsif getBaseType( identifiers( token ).kind ) = command_t then
-            err( "commands not yet supported" );
-         end if;
-
-         if not error_found then
-            return_len := return_len + 1;                       -- count idents
-
-            -- add to list
-
-            ParseIdentifier( return_id );
-            vector_identifier_lists.append( return_ids, return_id );
-            identifiers( return_id ).wasWritten := true;
-         end if;
-      end if;
-  exit when token /= symbol_t and identifiers( token ).value.all /= ",";
-      expectParameterComma;
-  end loop;
-
-  expect( is_t );                                       -- "is"
-
 end ParseCaseInHeaderPart;
 
 
@@ -680,8 +712,8 @@ begin
         begin
            return_id := vector_identifier_lists.element( return_ids, positive( return_idx ) );
         exception when constraint_error =>
-           err( gnat.source_info.source_location &
-             ": internal error: out identifier" & return_idx'img & " does not exist" );
+           err( pl( gnat.source_info.source_location &
+             ": internal error: out identifier" & return_idx'img & " does not exist" ) );
         end;
         ParseExpression( outExpr, outType );
         --if baseTypesOK( identifiers( return_id ).kind, outType ) then
@@ -694,7 +726,7 @@ begin
               -- try to assign an exception to a universal type.  We need to flag that as
               -- a special case
               if outType = exception_t then
-                 err( "exceptions cannot be assigned" );
+                 err( +"exceptions cannot be assigned" );
               elsif type_checks_done or else baseTypesOK( identifiers( return_id ).kind,outType ) then
                  if syntax_check then
                     identifiers( outType ).wasCastTo := true;
@@ -780,7 +812,7 @@ begin
   test_idx:= 1;                                        -- from first index
   while test_idx <= test_len loop                       -- all test ids
      if token = symbol_t and identifiers( token ).value.all = "=>" then
-        err( "missing when condition" );
+        err( +"missing when condition" );
      end if;
      test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
      b1 := false;                                      -- assume case fails
@@ -812,7 +844,7 @@ begin
            ParseIdentifier( case_id );                         -- get the case
            if identifiers( case_id ).usage /= constantUsage    -- is constant
               and identifiers( case_id ).class /= enumClass then -- or enum?
-              err( "variable not allowed as a case" );         -- error if not
+              err( +"variable not allowed as a case" );         -- error if not
            elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
                  identifiers( case_id ).kind ) then            -- types good?
               null;
@@ -835,14 +867,15 @@ begin
      expectParameterComma;                                      -- expect alternate
      test_idx := test_idx + 1;
      if test_idx > test_len then
-        err("too many cases compared to case identifier list" );
+        -- TODO: update this message so it makes for sense with case procedures 
+        err( +"too many cases compared to case identifier list" );
      end if;
   end loop;
   if test_idx < test_len then
-     err("too few cases compared to case identifier list" );
+     err( +"too few cases compared to case identifier list" );
   end if;
   if test_len = boxCount then
-     err( "<> for all conditions should be " & optional_yellow( "when others" ) );
+     err( +"<> for all conditions should be " & em( "when others" ) );
   end if;
 end ParseCaseWhenPart;
 
@@ -852,7 +885,7 @@ end ParseCaseWhenPart;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCaseInBlock is
+procedure ParseCaseProcedureCaseBlock( proc_id : identifier ) is
   test_ids : vector_identifier_lists.vector;
   test_len : count_type := 0;
   return_ids : vector_identifier_lists.vector;
@@ -860,8 +893,9 @@ procedure ParseCaseInBlock is
   handled  : boolean := false;
   b2       : boolean := false;
 begin
+  --expect( case_t );
 
-  ParseCaseInHeaderPart( test_ids, test_len, return_ids, return_len );
+  ParseCaseInHeaderPart( proc_id, test_ids, test_len, return_ids, return_len );
 
   -- this will have an error during compilation.
   if token /= when_t then                                 -- first when missing?
@@ -876,13 +910,14 @@ begin
   -- others part
 
   if token /= others_t then                                -- a little clearer
-     err( "when others expected" );                        -- if pointing at
+     err( +"when others expected" );                        -- if pointing at
   end if;                                                  -- end case
   expect( others_t );                                      -- "others"
 
   ParseCaseInBigArrowPart( return_ids, return_len, true, handled );
 
-end ParseCaseInBlock;
+  -- end case is not used
+end ParseCaseProcedureCaseBlock;
 
 
 -----------------------------------------------------------------------------
@@ -919,7 +954,7 @@ begin
   -- others part
 
   if token /= others_t then                                -- a little clearer
-     err( "when others expected" );                        -- if pointing at
+     err( +"when others expected" );                       -- if pointing at
   end if;                                                  -- end case
   expect( others_t );                                      -- "others"
 
@@ -1012,11 +1047,11 @@ procedure ParseCaseBlock is
 begin
   expect( case_t );
 
-  if token = in_t then
-     ParseCaseInBlock;
-  else
+  --if token = in_t then
+  --   ParseCaseInBlock;
+  --else
      ParseStandardcaseBlock;
-  end if;
+  --end if;
 
   -- end case
 
@@ -1147,7 +1182,7 @@ begin
       ParseStaticIdentifier( test_id );                        -- identifier to test
       if type_checks_done or else class_ok( test_id, varClass ) then
          if identifiers( test_id ).usage /= constantUsage then
-            err( "constant expected" );
+            err( +"constant expected" );
          else
             vector_identifier_lists.append( test_ids, test_id );
             test_len := test_len + 1;
@@ -1158,7 +1193,7 @@ begin
   end loop;
   if onlyAda95 then
      if test_len > 1 then
-        err( "multiple case identifiers are not allowed with " & optional_yellow( "pragma ada_95" ) );
+        err( +"multiple case identifiers are not allowed with " & em( "pragma ada_95" ) );
      end if;
   end if;
 
@@ -1196,7 +1231,7 @@ begin
            ParseIdentifier( case_id );                         -- get the case
            if identifiers( case_id ).usage /= constantUsage    -- is constant
               and identifiers( case_id ).class /= enumClass then -- or enum?
-              err( "variable not allowed as a case" );         -- error if not
+              err( +"variable not allowed as a case" );        -- error if not
            elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
                  identifiers( case_id ).kind ) then            -- types good?
               null;
@@ -1217,11 +1252,11 @@ begin
         expectParameterComma;                                       -- expect alternate
         test_idx := test_idx + 1;
         if test_idx > test_len then
-           err("too many cases compared to case identifier list" );
+           err( +"too many cases compared to case identifier list" );
         end if;
      end loop;
      if test_idx < test_len then
-        err("too few cases compared to case identifier list" );
+        err( +"too few cases compared to case identifier list" );
      end if;
      expect( symbol_t, "=>" );                             -- "=>"
      if b2 and not handled and not exit_block then         -- handled yet?
@@ -1235,7 +1270,7 @@ begin
   -- others part
 
   if token /= others_t then                                -- a little clearer
-     err( "when others expected" );                        -- if pointing at
+     err( +"when others expected" );                       -- if pointing at
   end if;                                                  -- end case
   expect( others_t );                                      -- "others"
   expect( symbol_t, "=>" );                                -- "=>"
@@ -1412,11 +1447,11 @@ begin
   if syntax_check or exit_block then
      expect( while_t );                                    -- "while"
      if token = while_t then                               -- this is from
-        err( "redundant " & optional_yellow( "while" ) );    -- GNAT
+        err( +"redundant " & em( "while" ) );              -- GNAT
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
-        err( "boolean expression expected" );
+        err( +"boolean expression expected" );
      end if;
      expect( loop_t );                                     --- "loop"
      ParseBlock;                                           -- check while block
@@ -1429,7 +1464,7 @@ begin
      -- The type of the while expression can only change during a while loop
      -- with a typeset at the command prompt.
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
-        err( "boolean expression expected" );
+        err( +"boolean expression expected" );
         exit;
      elsif expr_val /= "1" or error_found or exit_block then -- skipping?
         expect( loop_t );                                  -- "loop"
@@ -1490,23 +1525,23 @@ begin
      expect( for_t );                                   -- "for"
      for_name := identifiers( token ).name;             -- save var name
      if token = number_t then
-        err( optional_yellow( "identifier" ) & " expected, not a " &
-             optional_yellow( "number" ) );
+        err( em( "identifier" ) & pl( " expected, not a " ) &
+             em( "number" ) );
      elsif token = strlit_t then
-        err( optional_yellow( "identifier" ) & " expected, not a " &
-             optional_yellow( "string literal" ) );
+        err( em( "identifier" ) & pl( " expected, not a " ) &
+             em( "string literal" ) );
      elsif token = backlit_t then
-        err( optional_yellow( "identifier" ) & " expected, not a " &
-             optional_yellow( "backquoted literal" ) );
+        err( em( "identifier" ) & pl( " expected, not a " ) &
+             em( "backquoted literal" ) );
      elsif token = charlit_t then
-        err( optional_yellow( "identifier" ) & " expected, not a " &
-             optional_yellow( "character literal" ) );
+        err( em( "identifier" ) & pl( " expected, not a " ) &
+             em( "character literal" ) );
      elsif is_keyword( token ) and token /= eof_t then
-        err( optional_yellow( "identifier" ) & " expected, not a " &
-             optional_yellow( "keyword" ) );
+        err( em( "identifier" ) & pl( " expected, not a " ) &
+             em( "keyword" ) );
      elsif token = symbol_t then
-        err( optional_yellow( "identifier" ) & " expected, not a " &
-             optional_yellow( "symbol" ) );
+        err( em( "identifier" ) & pl( " expected, not a " ) &
+             em( "symbol" ) );
      elsif identifiers( token ).kind = new_t then          -- for var
         discardUnusedIdentifier( token );               -- brand new? toss it
      end if;                                            -- we'll declare it
@@ -1526,7 +1561,7 @@ begin
      -- might not be used within the loop...might just be a repeat loop
      if syntax_check and then not error_found then
         identifiers( for_var ).wasReferenced := true;
-        --identifiers( for_var ).referencedByThread := getThreadName;
+        --identifiers( for_var ).referencedByFlow := getDataFlowName;
         identifiers( for_var ).wasWritten := true;
         identifiers( for_var ).wasFactor := true;
      end if;
@@ -1585,7 +1620,7 @@ begin
            elsif getUniType( expr1_type ) = root_enumerated_t then
               null;
            else
-              err( "numeric or enumerated type expected" );
+              err( +"numeric or enumerated type expected" );
               -- should be err_previous but haven't exported it yet
            end if;
            if not error_found then
@@ -1720,11 +1755,11 @@ begin
    expect( typeset_t );
    if onlyAda95 then
       discardUnusedIdentifier( token );
-      err( "typeset is not allowed with " & optional_yellow( "pragma ada_95" ) );
+      err( +"typeset is not allowed with " & em( "pragma ada_95" ) );
       return;
    elsif inputMode /= interactive and inputMode /= breakout then
       discardUnusedIdentifier( token );
-      err( "typeset only allowed in an interactive session" );
+      err( +"typeset only allowed in an interactive session" );
       return;
    end if;
    if identifiers( token ).kind = new_t then
@@ -1735,24 +1770,24 @@ begin
    if token = is_t then
       expect( is_t );
       if token = exception_t then
-         err( "types cannot be changed to an exception" );
+         err( +"types cannot be changed to an exception" );
       else
          ParseIdentifier( typeid );
       end if;
    end if;
    if isExecutingCommand then
       if identifiers( id ).kind = exception_t then
-         err( "exception types cannot be changed to another type" );
+         err( +"exception types cannot be changed to another type" );
       elsif typeid = eof_t then
          identifiers( id ).kind := universal_t;
       elsif identifiers( id ).list then
-         err( "typeset with array types not yet implemented" );
+         err( +"typeset with array types not yet implemented" );
       elsif identifiers( typeid ).list then
-         err( "typeset with array types not yet implemented" );
+         err( +"typeset with array types not yet implemented" );
       elsif identifiers( id ).renamed_count > 0 then
          err_renaming( id );
       elsif identifiers( id ).renaming_of /= identifiers'first then
-         err( "cannot change the type of a renaming" );
+         err( +"cannot change the type of a renaming" );
       else
          begin
             identifiers( id ).value.all := castToType(
@@ -1794,6 +1829,7 @@ begin
 end ParseVm;
 
 procedure ParseProcedureBlock;
+procedure ParseCaseProcedureBlock;
 procedure ParseFunctionBlock;
 
 
@@ -1815,14 +1851,14 @@ begin
   if token = strlit_t then
      if syntax_check then
         if rshOpt then
-           err( "subscripts are not allowed in a " & optional_yellow( "restricted shell" ) );
+           err( +"subscripts are not allowed in a " & em( "restricted shell" ) );
         else
            insertInclude( identifiers( token ).value.all );
         end if;
      end if;
   end if;
   expect( strlit_t );
-  expectStatementSemicolon( contextNotes => "in with separate" );
+  expectStatementSemicolon( contextNotes => +"in with separate" );
   -- That was the end of the with separate statement.  However, remember that
   -- the subscript is embedded in the main script so we have to read the
   -- subscript header.  Only pragmas allowed before separate keyword.
@@ -1873,6 +1909,12 @@ begin
         save_syntax_check := syntax_check;
         syntax_check := true;
         ParseFunctionBlock;
+        syntax_check := save_syntax_check;
+     elsif token = case_t then
+        -- When parsing a decision table declaration, we never want to run it.
+        save_syntax_check := syntax_check;
+        syntax_check := true;
+        ParseCaseProcedureBlock;
         syntax_check := save_syntax_check;
      else
         ParseVariableIdentifier( var_id );
@@ -1941,7 +1983,7 @@ begin
      -- exceptions only exist at run-time
      if not syntax_check then
         if not inExceptionHandler then
-           err( "re-raise is not in an exception handler" );
+           err( +"re-raise is not in an exception handler" );
         else
            getBlockException( err_exception, err_message, last_status );
            -- Be careful to fix svalue pointer
@@ -1957,7 +1999,7 @@ begin
          getNextToken; -- skip semicolon
          -- eof_t because a raise might be the last line in a simple script
          if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
-           err( "the raise makes this unreachable code" );
+           err( +"the raise makes this unreachable code" );
          end if;
          resumeScanning( atSemicolon ); -- restore original position
      end if;
@@ -1971,12 +2013,13 @@ begin
      -- Normal raise of an explicit exception
 
      if identifiers( token ).class /= exceptionClass and identifiers( token ).kind /= new_t then
-        err( optional_yellow( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
+        err( name_em( token ) & pl( " is a " & getIdentifierClassImage( identifiers( token ).class ) &
+             " not an exception" ) );
      else
         ParseIdentifier( id );
         if token = with_t then
            if onlyAda95 then
-              err( "with not allowed with " & optional_yellow( "pragma ada_95" ) );
+              err( +"with not allowed with " & em( "pragma ada_95" ) );
            end if;
            expect( with_t );
            ParseExpression( with_text, withTextType );
@@ -1984,10 +2027,10 @@ begin
               null;
            end if;
            if token = use_t then
-              err( optional_yellow( "use" ) & " may only be used in exception declaration" );
+              err( em( "use" ) & pl( " may only be used in exception declaration" ) );
            end if;
         elsif token /= when_t and token /= symbol_t and identifiers( token ).value.all /= ";" then
-           err( "when, with or ';' expected" );
+           err( +"when, with or ';' expected" );
         end if;
         if token = when_t then
            ParseWhenClause( mustRaise );
@@ -2011,15 +2054,13 @@ begin
            err_exception.deleted := false;
            err_exception.value := err_exception.svalue'access;
            if length( with_text ) > 0 then
-              raise_exception( "raised " &
-                   optional_yellow( to_string( identifiers( id ).name ) ) &
-                   ": " &
-                   to_string( with_text )
+              raise_exception( +"raised " &
+                   name_em( id ) &
+                   pl( ": " &
+                   to_string( with_text ) )
               );
            else
-              raise_exception( "raised " &
-                   optional_yellow( to_string( identifiers( id ).name ) )
-              );
+              raise_exception( +"raised " & name_em( id ) );
            end if;
            -- set the exit status
            last_status := character'pos( element( identifiers( id ).value.all, 1 ) );
@@ -2042,7 +2083,7 @@ procedure SkipBlock( termid1, termid2 : identifier := keyword_t ) is
   old_skipping : boolean;
 begin
   if token = end_t or token = eof_t or token = exception_t or token = termid1 or token = termid2 then
-     err( "missing statement or command" );
+     err( +"missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
      ParseBlock( termid1, termid2 ); -- must process the block to look
@@ -2074,7 +2115,7 @@ end SkipBlock;
 procedure ParseBlock( termid1, termid2 : identifier := keyword_t ) is
 begin
   if token = end_t or token = eof_t or token = exception_t or token = termid1 or token = termid2 then
-     err( "missing statement or command" );
+     err( +"missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= termid1 and token /= termid2 loop
       ParseBlockExecutablePartStatement;
@@ -2114,13 +2155,13 @@ procedure ParseExceptionBlock is
   -- Same as ParseBlock except raise is permitted
 begin
   if token = end_t or token = eof_t or token = when_t then
-     err( "missing statement or command" );
+     err( +"missing statement or command" );
   end if;
   while token /= end_t and token /= eof_t and token /= exception_t and token /= when_t  loop
      ParseBlockExecutablePartStatement;
   end loop;
   if token = exception_t then
-     err( "already in an exception handler" );
+     err( +"already in an exception handler" );
   end if;
 end ParseExceptionBlock;
 
@@ -2139,7 +2180,7 @@ procedure SkipExceptionBlock is
   old_skipping : boolean;
 begin
   if token = end_t or token = eof_t or token = when_t then
-     err( "missing statement or command" );
+     err( +"missing statement or command" );
   end if;
   if syntax_check then               -- if we're checking syntax
      ParseExceptionBlock;
@@ -2176,7 +2217,7 @@ procedure ParseExceptionHandler( errorOnEntry : boolean ) is
   occurrence_exception : declaration;
   occurrence_message   : unbounded_string;
   occurrence_status    : aStatusCode;
-  occurrence_full      : unbounded_string;
+  occurrence_full      : messageStrings;
 begin
   handling_exceptions := (error_found and not done and not syntax_check and not errorOnEntry);
 
@@ -2219,7 +2260,8 @@ begin
              end if;
           end if;
        else
-          err( optional_yellow( to_string( identifiers( token ).name ) ) & " is a " & getIdentifierClassImage( identifiers( token ).class ) & " not an exception" );
+          err( name_em( token ) & pl( " is a " & getIdentifierClassImage( identifiers( token ).class ) &
+               " not an exception" ) );
           exit;
        end if;
     else
@@ -2252,7 +2294,7 @@ begin
              last_status := 0;                          -- and clear status code
                                                       -- exception already clear
              err_message := null_unbounded_string;                  -- clear any
-             fullErrorMessage := null_unbounded_string;              -- messages
+             fullErrorMessage := nullMessageStrings;                 -- messages
              if trace then
                 put_trace( "cleared exception occurrence" );
              end if;
@@ -2372,7 +2414,7 @@ begin
         -- err( "in out parameters not yet supported" );
      end if;
   elsif token = access_t then
-     err( "access parameters not yet supported" );
+     err( +"access parameters not yet supported" );
   else
      passingMode := in_mode;
   end if;
@@ -2380,7 +2422,7 @@ begin
   -- Check for anonymous array
 
   if token = array_t then
-     err( "anonymous array parameters not yet supported" );
+     err( +"anonymous array parameters not yet supported" );
   end if;
 
   -- Parse the name of the type
@@ -2405,13 +2447,13 @@ begin
 
    if passingMode = out_mode then
       if isFunction then
-         err( "out mode parameters not allowed in functions" );
+         err( +"out mode parameters not allowed in functions" );
      end if;
    end if;
    if passingMode = in_out_mode then
       if isFunction and onlyAda95 then
-         err( "in out mode parameters not allowed in functions with " &
-             optional_yellow( "pragma ada_95" ) );
+         err( +"in out mode parameters not allowed in functions with " &
+             em( "pragma ada_95" ) );
       end if;
    end if;
   if passingMode = in_mode then
@@ -2421,30 +2463,30 @@ begin
           context => subId,
           subject => formalParamId,
           subjectType => paramKind,
-          reason => "with in mode is not yet supported because",
-          obstructorNotes => "it is an " & optional_yellow( "array type" ),
-          remedy => "as a workaround use in out parameter passing mode and pragma assumption(written," & to_string( identifiers( formalParamId ).name ) & ")"
+          reason => +"with in mode is not yet supported because",
+          obstructorNotes => +"it is an " & em( "array type" ),
+          remedy => pl( "as a workaround use in out parameter passing mode and pragma assumption(written," & to_string( identifiers( formalParamId ).name ) & ")" )
         );
      elsif identifiers( getBaseType( paramKind ) ).kind = root_record_t then
         err(
           context => subId,
           subject => formalParamId,
           subjectType => paramKind,
-          reason => "with in mode is not yet supported because",
-          obstructorNotes => "it is a " & optional_yellow( "record type" ),
-          remedy => "as a workaround use in out parameter passing mode and pragma assumption(written," & to_string( identifiers( formalParamId ).name ) & ")"
+          reason => +"with in mode is not yet supported because",
+          obstructorNotes => +"it is a " & em( "record type" ),
+          remedy => pl( "as a workaround use in out parameter passing mode and pragma assumption(written," & to_string( identifiers( formalParamId ).name ) & ")" )
         );
      end if;
   end if;
   --elsif identifiers( getBaseType( type_token ) ).kind = root_record_t then
   if getBaseType( paramKind ) = command_t then
-     err( "commands not yet supported" );
+     err( +"commands not yet supported" );
   end if;
 
   -- Check for default value
 
   if token = symbol_t and identifiers( token ).value.all = ":=" then
-     err( "default values are not yet supported" );
+     err( +"default values are not yet supported" );
   end if;
 
 end ParseFormalParameterProperties;
@@ -2482,7 +2524,7 @@ begin
 
   if syntax_check then
      identifiers( formal_param_id ).wasReferenced := true;
-     --identifiers( formal_param_id ).referencedByThread := getThreadName;
+     --identifiers( formal_param_id ).referencedByFlow := getDataFlowName;
      identifiers( type_token ).wasApplied := true;
   end if;
 
@@ -2551,11 +2593,11 @@ begin
   -- Check type
 
   if identifiers( getBaseType( resultKind ) ).list then
-     err( "array parameters not yet supported" );
+     err( +"array parameters not yet supported" );
   elsif identifiers( getBaseType( resultKind ) ).kind = root_record_t then
-     err( "records not yet supported" );
+     err( +"records not yet supported" );
   elsif getBaseType( resultKind ) = command_t then
-     err( "commands not yet supported" );
+     err( +"commands not yet supported" );
   end if;
 end ParseFunctionReturnPartProperties;
 
@@ -2591,7 +2633,7 @@ begin
      -- This does not seem to work??  I had to hard-code the
      -- return_value_str in the scanner tests.
      identifiers( resultId ).wasFactor := true;
-     --identifiers( formal_param_id ).referencedByThread := getThreadName;
+     --identifiers( formal_param_id ).referencedByFlow := getDataFlowName;
   end if;
   -- The return value is treated as the function's parameter zero
   updateFormalParameter( resultId, resultKind, funcId, 0, none );
@@ -2656,7 +2698,7 @@ begin
             proc_id );
          if syntax_check then
             identifiers( actual_param_t ).wasReferenced := true;
-            --identifiers( actual_param_t ).referencedByThread := getThreadName;
+            --identifiers( actual_param_t ).referencedByFlow := getDataFlowName;
             identifiers(
               identifiers( actual_param_t ).kind
               ).wasApplied := true; -- type was used
@@ -2750,26 +2792,26 @@ begin
     -- A procedure can have no parameters
 
     if token = is_t then
-       err( "no parameters found but earlier specification had parameters (at " &
+       err( pl( "no parameters found but earlier specification had parameters (at " &
             to_string( identifiers( specId ).specFile) & ":" &
-            identifiers( specId ).specAt'img & ")");
+            identifiers( specId ).specAt'img & ")") );
        exit  ;
 
     -- A function may have no parameters, just a return
 
     elsif is_function and then token = return_t then
-       err( "no parameters found but earlier specification had parameters (at " &
+       err( pl( "no parameters found but earlier specification had parameters (at " &
             to_string( identifiers( specId ).specFile) & ":" &
-            identifiers( specId ).specAt'img & ")");
+            identifiers( specId ).specAt'img & ")") );
        exit;
 
     -- Too few parameters, ran into closing parenthesis early
 
     elsif token = symbol_t and identifiers( token ).value.all = ")" then
-       err( "missing parameter " & optional_yellow( to_string(specParamName) ) &
-            " from earlier specification (at " &
+       err( +"missing parameter " & unb_em( specParamName ) &
+            pl( " from earlier specification (at " &
             to_string( identifiers( specId ).specFile) & ":" &
-            identifiers( specId ).specAt'img & ")");
+            identifiers( specId ).specAt'img & ")") );
        exit;
     else
        -- Parse the next parameter and compare with specification
@@ -2788,23 +2830,23 @@ begin
        -- Parameter name: specification vs implementation
 
        if specParamName /= identifiers( bodyParamId ).name then
-          err("parameter name " &
-              optional_yellow( to_string( identifiers( bodyParamId ).name )) &
-              " was " & optional_yellow( to_string( specParamName )) &
-              " in the earlier specification (at " &
-              to_string( identifiers( specId ).specFile) & ":" &
-              identifiers( specId ).specAt'img & ")");
+          err( +"parameter name " &
+               name_em( bodyParamId ) &
+               pl( " was " ) & unb_em( specParamName ) &
+               pl( " in the earlier specification (at " &
+               to_string( identifiers( specId ).specFile) & ":" &
+               identifiers( specId ).specAt'img & ")" ) );
        end if;
 
        -- Parameter type: specification vs implementation
 
        if identifiers( specParamId ).kind /= bodyParamKind then
-          err("parameter type " &
-             optional_yellow( to_string( identifiers( bodyParamKind ).name ) ) &
-             " was " & optional_yellow( to_string( identifiers( identifiers( specParamId ).kind ).name )) &
-             " in the earlier specification (at " &
-             to_string( identifiers( specId ).specFile) & ":" &
-             identifiers( specId ).specAt'img & ")");
+          err( +"parameter type " &
+               name_em( bodyParamKind ) &
+               pl( " was " ) & name_em( identifiers( specParamId ).kind ) &
+               pl( " in the earlier specification (at " &
+               to_string( identifiers( specId ).specFile) & ":" &
+               identifiers( specId ).specAt'img & ")" ) );
        end if;
 
        -- TODO: Check the qualifier (currently not possible)
@@ -2812,12 +2854,12 @@ begin
        -- Parameter passing mode: specification vs implementation
 
        if identifiers( specParamId ).passingMode /= bodyPassingMode then
-          err("parameter mode " &
-              optional_yellow( to_string( bodyPassingMode ) ) &
-              " was " & optional_yellow( to_string( identifiers( specParamId ).passingMode ) ) &
-              " in the earlier specification (at " &
-              to_string( identifiers( specId ).specFile) & ":" &
-              identifiers( specId ).specAt'img & ")");
+          err( +"parameter mode " &
+               em( to_string( bodyPassingMode ) ) &
+               pl( " was " ) & em( to_string( identifiers( specParamId ).passingMode ) ) &
+               pl( " in the earlier specification (at " &
+               to_string( identifiers( specId ).specFile) & ":" &
+               identifiers( specId ).specAt'img & ")" ) );
        end if;
 
        -- Discard the implementation parameter
@@ -2853,12 +2895,12 @@ begin
       abstractKind => abstractReturn
    );
   if resultKind /= identifiers( funcId ).kind then
-     err("function return type " &
-         optional_yellow( to_string( identifiers( resultKind ).name ) ) &
-         " was " & optional_yellow( to_string( identifiers( identifiers( funcId ).kind ).name )) &
-                " in the earlier specification (at " &
+     err( +"function return type " &
+          name_em( resultKind ) &
+          pl( " was " ) & name_em( identifiers( funcId ).kind ) &
+                pl( " in the earlier specification (at " &
                 to_string( identifiers( funcId ).specFile) & ":" &
-                identifiers( funcId ).specAt'img & ")");
+                identifiers( funcId ).specAt'img & ")" ) );
   end if;
 
   -- The return statement needs to know the type of the function return
@@ -2902,10 +2944,11 @@ begin
      end if;
      i := i - 1;
    end loop;
+   -- Case Procedure not included here because it cannot contain other subprograms
    if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
-         err( "parent unit should be a subprogram" );
+         err( +"parent unit should be a subprogram" );
    elsif identifiers( parent_id ).name /= pu then
-         err( "expected parent unit " & optional_yellow( to_string( pu ) ) );
+         err( +"expected parent unit " & unb_em( pu ) );
    end if;
    expect( symbol_t, ")");
    expectStatementSemicolon( separate_t );
@@ -2919,7 +2962,8 @@ begin
       -- names match?  OK, discard.  proc is stored under original ident
       b := deleteIdent( separate_proc_id );
    else
-      err( optional_yellow( to_string( identifiers( separate_proc_id ).name ) ) & " is different from parent file's " & optional_yellow( to_string( identifiers( proc_id  ).name ) ) );
+      err( name_em( separate_proc_id ) & pl( " is different from parent file's " ) &
+        name_em( proc_id ) );
    end if;
    -- check for forward declarations not yet written so minimal checking here
    -- flush this out if i have time to walk the identifiers list if available
@@ -2970,9 +3014,9 @@ begin
      if identifiers( proc_id ).specAt /= noSpec then
         VerifySubprogramParameters( proc_id );
         if token /= symbol_t and identifiers( token ).value.all /= ")" then
-           err( "too many parameters compared to earlier specification (at " &
+           err( pl( "too many parameters compared to earlier specification (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
-                identifiers( proc_id ).specAt'img & ")");
+                identifiers( proc_id ).specAt'img & ")" ) );
         end if;
      else
      --no_params := 0;
@@ -2988,9 +3032,9 @@ begin
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( proc_id ).specAt /= noSpec then
-        err( "already declared specification for " & optional_yellow( to_string( identifiers( proc_id ).name ) ) & " (at " &
+        err( +"already declared specification for " & name_em( proc_id ) & pl( " (at " &
                 to_string( identifiers( proc_id ).specFile) & ":" &
-                identifiers( proc_id ).specAt'img & ")");
+                identifiers( proc_id ).specAt'img & ")" ) );
      end if;
      identifiers( proc_id ).class := userProcClass;
      identifiers( proc_id ).kind := procedure_t;
@@ -3011,13 +3055,14 @@ begin
         identifiers( proc_id ).usage := abstractUsage;
         if syntax_check then
            identifiers( proc_id ).wasReferenced := true;
-           --identifiers( proc_id ).referencedByThread := getThreadName;
+           fixUsableParametersInAbstractSubprogram( proc_id );
+           --identifiers( proc_id ).referencedByFlow := getDataFlowName;
         end if;
         pullBlock;
      else
         if token = separate_t then
            if rshOpt then
-              err( "subunits are not allowed in a " & optional_yellow( "restricted shell" ) );
+              err( +"subunits are not allowed in a " & em( "restricted shell" ) );
            end if;
            expect( separate_t );
            -- "is separate" is effectively an include
@@ -3031,12 +3076,12 @@ begin
            identifiers( proc_id ).usage := abstractUsage;
            if syntax_check then
               identifiers( proc_id ).wasReferenced := true;
-              --identifiers( proc_id ).referencedByThread := getThreadName;
+              --identifiers( proc_id ).referencedByFlow := getDataFlowName;
            end if;
         elsif abstract_parameter /= eof_t then
-           err( "procedure must be abstract because parameter type " &
-              optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
-              " is abstract" );
+           err( +"procedure must be abstract because parameter type " &
+              name_em( abstract_parameter ) &
+              pl( " is abstract" ) );
         end if;
         ParseDeclarations;
         expect( begin_t );
@@ -3056,6 +3101,146 @@ begin
   end if;
   expectDeclarationSemicolon( context => proc_id );
 end ParseProcedureBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE PROCEDURE BLOCK
+--
+-- Syntax:
+-- case procedure p [(param1...)] is [abstract|separate]
+--   OR
+-- case procedure p [(param1...)] is
+--   multi-case statement
+-- end p;
+-- Handle decision table declarations, including forward declarations.
+-- Note: DoUserDefinedCaseProcedure executes a user-defined procedure created by
+-- this routine.  Although it is functionally a procedure, it has a different
+-- syntax than a standard procedure.
+-----------------------------------------------------------------------------
+
+procedure ParseCaseProcedureBlock is
+  proc_id   : identifier;
+  procStart : natural;
+  procEnd   : natural;
+  no_params   : integer := 0;  -- TODO: delete this
+  old_error_found : constant boolean := error_found;
+  abstract_parameter : identifier := eof_t;
+  declarationFile : unbounded_string;
+  declarationLine : natural;
+begin
+  procStart := firstPos;
+  declarationFile := getSourceFileName;
+  declarationLine := getLineNo;
+
+  if onlyAda95 then
+     err( subjectNotes => em( "case procedures" ),
+          reason => +"are not allowed with",
+          obstructorNotes => em( "pragma ada_95" ),
+          remedy => pl( "a case statement is in a declaration section, or you " &
+                    "are trying to use case procedures which are " &
+                    "not known to Ada" ) );
+  end if;
+
+  expect( case_t );
+  expect( procedure_t );
+  ParseProcedureIdentifier( proc_id );
+
+  -- Whether forward or not, handle the parameters.  If there's a
+  -- forward specification, verify the new parameters match the old
+  -- ones.  Otherwise, parse the parameters as normal.
+
+  if token = symbol_t and identifiers( token ).value.all = "(" then
+     expect( symbol_t, "(" );
+     if identifiers( proc_id ).specAt /= noSpec then
+        VerifySubprogramParameters( proc_id );
+        if token /= symbol_t and identifiers( token ).value.all /= ")" then
+           err( pl( "too many parameters compared to earlier specification (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")" ) );
+        end if;
+     else
+     --no_params := 0;
+        ParseFormalParameters( proc_id, no_params, abstract_parameter );
+        --identifiers( proc_id ).value := to_unbounded_string( no_params );
+     end if;
+     expect( symbol_t, ")" );
+  elsif identifiers( proc_id ).specAt /= noSpec then
+     VerifySubprogramParameters( proc_id );
+  end if;
+
+  -- Is it a forward declaration?
+
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+     if identifiers( proc_id ).specAt /= noSpec then
+        err( +"already declared specification for " & name_em( proc_id ) & pl( " (at " &
+                to_string( identifiers( proc_id ).specFile) & ":" &
+                identifiers( proc_id ).specAt'img & ")" ) );
+     end if;
+     identifiers( proc_id ).class := userCaseProcClass;
+     identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specFile := declarationFile;
+     identifiers( proc_id ).specAt := declarationLine;
+  else
+     identifiers( proc_id ).class := userCaseProcClass;
+     identifiers( proc_id ).kind := procedure_t;
+     identifiers( proc_id ).specFile := null_unbounded_string;
+     identifiers( proc_id ).specAt := noSpec;
+     pushBlock( newScope => true,
+       newName => to_string (identifiers( proc_id ).name ) );
+     DeclareActualParameters( proc_id );
+     expect( is_t );
+     if token = null_t then                               -- null abstract
+        expect( null_t );
+        expect( abstract_t );
+        identifiers( proc_id ).usage := abstractUsage;
+        if syntax_check then
+           identifiers( proc_id ).wasReferenced := true;
+           fixUsableParametersInAbstractSubprogram( proc_id );
+           --identifiers( proc_id ).referencedByFlow := getDataFlowName;
+        end if;
+        pullBlock;
+     else
+        if token = separate_t then
+           if rshOpt then
+              err( +"subunits are not allowed in a " & em( "restricted shell" ) );
+           end if;
+           expect( separate_t );
+           -- "is separate" is effectively an include
+           -- only insert include on a syntax check
+           if syntax_check then
+              insertInclude( identifiers( proc_id ).name & ".sp" );
+           end if;
+           ParseSeparateProcHeader( proc_id, procStart );
+        elsif token = abstract_t then
+           expect( abstract_t );
+           identifiers( proc_id ).usage := abstractUsage;
+           if syntax_check then
+              identifiers( proc_id ).wasReferenced := true;
+              --identifiers( proc_id ).referencedByFlow := getDataFlowName;
+           end if;
+        elsif abstract_parameter /= eof_t then
+           err( +"case procedure must be abstract because parameter type " &
+              name_em( abstract_parameter ) &
+              pl( " is abstract" ) );
+        end if;
+        ParseCaseProcedureCaseBlock( proc_id );            -- never execute now
+        --expectDeclarationSemicolon( context => case_t );
+        -- no exception handler for a case procedure
+        if token = exception_t then
+           err( +"case producedures do not have an exception handler" );
+        end if;
+        pullBlock;
+        expect( end_t );
+        expect( proc_id );
+        procEnd := lastPos+1; -- include EOL ASCII.NUL
+        identifiers( proc_id ).value.all := to_unbounded_string( copyByteCodeLines( procStart, procEnd ) );
+        -- fake initial indent of 1 for byte code (SOH)
+        -- we don't know what the initial indent is (if any) since it may
+        -- not be the first token on the line (though it usually is)
+     end if;
+  end if;
+  expectDeclarationSemicolon( context => proc_id );
+end ParseCaseProcedureBlock;
 
 
 -----------------------------------------------------------------------------
@@ -3109,11 +3294,11 @@ procedure ParseActualParameters( proc_id : identifier;
           actualParamRef.index )'access;
     end if;
     exception when storage_error =>              -- prob freed mem
-         err( gnat.source_info.source_location &
-           ": internal error: storage_error exception raised" );
+         err( pl( gnat.source_info.source_location &
+           ": internal error: storage_error exception raised" ) );
        when others =>
-         err( gnat.source_info.source_location &
-            ": internal error: exception raised" );
+         err( pl( gnat.source_info.source_location &
+            ": internal error: exception raised" ) );
   end UpdateRenamedArrayElementParameter;
 
   --  UPDATE RENAMED FULL ARRAY PARAMETER
@@ -3150,12 +3335,12 @@ begin
         actualRecordRef.id ).kind ).value.all ) );
   exception when storage_error =>
     numFields := 0;
-    err( gnat.source_info.source_location &
-         "internal error: storage_error: unable to determine the number of fields" );
+    err( pl( gnat.source_info.source_location &
+         "internal error: storage_error: unable to determine the number of fields" ) );
   when constraint_error =>
     numFields := 0;
-    err( gnat.source_info.source_location &
-         "internal error: constraint_error: unable to determine the number of fields" );
+    err( pl( gnat.source_info.source_location &
+         "internal error: constraint_error: unable to determine the number of fields" ) );
   end;
 
   recordTypeFieldId := identifiers( formalRecordParamId ).kind + 1;
@@ -3180,8 +3365,8 @@ begin
 
      -- no more identifiers means we didn't find it.
      if recordTypeFieldId = identifiers_top then
-        err( gnat.source_info.source_location &
-           "internal error: record field not found" );
+        err( pl( gnat.source_info.source_location &
+           "internal error: record field not found" ) );
         exit;
      end if;
 
@@ -3214,7 +3399,7 @@ begin
     -- main record identifier.
     if syntax_check then
        identifiers( usableFieldId ).wasReferenced := true;
-       --identifiers( usableFieldId ).referencedByThread := getThreadName;
+       --identifiers( usableFieldId ).referencedByFlow := getDataFlowName;
        identifiers(
          identifiers( recordTypeFieldId ).kind
          ).wasApplied := true;
@@ -3334,7 +3519,7 @@ begin
            context => subprogram,
            subject => actual_param_ref.id,
            subjectType => identifiers( actual_param_ref.id ).kind,
-           reason => "is limited and limited is required for",
+           reason => +"is limited and limited is required for",
            obstructor => formalParamId,
            obstructorType => identifiers( formalParamId ).kind
         );
@@ -3343,10 +3528,10 @@ begin
         context => subprogram,
         subject => actual_param_ref.id,
         subjectType => identifiers( actual_param_ref.id ).kind,
-        reason => "is " & optional_yellow( "constant" ) & " and cannot be assigned to in out or out mode parammeter",
-        obstructorNotes => optional_yellow( to_string( paramName ) ),
+        reason => +"is " & em( "constant" ) & pl( " and cannot be assigned to in out or out mode parammeter" ),
+        obstructorNotes => unb_em( paramName ),
         obstructorType => identifiers( formalParamId ).kind,
-        remedy => "choose a variable that can be written to"
+        remedy => +"choose a variable that can be written to"
      );
   elsif identifiers( actual_param_ref.id ).class = enumClass then
      -- TODO: I could probably get this to work for out parameters but
@@ -3355,10 +3540,10 @@ begin
         context => subprogram,
         subject => actual_param_ref.id,
         subjectType => identifiers( actual_param_ref.id ).kind,
-        reason => "is an " & optional_yellow( "enumerated item" ) & " and cannot be assigned to in out or out mode parammeter",
-        obstructorNotes => optional_yellow( to_string( paramName ) ),
+        reason => +"is an " & em( "enumerated item" ) & pl( " and cannot be assigned to in out or out mode parammeter" ),
+        obstructorNotes => unb_em( paramName ),
         obstructorType => identifiers( formalParamId ).kind,
-        remedy => "choose a variable that can be written to"
+        remedy => +"choose a variable that can be written to"
      );
   end if;
   if not error_found then
@@ -3386,9 +3571,9 @@ begin
   if declareParams then
 
      -- Run-time side-effects tracking and test
-     -- Test for two or more "threads" writing to one unprotected variable
+     -- Test for two or more data flows writing to one unprotected variable
 
-     checkDoubleThreadWrite( actual_param_ref.id );
+     checkDoubleDataFlowWrite( actual_param_ref.id );
 
      -- When parsing the expression to assign to the parameter, recursion can
      -- cause a usable parameter (e.g. param1) to overshadow the actual
@@ -3529,11 +3714,11 @@ begin
               parseUsableInoutModeParameter( proc_id, formalParamId, paramName );
 
          when others =>
-              err( gnat.source_info.source_location &
+              err( pl( gnat.source_info.source_location &
                    ": internal error: formal parameter" &
                    formalParamId'img &
                    "/" & to_string( identifiers( formalParamId ).name ) &
-                   " has unsupported parameter passing mode" );
+                   " has unsupported parameter passing mode" ) );
      end case;
 
      -- Not sure we need to exit on an error here - KB: 17/10/15
@@ -3569,7 +3754,7 @@ begin
            -- return value is end of function's parameters
            exit when identifiers( formalParamId ).name = return_value_str;
            if integer'value( to_string( identifiers( formalParamId ).value.all )) = parameterNumber then
-              err( "too few parameters" );
+              err( +"too few parameters" );
               exit;
            end if;
         end if;
@@ -3631,9 +3816,9 @@ begin
      i := i - 1;
    end loop;
    if identifiers( parent_id ).class /= userProcClass and identifiers( parent_id ).class /= userFuncClass and identifiers( parent_id ).class /= mainProgramClass then
-         err( "parent should be a subprogram" );
+         err( +"parent should be a subprogram" );
    elsif identifiers( parent_id ).name /= pu then
-         err( "expected parent unit " & optional_yellow( to_string( pu ) ) );
+         err( +"expected parent unit " & unb_em( pu ) );
    end if;
    expect( symbol_t, ")");
    expectDeclarationSemicolon( context => separate_t );
@@ -3647,7 +3832,8 @@ begin
       -- names match?  OK, discard.  proc is stored under original ident
       b := deleteIdent( separate_func_id );
    else
-      err( optional_yellow( to_string( identifiers( separate_func_id ).name ) ) & " is different from parent file's " & optional_yellow( to_string( identifiers( func_id  ).name ) ) );
+      err( name_em( separate_func_id ) & pl( " is different from parent file's " ) &
+         name_em( func_id ) );
    end if;
    -- check for forward declarations not yet written so minimal checking here
    -- flush this out if i have time to walk the identifiers list if available
@@ -3661,7 +3847,8 @@ begin
    expect( return_t );
    ParseIdentifier( type_token ); -- don't really care
    if identifiers( func_id ).kind /= type_token then
-      err( optional_yellow( to_string( identifiers( type_token ).name ) ) & " is different from parent file's " & optional_yellow( to_string( identifiers( identifiers( func_id ).kind  ).name ) ) );
+      err( name_em( type_token ) & pl( " is different from parent file's " ) &
+         name_em( func_id ) );
    end if;
    expect( is_t );
 end ParseSeparateFuncHeader;
@@ -3716,9 +3903,9 @@ begin
         -- has a forward specification
         VerifySubprogramParameters( func_id, is_function => true );
         if token /= symbol_t and identifiers( token ).value.all /= ")" then
-           err( "too many parameters compared to earlier specification (at " &
+           err( pl( "too many parameters compared to earlier specification (at " &
                 to_string( identifiers( func_id ).specFile) & ":" &
-                identifiers( func_id ).specAt'img & ")");
+                identifiers( func_id ).specAt'img & ")" ) );
         end if;
         expect( symbol_t, ")" );
         -- we won't be able to see the specification until we delete
@@ -3756,9 +3943,9 @@ begin
 
   if token = symbol_t and identifiers( token ).value.all = ";" then
      if identifiers( func_id ).specAt /= noSpec then
-        err( "already declared specification for " & optional_yellow( to_string( identifiers( func_id ).name ) ) & " (at " &
+        err( +"already declared specification for " & name_em( func_id ) & pl( " (at " &
                 to_string( identifiers( func_id ).specFile) & ":" &
-                identifiers( func_id ).specAt'img & ")");
+                identifiers( func_id ).specAt'img & ")" ) );
      end if;
      identifiers( func_id ).class := userFuncClass;
      identifiers( func_id ).specFile := declarationFile;
@@ -3779,13 +3966,14 @@ begin
         identifiers( func_id ).usage := abstractUsage;
         if syntax_check then
            identifiers( func_id ).wasReferenced := true;
-           --identifiers( func_id ).referencedByThread := getThreadName;
+           fixUsableParametersInAbstractSubprogram( func_id );
+           --identifiers( func_id ).referencedByFlow := getDataFlowName;
         end if;
         pullBlock;
      else
         if token = separate_t then
            if rshOpt then
-              err( "subunits are not allowed in a " & optional_yellow( "restricted shell" ) );
+              err( +"subunits are not allowed in a " & em( "restricted shell" ) );
            end if;
             expect( separate_t );
            -- "is separate" is effectively an include
@@ -3799,23 +3987,23 @@ begin
            identifiers( func_id ).usage := abstractUsage;
            if syntax_check then
               identifiers( func_id ).wasReferenced := true;
-              --identifiers( func_id ).referencedByThread := getThreadName;
+              --identifiers( func_id ).referencedByFlow := getDataFlowName;
            end if;
         elsif abstract_parameter /= eof_t then
-           err( "function must be abstract because parameter type " &
-              optional_yellow( to_string( identifiers( abstract_parameter ).name ) ) &
-              " is abstract" );
+           err( +"function must be abstract because parameter type " &
+              name_em( abstract_parameter ) &
+              pl( " is abstract" ) );
         elsif abstract_return /= eof_t then
-           err( "function must be abstract because return type " &
-              optional_yellow( to_string( identifiers( abstract_return ).name ) ) &
-              " is abstract" );
+           err( +"function must be abstract because return type " &
+              name_em( abstract_return ) &
+              pl( " is abstract" ) );
         end if;
         ParseDeclarations;
         expect( begin_t );
         SkipBlock;                                       -- never execute
         if syntax_check then
            if not blockHasReturn then
-              err( "function has no return value statement" );
+              err( +"function has no return value statement" );
            end if;
         end if;
         if token = exception_t then
@@ -3864,10 +4052,11 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( proc_id ).wasReferenced := true;
-     --identifiers( proc_id ).referencedByThread := getThreadName;
+     --identifiers( proc_id ).referencedByFlow := getDataFlowName;
      if identifiers( proc_id ).usage = abstractUsage then
-        err( optional_yellow( to_string( identifiers( proc_id ).name ) ) &
-          " is abstract and cannot be run" );
+        err( subject => proc_id,
+             reason => +"cannot be run because",
+             obstructorNotes => em( "it is a abstract procedure" ) );
      end if;
   end if;
   getNextToken;
@@ -3916,8 +4105,8 @@ begin
 --put_line( "DEBUG: has context " );
           findIdent( chain_count_str, chain_count_id );
           if chain_count_id = eof_t then
-             err( gnat.source_info.source_location &
-                ": internal error: chain count not found" );
+             err( pl( gnat.source_info.source_location &
+                ": internal error: chain count not found" ) );
           else
              if isExecutingCommand then
                 -- values only exist if not syntax check
@@ -3927,8 +4116,8 @@ begin
                   );
                   findIdent( last_in_chain_str, last_in_chain_id );
                   if last_in_chain_id = eof_t then
-                     err( gnat.source_info.source_location &
-                        ": internal error: last in chain not found" );
+                     err( pl( gnat.source_info.source_location &
+                        ": internal error: last in chain not found" ) );
                   end if;
                 identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
              end if;
@@ -3946,11 +4135,11 @@ begin
           declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, varClass );
           if syntax_check then
              identifiers( chain_count_id ).wasReferenced := true;
-             --identifiers( chain_count_id ).referencedByThread := getThreadName;
+             --identifiers( chain_count_id ).referencedByFlow := getDataFlowName;
              identifiers( chain_count_id ).wasWritten := true;
              identifiers( chain_count_id ).wasFactor := true;
              identifiers( last_in_chain_id ).wasReferenced := true;
-             --identifiers( last_in_chain_id ).referencedByThread := getThreadName;
+             --identifiers( last_in_chain_id ).referencedByFlow := getDataFlowName;
              identifiers( last_in_chain_id ).wasWritten := true;
              identifiers( last_in_chain_id ).wasFactor := true;
           else
@@ -4064,17 +4253,18 @@ begin
      -- for declared but not used checking
      --When blocks are pulled, this will be checked.
      identifiers( func_id ).wasReferenced := true;
-     --identifiers( func_id ).referencedByThread := getThreadName;
+     --identifiers( func_id ).referencedByFlow := getDataFlowName;
      if identifiers( func_id ).usage = abstractUsage then
-        err( optional_yellow( to_string( identifiers( func_id ).name ) ) &
-          " is abstract and cannot be run" );
+        err( subject => func_id,
+             reason => +"cannot be run because",
+             obstructorNotes => em( "it is a abstract function" ) );
      end if;
   end if;
   getNextToken;
   -- Parameters will be in the new scope block
   pushBlock( newScope => true,
      newName => to_string (identifiers( func_id ).name ),
-     newThread => identifiers( func_id ).name );
+     newFlow => identifiers( func_id ).name );
   -- Parameters?  Create storage space in the symbol table
   if isExecutingCommand then
      --if token = symbol_t and identifiers( token ).value.all = "(" then
@@ -4132,6 +4322,214 @@ begin
   end if;
   pullBlock;                                  -- discard locals
 end DoUserDefinedFunction;
+
+
+-----------------------------------------------------------------------------
+--  DO USER DEFINED CASE PROCEDURE
+--
+-- Execute a user-defined procedure.  Based on interpretScript.
+-- procedure_name [(param1 [,param2...])]
+-- Note: ParseProcedureBlock compiles / creates the user-defined procedure.
+-- This routines runs the previously compiled procedure.
+-----------------------------------------------------------------------------
+
+procedure DoUserDefinedCaseProcedure( s : unbounded_string ) is
+  scriptState : aScriptState;
+  results     : unbounded_string;
+  proc_id     : identifier;
+
+  -- chain contexts
+  chain_count_id   : identifier := eof_t;
+  last_in_chain_id : identifier := eof_t;
+  in_chain     : boolean := false;
+  has_context  : boolean := false;
+  last_in_chain: boolean := false;
+  contextName  : unbounded_string;
+  old_error_found : constant boolean := error_found;
+  old_exit_block : constant boolean := exit_block;
+begin
+  proc_id := token;
+  if syntax_check then
+     -- for declared but not used checking
+     --When blocks are pulled, this will be checked.
+     identifiers( proc_id ).wasReferenced := true;
+     --identifiers( proc_id ).referencedByFlow := getDataFlowName;
+     if identifiers( proc_id ).usage = abstractUsage then
+        err( subject => proc_id,
+             reason => +"cannot be run because",
+             obstructorNotes => em( "it is a abstract case procedure" ) );
+     end if;
+  end if;
+  getNextToken;
+
+  -- TODO: check for pre-existing chain context
+  -- TODO: destroy chain context
+
+  -- To check for a chain, the parameters must be read and the @ located
+  -- (if it exists).  This must be done in syntax check mode since we
+  -- don't want anything actually declared.  Then return to the start of
+  -- the parameters and create a chain context block _prior_ to creating
+  -- the procedure block.
+  declare
+    old_syntax_check : constant boolean := syntax_check;
+    paramStart   : aScannerState;
+  begin
+    -- do we have a chain context?  Then we must be in a chain.
+    contextName := identifiers( proc_id ).name & " chain";
+    -- if we already have a context block, don't create another
+    if blocks_top > 1 then
+       has_context := ( getBlockName( blocks_top-1 ) = contextName );
+       in_chain := has_context;
+    end if;
+
+    -- check for itself.  If it exists, we must be in a chain
+    markScanner( paramStart );
+    syntax_check := true;
+    ParseActualParameters( proc_id, declareParams => false );
+    if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
+       in_chain := true;
+    end if;
+    if has_context then
+       if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = ";" then
+          if trace then
+             put_trace( "Last call in chain" );
+          end if;
+          last_in_chain := true;
+       end if;
+    end if;
+    resumeScanning( paramStart );
+    syntax_check := old_syntax_check;
+
+    if in_chain then
+       -- if we have a context?  then update the content of the context
+       if has_context then
+--put_line( "DEBUG: has context " );
+          findIdent( chain_count_str, chain_count_id );
+          if chain_count_id = eof_t then
+             err( pl( gnat.source_info.source_location &
+                ": internal error: chain count not found" ) );
+          else
+             if isExecutingCommand then
+                -- values only exist if not syntax check
+                identifiers( chain_count_id ).value.all :=
+                  to_unbounded_string(
+                    to_numeric( identifiers( chain_count_id ).value.all ) + 1.0
+                  );
+                  findIdent( last_in_chain_str, last_in_chain_id );
+                  if last_in_chain_id = eof_t then
+                     err( pl( gnat.source_info.source_location &
+                        ": internal error: last in chain not found" ) );
+                  end if;
+                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+             end if;
+--put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
+--put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
+          end if;
+       -- no context?  then we have to create a new context
+       else
+--put_line( "DEBUG: new context " );
+          if trace then
+             put_trace( "Creating chain context " & to_string( contextName ) );
+          end if;
+          pushBlock( newScope => true, newName => to_string( contextName ) );
+          declareIdent( chain_count_id, chain_count_str, natural_t, varClass );
+          declareIdent( last_in_chain_id, last_in_chain_str, boolean_t, varClass );
+          if syntax_check then
+             identifiers( chain_count_id ).wasReferenced := true;
+             --identifiers( chain_count_id ).referencedByFlow := getDataFlowName;
+             identifiers( chain_count_id ).wasWritten := true;
+             identifiers( chain_count_id ).wasFactor := true;
+             identifiers( last_in_chain_id ).wasReferenced := true;
+             --identifiers( last_in_chain_id ).referencedByFlow := getDataFlowName;
+             identifiers( last_in_chain_id ).wasWritten := true;
+             identifiers( last_in_chain_id ).wasFactor := true;
+          else
+             if isExecutingCommand then
+                -- values only exist if not syntax check
+                identifiers( chain_count_id ).value.all := to_unbounded_string( " 1" );
+                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+                -- TODO: we only want to export these if we are the current chain.
+                -- Otherwise, they will always be exported even if the chain was further
+                -- down the block stack
+                --identifiers( chain_count_id ).export := true;
+                --identifiers( last_in_chain_id ).export := true;
+--put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value ) );
+--put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value ) );
+             end if;
+          end if;
+       end if;
+    end if;
+    -- put_all_identifiers; -- DEBUG
+  end;
+
+  pushBlock( newScope => true,
+     newName => to_string (identifiers( proc_id ).name ) );
+  -- token will be @ here if in a chain but the final ; may or may not
+  -- indicate a chain
+  -- declareIdent( formal_param_id, to_unbounded_string( "chain count" ), type_token, varClass );
+  -- if syntax_check then
+  --    identifiers( formal_param_id ).wasReferenced := true;
+  -- end if;
+  if isExecutingCommand then
+  -- Notice nothing gets executed during syntax check.  Any variables/parameters
+  -- will have wasReferenced as false.
+  -- TODO: perhaps using syntax_check inside PAP would fix this.
+     --if token = symbol_t and identifiers( token ).value.all = "(" then
+     ParseActualParameters( proc_id );
+     --end if;
+     -- parseNewCommands would clear error_found.
+     if not error_found then
+        parseNewCommands( scriptState, s );
+        results := null_unbounded_string;        -- no results (yet)
+        expect( case_t );
+        expect( procedure_t );
+        if token = abstract_t then
+           expect( abstract_t );
+        end if;
+        ParseIdentifier( proc_id );
+        -- we already know the parameter syntax is good so skip to "is"
+        while token /= is_t loop
+           getNextToken;
+        end loop;
+        expect( is_t );
+        -- ParseDeclarations;
+        -- expect( begin_t );
+        ParseCaseProcedureCaseBlock( proc_id );
+        -- no exception handler in a case procedure
+        --if token = exception_t then
+        --   ParseExceptionHandler( old_error_found );
+        --end if;
+        -- Check to see if we're return-ing early
+        -- TODO: Not pretty, but will work.  This should be improved.
+        if exit_block and done_sub and not error_found and not syntax_check then
+           done_sub := false;
+           exit_block := old_exit_block;  -- TODO: is this right?
+           done := false;
+        end if;
+        expect( end_t );
+        expect( proc_id );
+        expectDeclarationSemicolon( proc_id );
+        if not done then                     -- not exiting?
+            expect( eof_t );                  -- should be nothing else
+        end if;
+        restoreScript( scriptState );               -- restore original script
+     end if;
+  elsif syntax_check or exit_block then
+     -- at this point, we are still looking at call
+     -- because nothing executes during a syntax check, we still need
+     -- to parse the parameters to check for errors, but don't declare
+     -- anything because wasReferenced will be false.
+     ParseActualParameters( proc_id, declareParams => false );
+  end if;
+  pullBlock;
+
+  if last_in_chain and has_context then
+     if trace then
+        put_trace( "Destroying chain context " & to_string( contextName ) );
+     end if;
+     pullBlock;
+  end if;
+end DoUserDefinedCaseProcedure;
 
 
 -----------------------------------------------------------------------------
@@ -4199,7 +4597,7 @@ procedure ParseShellCommand is
                  elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
                     null; -- for numbers, JSON is as-is
                  else
-                    err( "json export not yet written for this type" );
+                    err( +"json export not yet written for this type" );
                  end if;
               end if;
               tempStr := identifiers( id ).name & "=" & tempStr;
@@ -4209,7 +4607,7 @@ procedure ParseShellCommand is
               exportList( exportPos ) := new string( 1..length( tempStr )+1 );
               exportList( exportPos ).all := to_string( tempStr ) & ASCII.NUL;
               if putenv( exportList( exportPos ).all ) /= 0 then
-                 err( "unable to export " & optional_yellow( to_string( identifiers( id ).name) ) );
+                 err( +"unable to export " & name_em( id ) );
               end if;
               exportPos := exportPos + 1;
            end if;
@@ -4241,9 +4639,9 @@ procedure ParseShellCommand is
            C_reset_errno; -- freebsd bug: doesn't return result properly
            result := unsetenv( exportList( i )( 1..equalsPos-1 ) & ASCII.NUL );
            if result /= 0 and C_errno /= 0 then
-              err( "unable to remove " &
-                   optional_yellow( exportList( i )( 1..equalsPos-1 ) ) &
-                   "from the O/S environment" );
+              err( +"unable to remove " &
+                   em( exportList( i )( 1..equalsPos-1 ) ) &
+                   pl( "from the O/S environment" ) );
            end if;
        end loop;
        -- Deallocate memory
@@ -4376,8 +4774,8 @@ procedure ParseShellCommand is
   procedure checkAda95Redirects is
   begin
      if onlyAda95 then
-        err( "command line redirection not allowed with " &
-             optional_yellow( "pragma ada_95" ) & ".  Use set_output/input/error instead" );
+        err( +"command line redirection not allowed with " &
+             em( "pragma ada_95" ) & pl( ".  Use set_output/input/error instead" ) );
      end if;
   end checkAda95Redirects;
 
@@ -4392,11 +4790,11 @@ begin
   expect( shell_symbol_t, ">" );
   ParseShellRedirectTarget( targetPath );
   if redirectedAppendFD > 0 then
-     err( "cannot redirect using both > and >>" );
+     err( pl( "cannot redirect using both > and >>" ) );
   elsif rshOpt then
-     err( "cannot redirect > in a " & optional_yellow( "restricted shell" ) );
+     err( pl( "cannot redirect > in a " ) & em( "restricted shell" ) );
   elsif pipe2Next then
-     err( "> file should only be after the last pipeline command" );
+     err( pl( "> file should only be after the last pipeline command" ) );
   elsif isExecutingCommand then
 <<retry1>> redirectedOutputFd := open( to_string( targetPath ) & ASCII.NUL,
               O_WRONLY+O_TRUNC+O_CREAT, 8#644# );
@@ -4405,14 +4803,14 @@ begin
         if C_errno = EINTR then
            goto retry1;
         end if;
-        err( "Unable to open > file: " & OSerror( C_errno ) );
+        err( pl( "Unable to open > file: " & OSerror( C_errno ) ) );
      else
 <<retry2>> result := dup2( redirectedOutputFd, stdout );
         if result < 0 then
            if C_errno = EINTR then
               goto retry2;
            end if;
-           err( "unable to set output: " & OSerror( C_errno ) );
+           err( pl( "unable to set output: " & OSerror( C_errno ) ) );
            closeResult := close( redirectedOutputFd );
            -- close EINTR is a diagnostic message.  Do not handle.
            redirectedOutputFd := 0;
@@ -4432,21 +4830,21 @@ begin
   expect( shell_symbol_t, "<" );
   ParseShellRedirectTarget( targetPath );
   if pipeFromLast then
-     err( "< file should only be after the first pipeline command" );
+     err( +"< file should only be after the first pipeline command" );
   elsif isExecutingCommand then
 <<retry4>> redirectedInputFd := open( to_string( targetPath ) & ASCII.NUL, O_RDONLY, 8#644# );
      if redirectedInputFd < 0 then
         if C_errno = EINTR then
            goto retry4;
         end if;
-        err( "Unable to open < file: " & OSerror( C_errno ) );
+        err( pl( "Unable to open < file: " & OSerror( C_errno ) ) );
      else
 <<retry5>> result := dup2( redirectedInputFd, stdin );
         if result < 0 then
            if C_errno = EINTR then
               goto retry5;
            end if;
-           err( "unable to redirect input: " & OSerror( C_errno ) );
+           err( pl( "unable to redirect input: " & OSerror( C_errno ) ) );
            closeResult := close( redirectedInputFd );
            -- close EINTR is a diagnostic message.  Do not handle.
            redirectedInputFd := 0;
@@ -4466,9 +4864,9 @@ begin
   expect( shell_symbol_t, ">>" );
   ParseShellRedirectTarget( targetPath );
   if redirectedOutputFD > 0 then
-     err( "cannot redirect using both > and >>" );
+     err( +"cannot redirect using both > and >>" );
   elsif pipe2Next then
-     err( ">> file should only be after the last pipeline command" );
+     err( +">> file should only be after the last pipeline command" );
   elsif isExecutingCommand then
 <<retry7>> redirectedAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
      -- Linux applies the umask to open()
@@ -4476,14 +4874,14 @@ begin
         if C_errno = EINTR then
            goto retry7;
         end if;
-        err( "Unable to open >> file: " & OSerror( C_errno ) );
+        err( pl( "Unable to open >> file: " & OSerror( C_errno ) ) );
      else
 <<retry8>> result := dup2( redirectedAppendFd, stdout );
         if result < 0 then
            if C_errno = EINTR then
               goto retry8;
            end if;
-           err( "unable to append output: " & OSerror( C_errno ) );
+           err( pl( "unable to append output: " & OSerror( C_errno ) ) );
            closeResult := close( redirectedAppendFd );
            -- close EINTR is a diagnostic message.  Do not handle.
            redirectedAppendFd := 0;
@@ -4508,12 +4906,12 @@ begin
         if C_errno = EINTR then
            goto retry10;
         end if;
-        err( "unable to restore current error output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current error output: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedErrOutputFd );        -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
      redirectedErrOutputFD := 0;
-     err( "cannot redirect using both 2> and 2>>" );
+     err( +"cannot redirect using both 2> and 2>>" );
   elsif isExecutingCommand then
      -- Note: redirecting 2> to the same file twice in a pipeline
      -- is a race condition, but I don't know an easy way to
@@ -4526,16 +4924,16 @@ begin
         if C_errno = EINTR then
            goto retry12;
         end if;
-        err( "Unable to open 2> file: " & OSerror( C_errno ) );
+        err( pl( "Unable to open 2> file: " & OSerror( C_errno ) ) );
      elsif rshOpt then
-        err( "cannot redirect 2> in a " & optional_yellow( "restricted shell" ) );
+        err( +"cannot redirect 2> in a " & em( "restricted shell" ) );
      else
 <<retry13>> result := dup2( redirectedErrOutputFd, stderr );
         if result < 0 then
            if C_errno = EINTR then
               goto retry13;
            end if;
-           err( "unable to set error output: " & OSerror( C_errno ) );
+           err( pl( "unable to set error output: " & OSerror( C_errno ) ) );
            closeResult := close( redirectedErrOutputFd );
            -- close EINTR is a diagnostic message.  Do not handle.
            redirectedErrOutputFd := 0;
@@ -4560,12 +4958,12 @@ begin
          if C_errno = EINTR then
             goto retry15;
          end if;
-         err( "unable to restore current error output: " & OSerror( C_errno ) );
+         err( pl( "unable to restore current error output: " & OSerror( C_errno ) ) );
       end if;
       closeResult := close( redirectedErrOutputFd );           -- done with file
       -- close EINTR is a diagnostic message.  Do not handle.
       redirectedErrOutputFD := 0;
-      err( "cannot redirect using both 2> and 2>>" );
+      err( +"cannot redirect using both 2> and 2>>" );
   elsif isExecutingCommand then
 <<retry17>> redirectedErrAppendFd := open( to_string( targetPath ) & ASCII.NUL, O_WRONLY+O_APPEND, 8#644# );
       -- Linux applies the umask to open()
@@ -4573,14 +4971,14 @@ begin
          if C_errno = EINTR then
             goto retry17;
          end if;
-         err( "Unable to open 2>> file: " & OSerror( C_errno ) );
+         err( pl( "Unable to open 2>> file: " & OSerror( C_errno ) ) );
       else
 <<retry18>> result := dup2( redirectedErrAppendFd, stderr );
          if result < 0 then
             if C_errno = EINTR then
                goto retry18;
             end if;
-            err( "unable to append error output: " & OSerror( C_errno ) );
+            err( pl( "unable to append error output: " & OSerror( C_errno ) ) );
             closeResult := close( redirectedErrAppendFd );
             -- close EINTR is a diagnostic message.  Do not handle.
             redirectedErrAppendFd := 0;
@@ -4606,12 +5004,12 @@ begin
         if C_errno = EINTR then
            goto retry20;
         end if;
-        err( "unable to restore current error output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current error output: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedErrOutputFd );          -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
      redirectedErrOutputFD := 0;
-     err( "cannot redirect using two of 2>, 2>> and 2>&1" );
+     err( pl( "cannot redirect using two of 2>, 2>> and 2>&1" ) );
 
   elsif redirectedErrAppendFD > 0 then       -- no file for this one
 <<retry22>> result := dup2( currentStandardError, stderr );  -- restore stderr
@@ -4619,12 +5017,12 @@ begin
         if C_errno = EINTR then
            goto retry22;
         end if;
-        err( "unable to restore current error output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current error output: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedErrAppendFd );   -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
      redirectedErrAppendFD := 0;
-     err( "cannot redirect using two of 2>, 2>> and 2>&1" );
+     err( pl( "cannot redirect using two of 2>, 2>> and 2>&1" ) );
      -- KB: debugging
      --elsif pipe2Next then
      --   err( "2>&1 file should only be after the last pipeline command" );
@@ -4646,7 +5044,7 @@ begin
               goto retry24;
            end if;
            redirectedErrOutputFd := 0;
-           err( "unable to set error output: " & OSerror( C_errno ) );
+           err( pl( "unable to set error output: " & OSerror( C_errno ) ) );
         end if;
      end if;
   end if;
@@ -4736,7 +5134,7 @@ begin
         getNextToken;
      end if;
      if pipe2Next and onlyAda95 then
-        err( "pipelines are not allowed with " & optional_yellow( "pragma ada_95" ) );
+        err( pl( "pipelines are not allowed with " ) & em( "pragma ada_95" ) );
      end if;
 
      -- Running in the background
@@ -4745,12 +5143,12 @@ begin
         inbackground := true;
         expect( symbol_t, "&" );
         if pipe2Next then
-           err( "no & - piped commands are automatically run in the background" );
+           err( +"no & - piped commands are automatically run in the background" );
         elsif pipeFromLast then
-           err( "no & - final piped command always runs in the foreground" );
+           err( +"no & - final piped command always runs in the foreground" );
         end if;
         if token /= symbol_t or identifiers( token ).value.all /= ";" then
-           err( "unexpected arguments after &" );
+           err( +"unexpected arguments after &" );
         end if;
      end if;
 
@@ -4758,7 +5156,7 @@ begin
 
      if token = symbol_t and identifiers(token).value.all = "@" then
         if onlyAda95 then
-           err( "@ not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"@ not allowed with " & em( "pragma ada_95" ) );
         end if;
         itselfNext := true;
         expect( symbol_t, "@" );
@@ -4800,14 +5198,14 @@ begin
              token_value : unbounded_string renames identifiers( token ).value.all;
           begin
              if token = eof_t then
-                expectStatementSemicolon( contextNotes => "in " & to_string( cmdName ) );
+                expectStatementSemicolon( contextNotes => pl( "in " & to_string( cmdName ) ) );
                 haveAllParameters := true;
                 exit;
              elsif token = symbol_t then
                 -- if these exist, then the individual command is ended.
                 if token_value = "|" then
                    if onlyAda95 then
-                      err( "pipelines not allowed with " & optional_yellow( "pragma ada_95" ) );
+                      err( +"pipelines not allowed with " & em( "pragma ada_95" ) );
                    end if;
                    pipe2next := true;
                    haveAllParameters := true;
@@ -4815,7 +5213,7 @@ begin
                    exit;
                 elsif token_value = "@" then
                    if onlyAda95 then
-                      err( "@ not allowed with " & optional_yellow( "pragma ada_95" ) );
+                      err( +"@ not allowed with " & em( "pragma ada_95" ) );
                    end if;
                    itselfNext := true;
                    haveAllParameters := true;
@@ -4831,14 +5229,14 @@ begin
                    --end if;
                    inbackground := true;
                    if pipe2Next then
-                      err( "no & - piped commands are automatically run in the background" );
+                      err( +"no & - piped commands are automatically run in the background" );
                    elsif pipeFromLast then
-                      err( "no & - final piped command always runs in the foreground" );
+                      err( +"no & - final piped command always runs in the foreground" );
                    end if;
                    haveAllParameters := true;
                    expect( symbol_t, "&" );
                    if token /= symbol_t or identifiers( token ).value.all /= ";" then
-                      err( "unexpected arguments after &" );
+                      err( +"unexpected arguments after &" );
                    end if;
                    exit;
                  -- bourneShellWordLists.Clear( wordList, long_integer( paramCnt ) );
@@ -4887,8 +5285,8 @@ begin
 
   if bourneShellWordLists.length( wordList ) > 0 then
      if onlyAda95 then
-        err( "Bourne shell parameters not allowed with " &
-             optional_yellow( "pragma ada_95" ) );
+        err( +"Bourne shell parameters not allowed with " &
+             em( "pragma ada_95" ) );
      end if;
    end if;
 
@@ -4914,8 +5312,8 @@ end if;
      externalCommandParameters( ap, wordList );
 
      if boolean(rshOpt) and then Element( cmdName, 1 ) = '/' then -- rsh & cmd path
-        err( "absolute paths to commands not allowed in " &
-             optional_yellow( "restricted shells" ) );
+        err( +"absolute paths to commands not allowed in " &
+             em( "restricted shells" ) );
      elsif not pipeFromLast and pipe2next then              -- first in pipeln?
         run_inpipe( cmdName, ap, Success,                   -- pipe output
            background => true,
@@ -4971,7 +5369,7 @@ end if;
         if C_errno = EINTR then
            goto retry24b;
         end if;
-        err( "unable to restore current output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current output: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedOutputFd );     -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
@@ -4981,7 +5379,7 @@ end if;
         if C_errno = EINTR then
            goto retry25b;
         end if;
-        err( "unable to restore current input: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current input: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedInputFd );      -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
@@ -4991,7 +5389,7 @@ end if;
         if C_errno = EINTR then
            goto retry26b;
         end if;
-        err( "unable to restore current output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current output: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedAppendFd );     -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
@@ -5001,7 +5399,7 @@ end if;
         if C_errno = EINTR then
            goto retry27b;
         end if;
-        err( "unable to restore current error output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current error output: " & OSerror( C_errno ) ) );
      end if;
      -- If we redirected standard error to standard output, do not close
      -- standard error (fd 2).
@@ -5015,7 +5413,7 @@ end if;
         if C_errno = EINTR then
            goto retry28b;
         end if;
-        err( "unable to restore current error output: " & OSerror( C_errno ) );
+        err( pl( "unable to restore current error output: " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( redirectedErrAppendFd );  -- done with file
      -- close EINTR is a diagnostic message.  Do not handle.
@@ -5122,8 +5520,8 @@ begin
      resultFile := open( to_string( resultName ) & ASCII.NUL, -- open results
         O_WRONLY+O_TRUNC, 8#640# );                        -- for writing
      if resultFile < 0 then                                -- failed?
-        err( "RunAndCaptureOutput: unable to open file: "&
-           OSerror( C_errno ));
+        err( pl( "RunAndCaptureOutput: unable to open file: "&
+           OSerror( C_errno ) ) );
      elsif trace then                                      -- trace on?
         put_trace( "results will be captured from file descriptor" &
           resultFile'img );
@@ -5136,7 +5534,7 @@ begin
      oldStandardOutput := currentStandardOutput;           -- save old stdout
      result := dup2( resultFile, stdout );                 -- redirect stdout
      if result < 0 then                                    -- error?
-        err( "unable to set output: " & OSerror( C_errno ) );
+        err( pl( "unable to set output: " & OSerror( C_errno ) ) );
      elsif not error_found then                            -- no error?
         currentStandardOutput := resultFile;               -- track fd
      end if;
@@ -5145,7 +5543,7 @@ begin
      oldCurrentOutput := dup( 4 );                         -- backup
      result := dup2( resultFile, 4 );                      -- redirect curout
      if result < 0 then                                    -- error?
-        err( "unable to set output *current output): " & OSerror( C_errno ) );
+        err( pl( "unable to set output *current output): " & OSerror( C_errno ) ) );
      end if;
 
   end if;
@@ -5169,7 +5567,7 @@ begin
 
      result := dup2( oldCurrentOutput, 4 );                -- redirect curout
      if result < 0 then                                    -- error?
-        err( "unable to restore output (current output): " & OSerror( C_errno ) );
+        err( pl( "unable to restore output (current output): " & OSerror( C_errno ) ) );
      end if;
      closeResult := close( oldCurrentOutput );             -- free mem
 
@@ -5177,7 +5575,7 @@ begin
 
      result := dup2( oldStandardOutput, stdout );       -- to original
      if result < 0 then                                 -- error?
-        err( "unable to restore stdout: " & OSerror( C_errno ) );
+        err( pl( "unable to restore stdout: " & OSerror( C_errno ) ) );
      else                                               -- no error?
         currentStandardOutput := oldStandardOutput;     -- track fd
      end if;
@@ -5186,8 +5584,8 @@ begin
      resultFile := open( to_string(resultName) & ASCII.NUL, O_RDONLY,
          8#644# );
      if resultFile < 0 then                                -- error?
-        err( "unable to open temp file for reading: " &
-           OSError( C_errno ));
+        err( pl( "unable to open temp file for reading: " &
+           OSError( C_errno ) ) );
      else
         loop                                               -- for all results
 <<reread>>
@@ -5199,7 +5597,7 @@ begin
              if C_errno = EAGAIN or C_errno = EINTR then   -- retry?
                 goto reread;                               -- do so
              end if;                                       -- other error?
-             err( "unable to read results: " & OSError( C_errno ) );
+             err( pl( "unable to read results: " & OSError( C_errno ) ) );
              exit;                                         --  and bail
           end if;
           results := results & ch;                         -- add to results
@@ -5209,7 +5607,7 @@ begin
      end if;
      unlinkResult := unlink( to_string( resultName ) & ASCII.NUL );
      if unlinkResult < 0 then                              -- unable to delete?
-        err( "unable to unlink temp file: " & OSError( C_errno ) );
+        err( pl( "unable to unlink temp file: " & OSError( C_errno ) ) );
      end if;
      if length( results ) > 0 then                         -- discard last EOL
         if element( results, length( results ) ) = ASCII.LF then
@@ -5264,7 +5662,7 @@ procedure ParseStep is
 begin
   expect( step_t );
   if inputMode /= breakout then
-     err( "step can only be used when you break out of a script" );
+     err( +"step can only be used when you break out of a script" );
   else
      done := true;
      breakoutContinue := true;
@@ -5300,8 +5698,8 @@ begin
      put_trace( "returning to script" );
   elsif inputMode = interactive then
      if isLoginShell then
-        err( "warning: This is a login shell.  Use " &
-             optional_yellow( "logout" ) & " to quit." );
+        err( +"warning: This is a login shell.  Use " &
+             em( "logout" ) & pl( " to quit." ) );
      else
         expect( return_t );
         expectReturnSemicolon;
@@ -5335,7 +5733,7 @@ begin
            -- of a different scope to the return statement.
            -- TODO: this needs to be redesigned
            if return_id = eof_t then
-              err( "procedures cannot return a value" );
+              err( +"procedures cannot return a value" );
            else
            -- no type checking on the function result!
               ParseExpression( expr_val, expr_type );
@@ -5388,7 +5786,7 @@ begin
            if token /= eof_t and token /= end_t and token /= elsif_t and
               token /= else_t and token /= when_t and token /= others_t and
               token /= exception_t then
-                 err( "the return makes this unreachable code" );
+                 err( +"the return makes this unreachable code" );
            end if;
         end if;
      end if;
@@ -5428,7 +5826,7 @@ begin
     if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations then
        ParseNewIdentifier( var_id );
        if token = symbol_t and identifiers( token ).value.all = "(" then
-          err( "cannot automatically declare new arrays" );
+          err( +"cannot automatically declare new arrays" );
           discardUnusedIdentifier( var_id );
           var_id := eof_t;
        end if;
@@ -5456,13 +5854,13 @@ begin
   -- TODO: this will break when we can create derived record types
 
   if var_kind = root_record_t then
-     err( "cannot assign to an entire record" );
+     err( +"cannot assign to an entire record" );
   -- Array element
   elsif identifiers( var_id ).list then
      expect( symbol_t, "(" );
      ParseExpression( index_value, index_kind );
      if getUniType( index_kind ) = uni_string_t or identifiers( index_kind ).list then
-        err( "scalar expression expected" );
+        err( +"scalar expression expected" );
      end if;
 
      expect( symbol_t, ")" );
@@ -5470,12 +5868,16 @@ begin
      if isExecutingCommand then
         arrayIndex := long_integer( to_numeric( index_value ) );
         if identifiers( var_id ).avalue = null then
-           err( gnat.source_info.source_location &
-                ": internal error: target array storage unexpectedly null" );
+           err( pl( gnat.source_info.source_location &
+                ": internal error: target array storage unexpectedly null" ) );
         elsif identifiers( var_id ).avalue'first > arrayIndex then
-           err( "array index " & to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+           err( pl( "array index " & to_string( trim( index_value, ada.strings.both ) ) &
+                " not in" & identifiers( var_id ).avalue'first'img & " .." &
+                identifiers( var_id ).avalue'last'img ) );
         elsif identifiers( var_id ).avalue'last < arrayIndex then
-           err( "array index " &  to_string( trim( index_value, ada.strings.both ) ) & " not in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+           err( pl( "array index " &  to_string( trim( index_value, ada.strings.both ) ) &
+                " not in" & identifiers( var_id ).avalue'first'img & " .." &
+                identifiers( var_id ).avalue'last'img ) );
         end if;
      end if;
      var_kind := identifiers( var_kind ).kind; -- array of what?
@@ -5503,7 +5905,7 @@ begin
   if inputMode = interactive or inputMode = breakout or autoDeclareAllowed then
      if identifiers( var_id ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found then
         if index( identifiers( var_id ).name, "." ) /= 0 then
-           err( "Identifier not declared.  Cannot auto-declare a record field" );
+           err( +"Identifier not declared.  Cannot auto-declare a record field" );
         else
            var_kind := right_type;
            identifiers( var_id ).kind := right_type;
@@ -5522,7 +5924,7 @@ begin
   -- try to assign an exception to a universal type.  We need to flag that as
   -- a special case
   if right_type = exception_t then
-     err( "exceptions cannot be assigned" );
+     err( +"exceptions cannot be assigned" );
   elsif type_checks_done or else baseTypesOK( var_kind, right_type ) then
      if syntax_check then
         identifiers( var_kind ).wasCastTo := true;
@@ -5586,9 +5988,9 @@ begin
      -- Double write races (relaxed)
      --
      -- Run-time side-effects tracking and test
-     -- Test for two or more "threads" writing to one unprotected variable
+     -- Test for two or more dataflows writing to one unprotected variable
 
-     checkDoubleThreadWrite( var_id );
+     checkDoubleDataFlowWrite( var_id );
 
      -- Programming-by-contract
 
@@ -5615,9 +6017,10 @@ begin
            identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
            --end if;
         exception when CONSTRAINT_ERROR =>
-          err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img );
+          err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .." &
+               identifiers( var_id ).avalue'last'img ) );
         when STORAGE_ERROR =>
-          err( gnat.source_info.source_location & ": internal error : storage error raised in ParseAssignment" );
+          err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseAssignment" ) );
         end;
         if trace then
            put_trace(
@@ -5673,7 +6076,7 @@ begin
          discardUnusedIdentifier( var_id );
       else
          if identifiers( var2_id ).list then
-            err( "multiple arrays cannot be declared in one declaration" );
+            err( +"multiple arrays cannot be declared in one declaration" );
             -- because only the array is assigned values with :=
             -- unless I want to copy all the array elements everytime.
             -- Also, can't overwrite array ident value field.
@@ -5740,6 +6143,7 @@ procedure ParseExecutableStatement is
   term_id    : identifier;
   startToken : identifier;
   itself_question : boolean;
+  execution_position : unbounded_string;
 begin
 
   -- mark start of line (prior to breakout test which will change token
@@ -5770,8 +6174,10 @@ begin
             end if;
         end loop;
         --BREAKDBG
-        put_line( standard_error, get_script_execution_position(
-           optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
+        execution_position := get_script_execution_position(
+           inv( "Break: return to continue, logout to quit" ),
+           utf_wristwatch ); -- show stop posn
+        put_line( standard_error, execution_position);
         error_found := true;
      end if;
   elsif wasSIGWINCH then                                 -- window change?
@@ -5792,7 +6198,7 @@ begin
 --put_token; -- DEBUG
 
   if Token = command_t then
-     err( "Bourne shell command command not implemented" );
+     err( +"Bourne shell command command not implemented" );
      --getNextToken;
      --ParseShellCommand;
   elsif identifiers( token ).procCB /= null then  -- built-in proc w/cb?
@@ -5802,12 +6208,12 @@ begin
   elsif Token = pragma_t then
      ParsePragma;
   elsif Token = type_t then
-     err( "declarations not allowed in executable statements" );
+     err( +"declarations not allowed in executable statements" );
      -- ParseType;
   elsif Token = null_t then
      getNextToken;
   elsif Token = subtype_t then
-     err( "declarations not allowed in executable statements" );
+     err( +"declarations not allowed in executable statements" );
      -- ParseSubtype;
   elsif Token = if_t then
      ParseIfBlock;
@@ -5826,8 +6232,8 @@ begin
      ParseStep;
   elsif token = logout_t then
      if not isLoginShell and inputMode /= breakout then
-        err( "warning: this is not a login shell: use " & optional_yellow( "return" ) &
-             " to quit" );
+        err( +"warning: this is not a login shell: use " & em( "return" ) &
+             pl( " to quit" ) );
      end if;
      getNextToken;
      expectStatementSemicolon( context => logout_t );
@@ -5865,19 +6271,19 @@ begin
   elsif token = pen_put_t then                     -- Pen.Put
      ParsePenPut;
   elsif Token = else_t then
-     err( "else without if" );
+     err( +"else without if" );
   elsif Token = elsif_t then
-     err( "elsif without if" );
+     err( +"elsif without if" );
   elsif Token = with_t then
-     err( "with only allowed in declaration section or before main program" );
+     err( +"with only allowed in declaration section or before main program" );
   elsif Token = use_t then
-     err( "use not implemented" );
+     err( +"use not implemented" );
   elsif Token = task_t then
-     err( "tasks not implemented" );
+     err( +"tasks not implemented" );
   elsif Token = protected_t then
-     err( "protected types not implemented" );
+     err( +"protected types not implemented" );
   elsif Token = package_t then
-     err( "packages not implemented" );
+     err( +"packages not implemented" );
   elsif Token = raise_t then
      declare
         atSemicolon : aScannerState;
@@ -5890,14 +6296,14 @@ begin
            getNextToken; -- skip semicolon
            -- eof_t because a raise might be the last line in a simple script
            if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
-             err( "the raise makes this unreachable code" );
+             err( +"the raise makes this unreachable code" );
           end if;
           resumeScanning( atSemicolon ); -- restore original position
         end if;
      end;
   elsif Token = exit_t then
      if blocks_top = block'first then           -- not complete. should check
-         err( "no enclosing loop to exit" );    -- not just for no blocks
+         err( +"no enclosing loop to exit" );   -- not just for no blocks
      end if;                                    -- but the block type isn't easily checked
      expect( exit_t );
      if token = when_t or token = if_t then     -- if to give "expected when"
@@ -5912,7 +6318,7 @@ begin
               if token /= eof_t and token /= end_t and token /= elsif_t and
                  token /= else_t and token /= when_t and token /= others_t and
                  token /= exception_t then
-                 err( "the exit makes this unreachable code" );
+                 err( +"the exit makes this unreachable code" );
               end if;
               resumeScanning( cmdStart ); -- restore original position
               getNextToken;
@@ -5934,35 +6340,37 @@ begin
      resumeScanning( cmdStart );
      ParseShellCommand;
   elsif token = backlit_t then
-     err( "unexpected backquote literal" );
+     err( +"unexpected backquote literal" );
   elsif token = procedure_t then
      err(
          subject => token,
-         reason => "was not expected in",
-         obstructorNotes => optional_yellow( "executable statements" ),
-         remedy => "this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & optional_yellow( "begin" )
+         reason => +"was not expected in",
+         obstructorNotes => em( "executable statements" ),
+         remedy => +"this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & em( "begin" )
      );
   elsif token = function_t then
      err(
          subject => token,
-         reason => "was not expected in",
-         obstructorNotes => optional_yellow( "executable statements" ),
-         remedy => "this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & optional_yellow( "begin" )
+         reason => +"was not expected in",
+         obstructorNotes => em( "executable statements" ),
+         remedy => +"this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & em( "begin" )
      );
   elsif Token = eof_t then
      eof_flag := true;
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value.all = "@" then
-     err( "unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
+     err( +"unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
   elsif Token = symbol_t and identifiers( token ).value.all = ";" then
-     err( "statement expected" );
+     err( +"statement expected" );
   elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable
      resumeScanning( cmdStart );           -- assume array assignment
      ParseAssignment;                      -- looks like a AdaScript command
      itself_type := new_t;                 -- except for token type...
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
      DoUserDefinedProcedure( identifiers( token ).value.all );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
+     DoUserDefinedCaseProcedure( identifiers( token ).value.all );
   else
 
      -- we need to check the next token then back up
@@ -5976,7 +6384,7 @@ begin
         (to_string( identifiers( token ).value.all ) = ":" or
         to_string( identifiers( token ).value.all ) = ",") then
         resumeScanning( cmdStart );
-        err( "variable declarations not allowed in executable statements" );
+        err( +"variable declarations not allowed in executable statements" );
         --ParseVarDeclaration;
      else
 
@@ -5996,7 +6404,7 @@ begin
         -- new_t check because a command will produce an varClass with no type
         elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
-              err( "use " & optional_yellow( ":= true " ) & " with " & optional_yellow( "pragma ada_95" ) );
+              err( +"use " & em( ":= true " ) & pl( " with " ) & em( "pragma ada_95" ) );
            end if;
            if syntax_check and then not error_found then
               identifiers( startToken ).wasWritten := true;
@@ -6004,9 +6412,9 @@ begin
            end if;
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
-              -- Test for two or more "threads" writing to one unprotected variable
+              -- Test for two or more data flows writing to one unprotected variable
               checkExpressionFactorVolatilityOnWrite( startToken );
-              checkDoubleThreadWrite( startToken );
+              checkDoubleDataFlowWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
@@ -6032,11 +6440,11 @@ begin
      -- external command at compile time.
      if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            -- move to next token or inifinite loop if done = true
            getNextToken;
         elsif itself_type = new_t then
-           err( "@ is not defined" );
+           err( +"@ is not defined" );
            getNextToken;
         -- shell commands have no class so we can't do this (without
         -- changes, anyway...)
@@ -6072,7 +6480,7 @@ begin
         scriptState : aScriptState;                   -- current script
      begin
         --BREAKDBG: 2
-        put_line( standard_error, fullErrorMessage );
+        put_line( standard_error, fullErrorMessage.templateMessage );
         wasSIGINT := false;                            -- clear sig flag
         saveScript( scriptState );                     -- save position
         error_found := false;                          -- not a real error
@@ -6085,8 +6493,7 @@ begin
            resumeScanning( cmdStart );                 -- start of command
            --BREAKDBG
            put_line( standard_error, get_script_execution_position(
-              optional_inverse( "resuming here" ) ) ); -- redisplay line
-           --err( optional_inverse( "resuming here" ) ); -- redisplay line
+              ok( "resuming here" ), utf_checkmark ) ); -- redisplay line
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
            exit_block := false;                        --   and don't exit
@@ -6102,11 +6509,11 @@ begin
      end if;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( inv( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 when block_table_overflow =>
-  err( optional_inverse( "too many nested statements/blocks (block table overflow)" ) );
+  err( inv( "too many nested statements/blocks (block table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;
 end ParseExecutableStatement;
@@ -6132,6 +6539,7 @@ procedure ParseGeneralStatement is
   term_id    : identifier;
   startToken : identifier;
   itself_question : boolean;
+  execution_position : unbounded_string;
 begin
 
   -- mark start of line (prior to breakout test which will change token
@@ -6162,8 +6570,10 @@ begin
             end if;
         end loop;
         --BREAKDBG
-        put_line( standard_error, get_script_execution_position(
-            optional_inverse( "Break: return to continue, logout to quit" ) ) ); -- show stop posn
+        execution_position :=  get_script_execution_position(
+            inv( "Break: return to continue, logout to quit" ),
+            utf_wristwatch ); -- show stop posn
+        put_line( standard_error, execution_position );
         error_found := true;
         --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
      end if;
@@ -6185,7 +6595,7 @@ begin
  --put_token; -- DEBUG
 
   if Token = command_t then
-     err( "Bourne shell command command not implemented" );
+     err( +"Bourne shell command command not implemented" );
      --getNextToken;
      --ParseShellCommand;
   elsif identifiers( token ).procCB /= null then  -- built-in proc w/cb?
@@ -6219,8 +6629,8 @@ begin
      --if not isLoginShell and inputMode /= interactive and inputMode /= breakout then
      -- ^--not as restrictive
      if not isLoginShell and inputMode /= breakout then
-        err( "warning: this is not a login shell: use " & optional_yellow( "return" ) &
-             " to quit" );
+        err( +"warning: this is not a login shell: use " & em( "return" ) &
+             pl( " to quit" ) );
      end if;
      getNextToken;
      expectStatementSemicolon( context => logout_t );
@@ -6262,19 +6672,19 @@ begin
   elsif token = pen_put_t then                     -- Pen.Put
      ParsePenPut;
   elsif Token = else_t then
-     err( "else without if" );
+     err( +"else without if" );
   elsif Token = elsif_t then
-     err( "elsif without if" );
+     err( +"elsif without if" );
   elsif Token = with_t then
-     err( "with only allowed in declaration section or before main program" );
+     err( +"with only allowed in declaration section or before main program" );
   elsif Token = use_t then
-     err( "use not implemented" );
+     err( +"use not implemented" );
   elsif Token = task_t then
-     err( "tasks not implemented" );
+     err( +"tasks not implemented" );
   elsif Token = protected_t then
-     err( "protected types not implemented" );
+     err( +"protected types not implemented" );
   elsif Token = package_t then
-     err( "packages not implemented" );
+     err( +"packages not implemented" );
   elsif Token = raise_t then
      declare
         atSemicolon : aScannerState;
@@ -6287,14 +6697,14 @@ begin
            getNextToken; -- skip semicolon
            -- eof_t because a raise might be the last line in a simple script
            if token /= end_t and token /= exception_t and token /= when_t and token /= else_t and token /= elsif_t and token /= eof_t then
-             err( "the raise makes this unreachable code" );
+             err( +"the raise makes this unreachable code" );
           end if;
           resumeScanning( atSemicolon ); -- restore original position
         end if;
      end;
   elsif Token = exit_t then
      if blocks_top = block'first then           -- not complete. should check
-         err( "no enclosing loop to exit" );    -- not just for no blocks
+         err( +"no enclosing loop to exit" );   -- not just for no blocks
      end if;                                    -- but the block type isn't easily checked
      expect( exit_t );
      if token = when_t or token = if_t then     -- if to give "expected when"
@@ -6309,7 +6719,7 @@ begin
               if token /= eof_t and token /= end_t and token /= elsif_t and
                  token /= else_t and token /= when_t and token /= others_t and
                  token /= exception_t then
-                 err( "the exit makes this unreachable code" );
+                 err( +"the exit makes this unreachable code" );
               end if;
               resumeScanning( cmdStart ); -- restore original position
               getNextToken;
@@ -6332,35 +6742,37 @@ begin
      resumeScanning( cmdStart );
      ParseShellCommand;
   elsif token = backlit_t then
-     err( "unexpected backquote literal" );
+     err( +"unexpected backquote literal" );
   elsif token = procedure_t then
      err(
          subject => token,
-         reason => "was not expected in",
-         obstructorNotes => optional_yellow( "general statements" ),
-         remedy => "this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & optional_yellow( "begin" )
+         reason => +"was not expected in",
+         obstructorNotes => em( "general statements" ),
+         remedy => +"this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & em( "begin" )
      );
   elsif token = function_t then
      err(
          subject => token,
-         reason => "was not expected in",
-         obstructorNotes => optional_yellow( "general statements" ),
-         remedy => "this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & optional_yellow( "begin" )
+         reason => +"was not expected in",
+         obstructorNotes => em( "general statements" ),
+         remedy => +"this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & em( "begin" )
      );
   elsif Token = eof_t then
      eof_flag := true;
      -- a script could be a single comment without a ;
   elsif Token = symbol_t and identifiers( token ).value.all = "@" then
-     err( "unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
+     err( +"unexpected @.  Itself can appear after a command or pragma (and no preceding semi-colon) or in an assignment expression" );
            getNextToken;
   elsif Token = symbol_t and identifiers( token ).value.all = ";" then
-     err( "statement expected" );
+     err( +"statement expected" );
   elsif not identifiers( Token ).deleted and identifiers( Token ).list then     -- array variable
      resumeScanning( cmdStart );           -- assume array assignment
      ParseAssignment;                      -- looks like a AdaScript command
      itself_type := new_t;                 -- except for token type...
   elsif not identifiers( Token ).deleted and identifiers( token ).class = userProcClass then
      DoUserDefinedProcedure( identifiers( token ).value.all );
+  elsif not identifiers( Token ).deleted and identifiers( token ).class = userCaseProcClass then
+     DoUserDefinedCaseProcedure( identifiers( token ).value.all );
   else
 
      -- we need to check the next token then back up
@@ -6394,7 +6806,7 @@ begin
         -- new_t check because a command will produce an varClass with no type
         elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
-              err( "use " & optional_yellow( ":= true " ) & " with " & optional_yellow( "pragma ada_95" ) );
+              err( +"use " & em( ":= true " ) & pl( " with " ) & em( "pragma ada_95" ) );
            end if;
            if syntax_check and then not error_found then
               identifiers( startToken ).wasWritten := true;
@@ -6402,8 +6814,8 @@ begin
            end if;
            if isExecutingCommand then
               -- Run-time side-effects tracking and test
-              -- Test for two or more "threads" writing to one unprotected variable
-              checkDoubleThreadWrite( startToken );
+              -- Test for two or more data flows writing to one unprotected variable
+              checkDoubleDataFlowWrite( startToken );
               identifiers( startToken ).value.all := to_unbounded_string( "1" );
            end if;
            --if Token = symbol_t and to_string( identifiers( token ).value ) = ";" then
@@ -6429,11 +6841,11 @@ begin
      -- external command at compile time.
      if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            -- move to next token or inifinite loop if done = true
            getNextToken;
         elsif itself_type = new_t then
-           err( "@ is not defined" );
+           err( +"@ is not defined" );
            getNextToken;
         -- shell commands have no class so we can't do this (without
         -- changes, anyway...)
@@ -6469,7 +6881,7 @@ begin
         scriptState : aScriptState;                   -- current script
      begin
         --BREAKDBG: 2
-        put_line( standard_error, fullErrorMessage );
+        put_line( standard_error, fullErrorMessage.templateMessage );
         wasSIGINT := false;                            -- clear sig flag
         saveScript( scriptState );                     -- save position
         error_found := false;                          -- not a real error
@@ -6483,8 +6895,9 @@ begin
            resumeScanning( cmdStart );                 -- start of command
            --BREAKDBG
            --err( optional_inverse( "resuming here" ) ); -- redisplay line
-           put_line( standard_error, get_script_execution_position(
-              optional_inverse( "resuming here" ) ) ); -- redisplay line
+           execution_position := get_script_execution_position(
+              ok( "resuming here" ), utf_checkmark ); -- redisplay line
+           put_line( standard_error, execution_position );
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
            exit_block := false;                        --   and don't exit
@@ -6500,11 +6913,11 @@ begin
      end if;
   end if;
 exception when symbol_table_overflow =>
-  err( optional_inverse( "too many identifiers (symbol table overflow)" ) );
+  err( inv( "too many identifiers (symbol table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
 when block_table_overflow =>
-  err( optional_inverse( "too many nested statements/blocks (block table overflow)" ) );
+  err( inv( "too many nested statements/blocks (block table overflow)" ) );
   token := eof_t; -- this exception cannot be handled
   done := true;
 end ParseGeneralStatement;
@@ -6594,11 +7007,11 @@ begin
   -- Note: pushBlock must be before "is" (single symbol look-ahead)
   if token = symbol_t and identifiers( token ).value.all = "(" then
     err(
-      contextNotes => "For your main program procedure",
+      contextNotes => +"For your main program procedure",
       subject => is_t,
-      reason => "is expected not",
-      obstructorNotes => optional_yellow( "a parameter list" ),
-      remedy => "this is a procedure in an unstructured script but procedures need to be within a main program"
+      reason => +"is expected not",
+      obstructorNotes => em( "a parameter list" ),
+      remedy => +"this is a procedure in an unstructured script but procedures need to be within a main program"
     );
   else
     expect( is_t );
@@ -6649,12 +7062,12 @@ begin
      -- during compilation and won't get this far.)
 
      if token = eof_t then
-        err( "there were no commands to run" );
+        err( +"there were no commands to run" );
      elsif token = separate_t then
-        err( "this is a " &
-             optional_yellow( "separate file" ) &
-             " not a runnable " &
-             optional_yellow( "script" ) );
+        err( +"this is a " &
+             em( "separate file" ) &
+             pl( " not a runnable " ) &
+             em( "script" ) );
      end if;
 
      -- Begin by treating a script as unstructured.  We only know it's

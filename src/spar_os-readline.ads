@@ -23,7 +23,8 @@
 ------------------------------------------------------------------------------
 
 with interfaces.C.strings;
-use  interfaces.C.strings;
+use  interfaces.C,
+     interfaces.C.strings;
 
 package spar_os.readline is
 
@@ -73,6 +74,13 @@ pragma import( C,C_strdup, "C_strdup" );
 -----------------------------------------------------------------------------
 procedure add_history( s : string );
 pragma import( C, add_history, "add_history" );
+
+-----------------------------------------------------------------------------
+--  RL SET KEYBOARD INPUT TIMEOUT
+--
+-----------------------------------------------------------------------------
+function rl_set_keyboard_input_timeout( new_timeout : int ) return int;
+pragma import( C, rl_set_keyboard_input_timeout, "rl_set_keyboard_input_timeout" );
 
 end spar_os.readline;
 

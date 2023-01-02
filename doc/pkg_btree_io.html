@@ -106,30 +106,30 @@ data type but this is not recommended.</p>
 
         <center>
         <div class="code">
-<pre>
-<b>=&gt;</b> type clouds is (fog, cumulus, stratus, cirrus, cumulonimbus )
-<b>=&gt;</b> f : btree_io.file( clouds )
-<b>=&gt;</b> btree_io.create( f, "clouds.btree", 80, 80 )
-<b>=&gt;</b> ? btree_io.is_open( f )
-true
-<b>=&gt;</b> ? btree_io.name( f )
-clouds.btree
-<b>=&gt;</b> ls
-clouds.btree  __db.001	__db.002  __db.003  __db.004
-<b>=&gt;</b> btree_io.set( f, "Toronto", fog )
-<b>=&gt;</b> btree_io.set( f, "New York", cirrus ) @ (f, "Moscow", cumulonimbus ) 
-<b>=&gt;</b> ? btree_io.has_element( f, "Tokyo" )
-false
-<b>=&gt;</b> btree_io.get( f, "New York", c )
-<b>=&gt;</b> (Assuming c is a new clouds variable)
-<b>=&gt;</b> ? c
-cirrus
-<b>=&gt;</b> btree_io.add( f, "New York", cumulus )
-<b>=&gt;</b> btree_io.get( f, "New York", c )
-<b>=&gt;</b> ? c
-cirrus
-<b>=&gt;</b> btree_io.close ( f )
-</pre>
+<p class="code">
+<b>=&gt;</b> type clouds is (fog, cumulus, stratus, cirrus, cumulonimbus )<br>
+<b>=&gt;</b> f : btree_io.file( clouds )<br>
+<b>=&gt;</b> btree_io.create( f, "clouds.btree", 80, 80 )<br>
+<b>=&gt;</b> ? btree_io.is_open( f )<br>
+true<br>
+<b>=&gt;</b> ? btree_io.name( f )<br>
+clouds.btree<br>
+<b>=&gt;</b> ls<br>
+clouds.btree  __db.001	__db.002  __db.003  __db.004<br>
+<b>=&gt;</b> btree_io.set( f, "Toronto", fog )<br>
+<b>=&gt;</b> btree_io.set( f, "New York", cirrus ) @ (f, "Moscow", cumulonimbus )<br>
+<b>=&gt;</b> ? btree_io.has_element( f, "Tokyo" )<br>
+false<br>
+<b>=&gt;</b> btree_io.get( f, "New York", c )<br>
+<b>=&gt;</b> (Assuming c is a new clouds variable)<br>
+<b>=&gt;</b> ? c<br>
+cirrus<br>
+<b>=&gt;</b> btree_io.add( f, "New York", cumulus )<br>
+<b>=&gt;</b> btree_io.get( f, "New York", c )<br>
+<b>=&gt;</b> ? c<br>
+cirrus<br>
+<b>=&gt;</b> btree_io.close ( f )<br>
+</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Example</b>: Using btree_io to create a file of cities and their clouds
@@ -139,51 +139,51 @@ cirrus
 
         <center>
         <div class="code">
-<pre>
-<b>type</b> person_type <b>is</b> <b>record</b>
-   first_name : string;
-   age  : natural;
-<b>end</b> <b>record</b>;
-
-person : person_type;
-
-f : btree_io.file( person_type );
-
-btree_io.create( f, "person.btree", 80, 80 );
-
-person.first_name := "John";
-person.age  := 18;
-btree_io.add( f, person.first_name, person );
-
-person.first_name := "Sue";
-person.age  := 21;
-btree_io.add( f, person.first_name, person );
-
-person.first_name := "Al";
-person.age  := 42;
-btree_io.add( f, person.first_name, person );
-
-<b>declare</b>
-  c : btree_io.cursor( person_type );
-  key : string;
-<b>begin</b>
-  btree_io.open_cursor( f, c );
-  btree_io.get_first( f, c, key, person );
-  put( person.first_name ) @ ( " /" ) @ (person.age);
-  new_line;
-
-  <b>loop</b>
-    btree_io.get_next( f, c, key, person );
-    put( person.first_name ) @ ( " /" ) @ (person.age);
-    new_line;
-  <b>end</b> <b>loop</b>;
-<b>exception</b> <b>when</b> <b>others</b> =&gt;
-  btree_io.close_cursor( f, c );
-  put_line( "no more people" );
-<b>end</b>;
-
-btree_io.close( f );
-</pre>
+<p class="code">
+<b>type</b> person_type <b>is</b> <b>record</b><br>
+&nbsp;&nbsp;&nbsp;first_name : string;<br>
+&nbsp;&nbsp;&nbsp;age  : natural;<br>
+<b>end</b> <b>record</b>;<br>
+<br>
+person : person_type;<br>
+<br>
+f : btree_io.file( person_type );<br>
+<br>
+btree_io.create( f, "person.btree", 80, 80 );<br>
+<br>
+person.first_name := "John";<br>
+person.age  := 18;<br>
+btree_io.add( f, person.first_name, person );<br>
+<br>
+person.first_name := "Sue";<br>
+person.age  := 21;<br>
+btree_io.add( f, person.first_name, person );<br>
+<br>
+person.first_name := "Al";<br>
+person.age  := 42;<br>
+btree_io.add( f, person.first_name, person );<br>
+<br>
+<b>declare</b><br>
+&nbsp;&nbsp;&nbsp;c : btree_io.cursor( person_type );<br>
+&nbsp;&nbsp;&nbsp;key : string;<br>
+<b>begin</b><br>
+&nbsp;&nbsp;&nbsp;btree_io.open_cursor( f, c );<br>
+&nbsp;&nbsp;&nbsp;btree_io.get_first( f, c, key, person );<br>
+&nbsp;&nbsp;&nbsp;put( person.first_name ) @ ( " /" ) @ (person.age);<br>
+&nbsp;&nbsp;&nbsp;new_line;<br>
+<br>
+&nbsp;&nbsp;&nbsp;<b>loop</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;btree_io.get_next( f, c, key, person );<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;put( person.first_name ) @ ( " /" ) @ (person.age);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new_line;<br>
+&nbsp;&nbsp;&nbsp;  <b>end</b> <b>loop</b>;<br>
+<b>exception</b> <b>when</b> <b>others</b> =&gt;<br>
+&nbsp;&nbsp;&nbsp;btree_io.close_cursor( f, c );<br>
+&nbsp;&nbsp;&nbsp;put_line( "no more people" );<br>
+<b>end</b>;<br>
+<br>
+btree_io.close( f );<br>
+</p>
         &nbsp;<br>
         <div class="code_caption">
         <b>Example</b>: Using btree_io to sort records

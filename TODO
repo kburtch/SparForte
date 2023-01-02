@@ -11,12 +11,55 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
+- AI
+  - case procedures
+    - negative tests - syntax
+    - optional when / =>
+- modernizing
+  - keyword hilighting when displaying an error on the command line
+    (with --colour)
+
+  - checking error display rewrite
+    - test reports need to be checked
+    - compiler / escape ident for example
+    - test international characters and escaping
+    - in get...position, do we even use fullTemplateErrorMessage when
+      breaking out? check.
+    - security testing
+      - I should write tests that validate we're escaping
+    - ensure all output is properly escaped for the template format
+      (yaml - are there any, JavaScript / XML (no close comments)
+    - the byte code dump should be formatted for colour?
+    - removing dependences from pegasoft.user_io, if possible
+    - get command line has selectable template but output fns do not
+    - textMessage should possibly be consoleMessage
+    - fullTemplateErrorMessage is redundant with fullErrorMessage as a messageStrings
+    - raise exception does not have "script /= """ so why have that in err_shell?
+    - err_shell getnewLine should probably be inside the if
+    - yaml templates and commenting out errors
+
+- indenting columns in GetCommandLine may be an issue with markup
+  - colour does not always switch back to the correct colour (i.e. bright
+    white may revert to dim white after showing help index)
+  - showing 3 lines of code instead of one on an error, to improve
+    the context.  Possibly hilight the middle line with the error.
+
+- bug
+  - MakeIncl issue
+  - first word of quiet errors should not be capitalized if it's an
+    identifier name
+- test templates
+  - bug: in an html template, "? HOME = 7 ;" should be a type error but it
+    runs without an error
+- bug: logging is showing duplicate lines?
 - when tab completing a partial directory containing a backslashed space,
   after the attempted completion it resets the command line to before the
   first space character
   - files seem OK but...
   - mkdir "t 1 2 3" / ls t\ 1<tab><tab> => ls ./t (dropping "space 1")
   - issue might be in c_rl.c ... ada seems OK
+- Security
+  - allow history disabling - record and/or saving to disk
 - memory leak tests - check to make sure that resources are being cleared
 - check the end-of-block usage checks and error messages
   - check each of the SDLC modes
@@ -36,6 +79,7 @@ Priority Issues (Fix These First)
   - check handling of vectors of vectors, maps of maps, etc.
   - check enumerated vector index (it's a "TODO")
   - can I simulate a cursor for the wrong vector, raising an exception like ada?
+  - "?" and vector for quick table display?
 - multi-case
   - case in negative tests, type cast, refactor out idents with PareAssignment
   - static case and support multi-case
@@ -66,6 +110,11 @@ Priority Issues (Fix These First)
   - array elements of vectors / doubly / hashed_maps and their cursors and
     handling in the various package subprograms
     - if cannot be done, at least provide an appropriate error when it is attempted
+- logs package - whether or not something should be escallated
+  to an "error" severity based on appearence of common stop words
+  in the message (SecTor)
+  - perhaps an option for adding stop words for different languages
+    or a set of pre-defined stop words
 - better expected token messages
   - ada95 solution recommendations.  these might benefit from the better expected messages
   - declaration locations, useful on declared but not used errors...where was it declared?
@@ -92,7 +141,9 @@ Priority Issues (Fix These First)
     a return value (which never gets used).  We'll need to do some redesign
     work to solve this.
 
+- on errors of identifiers, display declaration line with the comment
 - get_line and GNU readline autocomplete options from a user's array
+- SparForte should scan for hard-coded passwords and encrypted secrets
 - shell ulimit built-in
   - include an option to timeout a script if it runs too long
 - separate subprograms need parameter verification like other forward
@@ -197,6 +248,7 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- cache the prompt script byte code to speed up prompt drawing
 - embedded sql - returning sql select in % (as JSON?) or by `..`?
 - constant spec negative tests
   - array constant specifications
@@ -340,6 +392,13 @@ Annoyances / Bugs with Workarounds / Updates
 Nice to Haves / Missing Functionality
 -------------------------------------
 
+- restrictions on loading
+  - a pragma that prevents a script from loading when certain
+    criteria is not met such as
+    - memory
+    - disk space
+  - a system that identifies deprecated or vulnerable packages
+    and refuses to load them
 - foreach
   - in PHP, foreach returns a pointer to the items, not a copy.
 - Java-style monitor
@@ -802,6 +861,7 @@ ISSUES (AdaScript)
   * strings package (AdaScript issues)
     - strings.replace_match/glob
     - strings.cvs - comma separated values - 2, 3, "hello", ... fields
+    - strings.pcre_replace
 
   * files package (AdaScript Issues)
     - should it handle ~?

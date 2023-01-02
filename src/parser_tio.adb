@@ -88,7 +88,7 @@ begin
   if isExecutingCommand then
      if file_kind = file_type_t then
         if identifier'value( to_string( stringField( file_ref, mode_field ) ) ) /= in_file_t then
-           err( "end_of_file only applies to " & optional_yellow( "in_mode" ) & " files" );
+           err( +"end_of_file only applies to " & em( "in_mode" ) & pl( " files" ) );
         end if;
      end if;
   end if;
@@ -166,7 +166,7 @@ begin
      elsif identifier'value( to_string( result ) ) = append_file_t then
         result := identifiers( append_file_t ).value.all;
      else
-        err( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode" );
+        err( pl( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode" ) );
      end if;
   end if;
 end ParseMode;
@@ -215,7 +215,7 @@ begin
               stringField( file_ref, fd_field ) ) );
         end if;
         if stringField(file_ref, eof_field ) = "1" then
-           err( "end of file" );
+           err( +"end of file" );
            return;
         end if;
         if file_kind = socket_type_t and then stringField( file_ref, doget_field ) = "1" then
@@ -277,7 +277,7 @@ begin
   else
      ParseInOutParameter( ref );
      if getUniType( ref.kind ) /= file_type_t then
-       err( "file_type expected" );
+       err( +"file_type expected" );
      end if;
   end if;
 
@@ -287,7 +287,7 @@ begin
 
   if not syntax_check then
      if length( identifiers( ref.id ).value.all ) = 0 then
-        err( "file not open" );
+        err( +"file not open" );
      elsif not error_found then
         return_ref := ref;
      end if;
@@ -329,7 +329,7 @@ begin
   else
      ParseInOutParameter( ref );
      if getUniType( ref.kind ) /= socket_type_t then
-        err( "file_type or socket_type variable expected" );
+        err( +"file_type or socket_type variable expected" );
      end if;
   end if;
 
@@ -339,7 +339,7 @@ begin
 
   if not syntax_check then
      if length( identifiers( ref.id ).value.all ) = 0 then
-        err( "file not open" );
+        err( +"file not open" );
      elsif not error_found then
         return_ref := ref;
      end if;
@@ -383,7 +383,7 @@ begin
   else
      ParseInOutParameter( ref );
      if ref.kind /= file_type_t and ref.kind /= socket_type_t then
-        err( "file_type or socket_type variable expected" );
+        err( +"file_type or socket_type variable expected" );
      end if;
   end if;
   kind := ref.kind;
@@ -394,7 +394,7 @@ begin
 
   if not syntax_check then
      if length( identifiers( ref.id ).value.all ) = 0 then
-        err( "file not open" );
+        err( +"file not open" );
      elsif not error_found then
         return_ref := ref;
      end if;
@@ -410,15 +410,15 @@ begin
   -- do not allow "current" or "standard" files to be closed.
 
   if token = standard_output_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = standard_error_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_input_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_output_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_error_t then
-     err( "file already open" );
+     err( +"file already open" );
   else
      ParseOutParameter( ref, file_type_t );
      -- GCC Ada 4.7.2 raises STORAGE_ERROR here under certain circumstances
@@ -429,10 +429,10 @@ begin
   -- syntax check).
 
      if getUniType( ref.kind ) /= file_type_t then
-        err( "expected file_type variable" );
+        err( +"expected file_type variable" );
      elsif not syntax_check then
         if length( identifiers( ref.id ).value.all ) > 0 then
-           err( "file already open" );
+           err( +"file already open" );
         elsif not error_found then
            r := ref;
         end if;
@@ -449,15 +449,15 @@ begin
   -- do not allow "current" or "standard" files to be closed.
 
   if token = standard_output_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = standard_error_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_input_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_output_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_error_t then
-     err( "file already open" );
+     err( +"file already open" );
   else
      ParseIdentifier( id );
 
@@ -466,10 +466,10 @@ begin
   -- syntax check).
 
      if getUniType( identifiers( id ).kind ) /= socket_type_t then
-        err( "expected socket_type variable" );
+        err( +"expected socket_type variable" );
      elsif not syntax_check then
         if length( identifiers( id ).value.all ) > 0 then
-           err( "file already open" );
+           err( +"file already open" );
         elsif not error_found then
            f := id;
         end if;
@@ -486,15 +486,15 @@ begin
   -- do not allow "current" or "standard" files to be closed.
 
   if token = standard_output_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = standard_error_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_input_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_output_t then
-     err( "file already open" );
+     err( +"file already open" );
   elsif token = current_error_t then
-     err( "file already open" );
+     err( +"file already open" );
   else
      ParseOutParameter( ref, file_type_t );
 
@@ -504,10 +504,10 @@ begin
 
      kind := ref.kind;
      if kind /= file_type_t and kind /= socket_type_t then
-        err( "file_type or socket_type variable expected" );
+        err( +"file_type or socket_type variable expected" );
      elsif not syntax_check then
         if length( identifiers( ref.id ).value.all ) > 0 then
-           err( "file already open" );
+           err( +"file already open" );
         elsif not error_found then
            return_ref := ref;
         end if;
@@ -546,7 +546,7 @@ begin
       if C_errno = EAGAIN  or C_errno = EINTR then
          goto reread;                   -- interrupted? try again
       end if;                           -- error? report it
-      err( "unable to read file:" & OSerror( C_errno ) );
+      err( pl( "unable to read file:" & OSerror( C_errno ) ) );
       return;                           -- and bail out
    elsif result = 0 then                -- nothing read?
       eof := true;                      -- then it's the end of file
@@ -554,7 +554,7 @@ begin
    if ref.id = current_output_t or      -- SHOULD NEVER BE TRUE BUT...
       ref.id = current_input_t or
       ref.id = current_error_t then
-      err( Gnat.Source_Info.Source_Location & ": Internal Error: DoGet was given a file alias not a real file" );
+      err( pl( Gnat.Source_Info.Source_Location & ": Internal Error: DoGet was given a file alias not a real file" ) );
    else
       if eof then                       -- eof? set eof_field
          replaceField( fileInfo, recSep, eof_field, "1" );
@@ -616,10 +616,10 @@ begin
   elsif mode = append_file_t then
      result := open( name & ASCII.NUL, flags+O_WRONLY+O_APPEND, 8#644# );
   else
-     err( Gnat.Source_Info.Source_Location & ": internal error: unexpected file mode" );
+     err( pl( Gnat.Source_Info.Source_Location & ": internal error: unexpected file mode" ) );
   end if;
   if result < 0 then
-     err( "Unable to open file: " & OSerror( C_errno ) );
+     err( pl( "Unable to open file: " & OSerror( C_errno ) ) );
   elsif not error_found then
      -- construct the file variable's value, a series of nul delimited fields
      fileOpenRec := to_unbounded_string( "." & ASCII.NUL );
@@ -669,15 +669,15 @@ begin
      begin
        host := to_unbounded_string( slice( name, 1, pos-1 ) );
      exception when others =>
-       err( "unable to interpret TCP/IP host" );
+       err( +"unable to interpret TCP/IP host" );
      end;
      begin
        port := integer'value( " " & slice( name, pos+1, length( name ) ) );
      exception when others =>
-       err( "unable to interpret TCP/IP port" );
+       err( +"unable to interpret TCP/IP port" );
      end;
      if port = 19 or port = 25 or port > 32767 then
-        err( "access to this TCP/IP port is prohibited" );
+        err( +"access to this TCP/IP port is prohibited" );
      end if;
   end if;
   if error_found then
@@ -685,7 +685,7 @@ begin
   end if;
   result := openSocket( host, port );
   if result < 0 then
-     err( "Unable to socket: " & OSerror( C_errno ) );
+     err( pl( "Unable to socket: " & OSerror( C_errno ) ) );
   elsif not error_found then
      -- construct the file variable's value, a series of nul delimited fields
      fileInfo := to_unbounded_string( " " & ASCII.NUL );
@@ -737,7 +737,7 @@ procedure ParseOpen( create : boolean := false ) is
 begin
   if create then
      if rshOpt then
-        err( "create not allowed in a " & optional_yellow( "restricted shell" ) );
+        err( +"create not allowed in a " & em( "restricted shell" ) );
      end if;
      expect( create_t );
      expect( symbol_t, "(" );
@@ -751,7 +751,7 @@ begin
         ParseIdentifier( mode );
         if baseTypesOk( identifiers( mode ).kind, file_mode_t ) then
            if create and mode = in_file_t then
-              err( "cannot create an in_file" );
+              err( +"cannot create an in_file" );
            end if;
         end if;
      end if;
@@ -764,7 +764,7 @@ begin
         if uniTypesOk( exprType, uni_string_t ) then
            name := exprVal;
            if length( name ) = 0 and then not syntax_check then
-              err( "pathname should not be null" );
+              err( +"pathname should not be null" );
            end if;
         end if;
      end if;
@@ -778,7 +778,7 @@ begin
         ParseIdentifier( mode );
         if baseTypesOk( identifiers( mode ).kind, file_mode_t ) then
            if boolean(rshOpt) and mode = out_file_t then
-              err( "out_file mode not allowed in a " & optional_yellow( "restricted shell" ) );
+              err( +"out_file mode not allowed in a " & em( "restricted shell" ) );
            end if;
         end if;
      end if;
@@ -792,14 +792,14 @@ begin
            -- now host + optional port in name.  host may contain keywords like $1
            if identifiers( token ).kind /= keyword_t then
               if getBaseType( identifiers( token ).kind ) = file_mode_t then
-                 err( "sockets don't have a mode" );
+                 err( +"sockets don't have a mode" );
                end if;
            end if;
            ParseExpression( exprVal, exprType );
            if uniTypesOk( exprType, uni_string_t ) then
               name := exprVal;
               if length( name ) = 0 and then not syntax_check then
-                 err( "hostname should not be null" );
+                 err( +"hostname should not be null" );
               end if;
               expect( symbol_t, ")" );
            end if;
@@ -808,7 +808,7 @@ begin
            if uniTypesOk( exprType, uni_string_t ) then
               name := exprVal;
               if length( name ) = 0 and then not syntax_check then
-                 err( "pathname should not be null" );
+                 err( +"pathname should not be null" );
               end if;
               expect( symbol_t, ")" );
            end if;
@@ -844,7 +844,7 @@ begin
         mode := token;
         getNextToken;
         if boolean(rshOpt) and mode = out_file_t then
-           err( "out_file mode not allowed in a " & optional_yellow( "restricted shell" ) );
+           err( +"out_file mode not allowed in a " & em( "restricted shell" ) );
         end if;
      end if;
   end if;
@@ -861,8 +861,8 @@ begin
         elsif to_string( modestr ) = append_file_t'img then
            mode := append_file_t;
         else
-           err( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode " &
-             to_string( modestr ) );
+           err( pl( Gnat.Source_Info.Source_Location & ": internal error: unable to determine file mode " &
+             to_string( modestr ) ) );
         end if;
      end if;
 <<retry>> closeResult := close( fd );
@@ -890,11 +890,11 @@ begin
   if isExecutingCommand then
      fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
      if fd = currentStandardInput then
-        err( "this file is the current input file" );
+        err( +"this file is the current input file" );
      elsif fd = currentStandardInput then
-        err( "this file is the current output file" );
+        err( +"this file is the current output file" );
      elsif fd = currentStandardInput then
-        err( "this file is the current error file" );
+        err( +"this file is the current error file" );
      else
 <<retry>>
         closeResult := close( fd );
@@ -925,16 +925,16 @@ begin
   ParseOpenFile( file_ref );
   expect( symbol_t, ")" );
   if rshOpt then
-     err( "delete is not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"delete is not allowed in a " & em( "restricted shell" ) );
   end if;
   if isExecutingCommand then
      fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
      if fd = currentStandardInput then
-        err( "this file is the current input file" );
+        err( +"this file is the current input file" );
      elsif fd = currentStandardInput then
-        err( "this file is the current output file" );
+        err( +"this file is the current output file" );
      elsif fd = currentStandardInput then
-        err( "this file is the current error file" );
+        err( +"this file is the current error file" );
      else
         name := stringField( file_ref, name_field );
 <<retry>> closeResult := close( fd );
@@ -946,7 +946,7 @@ begin
         identifiers( file_ref.id ).value.all := null_unbounded_string;
         result := integer( unlink( to_string( name ) & ASCII.NUL ) );
         if result /= 0 then
-           err( "unable to delete file: " & OSerror( C_errno ) );
+           err( pl( "unable to delete file: " & OSerror( C_errno ) ) );
         end if;
         if trace then
            put_trace( "delete file " & to_string( name ) );
@@ -990,7 +990,7 @@ begin
        loop
          ch := Element( identifiers( file_ref.id ).value.all, 1 );
          if stringField(file_ref, eof_field ) = "1" then
-             err( "end of file" );
+             err( +"end of file" );
              exit;
          end if;
          DoGet( file_ref );
@@ -1004,11 +1004,11 @@ begin
  -- KB: 2012/02/15: see spar_os-tty for an explaination of this kludge
         if result < 0 or result = size_t'last then
            if C_errno /= EAGAIN and C_errno /= EINTR then
-              err( "unable to read file:" & OSerror( C_errno ) );
+              err( pl( "unable to read file:" & OSerror( C_errno ) ) );
               exit;
            end if;
         elsif result = 0 then
-           err( "skipped past the end of the file" );
+           err( +"skipped past the end of the file" );
            exit;
         else
            if ch = ASCII.LF then
@@ -1064,7 +1064,7 @@ begin
            replaceField( fileInfo, recSep, doget_field, boolean'image(false));
         end if;
         if stringField( fileInfo, recSep, eof_field ) = "1" then
-           err( "end of file" );
+           err( +"end of file" );
         else
            ch := Element( fileInfo, 1 );
            AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
@@ -1079,9 +1079,9 @@ begin
               if C_errno = EAGAIN  or C_errno = EINTR then
                  goto reread;
               end if;
-              err( "unable to read file:" & OSerror( C_errno ) );
+              err( pl( "unable to read file:" & OSerror( C_errno ) ) );
          elsif result = 0 then
-            err( "end of file" );
+            err( +"end of file" );
          else
             AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
          end if;
@@ -1119,7 +1119,7 @@ begin
         ParseOpenFile( target_ref );
         if isExecutingCommand then
            if to_string( stringField(target_ref, mode_field)) = in_file_t'img then
-              err( "This is a in_mode file" );
+              err( +"This is a in_mode file" );
            end if;
         end if;
         expectParameterComma;
@@ -1152,7 +1152,7 @@ begin
             if exception_message( msg ) = "interrupted system call" then
                retry := true;
             else
-               err( exception_message( msg ) );
+               err( pl( exception_message( msg ) ) );
             end if;
           end;
         exit when not retry;
@@ -1168,7 +1168,7 @@ begin
             if exception_message( msg ) = "interrupted system call" then
                retry := true;
             else
-               err( exception_message( msg ) );
+               err( pl( exception_message( msg ) ) );
             end if;
           end;
         exit when not retry;
@@ -1184,7 +1184,7 @@ begin
                if C_errno = EAGAIN or C_errno = EINTR then
                   goto rewrite;
                end if;
-               err( "unable to write: " & OSerror( C_errno ) );
+               err( pl( "unable to write: " & OSerror( C_errno ) ) );
                exit;
             end if;
         end loop;
@@ -1195,7 +1195,7 @@ begin
            if C_errno = EAGAIN or C_errno = EINTR then
               goto rewrite2;
            end if;
-           err( "unable to write: " & OSerror( C_errno ) );
+           err( pl( "unable to write: " & OSerror( C_errno ) ) );
          else
            replaceField( target_ref, line_field,
               long_integer'image( long_integer'value(
@@ -1216,7 +1216,7 @@ procedure ParseQuestion is
 begin
   expect( symbol_t );
   if onlyAda95 then
-      err( optional_yellow( "pragma ada_95" ) & " doesn't allow ?" );
+      err( em( "pragma ada_95" ) & pl( " doesn't allow ?" ) );
       return;
   end if;
   ParseExpression( expr_val, expr_type );
@@ -1323,16 +1323,16 @@ begin
         exception when ada.strings.index_error =>
            -- since this is an expression, this could be something else but
            -- it is almost always this
-           err( "numeric variable has no value" );
+           err( +"numeric variable has no value" );
         when constraint_error =>
-           err( "constraint_error in question command - value " &
+           err( pl( "constraint_error in question command - value " &
              to_string( toEscaped( expr_val ) ) &
-             " may not be numeric" );
+             " may not be numeric" ) );
         when others =>
            err_exception_raised;
         end;
      elsif uni_type = root_record_t then
-        err( "full records cannot be printed with ?.  Try env");
+        err( pl( "full records cannot be printed with ?.  Try env" ) );
      end if;
      -- If an just error occurred, don't print anything further.
      if not error_found then
@@ -1346,7 +1346,7 @@ begin
              if exception_message( msg ) = "interrupted system call" then
                 retry := true;
              else
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
              end if;
            end;
         exit when not retry;
@@ -1384,7 +1384,7 @@ begin
         ParseOpenFile( target_ref );
         if isExecutingCommand then
            if to_string( stringField(target_ref, mode_field)) = in_file_t'img then
-              err( "This is a in_mode file" );
+              err( +"This is a in_mode file" );
            end if;
         end if;
         expectParameterComma;
@@ -1408,18 +1408,18 @@ begin
      getNextToken;
      ParseExpression( pic_val, pic_type );
      if getUniType( pic_type ) /= uni_string_t then
-        err( "number format picture string expected" );
+        err( +"number format picture string expected" );
      elsif not valid( to_string( pic_val ) ) then
-        err( "number not a valid format picture" );
+        err( +"number not a valid format picture" );
      elsif getUniType( expr_type ) /= uni_numeric_t then
-        err( "only numeric types can use a format picture" );
+        err( +"only numeric types can use a format picture" );
      else
         if isExecutingCommand then
            pic := to_picture( to_string( pic_val ) );
            begin
               expr_val := to_unbounded_string( image( decimal_output_type( to_numeric( expr_val ) ), pic ) );
            exception when LAYOUT_ERROR =>
-              err( "incorrect image picture " & ASCII.Quotation & to_string( toEscaped( pic_val ) ) & ASCII.Quotation );
+              err( pl( "incorrect image picture " & ASCII.Quotation & to_string( toEscaped( pic_val ) ) & ASCII.Quotation ) );
            end;
         end if;
         last_output_type := uni_string_t;
@@ -1440,7 +1440,7 @@ begin
              if exception_message( msg ) = "interrupted system call" then
                 retry := true;
              else
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
              end if;
            end;
         exit when not retry;
@@ -1456,7 +1456,7 @@ begin
              if exception_message( msg ) = "interrupted system call" then
                 retry := true;
              else
-                err( exception_message( msg ) );
+                err( pl( exception_message( msg ) ) );
              end if;
            end;
         exit when not retry;
@@ -1471,7 +1471,7 @@ begin
                if C_errno = EAGAIN or C_errno = EINTR then
                   goto rewrite;
                end if;
-               err( "unable to write: " & OSerror( C_errno ) );
+               err( pl( "unable to write: " & OSerror( C_errno ) ) );
                exit;
             end if;
         end loop;
@@ -1509,7 +1509,7 @@ begin
            if C_errno = EAGAIN or C_errno = EINTR then
               goto rewrite;
            end if;
-           err( "unable to write: " & OSerror( C_errno ) );
+           err( pl( "unable to write: " & OSerror( C_errno ) ) );
         end if;
      end if;
   end if;
@@ -1526,14 +1526,14 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if file_ref.id = standard_output_t then
-     err( optional_yellow( "standard_output" ) & " cannot be assigned for " &
-          optional_yellow( "input" ) );
+     err( em( "standard_output" ) & pl( " cannot be assigned for " ) &
+          em( "input" ) );
   elsif file_ref.id = standard_error_t then
-     err( optional_yellow( "standard_error" ) & " cannot be assigned for " &
-          optional_yellow( "input" ) );
+     err( em( "standard_error" ) & pl( " cannot be assigned for " ) &
+          em( "input" ) );
   elsif not syntax_check then
     if to_string(stringField(file_ref, mode_field)) /= in_file_t'img then
-       err( "not an in_file file" );
+       err( +"not an in_file file" );
     end if;
   end if;
   expect( symbol_t, ")" );
@@ -1541,7 +1541,7 @@ begin
      fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
      result := dup2( fd, stdin );
      if result < 0 then
-        err( "unable to set input: " & OSerror( C_errno ) );
+        err( pl( "unable to set input: " & OSerror( C_errno ) ) );
      elsif not error_found then
         currentStandardInput := fd;
         identifiers( current_input_t ).value.all :=
@@ -1565,11 +1565,11 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if file_ref.id = standard_input_t then
-     err( optional_yellow( "standard_input" ) & " cannot be assigned for " &
-          optional_yellow( "output" ) );
+     err( em( "standard_input" ) & pl( " cannot be assigned for " ) &
+          em( "output" ) );
   elsif not syntax_check then
      if to_string(stringField(file_ref.id, mode_field)) = in_file_t'img then
-        err( "not an out_file or append_file file" );
+        err( +"not an out_file or append_file file" );
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -1577,7 +1577,7 @@ begin
      fd := aFileDescriptor'value( to_string( stringField( file_ref.id, fd_field ) ) );
      result := dup2( fd, stdout );
      if result < 0 then
-        err( "unable to set output: " & OSerror( C_errno ) );
+        err( pl( "unable to set output: " & OSerror( C_errno ) ) );
      elsif not error_found then
         currentStandardOutput := fd;
         identifiers( current_output_t ).value.all :=
@@ -1601,11 +1601,11 @@ begin
   expect( symbol_t, "(" );
   ParseOpenFile( file_ref );
   if file_ref.id = standard_input_t then
-     err( optional_yellow( "standard_input" ) & " cannot be assigned for " &
-          optional_yellow( " standard error" ) );
+     err( em( "standard_input" ) & pl( " cannot be assigned for " ) &
+          em( " standard error" ) );
   elsif not syntax_check then
      if to_string(stringField(file_ref, mode_field)) = in_file_t'img then
-        err( "not an out_file or append_file file" );
+        err( pl( "not an out_file or append_file file" ) );
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -1613,7 +1613,7 @@ begin
      fd := aFileDescriptor'value( to_string( stringField( file_ref, fd_field ) ) );
      result := dup2( fd, stderr );
      if result < 0 then
-        err( "unable to set error: " & OSerror( C_errno ) );
+        err( pl( "unable to set error: " & OSerror( C_errno ) ) );
      elsif not error_found then
         currentStandardError := fd;
         identifiers( current_error_t ).value.all :=
@@ -1687,12 +1687,12 @@ begin
            end if;
            AssignParameter( id_ref, to_unbounded_string( "" & ch ) );
         else
-           err( "only implemented for a tty/terminal" );
+           err( +"only implemented for a tty/terminal" );
         end if;
      else
         -- TODO: this is only doing the terminal/tty, not files/sockets.
         -- This will probably require a C select() to avoid blocking.
-        err( "get_immediate for files are not yet implemented" );
+        err( +"get_immediate for files are not yet implemented" );
      end if;
   end if;
 end ParseGetImmediate;

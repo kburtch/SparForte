@@ -8,4 +8,23 @@ CHANGES SINCE 2.5
 
 2. New: System.Session_Name to read the name from --session.
 
+3. New: pragma prompt_idle_script and prompt_idle_speed.
+
+4. New: New examples rock.sp.
+
+5. New: case in is now case procedure. [negative tests needed]
+
+6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
+
+7. Fix: non-limited volatiles, which cannot be used in expressions, no longer have an error for not being declared limited.
+
+8. Fix: usable parameters in null subprograms no longer report an error if they are not used or are not referenced.
+
+9. Refactor: end-of-line CR/LF definitions are now in the os_binding files.
+
+10. Fix: --gcc-errors no longer hides error messages at an interactive prompt.
+
+11. Fix: with APQ, Makeincl no longer aborts a make clean because this generated file was removed in a previous make clean.
+
+12. Refactor: error reporting functions have been redesigned for better security and support for European characters.  Keywords are hilighted in source lines in error messages.
 

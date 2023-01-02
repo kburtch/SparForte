@@ -64,7 +64,7 @@ begin
   s := null_unbounded_string;
   mkstemp( result, LinuxPath );
   if result < 0 then
-     err( "makeTempFile: mkstemp failed" & OSError( C_errno ) );
+     err( pl( "makeTempFile: mkstemp failed" & OSError( C_errno ) ) );
      s := null_unbounded_string;
   else
 <<retry1>> closeResult := close( result ); -- not the most secure
@@ -191,7 +191,7 @@ begin
 
   mySocket := Socket( PF_INET, SOCK_STREAM, 0 );
   if mySocket = -1 then
-     err( "error making socket: " & OSError( C_errno ) );
+     err( pl( "error making socket: " & OSError( C_errno ) ) );
      return -1;
   end if;
   --New_Line;
@@ -204,9 +204,9 @@ begin
   myServerPtr := HEptrs.To_Pointer( myServer );
   if myServerPtr = null then
      if C_errno = 0 then
-        err( "there is no server by the name '" & to_string( serverName ) & "'" );
+        err( pl( "there is no server by the name '" & to_string( serverName ) & "'" ) );
      else
-        err( "error looking up host: " & OSError( C_errno ) );
+        err( pl( "error looking up host: " & OSError( C_errno ) ) );
      end if;
      return -1;
   end if;
@@ -237,7 +237,7 @@ begin
      if C_errno = EINTR then
         goto retry1;
      end if;
-     err( "error connecting to server: " & OSerror( C_errno ) );
+     err( pl( "error connecting to server: " & OSerror( C_errno ) ) );
 <<retry2>> Result := close( aFileDescriptor( mySocket ) );
      if Result < 0 then
         if C_errno = EINTR then
@@ -463,8 +463,8 @@ begin
          end if;
 
       when others =>                             -- unexpected mode
-        err( gnat.source_info.source_location &
-             ": internal error: unknown template mode" );
+        err( pl( gnat.source_info.source_location &
+             ": internal error: unknown template mode" ) );
       end case;
 
    end loop;                                     -- continue while text
@@ -529,19 +529,19 @@ begin
      if identifiers( token ).value.all = ";" then
         getNextToken;
      elsif identifiers( token ).value.all = "|" then
-        err( "procedures cannot be used in a pipeline like commands" );
+        err( +"procedures cannot be used in a pipeline like commands" );
      elsif identifiers( token ).value.all = ">" then
-        err( "procedure output cannot be redirected like commands" );
+        err( +"procedure output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = ">>" then
-        err( "procedure output cannot be redirected like commands" );
+        err( +"procedure output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "<" then
-        err( "procedure input cannot be redirected like commands" );
+        err( +"procedure input cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "2>" then
-        err( "procedure error output cannot be redirected like commands" );
+        err( +"procedure error output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "2>>" then
-        err( "procedure error output cannot be redirected like commands" );
+        err( +"procedure error output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "&" then
-        err( "procedures cannot be run in the background like commands" );
+        err( +"procedures cannot be run in the background like commands" );
      else
         expect( symbol_t, ";" );
      end if;
@@ -563,19 +563,19 @@ begin
      if identifiers( token ).value.all = ";" then
         getNextToken;
      elsif identifiers( token ).value.all = "|" then
-        err( "functions cannot be used in a pipeline like commands" );
+        err( +"functions cannot be used in a pipeline like commands" );
      elsif identifiers( token ).value.all = ">" then
-        err( "function output cannot be redirected like commands" );
+        err( +"function output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = ">>" then
-        err( "function output cannot be redirected like commands" );
+        err( +"function output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "<" then
-        err( "function input cannot be redirected like commands" );
+        err( +"function input cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "2>" then
-        err( "function error output cannot be redirected like commands" );
+        err( +"function error output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "2>>" then
-        err( "function error output cannot be redirected like commands" );
+        err( +"function error output cannot be redirected like commands" );
      elsif identifiers( token ).value.all = "&" then
-        err( "functions cannot be run in the background like commands" );
+        err( +"functions cannot be run in the background like commands" );
      else
         expect( symbol_t, ";" );
      end if;
@@ -647,12 +647,12 @@ begin
         canonicalRef.id ).kind ).value.all ) );
   exception when storage_error =>
     numFields := 0;
-    err( gnat.source_info.source_location &
-         "internal error: storage_error: unable to determine the number of fields" );
+    err( pl( gnat.source_info.source_location &
+         "internal error: storage_error: unable to determine the number of fields" ) );
   when constraint_error =>
     numFields := 0;
-    err( gnat.source_info.source_location &
-         "internal error: constraint_error: unable to determine the number of fields" );
+    err( pl( gnat.source_info.source_location &
+         "internal error: constraint_error: unable to determine the number of fields" ) );
   end;
 
   canonicalField := canonicalRef.id + 1;
@@ -675,8 +675,8 @@ begin
 
      -- no more identifiers means we didn't find it.
      if canonicalField = identifiers_top then
-        err( gnat.source_info.source_location &
-           "internal error: record field not found" );
+        err( pl( gnat.source_info.source_location &
+           "internal error: record field not found" ) );
         exit;
      end if;
 
@@ -700,13 +700,13 @@ begin
         -- the record type, so there's no reason to do a brute-force lookup.
         findIdent( fieldName, renamingField );
         if renamingField = eof_t then
-           err( gnat.source_info.source_location &
+           err( pl( gnat.source_info.source_location &
                 ": internal error: " &
                 "cannot find field in the renaming record; " &
                 "Identifier" & canonicalField'img &
-                ": Canonical field " &
-                optional_yellow( to_string( identifiers( canonicalField ).name ) ) & "/" &
-                "Renaming Field " & optional_yellow( to_string( fieldName ) ) );
+                ": Canonical field " ) &
+                name_em( canonicalField ) & pl( "/" &
+                "Renaming Field " ) & unb_em( fieldName ) );
         else
            -- The renaming is created by copying data.  Correct
            -- the fields to be owned

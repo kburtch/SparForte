@@ -112,7 +112,7 @@ begin
   expect( chains_chain_count_t );
   if isExecutingCommand then
      if in_chain = none then
-        err( "not in a chain" );
+        err( +"not in a chain" );
      else
         findIdent( chain_count_str, chain_count_id );
         result := identifiers( chain_count_id ).value.all;

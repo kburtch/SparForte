@@ -89,7 +89,7 @@ begin
      begin
        result := to_unbounded_string( year( time( to_numeric( expr_val ) ) )'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalYear;
@@ -111,7 +111,7 @@ begin
      begin
        result := to_unbounded_string( month( time( to_numeric( expr_val ) ) )'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalMonth;
@@ -133,7 +133,7 @@ begin
      begin
        result := to_unbounded_string( day( time( to_numeric( expr_val ) ) )'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalDay;
@@ -155,7 +155,7 @@ begin
      begin
        result := to_unbounded_string( long_float( seconds( time( to_numeric( expr_val ) ) ) )'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalSeconds;
@@ -192,7 +192,7 @@ begin
        AssignParameter( id3_ref, to_unbounded_string( day'img ) );
        AssignParameter( id4_ref, to_unbounded_string( seconds'img ) );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalSplit;
@@ -227,11 +227,11 @@ begin
                     day_number( to_numeric( day_val ) ),
                     day_duration( to_numeric( secs_val ) ) )'img );
      exception when time_error =>
-       err( "time error: illegal time value" );
+       err( +"time error: illegal time value" );
      when constraint_error =>
-       err( "constraint error: values out of range" );
+       err( +"constraint error: values out of range" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalTimeOf;
@@ -282,7 +282,7 @@ begin
        Julian := K - 32075.0 + Term1 + Term2 - Term3;
        result := to_unbounded_string( long_integer( Julian )'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalToJulian;
@@ -329,7 +329,7 @@ begin
        Day := Day_Number( K );
        result := to_unbounded_string( long_long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalToTime;
@@ -359,7 +359,7 @@ begin
        C_day_of_week( wday, Year, Month, Day );
        result := to_unbounded_string( wday'img );
      exception when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseCalDayOfWeek;

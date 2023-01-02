@@ -328,10 +328,10 @@ procedure CheckHomonyms( id : identifier ) is
           );
           findIdent( temp, tempId );
           if tempId /= eof_t then
-             err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) &
-                  " is similar to another visible name " &
-                  optional_yellow( to_string( temp ) ) &
-                  " and may cause confusion" );
+             err_style( +"name " & name_em( id ) &
+                  pl( " is similar to another visible name " ) &
+                  unb_em( temp ) &
+                  pl( " and may cause confusion" ) );
           end if;
       end if;
    end CheckOneHomonym;
@@ -420,11 +420,11 @@ begin
           end loop;
           if idWithoutUnderscore = tempIdWithoutUnderscore then
              err(
-                 contextNotes => "While checking naming style",
+                 contextNotes => +"While checking naming style",
                  subject => id,
-                 reason => "could be confused for",
+                 reason => +"could be confused for",
                  obstructor => tempId,
-                 remedy => "the identifiers should differ by more than underscores"
+                 remedy => +"the identifiers should differ by more than underscores"
              );
           end if;
       end loop;
@@ -457,7 +457,7 @@ begin
   elsif token = word_t then
      expectIdentifier( what, "(immediate) shell word" );
   elsif token = eof_t then
-     err( optional_yellow( "identifier" ) & " expected" );
+     err( em( "identifier" ) & pl( " expected" ) );
   elsif is_keyword( token ) and token /= eof_t then
      expectIdentifier( what, "keyword" );
   elsif token = symbol_t then
@@ -494,9 +494,9 @@ begin
            err(
                context => record_id,
                subject => token,
-               reason  => "is a record or record type field",
-               obstructorNotes   => "but was expecting a simple identifier",
-               remedy  => "use an identifier without a period while defining a record."
+               reason  => +"is a record or record type field",
+               obstructorNotes => +"but was expecting a simple identifier",
+               remedy  => +"use an identifier without a period while defining a record."
           );
         else
            -- an existing token name
@@ -505,9 +505,9 @@ begin
            if temp_id /= eof_t then
               err(
                    subject => record_id,
-                   reason => "already has a field named",
+                   reason => +"already has a field named",
                    obstructor => token,
-                   remedy => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
+                   remedy => +"choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
               );
               -- err( "already declared " &
               --      optional_yellow( to_string( fieldName ) ) );
@@ -523,9 +523,9 @@ begin
      findIdent( fieldName, temp_id );
      if temp_id /= eof_t then
         err( subject => record_id,
-             reason => "already has a field named",
+             reason => +"already has a field named",
              obstructor => token,
-             remedy => "choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
+             remedy => +"choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
         );
      else                                                     -- declare it
         discardUnusedIdentifier( token );
@@ -559,23 +559,24 @@ begin
         if identifiers( token ).field_of /= eof_t then
            err(
                subject => token,
-               reason  => "is a record or record type field",
-               obstructorNotes => "but was expecting a simple identifier",
-               remedy  => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
+               reason  => +"is a record or record type field",
+               obstructorNotes => +"but was expecting a simple identifier",
+               remedy  => +"choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
           );
            --err( optional_yellow( "identifier" ) & " expected, not a " &
            --     optional_yellow( "field of a record type" ) );
         -- if old, don't redeclare if it was a forward declaration
         elsif identifiers( token ).class = userProcClass or         -- a proc?
-              identifiers( token ).class = userFuncClass then       -- or func?
+              identifiers( token ).class = userFuncClass or        -- or func?
+              identifiers( token ).class = userCaseProcClass then -- case proc?
            if isLocal( token ) then                                 -- local?
-              if length( identifiers( token ).value.all ) = 0 then      -- forward?
-                 id := token;                                       -- then it's
-              else                                                  -- not fwd?
+              if length( identifiers( token ).value.all ) = 0 then -- forward?
+                 id := token;                                      -- then it's
+              else                                                 -- not fwd?
                  err( subject => token,
-                      reason => "is already defined",
-                      obstructorNotes => "and should be unique in the same block",
-                      remedy => "choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
+                      reason => +"is already defined",
+                      obstructorNotes => +"and should be unique in the same block",
+                      remedy => +"choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
                  );
                  --err( "already declared " &
                  --     optional_yellow( to_string( identifiers( token ).name ) ) );
@@ -586,9 +587,9 @@ begin
            end if;                                                  -- otherwise
         elsif isLocal( token ) then
            err( subject => token,
-                reason => "is already defined",
-                obstructorNotes => "and should be unique in the same block",
-                remedy => "choose an unused name, define it in a different block or remove it if it's a duplicate."
+                reason => +"is already defined",
+                obstructorNotes => +"and should be unique in the same block",
+                remedy => +"choose an unused name, define it in a different block or remove it if it's a duplicate."
            );
            --err( "already declared " &
            --     optional_yellow( to_string( identifiers( token ).name ) ) );
@@ -605,10 +606,10 @@ begin
      -- Procedure / Function style checks
 
      if length( identifiers(id).name ) < 3 then
-        err_style(optional_yellow( to_string( identifiers(id).name ) ) & ", a procedure/function name, should contain 3 or more characters" );
+        err_style( name_em( id ) & pl( ", a procedure/function name, should contain 3 or more characters" ) );
      elsif length( identifiers(id).name ) > 32 then
         if index( identifiers(id).name, "_" ) = 0 then
-            err_style( "long names are more readable when underscores are used" );
+            err_style( pl( "long names are more readable when underscores are used" ) );
         end if;
      elsif not type_checks_done and then not boolean( maintenanceOpt ) then
         -- for performance, don't check in maintenance phase.  Also, only
@@ -678,14 +679,14 @@ begin
      if isTokenValidIdentifier( "a design pragma constraint" ) then
         name := identifiers( token ).name;
         if toConstraintMode( name ) /= undefined then
-           err( "unique, exclusive or local are not allowed for a constraint name" );
+           err( pl( "unique, exclusive or local are not allowed for a constraint name" ) );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toConstraintMode( name ) /= undefined then
-        err( "unique, exclusive or local are not allowed for a constraint name" );
+        err( pl( "unique, exclusive or local are not allowed for a constraint name" ) );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -708,14 +709,14 @@ begin
      if isTokenValidIdentifier( "a design pragma affinity" ) then
         name := identifiers( token ).name;
         if toAffinityMode( name ) /= undefined then
-           err( "inclusive is not allowed for an affinity name" );
+           err( +"inclusive is not allowed for an affinity name" );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toAffinityMode( name ) /= undefined then
-        err( "inclusive is not allowed for an affinity name" );
+        err( +"inclusive is not allowed for an affinity name" );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -738,14 +739,14 @@ begin
      if isTokenValidIdentifier( "a design pragma mode" ) then
         name := identifiers( token ).name;
         if toConstraintMode( name ) = undefined then
-           err( "unique, file or subprogram expected for a constraint Mode" );
+           err( +"unique, file or subprogram expected for a constraint Mode" );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toConstraintMode( name ) = undefined then
-        err( "unique, file or subprogram expected for a constraint Mode" );
+        err( +"unique, file or subprogram expected for a constraint Mode" );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -769,14 +770,14 @@ begin
      if isTokenValidIdentifier( "a design pragma affinity mode" ) then
         name := identifiers( token ).name;
         if toAffinityMode( name ) = undefined then
-           err( "file or subprogram expected for an affinity mode" );
+           err( +"file or subprogram expected for an affinity mode" );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toAffinityMode( name ) = undefined then
-        err( "file or subprogram expected for an affinity mode" );
+        err( +"file or subprogram expected for an affinity mode" );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -803,8 +804,8 @@ begin
   if identifiers( token ).specAt /= noSpec and isLocal( token ) then
      if identifiers( token ).usage /= constantUsage or
         identifiers( token ).class /= varClass then
-        err( optional_yellow( "constant" ) & " expected for a " &
-             "earlier specification" );
+        err( em( "constant" ) & pl( " expected for a " &
+             "earlier specification" ) );
      end if;
      id := token;
      getNextToken;
@@ -812,8 +813,7 @@ begin
   elsif identifiers( token ).kind /= new_t then
      if isTokenValidIdentifier( "a variable" ) then
         if isLocal( token ) then
-           err( "already declared " &
-                optional_yellow( to_string( identifiers( token ).name ) ) );
+           err( +"already declared " & name_em( token ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
@@ -828,20 +828,20 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err_style( "name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
+              err_style( +"name lowercase " & em( "l" ) & pl( " can be confused with the number one" ) );
            elsif identifiers( id ).name = uppercase_o then
-              err_style( "name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
+              err_style( +"name uppercase " & em( "O" ) & pl( " can be confused with the number zero" ) );
            end if;
         end if;
         if element( nameAsLower, length( nameAsLower)-1 ) = '_' then
-           err( "trailing underscores not allowed in identifiers" );
+           err( +"trailing underscores not allowed in identifiers" );
         elsif index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+           err_style( +"name " & name_em( id ) & pl( " may not be descriptive or meaningful" ) );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-           err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+           err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
         elsif length( nameAsLower ) > 32 then
             if index( nameAsLower, "_" ) = 0 then
-               err_style( "long names are more readable when underscores are used" );
+               err_style( +"long names are more readable when underscores are used" );
             end if;
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
             -- for performance, don't check in maintenance phase.  Also, only
@@ -876,8 +876,7 @@ begin
   if identifiers( token ).kind /= new_t then
      if isTokenValidIdentifier( "a new identifier" ) then
         if isLocal( token ) then
-           err( "already declared " &
-                optional_yellow( to_string( identifiers( token ).name ) ) );
+           err( +"already declared " & name_em( token ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
@@ -892,21 +891,21 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err_style( "name lowercase " & optional_yellow( "l" ) & " can be confused with the number one" );
+              err_style( +"name lowercase " & em( "l" ) & pl( " can be confused with the number one" ) );
            elsif identifiers( id ).name = uppercase_o then
-              err_style( "name uppercase " & optional_yellow( "O" ) & " can be confused with the number zero" );
+              err_style( +"name uppercase " & em( "O" ) & pl( " can be confused with the number zero" ) );
            end if;
         end if;
         if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " may not be descriptive or meaningful" );
+           err_style( +"name " & name_em( id ) & pl( " may not be descriptive or meaningful" ) );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-            err_style( "name " & optional_yellow( to_string( identifiers(id).name ) ) & " is similar to a reserved keyword" );
+            err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
         elsif element( identifiers(id).name,
             length( identifiers(id).name ) ) = '_' then
-               err( "trailing underscores not allowed in identifiers" );
+               err( +"trailing underscores not allowed in identifiers" );
         elsif length( identifiers(id).name ) > 32 then
             if index( identifiers(id).name, "_" ) = 0 then
-               err_style( "long names are more readable when underscores are used" );
+               err_style( +"long names are more readable when underscores are used" );
             end if;
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
            -- for performance, don't check in maintenance phase.  Also, only
@@ -946,9 +945,9 @@ begin
                if i /= token and not identifiers(i).deleted then
                   if typoOf( identifiers(i).name, identifiers(token).name ) then
                      discardUnusedIdentifier( token );
-                     err( optional_yellow( to_string( identifiers(token).name ) ) &
-                     " is a possible typo of " &
-                     optional_yellow( to_string( identifiers(i).name ) ) );
+                     err( name_em( token ) &
+                     pl( " is a possible typo of " ) &
+                     name_em( i ) );
                      exit;
                   end if;
               end if;
@@ -959,7 +958,7 @@ begin
              -- help for common mistakes
              -- php/shell - checking for echo/print doesn't work since these
              -- are Linux commands anyway and will be found.  Code removed.
-             err( optional_yellow( to_string( identifiers( token ).name ) ) & " not declared" );
+             err( name_em( token ) & pl( " not declared" ) );
           end if;
         end if;
         -- this only appears if err in typo loop didn't occur
@@ -980,11 +979,11 @@ begin
            -- line but that is not correct.
            if recId in reserved_top..identifiers'last then
               identifiers( recId ).wasReferenced := true;
-              --identifiers( recId ).referencedByThread := getThreadName;
+              --identifiers( recId ).referencedByFlow := getDataFlowName;
            else
               -- mark the value as used because it was referred to
               identifiers( token ).wasReferenced := true;
-              --identifiers( token ).referencedByThread := getThreadName;
+              --identifiers( token ).referencedByFlow := getDataFlowName;
            end if;
         end if;
      end if;
@@ -1008,29 +1007,29 @@ procedure ParseStaticIdentifier( id : out identifier ) is
 begin
   id := eof_t; -- assume failure
   if token = number_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "number" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "number" ) );
   elsif token = strlit_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "string literal" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "string literal" ) );
   elsif token = backlit_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "backquoted literal" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "backquoted literal" ) );
   elsif token = charlit_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "character literal" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "character literal" ) );
   elsif token = word_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "(shell immediate) word" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "(shell immediate) word" ) );
   elsif is_keyword( token ) and token /= eof_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "keyword" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "keyword" ) );
   elsif token = symbol_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "symbol" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "symbol" ) );
   elsif token = shell_symbol_t then
-     err( optional_yellow( "identifier" ) & " expected, not a " &
-          optional_yellow( "shell symbol" ) );
+     err( em( "identifier" ) & pl( " expected, not a " ) &
+          em( "shell symbol" ) );
   elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
      -- if we're skipping a block, it doesn't matter if the identifier is
      -- declared, but it does if we're executing a block or checking syntax
@@ -1039,9 +1038,9 @@ begin
             if i /= token and not identifiers(i).deleted then
                if typoOf( identifiers(i).name, identifiers(token).name ) then
                   discardUnusedIdentifier( token );
-                  err( optional_yellow( to_string( identifiers(token).name ) ) &
-                  " is a possible typo of " &
-                  optional_yellow( to_string( identifiers(i).name ) ) );
+                  err( name_em( token ) &
+                  pl( " is a possible typo of " ) &
+                  name_em( i ) );
                   exit;
                end if;
            end if;
@@ -1049,7 +1048,7 @@ begin
        if not error_found then
           -- token will be eof_t if error has already occurred
           discardUnusedIdentifier( token );
-          err( optional_yellow( to_string( identifiers( token ).name ) ) & " not declared or is not static" );
+          err( name_em( token ) & pl( " not declared or is not static" ) );
        end if;
      end if;
      -- this only appears if err in typo loop didn't occur
@@ -1062,7 +1061,7 @@ begin
            -- the value (during syntax check only because value is otherwise
            -- unused).  When blocks are pulled, this will be checked.
            identifiers( token ).wasReferenced := true;
-           --identifiers( token ).referencedByThread := getThreadName;
+           --identifiers( token ).referencedByFlow := getDataFlowName;
      end if;
      id := token;
   end if;
@@ -1086,14 +1085,14 @@ begin
   -- style check: no dangerous program names
   if syntax_check then
      if index( confusingprogram_words, to_string( " " & identifiers( program_id ).name & " " ) ) > 0 then
-        err_style( optional_yellow( to_string( identifiers( program_id ).name ) ) & " is a built-in command in some shells" );
+        err_style( name_em( program_id ) & pl( " is a built-in command in some shells" ) );
      end if;
   end if;
   identifiers( program_id ).kind := identifiers'first;
   identifiers( program_id ).class := mainProgramClass;
   if syntax_check then
      identifiers( program_id ).wasReferenced := true;
-     --identifiers( program_id ).referencedByThread := getThreadName;
+     --identifiers( program_id ).referencedByFlow := getDataFlowName;
   end if;
 end ParseProgramName;
 
@@ -1151,7 +1150,7 @@ begin
    -- Create a new block, declaring the data type variable
    -- We don't need to assign the value until we know we're executing.
 
-   pushBlock( newScope => true, newName => affirm_clause_str, newThread
+   pushBlock( newScope => true, newName => affirm_clause_str, newFlow
      => identifiers( kind_id ).name & " affirm" );
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
 
@@ -1234,8 +1233,8 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
     kind := eof_t;
     ParseIdentifier( t );
     if identifiers( t ).volatile = checked then    -- volatile user identifier
-       err( to_string( identifiers( t ).name ) & " is " & optional_yellow( "volatile" ) &
-          " and not allowed in expressions because it may cause side-effects" );
+       err( unb_pl( identifiers( t ).name ) & pl( " is " ) & em( "volatile" ) &
+          pl( " and not allowed in expressions because it may cause side-effects" ) );
        --refreshVolatile( t );
        --f := identifiers( t ).value.all;
        --kind := identifiers( t ).kind;
@@ -1243,9 +1242,9 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
     -- check to see if it's an incomplete spec
     if isExecutingCommand then
        if identifiers( t ).specAt /= noSpec then
-          err( "earlier specification has not been completed (at " &
+          err( pl( "earlier specification has not been completed (at " &
                to_string( identifiers( t ).specFile) & ":" &
-               identifiers( t ).specAt'img & ")");
+               identifiers( t ).specAt'img & ")" ) );
        end if;
     end if;
     -- something failed earlier and we don't have an actual variable to
@@ -1258,10 +1257,10 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        if identifiers( getBaseType( t ) ).list then
           --err( optional_yellow( to_string( identifiers( t ).name ) ) & " is an array type" );
           err(
-            contextNotes => "in the expression",
+            contextNotes => +"in the expression",
             subject => t,
-            reason => "is an array type",
-            obstructorNotes => "and typecast by aggregate types is not supported"
+            reason => +"is an array type",
+            obstructorNotes => +"and typecast by aggregate types is not supported"
           );
        end if;                               -- represent array types
        castType := t;                        -- in expressiosn (yet)
@@ -1269,18 +1268,18 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           getNextToken;
        else
           expectSymbol(
-            contextNotes => "in the expression",
+            contextNotes => +"in the expression",
             expectedValue => "(",
             subject => t,
-            reason => "is a type or subtype and a typecast"
+            reason => +"is a type or subtype and a typecast"
           );
        end if;
        ParseExpression( f, kind );
        expectSymbol(
-         contextNotes => "in the expression",
+         contextNotes => +"in the expression",
          expectedValue => ")",
          subject => t,
-         reason => "is a typecast and the end of the typecast"
+         reason => +"is a typecast and the end of the typecast"
        );
        if type_checks_done or else uniTypesOk( castType, kind ) then
 
@@ -1295,39 +1294,39 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           end if;
        end if;
     elsif identifiers( t ).usage = limitedUsage then
-       err( contextNotes => "In the expression",
+       err( contextNotes => +"In the expression",
             subject => t,
             subjectType => identifiers( t ).kind,
-            reason => "cannot be used because",
-            obstructorNotes => "it is " & optional_yellow( "limited" ),
-            remedy => "it should not be limited, should not be used for an in mode " &
+            reason => +"cannot be used because",
+            obstructorNotes => +"it is " & em( "limited" ),
+            remedy => pl( "it should not be limited, should not be used for an in mode " &
                "parameter or a subprogram name is spelled incorrectly " &
-               "and it is mistaken for a shell command argument"
+               "and it is mistaken for a shell command argument" )
        );
        kind := eof_t;
     elsif identifiers( t ).class = userProcClass or
           identifiers( t ).class = procClass then
        err(
-          contextNotes => "In the expression",
+          contextNotes => +"In the expression",
           subject => t,
-          reason => "cannot be used because",
-          obstructorNotes => "it is a " & optional_yellow( "procedure" ),
-          remedy => "use a function because it returns a value"
+          reason => +"cannot be used because",
+          obstructorNotes => +"it is a " & em( "procedure" ),
+          remedy => +"use a function because it returns a value"
        );
     elsif identifiers( getBaseType( t ) ).list then        -- array(index)?
        array_id := t;                            -- array_id=array variable
        expectSymbol(                                    -- parse index part
-          contextNotes => "in the expression",
+          contextNotes => +"In the expression",
           expectedValue => "(",
           subject => t,
           subjectType => identifiers( t ).kind,
-          reason => "is an array variable and an array index"
+          reason => +"is an array variable and an array index"
        );
        ParseExpression( f, kind );               -- kind is the index type
        if getUniType( kind ) = uni_string_t or   -- index must be scalar
           getUniType( kind ) = root_record_t or
           identifiers( getBaseType( kind ) ).list then
-          err( "array index must be a scalar type" );
+          err( +"array index must be a scalar type" );
        end if;                                   -- variables are not
        if isExecutingCommand then                -- declared in syntax chk
               -- parse factor identifier: arrays
@@ -1345,20 +1344,22 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
               -- TODO: probably needs a better error message
               if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
                  if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
-                    err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers(     array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+                    err( pl( "array index " & to_string( trim( f, ada.strings.both ) ) &
+                         " not in" & identifiers( array_id ).avalue'first'img & " .." &
+                         identifiers( array_id ).avalue'last'img ) );
                  end if;
               end if;
           if not error_found then
              begin
                f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
              exception when CONSTRAINT_ERROR =>
-               err( gnat.source_info.source_location &
+               err( pl( gnat.source_info.source_location &
                 ": internal error: constraint_error : index out of range " &
                 identifiers( array_id ).avalue'first'img & " .." &
-                identifiers( array_id ).avalue'last'img );
+                identifiers( array_id ).avalue'last'img ) );
              when STORAGE_ERROR =>
-               err( gnat.source_info.source_location &
-                ": internal error : storage error raised in ParseFactor" );
+               err( pl( gnat.source_info.source_location &
+                ": internal error : storage error raised in ParseFactor" ) );
              end;
           end if;
           pushExpressionId( array_id );
@@ -1366,11 +1367,11 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
           identifiers( array_id ).wasFactor := true;
        end if;
        expectSymbol(
-          contextNotes => "in the expression",
+          contextNotes => +"in the expression",
           expectedValue => ")",
           subject => t,
           subjectType => identifiers( t ).kind,
-          reason => "is an array variable and closing an array index"
+          reason => +"is an array variable and closing an array index"
        );
        kind := identifiers( identifiers( array_id ).kind ).kind;
     else
@@ -1378,20 +1379,20 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        if t /= eof_t then
           if identifiers( t ).field_of /= eof_t then
              if identifiers( identifiers( t ).field_of ).usage = limitedUsage then
-                err( "limited record variables cannot be used in an expression" );
+                err( +"limited record variables cannot be used in an expression" );
              end if;
              if identifiers( identifiers( t ).field_of ).specAt /= noSpec then
-                err( "earlier specification has not been completed (at " &
+                err( pl( "earlier specification has not been completed (at " &
                      to_string( identifiers( identifiers( t ).field_of ).specFile) & ":" &
-                     identifiers( identifiers( t ).field_of ).specAt'img & ")");
+                     identifiers( identifiers( t ).field_of ).specAt'img & ")" ) );
              end if;
           end if;
 
        end if;
     -- regular variable with an array index?
        if token = symbol_t and then identifiers( token ).value.all = "(" then
-         err( optional_yellow( to_string( identifiers( t ).name ) ) &
-             " has an array index but is not an array" );
+         err( name_em( t ) &
+             pl( " has an array index but is not an array" ) );
        end if;
        -- parse factor identifier: scalar or record
        -- expression side-effect prevention
@@ -1440,9 +1441,9 @@ begin
      expectSymbol(
         expectedValue => ")",
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the subexpression",
+        subjectNotes => +"the subexpression",
         subjectType => kind,
-        reason => "is closing and"
+        reason => +"is closing and"
      );
   -- to speed things up, these wide if statements break up tokens into
   -- categories.  If the token isn't in the category, skip the rest.
@@ -1461,8 +1462,8 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
         if onlyAda95 then
-           err( "$# not allowed with " & optional_yellow( "pragma ada_95" ) &
-           " -- use command_line package" );
+           err( +"$# not allowed with " & em( "pragma ada_95" ) &
+           pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
            f := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
@@ -1473,8 +1474,8 @@ begin
         identifiers( Token ).value.all <= "$9" then
         -- this could be done a little tighter (ie length check)
         if onlyAda95 then
-           err( "$1..$9 not allowed with " & optional_yellow( "pragma ada_95" ) &
-           " -- use command_line package" );
+           err( +"$1..$9 not allowed with " & em( "pragma ada_95" ) &
+           pl( " -- use command_line package" ) );
         end if;
         kind := uni_string_t;
         if isExecutingCommand then
@@ -1484,18 +1485,18 @@ begin
                    integer'value(
                    "" & Element( identifiers( Token ).value.all, 2 ) )+optionOffset ) );
            exception when program_error =>
-              err( "program_error exception raised" );
+              err( +"program_error exception raised" );
               kind := eof_t;
            when others =>
-              err( "no such argument" );
+              err( +"no such argument" );
               kind := eof_t;
            end;
         end if;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$0" then
         if onlyAda95 then
-           err( "$0 not allowed with " & optional_yellow( "pragma ada_95" ) &
-           " -- use command_line package" );
+           err( +"$0 not allowed with " & em( "pragma ada_95" ) &
+           pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
            f := to_unbounded_string( Ada.Command_Line.Command_Name );
@@ -1504,15 +1505,15 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
-           err( "@ is not defined" );
+           err( +"@ is not defined" );
            f := null_unbounded_string;
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
-           err( "@ is not a variable" );
+           err( +"@ is not a variable" );
            kind := eof_t;
         else
            f := itself;
@@ -1521,7 +1522,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
         if onlyAda95 then
-           err( "% is not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"% is not allowed with " & em( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif syntax_check then             -- % depends on run-time
@@ -1529,7 +1530,7 @@ begin
            kind := universal_t;             -- typeless value
         else
            if last_output_type = eof_t then
-              err( "there has been no output assigned to %" );
+              err( +"there has been no output assigned to %" );
            else
               f := last_output;
            end if;
@@ -1557,12 +1558,12 @@ begin
         -- Bourne shell allows empty backquotes.  However, we do not by default.
         if length( codeFragment ) = 0 then
            if not suppress_no_empty_command_subs then
-              err( "empty command substitution" );
+              err( +"empty command substitution" );
            end if;
         else
            if tail( codeFragment, 1 ) = " " or
               tail( codeFragment, 1 ) = "" & ASCII.HT then
-              err( "trailing whitespace" );
+              err( +"trailing whitespace" );
            elsif tail( codeFragment, 1 ) /= ";" then
               codeFragment := codeFragment & ";";
            end if;
@@ -1576,21 +1577,21 @@ begin
         f := null_unbounded_string;                -- (always return something)
         kind := eof_t;
         err(                                              -- if/case function
-           contextNotes => "in this expression",
-           subjectNotes => "SparForte",
-           reason => "does not permit",
-           obstructorNotes => "Ada 2012 style if and case expressions",
-           remedy => "use the statement version which is easier to debug and maintain"
+           contextNotes => +"in this expression",
+           subjectNotes => +"SparForte",
+           reason => +"does not permit",
+           obstructorNotes => +"Ada 2012 style if and case expressions",
+           remedy => +"use the statement version which is easier to debug and maintain"
         );
      else
         f := null_unbounded_string;                -- (always return something)
         kind := eof_t;
         err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => "the expression",
-              reason => "expects an operand not",
+              subjectNotes => +"the expression",
+              reason => +"expects an operand not",
               obstructor => token,
-              remedy => "an expression factor expects a variable, value or subexpression"
+              remedy => +"an expression factor expects a variable, value or subexpression"
         );
      end if;
      -- Another board category, is the token a pre-defined idenifier?
@@ -1607,8 +1608,8 @@ begin
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
-           err( "symbol_table_size is not allowed with " &
-              optional_yellow( "pragma ada_95" ) );
+           err( +"symbol_table_size is not allowed with " &
+              em( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         else
@@ -1661,10 +1662,10 @@ begin
      kind := universal_t;
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects an operand not",
+        subjectNotes => +"the expression",
+        reason => +"expects an operand not",
         obstructor => token,
-        remedy => "an expression factor expects a variable, value or subexpression"
+        remedy => +"an expression factor expects a variable, value or subexpression"
         );
   else                                                  -- a user ident?
      ParseFactorIdentifier;
@@ -1702,8 +1703,8 @@ begin
   when others =>
       f := null_unbounded_string;                -- (always return something)
       kind := eof_t;
-      err( gnat.source_info.source_location &
-           ": internal error: unexpected uniary operation error" );
+      err( pl( gnat.source_info.source_location &
+           ": internal error: unexpected uniary operation error" ) );
   end case;
 --put_line("ParseFactor end"); -- DEBUG
 end ParseFactor;
@@ -1722,10 +1723,10 @@ begin
      --err( "operator expected");
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator symbol",
-        remedy => "'**'."
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator symbol",
+        remedy => +"'**'."
      );
   -- This is checked by parseTerm
   --elsif identifiers( Token ).value.all /= "**" then
@@ -1776,18 +1777,18 @@ begin
                          natural( to_numeric( factor2 ) ) );
                  end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  term := null_unbounded_string;
               when others =>
                  err_exception_raised;
                  term := null_unbounded_string;
               end;
           else
-              err( gnat.source_info.source_location &
-                   "interal error: unknown power operator" );
+              err( pl( gnat.source_info.source_location &
+                   "interal error: unknown power operator" ) );
           end if;
         else
-           err( "operation ** not defined for these types" );
+           err( +"operation ** not defined for these types" );
         end if;
      end if;
   end loop;
@@ -1809,18 +1810,18 @@ begin
   elsif Token /= symbol_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a term operator like '*', '/' or '&'."
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a term operator like '*', '/' or '&'."
      );
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a term operator like '*', '/' or '&'."
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a term operator like '*', '/' or '&'."
      );
   else
      op := identifiers( token ).value.all;
@@ -1876,7 +1877,7 @@ begin
                      term_type );
                   end if;
                  exception when program_error =>
-                    err( "program_error exception raised" );
+                    err( +"program_error exception raised" );
                     term := null_unbounded_string;
                  when others =>
                     err_exception_raised;
@@ -1905,14 +1906,14 @@ begin
                      t := to_numeric( term );
                      p := to_numeric( pterm2 );
                      if p = 0.0 then
-                        err( "division by zero" );
+                        err( +"division by zero" );
                      else
                         z := t / p;
                         term := castToType( z, term_type );
                      end if;
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -1933,7 +1934,7 @@ begin
                      term_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -1954,15 +1955,15 @@ begin
                      term_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
                    err_exception_raised;
                    term := null_unbounded_string;
                 end;
              else
-                err( gnat.source_info.source_location &
-                   ": Internal error: unable to handle term operator" );
+                err( pl( gnat.source_info.source_location &
+                   ": Internal error: unable to handle term operator" ) );
              end if;
            end if;
         elsif operation = uni_string_t then
@@ -1997,10 +1998,10 @@ begin
                     end if;
                  end if;
               else
-                 err( "operation not defined for string types" );
+                 err( +"operation not defined for string types" );
               end if;
            exception when program_error =>
-              err( "program_error exception raised" );
+              err( +"program_error exception raised" );
               term := null_unbounded_string;
            when others =>
               err_exception_raised;
@@ -2008,11 +2009,11 @@ begin
            end;
         else
            if operator = "*" then
-              err( "operation * not defined for these types" );
+              err( +"operation * not defined for these types" );
            elsif operator = "/" then
-              err( "operation / not defined for these types" );
+              err( +"operation / not defined for these types" );
            elsif operator = "&" then
-              err( "operation & not defined for these types" );
+              err( +"operation & not defined for these types" );
            end if;
         end if;
   end loop;
@@ -2033,18 +2034,18 @@ begin
   if Token /= symbol_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a simple expression operator like '+' or '-'."
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a simple expression operator like '+' or '-'."
      );
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a simple expression operator like '+' or '-'."
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a simple expression operator like '+' or '-'."
      );
   end if;
   op := identifiers( token ).value.all;
@@ -2120,7 +2121,7 @@ begin
                      expr_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -2139,7 +2140,7 @@ begin
                      expr_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -2177,11 +2178,11 @@ begin
                  end;
               end if;
            elsif operator = "-" then
-              err( "operation - not defined for these types" );
+              err( +"operation - not defined for these types" );
            end if;
         elsif operation = root_record_t then -- adding times
            if operator = "+" then
-              err( "operation + not defined for these types" );
+              err( +"operation + not defined for these types" );
            else
               if isExecutingCommand then
                  declare
@@ -2191,17 +2192,17 @@ begin
                     c2 := c - scanner.calendar.time( to_numeric( term2 ) );
                     se := to_unbounded_string( duration'image( c2 ) );
                  exception when time_error =>
-                    err( "duration value too large or small" );
+                    err( +"duration value too large or small" );
                  when constraint_error =>
-                    err( "constraint error" );
+                    err( +"constraint error" );
                  end;
               end if;
            end if;
         else
              if operator = "+" then
-                err( "operation + not defined for these types" );
+                err( +"operation + not defined for these types" );
              elsif operator = "-" then
-                err( "operation - not defined for these types" );
+                err( +"operation - not defined for these types" );
              end if;
         end if;
      end if;
@@ -2223,10 +2224,10 @@ begin
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a relational operator like '=', '/=' or 'in'"
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a relational operator like '=', '/=' or 'in'"
      );
   elsif identifiers( Token ).value.all /= ">=" and
         identifiers( Token ).value.all /= ">" and
@@ -2237,10 +2238,10 @@ begin
         Token /= in_t and Token /= not_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a relational operator like '=', '/=' or 'in'"
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a relational operator like '=', '/=' or 'in'"
      );
   end if;
   if Token = in_t then
@@ -2251,10 +2252,10 @@ begin
      if Token /= in_t then
         err(
            -- redundant contextNotes => "in this expression",
-           subjectNotes => "the expression",
-           reason => "expects",
-           obstructorNotes => "an operator",
-           remedy => "a relational operator like '=', '/=' or 'in'."
+           subjectNotes => +"the expression",
+           reason => +"expects",
+           obstructorNotes => +"an operator",
+           remedy => +"a relational operator like '=', '/=' or 'in'."
         );
      end if;
   else
@@ -2300,8 +2301,8 @@ begin
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then -- redundant below but
            expectSymbol(                           -- keeps error messages nice
               expectedValue => "..",
-              contextNotes => "in this expression",
-              subjectNotes => "the in / not in range",
+              contextNotes => +"in this expression",
+              subjectNotes => +"the in / not in range",
               subjectType => kind1
            );
            ParseFactor( se3, kind3 );       -- should probably restructure
@@ -2355,8 +2356,8 @@ begin
                      b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
                   end if;
                else
-                  err( gnat.source_info.source_location &
-                    ": Internal error: couldn't handle relational operator" );
+                  err( pl( gnat.source_info.source_location &
+                    ": Internal error: couldn't handle relational operator" ) );
                end if;
                if b then
                   re := to_unbounded_string( "1" );
@@ -2396,7 +2397,7 @@ begin
                    if length( se1 ) /= 1 or
                       length( se2 ) /= 1 or
                       length( se3 ) /= 1 then
-                      err( "scalar type required for range" );
+                      err( +"scalar type required for range" );
                    else
                       declare
                         c1 : constant character := element( se1, 1 );
@@ -2414,7 +2415,7 @@ begin
                    if length( se1 ) /= 1 or
                       length( se2 ) /= 1 or
                       length( se3 ) /= 1 then
-                      err( "scalar type required for range" );
+                      err( +"scalar type required for range" );
                    else
                       declare
                         c1 : constant character := element( se1, 1 );
@@ -2428,8 +2429,8 @@ begin
                    end if;
                 end if;
              else
-                err( gnat.source_info.source_location &
-                  ": Internal error: couldn't handle relational operator" );
+                err( pl( gnat.source_info.source_location &
+                  ": Internal error: couldn't handle relational operator" ) );
              end if;
              if b then
                 re := to_unbounded_string( "1" );
@@ -2437,7 +2438,7 @@ begin
                 re := to_unbounded_string( "0" );
              end if;
         else
-             err( "relational operation not defined for these types" );
+             err( +"relational operation not defined for these types" );
         end if;
      end if;
   end if;
@@ -2456,13 +2457,13 @@ begin
   if Token /= and_t and
      Token /= or_t and
      Token /= xor_t then
-     err( "boolean operator expected");
+     err( +"boolean operator expected");
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => "the expression",
-        reason => "expects",
-        obstructorNotes => "an operator",
-        remedy => "a boolean operator like 'and', 'or' or 'xor'."
+        subjectNotes => +"the expression",
+        reason => +"expects",
+        obstructorNotes => +"an operator",
+        remedy => +"a boolean operator like 'and', 'or' or 'xor'."
      );
   end if;
   op := Token;
@@ -2504,8 +2505,8 @@ begin
   while Token = and_t or Token = or_t or Token = xor_t loop
      ParseExpressionOperator( operator );
      if onlyAda95 and then last_op /= eof_t and then last_op /= operator then
-        err( "mixed boolean operators in expression not allowed with " &
-              optional_yellow( "pragam ada_95" ) & " - use parantheses" );
+        err( +"mixed boolean operators in expression not allowed with " &
+              em( "pragam ada_95" ) & pl( " -- use parantheses" ) );
      end if;
      ParseRelation( re2, kind2 );
      if type_checks_done or else baseTypesOK( kind1, kind2 ) then
@@ -2520,10 +2521,10 @@ begin
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  re1 := null_unbounded_string;
               when ada.strings.index_error =>
-                 err( "variable was not intialized" );
+                 err( +"variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err_exception_raised;
@@ -2538,10 +2539,10 @@ begin
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  re1 := null_unbounded_string;
               when ada.strings.index_error =>
-                 err( "variable was not intialized" );
+                 err( +"variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err_exception_raised;
@@ -2556,10 +2557,10 @@ begin
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  re1 := null_unbounded_string;
               when ada.strings.index_error =>
-                 err( "variable was not intialized" );
+                 err( +"variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err_exception_raised;
@@ -2581,8 +2582,8 @@ begin
                  b := re1 = "1" xor re2 = "1";
               end if;
            else
-              err( gnat.source_info.source_location &
-                ": Internal error: unable to handle boolean operator" );
+              err( pl( gnat.source_info.source_location &
+                ": Internal error: unable to handle boolean operator" ) );
            end if;
            if isExecutingCommand then
               if b then
@@ -2594,9 +2595,9 @@ begin
         else
            err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => "this expression",
-              reason => "expects",
-              obstructorNotes => "a boolean or a number"
+              subjectNotes => +"this expression",
+              reason => +"expects",
+              obstructorNotes => +"a boolean or a number"
            );
         end if;
      end if;
@@ -2665,8 +2666,8 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
         if onlyAda95 then
-           err( "$# not allowed with " & optional_yellow( "pragma ada_95" ) &
-           " -- use command_line package" );
+           err( +"$# not allowed with " & em( "pragma ada_95" ) &
+           pl( " -- use command_line package" ) );
         end if;
         if isExecutingStaticCommand then
            f := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
@@ -2677,8 +2678,8 @@ begin
         identifiers( Token ).value.all <= "$9" then
         -- this could be done a little tighter (ie length check)
         if onlyAda95 then
-           err( "$1..$9 not allowed with " & optional_yellow( "pragma ada_95" ) &
-           " -- use command_line package" );
+           err( +"$1..$9 not allowed with " & em( "pragma ada_95" ) &
+           pl( " -- use command_line package" ) );
         end if;
         kind := uni_string_t;
         if isExecutingStaticCommand then
@@ -2688,18 +2689,18 @@ begin
                    integer'value(
                    "" & Element( identifiers( Token ).value.all, 2 ) )+optionOffset ) );
            exception when program_error =>
-              err( "program_error exception raised" );
+              err( +"program_error exception raised" );
               kind := eof_t;
            when others =>
-              err( "there are only" & integer'image( Argument_Count-optionOffset) & " arguments" );
+              err( pl( "there are only" & integer'image( Argument_Count-optionOffset) & " arguments" ) );
               kind := eof_t;
            end;
         end if;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$0" then
         if onlyAda95 then
-           err( "$0 not allowed with " & optional_yellow( "pragma ada_95" ) &
-           " -- use command_line package" );
+           err( +"$0 not allowed with " & em( "pragma ada_95" ) &
+           pl( " -- use command_line package" ) );
         end if;
         if isExecutingStaticCommand then
            f := to_unbounded_string( Ada.Command_Line.Command_Name );
@@ -2708,15 +2709,15 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
         if onlyAda95 then
-           err( "@ is not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"@ is not allowed with " & em( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
-           err( "@ is not defined" );
+           err( +"@ is not defined" );
            f := null_unbounded_string;
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
-           err( "@ is not a variable" );
+           err( +"@ is not a variable" );
         else
            f := itself;
            kind := itself_type;
@@ -2724,7 +2725,7 @@ begin
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
         if onlyAda95 then
-           err( "% is not allowed with " & optional_yellow( "pragma ada_95" ) );
+           err( +"% is not allowed with " & em( "pragma ada_95" ) );
            f := null_unbounded_string;
            kind := eof_t;
         elsif syntax_check then             -- % depends on run-time
@@ -2732,7 +2733,7 @@ begin
            kind := universal_t;             -- typeless value
         else
            if last_output_type = eof_t then
-              err( "there has been no output assigned to %" );
+              err( +"there has been no output assigned to %" );
            else
               f := last_output;
            end if;
@@ -2765,21 +2766,21 @@ begin
      -- Static expressions must not run built-in functions because they will
      -- accept regular expressions
      elsif identifiers( token ).funcCB /= null then         -- a callback?
-        err( "static expressions cannot call functions" );
+        err( +"static expressions cannot call functions" );
         -- identifiers( token ).funcCB.all( f, kind );        -- run it
      elsif token = is_open_t then                         -- is_open function
-        err( "static expressions cannot call functions" );
+        err( +"static expressions cannot call functions" );
         --ParseIsOpen( t );
         --f := identifiers( t ).value.all;
         kind := boolean_t;
      elsif token = abs_t then                             -- abs function
-        err( "static expressions cannot call functions" );
+        err( +"static expressions cannot call functions" );
         --ParseNumericsAbs( f );
         kind := uni_numeric_t;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
-           err( "symbol_table_size is not allowed with pragma ada_95" );
+           err( +"symbol_table_size is not allowed with pragma ada_95" );
            f := null_unbounded_string;
            kind := eof_t;
         else
@@ -2812,20 +2813,20 @@ begin
     elsif identifiers( token ).class = userProcClass or
           identifiers( token ).class = procClass then
        err(
-          contextNotes => "In the static expression",
+          contextNotes => +"In the static expression",
           subject => token,
-          reason => "cannot be used because",
-          obstructorNotes => "it is a " & optional_yellow( "procedure" ),
-          remedy => "avoid procedures and functions because the program is loading not running"
+          reason => +"cannot be used because",
+          obstructorNotes => +"it is a " & em( "procedure" ),
+          remedy => +"avoid procedures and functions because the program is loading not running"
        );
       elsif identifiers( token ).class = userFuncClass or
             identifiers( token ).class = funcClass then
        err(
-          contextNotes => "In the static expression",
+          contextNotes => +"In the static expression",
           subject => token,
-          reason => "cannot be used because",
-          obstructorNotes => "it is a " & optional_yellow( "function" ),
-          remedy => "avoid procedures and functions because the program is loading not running"
+          reason => +"cannot be used because",
+          obstructorNotes => +"it is a " & em( "function" ),
+          remedy => +"avoid procedures and functions because the program is loading not running"
        );
      --    declare
      --      funcToken : identifier := token;
@@ -2836,14 +2837,14 @@ begin
      elsif identifiers( token ).kind = keyword_t then      -- no keywords
         f := null_unbounded_string;                        -- (always return something)
         kind := universal_t;
-        err( "variable, value or expression expected" );
+        err( +"variable, value or expression expected" );
      else                                                  -- some kind of user ident?
         ParseStaticIdentifier( t );
         --if isExecutingStaticCommand then
         if identifiers( t ).specAt /= noSpec then
-            err( "earlier specification has not been completed (at " &
+            err( pl( "earlier specification has not been completed (at " &
                  to_string( identifiers( t ).specFile) & ":" &
-                 identifiers( t ).specAt'img & ")");
+                 identifiers( t ).specAt'img & ")" ) );
         end if;
         --end if;
         -- Note: Variables must be allowed for System package variables
@@ -2856,7 +2857,7 @@ begin
            if getUniType( kind ) = uni_string_t or   -- index must be scalar
               getUniType( kind ) = root_record_t or
               identifiers( getBaseType( kind ) ).list then
-              err( "array index must be a scalar type" );
+              err( +"array index must be a scalar type" );
            end if;
            castType := t;                        -- in expressiosn (yet)
            expect( symbol_t, "(" );
@@ -2909,8 +2910,8 @@ begin
         -- regular variable with an array index?
         else
           if token = symbol_t and identifiers( token ).value.all = "(" then
-             err( optional_yellow( to_string( identifiers( t ).name ) ) &
-                 " has an array index but is not an array" );
+             err( name_em( t ) &
+                 pl( " has an array index but is not an array" ) );
            end if;
            f := identifiers( t ).value.all;
            kind := identifiers( t ).kind;
@@ -2948,7 +2949,7 @@ begin
           err_exception_raised;
        end;
   when others =>
-      err( "unexpected uniary operation error" );
+      err( +"unexpected uniary operation error" );
   end case;
 end ParseStaticFactor;
 
@@ -2963,7 +2964,7 @@ procedure ParseStaticPowerTermOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
-     err( "operator expected");
+     err( +"operator expected" );
   else
      op := identifiers( token ).value.all;
   end if;
@@ -3009,18 +3010,18 @@ begin
                          natural( to_numeric( factor2 ) ) );
                  end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  term := null_unbounded_string;
               when others =>
                  err_exception_raised;
                  term := null_unbounded_string;
               end;
           else
-              err( gnat.source_info.source_location &
-                   "interal error: unknown power operator" );
+              err( pl( gnat.source_info.source_location &
+                   "interal error: unknown power operator" ) );
           end if;
         else
-           err( "operation ** not defined for these types" );
+           err( +"operation ** not defined for these types" );
         end if;
      end if;
   end loop;
@@ -3039,9 +3040,9 @@ begin
   if Token = mod_t or Token = rem_t then
      op := identifiers( token ).name;
   elsif Token /= symbol_t then
-     err( "operator expected");
+     err( +"operator expected");
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
-     err( "term operator expected");
+     err( +"term operator expected");
   else
      op := identifiers( token ).value.all;
   end if;
@@ -3095,7 +3096,7 @@ begin
                      term_type );
                   end if;
                  exception when program_error =>
-                    err( "program_error exception raised" );
+                    err( +"program_error exception raised" );
                     term := null_unbounded_string;
                  when others =>
                     err_exception_raised;
@@ -3124,14 +3125,14 @@ begin
                      t := to_numeric( term );
                      p := to_numeric( pterm2 );
                      if p = 0.0 then
-                        err( "division by zero" );
+                        err( +"division by zero" );
                      else
                         z := t / p;
                         term := castToType( z, term_type );
                      end if;
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -3152,7 +3153,7 @@ begin
                      term_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -3173,15 +3174,15 @@ begin
                      term_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    term := null_unbounded_string;
                 when others =>
                    err_exception_raised;
                    term := null_unbounded_string;
                 end;
              else
-                err( gnat.source_info.source_location &
-                  ": Internal error: unable to handle term operator" );
+                err( pl( gnat.source_info.source_location &
+                  ": Internal error: unable to handle term operator" ) );
              end if;
            end if;
         elsif operation = uni_string_t then
@@ -3216,10 +3217,10 @@ begin
                     end if;
                  end if;
               else
-                 err( "operation not defined for string types" );
+                 err( +"operation not defined for string types" );
               end if;
            exception when program_error =>
-              err( "program_error exception raised" );
+              err( +"program_error exception raised" );
               term := null_unbounded_string;
            when others =>
               err_exception_raised;
@@ -3227,11 +3228,11 @@ begin
            end;
         else
            if operator = "*" then
-              err( "operation * not defined for these types" );
+              err( +"operation * not defined for these types" );
            elsif operator = "/" then
-              err( "operation / not defined for these types" );
+              err( +"operation / not defined for these types" );
            elsif operator = "&" then
-              err( "operation & not defined for these types" );
+              err( +"operation & not defined for these types" );
            end if;
         end if;
   end loop;
@@ -3248,9 +3249,9 @@ procedure ParseStaticSimpleExpressionOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t then
-     err( "operator expected");
+     err( +"operator expected");
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
-     err( "simple expression operator expected");
+     err( +"simple expression operator expected");
   end if;
   op := identifiers( token ).value.all;
   getNextToken;
@@ -3324,7 +3325,7 @@ begin
                      expr_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -3343,7 +3344,7 @@ begin
                      expr_type );
                   end if;
                 exception when program_error =>
-                   err( "program_error exception raised" );
+                   err( +"program_error exception raised" );
                    se := null_unbounded_string;
                 when others =>
                    err_exception_raised;
@@ -3381,11 +3382,11 @@ begin
                  end;
               end if;
            elsif operator = "-" then
-              err( "operation - not defined for these types" );
+              err( +"operation - not defined for these types" );
            end if;
         elsif operation = root_record_t then -- adding times
            if operator = "+" then
-              err( "operation + not defined for these types" );
+              err( +"operation + not defined for these types" );
            else
               if isExecutingStaticCommand then
                  declare
@@ -3395,17 +3396,17 @@ begin
                     c2 := c - scanner.calendar.time( to_numeric( term2 ) );
                     se := to_unbounded_string( duration'image( c2 ) );
                  exception when time_error =>
-                    err( "duration value too large or small" );
+                    err( +"duration value too large or small" );
                  when constraint_error =>
-                    err( "constraint error" );
+                    err( +"constraint error" );
                  end;
               end if;
            end if;
         else
              if operator = "+" then
-                err( "operation + not defined for these types" );
+                err( +"operation + not defined for these types" );
              elsif operator = "-" then
-                err( "operation - not defined for these types" );
+                err( +"operation - not defined for these types" );
              end if;
         end if;
      end if;
@@ -3424,7 +3425,7 @@ procedure ParseStaticRelationalOperator( op : out unbounded_string ) is
 begin
   -- token value is checked by parseTerm, but not token name
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
-     err( "operator expected");
+     err( +"operator expected");
   elsif identifiers( Token ).value.all /= ">=" and
         identifiers( Token ).value.all /= ">" and
         identifiers( Token ).value.all /= "<" and
@@ -3432,7 +3433,7 @@ begin
         identifiers( Token ).value.all /= "=" and
         identifiers( Token ).value.all /= "/=" and
         Token /= in_t and Token /= not_t then
-     err( "relational operator expected");
+     err( +"relational operator expected");
   end if;
   if Token = in_t then
      op := identifiers( token ).name;
@@ -3440,7 +3441,7 @@ begin
      op := to_unbounded_string( "not in" );
      getNextToken;
      if Token /= in_t then
-        err( "relational operator expected");
+        err( +"relational operator expected");
      end if;
   else
      op := identifiers( token ).value.all;
@@ -3533,8 +3534,8 @@ begin
                      b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
                   end if;
                else
-                  err( gnat.source_info.source_location &
-                    ": Internal error: couldn't handle relational operator" );
+                  err( pl( gnat.source_info.source_location &
+                    ": Internal error: couldn't handle relational operator" ) );
                end if;
                if b then
                   re := to_unbounded_string( "1" );
@@ -3574,7 +3575,7 @@ begin
                    if length( se1 ) /= 1 or
                       length( se2 ) /= 1 or
                       length( se3 ) /= 1 then
-                      err( "scalar type required for range" );
+                      err( +"scalar type required for range" );
                    else
                       declare
                         c1 : constant character := element( se1, 1 );
@@ -3592,7 +3593,7 @@ begin
                    if length( se1 ) /= 1 or
                       length( se2 ) /= 1 or
                       length( se3 ) /= 1 then
-                      err( "scalar type required for range" );
+                      err( +"scalar type required for range" );
                    else
                       declare
                         c1 : constant character := element( se1, 1 );
@@ -3606,8 +3607,8 @@ begin
                    end if;
                 end if;
              else
-                err( gnat.source_info.source_location &
-                   ": Internal error: couldn't handle relational operator" );
+                err( pl( gnat.source_info.source_location &
+                   ": Internal error: couldn't handle relational operator" ) );
              end if;
              if b then
                 re := to_unbounded_string( "1" );
@@ -3615,7 +3616,7 @@ begin
                 re := to_unbounded_string( "0" );
              end if;
         else
-             err( "relational operation not defined for these types" );
+             err( +"relational operation not defined for these types" );
         end if;
      end if;
   end if;
@@ -3633,7 +3634,7 @@ begin
   if Token /= and_t and
      Token /= or_t and
      Token /= xor_t then
-     err( "boolean operator expected");
+     err( +"boolean operator expected");
   end if;
   op := Token;
   getNextToken;
@@ -3662,8 +3663,8 @@ begin
   while Token = and_t or Token = or_t or Token = xor_t loop
      ParseStaticExpressionOperator( operator );
      if onlyAda95 and then last_op /= eof_t and then last_op /= operator then
-        err( "mixed boolean operators in expression not allowed with " &
-              optional_yellow( "pragam ada_95" ) & " - use parantheses" );
+        err( +"mixed boolean operators in expression not allowed with " &
+              em( "pragam ada_95" ) & pl( " -- use parantheses" ) );
      end if;
      ParseStaticRelation( re2, kind2 );
      if type_checks_done or else baseTypesOK( kind1, kind2 ) then
@@ -3678,10 +3679,10 @@ begin
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  re1 := null_unbounded_string;
               when ada.strings.index_error =>
-                 err( "variable was not intialized" );
+                 err( +"variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err_exception_raised;
@@ -3696,10 +3697,10 @@ begin
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  re1 := null_unbounded_string;
               when ada.strings.index_error =>
-                 err( "variable was not intialized" );
+                 err( +"variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err_exception_raised;
@@ -3714,10 +3715,10 @@ begin
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
               exception when program_error =>
-                 err( "program_error exception raised" );
+                 err( +"program_error exception raised" );
                  re1 := null_unbounded_string;
               when ada.strings.index_error =>
-                 err( "variable was not intialized" );
+                 err( +"variable was not intialized" );
                  re1 := null_unbounded_string;
               when others =>
                  err_exception_raised;
@@ -3739,8 +3740,8 @@ begin
                  b := re1 = "1" xor re2 = "1";
               end if;
            else
-              err( gnat.source_info.source_location &
-                ": Internal error: unable to handle boolean operator" );
+              err( pl( gnat.source_info.source_location &
+                ": Internal error: unable to handle boolean operator" ) );
            end if;
            if b then
               re1 := to_unbounded_string( "1" );
@@ -3748,7 +3749,7 @@ begin
               re1 := to_unbounded_string( "0" );
            end if;
         else
-           err( "boolean or number expected" );
+           err( +"boolean or number expected" );
         end if;
      end if;
      last_op := operator;

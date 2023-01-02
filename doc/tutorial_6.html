@@ -4,7 +4,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <META NAME="description" CONTENT="SparForte language documentation">
-tion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>SparForte - Tutorials - Template Tutorial 1: Basic Templates</title>
         <link rel="StyleSheet" type="text/css" media="screen" href="art/sparforte.css">
@@ -63,7 +62,7 @@ SparForte interpreter in the "#!" line at the top of script.</p>
 
 <p>The SparForte <tt>cgi</tt> package contains the basic functionality for
 writing CGI scripts.  This is included by default.  If you prefer, support
-for the <tt>gnat.cgi</tt> can be added when SparForte is built, though this
+for the <code>gnat.cgi</code> can be added when SparForte is built, though this
 disables certain features.  See the gnat.cgi package reference for more
 information.</p>
 
@@ -79,7 +78,7 @@ cgi.put_html_head( "test", "" );<br />
 &nbsp;<br />
         </p>
         <div class="code_caption">
-        <b>Example</b>: Display all predefined variables</span>
+        <b>Example</b>: Display all predefined variables
         </div>
         </div>
         </center>
@@ -112,13 +111,13 @@ package.  It shows the values submitted through a HTML form.</p>
      	&nbsp;&nbsp;&nbsp;&nbsp;put_line( "&lt;form method=" &amp; ASCII.Quotation &amp; "POST" &amp; ASCII.Quotation &amp;<br>
        	&nbsp;&nbsp;&nbsp;&nbsp;"&gt;What's your name?&lt;input name=" &amp; ASCII.Quotation &amp; "username" &amp;<br>
        	&nbsp;&nbsp;&nbsp;&nbsp;ASCII.Quotation &amp; "&gt;&lt;input type=" &amp; ASCII.Quotation &amp; "submit" &amp;<br>
-       	&nbsp;&nbsp;&nbsp;&nbsp;ASCII.Quotation &amp; "&gt;</form>" );<br>
+       	&nbsp;&nbsp;&nbsp;&nbsp;ASCII.Quotation &amp; "&lt;/form&gt;" );<br>
   	&nbsp;&nbsp;<b>end</b> <b>if</b>;<br>
   	&nbsp;&nbsp;cgi.put_html_tail;<br>
 	<b>end</b> minimal_cgi;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple CGI Script</span>
+        <b>Example</b>: A Simple CGI Script
         </div>
         </div>
         </center>
@@ -132,7 +131,7 @@ error log.</p>
 it doesn't yet have an Apache module, you can use the CGI mechanism
 to use templates.  First, the CGI script can do any necessary
 computation.  Then, using a directive called
-called <b>pragma template</b>, a web template is loaded containing
+called <code>pragma template</code>, a web template is loaded containing
 HTML and embedded SparForte statements.</p>
 
 <p>The template pragma has two parameters: the type of
@@ -149,10 +148,11 @@ queries or
 complex calculations. Once SparForte has executed this script, SparForte try will
 load a
 template called "status.tmpl".</p>
+
 <h4>What's in a Template File?</h4>
 <p>A template file should contain the web page SparForte will display. Embed
 SparForte
-scripts within the template using &lt;?spar tag. The output
+scripts within the template using <code>&lt;?spar&gt;</code> tag. The output
 from the scripts is written directly into the web page. For example,
 to insert the values of SparForte variables in a web page, use the question
 mark
@@ -173,7 +173,7 @@ command.</p>
 	&lt;/html&gt;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: A Simple Web Template (For the Simple Template Script)</span>
+        <b>Example</b>: A Simple Web Template (For the Simple Template Script)
         </div>
         </div>
         </center>
@@ -184,14 +184,14 @@ command.</p>
 <p style="font-weight: bold;font-size: 14px">Users on the System</p>
 There are 4 users on the system.
 <hr>
-<p>The &lt;?spar...?&gt; tag can contain any kind of SparForte script and
+<p>The <code>&lt;?spar&gt;</code> tag can contain any kind of SparForte script and
 can be longer
 than one line.</p>
 <p>The scripts in the template are after the main script. For security,
 scripts run in a restricted shell and are not able to run external
 operating
-system commands. (You can disable this protection with <tt>pragma
-unrestricted_template</tt> but anyone who can edit the template will be
+system commands. (You can disable this protection with <code>pragma
+unrestricted_template</code> but anyone who can edit the template will be
 able to run commands with the authority of the web server.</p>
 
 <p>Here is a longer example:</p>
@@ -244,22 +244,21 @@ prevent most exploits.  However, if a restricted shell is too restrictive,
 remember to do the following things:</p>
 
 <ul>
-<li>Use <b>cgi.url_encode</b> for all URL's being returned.</li>
-<li>Use <b>cgi.html_encode</b> for all string values that will used to build web content.</li>
-<li>Use the strings validation functions like <b>strings.is_alphanumeric</b> on all strings.</li>
-<li>Sanitize input values with <b>strings.fix</b> or <b>strings.trim</b> where appropriate.</li>
-<li>Convert or cast input values from strings to their appropriate type using functions like <b>numerics.value</b>.</li>
+<li>Use <code>cgi.url_encode</code> for all URL's being returned.</li>
+<li>Use <code>cgi.html_encode</code> for all string values that will used to build web content.</li>
+<li>Use the strings validation functions like <code>strings.is_alphanumeric</code> on all strings.</li>
+<li>Sanitize input values with <code>strings.fix</code> or <code>strings.trim</code> where appropriate.</li>
+<li>Convert or cast input values from strings to their appropriate type using functions like <code>numerics.value</code>.</li>
 </ul>
 
 <p>SparForte's strong typing is very good at keeping data separate that should
 remain separate.  It can help protect your site from putting plain, not encoded
-data on a web site.  For example, create new string types like "unescaped_string"
-and "escaped_string".</p>
+data on a web site.  For example, create new string types like <code>unescaped_string</code>
+and <code>escaped_string</code>.</p>
 
-<p>The create your own version of the html_encode and url_encode functions that
-have an unescaped_string parameter and returns a escaped_string.
-Create your own version of put or put_line that use escaped_string
-parameters.</p>
+<p>The create your own version of the <code>html_encode</code> and <code>url_encode</code> functions that
+have an <code>unescaped_string</code> parameter and returns a <code>escaped_string</code>.
+Create your own version of <code>put</code> or <code>put_line</code> that use <code>escaped_string</code> parameters.</p>
 
         <center>
         <div class="code">
@@ -288,7 +287,7 @@ parameters.</p>
 <b>end</b> put_line_html;<br>&nbsp;<br>
         </p>
         <div class="code_caption">
-        <b>Example</b>: Using Strong Typing to Ensure Web Page Content is Encoded</span>
+        <b>Example</b>: Using Strong Typing to Ensure Web Page Content is Encoded
         </div>
         </div>
         </center>

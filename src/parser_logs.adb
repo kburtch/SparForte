@@ -175,7 +175,7 @@ begin
 
   -- Check to see that the file is open
   if length( identifiers( ref.id ).value.all ) = 0 then
-     err( "log file is not open" );
+     err( +"log file is not open" );
      return;
   end if;
 
@@ -192,7 +192,7 @@ begin
           if exception_message( msg ) = "interrupted system call" then
              retry := true;
           else
-             err( exception_message( msg ) );
+             err( pl( exception_message( msg ) ) );
           end if;
         end;
      exit when not retry;
@@ -209,7 +209,7 @@ begin
             if C_errno = EAGAIN or C_errno = EINTR then
                goto logwrite;
             end if;
-            err( "unable to write: " & OSerror( C_errno ) );
+            err( pl( "unable to write: " & OSerror( C_errno ) ) );
             exit;
          end if;
      end loop;
@@ -220,7 +220,7 @@ begin
         if C_errno = EAGAIN or C_errno = EINTR then
             goto logwrite2;
         end if;
-        err( "unable to write: " & OSerror( C_errno ) );
+        err( pl( "unable to write: " & OSerror( C_errno ) ) );
       else
         replaceField( ref, line_field,
            long_integer'image( long_integer'value(
@@ -379,7 +379,7 @@ begin
            open( log_file, append_file, to_string( log_path ) );
         exception when others =>
            if rshOpt then
-              err( "creating new logs is not allowed in a " & optional_yellow( "restricted shell" ) );
+              err( +"creating new logs is not allowed in a " & em( "restricted shell" ) );
               unlock_file( to_string( lock_file_path ) );
               return; -- must abort
            else
@@ -506,7 +506,7 @@ begin
         AssignParameter(ref, to_unbounded_string( long_float( level ) ) );
         level := level + 1;
      exception when constraint_error =>
-        err( "constraint_error raised" );
+        err( +"constraint_error raised" );
      when others =>
         err_exception_raised;
      end;
@@ -523,7 +523,7 @@ begin
      begin
         level := natural'value( ' ' & to_string( identifiers( id ).value.all ) );
      exception when constraint_error =>
-        err( "constraint_error raised" );
+        err( +"constraint_error raised" );
      when others =>
         err_exception_raised;
      end;
@@ -578,7 +578,7 @@ begin
               exception when others => null;
               end;
            when others =>
-              err( "internal error: unexpected chain context" );
+              err( +"internal error: unexpected chain context" );
            end case;
         end if;
      exception when others =>
@@ -640,7 +640,7 @@ begin
               exception when others => null;
               end;
            when others =>
-              err( "internal error: unexpected chain context" );
+              err( +"internal error: unexpected chain context" );
            end case;
         end if;
      exception when others =>
@@ -702,7 +702,7 @@ begin
               exception when others => null;
               end;
            when others =>
-              err( "internal error: unexpected chain context" );
+              err( +"internal error: unexpected chain context" );
            end case;
         end if;
      exception when others =>
@@ -764,7 +764,7 @@ begin
               exception when others => null;
               end;
            when others =>
-              err( "internal error: unexpected chain context" );
+              err( +"internal error: unexpected chain context" );
            end case;
         end if;
      exception when others =>
@@ -802,14 +802,14 @@ begin
 
   if isExecutingCommand then
      if log_is_open then
-        err( "log is already open" );
+        err( +"log is already open" );
      -- Except for stderr, we need a file path
      elsif modeExpr /= "0" and length( pathExpr ) = 0 then
-        err( "log path is an empty string" );
+        err( +"log path is an empty string" );
      elsif modeExpr = "0" and length( pathExpr ) > 0 then
-        err( "log path should be an empty string" );
+        err( +"log path should be an empty string" );
      elsif Is_Directory( to_string( pathExpr ) & ASCII.NUL ) then
-        err( "log path is a directory" );
+        err( +"log path is a directory" );
      else
         get_entity( entity );
         sourceFile := basename( getSourceFileName );
@@ -834,7 +834,7 @@ begin
   expect( logs_close_t );
   if isExecutingCommand then
      if not log_is_open then
-        err( "log is already closed" );
+        err( +"log is already closed" );
      else
         closeLog;
      end if;
@@ -885,7 +885,7 @@ begin
   expect( logs_rotate_begin_t );
   if isExecutingCommand then
      if log_is_rotating then
-        err( "logs are already rotating" );
+        err( +"logs are already rotating" );
      elsif lock_file_path /= "" and log_mode /= stderr_log then
         -- We don't need a lock file when logging to standard error only
         lock_file( to_string( lock_file_path ) );
@@ -900,7 +900,7 @@ begin
   expect( logs_rotate_end_t );
   if isExecutingCommand then
      if not log_is_rotating then
-        err( "logs are not rotating" );
+        err( +"logs are not rotating" );
      elsif lock_file_path /= "" and log_mode /= stderr_log then
         -- We don't need a lock file when logging to standard error only
         unlock_file( to_string( lock_file_path ) );

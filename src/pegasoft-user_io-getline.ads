@@ -49,6 +49,11 @@ function has_readline return boolean;
 RL_PROMPT_START_IGNORE : constant character := ASCII.SOH; -- Ctrl-A
 RL_PROMPT_END_IGNORE   : constant character := ASCII.STX; -- Ctrl-B
 
+procedure set_readline_interval( interval : duration );
+-- Set the number of seconds at an idle prompt to call the idle
+-- callback.  The idle callback will repeat continuously.
+
+type a_readline_callback is access procedure;
 
 -----------------------------------------------------------------------------
 --
@@ -57,7 +62,8 @@ RL_PROMPT_END_IGNORE   : constant character := ASCII.STX; -- Ctrl-B
 -----------------------------------------------------------------------------
 
 
-procedure startupGetLine(optionOffset : natural);
+procedure startupGetLine(optionOffset : natural;
+  idle_callback : a_readline_callback);
 
 procedure shutdownGetLine;
 
@@ -103,5 +109,10 @@ pragma export( C, Ada_k8s_word_generator, "Ada_k8s_word_generator" );
 
 function Ada_npm_word_generator(text : chars_ptr; state : int ) return chars_ptr;
 pragma export( C, Ada_npm_word_generator, "Ada_npm_word_generator" );
+
+-- The Ada Readline timeout event handler
+
+function Ada_readline_timeout return int;
+pragma export( C, Ada_readline_timeout, "Ada_readline_timeout" );
 
 end pegasoft.user_io.getline;

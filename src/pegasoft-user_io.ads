@@ -22,8 +22,10 @@
 ------------------------------------------------------------------------------
 
 with ada.calendar,
-     ada.strings.unbounded;
-use  ada.strings.unbounded;
+     ada.strings.unbounded,
+     world;
+use  ada.strings.unbounded,
+     world;
 
 
 package pegasoft.user_io is
@@ -38,6 +40,8 @@ defaultPrompt  : constant unbounded_string := to_unbounded_string("=> ");
 -- default input prompt
 promptScript   : unbounded_string := null_unbounded_string;
 -- script created by pragma prompt_script
+promptIdleScript   : unbounded_string := null_unbounded_string;
+-- script created by pragma prompt_idle_script
 prompt         : unbounded_string := defaultPrompt;
 -- the last prompt displayed (set by parser)
 
@@ -108,10 +112,6 @@ function bold( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in bold characters
 
-function toProtectedValue( s : unbounded_string ) return string;
--- combines optional bold, secure data and escaped.  A null value will
--- return double single quotes.
-
 function optional_inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in inverse characters if -g not used
@@ -119,6 +119,10 @@ function optional_inverse( s : string ) return string;
 function inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in inverse characters
+
+procedure put_scrambled( msg : string );
+-- Display an animated scrambled message and started a new line
+-- In the style of the "Inside Man" movie end-credits.
 
 procedure put_trace( msg : string; icon : string := "" );
 -- display a trace message to standard error

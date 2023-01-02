@@ -156,7 +156,7 @@ begin
 
         expect( symbol_t, ")" );
      else
-        err( "string or boolean expected" );
+        err( +"string or boolean expected" );
      end if;
   end if;
 
@@ -164,11 +164,11 @@ begin
      begin
        Gnat.CGI.Put_Header( to_string( Header ), Force );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIPutHeader;
@@ -177,7 +177,7 @@ end ParseGnatCGIPutHeader;
 
 procedure not_configured is
 begin
-  err( "gnat.cgi support not configured" );
+  err( +"gnat.cgi support not configured" );
 end not_configured;
 
 pragma warnings( Off );
@@ -200,9 +200,9 @@ begin
      begin
        result := to_bush_boolean( gnat.cgi.ok );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIOK;
@@ -232,11 +232,11 @@ begin
                    )(2)&""
                  );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIMethod;
@@ -279,11 +279,11 @@ begin
           bool_val = identifiers( true_t ).value.all
        ) );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIMetavariable;
@@ -322,11 +322,11 @@ begin
                       meta_val
        ) ) ) ) );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIMetavariableExists;
@@ -369,11 +369,11 @@ begin
      begin
        result := to_unbounded_string( natural'image( gnat.cgi.argument_count ) );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIArgumentCount;
@@ -420,7 +420,7 @@ begin
         null;
      end if;
   else
-     err( "postive or string expected" );
+     err( +"postive or string expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -436,11 +436,11 @@ begin
           ) );
        end if;
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIValue;
@@ -469,11 +469,11 @@ begin
          gnat.cgi.key_exists( to_string( key_val ))
        );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( _"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIKeyExists;
@@ -507,11 +507,11 @@ begin
          gnat.cgi.key( positive'value( " " & to_string( pos_val ) ) )
        );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIKey;
@@ -563,7 +563,7 @@ begin
 
         expect( symbol_t, ")" );
      else
-        err( "string or boolean expected" );
+        err( +"string or boolean expected" );
      end if;
   end if;
 
@@ -571,13 +571,13 @@ begin
      begin
        Gnat.CGI.Cookie.Put_Header( to_string( Header ), Force );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookiePutHeader;
@@ -601,9 +601,9 @@ begin
      begin
        result := to_bush_boolean( gnat.cgi.cookie.ok );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookieOK;
@@ -627,13 +627,13 @@ begin
      begin
        result := to_unbounded_string( natural'image( gnat.cgi.cookie.count ) );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookieCount;
@@ -680,7 +680,7 @@ begin
         null;
      end if;
   else
-     err( "postive or string expected" );
+     err( +"postive or string expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -696,13 +696,13 @@ begin
           ) );
        end if;
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookieValue;
@@ -731,13 +731,13 @@ begin
          gnat.cgi.cookie.exists( to_string( key_val ))
        );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookieExists;
@@ -771,13 +771,13 @@ begin
          gnat.cgi.cookie.key( positive'value( " " & to_string( pos_val ) ) )
        );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookieKey;
@@ -876,13 +876,13 @@ begin
           secure
        );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGICookieSet;
@@ -905,13 +905,13 @@ begin
      begin
        result := to_unbounded_string( Gnat.Cgi.Debug.Text_Output );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIDebugTextOutput;
@@ -934,13 +934,13 @@ begin
      begin
        result := to_unbounded_string( Gnat.Cgi.Debug.HTML_Output );
      exception when Gnat.Cgi.Data_Error =>
-       err( "data_error exception" );
+       err( +"data_error exception" );
      when Gnat.Cgi.Parameter_Not_Found =>
-       err( "parameter_not_found exception" );
+       err( +"parameter_not_found exception" );
      when Gnat.Cgi.Cookie.Cookie_Not_Found =>
-       err( "cookie_not_found exception" );
+       err( +"cookie_not_found exception" );
      when others =>
-       err( "exception raised" );
+       err_exception_raised;
      end;
   end if;
 end ParseGnatCGIDebugHTMLOutput;

@@ -64,7 +64,7 @@ begin
   expectParameterComma;
   ParseIdentifier( source_var_id );
   if identifiers( getBaseType( identifiers( source_var_id ).kind ) ).kind /= root_record_t then
-     err( "Record type expected" );
+     err( +"Record type expected" );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -105,7 +105,7 @@ begin
   pullBlock;
   baseType := getBaseType( identifiers( target_ref.id ).kind );
   if identifiers( baseType ).kind /= root_record_t then
-     err( "Record type expected" );
+     err( +"Record type expected" );
   end if;
   expectParameterComma;
   ParseExpression( sourceVal, sourceType );
@@ -116,7 +116,14 @@ begin
      begin
        DoJsonToRecord( target_ref.id, sourceVal );
      exception when constraint_error =>
-       err( "bad JSON string " & to_string( toEscaped( sourceVal ) ) );
+       err( pl( "bad JSON string " &
+               toSecureData(
+                 to_string(
+                     toEscaped( sourceVal )
+                 )
+               )
+            )
+        );
      when others =>
        err_exception_raised;
      end;

@@ -61,7 +61,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
@@ -83,12 +83,12 @@ begin
            f := max_string;
         else
            f := to_unbounded_string( 0 );
-           err( "array is empty" );
+           err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when maxing array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when maxing array" ) );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   end if;
@@ -106,7 +106,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
@@ -128,14 +128,14 @@ begin
            f := min_string;
         else
            f := to_unbounded_string( 0 );
-           err( "array is empty" );
+           err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when minning array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when minning array" ) );
      end;
-     kind   := identifiers( identifiers( var_id ).kind ).kind;
+     kind := identifiers( identifiers( var_id ).kind ).kind;
   end if;
 end ParseStatsMin;
 
@@ -150,7 +150,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
@@ -168,14 +168,14 @@ begin
            f := to_unbounded_string( sum );
         else
            f := to_unbounded_string( 0 );
-           err( "array is empty" );
+           err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when minning array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when minning array" ) );
      end;
-     kind   := identifiers( identifiers( var_id ).kind ).kind;
+     kind := identifiers( identifiers( var_id ).kind ).kind;
   end if;
 end ParseStatsSum;
 
@@ -191,7 +191,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
@@ -210,12 +210,12 @@ begin
            f := to_unbounded_string( sum / long_float( len ) );
         else
            f := to_unbounded_string(0);
-           err( "array is empty" );
+           err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when summing array" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when summing array" ) );
      end;
      kind   := identifiers( identifiers( var_id ).kind ).kind;
   end if;
@@ -236,7 +236,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
@@ -261,15 +261,15 @@ begin
            f := to_unbounded_string( sum_diff_sq / long_float( len-1 ) );
         else
            f := to_unbounded_string( 0 );
-           err( "array is empty" );
+           err( +"array is empty" );
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+        err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
      when STORAGE_ERROR =>
-        err( gnat.source_info.source_location & ": internal error : storage error raised when calculating variance" );
+        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when calculating variance" ) );
      end;
      -- kind   := identifiers( var_id ).kind;
-     kind   := identifiers( identifiers( var_id ).kind ).kind;
+     kind := identifiers( identifiers( var_id ).kind ).kind;
   end if;
 end ParseStatsVariance;
 
@@ -287,7 +287,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( "Array expected" );
+     err( +"Array expected" );
   end if;
   if uniTypesOK( identifiers( var_id ).kind, uni_numeric_t ) then
      expect( symbol_t, ")" );
@@ -311,7 +311,7 @@ begin
         f := to_unbounded_string( sqrt( sum_diff_sq / long_float( len-1 ) ) );
      else
         f := to_unbounded_string( 0 );
-        err( "array is empty" );
+        err( +"array is empty" );
      end if;
      -- kind   := identifiers( var_id ).kind;
      kind   := identifiers( identifiers( var_id ).kind ).kind;

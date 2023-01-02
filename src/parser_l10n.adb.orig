@@ -108,12 +108,12 @@ procedure not_configured( result : out unbounded_string; kind : out identifier )
 begin
   result := null_unbounded_string;
   kind := universal_t;
-  err( "l10n support not configured" );
+  err( +"l10n support not configured" );
 end not_configured;
 
 procedure not_configured is
 begin
-  err( "l10n support not configured" );
+  err( +"l10n support not configured" );
 end not_configured;
 #end if;
 
@@ -282,7 +282,7 @@ begin
         when 6 => result := day_6;
         when 7 => result := day_7;
         when others =>
-          err( "day is 1..7" );
+          err( +"day is 1..7" );
         end case;
      exception when others =>
         err_exception_raised;
@@ -322,7 +322,7 @@ begin
         when 6 => result := abday_6;
         when 7 => result := abday_7;
         when others =>
-          err( "day is 1..7" );
+          err( +"day is 1..7" );
         end case;
      exception when others =>
         err_exception_raised;
@@ -367,7 +367,7 @@ begin
         when 11 => result := mon_11;
         when 12 => result := mon_12;
         when others =>
-          err( "month is 1..12" );
+          err( +"month is 1..12" );
         end case;
      exception when others =>
         err_exception_raised;
@@ -412,7 +412,7 @@ begin
         when 11 => result := abmon_11;
         when 12 => result := abmon_12;
         when others =>
-          err( "month is 1..12" );
+          err( +"month is 1..12" );
         end case;
      exception when others =>
         err_exception_raised;

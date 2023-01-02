@@ -26,14 +26,14 @@ with ada.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
-    world,
+    pegasoft.numerics,
     pegasoft.strings;
 use ada.text_io,
     ada.strings.unbounded.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
-    world,
+    pegasoft.numerics,
     pegasoft.strings;
 
 package body pegasoft.user_io is
@@ -257,20 +257,31 @@ end optional_inverse;
 
 
 -----------------------------------------------------------------------------
---  TO PROTECTED VALUE
+--  PUT SCRAMBLED
 --
--- combines optional bold, secure data and escaped.  A null value will
--- return double single quotes.
+-- Display a animated scrambled message and started a new line
+-- In the style of the "Inside Man" movie end-credits.
 -----------------------------------------------------------------------------
 
-function toProtectedValue( s : unbounded_string ) return string is
+procedure put_scrambled( msg : string ) is
+  message : unbounded_string;
 begin
-  if s = "" then
-     return "''";
-  else
-     return optional_bold( toSecureData( to_string( toEscaped( s ) ) ) );
-  end if;
-end toProtectedValue;
+  for rand in msg'range loop
+      message := null_unbounded_string;
+      for i in msg'range loop
+          if i <= rand then
+             message := message & msg(i);
+          else
+             message := message & character'val( 64 + rnd(32) );
+          end if;
+      end loop;
+      delay 0.02;
+      put_line( message );
+      put( term( up ) );
+  end loop;
+  New_Line;
+  delay 0.5;
+end put_scrambled;
 
 
 -----------------------------------------------------------------------------
@@ -620,7 +631,6 @@ begin
   end if;
   return "-";
 end utf_diamond;
-
 
 end pegasoft.user_io;
 

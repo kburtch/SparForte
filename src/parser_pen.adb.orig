@@ -96,14 +96,14 @@ begin
   if err_id /= GL_NO_ERROR then
      -- TODO this is a hack until glGetString is done
      case err_id is
-     when GL_INVALID_ENUM => err( "OpenGL error: invalid enum" );
-     when GL_INVALID_VALUE => err( "OpenGL error: invalid value" );
-     when GL_INVALID_OPERATION => err( "OpenGL error: invalid operation" );
-     when GL_STACK_OVERFLOW => err( "OpenGL error: stack overflow" );
-     when GL_STACK_UNDERFLOW => err( "OpenGL error: stack underflow" );
-     when GL_OUT_OF_MEMORY => err( "OpenGL error: out of memory" );
+     when GL_INVALID_ENUM => err( +"OpenGL error: invalid enum" );
+     when GL_INVALID_VALUE => err( +"OpenGL error: invalid value" );
+     when GL_INVALID_OPERATION => err( +"OpenGL error: invalid operation" );
+     when GL_STACK_OVERFLOW => err( +"OpenGL error: stack overflow" );
+     when GL_STACK_UNDERFLOW => err( +"OpenGL error: stack underflow" );
+     when GL_OUT_OF_MEMORY => err( +"OpenGL error: out of memory" );
      when others =>
-        err( "OpenGL error: id" & err_id'img );
+        err( pl( "OpenGL error: id" & err_id'img ) );
      end case;
   end if;
 end check_opengl_err;
@@ -112,7 +112,7 @@ end check_opengl_err;
 
 procedure not_configured is
 begin
-  err( "OpenGL support not configured" );
+  err( +"OpenGL support not configured" );
 end not_configured;
 
 pragma warnings( Off );
@@ -142,7 +142,7 @@ begin
      begin
        raiseGlExceptions := flag;
      exception when others =>
-       err( "exception was raised" );
+       err_exception_raised;
      end;
   end if;
 end ParsePenRaiseGlErrors;
@@ -830,7 +830,7 @@ begin
         if baseTypesOk( c_type, positive_t ) then
            C_Res := positive( to_numeric( C_val ) );
            if C_Res /= 8 and C_Res /= 16 and C_Res /= 24 and C_Res /= 32 then
-              err( "pixel bit resolution must be 8, 16, 24 or 32" );
+              err( +"pixel bit resolution must be 8, 16, 24 or 32" );
            end if;
            expect( symbol_t, "," );
            ParseOutParameter( canvas_ref, canvas_type );
@@ -899,7 +899,7 @@ begin
         if baseTypesOk( c_type, positive_t ) then
            C_Res := positive( to_numeric( C_val ) );
            if C_Res /= 8 and C_Res /= 16 and C_Res /= 24 and C_Res /= 32 then
-              err( "pixel bit resolution must be 8, 16, 24 or 32" );
+              err( +"pixel bit resolution must be 8, 16, 24 or 32" );
            end if;
            expect( symbol_t, "," );
            ParseOutParameter( canvas_ref, canvas_type );
@@ -964,7 +964,7 @@ begin
         if baseTypesOk( c_type, positive_t ) then
            C_Res := positive( to_numeric( C_val ) );
            if C_Res /= 8 and C_Res /= 16 and C_Res /= 24 and C_Res /= 32 then
-              err( "pixel bit resolution must be 8, 16, 24 or 32" );
+              err( +"pixel bit resolution must be 8, 16, 24 or 32" );
            end if;
            expect( symbol_t, "," );
            ParseOutParameter( canvas_ref, canvas_type );
@@ -1029,7 +1029,7 @@ begin
         if baseTypesOk( c_type, positive_t ) then
            C_Res := positive( to_numeric( C_val ) );
            if C_Res /= 8 and C_Res /= 16 and C_Res /= 24 and C_Res /= 32 then
-              err( "pixel bit resolution must be 8, 16, 24 or 32" );
+              err( +"pixel bit resolution must be 8, 16, 24 or 32" );
            end if;
            expect( symbol_t, "," );
            ParseOutParameter( canvas_ref, canvas_type );
@@ -1108,7 +1108,7 @@ begin
         expect( symbol_t, ")" );
      end if;
   else
-     err( "positive or string expected" );
+     err( +"positive or string expected" );
   end if;
   if syntax_check and not error_found then
      identifiers( canvas_ref.id ).wasWritten := true;
@@ -1159,7 +1159,7 @@ procedure ParsePenSaveCanvas is
   canvas_id   : identifier;
 begin
   if rshOpt then
-     err( "not allowed in a " & optional_yellow( "restricted shell" ) );
+     err( +"not allowed in a " & em( "restricted shell" ) );
   end if;
   expect( pen_save_canvas_t );
   expect( symbol_t, "(" );
@@ -2273,7 +2273,7 @@ begin
      expect( symbol_t, "," );
      ParseIdentifier( array_var_id );
      if not (class_ok( array_var_id, varClass ) and identifiers( array_var_id ).list) then
-        err( "Array expected" );
+        err( +"Array expected" );
      end if;
      if uniTypesOK( identifiers( array_var_id ).kind, uni_numeric_t ) then
         expect( symbol_t, ")" );
@@ -3124,7 +3124,7 @@ begin
   elsif baseType = pen_glblending_t then
      null;
   elsif baseType /= pen_glenum_t then
-     err( "expected type of pen.glenum, pen.glblending, pen.gldbuffer" ); --TODO
+     err( +"expected type of pen.glenum, pen.glblending, pen.gldbuffer" ); --TODO
   end if;
   if isExecutingCommand then
     begin
@@ -3533,7 +3533,7 @@ procedure ParsePenglGetString( result : out unbounded_string ) is
   name_val  : unbounded_string;
   name_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetstring_t );
   ParseSingleNumericParameter( eof_t, name_val, name_type, pen_glenum_t ); -- name : GLenum
   if isExecutingCommand then
@@ -4094,7 +4094,7 @@ procedure ParsePenglLoadMatrixd is
   m_val  : unbounded_string;
   -- m_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glloadmatrixd_t );
   -- TODO: pen_gl_double_array_matrix_t must be a 16 value sparforte array
   --ParseSingleNumericParameter( eof_t, m_val, m_type, pen_gl_double_array_matrix_t ); -- m : GL_Double_Array_Ptr
@@ -4129,7 +4129,7 @@ procedure ParsePenglLoadMatrixf is
   m_val  : unbounded_string;
 --  m_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glloadmatrixf_t );
   -- TODO: pen_gl_float_array_matrix_t must be a 16 value sparforte array
   --ParseSingleNumericParameter( eof_t, m_val, m_type, pen_gl_double_array_matrix_t ); -- m : GL_Double_Array_Ptr
@@ -4164,7 +4164,7 @@ procedure ParsePenglMultMatrixd is
   m_val  : unbounded_string;
 --  m_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultmatrixd_t );
   -- TODO: pen_gl_double_array_matrix_t must be a 16 value sparforte array
   --ParseSingleNumericParameter( eof_t, m_val, m_type, pen_gl_double_array_matrix_t ); -- m : GL_Double_Array_Ptr
@@ -4199,7 +4199,7 @@ procedure ParsePenglMultMatrixf is
   m_val  : unbounded_string;
 --  m_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultmatrixf_t );
   -- TODO: pen_gl_float_array_matrix_t must be a 16 value sparforte array
   --ParseSingleNumericParameter( eof_t, m_val, m_type, pen_gl_float_array_matrix_t ); -- m : GL_Float_Array_Ptr
@@ -4634,7 +4634,7 @@ procedure ParsePenglCallLists is
   lists_val  : unbounded_string;
   --lists_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcalllists_t );
   ParseFirstNumericParameter( eof_t, n_val, n_type, pen_glsizei_t ); -- n : GLsizei
   ParseNextNumericParameter( eof_t,  kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
@@ -5177,7 +5177,7 @@ begin
       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex2dv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5211,7 +5211,7 @@ begin
       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex2fv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5245,7 +5245,7 @@ begin
       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex2iv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5279,7 +5279,7 @@ begin
       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex2sv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5313,7 +5313,7 @@ begin
       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex3dv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5347,7 +5347,7 @@ begin
       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex3fv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5381,7 +5381,7 @@ begin
       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex3iv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5415,7 +5415,7 @@ begin
       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex3sv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5449,7 +5449,7 @@ begin
       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
       glVertex4dv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5483,7 +5483,7 @@ begin
       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
       glVertex4fv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5517,7 +5517,7 @@ begin
       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
       glVertex4iv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5551,7 +5551,7 @@ begin
       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
       glVertex4sv( param_ptr );
     exception when storage_error =>
-      err( "storage error raised" );
+      err( +"storage error raised" );
     when others =>
       err_exception_raised;
     end;
@@ -5745,7 +5745,7 @@ procedure ParsePenglNormal3bv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glnormal3bv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
@@ -5779,7 +5779,7 @@ procedure ParsePenglNormal3dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glnormal3dv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -5813,7 +5813,7 @@ procedure ParsePenglNormal3fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glnormal3fv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -5847,7 +5847,7 @@ procedure ParsePenglNormal3iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glnormal3iv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -5881,7 +5881,7 @@ procedure ParsePenglNormal3sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glnormal3sv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -6055,7 +6055,7 @@ procedure ParsePenglIndexdv is
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glindexdv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, c_val, c_type, pen_gl_double_array_ptr_t ); -- c : GL_Double_Array_Ptr
@@ -6089,7 +6089,7 @@ procedure ParsePenglIndexfv is
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glindexfv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, c_val, c_type, pen_gl_float_array_ptr_t ); -- c : GL_Float_Array_Ptr
@@ -6123,7 +6123,7 @@ procedure ParsePenglIndexiv is
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glindexiv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, c_val, c_type, pen_gl_int_array_ptr_t ); -- c : GL_Int_Array_Ptr
@@ -6157,7 +6157,7 @@ procedure ParsePenglIndexsv is
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glindexsv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, c_val, c_type, pen_gl_short_array_ptr_t ); -- c : GL_Short_Array_Ptr
@@ -6191,7 +6191,7 @@ procedure ParsePenglIndexubv is
   c_val  : unbounded_string;
 --  c_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glindexubv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, c_val, c_type, pen_gl_ubyte_array_ptr_t ); -- c : GL_UByte_Array_Ptr
@@ -6898,7 +6898,7 @@ procedure ParsePenglColor3bv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3bv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
@@ -6932,7 +6932,7 @@ procedure ParsePenglColor3dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3dv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -6966,7 +6966,7 @@ procedure ParsePenglColor3fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3fv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -7000,7 +7000,7 @@ procedure ParsePenglColor3iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3iv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -7034,7 +7034,7 @@ procedure ParsePenglColor3sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3sv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -7068,7 +7068,7 @@ procedure ParsePenglColor3ubv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3ubv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
@@ -7102,7 +7102,7 @@ procedure ParsePenglColor3uiv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3uiv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
@@ -7136,7 +7136,7 @@ procedure ParsePenglColor3usv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor3usv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
@@ -7170,7 +7170,7 @@ procedure ParsePenglColor4bv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4bv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_byte_array_ptr_t ); -- v : GL_Byte_Array_Ptr
@@ -7204,7 +7204,7 @@ procedure ParsePenglColor4dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4dv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -7238,7 +7238,7 @@ procedure ParsePenglColor4fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4fv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -7272,7 +7272,7 @@ procedure ParsePenglColor4iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4iv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -7306,7 +7306,7 @@ procedure ParsePenglColor4sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4sv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -7340,7 +7340,7 @@ procedure ParsePenglColor4ubv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4ubv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_ubyte_array_ptr_t ); -- v : GL_UByte_Array_Ptr
@@ -7374,7 +7374,7 @@ procedure ParsePenglColor4uiv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4uiv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_uint_array_ptr_t ); -- v : GL_UInt_Array_Ptr
@@ -7408,7 +7408,7 @@ procedure ParsePenglColor4usv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolor4usv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_ushort_array_ptr_t ); -- v : GL_UShort_Array_Ptr
@@ -7962,7 +7962,7 @@ procedure ParsePenglTexCoord1dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord1dv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -7996,7 +7996,7 @@ procedure ParsePenglTexCoord1fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord1fv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -8030,7 +8030,7 @@ procedure ParsePenglTexCoord1iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord1iv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -8064,7 +8064,7 @@ procedure ParsePenglTexCoord1sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord1sv_t );
   -- TODO: must be a 1 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -8098,7 +8098,7 @@ procedure ParsePenglTexCoord2dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord2dv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -8132,7 +8132,7 @@ procedure ParsePenglTexCoord2fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord2fv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -8166,7 +8166,7 @@ procedure ParsePenglTexCoord2iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord2iv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -8200,7 +8200,7 @@ procedure ParsePenglTexCoord2sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord2sv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -8234,7 +8234,7 @@ procedure ParsePenglTexCoord3dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord3dv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -8268,7 +8268,7 @@ procedure ParsePenglTexCoord3fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord3fv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -8302,7 +8302,7 @@ procedure ParsePenglTexCoord3iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord3iv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -8336,7 +8336,7 @@ procedure ParsePenglTexCoord3sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord3sv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -8370,7 +8370,7 @@ procedure ParsePenglTexCoord4dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord4dv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -8404,7 +8404,7 @@ procedure ParsePenglTexCoord4fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord4fv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -8438,7 +8438,7 @@ procedure ParsePenglTexCoord4iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord4iv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -8472,7 +8472,7 @@ procedure ParsePenglTexCoord4sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoord4sv_t );
   -- TODO: must be a 4 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -8950,7 +8950,7 @@ procedure ParsePenglRasterPos2dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos2dv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -8984,7 +8984,7 @@ procedure ParsePenglRasterPos2fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos2fv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -9018,7 +9018,7 @@ procedure ParsePenglRasterPos2iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos2iv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -9052,7 +9052,7 @@ procedure ParsePenglRasterPos2sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos2sv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -9086,7 +9086,7 @@ procedure ParsePenglRasterPos3dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos3dv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -9120,7 +9120,7 @@ procedure ParsePenglRasterPos3fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos3fv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -9154,7 +9154,7 @@ procedure ParsePenglRasterPos3iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos3iv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -9188,7 +9188,7 @@ procedure ParsePenglRasterPos3sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos3sv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -9222,7 +9222,7 @@ procedure ParsePenglRasterPos4dv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos4dv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_double_array_ptr_t ); -- v : GL_Double_Array_Ptr
@@ -9256,7 +9256,7 @@ procedure ParsePenglRasterPos4fv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos4fv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_float_array_ptr_t ); -- v : GL_Float_Array_Ptr
@@ -9290,7 +9290,7 @@ procedure ParsePenglRasterPos4iv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos4iv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_int_array_ptr_t ); -- v : GL_Int_Array_Ptr
@@ -9324,7 +9324,7 @@ procedure ParsePenglRasterPos4sv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrasterpos4sv_t );
   -- TODO: must be a 3 value sparforte array
   --ParseSingleNumericParameter( eof_t, v_val, v_type, pen_gl_short_array_ptr_t ); -- v : GL_Short_Array_Ptr
@@ -9508,7 +9508,7 @@ procedure ParsePenglRectdv is
   v2_val  : unbounded_string;
 --  v2_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrectdv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseFirstNumericParameter( eof_t, v1_val, v1_type, pen_gl_double_array_ptr_t ); -- v1 : GL_Double_Array_Ptr
@@ -9547,7 +9547,7 @@ procedure ParsePenglRectfv is
   v2_val  : unbounded_string;
 --  v2_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrectfv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseFirstNumericParameter( eof_t, v1_val, v1_type, pen_gl_float_array_ptr_t ); -- v1 : GL_Float_Array_Ptr
@@ -9586,7 +9586,7 @@ procedure ParsePenglRectiv is
   v2_val  : unbounded_string;
 --  v2_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrectiv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseFirstNumericParameter( eof_t, v1_val, v1_type, pen_gl_int_array_ptr_t ); -- v1 : GL_Int_Array_Ptr
@@ -9625,7 +9625,7 @@ procedure ParsePenglRectsv is
   v2_val  : unbounded_string;
 --  v2_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glrectsv_t );
   -- TODO: must be a 2 value sparforte array
   --ParseFirstNumericParameter( eof_t, v1_val, v1_type, pen_gl_short_array_ptr_t ); -- v1 : GL_Short_Array_Ptr
@@ -9668,7 +9668,7 @@ procedure ParsePenglVertexPointer is
   ptr_val  : unbounded_string;
 --  ptr_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glvertexpointer_t );
   ParseFirstNumericParameter( eof_t, size_val, size_type, pen_glint_t ); -- size : GLint
   ParseNextNumericParameter( eof_t,  kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
@@ -9708,7 +9708,7 @@ procedure ParsePenglNormalPointer is
   ptr_val  : unbounded_string;
 --  ptr_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glnormalpointer_t );
   ParseFirstNumericParameter( eof_t, kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( eof_t,  stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
@@ -9749,7 +9749,7 @@ procedure ParsePenglColorPointer is
   ptr_val  : unbounded_string;
 --  ptr_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glcolorpointer_t );
   ParseFirstNumericParameter( eof_t, size_val, size_type, pen_glint_t ); -- size : GLint
   ParseNextNumericParameter( eof_t,  kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
@@ -9789,7 +9789,7 @@ procedure ParsePenglIndexPointer is
   ptr_val  : unbounded_string;
 --  ptr_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glindexpointer_t );
   ParseFirstNumericParameter( eof_t, kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
   ParseNextNumericParameter( eof_t,  stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
@@ -9830,7 +9830,7 @@ procedure ParsePenglTexCoordPointer is
   ptr_val  : unbounded_string;
 --  ptr_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexcoordpointer_t );
   ParseFirstNumericParameter( eof_t, size_val, size_type, pen_glint_t ); -- size : GLint
   ParseNextNumericParameter( eof_t,  kind_val, kind_type, pen_gltypes_t ); -- kind : GLtypes
@@ -9868,7 +9868,7 @@ procedure ParsePenglEdgeFlagPointer is
   ptr_val  : unbounded_string;
 --  ptr_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gledgeflagpointer_t );
   ParseFirstNumericParameter( eof_t, stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
   -- TODO: returns a pointer to a C boolean edge flag array, but we don't support that in SparForte
@@ -9904,7 +9904,7 @@ procedure ParsePenglGetPointerv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetpointerv_t );
   ParseFirstNumericParameter( eof_t, pname_val, pname_type, pen_glvertexarrays_t ); -- pname : GLvertexarrays
   -- TODO: returns a pointer to a C structure, but we don't support that in SparForte
@@ -10007,7 +10007,7 @@ procedure ParsePenglDrawElements is
   indices_val  : unbounded_string;
 --  indices_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gldrawelements_t );
   ParseFirstNumericParameter( eof_t, mode_val, mode_type, pen_gltypes_t ); -- mode : GLtypes
   ParseNextNumericParameter( eof_t,  count_val, count_type, pen_glsizei_t ); -- count : GLsizei
@@ -10048,7 +10048,7 @@ procedure ParsePenglInterleavedArrays is
   pointer_val  : unbounded_string;
 --  pointer_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glinterleavedarrays_t );
   ParseFirstNumericParameter( eof_t, format_val, format_type, pen_glvertexarrays_t ); -- format : GLvertexarrays
   ParseNextNumericParameter( eof_t,  stride_val, stride_type, pen_glsizei_t ); -- stride : GLsizei
@@ -10195,7 +10195,7 @@ procedure ParsePenglLightfv is
   value_id  : identifier; -- NEW
   array_len : natural;
 begin
-  --err( "Not yet implemented" );
+  --err( +"Not yet implemented" );
   expect( pen_gllightfv_t );
   ParseFirstNumericParameter( eof_t, light_val, light_type, pen_gllighting_t ); -- light : GLenum
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10210,7 +10210,7 @@ begin
   --      err( "Array or array type expected" );
   --   end if;
   if not (class_ok( value_id, varClass ) and identifiers( value_id ).list) then
-     err( "Array or array type expected" );
+     err( +"Array or array type expected" );
   end if;
   expect( symbol_t, ")" ); -- NEW
   if isExecutingCommand then
@@ -10255,7 +10255,7 @@ procedure ParsePenglLightiv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gllightiv_t );
   ParseFirstNumericParameter( eof_t, light_val, light_type, pen_glenum_t ); -- light : GLenum
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10296,7 +10296,7 @@ procedure ParsePenglGetLightfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetlightfv_t );
   ParseFirstNumericParameter( eof_t, light_val, light_type, pen_gl_lighting_t ); -- light : GLenum
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10335,7 +10335,7 @@ procedure ParsePenglGetLightiv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetlightiv_t );
   ParseFirstNumericParameter( eof_t, light_val, light_type, pen_glenum_t ); -- light : GLenum
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10440,7 +10440,7 @@ procedure ParsePenglLightModelfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gllightmodelfv_t );
   ParseFirstNumericParameter( eof_t, pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
   -- TODO: takes a multivalue C float array of parameters
@@ -10478,7 +10478,7 @@ procedure ParsePenglLightModeliv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gllightmodeliv_t );
   ParseFirstNumericParameter( eof_t, pname_val, pname_type, pen_glenum_t ); -- pname : GLenum
   -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
@@ -10592,7 +10592,7 @@ procedure ParsePenglMaterialfv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glmaterialfv_t );
   ParseFirstNumericParameter( eof_t, face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10633,7 +10633,7 @@ procedure ParsePenglMaterialiv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glmaterialiv_t );
   ParseFirstNumericParameter( eof_t, face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10674,7 +10674,7 @@ procedure ParsePenglGetMaterialfv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetmaterialfv_t );
   ParseFirstNumericParameter( eof_t, face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10715,7 +10715,7 @@ procedure ParsePenglGetMaterialiv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetmaterialiv_t );
   ParseFirstNumericParameter( eof_t, face_val, face_type, pen_glbuffers_t ); -- face : GLbuffers
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gllighting_t ); -- pname : GLlighting
@@ -10960,7 +10960,7 @@ procedure ParsePenglPixelMapfv is
   values_val  : unbounded_string;
 --  values_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glpixelmapfv_t );
   ParseFirstNumericParameter( eof_t, map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   ParseNextNumericParameter( eof_t,  mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
@@ -11000,7 +11000,7 @@ procedure ParsePenglPixelMapuiv is
   values_val  : unbounded_string;
   --values_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glpixelmapuiv_t );
   ParseFirstNumericParameter( eof_t, map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   ParseNextNumericParameter( eof_t,  mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
@@ -11040,7 +11040,7 @@ procedure ParsePenglPixelMapusv is
   values_val  : unbounded_string;
   --values_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glpixelmapusv_t );
   ParseFirstNumericParameter( eof_t, map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   ParseNextNumericParameter( eof_t,  mapsize_val, mapsize_type, pen_glsizei_t ); -- mapsize : GLsizei
@@ -11078,7 +11078,7 @@ procedure ParsePenglGetPixelMapfv is
   values_val  : unbounded_string;
 --  values_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetpixelmapfv_t );
   ParseFirstNumericParameter( eof_t, map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
@@ -11115,7 +11115,7 @@ procedure ParsePenglGetPixelMapuiv is
   values_val  : unbounded_string;
 --  values_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetpixelmapuiv_t );
   ParseFirstNumericParameter( eof_t, map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   -- TODO: takes a multivalue C uint array of parameters, but we don't support that in SparForte
@@ -11152,7 +11152,7 @@ procedure ParsePenglGetPixelMapusv is
   values_val  : unbounded_string;
 --  values_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgetpixelmapusv_t );
   ParseFirstNumericParameter( eof_t, map_val, map_type, pen_glpixelmode_t ); -- map : GLpixelmode
   -- TODO: takes a multivalue C ushort array of parameters, but we don't support that in SparForte
@@ -11199,7 +11199,7 @@ procedure ParsePenglBitmap is
   bitmap_val  : unbounded_string;
 --  bitmap_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glbitmap_t );
   ParseFirstNumericParameter( eof_t, width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( eof_t,  height_val, height_type, pen_glsizei_t ); -- height : GLsizei
@@ -11251,7 +11251,7 @@ procedure ParsePenglReadPixels is
   pixels_val  : unbounded_string;
 --  pixels_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glreadpixels_t );
   ParseFirstNumericParameter( eof_t, x_val, x_type, pen_glint_t ); -- x : GLint
   ParseNextNumericParameter( eof_t,  y_val, y_type, pen_glint_t ); -- y : GLint
@@ -11298,7 +11298,7 @@ procedure ParsePenglDrawPixels is
   pixels_val  : unbounded_string;
 --  pixels_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gldrawpixels_t );
   ParseFirstNumericParameter( eof_t, width_val, width_type, pen_glsizei_t ); -- width : GLsizei
   ParseNextNumericParameter( eof_t,  height_val, height_type, pen_glsizei_t ); -- height : GLsizei
@@ -11626,7 +11626,7 @@ procedure ParsePenglTexGendv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexgendv_t );
   ParseFirstNumericParameter( eof_t, coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11666,7 +11666,7 @@ procedure ParsePenglTexGenfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexgenfv_t );
   ParseFirstNumericParameter( eof_t, coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11706,7 +11706,7 @@ procedure ParsePenglTexGeniv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexgeniv_t );
   ParseFirstNumericParameter( eof_t, coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11746,7 +11746,7 @@ procedure ParsePenglGetTexGendv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexgendv_t );
   ParseFirstNumericParameter( eof_t, coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11786,7 +11786,7 @@ procedure ParsePenglGetTexGenfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexgenfv_t );
   ParseFirstNumericParameter( eof_t, coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11826,7 +11826,7 @@ procedure ParsePenglGetTexGeniv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexgeniv_t );
   ParseFirstNumericParameter( eof_t, coord_val, coord_type, pen_gltexturemapping_t ); -- coord : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11940,7 +11940,7 @@ procedure ParsePenglTexEnvfv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexenvfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -11980,7 +11980,7 @@ procedure ParsePenglTexEnviv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexenviv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12020,7 +12020,7 @@ procedure ParsePenglGetTexEnvfv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexenvfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12060,7 +12060,7 @@ procedure ParsePenglGetTexEnviv is
   param_val  : unbounded_string;
 --  param_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexenviv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12174,7 +12174,7 @@ procedure ParsePenglTexParameterfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexparameterfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12214,7 +12214,7 @@ procedure ParsePenglTexParameteriv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_gltexparameteriv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12254,7 +12254,7 @@ procedure ParsePenglGetTexParameterfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexparameterfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12294,7 +12294,7 @@ procedure ParsePenglGetTexParameteriv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexparameteriv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_gltexturemapping_t ); -- pname : GLtexturemapping
@@ -12336,7 +12336,7 @@ procedure ParsePenglGetTexLevelParameterfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexlevelparameterfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -12379,7 +12379,7 @@ procedure ParsePenglGetTexLevelParameteriv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glgettexlevelparameteriv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -12430,7 +12430,7 @@ procedure ParsePenglTexImage1D is
   pixels_val  : unbounded_string;
 --  pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glteximage1d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -12486,7 +12486,7 @@ procedure ParsePenglTexImage2D is
   pixels_val  : unbounded_string;
 --  pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glteximage2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -12536,7 +12536,7 @@ procedure ParsePenglGetTexImage is
   pixels_val  : unbounded_string;
   --pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetteximage_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -12575,7 +12575,7 @@ procedure ParsePenglGenTextures is
   textures_val  : unbounded_string;
 --  textures_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgentextures_t );
   ParseFirstNumericParameter( eof_t, n_val, n_type, pen_glsizei_t ); -- n : GLsizei
   -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
@@ -12612,7 +12612,7 @@ procedure ParsePenglDeleteTextures is
   textures_val  : unbounded_string;
 --  textures_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gldeletetextures_t );
   ParseFirstNumericParameter( eof_t, n_val, n_type, pen_glsizei_t ); -- n : GLsizei
   -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
@@ -12685,7 +12685,7 @@ procedure ParsePenglPrioritizeTextures is
   priorities_val  : unbounded_string;
 --  priorities_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glprioritizetextures_t );
   ParseFirstNumericParameter( eof_t, n_val, n_type, pen_glsizei_t ); -- n : GLsizei
   -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
@@ -12726,7 +12726,7 @@ procedure ParsePenglAreTexturesResident( result : out unbounded_string ) is
   residences_val  : unbounded_string;
 --  residences_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glaretexturesresident_t );
   ParseFirstNumericParameter( eof_t, n_val, n_type, pen_glsizei_t ); -- n : GLsizei
 -- TODO: takes a multivalue C uint/bool array of parameters, but we don't support that in SparForte
@@ -12804,7 +12804,7 @@ procedure ParsePenglTexSubImage1D is
   pixels_val  : unbounded_string;
   --pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gltexsubimage1d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -12859,7 +12859,7 @@ procedure ParsePenglTexSubImage2D is
   pixels_val  : unbounded_string;
   --pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gltexsubimage2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_gltexturemapping_t ); -- target : GLtexturemapping
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -13097,7 +13097,7 @@ procedure ParsePenglMap1d is
   points_val  : unbounded_string;
 --  points_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmap1d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
@@ -13146,7 +13146,7 @@ procedure ParsePenglMap1f is
   points_val  : unbounded_string;
 --  points_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmap1f_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
@@ -13203,7 +13203,7 @@ procedure ParsePenglMap2d is
   points_val  : unbounded_string;
   --points_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmap2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  u1_val, u1_type, pen_gldouble_t ); -- u1 : GLdouble
@@ -13264,7 +13264,7 @@ procedure ParsePenglMap2f is
   points_val  : unbounded_string;
   --points_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmap2f_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  u1_val, u1_type, pen_glfloat_t ); -- u1 : GLfloat
@@ -13311,7 +13311,7 @@ procedure ParsePenglGetMapdv is
   v_val  : unbounded_string;
   --v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetmapdv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
@@ -13351,7 +13351,7 @@ procedure ParsePenglGetMapfv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetmapfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
@@ -13391,7 +13391,7 @@ procedure ParsePenglGetMapiv is
   v_val  : unbounded_string;
 --  v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetmapiv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glevaluators_t ); -- target : GLevaluators
   ParseNextNumericParameter( eof_t,  query_val, query_type, pen_glevaluators_t ); -- query : GLevaluators
@@ -13427,7 +13427,7 @@ procedure ParsePenglEvalCoord1d is
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glevalcoord1d_t );
   -- TODO: define this
   --ParseSingleNumericParameter( eof_t, u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
@@ -13461,7 +13461,7 @@ procedure ParsePenglEvalCoord1f is
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glevalcoord1f_t );
   -- TODO: define this
   -- ParseSingleNumericParameter( eof_t, u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
@@ -13495,7 +13495,7 @@ procedure ParsePenglEvalCoord1dv is
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glevalcoord1dv_t );
   -- TODO: define this
   -- ParseSingleNumericParameter( eof_t, u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
@@ -13529,7 +13529,7 @@ procedure ParsePenglEvalCoord1fv is
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glevalcoord1fv_t );
   -- TODO: define this
   --ParseSingleNumericParameter( eof_t, u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
@@ -13625,7 +13625,7 @@ procedure ParsePenglEvalCoord2dv is
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glevalcoord2dv_t );
   -- TODO: define this
   --ParseSingleNumericParameter( eof_t, u_val, u_type, pen_gl_double_array_ptr_t ); -- u : GL_Double_Array_Ptr
@@ -13659,7 +13659,7 @@ procedure ParsePenglEvalCoord2fv is
   u_val  : unbounded_string;
 --  u_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glevalcoord2fv_t );
   -- TODO: define this
   --ParseSingleNumericParameter( eof_t, u_val, u_type, pen_gl_float_array_ptr_t ); -- u : GL_Float_Array_Ptr
@@ -14050,7 +14050,7 @@ procedure ParsePenglFogfv is
   param_val  : unbounded_string;
   --param_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glfogfv_t );
   ParseFirstNumericParameter( eof_t, pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
   -- TODO: takes a multivalue C float array of parameters, but we don't support that in SparForte
@@ -14087,7 +14087,7 @@ procedure ParsePenglFogiv is
   param_val  : unbounded_string;
   --param_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glfogiv_t );
   ParseFirstNumericParameter( eof_t, pname_val, pname_type, pen_glfog_t ); -- pname : GLfog
   -- TODO: takes a multivalue C int array of parameters, but we don't support that in SparForte
@@ -14126,7 +14126,7 @@ procedure ParsePenglFeedbackBuffer is
   buffer_val  : unbounded_string;
 --  buffer_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glfeedbackbuffer_t );
   ParseFirstNumericParameter( eof_t, size_val, size_type, pen_glsizei_t ); -- size : GLsizei
   ParseNextNumericParameter( eof_t,  kind_val, kind_type, pen_glfeedback_t ); -- kind : GLfeedback
@@ -14195,7 +14195,7 @@ procedure ParsePenglSelectBuffer is
   buffer_val  : unbounded_string;
 --  buffer_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glselectbuffer_t );
   ParseFirstNumericParameter( eof_t, kind_val, kind_type, pen_glsizei_t ); -- kind : GLsizei
   -- TODO: takes a multivalue C uint array of parameters, but we don't support that in SparForte
@@ -14358,7 +14358,7 @@ procedure ParsePenglDrawRangeElements is
   indices_val  : unbounded_string;
 --  indices_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gldrawrangeelements_t );
   ParseFirstNumericParameter( eof_t, mode_val, mode_type, pen_glprimitives_t ); -- mode : GLprimitives
   ParseNextNumericParameter( eof_t,  start_val, start_type, pen_gluint_t ); -- start : GLuint
@@ -14414,7 +14414,7 @@ procedure ParsePenglTexImage3D is
   pixels_val  : unbounded_string;
 --  pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glteximage3d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -14476,7 +14476,7 @@ procedure ParsePenglTexSubImage3D is
   pixels_val  : unbounded_string;
 --  pixels_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gltexsubimage3d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -14581,7 +14581,7 @@ procedure ParsePenglColorTable is
   table_val  : unbounded_string;
 --  table_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcolortable_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  internalformat_val, internalformat_type, pen_glenum_t ); -- internalformat : GLenum
@@ -14629,7 +14629,7 @@ procedure ParsePenglColorSubTable is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcolorsubtable_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  start_val, start_type, pen_glsizei_t ); -- start : GLsizei
@@ -14671,7 +14671,7 @@ procedure ParsePenglColorTableParameteriv is
   params_val  : unbounded_string;
   --params_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcolortableparameteriv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
@@ -14711,7 +14711,7 @@ procedure ParsePenglColorTableParameterfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcolortableparameterfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
@@ -14833,7 +14833,7 @@ procedure ParsePenglGetColorTable is
   table_val  : unbounded_string;
 --  table_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetcolortable_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
@@ -14873,7 +14873,7 @@ procedure ParsePenglGetColorTableParameterfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetcolortableparameterfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
@@ -14913,7 +14913,7 @@ procedure ParsePenglGetColorTableParameteriv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetcolortableparameteriv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
@@ -15087,7 +15087,7 @@ procedure ParsePenglGetHistogram is
   values_val  : unbounded_string;
 --  values_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgethistogram_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  reset_val, reset_type, pen_glboolean_t ); -- reset : GLboolean
@@ -15268,7 +15268,7 @@ procedure ParsePenglGetMinmax is
   values_val  : unbounded_string;
 --  values_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetminmax_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  reset_val, reset_type, pen_glboolean_t ); -- reset : GLboolean
@@ -15309,7 +15309,7 @@ procedure ParsePenglGetMinmaxParameterfv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetminmaxparameterfv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
@@ -15349,7 +15349,7 @@ procedure ParsePenglGetMinmaxParameteriv is
   params_val  : unbounded_string;
 --  params_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetminmaxparameteriv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  pname_val, pname_type, pen_glarbmapping_t ); -- pname : GLarbmapping
@@ -15395,7 +15395,7 @@ procedure ParsePenglConvolutionFilter1D is
   image_val  : unbounded_string;
 --  image_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glconvolutionfilter1d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glbuffers_t ); -- target : GLbuffers
   ParseNextNumericParameter( eof_t,  internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
@@ -15445,7 +15445,7 @@ procedure ParsePenglConvolutionFilter2D is
   image_val  : unbounded_string;
 --  image_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glconvolutionfilter2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glbuffers_t ); -- target : GLbuffers
   ParseNextNumericParameter( eof_t,  internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
@@ -15683,7 +15683,7 @@ procedure ParsePenglGetConvolutionFilter is
   image_val  : unbounded_string;
 --  image_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetconvolutionfilter_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
@@ -15807,7 +15807,7 @@ procedure ParsePenglSeparableFilter2D is
   column_val  : unbounded_string;
 --  column_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glseparablefilter2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  internalformat_val, internalformat_type, pen_glbuffers_t ); -- internalformat : GLbuffers
@@ -15860,7 +15860,7 @@ procedure ParsePenglGetSeparableFilter is
   span_val  : unbounded_string;
   -- span_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetseparablefilter_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glarbmapping_t ); -- target : GLarbmapping
   ParseNextNumericParameter( eof_t,  format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
@@ -15971,7 +15971,7 @@ procedure ParsePenglCompressedTexImage1D is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcompressedteximage1d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -16021,7 +16021,7 @@ procedure ParsePenglCompressedTexImage2D is
   data_val  : unbounded_string;
  -- data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcompressedteximage2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -16074,7 +16074,7 @@ procedure ParsePenglCompressedTexImage3D is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcompressedteximage3d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -16124,7 +16124,7 @@ procedure ParsePenglCompressedTexSubImage1D is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcompressedtexsubimage1d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -16176,7 +16176,7 @@ procedure ParsePenglCompressedTexSubImage2D is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcompressedtexsubimage2d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -16233,7 +16233,7 @@ procedure ParsePenglCompressedTexSubImage3D is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcompressedtexsubimage3d_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  level_val, level_type, pen_glint_t ); -- level : GLint
@@ -16277,7 +16277,7 @@ procedure ParsePenglGetCompressedTexImage is
   img_val  : unbounded_string;
 --  img_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetcompressedteximage_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  lod_val, lod_type, pen_glint_t ); -- lod : GLint
@@ -16342,7 +16342,7 @@ procedure ParsePenglMultiTexCoord1dv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1dv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -16409,7 +16409,7 @@ procedure ParsePenglMultiTexCoord1fv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1fv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -16476,7 +16476,7 @@ procedure ParsePenglMultiTexCoord1iv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1iv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -16543,7 +16543,7 @@ procedure ParsePenglMultiTexCoord1sv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1sv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -16613,7 +16613,7 @@ procedure ParsePenglMultiTexCoord2dv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2dv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -16684,7 +16684,7 @@ procedure ParsePenglMultiTexCoord2fv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2fv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -16755,7 +16755,7 @@ procedure ParsePenglMultiTexCoord2iv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2iv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -16826,7 +16826,7 @@ procedure ParsePenglMultiTexCoord2sv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2sv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -16900,7 +16900,7 @@ procedure ParsePenglMultiTexCoord3dv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3dv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -16974,7 +16974,7 @@ procedure ParsePenglMultiTexCoord3fv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3fv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -17048,7 +17048,7 @@ procedure ParsePenglMultiTexCoord3iv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3iv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -17122,7 +17122,7 @@ procedure ParsePenglMultiTexCoord3sv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3sv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -17199,7 +17199,7 @@ procedure ParsePenglMultiTexCoord4dv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4dv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -17276,7 +17276,7 @@ procedure ParsePenglMultiTexCoord4fv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4fv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -17353,7 +17353,7 @@ procedure ParsePenglMultiTexCoord4iv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4iv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -17430,7 +17430,7 @@ procedure ParsePenglMultiTexCoord4sv( result : out unbounded_string ) is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4sv_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -17466,7 +17466,7 @@ procedure ParsePenglLoadTransposeMatrixd is
   --GLdoublem[16]_val  : unbounded_string;
   --GLdoublem[16]_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glloadtransposematrixd_t );
   null; --ParseSingleNumericParameter( eof_t, GLdoublem[16]_val, GLdoublem[16]_type, pen_gldoublem[16]_t ); -- GLdoublem[16] : GLdoublem[16]
   if isExecutingCommand then
@@ -17496,7 +17496,7 @@ procedure ParsePenglLoadTransposeMatrixf is
   --GLfloatm[16]_val  : unbounded_string;
   --GLfloatm[16]_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glloadtransposematrixf_t );
   null; --ParseSingleNumericParameter( eof_t, GLfloatm[16]_val, GLfloatm[16]_type, pen_glfloatm[16]_t ); -- GLfloatm[16] : GLfloatm[16]
   if isExecutingCommand then
@@ -17526,7 +17526,7 @@ procedure ParsePenglMultTransposeMatrixd is
   --GLdoublem[16]_val  : unbounded_string;
   --GLdoublem[16]_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glmulttransposematrixd_t );
   null; --ParseSingleNumericParameter( eof_t, GLdoublem[16]_val, GLdoublem[16]_type, pen_gldoublem[16]_t ); -- GLdoublem[16] : GLdoublem[16]
   if isExecutingCommand then
@@ -17556,7 +17556,7 @@ procedure ParsePenglMultTransposeMatrixf is
   --GLfloatm[16]_val  : unbounded_string;
   --GLfloatm[16]_type : identifier;
 begin
-  err( "Not yet implemented" );
+  err( +"Not yet implemented" );
   expect( pen_glmulttransposematrixf_t );
   --ParseSingleNumericParameter( eof_t, GLfloatm[16]_val, GLfloatm[16]_type, pen_glfloatm[16]_t ); -- GLfloatm[16] : GLfloatm[16]
   if isExecutingCommand then
@@ -17705,7 +17705,7 @@ procedure ParsePenglMultiTexCoord1dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1dvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -17769,7 +17769,7 @@ procedure ParsePenglMultiTexCoord1fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1fvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -17833,7 +17833,7 @@ procedure ParsePenglMultiTexCoord1ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1ivarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -17897,7 +17897,7 @@ procedure ParsePenglMultiTexCoord1svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord1svarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -17964,7 +17964,7 @@ procedure ParsePenglMultiTexCoord2dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2dvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -18031,7 +18031,7 @@ procedure ParsePenglMultiTexCoord2fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2fvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -18098,7 +18098,7 @@ procedure ParsePenglMultiTexCoord2ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2ivarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -18165,7 +18165,7 @@ procedure ParsePenglMultiTexCoord2svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord2svarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -18235,7 +18235,7 @@ procedure ParsePenglMultiTexCoord3dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3dvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -18305,7 +18305,7 @@ procedure ParsePenglMultiTexCoord3fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3fvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -18375,7 +18375,7 @@ procedure ParsePenglMultiTexCoord3ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3ivarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -18445,7 +18445,7 @@ procedure ParsePenglMultiTexCoord3svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord3svarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -18518,7 +18518,7 @@ procedure ParsePenglMultiTexCoord4dvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4dvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_gldouble_t ); -- v : GLdouble
@@ -18591,7 +18591,7 @@ procedure ParsePenglMultiTexCoord4fvARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4fvarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glfloat_t ); -- v : GLfloat
@@ -18664,7 +18664,7 @@ procedure ParsePenglMultiTexCoord4ivARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4ivarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glint_t ); -- v : GLint
@@ -18737,7 +18737,7 @@ procedure ParsePenglMultiTexCoord4svARB is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glmultitexcoord4svarb_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseLastNumericParameter( eof_t, v_val, v_type, pen_glshort_t ); -- v : GLshort
@@ -18767,7 +18767,7 @@ procedure ParsePenglCreateDebugObjectMESA is
   -- Syntax: --glCreateDebugObjectMESA return GLhandleARB;
   -- Source: spar_os.opengl.glCreateDebugObjectMESA
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcreatedebugobjectmesa_t );
   if isExecutingCommand then
     begin
@@ -18800,7 +18800,7 @@ procedure ParsePenglClearDebugLogMESA is
   shaderType_val  : unbounded_string;
   shaderType_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glcleardebuglogmesa_t );
   -- TODO: GLhandleARB not defined
   -- ParseFirstNumericParameter( eof_t, obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
@@ -18843,7 +18843,7 @@ procedure ParsePenglGetDebugLogMESA is
   debugLog_val  : unbounded_string;
 --  debugLog_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetdebuglogmesa_t );
   -- TODO: GLhandleARB not defined
   -- ParseFirstNumericParameter( eof_t, obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
@@ -18885,7 +18885,7 @@ procedure ParsePenglGetDebugLogLengthMESA is
   shaderType_val  : unbounded_string;
   shaderType_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetdebugloglengthmesa_t );
   -- TODO: GLhandleARB not defined
   -- ParseFirstNumericParameter( eof_t, obj_val, obj_type, pen_glhandlearb_t ); -- obj : GLhandleARB
@@ -18922,7 +18922,7 @@ procedure ParsePenglProgramCallbackMESA is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glprogramcallbackmesa_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  callback_val, callback_type, pen_glprogramcallbackmesa_t ); -- callback : GLprogramcallbackMESA
@@ -18961,7 +18961,7 @@ procedure ParsePenglGetProgramRegisterfvMESA is
   v_val  : unbounded_string;
   v_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glgetprogramregisterfvmesa_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  len_val, len_type, pen_glsizei_t ); -- len : GLsizei
@@ -19002,7 +19002,7 @@ procedure ParsePenglFramebufferTextureLayerEXT is
   layer_val  : unbounded_string;
   layer_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glframebuffertexturelayerext_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  attachment_val, attachment_type, pen_glenum_t ); -- attachment : GLenum
@@ -19038,7 +19038,7 @@ procedure ParsePenglBlendEquationSeparateATI is
   modeA_val  : unbounded_string;
   modeA_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glblendequationseparateati_t );
   ParseFirstNumericParameter( eof_t, modeRGB_val, modeRGB_type, pen_glenum_t ); -- modeRGB : GLenum
   ParseLastNumericParameter( eof_t, modeA_val, modeA_type, pen_glenum_t ); -- modeA : GLenum
@@ -19071,7 +19071,7 @@ procedure ParsePenglEGLImageTargetTexture2DOES is
   image_val  : unbounded_string;
 --  image_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gleglimagetargettexture2does_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   -- TODO: gleglimagesoes not defined
@@ -19105,7 +19105,7 @@ procedure ParsePenglEGLImageTargetRenderbufferStorageOES is
   image_val  : unbounded_string;
 --  image_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gleglimagetargetrenderbufferstorageoes_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   -- TODO: gleglimagesoes not defined
@@ -19137,7 +19137,7 @@ procedure ParsePengluBeginCurve is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubegincurve_t );
   -- TODO: we don't have a NURBS object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19167,7 +19167,7 @@ procedure ParsePengluBeginPolygon is
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubeginpolygon_t );
   -- TODO: we don't have a  tessellation yet in SparForte
   --ParseSingleNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -19197,7 +19197,7 @@ procedure ParsePengluBeginSurface is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubeginsurface_t );
   -- TODO: we don't have a NURBS object yet in SparForte
   --ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19227,7 +19227,7 @@ procedure ParsePengluBeginTrim is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubegintrim_t );
   -- TODO: we don't have a NURBS object yet in SparForte
   --ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19273,7 +19273,7 @@ procedure ParsePengluBuild1DMipmapLevels( result : out unbounded_string ) is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubuild1dmipmaplevels_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -19325,7 +19325,7 @@ procedure ParsePengluBuild1DMipmaps( result : out unbounded_string ) is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubuild1dmipmaps_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -19381,7 +19381,7 @@ procedure ParsePengluBuild2DMipmapLevels( result : out unbounded_string ) is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubuild2dmipmaplevels_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -19435,7 +19435,7 @@ procedure ParsePengluBuild2DMipmaps( result : out unbounded_string ) is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubuild2dmipmaps_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -19494,7 +19494,7 @@ procedure ParsePengluBuild3DMipmapLevels( result : out unbounded_string ) is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubuild3dmipmaplevels_t );
   ParseFirstNumericParameter( eof_t, taraget_val, taraget_type, pen_glenum_t ); -- taraget : GLenum
   ParseNextNumericParameter( eof_t,  internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -19551,7 +19551,7 @@ procedure ParsePengluBuild3DMipmaps( result : out unbounded_string ) is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glubuild3dmipmaps_t );
   ParseFirstNumericParameter( eof_t, target_val, target_type, pen_glenum_t ); -- target : GLenum
   ParseNextNumericParameter( eof_t,  internalFormat_val, internalFormat_type, pen_glbuffers_t ); -- internalFormat : GLbuffers
@@ -19594,7 +19594,7 @@ procedure ParsePengluCheckExtension  is
   extString_val  : unbounded_string;
 --  extString_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glucheckextension_t );
   -- TODO: no man page?
   -- ParseFirstNumericParameter( eof_t, extName_val, extName_type, pen_char_array_t ); -- extName : char_array
@@ -19635,7 +19635,7 @@ procedure ParsePengluCylinder is
   stacks_val  : unbounded_string;
   stacks_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glucylinder_t );
   -- TODO: no gluCylinder in Sparforte
   --ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -19670,7 +19670,7 @@ procedure ParsePengluDeleteNurbsRenderer is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gludeletenurbsrenderer_t );
   -- TODO: no NURBS object in SparForte yet
   -- ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19700,7 +19700,7 @@ procedure ParsePengluDeleteQuadric is
   quad_val  : unbounded_string;
 --  quad_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gludeletequadric_t );
   -- TODO: no quadratic object in SparForte yet
   -- ParseSingleNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -19730,7 +19730,7 @@ procedure ParsePengluDeleteTess is
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gludeletetess_t );
   -- TODO: no tessellation object in SparForte yet
   -- ParseSingleNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -19768,7 +19768,7 @@ procedure ParsePengluDisk is
   loops_val  : unbounded_string;
   loops_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gludisk_t );
   -- TODO: no quadrics object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -19802,7 +19802,7 @@ procedure ParsePengluEndCurve is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluendcurve_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19832,7 +19832,7 @@ procedure ParsePengluEndPolygon is
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluendpolygon_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -19862,7 +19862,7 @@ procedure ParsePengluEndSurface is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluendsurface_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19892,7 +19892,7 @@ procedure ParsePengluEndTrim is
   nurb_val  : unbounded_string;
 --  nurb_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluendtrim_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19923,7 +19923,7 @@ procedure ParsePengluErrorString is
   error_val  : unbounded_string;
   error_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluerrorstring_t );
   ParseSingleNumericParameter( eof_t, error_val, error_type, pen_glenum_t ); -- error : GLenum
   if isExecutingCommand then
@@ -19958,7 +19958,7 @@ procedure ParsePengluGetNurbsProperty is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glugetnurbsproperty_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -19992,7 +19992,7 @@ procedure ParsePengluGetString is
   name_val  : unbounded_string;
   name_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glugetstring_t );
   ParseSingleNumericParameter( eof_t, name_val, name_type, pen_glenum_t ); -- name : GLenum
   if isExecutingCommand then
@@ -20027,7 +20027,7 @@ procedure ParsePengluGetTessProperty is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glugettessproperty_t );
   -- TODO: no tessellation object yet for SparForte
   -- ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -20066,7 +20066,7 @@ procedure ParsePengluLoadSamplingMatrices is
   view_val  : unbounded_string;
 --  view_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluloadsamplingmatrices_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20151,7 +20151,7 @@ procedure ParsePengluNewNurbsRenderer is
   -- Syntax: gluNewNurbsRenderer return GLUnurbs_Ptr;
   -- Source: spar_os.opengl.gluNewNurbsRenderer
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunewnurbsrenderer_t );
   if isExecutingCommand then
     begin
@@ -20179,7 +20179,7 @@ procedure ParsePengluNewQuadric is
   -- Syntax: gluNewQuadric return GLUquadratic_Ptr;
   -- Source: spar_os.opengl.gluNewQuadric
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunewquadric_t );
   if isExecutingCommand then
     begin
@@ -20207,7 +20207,7 @@ procedure ParsePengluNewTess is
   -- Syntax: gluNewTess return GLUtessellator_Ptr;
   -- Source: spar_os.opengl.gluNewTess
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunewtess_t );
   if isExecutingCommand then
     begin
@@ -20238,7 +20238,7 @@ procedure ParsePengluNextContour is
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunextcontour_t );
   -- TODO: no tessellation object in SparForte yet
   -- ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -20273,7 +20273,7 @@ procedure ParsePengluNurbsCallback is
   CallBackFunc_val  : unbounded_string;
 --  CallBackFunc_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunurbscallback_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20308,7 +20308,7 @@ procedure ParsePengluNurbsCallbackData is
   userData_val  : unbounded_string;
 --  userData_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunurbscallbackdata_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20342,7 +20342,7 @@ procedure ParsePengluNurbsCallbackDataEXT is
   userData_val  : unbounded_string;
 --  userData_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunurbscallbackdataext_t );
   -- TODO: no NURBS object yet in SparForte
   --ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20386,7 +20386,7 @@ procedure ParsePengluNurbsCurve is
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunurbscurve_t );
   -- TODO: no NURBS objecdt yet in SparFOrte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20426,7 +20426,7 @@ procedure ParsePengluNurbsProperty is
   value_val  : unbounded_string;
   value_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunurbsproperty_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20478,7 +20478,7 @@ procedure ParsePengluNurbsSurface is
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glunurbssurface_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20567,7 +20567,7 @@ procedure ParsePengluPartialDisk is
   sweep_val  : unbounded_string;
   sweep_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glupartialdisk_t );
   -- TODO: no quadrics object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -20703,7 +20703,7 @@ procedure ParsePengluProject is
   winZ_val  : unbounded_string;
 --  winZ_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluproject_t );
   ParseFirstNumericParameter( eof_t, objX_val, objX_type, pen_gldouble_t ); -- objX : GLdouble
   ParseNextNumericParameter( eof_t,  objY_val, objY_type, pen_gldouble_t ); -- objY : GLdouble
@@ -20763,7 +20763,7 @@ procedure ParsePengluPwlCurve is
   kind_val  : unbounded_string;
   kind_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glupwlcurve_t );
   -- TODO: no NURBS object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, nurb_val, nurb_type, pen_glunurbs_ptr_t ); -- nurb : GLUnurbs_Ptr
@@ -20801,7 +20801,7 @@ procedure ParsePengluQuadricCallback is
   CallBackFunc_val  : unbounded_string;
 --  CallBackFunc_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluquadriccallback_t );
   -- TODO: no quad object in SparForte
   --ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -20836,7 +20836,7 @@ procedure ParsePengluQuadricDrawStyle is
   draw_val  : unbounded_string;
   draw_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluquadricdrawstyle_t );
   -- TODO: no quad object in SparForte
   -- ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -20869,7 +20869,7 @@ procedure ParsePengluQuadricNormals is
   normal_val  : unbounded_string;
   normal_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluquadricnormals_t );
   -- TODO: no quad object in SparForte yet
   -- ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -20902,7 +20902,7 @@ procedure ParsePengluQuadricOrientation is
   orientation_val  : unbounded_string;
   orientation_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluquadricorientation_t );
   -- TODO: no quadrics object in SparForte yet
   -- ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -20935,7 +20935,7 @@ procedure ParsePengluQuadricTexture is
   texture_val  : unbounded_string;
   texture_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluquadrictexture_t );
   -- TODO: no quadrics object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -20982,7 +20982,7 @@ procedure ParsePengluScaleImage( result : out unbounded_string ) is
   dataOut_val  : unbounded_string;
 --  dataOut_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluscaleimage_t );
   ParseFirstNumericParameter( eof_t, format_val, format_type, pen_glbuffers_t ); -- format : GLbuffers
   ParseNextNumericParameter( eof_t,  wIn_val, wIn_type, pen_glsizei_t ); -- wIn : GLsizei
@@ -21032,7 +21032,7 @@ procedure ParsePengluSphere is
   stacks_val  : unbounded_string;
   stacks_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glusphere_t );
   -- TODO: no quadrics object yet in SparForte
   --ParseFirstNumericParameter( eof_t, quad_val, quad_type, pen_gluquadratic_ptr_t ); -- quad : GLUquadratic_Ptr
@@ -21065,7 +21065,7 @@ procedure ParsePengluTessBeginContour is
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessbegincontour_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21097,7 +21097,7 @@ procedure ParsePengluTessBeginPolygon is
   data_val  : unbounded_string;
 --  data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessbeginpolygon_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21132,7 +21132,7 @@ procedure ParsePengluTessCallback is
   CallBackFunc_val  : unbounded_string;
 --  CallBackFunc_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutesscallback_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21164,7 +21164,7 @@ procedure ParsePengluTessEndContour is
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessendcontour_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21194,7 +21194,7 @@ procedure ParsePengluTessEndPolygon is
   tess_val  : unbounded_string;
 --  tess_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessendpolygon_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseSingleNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21230,7 +21230,7 @@ procedure ParsePengluTessNormal is
   valueZ_val  : unbounded_string;
   valueZ_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessnormal_t );
   -- TODO: no tessellation object yet in SparForte
   --ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21267,7 +21267,7 @@ procedure ParsePengluTessProperty is
   data_val  : unbounded_string;
   data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessproperty_t );
   -- TODO: no tessellation object yet in SparForte
   --ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21303,7 +21303,7 @@ procedure ParsePengluTessVertex is
   data_val  : unbounded_string;
   --data_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_glutessvertex_t );
   -- TODO: no tessellation object yet in SparForte
   -- ParseFirstNumericParameter( eof_t, tess_val, tess_type, pen_glutessellator_ptr_t ); -- tess : GLUtessellator_Ptr
@@ -21352,7 +21352,7 @@ procedure ParsePengluUnProject is
   objZ_val  : unbounded_string;
 --  objZ_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluunproject_t );
   ParseFirstNumericParameter( eof_t, winX_val, winX_type, pen_gldouble_t ); -- winX : GLdouble
   ParseNextNumericParameter( eof_t,  winY_val, winY_type, pen_gldouble_t ); -- winY : GLdouble
@@ -21415,7 +21415,7 @@ procedure ParsePengluUnProject4 is
   objW_val  : unbounded_string;
   --objW_type : identifier;
 begin
-  err( "not yet complete" );
+  err( +"not yet complete" );
   expect( pen_gluunproject4_t );
   ParseFirstNumericParameter( eof_t, winX_val, winX_type, pen_gldouble_t ); -- winX : GLdouble
   ParseNextNumericParameter( eof_t,  winY_val, winY_type, pen_gldouble_t ); -- winY : GLdouble
@@ -21504,13 +21504,13 @@ begin
      array_val := GLbyte( to_numeric( newval_val ) );
      findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_ba'range then
-        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ba'first ) & " .." & size_t'image( theArray.gl_ba'last ) );
+        err( pl( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ba'first ) & " .." & size_t'image( theArray.gl_ba'last ) ) );
      else
         theArray.gl_ba( array_pos ) := array_val;
      end if;
   end if;
   exception when others =>
-    err( "constraint error" );
+    err( +"constraint error" );
 end ParsePenSetGLByteArray;
 
 #else
@@ -21577,13 +21577,13 @@ begin
      array_val := GLint( to_numeric( newval_val ) );
      findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_ia'range then
-        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ia'first ) & " .." & size_t'image( theArray.gl_ia'last ) );
+        err( pl( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_ia'first ) & " .." & size_t'image( theArray.gl_ia'last ) ) );
      else
         theArray.gl_ia( array_pos ) := array_val;
      end if;
   end if;
   exception when others =>
-    err( "constraint error" );
+    err( +"constraint error" );
 end ParsePenSetGLIntArray;
 
 #else
@@ -21651,13 +21651,13 @@ begin
      array_val := GLShort( to_numeric( newval_val ) );
      findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_sa'range then
-        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_sa'first ) & " .." & size_t'image( theArray.gl_sa'last ) );
+        err( pl( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_sa'first ) & " .." & size_t'image( theArray.gl_sa'last ) ) );
      else
         theArray.gl_sa( array_pos ) := array_val;
      end if;
   end if;
   exception when others =>
-    err( "constraint error" );
+    err( +"constraint error" );
 end ParsePenSetGLShortArray;
 
 #else
@@ -21724,13 +21724,13 @@ begin
      array_val := GLfloat( to_numeric( newval_val ) );
      findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_fa'range then
-        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_fa'first ) & " .." & size_t'image( theArray.gl_fa'last ) );
+        err( pl( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_fa'first ) & " .." & size_t'image( theArray.gl_fa'last ) ) );
      else
         theArray.gl_fa( array_pos ) := array_val;
      end if;
   end if;
   exception when others =>
-    err( "constraint error" );
+    err( +"constraint error" );
 end ParsePenSetGLFloatArray;
 
 #else
@@ -21797,13 +21797,13 @@ begin
      array_val := GLdouble( to_numeric( newval_val ) );
      findResource( to_resource_id( identifiers( a_id ).value.all ), theArray );
      if array_pos not in theArray.gl_da'range then
-        err( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_da'first ) & " .." & size_t'image( theArray.gl_da'last ) );
+        err( pl( "the array position" & to_string( pos_val ) & " is not in the range" & size_t'image( theArray.gl_da'first ) & " .." & size_t'image( theArray.gl_da'last ) ) );
      else
         theArray.gl_da( array_pos ) := array_val;
      end if;
   end if;
   exception when others =>
-    err( "constraint error" );
+    err( +"constraint error" );
 end ParsePenSetGLDoubleArray;
 
 #else

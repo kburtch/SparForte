@@ -91,20 +91,20 @@ begin
                 exit when gst_error(i) = ASCII.NUL;
                 msg := msg & gst_error(i);
             end loop;
-            err( to_string( msg ) );
+            err( unb_pl( msg ) );
          end if;
        exception when others =>
          err_exception_raised;
        end;
      exception
        when NAME_ERROR =>
-         err( "file " & optional_yellow( path ) & " does not exist or is not readable" );
+         err( +"file " & em( path ) & pl( " does not exist or is not readable" ) );
        when STATUS_ERROR =>
-         err( "file " & optional_yellow( path ) & " may be locked" );
+         err( +"file " & em( path ) & pl( " may be locked" ) );
        when MODE_ERROR =>
-         err( gnat.source_info.source_location & ": internal error: mode error on file open" );
+         err( pl( gnat.source_info.source_location & ": internal error: mode error on file open" ) );
        when others =>
-         err( "exception when opening sound file " & optional_yellow( path ) );
+         err( +"exception when opening sound file " & em( path ) );
      end;
 #else
       err( "sound support not installed" );
@@ -128,7 +128,7 @@ begin
 #if SOUND
      PlayCD( dev_name );
 #else
-      err( "sound support not installed" );
+      err( +"sound support not installed" );
 #end if;
   end if;
 end ParsePlayCD;
@@ -140,7 +140,7 @@ begin
 #if SOUND
      StopCD;
 #else
-      err( "sound support not installed" );
+      +err( "sound support not installed" );
 #end if;
   end if;
 end ParseStopCD;
@@ -152,7 +152,7 @@ end ParseStopCD;
 --#if SOUND
 --     Mute;
 --#else
---      err( "sound support not installed" );
+--      +err( "sound support not installed" );
 --#end if;
 --  end if;
 --end ParseMute;
@@ -164,7 +164,7 @@ end ParseStopCD;
 --#if SOUND
 --     Unmute;
 --#else
---      err( "sound support not installed" );
+--      +err( "sound support not installed" );
 --#end if;
 --  end if;
 --end ParseUnmute;

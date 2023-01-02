@@ -597,6 +597,29 @@ end ToEscaped;
 
 
 ------------------------------------------------------------------------------
+--  TO CTRL ESCAPED
+--
+-- Create a printable string by marking unprintable characters with
+-- "[# ascii-code]"
+------------------------------------------------------------------------------
+
+function ToCtrlEscaped( s : unbounded_string ) return unbounded_string is
+  ch : character;
+  newstr : unbounded_string;
+begin
+  for i in 1..length( s ) loop
+      ch := Element( s, i );
+      if ch < ' ' then
+         newstr := newstr & "[#" & character'pos( ch )'img & "]";
+      else
+         newstr := newstr & ch;
+      end if;
+  end loop;
+  return newstr;
+end ToCtrlEscaped;
+
+
+------------------------------------------------------------------------------
 --  TO JSON ESCAPED
 --
 -- convert special characters in string to JSON escape codes
@@ -630,6 +653,7 @@ begin
   end loop;
   return item;
 end ToJSONEscaped;
+
 
 ------------------------------------------------------------------------------
 --  TO JSON UNESCAPED

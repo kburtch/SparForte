@@ -75,6 +75,25 @@ package body interpreter is
 
 
 ------------------------------------------------------------------------------
+--  PROMPT IDLE_CALLBACK
+--
+-- Pegasoft.user_io will use readline to read text at the command prompt.
+-- This callback will handle readline idle events and run the user's prompt
+-- idle script.  This is a callback to keep SparForte logic out of the
+-- Pegasoft packages.
+------------------------------------------------------------------------------
+
+procedure promptIdleCallback is
+begin
+  if promptIdleScript /= null_unbounded_string then
+     CompileAndRun( promptIdleScript, fragment => false );
+     if error_found then
+        put_line( current_error, fullErrorMessage.textMessage );
+     end if;
+  end if;
+end promptIdleCallback;
+
+------------------------------------------------------------------------------
 --  PUT COMMAND PROMPT
 --
 -- Process the command prompt script if necessary.  Show the command prompt.
@@ -93,7 +112,7 @@ begin
     if length( promptScript ) /= 0 then
        CompileRunAndCaptureOutput( promptScript, prompt );
        if error_found then
-          put_line( current_error, fullErrorMessage );
+          put_line( current_error, fullErrorMessage.textMessage );
           prompt := null_unbounded_string;
        elsif terminalWindowNaming then
           -- set the xterm window title
@@ -198,19 +217,19 @@ begin
     if currentStandardInput /= originalStandardInput then
        result := dup2( currentStandardInput, stdin );   -- restore stdin
        if result < 0 then
-          err( "Unable to redirect standard input" );
+          err( +"Unable to redirect standard input" );
        end if;
     end if;
     if currentStandardOutput /= originalStandardOutput then
        result := dup2( currentStandardOutput, stdout ); -- restore stdout
        if result < 0 then
-          err( "Unable to redirect standard output" );
+          err( +"Unable to redirect standard output" );
        end if;
     end if;
     if currentStandardError /= originalStandardError then
        result := dup2( currentStandardError, stderr );  -- restore stderr
        if result < 0 then
-          err( "Unable to redirect standard error" );
+          err( +"Unable to redirect standard error" );
        end if;
     end if;
     error_found := false;                               -- no err found (prompt)
@@ -253,7 +272,7 @@ begin
              ParseGeneralStatement;                     -- do the command
           end loop;
           if error_found then
-             put_line( standard_error, fullErrorMessage );
+             put_line( standard_error, fullErrorMessage.textMessage );
              -- Not sure if templates are possible here but...
              if hasTemplate then
                 putTemplateHeader( templateHeader );
@@ -268,21 +287,21 @@ begin
        if C_errno = EINTR then
           goto retry1;
        end if;
-       err( "Unable to restore standard input" );
+       err( +"Unable to restore standard input" );
     end if;
 <<retry2>> result := dup2( originalStandardOutput, stdout ); -- restore standard output
     if result < 0 then
        if C_errno = EINTR then
           goto retry2;
        end if;
-       err( "Unable to restore standard output" );
+       err( +"Unable to restore standard output" );
     end if;
 <<retry3>>    result := dup2( originalStandardError, stderr );  -- restore standard error
     if result < 0 then
        if C_errno = EINTR then
           goto retry3;
        end if;
-       err( "Unable to restore standard error" );
+       err( +"Unable to restore standard error" );
     end if;
     exit when done;                                   -- and stop when done
   end loop;
@@ -342,7 +361,7 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          err( "unable to read first line of script" );
+          err( +"unable to read first line of script" );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -363,7 +382,7 @@ begin
         token := identifiers'first;                -- dummy, replaced by g_n_t
         getNextToken;                              -- load first token
         parsePolicy;
-        expectStatementSemicolon( contextNotes => "in the global policy" );
+        expectStatementSemicolon( contextNotes => +"in the global policy" );
         if token /= eof_t then                     -- unexpected token?
            expect( pragma_t );                     -- say what we expect
         else
@@ -371,12 +390,12 @@ begin
         end if;
      end if;
   elsif C_errno = 2 then                           -- file not found?
-     err( "unable to open policy file '" &
-       policyPath & "' : file not found" );
+     err( +"unable to open policy file '" &
+       pl( policyPath & "' : file not found" ) );
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     err( "unable to open policy file '" &
-       policyPath & "' : " & OSerror( C_errno ) );
+     err( +"unable to open policy file '" &
+       pl( policyPath & "' : " & OSerror( C_errno ) ) );
   end if;
 <<error>>
   if error_found then                              -- was there an error?
@@ -445,7 +464,7 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          err( "unable to read first line of script" );
+          err( +"unable to read first line of script" );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -466,16 +485,16 @@ begin
         token := identifiers'first;                -- dummy, replaced by g_n_t
         getNextToken;                              -- load first token
         parseConfig;
-        expectStatementSemicolon( contextNotes => "in the global configuration" );
+        expectStatementSemicolon( contextNotes => +"in the global configuration" );
         expect( eof_t );                        -- should be nothing else
      end if;
   elsif C_errno = 2 then                             -- file not found?
-     err( "unable to open config file '" &
-       configPath & "' : file not found" );
+     err( +"unable to open config file '" &
+       pl( configPath & "' : file not found" ) );
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     err( "unable to open config file '" &
-       configPath & "' : " & OSerror( C_errno ) );
+     err( +"unable to open config file '" &
+       pl( configPath & "' : " & OSerror( C_errno ) ) );
   end if;
 <<error>>
   if error_found then                              -- was there an error?
@@ -497,7 +516,7 @@ begin
      for i in old_identifiers_top..identifiers_top-1 loop
          put_trace( "global config declared " & to_string( identifiers( i ).name ) );
          identifiers( i ).wasReferenced := true;
-         --identifiers( i ).referencedByThread := mainThread;
+         --identifiers( i ).referencedByFlow := mainDataFlow;
      end loop;
      --set_exit_status( 0 );                         -- return no error
      --if trace then                                 -- -x? show 0 exit status
@@ -546,7 +565,7 @@ begin
      when executing =>
         Put_Trace( "Executing Commands", utf_checkmark );
      when others =>
-        err( "internal error: unexpected interpreter phase" );
+        err( +"internal error: unexpected interpreter phase" );
      end case;
   end if;
   inputMode := fromScriptFile;                     -- running a script
@@ -588,10 +607,10 @@ begin
     if scriptFile > 0 then
        scriptDir := dirname( scriptFilePath );
        if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-         err( "the script directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
+         err( +"the script directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
          goto error;
        elsif not C_is_includable_file( to_string( scriptFilePath ) & ASCII.NUL ) then
-         err( "the script file " & optional_yellow( to_string( scriptFilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+         err( +"the script file " & unb_em( scriptFilePath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
          goto error;
        end if;
     end if;
@@ -606,7 +625,7 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          err( "unable to read first line of script" );
+          err( +"unable to read first line of script" );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -636,13 +655,14 @@ begin
         end if;
      end if;
   elsif C_errno = 2 then                             -- file not found?
-     err( "unable to open script file '" &
-       scriptPath & "' : file not found" );
+     err( +"unable to open script file '" &
+       pl( scriptPath & "' : file not found" ) );
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     err( "unable to open script file '" &
-       scriptPath & "' : " & OSerror( C_errno ) );
+     err( +"unable to open script file '" &
+       pl( scriptPath & "' : " & OSerror( C_errno ) ) );
   end if;
+
 <<error>>
   if error_found then                              -- was there an error?
      if last_status = 0 then                       -- no last command status?
@@ -676,7 +696,7 @@ begin
      when executing =>
         null; -- Put_Trace( "Done executing Commands", utf_checkmark );
      when others =>
-        err( "internal error: unexpected interpreter phase" );
+        err( +"internal error: unexpected interpreter phase" );
      end case;
   end if;
 end interpretScript;
@@ -705,7 +725,7 @@ begin
         Put_Trace( "Executing Commands", utf_checkmark );
      end if;
   when others =>
-     err( "internal error: unexpected interpreter phase" );
+     err( +"internal error: unexpected interpreter phase" );
   end case;
   scriptFilePath := to_unbounded_string( commandLineSource ); -- "script" name
   sourceFilesList.Clear( SourceFiles );
@@ -716,7 +736,7 @@ begin
   compileCommand( commandString );
   parse;
   if error_found then                              -- was there an error?
-     put_line( standard_error, fullErrorMessage );
+     put_line( standard_error, fullErrorMessage.textMessage );
      -- may or may not have a template at this point, so check
      if hasTemplate then
         putTemplateHeader( templateHeader );
@@ -823,10 +843,10 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( globalPolicyPath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( "the global policy directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global policy directory " & optional_yellow( globalPolicyPath ) & " is either not readable, is world writable, is not a directory";
+          err( +"the global policy directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+          raise BAD_PROFILE with "global policy directory '" & globalPolicyPath & "' is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( globalPolicyPath & ASCII.NUL ) then
-          err( "global policy file " & optional_yellow( globalPolicyPath ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          err( +"global policy file " & em( globalPolicyPath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
           raise BAD_PROFILE with "global policy file '" & globalPolicyPath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalPolicyPath ) ) ) );
@@ -835,7 +855,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage );
+     put_line( standard_error, fullErrorMessage.textMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -874,10 +894,10 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( globalConfigPath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( "the global config directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global config directory " & optional_yellow( globalConfigPath ) & " is either not readable, is world writable, is not a directory";
+          err( +"the global config directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+          raise BAD_PROFILE with "global config directory '" & globalConfigPath & "' is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( globalConfigPath & ASCII.NUL ) then
-          err( "global config file " & optional_yellow( globalConfigPath ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          err( +"global config file " & em( globalConfigPath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
           raise BAD_PROFILE with "global config file '" & globalConfigPath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalConfigPath ) ) ) );
@@ -886,7 +906,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage );
+     put_line( standard_error, fullErrorMessage.textMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -919,10 +939,10 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( globalProfilePath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( "the global profile directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-          raise BAD_PROFILE with "global profile directory " & optional_yellow( globalProfilePath ) & " is either not readable, is world writable, is not a directory";
+          err( +"the global profile directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+          raise BAD_PROFILE with "global profile directory '" & globalProfilePath & "' is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( globalProfilePath & ASCII.NUL ) then
-          err( "global profile file " & optional_yellow( globalProfilePath ) & " is either not readable, is world writable, is not a regular file or is empty" );
+          err( +"global profile file " & em( globalProfilePath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
           raise BAD_PROFILE with "global profile file '" & globalProfilePath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalProfilePath ) ) ) );
@@ -931,7 +951,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage );
+     put_line( standard_error, fullErrorMessage.textMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -977,10 +997,10 @@ begin
         if C_errno = 0 then
            scriptDir := dirname( profilePath );
            if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-             err( "the local profile directory " & optional_yellow( to_string( scriptDir ) ) & " is either not readable, is world writable, is not a directory" );
-             raise BAD_PROFILE with "local profile directory " & optional_yellow( to_string( profilePath ) ) & " is either not readable, is world writable, is not a directory";
+             err( +"the local profile directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+             raise BAD_PROFILE with "local profile directory '" & to_string( profilePath ) & "' is either not readable, is world writable, is not a directory";
            elsif not C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then
-             err( "the local profile file " & optional_yellow( to_string( profilePath ) ) & " is either not readable, is world writable, is not a regular file or is empty" );
+             err( +"the local profile file " & unb_em( profilePath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
              raise BAD_PROFILE with "local profile file '" & to_string( profilePath ) & "' is either not readable, is world writable, is not a regular file or is empty";
            end if;
            sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( profilePath ) ) );
@@ -990,7 +1010,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage );
+     put_line( standard_error, fullErrorMessage.textMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1030,7 +1050,7 @@ begin
   --   end if;
   --   interpretScript( Argument( OptionOffset ) );    -- run the script
      if error_found then
-        put_line( standard_error, fullErrorMessage );
+        put_line( standard_error, fullErrorMessage.textMessage );
      end if;
   else
      syntax_check := true;                           -- check syntax only
@@ -1047,12 +1067,12 @@ begin
      end if;
      if testOpt then
         if wasTestErrorOrFailure then
-           err( "tests failed" );
+           err( +"tests failed" );
         end if;
      end if;
      -- display any error message
      if error_found then
-        put_line( standard_error, fullErrorMessage );
+        put_line( standard_error, fullErrorMessage.textMessage );
         -- may or may not have a template at this point, so check
         if hasTemplate then
            putTemplateHeader( templateHeader );
@@ -1063,21 +1083,21 @@ begin
         if hasTemplate then
            putTemplateHeader( templateHeader );
         end if;
-        warn( to_string( depreciatedMsg ) );
+        warn( unb_pl( depreciatedMsg ) );
      end if;
      if restriction_annotations_not_optional and not annotationsFound then
         -- pragma restriction( annotations_not_optional )
         if hasTemplate then
            putTemplateHeader( templateHeader );
         end if;
-        warn( "annotations are required but missing" );
+        warn( +"annotations are required but missing" );
      end if;
      if restriction_no_annotate_todos and annotationTodoFound then
         -- pragma restriction( annotations_no_todos )
         if hasTemplate then
            putTemplateHeader( templateHeader );
         end if;
-        warn( "annotation todo found but none expected" );
+        warn( +"annotation todo found but none expected" );
      end if;
      if processingTemplate and not error_found then  -- doing a template
         if verboseOpt then
@@ -1088,28 +1108,28 @@ begin
            processTemplate;
         exception
         when STATUS_ERROR =>
-           err( "cannot open template " & optional_yellow( to_string( templatePath ) ) &
-               " - file may be locked" );
+           err( +"cannot open template " & unb_em( templatePath ) &
+               pl( " - file may be locked" ) );
         when NAME_ERROR =>
-           err( "template " & optional_yellow( to_string( templatePath ) ) &
-               " doesn't exist or is not readable" );
+           err( +"template " & unb_em( templatePath ) &
+               pl( " doesn't exist or is not readable" ) );
         when MODE_ERROR =>
-           err( gnat.source_info.source_location &
-                ": internal error: mode error on template " & optional_yellow( to_string( templatePath ) ) );
+           err( pl( gnat.source_info.source_location &
+                ": internal error: mode error on template " ) & unb_em( templatePath ) );
         when END_ERROR =>
-           err( gnat.source_info.source_location &
-                ": internal error: end of file reached on template " & optional_yellow( to_string( templatePath ) ) );
+           err( pl( gnat.source_info.source_location &
+                ": internal error: end of file reached on template " ) & unb_em(templatePath ) );
         -- when others =>
        --  err( "unable to open template " & optional_yellow( to_string( templatePath ) ) );
         end;
         -- Not sure this makes sense in a template, but we'll include it here.
         if testOpt then
            if wasTestErrorOrFailure then
-              err( "tests failed" );
+              err( +"tests failed" );
            end if;
         end if;
         if error_found then
-           put_line( standard_error, fullErrorMessage );
+           put_line( standard_error, fullErrorMessage.textMessage );
            -- always has template if we get here
            put_line( fullTemplateErrorMessage );
         end if;
@@ -1224,7 +1244,7 @@ begin
   if pwd /= eof_t then
      identifiers( pwd ).value.all := current_working_directory;
   end if;
-  pegasoft.user_io.getline.startupGetline( optionOffset );
+  pegasoft.user_io.getline.startupGetline( optionOffset, promptIdleCallback'access );
 end startInterpreter;
 
 

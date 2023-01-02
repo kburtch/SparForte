@@ -64,7 +64,7 @@ begin
      if identifiers( var_id ).kind /= root_enumerated_t then
         var_id := getBaseType( var_id );
         if identifiers( var_id ).kind /= root_enumerated_t then
-           err( "Enumerated type expected" );
+           err( +"Enumerated type expected" );
         end if;
      end if;
   end if;
@@ -93,7 +93,7 @@ begin
      if identifiers( var_id ).kind /= root_enumerated_t then
         var_id := getBaseType( var_id );
         if identifiers( var_id ).kind /= root_enumerated_t then
-           err( "Enumerated type expected" );
+           err( +"Enumerated type expected" );
         end if;
      end if;
   end if;
@@ -133,11 +133,11 @@ begin
   ParseIdentifier( var_id );
   kind := identifiers( var_id ).kind;
   if identifiers( var_id ).class /= enumClass then
-     err( "Enumerated item expected" );
+     err( +"Enumerated item expected" );
   else
      kind := getBaseType( identifiers( var_id ).kind );
      if identifiers( kind ).kind /= root_enumerated_t then
-        err( "Enumerated item expected" );
+        err( +"Enumerated item expected" );
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -153,7 +153,7 @@ begin
            f := to_unbounded_string( s );
         end;
      exception when others =>
-        err( "exception thrown" );
+        err_exception_raised;
      end;
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
@@ -171,11 +171,11 @@ begin
   ParseIdentifier( var_id );
   kind := identifiers( var_id ).kind;
   if identifiers( var_id ).class /= enumClass then
-     err( "Enumerated item expected" );
+     err( +"Enumerated item expected" );
   else
      kind := getBaseType( identifiers( var_id ).kind );
      if identifiers( kind ).kind /= root_enumerated_t then
-        err( "Enumerated item expected" );
+        err( +"Enumerated item expected" );
      end if;
   end if;
   expect( symbol_t, ")" );
@@ -209,7 +209,7 @@ begin
            f := to_unbounded_string( s );
         end;
      exception when others =>
-        err( "exception thrown" );
+        err( +"exception thrown" );
      end;
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check

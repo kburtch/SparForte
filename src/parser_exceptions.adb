@@ -69,7 +69,7 @@ begin
      if err_exception.deleted then
         result := null_unbounded_string;
      else
-        result := fullErrorMessage;
+        result := fullErrorMessage.textMessage;
      end if;
   end if;
 end ParseExceptionsExceptionInfo;

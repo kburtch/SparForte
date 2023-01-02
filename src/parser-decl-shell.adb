@@ -129,7 +129,9 @@ procedure doPathnameExpansion(
     end loop;
     return expandedWord;
   exception when others =>
-    err( "internal error: cannot remove escapes from globbing pattern " & toProtectedValue( unbounded_string( originalGlobPattern ) ) );
+    err( pl( "internal error: cannot remove escapes from globbing pattern " ) &
+         em_value( unbounded_string( originalGlobPattern ) )
+    );
     return anExpandedShellWord( originalGlobPattern );
   end globPatternWithoutEscapes;
 
@@ -356,9 +358,9 @@ procedure doPathnameExpansion(
        close( parentDir );
     end if;
   when DIRECTORY_ERROR =>
-    err( "directory error on directory " & toSecureData(to_string( candidateParentPath)));
+    err( pl( "directory error on directory " & toSecureData(to_string( candidateParentPath))));
   when program_error =>
-    err( "program_error exception raised" );
+    err( +"program_error exception raised" );
   when others =>
     err_exception_raised;
   end walkSegment;
@@ -541,9 +543,9 @@ begin
                if varNameLen > 1 then -- if more than one char
                   ch := Element( rawWordValue, firstNameChar );
                   if ch = '_' then
-                     err_shell( "leading underscores should not be in identifier names", wordPos );
+                     err_shell( +"leading underscores should not be in identifier names", wordPos );
                   elsif ch in '0'..'9' then --and firstPos /= wordPos then
-                     err_shell( "identifier names should not start with numerals", wordPos );
+                     err_shell( +"identifier names should not start with numerals", wordPos );
                   end if;
                end if;
             end;
@@ -601,7 +603,7 @@ procedure getExpansionValue(
 begin
 -- put_line("getExpansionValue: " & to_string( expansionVar )); -- DEBUG
    if expansionVar = "" then
-      err_shell( "missing variable name", wordPos );
+      err_shell( +"missing variable name", wordPos );
    elsif expansionVar = "#" then
       if isExecutingCommand then
          subword := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
@@ -638,10 +640,10 @@ begin
    elsif length( expansionVar ) = 1 and (expansionVar >= "1" and expansionVar <= "9" ) then
       if not suppress_word_quoting and then whitespaceOption = trim then
          err_shell(
-             "While expanding shell or SQL variables, " &
-             toProtectedValue( expansionVar ) &
-             " could split into multiple parameters unless " &
-             "double quotes are used", wordPos );
+             pl( "While expanding shell or SQL variables, " ) &
+             em_value( expansionVar ) &
+             pl( " could split into multiple parameters unless " &
+             "double quotes are used" ), wordPos );
       end if;
       if isExecutingCommand then
          begin
@@ -650,24 +652,24 @@ begin
                    integer'value(
                    to_string( " " & expansionVar ) )+optionOffset ) );
          exception when others =>
-            err_shell( "script argument " & to_string(expansionVar) & " not found " &
-                 "in arguments 0 .." &
-                 integer'image( Argument_Count-optionOffset), wordPos );
+            err_shell( pl( "script argument " & to_string(expansionVar) &
+                 " not found " & "in arguments 0 .." &
+                 integer'image( Argument_Count-optionOffset) ), wordPos );
          end;
       end if;
    else
       --if not suppress_word_quoting then
       if not suppress_word_quoting and then whitespaceOption = trim then
          err_shell(
-             "While expanding shell or SQL variables, " &
-             toProtectedValue( expansionVar ) &
-             " could split into multiple parameters unless " &
-             "double quotes are used", wordPos );
+             pl( "While expanding shell or SQL variables, " ) &
+             em_value( expansionVar ) &
+             pl( " could split into multiple parameters unless " &
+             "double quotes are used"), wordPos );
       end if;
       findIdent( expansionVar, var_id );
 
       if var_id = eof_t then
-         err_shell( "identifier " & optional_yellow( to_string( toEscaped( expansionVar ) ) ) & " not declared", wordPos );
+         err_shell( +"identifier " & em_esc( expansionVar ) & pl( " not declared" ), wordPos );
 
       -- For an enumerated item, the value is the item name
 
@@ -690,16 +692,16 @@ begin
          -- and will be the record name.
 
          if identifiers( var_id ).list then
-            err_shell( optional_yellow( to_string( expansionVar ) ) & " is an array", wordPos);
+            err_shell( unb_em( expansionVar ) & pl( " is an array" ), wordPos);
          elsif getUniType( identifiers( var_id ).kind ) = root_record_t then
-            err_shell( optional_yellow( to_string( expansionVar ) ) & " is a record", wordPos);
+            err_shell( unb_em( expansionVar ) & pl( " is a record" ), wordPos);
          elsif syntax_check then
             identifiers( var_id ).wasReferenced := true;
             -- Although not a SparForte expression, an expansion is an
             -- expression of sorts: it should raise a limited required
             -- error.
             identifiers( var_id ).wasFactor := true;
-            --identifiers( id ).referencedByThread := getThreadName;
+            --identifiers( id ).referencedByFlow := getDataFlowName;
             subword := to_unbounded_string( "undefined" );
          else
             if getUniType( identifiers( var_id ).kind ) = root_enumerated_t then
@@ -722,7 +724,7 @@ begin
             end if;
          end if;
       else
-         err_shell( optional_yellow( to_string( expansionVar ) ) & " is not a variable", wordPos );
+         err_shell( unb_em(expansionVar ) & pl( " is not a variable" ), wordPos );
       end if;
    end if;
 end getExpansionValue;
@@ -876,16 +878,16 @@ procedure doVariableExpansion(
       -- in ada, slice needs a last position not a length
       colonPos := index( tmp, ":" );
       if length(defaultValue) > 1 and colonPos = length(defaultValue) then
-          err_shell( "slice length is missing", wordPos );
+          err_shell( +"slice length is missing", wordPos );
       elsif colonPos = 1 then
-          err_shell( "slice position is missing", wordPos );
+          err_shell( +"slice position is missing", wordPos );
       elsif colonPos > 0 then
          -- a negative position is not possible, it ends up :-
          begin
             tmp2 := unbounded_slice( tmp, 1, colonPos-1);
             slicePos := natural'value( " " & to_string( tmp2 ) ) + 1;
          exception when others =>
-            err_shell( "slice position is not a natural", wordPos );
+            err_shell( +"slice position is not a natural", wordPos );
          end;
          begin
             tmp2 := unbounded_slice( tmp, colonPos+1, length(tmp) );
@@ -894,14 +896,14 @@ procedure doVariableExpansion(
                sliceEnd := length( subword ) + sliceEnd;
                if sliceEnd < 1 then
                   sliceEnd := length( subword );
-                  err_shell( "negative slice length is less that start position", wordPos );
+                  err_shell( +"negative slice length is less that start position", wordPos );
                end if;
             else
               sliceEnd := integer'value( " " & to_string( tmp2 ) );
               sliceEnd := slicePos + sliceEnd - 1;
             end if;
          exception when others =>
-            err_shell( "slice length is not a integer", wordPos );
+            err_shell( +"slice length is not a integer", wordPos );
          end;
          -- Ada will error of end is out-of-range but shell doesn't care
          if sliceEnd > length( subword ) then
@@ -912,7 +914,7 @@ procedure doVariableExpansion(
             slicePos := natural'value( " " & to_string( tmp ) ) + 1;
             sliceEnd := length( subword );
          exception when others =>
-            err_shell( "slice position is not a natural", wordPos );
+            err_shell( +"slice position is not a natural", wordPos );
          end;
       end if;
       begin
@@ -924,7 +926,7 @@ procedure doVariableExpansion(
          subword := null_unbounded_string;
       when CONSTRAINT_ERROR =>
          -- should not happen
-         err_shell( "slice position or length out of range", wordPos );
+         err_shell( +"slice position or length out of range", wordPos );
       end;
    end doVarSliceExpansion;
 
@@ -942,7 +944,7 @@ procedure doVariableExpansion(
    begin
       slashPos := ada.strings.unbounded.index( defaultValue, "/" );
       if slashPos <= 1 then
-          err_shell( "search string is missing", wordPos );
+          err_shell( +"search string is missing", wordPos );
       else
           searchStr := unbounded_slice( defaultValue, 1, slashPos-1);
           replaceStr := unbounded_slice( defaultValue, slashPos+1, length( defaultValue ) );
@@ -985,9 +987,9 @@ begin
    when question =>
       if subword = "" then
          if defaultValue = "" then
-            err_shell( toProtectedValue( expansionVar ) & " is an empty string", wordPos );
+            err_shell( em_value( expansionVar ) & pl( " is an empty string" ), wordPos );
          else
-            err_shell( toProtectedValue( expansionVar ) & " " & to_string( defaultValue ), wordPos );
+            err_shell( em_value( expansionVar ) & pl( " " & to_string( defaultValue ) ), wordPos );
          end if;
       end if;
    when var_slice =>
@@ -1129,7 +1131,7 @@ begin
       -- In Bourne shell, nothing happens.  It's not an error.  However, we
       -- enforce an error by default.
       if not suppress_no_empty_command_subs then
-         err( "empty command substitution" );
+         err( +"empty command substitution" );
       end if;
    else
 
@@ -1314,9 +1316,9 @@ begin
       if element( rawWordValue, wordPos ) = ':' then
          expectChar( ':', rawWordValue, wordLen, wordPos  );
          if endOfShellWord then
-            err_shell( "expected -, + or ? after colon", wordPos );
+            err_shell( +"expected -, + or ? after colon", wordPos );
          elsif isLengthExpansion then
-            err_shell( "# cannot be used with colon", wordPos );
+            err_shell( +"# cannot be used with colon", wordPos );
          elsif element( rawWordValue, wordPos ) = '-' then
             defaultMode := minus;
             expectChar( '-', rawWordValue, wordLen, wordPos  );
@@ -1330,7 +1332,7 @@ begin
             expectChar( '?', rawWordValue, wordLen, wordPos  );
             getBraceOperatorDefaultValue;
          elsif element( rawWordValue, wordPos ) = '=' then
-            err_shell( "assignment in curly braces not supported", wordPos );
+            err_shell( +"assignment in curly braces not supported", wordPos );
          else
             -- substring slice
             defaultMode := var_slice;
@@ -1359,7 +1361,7 @@ begin
             expectChar( ',', rawWordValue, wordLen, wordPos  );
             isLowercaseExpansion := true;
          else
-            err_shell( "single comma lowercase is not supported", wordPos );
+            err_shell( +"single comma lowercase is not supported", wordPos );
          end if;
       end if;
    end if;
@@ -1602,7 +1604,7 @@ begin
    expectChar( '\', rawWordValue, wordLen, wordPos );
    -- This may never happen because the compiler may fail before we get here.
    if endOfShellWord then
-      err_shell( "missing character after backslash", wordPos );
+      err_shell( +"missing character after backslash", wordPos );
    else
      globPattern := globPattern & "\" & element( rawWordValue, wordPos );
      getNextChar( rawWordValue, wordLen, wordPos );
@@ -1706,7 +1708,7 @@ begin
    expectChar( '\', rawWordValue, wordLen, wordPos );
    ch := element( rawWordValue, wordPos );
    if endOfShellWord then
-      err_shell( "missing character after backslash", wordPos );
+      err_shell( +"missing character after backslash", wordPos );
    elsif ch = '"' then
      globPattern := globPattern & "\" & ch;
      getNextChar( rawWordValue, wordLen, wordPos );
@@ -2013,7 +2015,7 @@ begin
          -- the normal way.  We don't allow it to be combined with other
          -- subwords.
          if shellWord = "$@" then
-            err_shell("$@ should be in double quotes", wordPos);
+            err_shell( +"$@ should be in double quotes", wordPos);
          elsif shellWord = ASCII.Quotation & "$@" & ASCII.Quotation then
             parseDollarAtSign( bourneShellWordList );
          else
@@ -2064,7 +2066,7 @@ begin
    elsif token = symbol_t then
       -- This is primarily for "&"
       -- e.g. `pwd` : integer; will give this error on the colon
-      err_shell( "unexpected symbol in shell command", wordPos );
+      err_shell( +"unexpected symbol in shell command", wordPos );
    elsif identifiers( token ).kind = new_t then
       -- If there's any kind of quotation, it will be a word not an identifier.
       -- This will always be a bareword.
@@ -2078,22 +2080,22 @@ begin
    -- The following may never happen...but are included here to catch the unexpected.
    -- These follow the same pattern as expected identifiers.
    elsif token = number_t then
-     err( optional_yellow( "shell word") & " expected, not a " &
-          optional_yellow( "number" ) );
+     err( em( "shell word") & pl( " expected, not a " ) &
+          em( "number" ) );
    elsif token = strlit_t then
-     err( optional_yellow( "shell word" ) & " expected, not a " &
-          optional_yellow( "string literal" ) );
+     err( em( "shell word" ) & pl( " expected, not a " ) &
+          em( "string literal" ) );
    elsif token = backlit_t then
-     err( optional_yellow( "shell word" ) & " expected, not a " &
-          optional_yellow( "backquoted literal" ) );
+     err( em( "shell word" ) & pl( " expected, not a " ) &
+          em( "backquoted literal" ) );
    elsif token = charlit_t then
-     err( optional_yellow( "shell word" ) & " expected, not a " &
-          optional_yellow( "character literal" ) );
+     err( em( "shell word" ) & pl( " expected, not a " ) &
+          em( "character literal" ) );
    elsif is_keyword( token ) and token /= eof_t then
-      err( optional_yellow( "shell word" ) & " expected, not a " &
-           optional_yellow( "keyword" ) );
+      err( em( "shell word" ) & pl( " expected, not a " ) &
+           em( "keyword" ) );
    else -- including EOF
-      err( optional_yellow( "shell word" ) & " expected" );
+      err( em( "shell word" ) & pl( " expected" ) );
    end if;
 
    if trace then
@@ -2142,9 +2144,9 @@ procedure parseUniqueShellWord( shellWord : in out anExpandedShellWord ) is
 begin
   parseShellWord( wordList );
   if bourneShellWordLists.Length( wordList ) > 1 then
-     err( "one shell word expected but it expanded to multiple words.  (SparForte requires commands that expand to one shell word.)" );
+     err( +"one shell word expected but it expanded to multiple words.  (SparForte requires commands that expand to one shell word.)" );
   elsif bourneShellWordLists.Length( wordList ) = 0 then
-     err( "internal error: one shell word expected but it expanded to none" );
+     err( +"internal error: one shell word expected but it expanded to none" );
   else
      bourneShellWordLists.Pull(wordList, shellWord);
   end if;

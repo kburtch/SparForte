@@ -43,7 +43,7 @@
 
 <h3>The If Statement</h3>
 
-<p>if statements are used for conditional branching.</p>
+<p><code>if</code> statements are used for conditional branching.</p>
 
         <center>
         <div class="code">
@@ -64,7 +64,7 @@
 
 <h3>The Case Statement</h3>
 
-<p>The case statement can test a variable for several different values.
+<p>The <code>case</code> statement can test a variable for several different values.
 </p>
 
         <center>
@@ -82,7 +82,7 @@ c : country;<br>
 &nbsp;&nbsp; put_line( "Brazil" );<br>
 <b>when</b> others =&gt;<br>
 &nbsp;&nbsp; put_line( "Unexpected country" );<br>
-<b>end</b> <b>case</b>;</p>
+<b>end</b> <b>case</b>;
 <br>&nbsp;<br></p>
         <div class="code_caption">
                 <b>Example</b>: The Case Statement
@@ -98,9 +98,9 @@ c : country;<br>
         </div>
         </center>
 
-<p>The "when" cases must not be variables (although constants are OK).
-The "when others" case is always required.  You can create a do nothing
-case by using the <tt>null</tt> statement.</p>
+<p>The <code>when</code> cases must not be variables (although constants are OK).
+The <code>when others</code> case is always required.  You can create a do nothing
+case by using the <code>null</code> statement.</p>
 
 <p><b>Ada</b>: The when others clause is optional in Ada.  It's required
 in SparForte.</p>
@@ -128,7 +128,7 @@ language : languages;<br>
 &nbsp;&nbsp; put_line( "Brazillian Portugeuse" );<br>
 <b>when</b> others =&gt;<br>
 &nbsp;&nbsp; put_line( "Unexpected country and language" );<br>
-<b>end</b> <b>case</b>;</p>
+<b>end</b> <b>case</b>;
 <br>&nbsp;<br></p>
         <div class="code_caption">
                 <b>Example</b>: The Case Statement with Multiple Cases
@@ -140,54 +140,7 @@ language : languages;<br>
 ignoring the value of that case identifier.  In the example above,
 we assume that everyone in Brazil speaks Portugeuse.</p>
 
-<p><b>Ada</b>: pragma ada_95 does not allow multiple cases identifiers.</p>
-
-<p><b>Implementation Note</b>: The case in statement is experimental and the box symbol may change in the next version of SparForte.</p>
-
-<h3>The Case In Statement</h3>
-
-<p>The case in statement implements business decision tables.
-There is a list of variables to test after "in" and a list of variables
-to update after "out".  Each when has a list of values corresponding to
-the "in" list.  Each value must match for the list of expressions after
-the "=&gt;" to run.</p>
-
-<p>This version of the case statement is especially useful when
-creating lookup tables as commonly used in business programming.</p>
-
-        <center>
-        <div class="code">
-                <p class="code">
-<b>type</b> a_customer_loyalty <b>is</b> (recent, loyal);<br>
-<b>type</b> a_outage_duration <b>is</b> (short, long);<br>
-<b>type</b> a_rebate <b>is</b> (none, small, medium, large);<br>
-<br>
-customer_loyalty : <b>limited</b> a_customer_loyalty := recent;<br>
-outage_duration  : <b>limited</b> a_outage_duration := long;<br>
-rebate           : a_rebate;<br>
-<br>
-<b>case</b> <b>in</b> customer_loyalty, outage_duration <b>out</b> rebate <b>is</b><br>
-&nbsp;&nbsp;&nbsp;<b>when</b> recent,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;small;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> recent,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;medium;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> loyal,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; short&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;medium;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> loyal,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; long&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;large;<br>
-&nbsp;&nbsp;&nbsp;<b>when</b> <b>others</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;none;<br>
-<b>end</b> <b>case</b>;<br>
-<br>
-? "rebate is " @  rebate;<br>
-        <div class="code_caption">
-                <b>Example</b>: The Case In Statement
-        </div>
-        </div>
-        </center>
-
-<p>Out identifiers must be previously declared (they will not be automatically
-declared if new).  Out identifiers cannot be commands, exceptions, arrays or
-records.</p>
-
-<p><b>Ada</b>: The case in statement is not allowed with pragma ada_95.</p>
-
-<p><b>Implementation Note</b>: The case in statement is experimental and will likely change in the next version of SparForte.</p>
+<p><b>Ada</b>: <code>pragma ada_95</code> does not allow multiple cases identifiers.</p>
 
 <h3>The While Loop Statement</h3>
 
@@ -211,7 +164,7 @@ the first line of the loop is executed.</p>
 
 <h3>The For Loop Statement</h3>
 
-<p>The for loop increments its index variable by 1 until it iterates
+<p>The <code>for</code> loop increments its index variable by 1 until it iterates
 through the specified range.  The range can either be numeric
 or enumerated.</p>
 
@@ -234,13 +187,12 @@ a breakout prompt for debugging purposes.)</p>
         </div>
         </center>
 
-<p>To loop through values in the reverse order, use "in reverse" instead of "in".
+<p>To loop through values in the reverse order, use <code>in reverse</code> instead of <code>in</code>.
 </p>
 
 <h3>The Exit Statement</h3>
 
-<p>Any loop can be exited by using either an exit statement or an "exit
-when" shorthand.
+<p>Any loop can be exited by using either an <code>exit</code> statement or an <code>exit when</code> shorthand.
 </p>
 
         <center>
@@ -248,7 +200,7 @@ when" shorthand.
                 <p class="code">
 <b>if</b> x &gt; 100 <b>then</b><br>
 &nbsp; <b>exit</b>;<br>
-<b>end</b> <b>if</b>;</p>
+<b>end</b> <b>if</b>;<br>
 &nbsp;<br>
 <b>exit</b> <b>when</b> x &gt; 100;<br>&nbsp;<br></p>
         <div class="code_caption">
@@ -259,7 +211,7 @@ when" shorthand.
 
 <h3>The Loop Loop Statement</h3>
 
-<p>A "loop" loop is a general purpose loop. It can only be exited with
+<p>A <code>loop</code> loop is a general purpose loop. It can only be exited with
 "exit".
 </p>
 
@@ -278,7 +230,6 @@ when" shorthand.
 
 <br>
 &nbsp;
-</p>
 
 			</td>
 			<td bgcolor="#d3c7f8" width="150" align="right" valign="top"><noscript><hr /></noscript><img src="art/right_menu_top.png" width="150" height="24" alt="[Right Submenu]"><br><a name="submenu"></a>

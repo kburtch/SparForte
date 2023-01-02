@@ -284,44 +284,44 @@ end clearCommandHash;
 procedure showRunError( code : integer ) is
 begin
   case code is
-  when E2BIG   => err( "The O/S cannot handle that many arguments" );
-  when ENOEXEC => err( "This file is not an executable program" );
-  when EMLINK  => err( "The pathname is a circular symbolic link path" );
-  when ENFILE  => err( "The O/S cannot open any more files" );
-  when EMFILE  => err( "You reached your limit of number of open files" );
-  when EINVAL  => err( "The program file is corrupt" );
-  when EISDIR  => err( "The script interpreter was a directory" );
-  when ELIBBAD => err( "The script interpreter could not be run" );
-  when EACCES  => err( gnat.source_info.source_location &
+  when E2BIG   => err( +"The O/S cannot handle that many arguments" );
+  when ENOEXEC => err( +"This file is not an executable program" );
+  when EMLINK  => err( +"The pathname is a circular symbolic link path" );
+  when ENFILE  => err( +"The O/S cannot open any more files" );
+  when EMFILE  => err( +"You reached your limit of number of open files" );
+  when EINVAL  => err( +"The program file is corrupt" );
+  when EISDIR  => err( +"The script interpreter was a directory" );
+  when ELIBBAD => err( +"The script interpreter could not be run" );
+  when EACCES  => err( pl( gnat.source_info.source_location &
                        ": Internal error: run() family thought that the" &
-                       " program was not accessible" );
-  when EPERM   => err( gnat.source_info.source_location &
+                       " program was not accessible" ) );
+  when EPERM   => err( pl( gnat.source_info.source_location &
                        ": Internal error: run() family thought that it" &
-                       "had permission to run the program" );
-  when ENOTDIR => err( gnat.source_info.source_location &
+                       "had permission to run the program" ) );
+  when ENOTDIR => err( pl( gnat.source_info.source_location &
                        ": Internal error: run() family thought that the " &
                        "patname was good when a directory in it was " &
-                       "wrong" );
-  when ECHILD  => err( gnat.source_info.source_location &
-                       ": Internal error: spawn() failed to catch ECHILD" );
-  when ENOENT  => err( gnat.source_info.source_location &
-                       ": Internal error: spawn() failed to find file or file disappeared unexpectedly" );
-  when 0       => err( gnat.source_info.source_location &
+                       "wrong" ) );
+  when ECHILD  => err( pl( gnat.source_info.source_location &
+                       ": Internal error: spawn() failed to catch ECHILD" ) );
+  when ENOENT  => err( pl( gnat.source_info.source_location &
+                       ": Internal error: spawn() failed to find file or file disappeared unexpectedly" ) );
+  when 0       => err( pl( gnat.source_info.source_location &
                        "Internal error: run() family thinks there was an" &
-                       " error but the error code indicates no error" );
+                       " error but the error code indicates no error" ) );
 
  -- New to more recent Linux
-  when EIO     => err( "An I/O error occurred" );
+  when EIO     => err( +"An I/O error occurred" );
   --when ETXTBSY => err( "The file is open for writing" );
   --when ELOOP   => err( "Too many symbolic link dereferences" );
-  when ENAMETOOLONG => err( "The filename is too long" );
-  when EAGAIN  => err( "The process may be above its resource limit" );
-  when EFAULT  => err( gnat.source_info.source_location &
+  when ENAMETOOLONG => err( +"The filename is too long" );
+  when EAGAIN  => err( +"The process may be above its resource limit" );
+  when EFAULT  => err( pl( gnat.source_info.source_location &
                        ": Internal error: arguments or environment" &
-                       " pointers point outside address space" );
+                       " pointers point outside address space" ) );
 
   when others  => -- out of memory, IO error
-       err( "Serious error occurred: " & OSError( code ) & "(" & code'img & ")" );
+       err( pl( "Serious error occurred: " & OSError( code ) & "(" & code'img & ")" ) );
   end case;
 end showRunError;
 
@@ -370,27 +370,27 @@ begin
 
   if length( che.fullPath ) /= 0 or che.builtin then
      err(
-        contextNotes => to_string( current_working_directory ),
-        subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
-        reason       => "was",
-        obstructorNotes => optional_yellow( "not found" ),
-        remedy       => "it was moved and is no longer in the PATH directory list, or you need to clear the command hash by restart SparForte or pragma no_command_hash"
+        contextNotes => unb_pl( current_working_directory ),
+        subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
+        reason       => +"was",
+        obstructorNotes => em( "not found" ),
+        remedy       => +"it was moved and is no longer in the PATH directory list, or you need to clear the command hash by restart SparForte or pragma no_command_hash"
      );
   elsif id /= eof_t then
      err(
-        contextNotes => to_string( current_working_directory ),
-        subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
-        reason       => "was",
-        obstructorNotes => optional_yellow( "not found" ),
-        remedy       => "it was spelled wrong or a directory is missing in the PATH directory list"
+        contextNotes => unb_pl( current_working_directory ),
+        subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd )  & pl( "'" ),
+        reason       => +"was",
+        obstructorNotes => em( "not found" ),
+        remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
      );
   else
      err(
-        contextNotes => to_string( current_working_directory ),
-        subjectNotes => to_string( prefixStr & optional_yellow( "'" & to_string( toEscaped( cmd ) ) & "'" ) ),
-        reason       => "was",
-        obstructorNotes => optional_yellow( "not found" ),
-        remedy       => "it was spelled wrong or a directory is missing in the PATH directory list"
+        contextNotes => unb_pl( current_working_directory ),
+        subjectNotes => unb_pl( prefixStr ) & pl( "'" ) & em_esc( cmd ) & pl( "'" ),
+        reason       => +"was",
+        obstructorNotes => em( "not found" ),
+        remedy       => +"it was spelled wrong or a directory is missing in the PATH directory list"
      );
   end if;
 end err_cmd_not_found;
@@ -445,8 +445,8 @@ begin
    -- Got here?  Must be an external command
 
    if restriction_no_external_commands then
-      err( "typing mistake or external command (not allowed with " &
-           optional_yellow( "restriction( no_external_commands )" ) );
+      err( +"typing mistake or external command (not allowed with " &
+           em( "restriction( no_external_commands )" ) );
       return;
    end if;
      C_reset_errno;                                             -- assume OK
@@ -505,7 +505,7 @@ begin
       if background then
          myPID := fork;
          if myPID < 0 then
-            err( "unable to fork and run the command" );
+            err( +"unable to fork and run the command" );
             Success := false;
          elsif myPID = 0 then -- child
             spawnCommandOrRunBuiltin(
@@ -558,7 +558,7 @@ begin
    pipeStackTop := pipeStack'first;
    pipe( result, pipeStack( pipeStackTop ) );
    if result /= 0 then
-      err( "unable to create pipe: errno " & C_errno'img );
+      err( pl( "unable to create pipe: errno " & C_errno'img ) );
       pipeStackTop := pipeStackTop-1;
       Success := false;
       return;
@@ -585,7 +585,7 @@ begin
       if background then
          myPID := fork;                      -- start a new process
          if myPID < 0 then                   -- failed?
-            err( "unable to fork and run the command" );
+            err( +"unable to fork and run the command" );
             Success := false;
          elsif myPID = 0 then                -- in child process?
             -- a background process is not the login shell anymore.  If we fail
@@ -601,7 +601,7 @@ begin
               if C_errno = EINTR then
                  goto retry1b;
               end if;
-              err( "unable to dup2 the pipe: errno " & C_errno'img );
+              err( pl( "unable to dup2 the pipe: errno " & C_errno'img ) );
               Success := false;
               return;
             end if;
@@ -613,7 +613,7 @@ begin
                   if C_errno = EINTR then
                      goto retry1c;
                   end if;
-                  err( "unable to dup2 the pipe: errno " & C_errno'img );
+                  err( pl( "unable to dup2 the pipe: errno " & C_errno'img ) );
                   Success := false;
                   return;
                 end if;
@@ -647,7 +647,7 @@ begin
             Success := true;
          end if;
       else
-         err( gnat.source_info.source_location & ": internal error: pipelines must be run in background" );
+         err( pl( gnat.source_info.source_location & ": internal error: pipelines must be run in background" ) );
       end if;
    end if;
 end run_inpipe;
@@ -691,7 +691,8 @@ begin
       closePipeline;
    else
       if background then                    -- should never be
-         err( gnat.source_info.source_location & ": internal error: final pipeline command must be run in foreground" );
+         err( pl( gnat.source_info.source_location &
+            ": internal error: final pipeline command must be run in foreground" ) );
          Success := false;
          closePipeline;
          return;
@@ -703,7 +704,7 @@ begin
          if C_errno = EINTR then
             goto retry1;
          end if;
-         err( "unable to save stdin: errno" & C_errno'img );
+         err( pl( "unable to save stdin: errno" & C_errno'img ) );
          Success := false;
          closePipeline;
          return;
@@ -717,8 +718,8 @@ begin
          if C_errno = EINTR then
             goto retry3;
          end if;
-         err( "unable to dup2 the pipe for " & to_string( cmd ) &
-           "input: errno " & C_errno'img );
+         err( pl( "unable to dup2 the pipe for " & to_string( cmd ) &
+           "input: errno " & C_errno'img ) );
          Success := false;
          closePipeline;
       else
@@ -741,9 +742,9 @@ begin
          if C_errno = EINTR then
             goto retry5;
          end if;
-         err( gnat.source_info.source_location & ": internal error: unable to restore old stdin: " &
+         err( pl( gnat.source_info.source_location & ": internal error: unable to restore old stdin: " &
             " unable to dup2(" & oldStdin'img & "," &
-            stdin'img & "): errno " & C_errno'img );
+            stdin'img & "): errno " & C_errno'img ) );
       end if;
       closeResult := close( oldStdin );        -- discard original stdin copy
       -- close EINTR is a diagnostic message.  Do not handle.
@@ -776,14 +777,14 @@ begin
 
    pipeStackTop := pipeStackTop+1;             -- prepare for another pipe
    if pipeStackTop > aPipeStack'last then      -- no available pipes?
-      err( "pipeline too long" );              -- print error
+      err( +"pipeline too long" );             -- print error
       pipeStackTop := pipeStackTop-1;          -- avoid future constraint
       Success := false;                        -- errors and flag failure
       return;                                  -- and quit
    end if;
    pipe( result, pipeStack( pipeStackTop ) );  -- create pipe
    if result /= 0 then                         -- failed?
-      err( "unable to create pipe: errno " & C_errno'img );
+      err( pl( "unable to create pipe: errno " & C_errno'img ) );
       pipeStackTop := pipeStackTop-1;          -- top not valid pipe
       Success := false;                        -- flag failure
       return;                                  -- and quit
@@ -810,7 +811,7 @@ begin
       if background then
          myPID := fork;
          if myPID < 0 then
-            err( "unable to fork to run " & to_string( cmd ) );
+            err( pl( "unable to fork to run " & to_string( cmd ) ) );
             Success := false;
          elsif myPID = 0 then
             -- a background process is not the login shell anymore.  If we fail
@@ -827,8 +828,8 @@ begin
                if C_errno = EINTR then
                   goto retrydupout;
                end if;
-               err( "unable to dup2 the pipe for " & to_string( cmd ) &
-                  " input: errno " & C_errno'img );
+               err( pl( "unable to dup2 the pipe for " & to_string( cmd ) &
+                  " input: errno " & C_errno'img ) );
                Success := false;
                return;
             end if;
@@ -841,8 +842,8 @@ begin
                if C_errno = EINTR then
                   goto retrydupin;
                end if;
-               err( "unable to dup2 the pipe for " & to_string( cmd ) &
-                 " output: errno " & C_errno'img );
+               err( pl( "unable to dup2 the pipe for " & to_string( cmd ) &
+                 " output: errno " & C_errno'img ) );
                Success := false;
                return;
             end if;
@@ -854,7 +855,7 @@ begin
                   if C_errno = EINTR then
                      goto retrydupin2;
                   end if;
-                  err( "unable to dup2 the pipe: errno " & C_errno'img );
+                  err( pl( "unable to dup2 the pipe: errno " & C_errno'img ) );
                   Success := false;
                   return;
                 end if;
@@ -891,7 +892,7 @@ begin
             Success := true;
          end if;
       else
-         err( gnat.source_info.source_location & ": internal error: pipelines must be run in background" );
+         err( pl( gnat.source_info.source_location & ": internal error: pipelines must be run in background" ) );
       end if;
    end if;
 end run_bothpipe;
@@ -953,7 +954,7 @@ begin
   if result = -1 and C_errno = EINTR then       -- interrupted syscall?
      goto retry;                              -- retry it
   elsif result = -1 and C_errno /= ECHILD then  -- error if any error
-     err( "waitpid: error #" & C_errno'img );   -- execpt ECHILD
+     err( pl( "waitpid: error #" & C_errno'img ) );   -- execpt ECHILD
   end if;
   jobList.Clear( jobs, numberOfJobs );
   if not lastJob.quiet then
@@ -982,7 +983,7 @@ begin
       if result = -1 and C_errno = EINTR then       -- interrupted syscall?
          goto retry;                              -- retry it
       elsif result = -1 and C_errno /= ECHILD then  -- error if any error
-         err( "waitpid: error #" & C_errno'img );   -- execpt ECHILD
+         err( pl( "waitpid: error #" & C_errno'img ) );   -- execpt ECHILD
       elsif result = -1 then                      -- no such job? (ECHILD)
          jobList.Clear( jobs, i );                -- then it's done
           if not job.quiet then
