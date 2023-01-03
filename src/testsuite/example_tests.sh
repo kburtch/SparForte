@@ -453,6 +453,7 @@ RESULT=`src/spar --test examples/$EXAMPLE <<HERE
 1
 3
 2
+
 HERE`
 RESULT=`echo "$RESULT" | tail -n 2`
 EXPECTED=" 2
