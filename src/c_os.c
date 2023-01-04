@@ -15,6 +15,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
+/* For group_member(), a GNU libc extension, moved in recent versions */
+#include <unistd.h>
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 int group_member(gid_t gid) {
