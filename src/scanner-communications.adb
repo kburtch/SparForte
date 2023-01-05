@@ -63,70 +63,30 @@ templateErrorHeader : constant unbounded_string := to_unbounded_string( "SparFor
 --
 -- Change an error message so that it is formatted as HTML
 -----------------------------------------------------------------------------
-
-function convertToHTML( oldString : unbounded_string ) return unbounded_string is
-   s : unbounded_string := oldString;
-   p : natural;
-
-   --  STRIP TERMINAL CHARS
-   --
-   -- Search for and remove occurrences of terminal control sequences.  If
-   -- the control sequence is nothing, then do nothing.  A timeout prevents
-   -- infinite loops.  The string s is updated with the changes.
-   --------------------------------------------------------------------------
-
-   -- procedure stripTerminalChars(
-   --      s : in out unbounded_string;
-   --      controlSeq : unbounded_string;
-   --      replacementHTML : string ) is
-   --   timeout : natural;
-   --begin
-   --   if controlSeq = "" then
-   --      return;
-   --   end if;
-   --   timeout := 0;
-   --   loop
-   --      p := index( s, to_string( controlSeq ) );
-   --   exit when p = 0 or timeout = 10;
-   --      delete( s, p, p - 1 + length( controlSeq ) );
-   --      insert( s, p, replacementHTML );
-   --      timeout := timeout + 1;
-   --   end loop;
-   --end stripTerminalChars;
-
-begin
-
-   -- replace end-of-lines / spaces
-   -- do this first as the spans we may insert have spaces
-
-   p := 1;
-   while p <= length( s ) loop
-      if element( s, p ) = ASCII.LF then
-         delete( s, p, p );
-         insert( s, p, "<br>" );
-      elsif element( s, p ) = ' ' then
-         delete( s, p, p );
-         insert( s, p, "&nbsp;" );
-      end if;
-      p := p + 1;
-   end loop;
-
-   -- Replace boldface on
-
-   -- stripTerminalChars(  s, term( bold ), "<span style=""font-weight:bold"">" );
-   -- stripTerminalChars(  s, term( inverse ), "<span style=""font-style:italic"">" );
-   -- stripTerminalChars(  s, term( normal ), "</span>" );
-
-   -- Colour sequences: convert to bold and italic.  Green does nothing.
-   -- White is treated as closing a colour.
-
-   -- stripTerminalChars(  s, term( green ), "<span>" );
-   -- stripTerminalChars(  s, term( yellow ), "<span style=""font-weight:bold"">" );
-   -- stripTerminalChars(  s, term( red ), "<span style=""font-style:italic"">" );
-   -- stripTerminalChars(  s, term( white ), "</span>" );
-
-   return s;
-end convertToHTML;
+--
+--function convertToHTML( oldString : unbounded_string ) return unbounded_string is
+--   s : unbounded_string := oldString;
+--   p : natural;
+--
+--begin
+--
+--   -- replace end-of-lines / spaces
+--   -- do this first as the spans we may insert have spaces
+--
+--   p := 1;
+--   while p <= length( s ) loop
+--      if element( s, p ) = ASCII.LF then
+--         delete( s, p, p );
+--         insert( s, p, "<br>" );
+--      elsif element( s, p ) = ' ' then
+--         delete( s, p, p );
+--         insert( s, p, "&nbsp;" );
+--      end if;
+--      p := p + 1;
+--   end loop;
+--
+--   return s;
+--end convertToHTML;
 
 
 -----------------------------------------------------------------------------
@@ -136,110 +96,55 @@ end convertToHTML;
 -- for a web server log file.  By default, all line feeds are removed.
 -----------------------------------------------------------------------------
 
-type plainTextOptions is ( no_lf, with_lf );
-
-function convertToPlainText( oldString : unbounded_string; options : plainTextOptions := no_lf ) return unbounded_string is
-  s : unbounded_string := oldString;
-  p : natural;
-  -- timeout : natural;
-
-   --  STRIP TERMINAL CHARS
-   --
-   -- Search for and remove occurrences of terminal control sequences.  If
-   -- the control sequence is nothing, then do nothing.  A timeout prevents
-   -- infinite loops.
-   --------------------------------------------------------------------------
-
-   procedure stripTerminalChars(
-         s : in out unbounded_string;
-         controlSeq : unbounded_string ) is
-      timeout : natural;
-   begin
-      if controlSeq = "" then
-         return;
-      end if;
-      timeout := 0;
-      loop
-         p := index( s, to_string( controlSeq ) );
-      exit when p = 0 or timeout = 10;
-         delete( s, p, p - 1 + length( controlSeq ) );
-         -- insert( s, p, replacementHTML );
-         timeout := timeout + 1;
-      end loop;
-   end stripTerminalChars;
-
-begin
-
-  -- remove any end-of-lines to ensure message is on one line
-
-  if options = no_lf then
-     p := 1;
-     while p <= length( s ) loop
-        if element( s, p ) = ASCII.LF then
-           delete( s, p, p );
-           insert( s, p, " " );
-        end if;
-        p := p + 1;
-     end loop;
-  end if;
-
-
-   -- Replace boldface on
-
-   -- stripTerminalChars(  s, term( bold ) );
-   -- stripTerminalChars(  s, term( inverse ) );
-   -- stripTerminalChars(  s, term( normal ) );
-
-   -- Colour sequences: convert to bold and italic.  Green does nothing.
-   -- White is treated as closing a colour.
-
-   -- stripTerminalChars(  s, term( green ) );
-   -- stripTerminalChars(  s, term( yellow ) );
-   -- stripTerminalChars(  s, term( red ) );
-   -- stripTerminalChars(  s, term( white ) );
-
-  -- remove boldface on
-  -- If not running in a tty, the term value may be empty.
-
-
-  --if term( bold ) /= null_unbounded_string then
-  --   timeout := 0;
-  --   loop
-  --      p := index( s, to_string( term( bold ) ) );
-  --   exit when p = 0 or timeout = 10;
-  --      delete( s, p, p - 1 + length( term( bold ) ) );
-  ---      timeout := timeout + 1;
-  --   end loop;
-  --end if;
-
-  -- remove inverse on
-  -- If not running in a tty, the term value may be empty.
-
-  --if term( inverse ) /= null_unbounded_string then
-  --   timeout := 0;
-  --   loop
-  --      p := index( s, to_string( term( inverse ) ) );
-  --   exit when p = 0 or timeout = 10;
-  --      delete( s, p, p - 1 + length( term( inverse ) ) );
-  --      timeout := timeout + 1;
-  --   end loop;
-  --end if;
-
-  -- remove boldface/inverse off
-  -- If not running in a tty, the term value may be empty.
-
-  --if term( normal ) /= null_unbounded_string then
-  --   timeout := 0;
-  --   loop
-  --      p := index( s, to_string( term( normal ) ) );
-  --   exit when p = 0 or timeout = 10;
-  --      delete( s, p, p - 1 + length( term( normal ) ) );
-  --      timeout := timeout + 1;
-  --   end loop;
-  --end if;
-
-  return s;
-end convertToPlainText;
+--type plainTextOptions is ( no_lf, with_lf );
+--
+--function convertToPlainText( oldString : unbounded_string; options : plainTextOptions := no_lf ) return unbounded_string is
+--  s : unbounded_string := oldString;
+--  p : natural;
+--  -- timeout : natural;
+--
+--   --  STRIP TERMINAL CHARS
+--   --
+--   -- Search for and remove occurrences of terminal control sequences.  If
+--   -- the control sequence is nothing, then do nothing.  A timeout prevents
+--   -- infinite loops.
+--   --------------------------------------------------------------------------
+--
+--   procedure stripTerminalChars(
+--         s : in out unbounded_string;
+--         controlSeq : unbounded_string ) is
+--      timeout : natural;
+--   begin
+--      if controlSeq = "" then
+--         return;
+--      end if;
+--      timeout := 0;
+--      loop
+--         p := index( s, to_string( controlSeq ) );
+--      exit when p = 0 or timeout = 10;
+--         delete( s, p, p - 1 + length( controlSeq ) );
+--         -- insert( s, p, replacementHTML );
+--         timeout := timeout + 1;
+--      end loop;
+--   end stripTerminalChars;
+--
+--begin
+--
+--  -- remove any end-of-lines to ensure message is on one line
+--
+--  if options = no_lf then
+--     p := 1;
+--     while p <= length( s ) loop
+--        if element( s, p ) = ASCII.LF then
+--           delete( s, p, p );
+--           insert( s, p, " " );
+--        end if;
+--        p := p + 1;
+--     end loop;
+--  end if;
+--
+--  return s;
+--end convertToPlainText;
 
 
 -----------------------------------------------------------------------------
@@ -544,22 +449,22 @@ end getSparFormatMessageHeader;
 -- Return an error message based on the output context.
 -----------------------------------------------------------------------------
 
-function getFormattedMessage( original : string ) return unbounded_string is
-  formattedMsg : unbounded_string;
-begin
-  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
-     case templateHeader.templateType is
-     when htmlTemplate | wmlTemplate =>
-        formattedMsg := convertToHTML( to_unbounded_string( original ) );
-     when others =>
-        formattedMsg := convertToPlainText( to_unbounded_string( original ) );
-     end case;
-  else
-     -- normal case, leave colour text alone
-     formattedMsg := to_unbounded_string( original );
-  end if;
-  return formattedMsg;
-end getFormattedMessage;
+--function getFormattedMessage( original : string ) return unbounded_string is
+--  formattedMsg : unbounded_string;
+--begin
+--  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
+--     case templateHeader.templateType is
+--     when htmlTemplate | wmlTemplate =>
+--        formattedMsg := convertToHTML( to_unbounded_string( original ) );
+--     when others =>
+--        formattedMsg := convertToPlainText( to_unbounded_string( original ) );
+--     end case;
+--  else
+--     -- normal case, leave colour text alone
+--     formattedMsg := to_unbounded_string( original );
+--  end if;
+--  return formattedMsg;
+--end getFormattedMessage;
 
 
 -----------------------------------------------------------------------------
@@ -611,7 +516,6 @@ begin
   -- template error (if one exists)
 
   fullErrorMessage := nullMessageStrings;
-  fullTemplateErrorMessage := null_unbounded_string;
 
   -- Generate a Gcc-formatted error message (if we need one)
 
@@ -676,7 +580,7 @@ begin
   if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
-        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+        fullErrorMessage.templateMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
@@ -685,15 +589,15 @@ begin
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
+        fullErrorMessage.templateMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
+        fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
-        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
+        fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & fullErrorMessage.templateMessage;
+        fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
-        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
+        null;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -758,7 +662,6 @@ begin
   -- template error (if one exists)
 
   fullErrorMessage := nullMessageStrings;
-  fullTemplateErrorMessage := null_unbounded_string;
 
   -- Generate a Gcc-formatted error message (if we need one)
 
@@ -835,7 +738,7 @@ begin
   if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
-        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+        fullErrorMessage.templateMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
@@ -844,15 +747,15 @@ begin
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
+        fullErrorMessage.templateMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
+        fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
-        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
+        fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & fullErrorMessage.templateMessage;
+        fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
-        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
+        null;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -876,7 +779,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace_error( "error: " & to_string( msg.textMessage ) );
+     put_trace_error( "error: " & to_string( msg.textMessage ), boolean( gccOpt ), boolean( colourOpt ) );
   end if;
 end err_shell;
 
@@ -1019,7 +922,6 @@ begin
   -- template error (if one exists)
 
   fullErrorMessage := nullMessageStrings;
-  fullTemplateErrorMessage := null_unbounded_string;
 
   -- Generate a Gcc-formatted error message (if we need one)
 
@@ -1082,7 +984,7 @@ begin
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
-        fullTemplateErrorMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #9F6000; background-color: #FEEFB3; width:100%; overflow:auto"">" &
+        fullErrorMessage.templateMessage := "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #9F6000; background-color: #FEEFB3; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-weight:bold; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#9f6000; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">!</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #9F6000; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
@@ -1091,13 +993,13 @@ begin
            "</div>" &
            "<br />";
      when cssTemplate | jsTemplate =>
-        fullTemplateErrorMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
+        fullErrorMessage.templateMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
+        fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & fullErrorMessage.templateMessage;
+        fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | textTemplate | jsonTemplate =>
-        fullTemplateErrorMessage := fullErrorMessage.templateMessage;
+        null;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -1122,7 +1024,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace_error( "exception: " & to_string( fullErrorMessage.textMessage ) );
+     put_trace_error( "exception: " & to_string( fullErrorMessage.textMessage ), boolean( gccOpt ), boolean( colourOpt ) );
   end if;
 end raise_exception;
 
@@ -1289,11 +1191,11 @@ begin
      when cssTemplate | jsTemplate =>
         ourFullTemplateErrorMessage := "/* " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
-        fullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage & " -->";
+        ourFullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage & " -->";
      when yamlTemplate =>
-        fullTemplateErrorMessage := "# " & ourFullErrorMessage.templateMessage;
+        ourFullTemplateErrorMessage := "# " & ourFullErrorMessage.templateMessage;
      when noTemplate | textTemplate | jsonTemplate =>
-        ourFullTemplateErrorMessage := ourFullErrorMessage.templateMessage;
+        null;
      end case;
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
@@ -1363,18 +1265,18 @@ begin
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
-           "<p>" & convertToHTML( fullMsg ) & "</p>" &
+           "<p>" & fullMsg & "</p>" &
            "</div>" &
            "</div>" &
            "<br />" );
      when cssTemplate | jsTemplate =>
-        put( "/* " & templateErrorHeader & " " & convertToPlainText( fullMsg ) &  " */" );
+        put( "/* " & templateErrorHeader & " " & fullMsg &  " */" );
      when xmlTemplate =>
-        put( "<!-- " & templateErrorHeader & " " & convertToPlainText( fullMsg ) & " -->" );
+        put( "<!-- " & templateErrorHeader & " " & fullMsg & " -->" );
      when yamlTemplate =>
-        put( "# " & convertToPlainText( fullMsg ) );
+        put( "# " & fullMsg );
      when noTemplate | textTemplate | jsonTemplate =>
-        put( convertToPlainText( fullMsg ) );
+        put( fullMsg );
      end case;
   end if;
 end warn;

@@ -2307,7 +2307,7 @@ begin
      end case;
   elsif colourOpt then
      return messageStrings'(
-        to_unbounded_string( optional_red( s ) ),
+        to_unbounded_string( red( s ) ),
         to_unbounded_string( s )
      );
   end if;
@@ -2349,7 +2349,7 @@ begin
      end case;
   elsif colourOpt then
      return messageStrings'(
-        to_unbounded_string( optional_green( s ) ),
+        to_unbounded_string( green( s ) ),
         to_unbounded_string( s )
      );
   end if;
@@ -2392,7 +2392,7 @@ begin
      end case;
   elsif colourOpt then
      return messageStrings'(
-        to_unbounded_string( optional_yellow( s ) ),
+        to_unbounded_string( yellow( s ) ),
         to_unbounded_string( s )
      );
   end if;
@@ -2454,5 +2454,22 @@ begin
      return em( toSecureData( to_string( toEscaped( s ) ) ) );
   end if;
 end em_value;
+
+
+-----------------------------------------------------------------------------
+--  PUT TRACE
+--
+-- Display an escaped message to standard error in the format used when
+-- "trace true" is used.  This does not check the tracing flag.
+-----------------------------------------------------------------------------
+
+procedure put_trace( msg : string; icon : string := "" ) is
+begin
+  if icon /= "" and boolean( colourOpt ) then
+     put_line( standard_error, adorn_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
+  else
+     put_line( standard_error, adorn_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
+  end if;
+end put_trace;
 
 end world;

@@ -88,7 +88,7 @@ begin
   if promptIdleScript /= null_unbounded_string then
      CompileAndRun( promptIdleScript, fragment => false );
      if error_found then
-        put_line( current_error, fullErrorMessage.textMessage );
+        put_line( current_error, fullErrorMessage.templateMessage );
      end if;
   end if;
 end promptIdleCallback;
@@ -112,7 +112,7 @@ begin
     if length( promptScript ) /= 0 then
        CompileRunAndCaptureOutput( promptScript, prompt );
        if error_found then
-          put_line( current_error, fullErrorMessage.textMessage );
+          put_line( current_error, fullErrorMessage.templateMessage );
           prompt := null_unbounded_string;
        elsif terminalWindowNaming then
           -- set the xterm window title
@@ -272,11 +272,11 @@ begin
              ParseGeneralStatement;                     -- do the command
           end loop;
           if error_found then
-             put_line( standard_error, fullErrorMessage.textMessage );
+             put_line( standard_error, fullErrorMessage.templateMessage );
              -- Not sure if templates are possible here but...
              if hasTemplate then
                 putTemplateHeader( templateHeader );
-                put_line( fullTemplateErrorMessage );
+                put_line( fullErrorMessage.templateMessage );
              end if;
           end if;
        end if;
@@ -736,11 +736,11 @@ begin
   compileCommand( commandString );
   parse;
   if error_found then                              -- was there an error?
-     put_line( standard_error, fullErrorMessage.textMessage );
+     put_line( standard_error, fullErrorMessage.templateMessage );
      -- may or may not have a template at this point, so check
      if hasTemplate then
         putTemplateHeader( templateHeader );
-        put_line( fullTemplateErrorMessage );
+        put_line( fullErrorMessage.templateMessage );
      end if;
      if last_status = 0 then                       -- no last command status?
         set_exit_status( Failure );                -- just set to 1
@@ -1076,7 +1076,7 @@ begin
         -- may or may not have a template at this point, so check
         if hasTemplate then
            putTemplateHeader( templateHeader );
-           put_line( fullTemplateErrorMessage );
+           put_line( fullErrorMessage.templateMessage );
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
@@ -1129,9 +1129,9 @@ begin
            end if;
         end if;
         if error_found then
-           put_line( standard_error, fullErrorMessage.textMessage );
+           put_line( standard_error, fullErrorMessage.templateMessage );
            -- always has template if we get here
-           put_line( fullTemplateErrorMessage );
+           put_line( fullErrorMessage.templateMessage );
         end if;
         -- if there was a formal script with a main program, the main program
         -- block is left un-pulled for use by the template.  We can now

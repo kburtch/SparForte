@@ -24,12 +24,14 @@ with ada.strings.unbounded.text_io,
      spar_os.tty,
      cgi,
      pegasoft.strings,
-     pegasoft.user_io;
+     pegasoft.user_io,
+     world;
 use  ada.strings.unbounded.text_io,
      spar_os.tty,
      cgi,
      pegasoft.strings,
-     pegasoft.user_io;
+     pegasoft.user_io,
+     world;
 
 package body reports is
 
@@ -202,7 +204,7 @@ package body reports is
      if length( s ) > 0 then
         new_line( r.outputfile );
         if name'length > 0 then
-           renderRequiredText( r,  optional_yellow( name ) & ": " & s );
+           renderRequiredText( r,  optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " & s );
         else
            renderRequiredText( r, s );
         end if;
@@ -237,7 +239,7 @@ package body reports is
     s : unbounded_string;
   begin
    if not contentList.isEmpty( l ) then
-      put_line( r.outputfile, optional_yellow( name ) & ": " );
+      put_line( r.outputfile, optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " );
       while not contentList.isEmpty( l ) loop
          contentList.Pull( l, s );
          newLineWidth := r.lineWidth + columnWidth + 1;
@@ -284,7 +286,7 @@ package body reports is
            end if;
             if not contentList.isEmpty( l ) then
                contentList.Pull( l, s );
-               put_line( r.outputfile, optional_yellow( to_string( s ) ) );
+               put_line( r.outputfile, optional_yellow( to_string( s ), boolean( gccOpt), boolean( colourOpt ) ) );
                new_line( r.outputfile );
             end if;
             r.lineWidth := 0;
@@ -328,7 +330,7 @@ package body reports is
   begin
    if not contentList.isEmpty( l ) then
       new_line( r.outputfile );
-      put( r.outputfile, optional_yellow( name ) & ": " );
+      put( r.outputfile, optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " );
       if contentList.length( l ) = 1 then
          contentList.Pull( l, s );
          put_line( r.outputfile, to_string( s ) );

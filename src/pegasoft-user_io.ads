@@ -83,38 +83,42 @@ procedure getKey( ch : out character; nonblock : boolean := false );
 -- Special terminal control
 ------------------------------------------------------
 
-function optional_red( s : string ) return string;
+function optional_red( s : string; as_plain, in_colour : boolean ) return string;
 -- Return a string with terminal codes to draw the string
 -- in red characters --colour is used, else inverse.
 -- Return the string as-is if -g is used
+
+function red( s : string ) return string;
+-- Return a string with terminal codes to draw the string
+-- in red characters
 
 function adorn_red( s : string ) return string;
 -- Return a string with terminal codes to draw the string
 -- in red characters --colour is used, else normal.
 
-function optional_yellow( s : string ) return string;
+function optional_yellow( s : string; as_plain, in_colour : boolean ) return string;
 -- return a string with terminal codes to draw the string
 -- in yellow characters if -g not used
 
-function optional_green( s : string ) return string;
+function yellow( s : string ) return string;
+-- return a string with terminal codes to draw the string
+-- in yellow characters
+
+function optional_green( s : string; as_plain, in_colour : boolean ) return string;
 -- return a string with terminal codes to draw the string
 -- in green characters if -g not used
 
-function adorn_green( s : string ) return string;
+function green( s : string ) return string;
+-- return a string with terminal codes to draw the string
+-- in green characters
+
+function adorn_green( s : string; in_colour : boolean ) return string;
 -- Return a string with terminal codes to draw the string
 -- in green characters --colour is used, else normal.
-
-function optional_bold( s : string ) return string;
--- return a string with terminal codes to draw the string
--- in bold characters if -g not used
 
 function bold( s : string ) return string;
 -- return a string with terminal codes to draw the string
 -- in bold characters
-
-function optional_inverse( s : string ) return string;
--- return a string with terminal codes to draw the string
--- in inverse characters if -g not used
 
 function inverse( s : string ) return string;
 -- return a string with terminal codes to draw the string
@@ -124,10 +128,7 @@ procedure put_scrambled( msg : string );
 -- Display an animated scrambled message and started a new line
 -- In the style of the "Inside Man" movie end-credits.
 
-procedure put_trace( msg : string; icon : string := "" );
--- display a trace message to standard error
-
-procedure put_trace_error( msg : string; icon : string := "" );
+procedure put_trace_error( msg : string; as_plain, in_colour : boolean; icon : string := "" );
 -- display a trace error message to standard error
 
 procedure displayVersionSplash;

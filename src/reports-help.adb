@@ -25,14 +25,16 @@ with ada.strings.unbounded.text_io,
      ada.text_io,
      cgi,
      pegasoft.strings,
-     pegasoft.user_io;
+     pegasoft.user_io,
+     world;
 use  ada.strings,
      ada.strings.unbounded.text_io,
      ada.calendar,
      ada.text_io,
      cgi,
      pegasoft.strings,
-     pegasoft.user_io;
+     pegasoft.user_io,
+     world;
 
 package body reports.help is
 
@@ -368,7 +370,7 @@ package body reports.help is
   procedure render( r : in out longHelpReport; e : in out aHelpEntry ) is
   begin
      -- display the help topic and the header if there is one
-     put( r.outputfile, optional_green( to_string( e.topic ) ) );
+     put( r.outputfile, optional_green( to_string( e.topic ), boolean( gccOpt ), boolean( colourOpt ) ) );
      if length( e.summary ) > 0 then
         put( r.outputfile, " " & utf_diamond & " " & to_string( e.summary ) );
      end if;

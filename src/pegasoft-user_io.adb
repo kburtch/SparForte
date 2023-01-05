@@ -136,13 +136,13 @@ end bold;
 -- terminal, but only if not for GCC format errors.
 -----------------------------------------------------------------------------
 
-function optional_bold( s : string ) return string is
-begin
-  if gccOpt then
-     return s;
-  end if;
-  return to_string( term( bold ) ) & s & to_string( term( normal ) );
-end optional_bold;
+--function optional_bold( s : string; no_bold : boolean ) return string is
+--begin
+--  if no_bold then
+--     return s;
+--  end if;
+--  return to_string( term( bold ) ) & s & to_string( term( normal ) );
+--end optional_bold;
 
 -----------------------------------------------------------------------------
 --  OPTIONAL RED
@@ -152,12 +152,12 @@ end optional_bold;
 -- Return the string as-is if -g is used
 -----------------------------------------------------------------------------
 
-function optional_red( s : string ) return string is
+function optional_red( s : string; as_plain, in_colour : boolean ) return string is
 begin
   if gccOpt then
      return s;
   elsif not colourOpt then
-     return optional_inverse( s );
+     return inverse( s );
   end if;
   return to_string( term( red ) ) & s & to_string( term( white ) );
 end optional_red;
@@ -178,21 +178,45 @@ begin
 end adorn_red;
 
 -----------------------------------------------------------------------------
+--  RED
+--
+-- Return a string with terminal codes to draw the string
+-- in red characters
+-----------------------------------------------------------------------------
+
+function red( s : string ) return string is
+begin
+  return to_string( term( red ) ) & s & to_string( term( white ) );
+end red;
+
+-----------------------------------------------------------------------------
 --  OPTIONAL YELLOW
 --
 -- return a string with terminal codes to draw the string
 -- in yellow characters if -g not used
 -----------------------------------------------------------------------------
 
-function optional_yellow( s : string ) return string is
+function optional_yellow( s : string; as_plain, in_colour : boolean  ) return string is
 begin
-  if gccOpt then
+  if as_plain then
      return s;
-  elsif not colourOpt then
-     return optional_bold( s );
+  elsif not in_colour then
+     return bold( s );
   end if;
   return to_string( term( yellow ) ) & s & to_string( term( white ) );
 end optional_yellow;
+
+-----------------------------------------------------------------------------
+--  YELLOW
+--
+-- return a string with terminal codes to draw the string
+-- in yellow characters
+-----------------------------------------------------------------------------
+
+function yellow( s : string  ) return string is
+begin
+  return to_string( term( yellow ) ) & s & to_string( term( white ) );
+end yellow;
 
 -----------------------------------------------------------------------------
 --  OPTIONAL GREEN
@@ -201,15 +225,27 @@ end optional_yellow;
 -- in green characters if -g not used
 -----------------------------------------------------------------------------
 
-function optional_green( s : string ) return string is
+function optional_green( s : string; as_plain, in_colour : boolean ) return string is
 begin
-  if gccOpt then
+  if as_plain then
      return s;
-  elsif not colourOpt then
-     return optional_bold( s );
+  elsif not in_colour then
+     return bold( s );
   end if;
   return to_string( term( green ) ) & s & to_string( term( white ) );
 end optional_green;
+
+-----------------------------------------------------------------------------
+--  GREEN
+--
+-- return a string with terminal codes to draw the string
+-- in green characters
+-----------------------------------------------------------------------------
+
+function green( s : string ) return string is
+begin
+  return to_string( term( green ) ) & s & to_string( term( white ) );
+end green;
 
 -----------------------------------------------------------------------------
 --  ADORN GREEN
@@ -218,9 +254,9 @@ end optional_green;
 -- in green characters --colour is used, else normal.
 -----------------------------------------------------------------------------
 
-function adorn_green( s : string ) return string is
+function adorn_green( s : string; in_colour : boolean ) return string is
 begin
-  if not colourOpt then
+  if not in_colour then
      return s;
   end if;
   return to_string( term( green ) ) & s & to_string( term( white ) );
@@ -247,9 +283,9 @@ end inverse;
 -- terminal, but only if not for GCC format errors.
 -----------------------------------------------------------------------------
 
-function optional_inverse( s : string ) return string is
+function optional_inverse( s : string; as_plain : boolean ) return string is
 begin
-  if gccOpt then
+  if as_plain then
      return s;
   end if;
   return to_string( term( inverse ) ) & s & to_string( term( normal ) );
@@ -285,34 +321,18 @@ end put_scrambled;
 
 
 -----------------------------------------------------------------------------
---  PUT TRACE
---
--- Display an escaped message to standard error in the format used when
--- "trace true" is used.  This does not check the tracing flag.
------------------------------------------------------------------------------
-
-procedure put_trace( msg : string; icon : string := "" ) is
-begin
-  if icon /= "" and boolean(colourOpt) then
-     put_line( standard_error, adorn_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
-  else
-     put_line( standard_error, adorn_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
-  end if;
-end put_trace;
-
------------------------------------------------------------------------------
 --  PUT TRACE ERROR
 --
 -- Display an escaped message to standard error in the format used when
 -- "trace true" is used.  This does not check the tracing flag.
 -----------------------------------------------------------------------------
 
-procedure put_trace_error( msg : string; icon : string := "" ) is
+procedure put_trace_error( msg : string; as_plain, in_colour : boolean; icon : string := "" ) is
 begin
-  if icon /= "" and boolean(colourOpt) then
-     put_line( standard_error, optional_red( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+  if icon /= "" and in_colour then
+     put_line( standard_error, optional_red( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")", as_plain, in_colour ) );
   else
-     put_line( standard_error, optional_red( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")" ) );
+     put_line( standard_error, optional_red( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")", as_plain, in_colour ) );
   end if;
 end put_trace_error;
 
