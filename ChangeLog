@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Bug fixes following 2.5 and reducing technical debt.  Foundations of AI.
+Objective: Bug fixes following 2.5 and reducing technical debt.  Foundations of AI and data security.
 
 CHANGES SINCE 2.5
 
@@ -26,5 +26,7 @@ CHANGES SINCE 2.5
 
 11. Fix: with APQ, Makeincl no longer aborts a make clean because this generated file was removed in a previous make clean.
 
-12. Refactor: error reporting functions have been redesigned for better security and support for European characters.  Keywords are hilighted in source lines in error messages.
+12. Refactor: error reporting functions have been redesigned for better security and support for European characters.  Also, highlighted keywords in source lines in error messages.
+
+13. Fix: libc group_member() missing from some Ubuntu Linux where __USE_GNU is not set.  Occurred on a recent Ubuntu update.  Added workaround based on BSD hack.
 

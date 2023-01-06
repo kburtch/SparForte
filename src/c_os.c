@@ -15,8 +15,17 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
+
 /* For group_member(), a GNU libc extension, moved in recent versions */
+/* Some Linuxes do not have group_list defined and we must use the */
+/* non-standard grp.h for getgrouplist() */
+#if defined( __USE_GNU )
 #include <unistd.h>
+#else
+#include <grp.h>
+#endif
+
+/* group_member() for BSD-based systems */
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 int group_member(gid_t gid) {
@@ -26,6 +35,27 @@ int group_member(gid_t gid) {
 #else
   unsigned int groups[NGROUPS_MAX];
 #endif
+
+  ngroups = NGROUPS_MAX;
+  if (getgrouplist(getlogin(), -1, groups, &ngroups) == -1) {
+    printf ("Groups array is too small: %d\n", ngroups);
+  }
+  ret = 0;
+  for (i = 0; i < ngroups; i++) {
+    if (gid == groups[i]) {
+      ret = 1;
+      break;
+      }
+  }
+  return ret;
+}
+#elif defined( __USE_GNU )
+/* group_member() should exist when Linux has __USE_GNU */
+#else
+/* Use this if __USE_GNU is not defined for Linux (some Ubuntu) */
+int group_member(gid_t gid) {
+  int ngroups, i, ret;
+  unsigned int groups[NGROUPS_MAX];
 
   ngroups = NGROUPS_MAX;
   if (getgrouplist(getlogin(), -1, groups, &ngroups) == -1) {
