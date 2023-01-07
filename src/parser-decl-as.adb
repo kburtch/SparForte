@@ -761,6 +761,83 @@ end ParseCaseInBigArrowPart;
 
 
 -----------------------------------------------------------------------------
+--  PARSE CASE UNSTRUCTURED BIG ARROW PART
+--
+-- unstructured when , expr [, expr...] ;
+--
+-- Parse the expression list of values to return.  Consume the final
+-- semi-colon.
+-----------------------------------------------------------------------------
+
+--procedure ParseCaseUnstructuredBigArrowPart(
+--  return_ids : in out vector_identifier_lists.vector;
+--  return_len : count_type;
+--  b2         : boolean;
+--  handled   : in out boolean
+--) is
+--  return_id  : identifier;
+--  outExpr  : unbounded_string;
+--  outType  : identifier;
+--begin
+--  expectParameterComma;                                 -- ","
+--  if b2 and not handled and not exit_block then         -- handled yet?
+--     if trace then
+--        put_trace( "executing" );
+--     end if;
+--     -- for decision table
+--     for return_idx in 1..return_len loop
+--        begin
+--           return_id := vector_identifier_lists.element( return_ids, positive( return_idx ) );
+--        exception when constraint_error =>
+--           err( pl( gnat.source_info.source_location &
+--             ": internal error: out identifier" & return_idx'img & " does not exist" ) );
+--        end;
+--        ParseExpression( outExpr, outType );
+--        --if baseTypesOK( identifiers( return_id ).kind, outType ) then
+--           if isExecutingCommand then
+--
+--              -- TODO: refactor me with parse assignment
+--
+--              -- Type testing and casting
+--
+--              -- try to assign an exception to a universal type.  We need to flag that as
+--              -- a special case
+--              if outType = exception_t then
+--                 err( +"exceptions cannot be assigned" );
+--              elsif type_checks_done or else baseTypesOK( identifiers( return_id ).kind,outType ) then
+--                 if syntax_check then
+--                    identifiers( outType ).wasCastTo := true;
+--                 end if;
+--                 if isExecutingCommand then
+--                    outExpr := castToType( outExpr, outtype );
+--                 end if;
+--              end if;
+--
+--              identifiers( return_id ).value.all := outExpr;
+--              if trace then
+--                 put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).value.all ) ) ) );
+--              end if;
+--           --end if;
+--        end if;
+--        if return_idx < return_len then
+--           expectParameterComma;
+--        end if;
+--     end loop;
+--     handled := true;                                   -- and remember done
+--  else
+--     -- skip expression
+--     for return_idx in 1..return_len loop
+--        ParseExpression( outExpr, outType );
+--        if return_idx < return_len then
+--           expectParameterComma;
+--        end if;
+--     end loop;
+--  end if;
+--  expect( symbol_t, ";" );
+--end ParseCaseUnstructuredBigArrowPart;
+
+
+-----------------------------------------------------------------------------
 --  PARSE STANDARD CASE BIG ARROW PART
 --
 -- "=>" statements ;
@@ -881,6 +958,102 @@ end ParseCaseWhenPart;
 
 
 -----------------------------------------------------------------------------
+--  PARSE CASE UNSTRUCTURED WHEN PART
+--
+-- when val [|val ...]
+--
+-- Parse the listof values and determine if the result is true or false.
+-----------------------------------------------------------------------------
+
+--procedure ParseCaseUnstructuredWhenPart(
+--  test_ids : in out vector_identifier_lists.vector;
+--  test_len : count_type;
+--  b2       : in out boolean
+--) is
+--  test_id  : identifier;
+--  test_idx : count_type;
+--  case_id  : identifier;
+--  boxCount : count_type := 0;
+--  b1       : boolean := false;
+--begin
+--  if error_found then
+--     return;
+--  end if;
+--
+--  -- this should be ParseConstantIdentifier
+--  b2 := true;                                          -- assume it succeeds
+--  test_idx:= 1;                                        -- from first index
+--  while test_idx <= test_len loop                       -- all test ids
+--     -- if token = symbol_t and identifiers( token ).value.all = "=>" then
+--     --   err( +"missing when condition" );
+--     --end if;
+--     test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
+--     b1 := false;                                      -- assume case fails
+--     loop
+--        if token = strlit_t then                          -- strlit allowed
+--           if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
+--              case_id := token;
+--              getNextToken;
+--           end if;
+--        elsif token = charlit_t then                      -- charlit allowed
+--           if type_checks_done or else uniTypesOK( identifiers( test_id ).kind, uni_string_t ) then
+--              case_id := token;
+--              getNextToken;
+--           end if;
+--        elsif token = number_t then                       -- num lit allowed
+--           if type_checks_done or else uniTypesOk( identifiers( test_id ).kind, uni_numeric_t ) then
+--              case_id := token;
+--              getNextToken;
+--           end if;
+--        elsif token = symbol_t and identifiers( token ).value.all = "<>" then -- box allowed
+--           boxCount := boxCount + 1;
+--           b1 := true;
+--           case_id := symbol_t;
+--           -- I don't check for pragma ada_95 here because multiple when
+--           -- conditions are already not allowed, and a box with single
+--           -- when condition is already an error for not using when others.
+--           getNextToken;
+--        else                                             -- constant allowed
+--           ParseIdentifier( case_id );                         -- get the case
+--           if identifiers( case_id ).usage /= constantUsage    -- is constant
+--              and identifiers( case_id ).class /= enumClass then -- or enum?
+--              err( +"variable not allowed as a case" );         -- error if not
+--           elsif type_checks_done or else baseTypesOK( identifiers( test_id ).kind,
+--                 identifiers( case_id ).kind ) then            -- types good?
+--              null;
+--           end if;
+--        end if;
+--        if not error_found then                         -- OK? check case
+--           if case_id /= symbol_t then                  -- if not box token
+--              b1 := b1 or                                  -- against test var
+--                Ada.Strings.Unbounded.trim( identifiers( test_id ).value.all, Ada.Strings.left ) =
+--                Ada.Strings.Unbounded.trim( identifiers( case_id ).value.all, Ada.Strings.left );
+--           end if;
+--        end if;
+--        exit when error_found or token /= symbol_t or identifiers( token ).value.all /= "|";
+--        expect( symbol_t, "|" );                        -- expect alternate
+--     end loop;
+--     if not error_found then
+--        b2 := b2 and b1;
+--     end if;
+--     exit when error_found or token /= symbol_t or identifiers( token ).value.all /= ",";
+--     expectParameterComma;                                      -- expect alternate
+--     test_idx := test_idx + 1;
+--     if test_idx > test_len then
+--        -- TODO: update this message so it makes for sense with case procedures 
+--        err( +"too many cases compared to case identifier list" );
+--     end if;
+--  end loop;
+--  if test_idx < test_len then
+--     err( +"too few cases compared to case identifier list" );
+--  end if;
+--  if test_len = boxCount then
+--     err( +"<> for all conditions should be " & em( "when others" ) );
+--  end if;
+--end ParseCaseUnstructuredWhenPart;
+
+
+-----------------------------------------------------------------------------
 --  PARSE CASE IN BLOCK
 --
 -----------------------------------------------------------------------------
@@ -898,24 +1071,43 @@ begin
   ParseCaseInHeaderPart( proc_id, test_ids, test_len, return_ids, return_len );
 
   -- this will have an error during compilation.
-  if token /= when_t then                                 -- first when missing?
-     expect( when_t );                                    -- force error
-  end if;
-  while token = when_t loop
-     ParseCaseWhenPart( test_ids, test_len, b2 );
-     exit when error_found or token = others_t;
-     ParseCaseInBigArrowPart( return_ids, return_len, b2, handled );
-  end loop;
+  -- Case #1: case procedure when ... =>    ;
 
-  -- others part
+  --if token = when_t then
 
-  if token /= others_t then                                -- a little clearer
-     err( +"when others expected" );                        -- if pointing at
-  end if;                                                  -- end case
-  expect( others_t );                                      -- "others"
+     if token /= when_t then                                 -- first when missing?
+        expect( when_t );                                    -- force error
+     end if;
 
-  ParseCaseInBigArrowPart( return_ids, return_len, true, handled );
+     while token = when_t loop
+        ParseCaseWhenPart( test_ids, test_len, b2 );
+        exit when error_found or token = others_t;
+        ParseCaseInBigArrowPart( return_ids, return_len, b2, handled );
+     end loop;
 
+     -- others part
+
+     if token /= others_t then                                -- a little clearer
+        err( +"when others expected" );                        -- if pointing at
+     end if;                                                  -- end case
+     expect( others_t );                                      -- "others"
+
+     ParseCaseInBigArrowPart( return_ids, return_len, true, handled );
+
+  --else
+
+     -- Case #2: a|b,c|d,...val,val,val
+     -- No when others
+     -- this requires the compiler not to treat the data after the when as a
+     -- adascript instead of shell commands
+
+   --  while token /= end_t loop
+  --      ParseCaseUnstructuredWhenPart( test_ids, test_len, b2 );
+  --      exit when error_found;
+  --      ParseCaseUnstructuredBigArrowPart( return_ids, return_len, b2, handled );
+  --   end loop;
+
+  --end if;
   -- end case is not used
 end ParseCaseProcedureCaseBlock;
 

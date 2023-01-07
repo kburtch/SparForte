@@ -14,7 +14,6 @@ Priority Issues (Fix These First)
 - AI
   - case procedures
     - negative tests - syntax
-    - optional when / =>
 - modernizing
   - keyword hilighting when displaying an error on the command line
     (with --colour)

@@ -855,7 +855,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.textMessage );
+     put_line( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -906,7 +906,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.textMessage );
+     put_line( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -951,7 +951,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.textMessage );
+     put_line( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1010,7 +1010,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.textMessage );
+     put_line( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1050,7 +1050,7 @@ begin
   --   end if;
   --   interpretScript( Argument( OptionOffset ) );    -- run the script
      if error_found then
-        put_line( standard_error, fullErrorMessage.textMessage );
+        put_line( standard_error, fullErrorMessage.templateMessage );
      end if;
   else
      syntax_check := true;                           -- check syntax only
@@ -1072,7 +1072,7 @@ begin
      end if;
      -- display any error message
      if error_found then
-        put_line( standard_error, fullErrorMessage.textMessage );
+        put_line( standard_error, fullErrorMessage.templateMessage );
         -- may or may not have a template at this point, so check
         if hasTemplate then
            putTemplateHeader( templateHeader );

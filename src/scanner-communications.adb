@@ -331,9 +331,9 @@ function getStackTrace return messageStrings is
 begin
   if blocks_top > blocks'first then                            -- in a block?
      for i in reverse blocks'first..blocks_top-1 loop             -- show the
-         if i /= blocks_top-1 then                              -- simplified
-            stackTrace := stackTrace & pl( " in " );             -- traceback
-         end if;
+         -- while we could suppress "in" on the first block, if the block
+         -- is the only block, you'd just get the block name.
+         stackTrace := stackTrace & pl( " in " );                 -- traceback
          stackTrace := stackTrace & unb_pl( ToEscaped( blocks( i ).blockName ) );
      end loop;
   else                                                        -- if no blocks
@@ -438,7 +438,7 @@ begin
   sparHeader := unb_pl( sfr.name
      & ":" & lineno'img
      & ":" & firstpos'img
-     & ": ");
+     & ":");
   return sparHeader;
 end getSparFormatMessageHeader;
 
@@ -746,6 +746,7 @@ begin
            "</div>" &
            "</div>" &
            "<br />";
+
      when cssTemplate | jsTemplate =>
         fullErrorMessage.templateMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
@@ -757,6 +758,8 @@ begin
      when noTemplate | jsonTemplate =>
         null;
      end case;
+  end if;
+
      -- In the case of the template, the error output must always
      -- be in gcc format (a single line) for the web server log.
      --
@@ -764,10 +767,8 @@ begin
      -- will differ from error message in exceptions package.  Also,
      -- format this for Apache by stripping out the boldface or
      -- other effects.
-     --
 
-     fullErrorMessage := gccFormatMsg;
-  end if;
+     fullErrorMessage.textMessage := gccFormatMsg.textMessage;
 
   -- Show that this is an error, not an exception
 
