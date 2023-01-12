@@ -1586,13 +1586,25 @@ begin
      else
         f := null_unbounded_string;                -- (always return something)
         kind := eof_t;
-        err(
+        -- comma (a list) or semi-colon (end-of-statement) may indicate a
+        -- missing expression
+        if token = symbol_t and ( identifiers( token ).value.all = "," or
+           identifiers( token ).value.all = ";" ) then
+           err(
               -- redundant contextNotes => "in this expression",
               subjectNotes => +"the expression",
               reason => +"expects an operand not",
               obstructor => token,
-              remedy => +"an expression factor expects a variable, value or subexpression"
-        );
+              remedy => +"an operand or expression is missing"
+          );
+        else
+           err(
+              -- redundant contextNotes => "in this expression",
+              subjectNotes => +"the expression",
+              reason => +"expects an operand not",
+              obstructor => token,
+              remedy => +"an expression factor expects a variable, value or subexpression"          );
+        end if;
      end if;
      -- Another board category, is the token a pre-defined idenifier?
   elsif token < predefined_top then
@@ -1660,13 +1672,27 @@ begin
   elsif identifiers( token ).kind = keyword_t then      -- no keywords
      f := null_unbounded_string;                        -- (always return something)
      kind := universal_t;
-     err(
-        -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
-        reason => +"expects an operand not",
-        obstructor => token,
-        remedy => +"an expression factor expects a variable, value or subexpression"
+      -- comma (a list) or semi-colon (end-of-statement) may indicate a
+      -- missing expression
+      if token = symbol_t and ( identifiers( token ).value.all = "," or
+         identifiers( token ).value.all = ";" ) then
+         err(
+            -- redundant contextNotes => "in this expression",
+            subjectNotes => +"the expression",
+            reason => +"expects an operand not",
+            obstructor => token,
+              remedy => +"an operand or expression is missing"
         );
+      else
+         err(
+            -- redundant contextNotes => "in this expression",
+            subjectNotes => +"the expression",
+            reason => +"expects an operand not",
+            obstructor => token,
+            remedy => +"an expression factor expects a variable, value or subexpression"
+        );
+      end if;
+
   else                                                  -- a user ident?
      ParseFactorIdentifier;
   end if;

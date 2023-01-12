@@ -11,13 +11,7 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- AI
-  - case procedures
-    - negative tests - syntax
 - modernizing
-  - keyword hilighting when displaying an error on the command line
-    (with --colour)
-
   - checking error display rewrite
     - test reports need to be checked
     - compiler / escape ident for example

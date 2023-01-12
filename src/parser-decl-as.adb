@@ -702,7 +702,24 @@ procedure ParseCaseInBigArrowPart(
   outExpr  : unbounded_string;
   outType  : identifier;
 begin
-  expect( symbol_t, "=>" );                             -- "=>"
+  if token /= symbol_t or identifiers( token ).value.all /= "=>" then
+    err(                                                 -- "=>"
+       contextNotes => +"in case procedure when part",
+       subjectNotes => +"the list of input values",
+       reason => +"should end with a '=>' but found a",
+       obstructor => token
+    );
+  else
+    getNextToken; -- expectSymbol( "=>" );
+  end if;
+  if token = symbol_t and identifiers( token ).value.all = ";" then
+    err(                                                 -- "=>"
+       contextNotes => +"in case procedure when part",
+       subjectNotes => +"the list of output values",
+       reason => +"is",
+       obstructorNotes => +"missing"
+    );
+  end if;
   if b2 and not handled and not exit_block then         -- handled yet?
      if trace then
         put_trace( "executing" );
@@ -756,7 +773,16 @@ begin
         end if;
      end loop;
   end if;
-  expect( symbol_t, ";" );
+  if token /= symbol_t or identifiers( token ).value.all /= ";" then
+     err(                                                 -- "=>"
+        contextNotes => +"in the case procedure when part",
+        subjectNotes => +"the list of output values",
+        reason => +"should end with a ';' but found a",
+        obstructor => token
+     );
+  else
+    getNextToken; -- expect( symbol_t, ";" );
+  end if;
 end ParseCaseInBigArrowPart;
 
 
@@ -889,7 +915,12 @@ begin
   test_idx:= 1;                                        -- from first index
   while test_idx <= test_len loop                       -- all test ids
      if token = symbol_t and identifiers( token ).value.all = "=>" then
-        err( +"missing when condition" );
+       err(                                                 -- "=>"
+          contextNotes => +"in the case when part",
+          subjectNotes => +"the when conditions",
+          reason => +"are",
+          obstructorNotes => +"missing"
+       );
      end if;
      test_id := vector_identifier_lists.element( test_ids,positive( test_idx ) );
      b1 := false;                                      -- assume case fails
@@ -1088,7 +1119,12 @@ begin
      -- others part
 
      if token /= others_t then                                -- a little clearer
-        err( +"when others expected" );                        -- if pointing at
+        err(
+           contextNotes => +"in the case procedure",
+           subjectNotes => +"when others",
+           reason => +"is",
+           obstructorNotes => +"missing"
+        );                        -- if pointing at
      end if;                                                  -- end case
      expect( others_t );                                      -- "others"
 
