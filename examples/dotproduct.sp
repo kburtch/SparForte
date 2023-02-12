@@ -10,10 +10,12 @@ pragma annotate( summary, "dotproduct" )
        @( description, "each vector must be the same length; multiply" )
        @( description, "corresponding terms from each vector then sum the results" )
        @( description, "to produce the answer. " )
+       @( category, "algorithms" )
        @( see_also, "http://rosettacode.org/wiki/Dot_product" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure dotproduct is

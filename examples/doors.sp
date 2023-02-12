@@ -9,10 +9,12 @@ pragma annotate( summary, "doors" )
        @( description, "only visit the 100th door." )
        @( description, "Question: What state are the doors in after the last pass? Which are open," )
        @( description, "which are closed?" )
+       @( category, "puzzles" )
        @( see_also, "http://rosettacode.org/wiki/100_doors" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure Doors is

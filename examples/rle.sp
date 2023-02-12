@@ -11,9 +11,11 @@ pragma is
   annotate( description, "Example:" );
   annotate( description, "Input: WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW" );
   annotate( description, "Output: 12W1B12W3B24W1B14W" );
+  annotate( category, "algorithms" );
   annotate( see_also, "http://rosettacode.org/wiki/Run-length_encoding" );
   annotate( author, "Ken O. Burtch" );
   license( unrestricted );
+  software_model( nonstandard );
   restriction( no_external_commands );
 end pragma;
 

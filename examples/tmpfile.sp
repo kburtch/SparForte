@@ -12,10 +12,12 @@ pragma annotate( description, "and should only fail in cases where permission is
 pragma annotate( description, "denied, the filesystem is read-only or full, or similar" );
 pragma annotate( description, "conditions exist (returning an error or raising an" );
 pragma annotate( description, "exception as appropriate to the language/environment)." );
+pragma annotate( category, "scripting" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Secure_temporary_file" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure tmpfile is

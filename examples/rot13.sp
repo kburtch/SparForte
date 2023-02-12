@@ -15,10 +15,12 @@ pragma annotate( description, "implementation should work on upper and lower cas
 pragma annotate( description, "letters, preserve case, and pass all non-alphabetic" );
 pragma annotate( description, "characters in the input stream through without" );
 pragma annotate( description, "alteration." );
+pragma annotate( category, "entertainment" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Rot-13" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure rot13 is

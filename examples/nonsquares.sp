@@ -6,10 +6,12 @@ pragma annotate( description, "sequence of non-square natural numbers: n +" );
 pragma annotate( description, "floor(1/2 + sqrt(n)).  Print out the values for n in" );
 pragma annotate( description, "the range 1 to 22.  Show that no squares occur for n" );
 pragma annotate( description, "less than one million." );
+pragma annotate( category, "algorithms" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Sequence_of_non-squares" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure nonsquares is

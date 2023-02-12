@@ -11,9 +11,12 @@ pragma annotate( description, "* Print 'Sleeping...'" );
 pragma annotate( description, "* Sleep the main thread for the given amount of time." );
 pragma annotate( description, "* Print 'Awake!'" );
 pragma annotate( description, "* End." );
+pragma annotate( category, "scripting" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Sleep" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
+
+pragma software_model( nonstandard );
 
 procedure sleep_demo is
   in_val : duration;

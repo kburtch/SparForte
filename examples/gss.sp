@@ -7,10 +7,12 @@ pragma annotate( summary, "gss" )
        @( description, "up to a value larger than this one. An empty subsequence is considered to have" )
        @( description, "the sum 0; thus if all elements are negative, the result must be the empty" )
        @( description, "sequence." )
+       @( category, "puzzles" )
        @( see_also, "http://rosettacode.org/wiki/Greatest_subsequential_sum" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure gss is

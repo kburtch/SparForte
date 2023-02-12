@@ -12,10 +12,12 @@ pragma annotate( summary, "monte" )
               @( description, "results of a few different sample sizes. For software" )
               @( description, "where the number pi is not built-in, we give pi to a couple" )
               @( description, "of digits: 3.141592653589793238462643383280 " )
+              @( category, "algorithms" )
               @( see_also, "http://rosettacode.org/wiki/Monte_Carlo_methods" )
               @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure monte is

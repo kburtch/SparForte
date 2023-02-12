@@ -11,10 +11,12 @@ pragma annotate( description, "optimize by using pre-computed wheels, i.e. don't
 pragma annotate( description, "you need only to cross out odd numbers (wheel based on" );
 pragma annotate( description, "2), numbers equal to 1 or 5 modulo 6 (wheel based on 2" );
 pragma annotate( description, "and 3), or similar wheels based on low primes." );
+pragma annotate( category, "algorithms" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Sieve_of_Eratosthenes" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure sieve is

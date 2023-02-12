@@ -5,10 +5,12 @@ pragma annotate( description, "Write a program that prints the numbers from 1 to
 pragma annotate( description, "three print 'Fizz' instead of the number and for the multiples of five print" );
 pragma annotate( description, "'Buzz'. For numbers which are multiples of both three and five print" );
 pragma annotate( description, "'FizzBuzz'" );
+pragma annotate( category, "puzzles" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/FizzBuzz" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure fizzbuzz is

@@ -24,10 +24,12 @@ this is a test
        @( description, "The task is to remove text that follow any of a set of" )
        @( description, "comment markers, (in these examples either a hash or a" )
        @( description, "semicolon) from a string or input line." )
+       @( category, "scripting" )
        @( see_also, "http://rosettacode.org/wiki/Strip_comments_from_a_string" )
        @( author, "Ken O. Burtch" );
 <b>pragma</b> license( unrestricted );
 
+<b>pragma</b> software_model( nonstandard );
 <b>pragma</b> restriction( no_external_commands );
 
 <b>procedure</b> stripcomment <b>is</b>
@@ -41,7 +43,7 @@ this is a test
     eol := i;
   <b>end</b> <b>loop</b>;
   <b>if</b> eol &gt; 0 <b>then</b>
-     ? strings.slice( line, 1, eol );
+     ? strings.trim( strings.slice( line, 1, eol ), trim_end.both );
   <b>end</b> <b>if</b>;
 <b>end</b> stripcomment;
 

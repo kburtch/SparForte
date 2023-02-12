@@ -8,10 +8,12 @@ pragma annotate( summary, "monty" )
        @( description, "Simulate at least a thousand games using three doors" )
        @( description, "for each strategy and show the results in such a way as" )
        @( description, "to make it easy to compare the effects of each strategy." )
+       @( category, "puzzles" )
        @( see_also, "http://rosettacode.org/wiki/Monty_Hall_problem" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure monty is

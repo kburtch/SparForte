@@ -13,10 +13,12 @@ pragma annotate( description, "compare the dates calculated with the output of o
 pragma annotate( description, "any anomalies in the handling of dates which may be due to, for example," );
 pragma annotate( description, "overflow in types used to represent dates/times similar to y2k type" );
 pragma annotate( description, "problems. ");
+pragma annotate( category, "puzzles" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Day_of_the_week" );
 pragma annotate( author, "Ken O. Burtch ");
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure yuletide is

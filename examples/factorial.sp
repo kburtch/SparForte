@@ -2,9 +2,11 @@
 
 pragma annotate( summary, "factorial n" )
        @( description, "Write a function to return the factorial of a number." )
+       @( category, "puzzles" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure factorial is

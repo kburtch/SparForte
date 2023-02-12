@@ -3,10 +3,12 @@
 pragma annotate( summary, "dateformat")
        @( description, "Display the current date in the formats of '2007-11-10' " )
        @( description, "and 'Sunday, November 10, 2007'." )
+       @( category, "utilities" )
        @( see_also, "http://rosettacode.org/wiki/Date_format" )
        @( "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure dateformat is

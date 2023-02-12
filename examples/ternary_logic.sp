@@ -6,10 +6,12 @@ pragma annotate( summary, "ternary_logic" )
        @( description, "3VL) is any of several many-valued logic systems " )
        @( description, "in which there are three truth values indicating " )
        @( description, "true, false and some indeterminate third value. " )
+       @( category, "algorithms" )
        @( see_also, "http://rosettacode.org/wiki/Ternary_logic" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure ternary_logic is

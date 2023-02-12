@@ -2,10 +2,12 @@
 
 pragma annotate( summary, "DrawLine" )
               @( description, "Draw a line given 2 points with the Bresenham's algorithm." )
+              @( category, "algorithms" )
               @( see_also, "http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm" )
               @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure drawline is

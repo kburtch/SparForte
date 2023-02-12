@@ -2,10 +2,12 @@
 
 pragma annotate( summary, "arraysum" )
        @( description, "Compute the sum and product of an array of integers." )
+       @( category, "algorithms" )
        @( see_also, "http://rosettacode.org/wiki/Sum_and_product_of_an_array" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure arraysum is

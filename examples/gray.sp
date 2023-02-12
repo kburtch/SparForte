@@ -11,10 +11,12 @@ pragma annotate( description, "5-bit binary numbers (0-31 inclusive, leading 0's
 pragma annotate( description, "necessary).  There are many possible Gray codes. The" );
 pragma annotate( description, "following encodes what is called 'binary reflected" );
 pragma annotate( description, "Gray code.'"  );
+pragma annotate( category, "algorithms" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Gray_code" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure gray is

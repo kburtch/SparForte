@@ -5,10 +5,12 @@ pragma annotate( summary, "sumseries" )
               @( description, "sum of the n first terms of the " )
               @( description, "corresponding sequence.  For this task " )
               @( description, "repeat 1000 times. " )
+              @( category, "algorithms" )
               @( see_also, "http://rosettacode.org/wiki/Sum_of_a_series" )
               @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure sumseries is

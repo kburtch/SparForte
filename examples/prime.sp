@@ -4,10 +4,12 @@ pragma annotate( summary, "prime" );
 pragma annotate( description, "Write a boolean function that tells whether a given" );
 pragma annotate( description, "integer is prime. Remember that 1 and all" );
 pragma annotate( description, "non-positive numbers are not prime. " );
+pragma annotate( category, "algorithms" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Primality_by_trial_division" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure prime is

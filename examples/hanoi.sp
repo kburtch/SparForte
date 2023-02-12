@@ -2,10 +2,12 @@
 
 pragma annotate( summary, "hanoi" )
        @( description, "Solve the Towers of Hanoi problem with recursion." )
+       @( category, "puzzles" )
        @( see_also, "https://rosettacode.org/wiki/Towers_of_Hanoi" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure hanoi is

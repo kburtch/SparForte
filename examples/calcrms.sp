@@ -5,10 +5,12 @@ pragma annotate( summary, "calcrms" )
        @( description, "The root mean square is also known by its initial RMS (or rms), and as the" )
        @( description, "quadratic mean.  The RMS is calculated as the mean of the squares of the" )
        @( description, "numbers, square-rooted" )
+       @( category, "algorithms" )
        @( see_also, "http://rosettacode.org/wiki/Averages/Root_mean_square" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure calcrms is

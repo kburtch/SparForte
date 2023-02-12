@@ -791,6 +791,36 @@ else
    echo "OK - $EXAMPLE"
 fi
 
+EXAMPLE="user_input.sp"
+RESULT=`echo -e "abc\n123" | src/spar --test examples/$EXAMPLE`
+echo "$RESULT"
+EXPECTED="abc
+ 123"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
+EXAMPLE="user_input_unstructured.sp"
+RESULT=`echo -e "abc\n123" | src/spar --test examples/$EXAMPLE`
+echo "$RESULT"
+EXPECTED="abc
+ 123"
+if [ "$RESULT" != "$EXPECTED" ] ; then
+   echo "Failed - $EXAMPLE Failed"
+   echo "$RESULT"
+   echo "expected"
+   echo "$EXPECTED"
+   exit 192
+else
+   echo "OK - $EXAMPLE"
+fi
+
 EXAMPLE="yorn.sp"
 RESULT=`echo "y" | src/spar --test examples/$EXAMPLE`
 echo "$RESULT"

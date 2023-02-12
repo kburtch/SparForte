@@ -5,9 +5,11 @@ pragma annotate( summary, "combinations" )
        @( description, "combinations of the integers from 0 to n-1 in sorted" )
        @( description, "order (each combination is sorted and the entire table" )
        @( description, "is sorted" )
+       @( category, "algorithms" )
        @( see_also, "http://rosettacode.org/wiki/Combinations" )
        @( author, "Ken O. Burtch" );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure combinations is

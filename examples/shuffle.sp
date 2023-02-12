@@ -7,10 +7,12 @@ pragma annotate( description, "for an integer array (or, if possible, an array o
 pragma annotate( description, "type). The Knuth shuffle is used to create a random" );
 pragma annotate( description, "permutation of an array." );
 pragma annotate( description, "Note: spar has a built-in arrays.shuffle() function that does this." );
+pragma annotate( category, "algorithms" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Knuth_shuffle" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure shuffle is

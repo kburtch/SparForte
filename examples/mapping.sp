@@ -6,10 +6,12 @@ pragma annotate( summary, "mapping" )
        @( description, "the real number from the first to the second range. Use" )
        @( description, "this function to map values from the range [0, 10] to the" )
        @( description, "range [-1, 0]." )
+       @( category, "algorithms" )
        @( see_also, "http://rosettacode.org/wiki/Map_range" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure mapping is

@@ -8,9 +8,12 @@ pragma annotate( description, "Originally for the PDP-8." );
 pragma annotate( description, "The Timeless cave-crawling classic based on GW-BASIC source" );
 pragma annotate( description, "www.ifarchive.org.  Modified for SparForte by Ken O. Burtch." );
 pragma annotate( description, "For sound effects, run as superuser" );
+pragma annotate( category, "games" );
+
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands ); -- O/S independent
 
 procedure wumpus is

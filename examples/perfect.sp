@@ -5,10 +5,12 @@ pragma annotate( description, "In mathematics, a perfect number is a positive in
 pragma annotate( description, "that is the sum of its proper positive divisors, that is," );
 pragma annotate( description, "the sum of the positive divisors excluding the number" );
 pragma annotate( description, "itself." );
+pragma annotate( category, "algorithms" );
 pragma annotate( see_also, "http://en.wikipedia.org/wiki/Perfect_number" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure perfect is

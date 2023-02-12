@@ -7,10 +7,12 @@ pragma annotate( description, "are removed, preventing any existing Y or N keypr
 pragma annotate( description, "being evaluated. The response should be obtained as soon as" );
 pragma annotate( description, "Y or N are pressed, and there should be no need to press an" );
 pragma annotate( description, "enter key. " );
+pragma annotate( category, "scripting" );
 pragma annotate( see_also, "http://rosettacode.org/wiki/Keyboard_Input/Obtain_a_Y_or_N_response" );
 pragma annotate( author, "Ken O. Burtch" );
 
 pragma ada_95;
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure yorn is

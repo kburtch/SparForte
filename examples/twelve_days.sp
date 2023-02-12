@@ -3,10 +3,12 @@
 pragma annotate( summary, "twelve_days" )
        @( description, "Write a program that outputs the lyrics of the " )
        @( description, "Christmas carol The Twelve Days of Christmas. " )
+       @( category, "entertainment" )
        @( see_also, "http://rosettacode.org/wiki/The_Twelve_Days_of_Christmas" );
 pragma annotate( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure twelve_days is

@@ -6,6 +6,7 @@ pragma annotate( summary, "charcode" )
        @( description, "the character 'a' (lowercase letter A) has a code of 97 in ASCII (as" )
        @( description, "well as Unicode, as ASCII forms the beginning of Unicode). Conversely," )
        @( description, "given a code, print out the corresponding character. " )
+       @( category, "tutorials" )
        @( see_also, "http://rosettacode.org/wiki/Character_codes" )
        @( author, "Ken O. Burtch");
 pragma license( unrestricted );

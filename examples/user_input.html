@@ -1,0 +1,55 @@
+<HEAD><TITLE>user_input.sp</TITLE></HEAD>
+<BODY>
+<HR><DIV ALIGN="center"><H1> File : user_input.sp </H1></DIV><HR>
+<DIV ALIGN="center">
+<TABLE CELLSPACING="0" CELLPADDING="3" WIDTH="80%" SUMMARY="">
+<TR>
+<TD BGCOLOR="black"><SPAN STYLE="color: #00CC00">
+<PRE>
+$ spar user_input.sp
+abc
+123
+abc
+ 123
+
+</PRE>
+</SPAN>
+</TD>
+</TR>
+</TABLE>
+</DIV>
+<P>As an structured script.</P>
+<PRE>
+#!/usr/local/bin/spar
+
+<b>pragma</b> annotate( summary, "user_input" )
+       @( description, "Input a string and the integer 75000 from the text console." )
+       @( category, "tutorials" )
+       @( see_also, "https://rosettacode.org/wiki/User_input/Text" )
+       @( author, "Ken O. Burtch" );
+<b>pragma</b> license( unrestricted );
+
+<b>pragma</b> software_model( nonstandard );
+<b>pragma</b> restriction( no_external_commands );
+
+<b>procedure</b> get_string <b>is</b>
+  s : unbounded_string;
+  i : integer;
+<b>begin</b>
+  s := get_line;
+  i := integer( numerics.value( get_line ) );
+  ? s @ i;
+<b>exception</b> <b>when</b> <b>others</b> =&gt;
+  put_line( standard_error, "the value is not valid" );
+<b>end</b> user_input;
+
+<FONT COLOR=green><EM>-- VIM editor formatting instructions</EM></FONT>
+<FONT COLOR=green><EM>-- vim: ft=spar</EM></FONT>
+</PRE>
+<P>As an unstructured script.</P>
+<PRE>
+s := get_line;
+i := numerics.value( get_line );
+? s @ i;
+
+</PRE></BODY></HTML>

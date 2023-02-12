@@ -3,10 +3,12 @@
 pragma annotate( summary, "luhn test of credit card numbers" )
        @( description, "The Luhn test is used by some credit card companies to " )
        @( description, "distinguish valid credit card numbers from what could be a random selection of digits." )
+       @( category, "algorithms" )
        @( see_also, "https://rosettacode.org/wiki/Luhn_test_of_credit_card_number" )
        @( author, "Ken O. Burtch" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure luhn is

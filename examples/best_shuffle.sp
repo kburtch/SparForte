@@ -8,10 +8,12 @@ pragma annotate( summary, "best_shuffle" )
        @( description, "shuffled string, (score). The score gives the" )
        @( description, "number of positions whose character value" )
        @( description, "did not change." )
+       @( category, "algorithms" )
        @( author, "Ken O. Burtch" )
        @( see_also, "http://rosettacode.org/wiki/Best_shuffle" );
 pragma license( unrestricted );
 
+pragma software_model( nonstandard );
 pragma restriction( no_external_commands );
 
 procedure best_shuffle is
