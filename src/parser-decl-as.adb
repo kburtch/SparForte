@@ -619,7 +619,7 @@ begin
                 subject => actual_id,
                 reason => +"should be between the start and",
                 obstructor => first_out_param,
-                remedy => pl( 
+                remedy => pl(
                        "the parameters should be declared in the same order " &
                        "as they are used in the when clauses, or a parameter " &
                        "passing mode is incorrect" )
@@ -975,7 +975,7 @@ begin
      expectParameterComma;                                      -- expect alternate
      test_idx := test_idx + 1;
      if test_idx > test_len then
-        -- TODO: update this message so it makes for sense with case procedures 
+        -- TODO: update this message so it makes for sense with case procedures
         err( +"too many cases compared to case identifier list" );
      end if;
   end loop;
@@ -1071,7 +1071,7 @@ end ParseCaseWhenPart;
 --     expectParameterComma;                                      -- expect alternate
 --     test_idx := test_idx + 1;
 --     if test_idx > test_len then
---        -- TODO: update this message so it makes for sense with case procedures 
+--        -- TODO: update this message so it makes for sense with case procedures
 --        err( +"too many cases compared to case identifier list" );
 --     end if;
 --  end loop;
