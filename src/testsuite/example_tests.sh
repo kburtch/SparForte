@@ -794,7 +794,10 @@ fi
 EXAMPLE="user_input.sp"
 RESULT=`echo -e "abc\n123" | src/spar --test examples/$EXAMPLE`
 echo "$RESULT"
-EXPECTED="abc
+EXPECTED="
+abc
+123
+abc
  123"
 if [ "$RESULT" != "$EXPECTED" ] ; then
    echo "Failed - $EXAMPLE Failed"
