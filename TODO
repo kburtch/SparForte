@@ -13,15 +13,10 @@ Priority Issues (Fix These First)
 
 - modernizing
   - checking error display rewrite
-    - test reports need to be checked
-    - compiler / escape ident for example
-    - test international characters and escaping
     - in get...position, do we even use fullTemplateErrorMessage when
       breaking out? check.
     - security testing
       - I should write tests that validate we're escaping
-    - ensure all output is properly escaped for the template format
-      (yaml - are there any, JavaScript / XML (no close comments)
     - the byte code dump should be formatted for colour?
     - removing dependences from pegasoft.user_io, if possible
     - get command line has selectable template but output fns do not

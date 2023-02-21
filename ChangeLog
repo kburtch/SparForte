@@ -12,7 +12,7 @@ CHANGES SINCE 2.5
 
 4. New: New examples rock.sp, user_input.sp.
 
-5. New: case in is now case procedure. [negative tests needed]
+5. New: case in is now case procedure.
 
 6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
 
@@ -33,4 +33,6 @@ CHANGES SINCE 2.5
 14. Fix: if an error occurs while parsing a pragma template, do not enable templates and get an internal error when rendering the HTTP header.
 
 15. Fix: template error messages are now consistently written to standard error as a single line for logging purposes.
+
+16. Fix: extended ASCII characters render correctly when displaying the source code line in an error message.
 
