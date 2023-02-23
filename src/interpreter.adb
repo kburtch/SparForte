@@ -272,11 +272,13 @@ begin
              ParseGeneralStatement;                     -- do the command
           end loop;
           if error_found then
-             put_line( standard_error, fullErrorMessage.templateMessage );
              -- Not sure if templates are possible here but...
              if hasTemplate then
+                put_line( standard_error, fullErrorMessage.textMessage );
                 putTemplateHeader( templateHeader );
                 put_line( fullErrorMessage.templateMessage );
+             else
+                put_line( standard_error, fullErrorMessage.templateMessage );
              end if;
           end if;
        end if;
@@ -640,6 +642,7 @@ begin
        end if;
     end if;
   end if;
+
   if (scriptFile > 0 or boolean(execOpt)) and not done then -- file open or -e?
      if perfOpt then
         if syntax_check then
@@ -736,11 +739,13 @@ begin
   compileCommand( commandString );
   parse;
   if error_found then                              -- was there an error?
-     put_line( standard_error, fullErrorMessage.templateMessage );
      -- may or may not have a template at this point, so check
      if hasTemplate then
+        put_line( standard_error, fullErrorMessage.textMessage );
         putTemplateHeader( templateHeader );
         put_line( fullErrorMessage.templateMessage );
+     else
+        put_line( standard_error, fullErrorMessage.templateMessage );
      end if;
      if last_status = 0 then                       -- no last command status?
         set_exit_status( Failure );                -- just set to 1
@@ -1072,11 +1077,13 @@ begin
      end if;
      -- display any error message
      if error_found then
-        put_line( standard_error, fullErrorMessage.templateMessage );
         -- may or may not have a template at this point, so check
         if hasTemplate then
+           put_line( standard_error, fullErrorMessage.textMessage );
            putTemplateHeader( templateHeader );
            put_line( fullErrorMessage.templateMessage );
+        else
+           put_line( standard_error, fullErrorMessage.templateMessage );
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
@@ -1128,9 +1135,13 @@ begin
               err( +"tests failed" );
            end if;
         end if;
+        -- For errors when processing templates, the standard output is
+        -- the error message in template format.  Also, standard error has
+        -- the error message in a single line text format (as it is assumed to
+        -- be written into a server log).  The template header has already
+        -- been written.
         if error_found then
-           put_line( standard_error, fullErrorMessage.templateMessage );
-           -- always has template if we get here
+           put_line( standard_error, fullErrorMessage.textMessage );
            put_line( fullErrorMessage.templateMessage );
         end if;
         -- if there was a formal script with a main program, the main program

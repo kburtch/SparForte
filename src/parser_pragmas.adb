@@ -1759,48 +1759,61 @@ begin
         return;
      end if;
   when template | unrestricted_template =>   -- pragma (unrestricted) template
-     if rshOpt then
-        err( +"templates cannot be used in a restricted shell" );
-     else
-        ParsePragmaIdentifier( expr_val );
-        if token = symbol_t and identifiers( token ).value.all = "," then
-           getNextToken;
-           expect( strlit_t );
-           var_id := strlit_t;
+     declare
+        errorFoundFirst : constant boolean := error_found;
+        hadTemplatePragmaError : boolean := false;
+     begin
+        if rshOpt then
+           err( +"templates cannot be used in a restricted shell" );
         else
-           var_id := eof_t;
+           ParsePragmaIdentifier( expr_val );
+           if token = symbol_t and identifiers( token ).value.all = "," then
+              getNextToken;
+              -- it is possible for this to fail with a syntax error
+              expect( strlit_t );
+              var_id := strlit_t;
+           else
+              var_id := eof_t;
+           end if;
+           -- check for an error while processing the pragma
+           if not errorFoundFirst and error_found then
+              hadTemplatePragmaError := true;
+           end if;
         end if;
-     end if;
-     -- Mark this script as having a template to disable unused variable checks
-     -- We need the type of template so interpret it now.
-     if not skipping_block then
-        hasTemplate := true;
-        templateHeader.templateType := noTemplate;
-        templateHeader.status := 200;
-        -- if no type specified, assume HTML.
-        if var_id = eof_t then
-           templateHeader.templateType := htmlTemplate;
-        -- http://www.webmaster-toolkit.com/mime-types.shtml
-        elsif expr_val = "html" then
-           templateHeader.templateType := htmlTemplate;
-        elsif expr_val = "css" then
-           templateHeader.templateType := cssTemplate;
-        elsif expr_val = "js" then
-           templateHeader.templateType := jsTemplate;
-        elsif expr_val = "json" then
-           templateHeader.templateType := jsonTemplate;
-        elsif expr_val = "text" then
-           templateHeader.templateType := textTemplate;
-        elsif expr_val = "wml" then
-           templateHeader.templateType := wmlTemplate;
-        elsif expr_val = "xml" then
-           templateHeader.templateType := xmlTemplate; -- text/xml
-        elsif expr_val = "yaml" then
-           templateHeader.templateType := yamlTemplate;
-        else
-           err( +"unknown template type" );
+        -- Mark this script as having a template to disable unused variable checks
+        -- We need the type of template so interpret it now.
+        -- If a syntax error occurred while processing this pragma, do not
+        -- enable templates.
+        if not skipping_block and not hadTemplatePragmaError then
+           hasTemplate := true;
+           templateHeader.templateType := noTemplate;
+           templateHeader.status := 200;
+           -- if no type specified, assume HTML.
+           if var_id = eof_t then
+              templateHeader.templateType := htmlTemplate;
+           -- http://www.webmaster-toolkit.com/mime-types.shtml
+           elsif expr_val = "html" then
+              templateHeader.templateType := htmlTemplate;
+           elsif expr_val = "css" then
+              templateHeader.templateType := cssTemplate;
+           elsif expr_val = "js" then
+              templateHeader.templateType := jsTemplate;
+           elsif expr_val = "json" then
+              templateHeader.templateType := jsonTemplate;
+           elsif expr_val = "text" then
+              templateHeader.templateType := textTemplate;
+           elsif expr_val = "wml" then
+              templateHeader.templateType := wmlTemplate;
+           elsif expr_val = "xml" then
+              templateHeader.templateType := xmlTemplate; -- text/xml
+           elsif expr_val = "yaml" then
+              templateHeader.templateType := yamlTemplate;
+           else
+              err( +"unknown template type '" & pl( to_string( expr_val ) ) &
+                  pl( "'" ) );
+           end if;
         end if;
-     end if;
+     end;
   when test =>                               -- pragma test
      expr_val := identifiers( token ).value.all;
      expect( backlit_t );

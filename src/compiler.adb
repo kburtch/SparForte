@@ -537,9 +537,11 @@ begin
      return;                                                  -- don't display
   end if;
 
+  -- Display the location
+
   if inputMode /= interactive and inputMode /= breakout then  -- a script?
+     lineStr := to_unbounded_string( natural'image( getByteCodeLineNo ) );
      if gccOpt then                                    -- gcc style?
-        lineStr := to_unbounded_string( natural'image( getByteCodeLineNo ) );
                                                        -- remove leading
         if length( lineStr ) > 0 then                  -- space (if any)
            if element( lineStr, 1 ) = ' ' then
@@ -554,8 +556,8 @@ begin
      else
         sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( getByteCodeFileNo ), sfr );
         put( standard_error, sfr.name );            -- otherwise
-        put( standard_error, ":" );                  -- leave leading
-        put( standard_error, getByteCodeLineNo'img );           -- spaces in
+        put( standard_error, ":" );                 -- leave leading
+        put( standard_error,lineStr );              -- spaces in
         put( standard_error, ":1:" );
      end if;
   else
@@ -578,17 +580,10 @@ begin
   -- Command line that errored (ie the current line)
 
   if not gccOpt then
+     new_line;
      put_line( standard_error, cmdline );                     -- display line
 
      -- Error Pointer
-
-     -- KB: 07/11/04: guestimated
-     -- KB: 09/13/21: ignore on interactive prompt
-     if inputMode = interactive and inputMode = breakout then  -- a script?
-        for i in 1..length( sfr.name )+length( lineStr )+6 loop -- move to token
-           put( standard_error, " " );
-        end loop;
-     end if;
 
      for i in 1..firstpos-1 loop                              -- move to token
         put( standard_error, " " );
@@ -2521,12 +2516,31 @@ end endByteCode;
 
 procedure dumpByteCode( ci : compressionInfo ) is
    line : integer := 0;
+
+   function get_horizontal_line return string is
+   begin
+   if colourOpt then
+      return utf_horizontalLine;
+   end if; 
+   return "-";
+   end get_horizontal_line;
+
+   s : unbounded_string;
 begin
-   put_line( "--- Byte Code dump ---------------------------------------------------" );
+   s := to_unbounded_string( to_string( 3*get_horizontal_line ) );
+   s := s & " Byte Code dump ";
+   s := s & to_unbounded_string( to_string( (80-19) * get_horizontal_line ) );
+   put_line( to_string( s ) );
    put( "  H:   1:" );
    put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 1 ) ) ) );
    put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 2 ) ) ) );
-   put_line( " Byte Code Version: " & character'pos( Element( ci.compressedScript, 1 ) )'img );
+   put_line(
+         optional_yellow(
+            " Byte Code Version:" & character'pos( Element( ci.compressedScript, 1 ) )'img,
+            as_plain => boolean( gccOpt ),
+            in_colour => boolean( colourOpt )
+         )
+   );
    put( "  0:   3:" );
    for i in 3..length( ci.compressedScript ) loop
        put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, i ) ) ) );
@@ -2552,7 +2566,13 @@ begin
        end if;
    end loop;
    new_line;
-   put_line( "Byte Code Size =" & length( ci.compressedScript )'img );
+   put_line( 80*get_horizontal_line );
+   put_line(
+      optional_yellow(
+         "Byte Code Size =" & length( ci.compressedScript )'img & " byte(s)",
+            as_plain => boolean( gccOpt ),
+            in_colour => boolean( colourOpt )      )
+   );
 end dumpByteCode;
 
 
@@ -2765,9 +2785,6 @@ begin
         compileDone := not LineRead( command'access );        -- quit when done
         SourceLineNoLo := 1;                                  -- skip 1 line
      end if;
-  end if;
-  if verboseOpt then
-     put_line( standard_error, "=> (Line 1 ...)" );
   end if;
 
   -- compile the script into byte code

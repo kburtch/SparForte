@@ -31,6 +31,7 @@ with system,
     ada.text_io,
     ada.strings.unbounded.text_io,
     gnat.source_info,
+    spar_os.tty,
     CGI,
     pegasoft.strings,
     pegasoft.user_io;
@@ -38,6 +39,7 @@ use ada.text_io,
     ada.command_line,
     ada.command_line.environment,
     ada.strings.unbounded.text_io,
+    spar_os.tty,
     pegasoft.strings,
     pegasoft.user_io;
 
@@ -2225,6 +2227,31 @@ begin
   return newText;
 end escapeChar;
 
+-----------------------------------------------------------------------------
+--  GET NEW LINE
+--
+-- Return a new line as appropriate for the output context.
+-----------------------------------------------------------------------------
+
+function getNewLine return messageStrings is
+  nl : messageStrings;
+begin
+  if hasTemplate then
+     case templateHeader.templateType is
+     when htmlTemplate | wmlTemplate =>
+         nl.templateMessage := to_unbounded_string( "<br>" & ASCII.CR & ASCII.LF );
+     when yamlTemplate =>
+         nl.templateMessage := to_unbounded_string( eol_characters & "# " );
+     when others =>
+         nl.templateMessage := to_unbounded_string( eol_characters );
+     end case;
+   else
+     nl.templateMessage := to_unbounded_string( eol_characters );
+   end if;
+   nl.textMessage := to_unbounded_string( eol_characters );
+   return nl;
+end getNewLine;
+
 
 -----------------------------------------------------------------------------
 -- Concatenation
@@ -2232,9 +2259,40 @@ end escapeChar;
 
 function "&"( left, right : messageStrings ) return messageStrings is
   new_strings : messageStrings;
+  --temp : messageStrings;
 begin
-  new_strings.templateMessage := left.templateMessage & right.templateMessage;
+
+  new_strings.templateMessage := left.templateMessage;
+
+  -- Text wrap on concatenation
+  --
+  -- This assumes messages are built left to right
+  --
+  -- Base the length of the message on the number of characters in the
+  -- text message.  If the new text exceeds the wrap point, move to the
+  -- next line and advance to the next wrap point (i.e. 80 + 80 = 160 chars)
+
+  --if not hasTemplate or templateheader.templateType = noTemplate then
+     --if left.wrapPoint > 0 then
+     --   new_strings.wrapPoint := left.wrapPoint;
+     --elsif right.wrapPoint > 0 then
+     --   new_strings.wrapPoint := right.wrapPoint;
+     --else
+     --  new_strings.wrapPoint := integer( displayInfo.col );
+     --end if;
+
+     --if length( left.textMessage & right.textMessage ) > new_strings.wrapPoint then
+        -- TODO: may not be perfect
+     --   new_strings.wrapPoint := length(left.textMessage) + integer( displayInfo.col );
+     --   temp := getNewLine;
+     --   new_strings.templateMessage := new_strings.templateMessage & temp.templateMessage;
+     --   --end loop;
+     --end if;
+  --end if;
+  new_strings.templateMessage := new_strings.templateMessage & right.templateMessage;
+
   new_strings.textMessage     := left.textMessage & right.textMessage;
+--put_line( "wrap point = " & new_strings.wrapPoint'img & ";" & new_strings.templateMessage ); -- DEBUG
   return new_strings;
 end "&";
 
@@ -2263,7 +2321,6 @@ begin
 end pl;
 
 
-
 -----------------------------------------------------------------------------
 --  UNB (unbounded string) PL (plain)
 --
@@ -2275,6 +2332,7 @@ function unb_pl( us : unbounded_string ) return messageStrings is
 begin
   return pl( to_string( us ) );
 end unb_pl;
+
 
 -----------------------------------------------------------------------------
 --  INV (inverse)

@@ -296,30 +296,6 @@ end getHorizontalLineIcon;
 
 
 -----------------------------------------------------------------------------
---  GET NEW LINE
---
--- Return a new line as appropriate for the output context.
------------------------------------------------------------------------------
-
-function getNewLine return messageStrings is
-  nl : messageStrings;
-begin
-  if hasTemplate then
-     case templateHeader.templateType is
-     when htmlTemplate | wmlTemplate =>
-         nl.templateMessage := to_unbounded_string( "<br>" & ASCII.CR & ASCII.LF );
-     when others =>
-         nl.templateMessage := to_unbounded_string( eol_characters );
-     end case;
-   else
-     nl.templateMessage := to_unbounded_string( eol_characters );
-   end if;
-   nl.textMessage := to_unbounded_string( eol_characters );
-   return nl;
-end getNewLine;
-
-
------------------------------------------------------------------------------
 --  GET STACK TRACE
 --
 -- Return the active nested blocks for the current execution context in the
@@ -536,7 +512,7 @@ begin
           getStackTrace;
      end if;
   end if;
-  fullErrorMessage := fullErrorMessage & getNewLine;
+  fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
 
   -- header : stack trace <-- this is compete
   -- source line <-- doing this
@@ -678,7 +654,7 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
+        fullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
      end if;
   end if;
@@ -943,7 +919,7 @@ begin
         fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
      --end if;
-     fullErrorMessage := fullErrorMessage & getNewLine;
+     fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
   end if;
 
   -- For the normal version, we must follow the traceback with the
@@ -1078,7 +1054,7 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        ourFullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
+        ourFullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
      end if;
      ourFullErrorMessage := ourFullErrorMessage & getNewLine;

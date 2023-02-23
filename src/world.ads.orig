@@ -69,6 +69,7 @@ type line_count is new long_long_integer;
 type messageStrings is record
    templateMessage : unbounded_string;
    textMessage  : unbounded_string;
+   --wrapPoint : natural := 0;
 end record;
 
 nullMessageStrings : constant messageStrings := messageStrings'(
@@ -1164,6 +1165,9 @@ procedure putTemplateHeader( header : in out templateHeaders );
 ------------------------------------------------------------------------------
 -- Message "mark up" and escaping functions
 ------------------------------------------------------------------------------
+
+function getNewLine return messageStrings;
+-- get a new line appropriate for an error message
 
 function "&"( left, right : messageStrings ) return messageStrings;
 -- concatenation
