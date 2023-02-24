@@ -25,13 +25,14 @@ with ada.strings.unbounded.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,
-     world;
+     world.utf8;
 use  ada.strings.unbounded.text_io,
      spar_os.tty,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,
-     world;
+     world,
+     world.utf8;
 
 package body reports is
 

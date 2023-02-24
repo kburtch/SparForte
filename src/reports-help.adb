@@ -26,7 +26,7 @@ with ada.strings.unbounded.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,
-     world;
+     world.utf8;
 use  ada.strings,
      ada.strings.unbounded.text_io,
      ada.calendar,
@@ -34,7 +34,8 @@ use  ada.strings,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,
-     world;
+     world,
+     world.utf8;
 
 package body reports.help is
 

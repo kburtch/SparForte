@@ -38,6 +38,7 @@ with CGI,
     pegasoft.user_io,
     pegasoft.script_io,
     pegasoft.strings,
+    world.utf8,
     scanner_res,
     performance_monitoring;
 use ada.text_io,
@@ -52,6 +53,7 @@ use ada.text_io,
     pegasoft.user_io,
     pegasoft.script_io,
     pegasoft.strings,
+    world.utf8,
     scanner_res,
     performance_monitoring;
 
@@ -350,7 +352,7 @@ begin
      i := line_firstpos;
      while i <= line_lastpos loop
          if script( i ) = ASCII.HT then                   -- embedded tab?
-            while (length( cmdline.textMessage )) mod 8 /= 0 loop     -- move to a column
+            while (length( cmdline.gccMessage )) mod 8 /= 0 loop     -- move to a column
                cmdline := cmdline & pl( " " );            -- of 8
             end loop;
          elsif script( i ) > ASCII.DEL then               -- keyword token?
@@ -408,7 +410,7 @@ begin
     -- insert( cmdline, 1, to_string( indent * " " ) );
   end if;
 
-  if token_firstpos > length( cmdline.textMessage ) then  -- past end of cmd?
+  if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
      token_firstpos := line_lastpos+1-line_firstpos;      -- treat token as
      token_lastpos := token_firstpos;                     -- one char past end
   end if;
@@ -590,7 +592,7 @@ begin
      end loop;
      if lastpos-1 > firstpos then
         if colourOpt then
-           put( standard_error, utf_left );                   -- underline it
+           put( standard_error, utf_left ); -- underline it
         else
            put( standard_error, "^" );                        -- underline it
         end if;
@@ -602,13 +604,13 @@ begin
            end if;
         end loop;
         if colourOpt then
-           put( standard_error, utf_right );                     -- underline it
+           put( standard_error, utf_right ); -- underline it
         else
            put( standard_error, "^" );
         end if;
      else
         if colourOpt then
-           put( standard_error, utf_triangle );                -- underline it
+           put( standard_error, utf_triangle ); -- underline it
         else
            put( standard_error, "^" );                        -- underline it
         end if;
@@ -2517,19 +2519,11 @@ end endByteCode;
 procedure dumpByteCode( ci : compressionInfo ) is
    line : integer := 0;
 
-   function get_horizontal_line return string is
-   begin
-   if colourOpt then
-      return utf_horizontalLine;
-   end if; 
-   return "-";
-   end get_horizontal_line;
-
    s : unbounded_string;
 begin
-   s := to_unbounded_string( to_string( 3*get_horizontal_line ) );
+   s := to_unbounded_string( to_string( 3*utf_horizontalLine ) );
    s := s & " Byte Code dump ";
-   s := s & to_unbounded_string( to_string( (80-19) * get_horizontal_line ) );
+   s := s & to_unbounded_string( to_string( (80-19) * utf_horizontalLine ) );
    put_line( to_string( s ) );
    put( "  H:   1:" );
    put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 1 ) ) ) );
@@ -2566,12 +2560,11 @@ begin
        end if;
    end loop;
    new_line;
-   put_line( 80*get_horizontal_line );
+   put_line( 80*utf_horizontalLine );
    put_line(
-      optional_yellow(
-         "Byte Code Size =" & length( ci.compressedScript )'img & " byte(s)",
-            as_plain => boolean( gccOpt ),
-            in_colour => boolean( colourOpt )      )
+      adorn_green(
+         "=> (Byte Code Size =" & length( ci.compressedScript )'img & " bytes)",
+         boolean( colourOpt ))
    );
 end dumpByteCode;
 
@@ -2787,12 +2780,29 @@ begin
      end if;
   end if;
 
+  -- Show progress when compiling a large file (updated below)
+  if verboseOpt then
+     if colourOpt then
+        put_line( standard_error, adorn_green( "=> (" & utf_wristwatch & " Compiling Line 1 ...)",
+           boolean(colourOpt) ) );
+     else
+        put_line( standard_error, "=> (Compiling Line 1 ...)" );
+     end if;
+  end if;
+
   -- compile the script into byte code
   while not compileDone loop                                  -- for all lines
      if verboseOpt then
         if getByteCodeLineNo >= lastLineNumber + 500 then
            lastLineNumber := getByteCodeLineNo;
-           put_line( standard_error, to_string( term( up ) & "=> (Line" & lastLineNumber'img & " ...)" ) );
+           if colourOpt then
+              put_line( standard_error, to_string( term( up ) &
+                  adorn_green( "=> (" & utf_wristwatch &
+                  "Compiling Line" & lastLineNumber'img & " ...)", boolean(colourOpt) ) ) );
+           else
+              put_line( standard_error, to_string( term( up ) &
+                 "=> (Compiling Line" & lastLineNumber'img & " ...)" ) );
+           end if;
         end if;
      end if;
      line2ByteCode( ci, command );                            -- compress line
@@ -2821,6 +2831,14 @@ begin
   -- Verbose? Show the byte code
 
   if verboseOpt then
+     if not error_found then
+        if colourOpt then
+           put_line( standard_error, to_string( term( up ) &
+              adorn_green( "=> (" & utf_checkmark & " Compiled)             ", boolean(colourOpt) ) ) );
+        else
+           put_line( standard_error, to_string( term( up ) & "=> (Compiled)             " ) );
+        end if;
+     end if;
      dumpByteCode( ci );
   end if;
   script := new string( 1..length( ci.compressedScript ) );  -- alloc script

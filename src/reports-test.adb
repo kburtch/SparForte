@@ -212,7 +212,7 @@ package body reports.test is
   begin
     jtc.errorCnt := jtc.errorCnt + 1;
     wasTestErrorOrFailure := true;
-    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage.textMessage ) );
+    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage.gccMessage ) );
   end testCaseError;
 
   -- TEST CASE FAILURE
@@ -239,7 +239,7 @@ package body reports.test is
        else
           -- TODO: if the test was multi-line, this will only show
           -- the final line.
-          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine.textMessage ) );
+          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine.gccMessage ) );
        end if;
     elsif jtc.errorCnt = 1 then
        failureList.Clear( jtc.failureMsgs );
@@ -477,7 +477,7 @@ package body reports.test is
   begin
     jtc.errorCnt := jtc.errorCnt + 1;
     wasTestErrorOrFailure := true;
-    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage.textMessage ) );
+    errorList.Queue( jtc.errorMsgs, toEscaped( fullErrorMessage.gccMessage ) );
   end testCaseError;
 
   procedure testCaseFailure( report: in out xmlTestReport; test_message : unbounded_string := null_unbounded_string ) is
@@ -500,7 +500,7 @@ package body reports.test is
        else
           -- TODO: if the test was multi-line, this will only show
           -- the final line.
-          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine.textMessage ) );
+          failureList.Queue( jtc.failureMsgs, toEscaped( cmdLine.gccMessage ) );
        end if;
     elsif jtc.errorCnt = 1 then
        failureList.Clear( jtc.failureMsgs );

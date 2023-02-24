@@ -17,10 +17,8 @@ Priority Issues (Fix These First)
       - I should write tests that validate we're escaping
     - removing dependences from pegasoft.user_io, if possible
     - get command line has selectable template but output fns do not
-    - textMessage should possibly be consoleMessage
     - raise exception does not have "script /= """ so why have that in err_shell?
     - err_shell getnewLine should probably be inside the if
-    - yaml templates and commenting out errors
 
 - indenting columns in GetCommandLine may be an issue with markup
   - colour does not always switch back to the correct colour (i.e. bright

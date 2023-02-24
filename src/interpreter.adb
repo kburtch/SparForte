@@ -37,7 +37,7 @@ with ada.text_io,
     pegasoft.user_io,
     pegasoft.user_io.getline,
     pegasoft.script_io,
-    world,
+    world.utf8,
     performance_monitoring,
     reports.test,
     builtins,
@@ -58,6 +58,7 @@ use ada.text_io,
     pegasoft.user_io,
     pegasoft.script_io,
     world,
+    world.utf8,
     pegasoft.strings,
     performance_monitoring,
     reports.test,
@@ -274,7 +275,7 @@ begin
           if error_found then
              -- Not sure if templates are possible here but...
              if hasTemplate then
-                put_line( standard_error, fullErrorMessage.textMessage );
+                put_line( standard_error, fullErrorMessage.gccMessage );
                 putTemplateHeader( templateHeader );
                 put_line( fullErrorMessage.templateMessage );
              else
@@ -565,7 +566,7 @@ begin
         startTime := Clock;
         Put_Trace( "Checking Syntax", utf_wristwatch );
      when executing =>
-        Put_Trace( "Executing Commands", utf_checkmark );
+        Put_Trace( "Executing Commands", utf_checkmark  );
      when others =>
         err( +"internal error: unexpected interpreter phase" );
      end case;
@@ -741,7 +742,7 @@ begin
   if error_found then                              -- was there an error?
      -- may or may not have a template at this point, so check
      if hasTemplate then
-        put_line( standard_error, fullErrorMessage.textMessage );
+        put_line( standard_error, fullErrorMessage.gccMessage );
         putTemplateHeader( templateHeader );
         put_line( fullErrorMessage.templateMessage );
      else
@@ -1079,7 +1080,7 @@ begin
      if error_found then
         -- may or may not have a template at this point, so check
         if hasTemplate then
-           put_line( standard_error, fullErrorMessage.textMessage );
+           put_line( standard_error, fullErrorMessage.gccMessage );
            putTemplateHeader( templateHeader );
            put_line( fullErrorMessage.templateMessage );
         else
@@ -1141,7 +1142,7 @@ begin
         -- be written into a server log).  The template header has already
         -- been written.
         if error_found then
-           put_line( standard_error, fullErrorMessage.textMessage );
+           put_line( standard_error, fullErrorMessage.gccMessage );
            put_line( fullErrorMessage.templateMessage );
         end if;
         -- if there was a formal script with a main program, the main program

@@ -32,6 +32,7 @@ with gnat.source_info,
      pegasoft.strings,
      pegasoft.user_io,
      spar_os.tty,
+     world.utf8,
      -- TODO: references own parent.  This is messy to sort out.  Will
      -- deal with it later.
      scanner;
@@ -44,6 +45,7 @@ use  ada.characters.handling,
      pegasoft.user_io,
      spar_os,
      spar_os.tty,
+     world.utf8,
      scanner;
 
 package body scanner.communications is
@@ -199,7 +201,7 @@ begin
      else
         caretIcon.templateMessage := to_unbounded_string( "^" );
      end if;
-     caretIcon.textMessage := to_unbounded_string( "^" );
+     caretIcon.gccMessage := to_unbounded_string( "^" );
   end if;
   return caretIcon;
 end getCaretIcon;
@@ -229,7 +231,7 @@ begin
      else
         caretIcon.templateMessage := to_unbounded_string( "^" );
      end if;
-     caretIcon.textMessage := to_unbounded_string( "^" );
+     caretIcon.gccMessage := to_unbounded_string( "^" );
   end if;
   return caretIcon;
 end getLeftCaretIcon;
@@ -259,7 +261,7 @@ begin
      else
         caretIcon.templateMessage := to_unbounded_string( "^" );
      end if;
-     caretIcon.textMessage := to_unbounded_string( "^" );
+     caretIcon.gccMessage := to_unbounded_string( "^" );
   end if;
   return caretIcon;
 end getRightCaretIcon;
@@ -289,7 +291,7 @@ begin
      else
         lineIcon.templateMessage := to_unbounded_string( width * "-" );
      end if;
-     lineIcon.textMessage := to_unbounded_string( width * "-" );
+     lineIcon.gccMessage := to_unbounded_string( width * "-" );
   end if;
   return lineIcon;
 end getHorizontalLineIcon;
@@ -395,7 +397,7 @@ begin
      & ":" & firstposStr
      & ":";                                                  -- no traceback
      gccMsg := gccMsg & ' ';                                  -- token start
-     gccMsg := gccMsg & msg.textMessage;
+     gccMsg := gccMsg & msg.gccMessage;
   return unb_pl( gccMsg );
 end getGCCFormatErrorMessage;
 
@@ -583,7 +585,7 @@ begin
      -- format this for Apache by stripping out the boldface or
      -- other effects.
      --
-     return gccFormatMsg.textMessage;
+     return gccFormatMsg.gccMessage;
   end if;
   return fullErrorMessage.templateMessage;
 end get_script_execution_position;
@@ -744,7 +746,7 @@ begin
      -- format this for Apache by stripping out the boldface or
      -- other effects.
 
-     fullErrorMessage.textMessage := gccFormatMsg.textMessage;
+     fullErrorMessage.gccMessage := gccFormatMsg.gccMessage;
 
   -- Show that this is an error, not an exception
 
@@ -756,7 +758,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace_error( "error: " & to_string( msg.textMessage ), boolean( gccOpt ), boolean( colourOpt ) );
+     put_trace_error( "error: " & to_string( msg.gccMessage ), boolean( gccOpt ), boolean( colourOpt ) );
   end if;
 end err_shell;
 
@@ -1001,7 +1003,7 @@ begin
   -- where the error occurred.
 
   if traceOpt then
-     put_trace_error( "exception: " & to_string( fullErrorMessage.textMessage ), boolean( gccOpt ), boolean( colourOpt ) );
+     put_trace_error( "exception: " & to_string( fullErrorMessage.gccMessage ), boolean( gccOpt ), boolean( colourOpt ) );
   end if;
 end raise_exception;
 
@@ -1197,7 +1199,7 @@ begin
 
   -- Show the test result message immediately
 
-  put_line( standard_error, ourFullErrorMessage.textMessage );
+  put_line( standard_error, ourFullErrorMessage.gccMessage );
   -- may or may not have a template at this point, so check
   if hasTemplate then
      putTemplateHeader( templateHeader );
@@ -1334,7 +1336,7 @@ begin
         if blockName /= null_unbounded_string then
            msg := unb_pl( "In " & blockName );
         end if;
-     elsif Is_Upper( head( contextNotes.textMessage, 1 ) ) then
+     elsif Is_Upper( head( contextNotes.gccMessage, 1 ) ) then
         msg := contextNotes;
      else
         msg := pl( "While " ) & contextNotes;
@@ -1362,9 +1364,9 @@ begin
         msg.templateMessage := msg.templateMessage &
            ToUpper( Head( subjectNotes.templateMessage, 1 ) & "" ) &
            Slice( subjectNotes.templateMessage, 2, length( subjectNotes.templateMessage ) ) ;
-        msg.textMessage     := msg.textMessage &
-           ToUpper( Head( subjectNotes.textMessage, 1 ) & "" ) &
-           Slice( subjectNotes.textMessage, 2, length( subjectNotes.textMessage ) ) ;
+        msg.gccMessage     := msg.gccMessage &
+           ToUpper( Head( subjectNotes.gccMessage, 1 ) & "" ) &
+           Slice( subjectNotes.gccMessage, 2, length( subjectNotes.gccMessage ) ) ;
      end if;
   end if;
 

@@ -68,7 +68,7 @@ type line_count is new long_long_integer;
 
 type messageStrings is record
    templateMessage : unbounded_string;
-   textMessage  : unbounded_string;
+   gccMessage  : unbounded_string;
    --wrapPoint : natural := 0;
 end record;
 

@@ -2223,7 +2223,7 @@ begin
      newText.templateMessage := ToCtrlEscaped( to_unbounded_string( "" & ch ) );
   end case;
   -- the text alternative also escapes control characters
-       newText.textMessage := ToCtrlEscaped( to_unbounded_string( "" & ch ) );
+       newText.gccMessage := ToCtrlEscaped( to_unbounded_string( "" & ch ) );
   return newText;
 end escapeChar;
 
@@ -2248,7 +2248,7 @@ begin
    else
      nl.templateMessage := to_unbounded_string( eol_characters );
    end if;
-   nl.textMessage := to_unbounded_string( eol_characters );
+   nl.gccMessage := to_unbounded_string( eol_characters );
    return nl;
 end getNewLine;
 
@@ -2291,7 +2291,7 @@ begin
   --end if;
   new_strings.templateMessage := new_strings.templateMessage & right.templateMessage;
 
-  new_strings.textMessage     := left.textMessage & right.textMessage;
+  new_strings.gccMessage     := left.gccMessage & right.gccMessage;
 --put_line( "wrap point = " & new_strings.wrapPoint'img & ";" & new_strings.templateMessage ); -- DEBUG
   return new_strings;
 end "&";
@@ -2310,7 +2310,7 @@ begin
       msg := msg & escapeChar( s(i) );
   end loop;
   if gccOpt then
-      msg.templateMessage := msg.textMessage;
+      msg.templateMessage := msg.gccMessage;
   end if;
   return msg;
 end pl;

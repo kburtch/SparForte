@@ -40,6 +40,7 @@ with system,
     pegasoft.script_io,
     pegasoft.strings,
     software_models,
+    world.utf8,
     performance_monitoring,
     -- TODO: referencing own child.  this is messy to sort out so I
     -- will look at it later.
@@ -103,6 +104,7 @@ use ada.text_io,
     pegasoft.script_io,
     pegasoft.strings,
     software_models,
+    world.utf8,
     performance_monitoring,
     scanner.communications,
     scanner_res,
@@ -1266,7 +1268,7 @@ begin
          if trace and not exit_block and not error_found then   -- display
             put( standard_error, "=> " & '"' );                 -- line if
             getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
-            put( standard_error, toEscaped( cmdline.textMessage ) );
+            put( standard_error, toEscaped( cmdline.gccMessage ) );
             put( standard_error, """ [" );
             put( standard_error, lineno'img );
             put_line( standard_error, "]" );
@@ -1463,7 +1465,7 @@ begin
      -- the position in the symbol table undefined
      blocks( blocks_top-1 ).occurrence_message := err_message;
      blocks( blocks_top-1 ).occurrence_status := last_status;
-     blocks( blocks_top-1 ).occurrence_full := fullErrorMessage.textMessage;
+     blocks( blocks_top-1 ).occurrence_full := fullErrorMessage.gccMessage;
   end if;
 end startExceptionHandler;
 
@@ -4877,7 +4879,7 @@ begin
             cmdpos := cmdpos + 2; -- first character of next command
             put( standard_error, "=> " & '"' );
             getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, fileno );
-            put( standard_error, toEscaped( gnt_commandLine.textMessage ) );
+            put( standard_error, toEscaped( gnt_commandLine.gccMessage ) );
             put( standard_error, """ [" );
             if fileno > 1 then -- don't bother naming main file
                sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( fileno ), sfr );
