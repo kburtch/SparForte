@@ -154,9 +154,9 @@ end bold;
 
 function optional_red( s : string; as_plain, in_colour : boolean ) return string is
 begin
-  if gccOpt then
+  if as_plain then
      return s;
-  elsif not colourOpt then
+  elsif not in_colour then
      return inverse( s );
   end if;
   return to_string( term( red ) ) & s & to_string( term( white ) );
@@ -169,9 +169,9 @@ end optional_red;
 -- in red characters --colour is used, else normal.
 -----------------------------------------------------------------------------
 
-function adorn_red( s : string ) return string is
+function adorn_red( s : string; in_colour : boolean ) return string is
 begin
-  if not colourOpt then
+  if not in_colour then
      return s;
   end if;
   return to_string( term( red ) ) & s & to_string( term( white ) );
@@ -395,65 +395,6 @@ begin
       history(i).line := null_unbounded_string;
   end loop;
 end clearHistory;
-
-
------------------------------------------------------------------------------
---  DISPLAY VERSION SPLASH
---
--- display --version message.  This is located here because it
--- uses term attributes.
------------------------------------------------------------------------------
-
-procedure displayVersionSplash is
-begin
-  if isatty( stdout ) = 1 then
-     Put( "SparForte version " );
-     if released then
-        Put_Line( version );
-     else
-        Put_Line( version & " (Build ID " & buildDate & ')' );
-     end if;
-     Put_Line( copyright );
-     Put_Line( "This is free software; see the source for copying conditions." );
-     Put_Line( "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." );
-     --New_Line;
-
-     --path := to_unbounded_string( globalConfigPath );
-     --if not C_is_includable_file( globalConfigPath & ASCII.NUL ) then
-     --   path := path & " (no file)";
-     --end if;
-     --Put_line( "* Global Configuration: " & toEscaped( path ) );
-
-     --path := to_unbounded_string( globalPolicyPath );
-     --if not C_is_includable_file( globalPolicyPath & ASCII.NUL ) then
-     --   path := path & " (no file)";
-     --end if;
-     --Put_line( "* Global Policy:        " & toEscaped( path ) );
-
-     --path := to_unbounded_string( globalProfilePath );
-     --if not C_is_includable_file( globalProfilePath & ASCII.NUL ) then
-     --   path := path & " (no file)";
-     --end if;
-     --Put_line( "* Global Profile:       " & toEscaped( path ) );
-  end if;
-end displayVersionSplash;
-
-
------------------------------------------------------------------------------
---  DISPLAY COPYRIGHT SPLASH
---
--- display copyright message.  This is located here because it
--- uses term attributes.  Suppress the message on a login shell
--- or if there is no tty.
--- Some of this is now defind in the world.ads file.
------------------------------------------------------------------------------
-
-procedure displayCopyrightSplash is
-begin
-  if isatty( stdout ) = 1 and not isLoginShell then
-     Put_Line( "Type ""help"" for help" );
-  end if;
-end displayCopyrightSplash;
 
 end pegasoft.user_io;
 

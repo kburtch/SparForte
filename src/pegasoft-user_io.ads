@@ -22,10 +22,10 @@
 ------------------------------------------------------------------------------
 
 with ada.calendar,
-     ada.strings.unbounded,
-     world;
-use  ada.strings.unbounded,
-     world;
+     ada.strings.unbounded;
+     --world;
+use  ada.strings.unbounded;
+     --world;
 
 
 package pegasoft.user_io is
@@ -92,7 +92,7 @@ function red( s : string ) return string;
 -- Return a string with terminal codes to draw the string
 -- in red characters
 
-function adorn_red( s : string ) return string;
+function adorn_red( s : string; in_colour : boolean ) return string;
 -- Return a string with terminal codes to draw the string
 -- in red characters --colour is used, else normal.
 
@@ -130,12 +130,6 @@ procedure put_scrambled( msg : string );
 
 procedure put_trace_error( msg : string; as_plain, in_colour : boolean; icon : string := "" );
 -- display a trace error message to standard error
-
-procedure displayVersionSplash;
--- show --version version message
-
-procedure displayCopyrightSplash;
--- show bootup copyright message
 
 
 ------------------------------------------------------
