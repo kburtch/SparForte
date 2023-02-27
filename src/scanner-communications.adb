@@ -887,15 +887,11 @@ begin
 
   -- Decode a copy of the command line to show the error.  Also returns
   -- the current token position and the line number.
+  --
+  -- Exceptions cannot happen without a script so there is no script /= null
+  -- test.
 
-  --getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
-  if script /= null then
-     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
-  else
-     -- can't use optional_inverse here because the text will be
-     -- escaped later
-     cmdLine := pl( "<No executable line to show> in <no script loaded>" );
-  end if;
+  getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
@@ -905,9 +901,7 @@ begin
   -- Generate a Gcc-formatted error message (if we need one)
 
   if needGccVersion then
-     --if script /= null then
-        gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
-      --end if;
+     gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
   end if;
 
   -- If in a script (that is, a non-interactive input mode) then
@@ -915,12 +909,9 @@ begin
   -- the command prompt, don't bother with the location/traceback.
 
   if inputMode /= interactive and inputMode /= breakout then
-
-     --if script /= null then
         -- For the regular format, show the location and traceback in script
         fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
-     --end if;
      fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
   end if;
 

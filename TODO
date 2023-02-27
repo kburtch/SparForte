@@ -15,9 +15,7 @@ Priority Issues (Fix These First)
   - checking error display rewrite
     - security testing
       - I should write tests that validate we're escaping
-    - removing dependences from pegasoft.user_io, if possible
     - get command line has selectable template but output fns do not
-    - raise exception does not have "script /= """ so why have that in err_shell?
     - err_shell getnewLine should probably be inside the if
 
 - indenting columns in GetCommandLine may be an issue with markup
