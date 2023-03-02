@@ -512,9 +512,9 @@ begin
         -- For the regular format, show the location and traceback in script
         fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
+        fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
      end if;
   end if;
-  fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
 
   -- header : stack trace <-- this is compete
   -- source line <-- doing this
@@ -658,9 +658,9 @@ begin
         -- For the regular format, show the location and traceback in script
         fullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
+        fullErrorMessage := fullErrorMessage & getNewLine;
      end if;
   end if;
-  fullErrorMessage := fullErrorMessage & getNewLine;
 
   -- header : stack trace <-- this is compete
   -- source line <-- doing this
