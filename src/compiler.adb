@@ -146,8 +146,7 @@ end resetLineNo;
 -----------------------------------------------------------------------------
 
 procedure getCommandLine ( cmdline : out messageStrings;
-  token_firstpos, token_lastpos, line_number, file_number : out natural;
-  template : templateTypes := noTemplate ) is
+  token_firstpos, token_lastpos, line_number, file_number : out natural ) is
   line_firstpos : natural;                           -- start of compiled line
   line_lastpos  : natural;                           -- end of compiled line
   indent        : natural;
@@ -157,73 +156,6 @@ procedure getCommandLine ( cmdline : out messageStrings;
   i             : natural;
   id            : identifier;
   adv           : integer;
-
-  --  ESCAPE CHAR
-  --
-  -- Render a character for the output format, escaping or converting
-  -- characters as needed.  Currently, the escaping does not support UTF-8.
-  ----------------------------------------------------------------------------
-
---  function escapeChar( ch : character ) return unbounded_string is
---    newText : unbounded_string;
---  begin
---    case template is
---    when htmlTemplate  | wmlTemplate =>
---      -- spaces and line feeds are special cases
---      if ch = ' ' then
---         newText := to_unbounded_string( "&nbsp;" );
---      elsif ch = ASCII.LF then
---         newText := to_unbounded_string( "<br>" );
---      else
---         newText := to_unbounded_string(
---           CGI.html_encode(
---            to_string(
---               toEscaped(
---                to_unbounded_string( "" & script( i ) )
---               )
---             )
---           )
---         );
---      end if;
---    when textTemplate =>
---      newText := null_unbounded_string & script( i );
---    when others => -- including noTemplate
---      newText := toEscaped( to_unbounded_string( "" & script( i ) ) );
---    end case;
---    return newText;
---  end escapeChar;
-
-  --  ESCAPE IDENT
-  --
-  -- Render an identifier for the output format, escaping or converting
-  -- characters as needed.  Also highlights the identifier.  Currently, the
-  -- escaping does not support UTF-8.
-  ----------------------------------------------------------------------------
-
---  function escapeIdent( id : identifier ) return unbounded_string is
---    newText : unbounded_string;
---  begin
---    case template is
---    when noTemplate =>
---      newText := to_unbounded_string( optional_yellow( to_string( toEscaped( identifiers( id ).name ) ) ) );
---    when htmlTemplate | wmlTemplate =>
---      newText := to_unbounded_string(
---        "<strong>" &
---          CGI.html_encode(
---            to_string(
---              toEscaped(
---               identifiers( id ).name
---              )
---            )
---         )
---      & "</strong>" );
---    when textTemplate =>
---      newText := identifiers( id ).name;
---    when others =>
---      newText := toEscaped( identifiers( id ).name );
---    end case;
---    return newText;
---  end escapeIdent;
 
 begin
 
@@ -371,10 +303,6 @@ begin
                i := i + 1;
             else
                if not is_escaping then                    -- not escaping?
-                  --cmdline := cmdline &
-                  --    identifiers( character'pos( script(i) )-128 ).name;
-                  --len := length(
-                  --    identifiers( character'pos( script(i) ) - 128 ).name );
                   toIdentifier( script(i), script(i+1), id, adv );
                   cmdline := cmdline & unb_pl( identifiers( id ).name );
                   len := length( identifiers( id ).name );
@@ -402,12 +330,11 @@ begin
 
   -- indent the line.  how depends on the template type
 
-  if template = htmlTemplate or template = wmlTemplate then
+  if hasTemplate and (templateHeader.templateType = htmlTemplate or
+     templateHeader.templateType = wmlTemplate) then
     cmdLine := unb_pl( indent * "&nbsp;" ) & cmdLine;
-    -- insert( cmdline, 1, to_string( indent * "&nbsp;" ) );
   else
     cmdLine := unb_pl( indent * " " ) & cmdLine;
-    -- insert( cmdline, 1, to_string( indent * " " ) );
   end if;
 
   if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
@@ -416,7 +343,7 @@ begin
   end if;
 end getCommandLine;
 
-function getCommandLine( template : templateTypes := noTemplate ) return messageStrings is
+function getCommandLine return messageStrings is
   -- Return current command line, fully indented, but not including
   -- the LF separating lines.  This function version doesn't compute
   -- the token position on the expanded line.
@@ -425,7 +352,7 @@ function getCommandLine( template : templateTypes := noTemplate ) return message
   line_number : natural;
   file_number : natural;
 begin
-  getCommandLine( cmdline, firstpos, lastpos, line_number, file_number, template );
+  getCommandLine( cmdline, firstpos, lastpos, line_number, file_number );
   return cmdline;
 end getCommandLine;
 

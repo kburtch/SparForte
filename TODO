@@ -15,7 +15,7 @@ Priority Issues (Fix These First)
   - checking error display rewrite
     - security testing
       - I should write tests that validate we're escaping
-    - get command line has selectable template but output fns do not
+   - check exception handling with templates and exception package
 
 - indenting columns in GetCommandLine may be an issue with markup
   - colour does not always switch back to the correct colour (i.e. bright

@@ -461,7 +461,7 @@ end getSparFormatMessageHeader;
 -----------------------------------------------------------------------------
 
 function get_script_execution_position( msg : messageStrings; utf_icon : string ) return unbounded_string is
-  cmdline    : messageStrings;
+  discardCmdLine    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
   lineno     : natural;
@@ -479,15 +479,14 @@ begin
 
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
-  -- Decode a copy of the command line to show the error.  Also returns
-  -- the current token position and the line number.
+  -- Returns the current token position and the line number.
+  -- We're not using cmdline.
 
   if script /= null then
-     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
+     getCommandLine( discardCmdLine, firstpos, lastpos, lineno, fileno );
   else
-     -- can't use optional_inverse here because the text will be
-     -- escaped later
-     cmdLine := pl( "<No executable line to show> in <no script loaded>" );
+     firstPos := 1;
+     lastPos := 1;
   end if;
 
   -- Clear any old error messages from both the screen error and the
@@ -525,7 +524,7 @@ begin
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -601,7 +600,7 @@ end get_script_execution_position;
 -----------------------------------------------------------------------------
 
 procedure err_shell( msg : messageStrings; wordOffset : natural ) is
-  cmdline    : messageStrings;
+  discardCmdLine    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
   lineno     : natural;
@@ -625,15 +624,14 @@ begin
 
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
-  -- Decode a copy of the command line to show the error.  Also returns
-  -- the current token position and the line number.
+  -- Returns the current token position and the line number.
+  -- We're not using cmdline.
 
   if script /= null then
-     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
+     getCommandLine( discardCmdLine, firstpos, lastpos, lineno, fileno );
   else
-     -- can't use optional_inverse here because the text will be
-     -- escaped later
-     cmdLine := pl( "<No executable line to show> in <no script loaded>" );
+     firstPos := 1;
+     lastPos := 1;
   end if;
 
   -- Clear any old error messages from both the screen error and the
@@ -668,22 +666,11 @@ begin
 
   -- Second, add the line the error occurred in
 
-  --declare
-  --   formattedCmdline : unbounded_string;
-  --begin
-  --  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
-  --     getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
-  --     fullErrorMessage := fullErrorMessage & formattedCmdline;
-  --  else
-  --     getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, noTemplate );
-  --     fullErrorMessage := fullErrorMessage & formattedCmdline;
-  --  end if;
-  --end;
 
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno);
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -857,7 +844,7 @@ end err_renaming;
 -----------------------------------------------------------------------------
 
 procedure raise_exception( msg : messageStrings ) is
-  cmdline    : messageStrings;
+  discardCmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
   lineStr    : unbounded_string;
@@ -885,13 +872,12 @@ begin
 
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
-  -- Decode a copy of the command line to show the error.  Also returns
-  -- the current token position and the line number.
+  -- Returns the current token position and the line number.
   --
   -- Exceptions cannot happen without a script so there is no script /= null
   -- test.
 
-  getCommandLine( cmdline, firstpos, lastpos, lineno, fileno, textTemplate );
+  getCommandLine( discardCmdline, firstpos, lastpos, lineno, fileno );
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
@@ -917,12 +903,7 @@ begin
 
   -- For the normal version, we must follow the traceback with the
   -- message, error underline and show the exception message.
-  -- Output only full lines to avoid messy Apache error logs.
-  --
-  -- First, add the line the exception occurred in.  As a precaution,
-  -- escape the command line.
-  --fullErrorMessage := fullErrorMessage & toEscaped( cmdline );
-
+ 
   -- Draw the underline error pointer
 
   --outLine := outLine & getLinePointer( getErrorIcon, firstPos, lastPos ) & msg;
@@ -934,22 +915,10 @@ begin
      fullErrorMessage := fullErrorMessage & msg;
   end if;
 
-  -- DEBUG
-  -- fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
-
   -- Even for a template, if the user selected gccOpt specifically,
   -- use it.
 
   -- Pick which format the user wants for the full message.
-  --
-  -- TODO: we're using UNIX eof's but should ideally be o/s
-  -- independent
-
-  --if gccOpt then
-  --   fullErrorMessage := gccOutLine;
-  --else
-  --   fullErrorMessage := fullErrorMessage & ASCII.LF & outLine;
-  --end if;
 
   if hasTemplate and ( boolean( debugOpt or not maintenanceOpt ) ) then
      case templateHeader.templateType is
@@ -979,8 +948,7 @@ begin
      -- format this for Apache by stripping out the boldface or
      -- other effects.
      --
-     -- TODO: document this
-     fullErrorMessage := gccFormatMsg;
+     --fullErrorMessage := gccFormatMsg;
 
   end if;
 
@@ -1006,7 +974,7 @@ end raise_exception;
 -----------------------------------------------------------------------------
 
 procedure err_test_result is
-  cmdline    : messageStrings;
+  discardCmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
   lineStr    : unbounded_string;
@@ -1024,13 +992,10 @@ begin
   -- determine if gcc format is requested or required
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
-  -- get the command line
-  if script /= null then
-     getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
-  else
-     raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
-         ": internal error: script unexpectly empty";
-  end if;
+  -- Get the command line position.  We don't care about the command
+  -- line.  Script should always exist so a null script check is not done.
+
+  getCommandLine( discardCmdline, firstpos, lastpos, lineno, fileno );
 
   -- Generate a Gcc-formatted error message (if we need one)
 
@@ -1117,7 +1082,7 @@ begin
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno, templateHeader.templateType );
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
     ourFullErrorMessage := ourFullErrorMessage & formattedCmdline;
   end;
 
