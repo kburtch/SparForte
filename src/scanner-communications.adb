@@ -898,15 +898,23 @@ begin
         -- For the regular format, show the location and traceback in script
         fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
           getStackTrace;
-     fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
+     fullErrorMessage := fullErrorMessage & getNewLine;
   end if;
 
   -- For the normal version, we must follow the traceback with the
   -- message, error underline and show the exception message.
+
+  -- Second, add the line the error occurred in
+
+  declare
+     formattedCmdline : messageStrings;
+  begin
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
+    fullErrorMessage := fullErrorMessage & formattedCmdline;
+  end;
  
   -- Draw the underline error pointer
 
-  --outLine := outLine & getLinePointer( getErrorIcon, firstPos, lastPos ) & msg;
   if gccOpt then
      fullErrorMessage := gccFormatMsg;
   else

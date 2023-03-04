@@ -259,7 +259,7 @@ begin
                   elsif lastpos > i then                     -- token shifted?
                      token_lastpos := token_lastpos + len-1; -- adjust
                      if firstpos > i then
-                     token_firstpos := token_firstpos + len-1;
+                        token_firstpos := token_firstpos + len-1;
                      end if;
                   end if;
                   i := i + adv;
@@ -338,7 +338,8 @@ begin
   end if;
 
   if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
-     token_firstpos := line_lastpos+1-line_firstpos;      -- treat token as
+     -- token_firstpos := line_lastpos+1-line_firstpos; 
+     token_firstpos := length( cmdline.gccMessage )+1;    -- treat token as
      token_lastpos := token_firstpos;                     -- one char past end
   end if;
 end getCommandLine;

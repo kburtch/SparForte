@@ -16,6 +16,8 @@ Priority Issues (Fix These First)
     - security testing
       - I should write tests that validate we're escaping
    - check exception handling with templates and exception package
+    - indentation wrong for raise exception
+   - thermometer when representing line where an issue happened
 
 - indenting columns in GetCommandLine may be an issue with markup
   - colour does not always switch back to the correct colour (i.e. bright
