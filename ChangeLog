@@ -10,7 +10,7 @@ CHANGES SINCE 2.5
 
 3. New: pragma prompt_idle_script and prompt_idle_speed.
 
-4. New: New examples rock.sp, user_input.sp.
+4. New: New examples rock.sp, user_input.sp, primes_asc.sp.
 
 5. New: case in is now case procedure.
 

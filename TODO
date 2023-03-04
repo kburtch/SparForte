@@ -34,6 +34,8 @@ Priority Issues (Fix These First)
 - bug
   - first word of quiet errors should not be capitalized if it's an
     identifier name
+  - ^-^ In primes, the end of the statement expects ';' where primes is
+    a variable in assignment...is incorrect
 - test templates
   - bug: in an html template, "? HOME = 7 ;" should be a type error but it
     runs without an error

@@ -338,7 +338,7 @@ begin
   end if;
 
   if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
-     -- token_firstpos := line_lastpos+1-line_firstpos; 
+     -- token_firstpos := line_lastpos+1-line_firstpos;
      token_firstpos := length( cmdline.gccMessage )+1;    -- treat token as
      token_lastpos := token_firstpos;                     -- one char past end
   end if;

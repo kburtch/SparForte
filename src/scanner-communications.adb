@@ -912,7 +912,7 @@ begin
     getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
- 
+
   -- Draw the underline error pointer
 
   if gccOpt then
