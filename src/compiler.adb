@@ -330,12 +330,7 @@ begin
 
   -- indent the line.  how depends on the template type
 
-  if hasTemplate and (templateHeader.templateType = htmlTemplate or
-     templateHeader.templateType = wmlTemplate) then
-    cmdLine := unb_pl( indent * "&nbsp;" ) & cmdLine;
-  else
-    cmdLine := unb_pl( indent * " " ) & cmdLine;
-  end if;
+  cmdLine := unb_pl( indent * " " ) & cmdLine;
 
   if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
      -- token_firstpos := line_lastpos+1-line_firstpos;

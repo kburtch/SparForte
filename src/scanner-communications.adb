@@ -571,7 +571,7 @@ begin
         fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
         fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
-     when yamlTemplate =>
+     when tomlTemplate | yamlTemplate =>
         fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
         null;
@@ -718,7 +718,7 @@ begin
         fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
         fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
-     when yamlTemplate =>
+     when tomlTemplate | yamlTemplate =>
         fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
         null;
@@ -943,7 +943,7 @@ begin
         fullErrorMessage.templateMessage := "/* " & templateErrorHeader & " " & fullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
         fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
-     when yamlTemplate =>
+     when tomlTemplate | yamlTemplate =>
         fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | textTemplate | jsonTemplate =>
         null;
@@ -1135,7 +1135,7 @@ begin
         ourFullTemplateErrorMessage := "/* " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage &  " */";
      when xmlTemplate =>
         ourFullTemplateErrorMessage := "<!-- " & templateErrorHeader & " " & ourFullErrorMessage.templateMessage & " -->";
-     when yamlTemplate =>
+     when tomlTemplate | yamlTemplate =>
         ourFullTemplateErrorMessage := "# " & ourFullErrorMessage.templateMessage;
      when noTemplate | textTemplate | jsonTemplate =>
         null;
@@ -1216,7 +1216,7 @@ begin
         put( "/* " & templateErrorHeader & " " & fullMsg &  " */" );
      when xmlTemplate =>
         put( "<!-- " & templateErrorHeader & " " & fullMsg & " -->" );
-     when yamlTemplate =>
+     when tomlTemplate | yamlTemplate =>
         put( "# " & fullMsg );
      when noTemplate | textTemplate | jsonTemplate =>
         put( fullMsg );

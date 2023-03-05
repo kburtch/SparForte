@@ -1802,6 +1802,8 @@ begin
               templateHeader.templateType := jsonTemplate;
            elsif expr_val = "text" then
               templateHeader.templateType := textTemplate;
+           elsif expr_val = "toml" then
+              templateHeader.templateType := tomlTemplate;
            elsif expr_val = "wml" then
               templateHeader.templateType := wmlTemplate;
            elsif expr_val = "xml" then

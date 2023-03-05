@@ -15,9 +15,11 @@ Priority Issues (Fix These First)
   - checking error display rewrite
     - security testing
       - I should write tests that validate we're escaping
-   - check exception handling with templates and exception package
-    - indentation wrong for raise exception
-   - thermometer when representing line where an issue happened
+   - check json escaping with templates - json has no comments
+     so special chars must be escaped
+   - thermometer when representing progress through script
+
+- Dash support for shell scripts required for Alire project
 
 - indenting columns in GetCommandLine may be an issue with markup
   - colour does not always switch back to the correct colour (i.e. bright
@@ -27,15 +29,12 @@ Priority Issues (Fix These First)
   - showing 3 lines of code instead of one on an error, to improve
     the context.  Possibly hilight the middle line with the error.
 
-- Dash support for shell scripts required for Alire project
-  - TOML(INI) template support for Alire, though TOML is not an accepted MIME
-    standard - comments are number sign
-    - https://en.wikipedia.org/wiki/TOML
 - bug
   - first word of quiet errors should not be capitalized if it's an
     identifier name
   - ^-^ In primes, the end of the statement expects ';' where primes is
-    a variable in assignment...is incorrect
+    a variable in assignment...is incorrect.  At least, it should be
+    "in primes assigment"
 - test templates
   - bug: in an html template, "? HOME = 7 ;" should be a type error but it
     runs without an error

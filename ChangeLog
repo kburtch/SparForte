@@ -36,3 +36,5 @@ CHANGES SINCE 2.5
 
 16. Fix: extended ASCII characters render correctly when displaying the source code line in an error message.
 
+17. New: TOML/INI template support.
+

@@ -2130,6 +2130,7 @@ begin
   when xmlTemplate  => s := s & "text/xml";
   when wmlTemplate  => s := s & "text/vnd.wap.wml";
   when yamlTemplate => s := s & "text/yaml";
+  when tomlTemplate => s := s & "text/toml"; -- no offical type
   when others => -- includes noTemplate
      --s := to_unbounded_string( "HTTP/1.1 500 Internal Server Error" );
      raise SPARFORTE_ERROR with Gnat.Source_Info.Source_Location &
@@ -2240,7 +2241,7 @@ begin
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
          nl.templateMessage := to_unbounded_string( "<br>" & ASCII.CR & ASCII.LF );
-     when yamlTemplate =>
+     when tomlTemplate | yamlTemplate =>
          nl.templateMessage := to_unbounded_string( eol_characters & "# " );
      when others =>
          nl.templateMessage := to_unbounded_string( eol_characters );
