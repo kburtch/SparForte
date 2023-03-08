@@ -304,7 +304,7 @@ begin
      message := insert( message, p, "[# 58]" );
   end loop;
   -- Escape control characters
-  message := toEscaped( message );
+  message := toCtrlEscaped( message );
 end log_clean_message;
 
 

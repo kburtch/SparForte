@@ -40,3 +40,5 @@ CHANGES SINCE 2.5
 
 18. New: error messages include the percentage of distance through the script where the error occurred.
 
+19. Fix: extended ASCII characters render correctly in log package messages.
+
