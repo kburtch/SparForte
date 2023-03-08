@@ -1257,6 +1257,7 @@ procedure topOfBlock is
   lastpos  : natural;
   lineno   : natural;
   fileno   : natural;
+  discard_percentage_distance : natural;
   cmdLine  : messageStrings;
 begin
    if blocks_top = blocks'first then                            -- in a block?
@@ -1267,7 +1268,7 @@ begin
          scriptLineStart := blocks( blocks_top-1).startpos;     -- current line
          if trace and not exit_block and not error_found then   -- display
             put( standard_error, "=> " & '"' );                 -- line if
-            getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+            getCommandLine( cmdline, firstpos, lastpos, lineno, discard_percentage_distance, fileno );
             put( standard_error, toEscaped( cmdline.gccMessage ) );
             put( standard_error, """ [" );
             put( standard_error, lineno'img );
@@ -4855,6 +4856,7 @@ procedure getNextToken is
   -- be surprised by what a compiler won't optimize away...
   is_based_number : boolean; -- true if numeric literal has a base
   token_firstpos, token_lastpos, lineno, fileno : natural;
+  discard_distance_percent : natural;
   sfr : aSourceFile;
   inBackslash : boolean;
   adj : integer;
@@ -4878,7 +4880,7 @@ begin
          if syntax_check or (not exit_block and not error_found) then
             cmdpos := cmdpos + 2; -- first character of next command
             put( standard_error, "=> " & '"' );
-            getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, fileno );
+            getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, discard_distance_percent, fileno );
             put( standard_error, toEscaped( gnt_commandLine.gccMessage ) );
             put( standard_error, """ [" );
             if fileno > 1 then -- don't bother naming main file

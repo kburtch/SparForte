@@ -147,7 +147,8 @@ function getLineNo return natural;
 
 function getCommandLine return messageStrings;
 procedure getCommandLine ( cmdline : out messageStrings;
-  token_firstpos, token_lastpos, line_number, file_number : out natural);
+  token_firstpos, token_lastpos, line_number, distance_percent,
+  file_number : out natural);
 -- de-tokenize and return the original command string
 
 ------------------------------------------------------------------------------

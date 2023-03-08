@@ -38,3 +38,5 @@ CHANGES SINCE 2.5
 
 17. New: TOML/INI template support.
 
+18. New: error messages include the percentage of distance through the script where the error occurred.
+

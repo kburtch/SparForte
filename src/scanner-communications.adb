@@ -408,7 +408,8 @@ end getGCCFormatErrorMessage;
 -- Return the message location.
 -----------------------------------------------------------------------------
 
-function getSparFormatMessageHeader( lineno, firstpos, fileno : natural ) return messageStrings is
+function getSparFormatMessageHeader( lineno, firstpos, distance_percent,
+     fileno : natural ) return messageStrings is
   sparHeader : messageStrings;
   sfr        : aSourceFile;
 begin
@@ -416,6 +417,7 @@ begin
   sparHeader := unb_pl( sfr.name
      & ":" & lineno'img
      & ":" & firstpos'img
+     & ":" & distance_percent'img & "%"
      & ":");
   return sparHeader;
 end getSparFormatMessageHeader;
@@ -465,6 +467,7 @@ function get_script_execution_position( msg : messageStrings; utf_icon : string 
   firstpos   : natural;
   lastpos    : natural;
   lineno     : natural;
+  distance_percent : natural;
   fileno     : natural;
   gccFormatMsg : messageStrings;
   needGccVersion : boolean := false;
@@ -483,7 +486,8 @@ begin
   -- We're not using cmdline.
 
   if script /= null then
-     getCommandLine( discardCmdLine, firstpos, lastpos, lineno, fileno );
+     getCommandLine( discardCmdLine, firstpos, lastpos, lineno,
+        distance_percent, fileno );
   else
      firstPos := 1;
      lastPos := 1;
@@ -509,8 +513,8 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
-          getStackTrace;
+        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos,
+          distance_percent, fileno ) & getStackTrace;
         fullErrorMessage := getNewLine & fullErrorMessage & getNewLine;
      end if;
   end if;
@@ -524,7 +528,8 @@ begin
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno,
+       distance_percent, fileno );
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -604,6 +609,7 @@ procedure err_shell( msg : messageStrings; wordOffset : natural ) is
   firstpos   : natural;
   lastpos    : natural;
   lineno     : natural;
+  distance_percent : natural;
   fileno     : natural;
   gccFormatMsg : messageStrings;
   needGccVersion : boolean := false;
@@ -628,7 +634,8 @@ begin
   -- We're not using cmdline.
 
   if script /= null then
-     getCommandLine( discardCmdLine, firstpos, lastpos, lineno, fileno );
+     getCommandLine( discardCmdLine, firstpos, lastpos, lineno,
+        distance_percent, fileno );
   else
      firstPos := 1;
      lastPos := 1;
@@ -654,8 +661,8 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        fullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno, firstpos, fileno ) &
-          getStackTrace;
+        fullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno,
+          firstpos, distance_percent, fileno ) & getStackTrace;
         fullErrorMessage := fullErrorMessage & getNewLine;
      end if;
   end if;
@@ -670,7 +677,8 @@ begin
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno);
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno,
+       distance_percent, fileno);
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -847,6 +855,7 @@ procedure raise_exception( msg : messageStrings ) is
   discardCmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
+  distance_percent : natural;
   lineStr    : unbounded_string;
   firstposStr : unbounded_string;
   lineno     : natural;
@@ -877,7 +886,8 @@ begin
   -- Exceptions cannot happen without a script so there is no script /= null
   -- test.
 
-  getCommandLine( discardCmdline, firstpos, lastpos, lineno, fileno );
+  getCommandLine( discardCmdline, firstpos, lastpos, lineno, distance_percent,
+     fileno );
 
   -- Clear any old error messages from both the screen error and the
   -- template error (if one exists)
@@ -896,8 +906,8 @@ begin
 
   if inputMode /= interactive and inputMode /= breakout then
         -- For the regular format, show the location and traceback in script
-        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos, fileno ) &
-          getStackTrace;
+        fullErrorMessage := getSparFormatMessageHeader(lineno, firstpos,
+          distance_percent, fileno ) & getStackTrace;
      fullErrorMessage := fullErrorMessage & getNewLine;
   end if;
 
@@ -909,7 +919,8 @@ begin
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno,
+       distance_percent, fileno );
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -988,6 +999,7 @@ procedure err_test_result is
   lineStr    : unbounded_string;
   firstposStr : unbounded_string;
   lineno     : natural;
+  distance_percent : natural;
   fileno     : natural;
   outLine    : unbounded_string;
   gccOutLine : messageStrings;
@@ -1003,7 +1015,7 @@ begin
   -- Get the command line position.  We don't care about the command
   -- line.  Script should always exist so a null script check is not done.
 
-  getCommandLine( discardCmdline, firstpos, lastpos, lineno, fileno );
+  getCommandLine( discardCmdline, firstpos, lastpos, lineno, distance_percent, fileno );
 
   -- Generate a Gcc-formatted error message (if we need one)
 
@@ -1020,8 +1032,8 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        ourFullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno, firstpos, fileno ) &
-          getStackTrace;
+        ourFullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno,
+          firstpos, distance_percent, fileno ) & getStackTrace;
      end if;
      ourFullErrorMessage := ourFullErrorMessage & getNewLine;
   end if;
@@ -1090,7 +1102,7 @@ begin
   declare
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( formattedCmdline, firstpos, lastpos, lineno, distance_percent, fileno );
     ourFullErrorMessage := ourFullErrorMessage & formattedCmdline;
   end;
 

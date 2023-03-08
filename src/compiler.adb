@@ -146,7 +146,8 @@ end resetLineNo;
 -----------------------------------------------------------------------------
 
 procedure getCommandLine ( cmdline : out messageStrings;
-  token_firstpos, token_lastpos, line_number, file_number : out natural ) is
+    token_firstpos, token_lastpos, line_number, distance_percent,
+    file_number : out natural ) is
   line_firstpos : natural;                           -- start of compiled line
   line_lastpos  : natural;                           -- end of compiled line
   indent        : natural;
@@ -164,11 +165,12 @@ begin
   -- cause the test case of an empty file to fail.
 
   if script = null then
-     cmdline        := nullMessageStrings;
-     token_firstpos := cmdpos;
-     token_lastpos  := cmdpos;
-     line_number    := natural'last;
-     file_number := natural'last;
+     cmdline          := nullMessageStrings;
+     token_firstpos   := cmdpos;
+     token_lastpos    := cmdpos;
+     line_number      := natural'last;
+     distance_percent := natural'first;
+     file_number      := natural'last;
      return;
   end if;
 
@@ -181,6 +183,7 @@ begin
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
      line_number    := natural'last;
+     distance_percent := natural'first;
      file_number := natural'last;
      return;
   end if;
@@ -190,6 +193,10 @@ begin
   line_firstpos := cmdpos;                           -- start at current pos
   line_lastpos := cmdpos;                            -- start at current pos
   is_escaping := false;                              -- not escaping
+
+  -- The distance through the script, as a percentage
+
+  distance_percent := 100 * cmdpos / script'length;
 
   -- find beginning and end of command line
   -- (as it appears in the byte code)
@@ -343,12 +350,13 @@ function getCommandLine return messageStrings is
   -- Return current command line, fully indented, but not including
   -- the LF separating lines.  This function version doesn't compute
   -- the token position on the expanded line.
-  firstpos, lastpos : natural;
+  firstpos, lastpos, distance_percent : natural;
   cmdline : messageStrings;
   line_number : natural;
   file_number : natural;
 begin
-  getCommandLine( cmdline, firstpos, lastpos, line_number, file_number );
+  getCommandLine( cmdline, firstpos, lastpos, line_number, distance_percent,
+     file_number );
   return cmdline;
 end getCommandLine;
 

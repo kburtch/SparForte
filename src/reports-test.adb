@@ -128,6 +128,7 @@ package body reports.test is
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
+    discard_distance_percent : natural;
     fileno     : natural;
     sfr        : aSourceFile;
   begin
@@ -135,7 +136,7 @@ package body reports.test is
     jtc.class := to_unbounded_string( "undefined" );
     jtc.startTime := ada.calendar.clock;
     jtc.testNo := jtc.testNo + 1;
-    getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( cmdline, firstpos, lastpos, lineno, discard_distance_percent, fileno );
     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
     if length( name ) = 0 then
       jtc.name := sfr.name & "_" & trim( to_unbounded_string( jtc.testno'img ), both );
@@ -221,19 +222,13 @@ package body reports.test is
 
   procedure testCaseFailure( report : in out textTestReport; test_message : unbounded_string := null_unbounded_string ) is
     cmdline    : messageStrings;
-    firstpos   : natural;
-    lastpos    : natural;
-    lineno     : natural;
-    fileno     : natural;
-    -- sfr        : aSourceFile;
   begin
      -- if an error occurred in the test, ignore the success or failure
     if jtc.errorCnt = 0 then
        wasTestErrorOrFailure := true;
        jtc.assertionCnt := jtc.assertionCnt + 1;
        jtc.failureCnt := jtc.failureCnt + 1;
-       getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
-       -- sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
+       cmdline := getCommandLine;
        if test_message /= null_unbounded_string then
           failureList.Queue( jtc.failureMsgs, toEscaped( test_message ) );
        else
@@ -274,11 +269,12 @@ package body reports.test is
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
+    discard_distance_percent : natural;
     fileno     : natural;
     sfr        : aSourceFile;
   begin
     jts.isOpen := true;
-    getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( cmdline, firstpos, lastpos, lineno, discard_distance_percent, fileno );
     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
 
     -- if no name is provided, the test name prefix is the source file.
@@ -332,10 +328,11 @@ package body reports.test is
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
+    discard_distance_percent : natural;
     fileno     : natural;
     sfr        : aSourceFile;
   begin
-    getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( cmdline, firstpos, lastpos, lineno, discard_distance_percent, fileno );
     if lastSourceFile /= fileNo then
        if lastSourceFile /= 0 then -- or if not isJunitTestSuiteStarted then
           endJunitTestSuite( report );
@@ -389,6 +386,7 @@ package body reports.test is
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
+    discard_distance_percent : natural;
     fileno     : natural;
     sfr        : aSourceFile;
   begin
@@ -396,7 +394,7 @@ package body reports.test is
     jtc.class := to_unbounded_string( "undefined" );
     jtc.startTime := ada.calendar.clock;
     jtc.testNo := jtc.testNo + 1;
-    getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( cmdline, firstpos, lastpos, lineno, discard_distance_percent, fileno );
     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
     if length( name ) = 0 then
       jtc.name := sfr.name & "_" & trim( to_unbounded_string( jtc.testno'img ), both );
@@ -482,18 +480,13 @@ package body reports.test is
 
   procedure testCaseFailure( report: in out xmlTestReport; test_message : unbounded_string := null_unbounded_string ) is
     cmdline    : messageStrings;
-    firstpos   : natural;
-    lastpos    : natural;
-    lineno     : natural;
-    fileno     : natural;
-    -- sfr        : aSourceFile;
   begin
      -- if an error occurred in the test, ignore the success or failure
     if jtc.errorCnt = 0 then
        wasTestErrorOrFailure := true;
        jtc.assertionCnt := jtc.assertionCnt + 1;
        jtc.failureCnt := jtc.failureCnt + 1;
-       getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+       cmdline := getCommandLine;
        -- sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
        if test_message /= null_unbounded_string then
           failureList.Queue( jtc.failureMsgs, test_message );
@@ -521,12 +514,13 @@ package body reports.test is
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
+    discard_distance_percent : natural;
     fileno     : natural;
     sfr        : aSourceFile;
   begin
     jts.isOpen := true;
     --jts.path := path;
-    getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( cmdline, firstpos, lastpos, lineno, discard_distance_percent, fileno );
     sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
     if length( name ) = 0 then
       raise SPARFORTE_ERROR;
@@ -573,10 +567,11 @@ package body reports.test is
     firstpos   : natural;
     lastpos    : natural;
     lineno     : natural;
+    discard_distance_percent : natural;
     fileno     : natural;
     sfr        : aSourceFile;
   begin
-    getCommandLine( cmdline, firstpos, lastpos, lineno, fileno );
+    getCommandLine( cmdline, firstpos, lastpos, lineno, discard_distance_percent, fileno );
     if lastSourceFile /= fileNo then
        if lastSourceFile /= 0 then -- or if not isJunitTestSuiteStarted then
           endJunitTestSuite( report );

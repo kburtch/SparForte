@@ -17,7 +17,9 @@ Priority Issues (Fix These First)
       - I should write tests that validate we're escaping
    - check json escaping with templates - json has no comments
      so special chars must be escaped
-   - thermometer when representing progress through script
+   - text test reports should show the percentage distance through the script
+   - logs package should handle european characters better, not using
+     to_escape
 
 - Dash support for shell scripts required for Alire project
 
