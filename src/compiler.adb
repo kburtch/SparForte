@@ -361,6 +361,62 @@ begin
 end getCommandLine;
 
 
+------------------------------------------------------------------------------
+--  GET TWO COMMAND LINES
+--
+-- Get the current command line and the error, but also get the previous
+-- source code line, if it exists.
+------------------------------------------------------------------------------
+
+procedure getTwoCommandLines( cmdline1, cmdline2 : out messageStrings;
+    token_firstpos, token_lastpos, line_number, distance_percent,
+    file_number : out natural ) is
+    cmdline1_cmdpos : natural;
+    cmdpos_save : natural;
+    firstpos_save : natural;
+    lastpos_save : natural;
+    header_eof_char : character;
+begin
+    cmdline1 := nullMessageStrings;
+
+    -- Don't look for a second line on an empty script
+
+    if script /= null then
+
+       -- Find the previous line
+
+       cmdline1_cmdpos := cmdpos - 1;
+       while script( cmdline1_cmdpos ) /= ASCII.NUL loop
+          cmdline1_cmdpos := cmdline1_cmdpos - 1;
+       end loop;
+
+       -- Temporarily switch the script position and get the line
+       -- If we hit the EOF in the header, there's no previous line.
+       -- I'm assuming here that the EOF will always be encoded as a single
+       -- character.
+
+       header_eof_char := toByteCode( eof_t )(1);
+       if script( cmdline1_cmdpos -1 ) /= header_eof_char then
+          cmdpos_save := cmdpos;
+          firstpos_save := firstpos;
+          lastpos_save := lastpos;
+          cmdpos := cmdline1_cmdpos;
+          firstpos := cmdline1_cmdpos;
+          lastpos := cmdline1_cmdpos;
+          cmdline1 :=  getCommandLine;
+          cmdpos := cmdpos_save;
+          firstpos := firstpos_save;
+          lastpos := lastpos_save;
+       end if;
+    end if;
+
+    -- Perform a normal get command line for the rest of the info
+
+    getCommandLine( cmdline2, token_firstpos, token_lastpos, line_number, distance_percent,
+       file_number );
+end getTwoCommandLines;
+
+
 -----------------------------------------------------------------------------
 -- "BYTE CODE" GENERATION
 --

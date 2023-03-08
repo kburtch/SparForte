@@ -424,30 +424,6 @@ end getSparFormatMessageHeader;
 
 
 -----------------------------------------------------------------------------
---  GET FORMATTED MESSAGE
---
--- Return an error message based on the output context.
------------------------------------------------------------------------------
-
---function getFormattedMessage( original : string ) return unbounded_string is
---  formattedMsg : unbounded_string;
---begin
---  if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
---     case templateHeader.templateType is
---     when htmlTemplate | wmlTemplate =>
---        formattedMsg := convertToHTML( to_unbounded_string( original ) );
---     when others =>
---        formattedMsg := convertToPlainText( to_unbounded_string( original ) );
---     end case;
---  else
---     -- normal case, leave colour text alone
---     formattedMsg := to_unbounded_string( original );
---  end if;
---  return formattedMsg;
---end getFormattedMessage;
-
-
------------------------------------------------------------------------------
 --
 -- BASIC ERROR MESSAGES (and similar messages)
 --
@@ -526,10 +502,14 @@ begin
   -- Second, add the line the error occurred in
 
   declare
+     formattedPreviousCmdLine : messageStrings;
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno,
-       distance_percent, fileno );
+    getTwoCommandLines( formattedPreviousCmdLine, formattedCmdline, firstpos,
+       lastpos, lineno, distance_percent, fileno);
+    if formattedPreviousCmdLine /= nullMessageStrings then
+       fullErrorMessage := fullErrorMessage & formattedPreviousCmdLine & getNewLine;
+    end if;
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -661,7 +641,7 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        fullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno,
+        fullErrorMessage := getSparFormatMessageHeader(lineno,
           firstpos, distance_percent, fileno ) & getStackTrace;
         fullErrorMessage := fullErrorMessage & getNewLine;
      end if;
@@ -673,12 +653,15 @@ begin
 
   -- Second, add the line the error occurred in
 
-
   declare
+     formattedPreviousCmdLine : messageStrings;
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno,
-       distance_percent, fileno);
+    getTwoCommandLines( formattedPreviousCmdLine, formattedCmdline, firstpos,
+       lastpos, lineno, distance_percent, fileno);
+    if formattedPreviousCmdLine /= nullMessageStrings then
+       fullErrorMessage := fullErrorMessage & formattedPreviousCmdLine & getNewLine;
+    end if;
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -917,10 +900,14 @@ begin
   -- Second, add the line the error occurred in
 
   declare
+     formattedPreviousCmdLine : messageStrings;
      formattedCmdline : messageStrings;
   begin
-    getCommandLine( formattedCmdline, firstpos, lastpos, lineno,
-       distance_percent, fileno );
+    getTwoCommandLines( formattedPreviousCmdLine, formattedCmdline, firstpos,
+       lastpos, lineno, distance_percent, fileno);
+    if formattedPreviousCmdLine /= nullMessageStrings then
+       fullErrorMessage := fullErrorMessage & formattedPreviousCmdLine & getNewLine;
+    end if;
     fullErrorMessage := fullErrorMessage & formattedCmdline;
   end;
 
@@ -1032,72 +1019,11 @@ begin
   if inputMode /= interactive and inputMode /= breakout then
      if script /= null then
         -- For the regular format, show the location and traceback in script
-        ourFullErrorMessage := getNewLine & getSparFormatMessageHeader(lineno,
+        ourFullErrorMessage := getSparFormatMessageHeader(lineno,
           firstpos, distance_percent, fileno ) & getStackTrace;
      end if;
      ourFullErrorMessage := ourFullErrorMessage & getNewLine;
   end if;
-
-  --if inputMode /= interactive and inputMode /= breakout then
-        --if needGccVersion then                            -- gcc style?
-           --lineStr := to_unbounded_string( lineno'img );  -- remove leading
-           --if length( lineStr ) > 0 then                  -- space (if any)
-           --   if element( lineStr, 1 ) = ' ' then
-           --      delete( lineStr, 1, 1 );
-           --   end if;
-           --end if;
-           --firstposStr := to_unbounded_string( firstpos'img );
-           --if length( firstposStr ) > 0 then              -- here, too
-           --   if element( firstposStr, 1 ) = ' ' then
-           --      delete( firstposStr, 1, 1 );
-           --   end if;
-           --end if;
-           --sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-           --gccOutLine := sfr.name
-           --  & ":" & lineStr
-           --  & ":" & firstposStr
-           --  & ":";                                       -- no traceback
-           --gccOutLine := gccOutLine & ' ';                -- token start
-           --gccOutLine := gccOutLine & msg;
-           --gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
-        --end if;
-
-
-       -- sourceFilesList.Find( sourceFiles, SourceFilesList.aListIndex( fileno ), sfr );
-      --  outLine := sfr.name                               -- location
-      --     & ":" & lineno'img
-      --     & ":" & firstpos'img
-      --     & ": ";
-        -- TODO: we're using UNIX eof's but should ideally be o/s
-        -- independent
-      --  if blocks_top > blocks'first then                 -- in a block?
-      --     for i in reverse blocks'first..blocks_top-1 loop -- show the
-      --         if i /= blocks_top-1 then                  -- simplified
-      --            outLine := outLine & " in ";            -- traceback
-      --         end if;
-      --         outLine := outLine & ToEscaped( blocks( i ).blockName );
-      --     end loop;
-      --     ourFullErrorMessage := outLine & ASCII.LF;
-      --     outLine := null_unbounded_string;
-      --  else                                              -- if no blocks
-      --     outLine := outLine & "in script";              -- just say
-      --     ourFullErrorMessage := outLine & ASCII.LF;        -- "in script"
-      --     outLine := null_unbounded_string;
-      --  end if;
-  --end if;
-
- -- ourFullErrorMessage := ourFullErrorMessage & toEscaped( cmdline );
-
-  -- Draw the underline error pointer
-
-  --outLine := outLine & ada.strings.unbounded.to_string( (firstPos-1) * " " );      -- indent
-  --outLine := outLine & '^';                                  -- token start
-  --if lastpos > firstpos then                                 -- multi chars?
-  --   outLine := outLine & ada.strings.unbounded.to_string( (lastpos-firstPos-1) * "-" );
-  --   outLine := outLine & '^';                               -- token end
-  --end if;
-  --outLine := outLine & ' ';                                  -- token start
-  --outLine := outLine & msg;
 
   declare
      formattedCmdline : messageStrings;
@@ -1113,20 +1039,6 @@ begin
      ourFullErrorMessage := ourFullErrorMessage & getLinePointer( getErrorIcon, firstPos, lastPos );
      ourFullErrorMessage := ourFullErrorMessage & msg;
   end if;
-
-  -- Even for a template, if the user selected gccOpt specifically,
-  -- use it.
-
-  -- Pick which format the user wants for the full message.
-  --
-  -- TODO: we're using UNIX eof's but should ideally be o/s
-  -- independent
-
-  --if gccOpt then
-  --   ourFullErrorMessage := gccOutLine;
-  --else
-   --  ourFullErrorMessage := ourFullErrorMessage & ASCII.LF & outLine;
-  --end if;
 
   -- If we are in any mode of the development cycle except maintenance
   -- mode, create an error message to display.  If we're in maintenance
@@ -1182,18 +1094,6 @@ begin
      put_line( ourFullTemplateErrorMessage );
   end if;
 
-  -- Originally:
-  --
-  -- put( standard_error, scriptFilePath );
-  -- put( standard_error, ":" );
-  -- put( standard_error, getLineNo'img );
-  -- put( standard_error, ": " );
-  -- if gccOpt then
-  --     put_line( standard_error, "test failed" );
-  -- else
-  --     put_line( standard_error, to_string( getCommandLine ) );
-  --     put_line( standard_error, "^ test failed" );
-  -- end if;
 end err_test_result;
 
 

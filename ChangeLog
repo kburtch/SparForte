@@ -12,7 +12,7 @@ CHANGES SINCE 2.5
 
 4. New: New examples rock.sp, user_input.sp, primes_asc.sp.
 
-5. New: case in is now case procedure.
+5. New: case in is now case procedure. [docs needed?]
 
 6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
 
@@ -34,11 +34,11 @@ CHANGES SINCE 2.5
 
 15. Fix: template error messages are now consistently written to standard error as a single line for logging purposes.
 
-16. Fix: extended ASCII characters render correctly when displaying the source code line in an error message.
+16. New: basic TOML/INI template support.
 
-17. New: TOML/INI template support.
+17. New: error messages include the percentage of distance through the script where the error occurred.
 
-18. New: error messages include the percentage of distance through the script where the error occurred.
+18. Fix: extended ASCII characters render correctly in log package messages.
 
-19. Fix: extended ASCII characters render correctly in log package messages.
+19. Change: normal errors (not GCC format) show the line before the error line as well as the error line, for more context.
 

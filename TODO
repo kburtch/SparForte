@@ -25,8 +25,6 @@ Priority Issues (Fix These First)
     white may revert to dim white after showing help index)
     - it may be impossible but setting the colour to bright what by default
       may be a partial solution
-  - showing 3 lines of code instead of one on an error, to improve
-    the context.  Possibly hilight the middle line with the error.
 
 - bug
   - first word of quiet errors should not be capitalized if it's an
@@ -34,6 +32,8 @@ Priority Issues (Fix These First)
   - ^-^ In primes, the end of the statement expects ';' where primes is
     a variable in assignment...is incorrect.  At least, it should be
     "in primes assigment"
+  - an undeclared variable shows up as "(a new)" in messages but should
+    be a clearer message
 - test templates
   - bug: in an html template, "? HOME = 7 ;" should be a type error but it
     runs without an error

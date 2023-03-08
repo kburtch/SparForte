@@ -151,6 +151,12 @@ procedure getCommandLine ( cmdline : out messageStrings;
   file_number : out natural);
 -- de-tokenize and return the original command string
 
+procedure getTwoCommandLines( cmdline1, cmdline2 : out messageStrings;
+    token_firstpos, token_lastpos, line_number, distance_percent,
+    file_number : out natural );
+-- de-tokenize and return the original command string, plus previous
+-- source line, if any
+
 ------------------------------------------------------------------------------
 -- Virtual Machine Registers
 --
