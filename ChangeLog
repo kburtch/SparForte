@@ -12,7 +12,7 @@ CHANGES SINCE 2.5
 
 4. New: New examples rock.sp, user_input.sp, primes_asc.sp.
 
-5. New: case in is now case procedure. [docs needed?]
+5. New: case in is now case procedure.
 
 6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
 

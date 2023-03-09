@@ -15,12 +15,9 @@ Priority Issues (Fix These First)
   - checking error display rewrite
     - security testing
       - I should write tests that validate we're escaping
-   - check json escaping with templates - json has no comments
-     so special chars must be escaped
 
 - Dash support for shell scripts required for Alire project
 
-- indenting columns in GetCommandLine may be an issue with markup
   - colour does not always switch back to the correct colour (i.e. bright
     white may revert to dim white after showing help index)
     - it may be impossible but setting the colour to bright what by default
@@ -233,6 +230,13 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- when displaying error message in templates, using comments may not
+  be enough to stop injecting bad data...perhaps, for example, the
+  error happens in q quoted string.  It is necessary to escape the
+  error message as appropriate to the context of the template
+  document
+   - check json escaping with templates - json has no comments
+     so special chars must be escaped
 - cache the prompt script byte code to speed up prompt drawing
 - embedded sql - returning sql select in % (as JSON?) or by `..`?
 - constant spec negative tests
