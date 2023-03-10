@@ -16,8 +16,6 @@ Priority Issues (Fix These First)
     - security testing
       - I should write tests that validate we're escaping
 
-- Dash support for shell scripts required for Alire project
-
   - colour does not always switch back to the correct colour (i.e. bright
     white may revert to dim white after showing help index)
     - it may be impossible but setting the colour to bright what by default

@@ -42,3 +42,5 @@ CHANGES SINCE 2.5
 
 19. Change: normal errors (not GCC format) show the line before the error line as well as the error line, for more context.
 
+20. Change: replaced "let" commands in shell scripts with $((..)) to make them compatible with feature-poor dash shell.
+
