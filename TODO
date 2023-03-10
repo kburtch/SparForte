@@ -21,6 +21,8 @@ Priority Issues (Fix These First)
     - it may be impossible but setting the colour to bright what by default
       may be a partial solution
 
+  - coverage tests
+
 - bug
   - first word of quiet errors should not be capitalized if it's an
     identifier name

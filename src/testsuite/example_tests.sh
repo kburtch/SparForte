@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Test Some of the Example Programs
 # ---------------------------------------------------------------------------
@@ -817,7 +817,10 @@ else
 fi
 
 EXAMPLE="user_input.sp"
-RESULT=`echo -e "abc\n123" | src/spar --test examples/$EXAMPLE`
+# DASH shell does not support echo -e.  Using TEST_DATA to pass newline.
+TEST_DATA="abc
+123"
+RESULT=`echo "$TEST_DATA" | src/spar --test examples/$EXAMPLE`
 echo "$RESULT"
 EXPECTED="abc
 123
@@ -834,7 +837,10 @@ else
 fi
 
 EXAMPLE="user_input_unstructured.sp"
-RESULT=`echo -e "abc\n123" | src/spar --test examples/$EXAMPLE`
+# DASH shell does not support echo -e.  Using TEST_DATA to pass newline.
+TEST_DATA="abc
+123"
+RESULT=`echo "$TEST_DATA" | src/spar --test examples/$EXAMPLE`
 echo "$RESULT"
 EXPECTED="abc
 123

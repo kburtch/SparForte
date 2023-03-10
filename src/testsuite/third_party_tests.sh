@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Test Interfaces to Third-party software
 # ---------------------------------------------------------------------------
