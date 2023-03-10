@@ -133,22 +133,22 @@ start_junit_case() {
 #
 # Example:
 #      <testcase name="testBarChart_constructor" class="BarChartTest" file="/var/
-#lib/jenkins/workspace/pallet_website_yii/tests/unit/BarChartTest.php" line="32" 
+#lib/jenkins/workspace/pallet_website_yii/tests/unit/BarChartTest.php" line="32"
 #assertions="1" time="0.015803"/>
 # ---------------------------------------------------------------------------
 
 end_junit_case() {
    # Increment grand total of tests
-   let "JUNIT_TEST_CNT=JUNIT_TEST_CNT+1"
+   JUNIT_TEST_CNT="$((JUNIT_TEST_CNT+1))"
 
    # Adjust the test suite totals based on the case results
-   let "JUNIT_SUITE_TEST_CNT=JUNIT_SUITE_TEST_CNT+JUNIT_CASE_TEST_CNT"
-   let "JUNIT_SUITE_ASSERTION_CNT=JUNIT_SUITE_ASSERTION_CNT+JUNIT_CASE_ASSERTION_CNT"
-   let "JUNIT_SUITE_FAILURE_CNT=JUNIT_SUITE_FAILURE_CNT+JUNIT_CASE_FAILURE_CNT"
-   let "JUNIT_SUITE_ERROR_CNT=JUNIT_SUITE_ERROR_CNT+JUNIT_CASE_ERROR_CNT"
+   JUNIT_SUITE_TEST_CNT="$((JUNIT_SUITE_TEST_CNT+JUNIT_CASE_TEST_CNT))"
+   JUNIT_SUITE_ASSERTION_CNT="$((JUNIT_SUITE_ASSERTION_CNT+JUNIT_CASE_ASSERTION_CNT))"
+   JUNIT_SUITE_FAILURE_CNT="$((JUNIT_SUITE_FAILURE_CNT+JUNIT_CASE_FAILURE_CNT))"
+   JUNIT_SUITE_ERROR_CNT="$((JUNIT_SUITE_ERROR_CNT+JUNIT_CASE_ERROR_CNT))"
    # Calculate the time the tests took
    JUNIT_CASE_END_TIME=`date '+%s'`
-   let "JUNIT_CASE_DURATION=JUNIT_CASE_END_TIME-JUNIT_CASE_START_TIME"
+   JUNIT_CASE_DURATION="$((JUNIT_CASE_END_TIME-JUNIT_CASE_START_TIME))"
    # Write the test case with totals
    echo "  <testcase name=\"$JUNIT_CASE_NAME\" class=\"$JUNIT_CASE_CLASS\" file=\"$JUNIT_CASE_FILE\" line=\"$JUNIT_CASE_LINE\" assertions=\"$JUNIT_CASE_ASSERTION_CNT\" failures=\"$JUNIT_CASE_FAILURE_CNT\" errors=\"$JUNIT_CASE_ERROR_CNT\" time=\"$JUNIT_CASE_DURATION\">" >> "$JUNIT_CASES"
   if [ ! -z "$JUNIT_CASE_FAILURE_MSG" ] ; then
@@ -156,10 +156,10 @@ end_junit_case() {
   fi
   if [ ! -z "$JUNIT_CASE_ERROR_MSG" ] ; then
      echo "    <error message=\"test error\">$JUNIT_CASE_ERROR_MSG</error>" >> "$JUNIT_CASES"
-  fi 
+  fi
   if [ ! -z "$JUNIT_CASE_SKIPPED" ] ; then
      echo "    <skipped />" >> "$JUNIT_CASES"
-  fi 
+  fi
   # TODO: skipped, error
   echo "  </testcase>" >> "$JUNIT_CASES"
   JUNIT_CASE_OPEN=
@@ -206,7 +206,7 @@ end_junit_suite() {
 
    # Calculate the time to run the suite
    JUNIT_SUITE_END_TIME=`date '+%s'`
-   let "JUNIT_SUITE_DURATION=JUNIT_SUITE_END_TIME-JUNIT_SUITE_START_TIME"
+   JUNIT_SUITE_DURATION="$((JUNIT_SUITE_END_TIME-JUNIT_SUITE_START_TIME))"
 
    # Display the suite summary with the individual test cases
    echo "<testsuite name=\"$JUNIT_SUITE_NAME\" file=\"$JUNIT_SUITE_FNAME\" tests=\"$JUNIT_SUITE_TEST_CNT\" assertions=\"$JUNIT_SUITE_ASSERTION_CNT\" failures=\"$JUNIT_SUITE_FAILURE_CNT\" errors=\"$JUNIT_SUITE_ERROR_CNT\" time=\"$JUNIT_SUITE_DURATION\">" >> "$JUNIT_RESULT"
@@ -250,8 +250,8 @@ end_junit() {
 junit_fail() {
   HAD_ERRORS=1
   if [ ! -z "$JUNIT_CASE_OPEN" ] ; then
-     let "JUNIT_FAILURE_CNT=JUNIT_FAILURE_CNT+1"
-     let "JUNIT_CASE_FAILURE_CNT=JUNIT_CASE_FAILURE_CNT+1"
+     JUNIT_FAILURE_CNT="$((JUNIT_FAILURE_CNT+1))"
+     JUNIT_CASE_FAILURE_CNT="$((JUNIT_CASE_FAILURE_CNT+1))"
      if [ ! -z "$1" ] ; then
         JUNIT_CASE_FAILURE_MSG="$1"
      else
