@@ -44,3 +44,5 @@ CHANGES SINCE 2.5
 
 20. Change: replaced "let" commands in shell scripts with $((..)) to make them compatible with feature-poor dash shell.
 
+21. New: configure --jobs option.
+

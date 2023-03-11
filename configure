@@ -27,6 +27,9 @@ fi
 # This will have "sudo" if required for ldconfig
 LDCONFIG_SUDO=
 
+# Default number of GNU make processes
+GMAKE_JOBS=4
+
 # These variables may be passed into this script from the environment.
 #
 # For example, ARCH=i386 ./configure
@@ -72,6 +75,7 @@ while [ $# -gt 0 ] ; do
       echo "                        Examples: alpha, armv6l (Pi), athlon, i386"
       echo "                        (base Intel 32-bit), x86_64 (base Intel"
       echo "                        64-bit), core2, corei7, nocona, etc."
+      echo "  --jobs=n              number of make parallel jobs (default $GMAKE_JOBS)"
       echo "  --make=MAKE           name of GNU make"
       echo "  --prefix=PREFIX       root installation directory"
       echo "  --manprefix=MANPREFIX man page install directory"
@@ -92,6 +96,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --arch)
       ARCH=`echo "$1" | cut -d= -f2`
+      ;;
+  --jobs)
+      GMAKE_JOBS=`echo "$1" | cut -d= -f2`
       ;;
   --make)
       GMAKE=`echo "$1" | cut -d= -f2`
@@ -1748,7 +1755,7 @@ cd ..
 
 echo "Creating...src/GNUmakefile"
 
-sed "s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROBJSUB/$GSTREAMEROBJ/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g;s/PCRELIBSSUB/$PCRELIBS/g;s/PCREOBJSUB/$PCREOBJ/g;s/PCREFLAGSUB/$PCREFLAG/g;s/RLFLAGSUB/$RLFLAG/g;s/L10NFLAGSUB/$L10NFLAG/g;s/L10NLIBSSUB/$L10NLIBS/g" < GNUmakefile.orig > GNUmakefile
+sed "s/GMAKEJOBSSUB/$GMAKE_JOBS/g;s/CPUFLAG/$CPU_FLAG/g;s/CCTYPE/$CC/g;s/CPUTYPE/$ARCH/g;s/MANPREFIXSUB/$MANPREFIX/g;s/PREFIXSUB/$PREFIX/g;s/GMAKETYPE/$GMAKETYPE/g;s/SDLLIBSTYPE/$SDLLIBSTYPE/g;s/SDLINCLTYPE/$SDLINCLTYPE/g;s/CFLAGSTYPE/$CFLAGSTYPE/g;s/PGLIBSSUB/$PGLIBSSUB/g;s/MYSQLLIBSSUB/$MYSQLLIBSSUB/g;s/APQLIBSSUB/$APQLIBSSUB/g;s/APQINCLSSUB/$APQINCLSSUB/g;s/SDLINCLSSUB/$SDLINCLSSUB/g;s/APQMAKESUB/$APQMAKESUB/g;s/FASTCGISUB/$FASTCGISUB/g;s/GSTREAMERLIBSSUB/$GSTREAMERLIBS/g;s/GSTREAMERFLAGSUB/$GSTREAMERFLAG/g;s/GSTREAMEROBJSUB/$GSTREAMEROBJ/g;s/MESAINCLSUB/$MESAINCLTYPE/g;s/MESALIBSSUB/$MESALIBSTYPE/g;s/BDBSUB/$BDBLIBS/g;s/BDBINCLSUB/$BDBINCL/g;s/RLINCLSUB/$RLINCL/g;s/RLLIBSSUB/$RLLIBS/g;s/PCRELIBSSUB/$PCRELIBS/g;s/PCREOBJSUB/$PCREOBJ/g;s/PCREFLAGSUB/$PCREFLAG/g;s/RLFLAGSUB/$RLFLAG/g;s/L10NFLAGSUB/$L10NFLAG/g;s/L10NLIBSSUB/$L10NLIBS/g" < GNUmakefile.orig > GNUmakefile
 
 cd ..
 echo "Creating...GNUmakefile"

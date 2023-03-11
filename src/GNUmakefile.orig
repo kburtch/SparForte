@@ -7,6 +7,7 @@
 #
 # For SDL, sdl_config is not always available.
 
+GMAKEJOBS=GMAKEJOBSSUB
 CC=CCTYPE
 CPU=CPUTYPE
 CPU_FLAG=CPUFLAG
@@ -111,7 +112,7 @@ endif
 	@echo "---------------------------------------------------------------"
 	@echo
 	# $(GNATMAKE) -j4 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnatw.eDHM.Y -gnateEeEeF -gnatybdh -fstack-protector -c $(INCLUDE) spar
-	$(GNATMAKE) -j4 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeEeF -fstack-protector -c $(INCLUDE) spar
+	$(GNATMAKE) -j$(GMAKEJOBS) -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeEeF -fstack-protector -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 	@echo
@@ -214,7 +215,7 @@ max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	@echo "Making SparForte"
 	@echo "---------------------------------------------------------------"
 	@echo
-	$(GNATMAKE) -j4 -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
+	$(GNATMAKE) -j$(GMAKEJOBS) -c -i -O3 $(CPU_FLAG)=$(CPU) -gnatf -gnatn -gnatp -ffast-math -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 
@@ -305,7 +306,7 @@ endif
 	-rm -f *.gcda *.gcov coverage.info
 	# Always build without optimization to ensure correct coverage results
 	# -pg required for gprof performance profiling
-	$(GNATMAKE) -j4 -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeEeF -gnatybdh -fstack-protector -fprofile-arcs -ftest-coverage -pg -g -c $(INCLUDE) spar
+	$(GNATMAKE) -j$(GMAKEJOBS) -c -i -O0 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeEeF -gnatybdh -fstack-protector -fprofile-arcs -ftest-coverage -pg -g -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS) -lgcov -pg
 	@echo
