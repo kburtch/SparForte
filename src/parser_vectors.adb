@@ -144,7 +144,7 @@ end err_empty;
 procedure err_index( subprogram : identifier; idxExpr : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => pl( "the index position" ) & em_value( idxExpr ),
+       subjectNotes => pl( qp( "the index position" ) ) & em_value( idxExpr ),
        reason => +"is",
        obstructorNotes => +"not in the vector"
   );
@@ -153,7 +153,7 @@ end err_index;
 procedure err_index( subprogram : identifier; idxExpr1, idxExpr2 : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => pl( "the index position" ) & em_value( idxExpr1 ) &
+       subjectNotes => pl( qp( "the index position" ) ) & em_value( idxExpr1 ) &
                   pl( " or" ) & em_value( idxExpr2 ),
        reason => +"is",
        obstructorNotes => +"not in the vector"
@@ -175,7 +175,7 @@ procedure err_count( subprogram : identifier; cntExpr : unbounded_string; cntTyp
 begin
    if cntExpr = "" then
       err( context => subprogram,
-           subjectNotes => +"the count value",
+           subjectNotes => pl( qp( "the count value" ) ),
            subjectType  => cntType,
            reason => +"has",
            obstructorNotes => +"no assigned value",
@@ -183,7 +183,7 @@ begin
       );
    else
       err( context => subprogram,
-           subjectNotes => pl("the count value of " & toSecureData( to_string( cntExpr ) ) ),
+           subjectNotes => pl( qp( "the count value of " ) & toSecureData( to_string( cntExpr ) ) ),
            subjectType  => cntType,
            reason => +"is not valid for",
            obstructor => containers_count_type_t,
@@ -220,7 +220,7 @@ begin
   if identifiers( leftVectorItem ).genKind /= identifiers( rightVectorItem ).genKind then
      err(
        context => subprogram,
-       subjectNotes => +"the index of " & name_em( leftVectorItem ),
+       subjectNotes => pl( qp( "the index of " ) ) & name_em( leftVectorItem ),
        subjectType => identifiers( leftVectorItem ).genKind,
        reason => +"should have the identical type as",
        obstructorNotes => +"the index of " & name_em( rightVectorItem ),
@@ -239,7 +239,7 @@ begin
         -- left, center match but right
         err(
           context => subprogram,
-          subjectNotes => +"the index of " & name_em( rightVectorItem ),
+          subjectNotes => pl( qp( "the index of " ) ) & name_em( rightVectorItem ),
           subjectType => identifiers( rightVectorItem ).genKind,
           reason => +"should have the identical type as",
           obstructorNotes => +"the index of " & name_em( leftVectorItem ) &
@@ -250,7 +250,7 @@ begin
         -- center, right match but left
         err(
           context => subprogram,
-          subjectNotes => +"the index of " & name_em( leftVectorItem ),
+          subjectNotes => pl( qp( "the index of " ) ) & name_em( leftVectorItem ),
           subjectType => identifiers( leftVectorItem ).genKind,
           reason => +"should have the identical type as",
           obstructorNotes => +"the index of " & name_em( centerVectorItem ) &
@@ -261,7 +261,7 @@ begin
        -- all 3 different
         err(
           context => subprogram,
-          subjectNotes => +"all indices",
+          subjectNotes => pl( qp( "all indices" ) ),
           reason => +"should have identical types but are different for",
           obstructorNotes => name_em( leftVectorItem ) &
              pl( ", " ) & name_em( centerVectorItem ) &
@@ -272,7 +272,7 @@ begin
      -- left, right match but not center
      err(
        context => subprogram,
-       subjectNotes => pl( "the index of " ) & name_em( centerVectorItem ),
+       subjectNotes => pl( qp( "the index of " ) ) & name_em( centerVectorItem ),
        subjectType => identifiers( centerVectorItem ).genKind,
        reason => +"should have the identical type as",
        obstructorNotes => +"the index of " & name_em( leftVectorItem ) &
@@ -354,7 +354,7 @@ begin
   if effectiveLeftType /= effectiveRightType then
      err(
        context => subprogram,
-       subjectNotes => +"the expression",
+       subjectNotes => pl( qp( "the expression" ) ),
        subjectType => leftType,
        reason => +"is not compatible with",
        obstructorNotes => +"a cursor or the index of " & name_em( rightVectorItem ),
@@ -639,7 +639,7 @@ begin
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
-            subjectNotes => pl( "the capacity count value of " & toSecureData( to_string( cntExpr ) ) ),
+            subjectNotes => pl( qp( "the capacity count value of " ) & toSecureData( to_string( cntExpr ) ) ),
             subjectType  => cntType,
             reason => +"is not valid for",
             obstructor => containers_count_type_t,
@@ -702,7 +702,7 @@ begin
      exception when constraint_error =>
        -- e.g. user gave "-1" for what is a natural type
        err( context => subprogramId,
-            subjectNotes => pl( "the capacity count value of " & toSecureData( to_string( cntExpr ) ) ),
+            subjectNotes => pl( qp( "the capacity count value of " ) & toSecureData( to_string( cntExpr ) ) ),
             subjectType  => cntType,
             reason => +"is not valid for",
             obstructor => containers_count_type_t,
@@ -2109,7 +2109,7 @@ begin
         getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
-          subjectNotes => +"a second index",
+          subjectNotes => pl( qp( "a second index" ) ),
           reason => +"was expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
@@ -2179,7 +2179,7 @@ begin
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
-          subjectNotes => +"a vector element",
+          subjectNotes => pl( qp( "a vector element" ) ),
           subjectType => identifiers( vectorId ).genKind2,
           reason => +"was expected not",
           obstructor => token,
@@ -2250,7 +2250,7 @@ begin
      getUniType( identifiers( token ).kind ) = vectors_cursor_t then
         err(
           context => subprogramId,
-          subjectNotes => +"a vector element",
+          subjectNotes => pl( qp( "a vector element" ) ),
           subjectType => identifiers( vectorId ).genKind2,
           reason => +"was expected not",
           obstructor => token,
@@ -2427,7 +2427,7 @@ begin
      expect( symbol_t, ")" );
   else
      err( context => subprogramId,
-          subjectNotes => +"the parameter list",
+          subjectNotes => pl( qp( "the parameter list" ) ),
           reason  => +"expects a ')' for two parameters or ',' for three",
           obstructorNotes => +""
      );
@@ -2450,7 +2450,7 @@ begin
        end;
      exception when constraint_error =>
        err( context => subprogramId,
-          subjectNotes => +"the amount",
+          subjectNotes => pl( qp( "the amount" ) ),
           reason  => +"should be a natural not",
           obstructorNotes => em_value( numExpr ),
           obstructorType => numType,
@@ -2498,7 +2498,7 @@ begin
      expect( symbol_t, ")" );
   else
      err( context => subprogramId,
-          subjectNotes => +"the parameter list",
+          subjectNotes => pl( qp( "the parameter list" ) ),
           reason  => +"expects a ')' for two parameters or ',' for three",
           obstructorNotes => +""
      );
@@ -2521,7 +2521,7 @@ begin
        end;
      exception when constraint_error =>
        err( context => subprogramId,
-          subjectNotes => +"the amount",
+          subjectNotes => pl( qp( "the amount" ) ),
           reason  => +"should be a natural not",
           obstructorNotes => em_value( numExpr ),
           obstructorType => numType,

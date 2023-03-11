@@ -106,7 +106,7 @@ end err_storage;
 procedure err_no_key( subprogram : identifier; keyName : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => +"the key " & em( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
+       subjectNotes => pl( qp( "the key " ) ) & em( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
        reason => +"is",
        obstructorNotes => +"not in the map" );
 end err_no_key;
@@ -120,7 +120,7 @@ end err_no_key;
 procedure err_key_exists( subprogram : identifier; keyName : unbounded_string ) is
 begin
   err( context => subprogram,
-       subjectNotes => +"the key " & em( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
+       subjectNotes => pl( qp( "the key " ) ) & em( toSecureData( to_string( ToEscaped( keyName ) ) ) ),
        reason => +"is",
        obstructorNotes => +"already in the map" );
 end err_key_exists;

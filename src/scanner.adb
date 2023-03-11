@@ -2766,7 +2766,7 @@ begin
   if identifiers( original ).kind = eof_t then
         err(
             contextNotes => pl( "Checking root types" ),
-            subjectNotes => pl( "a missing value" ),
+            subjectNotes => pl( qp( "a missing value" ) ),
             reason => pl( "is not a" ),
             obstructorNotes => pl( "a type or subtype" ) );
         return universal_t;
@@ -2792,7 +2792,7 @@ begin
      if original = keyword_t then
         err(
             contextNotes => +"Checking root types",
-            subjectNotes => +"a keyword",
+            subjectNotes => pl( qp( "a keyword" ) ),
             reason => +"is not a",
             obstructorNotes => +"a type or subtype" );
      else
@@ -2848,7 +2848,7 @@ begin
   if identifiers( original ).kind = eof_t then
         err(
             contextNotes => +"Checking base types",
-            subjectNotes => +"a missing value",
+            subjectNotes => pl( qp( "a missing value" ) ),
             reason => +"is not a",
             obstructorNotes => +"a type or subtype" );
         return universal_t;
@@ -2869,7 +2869,7 @@ begin
      if original = keyword_t then
         err(
             contextNotes => +"Checking base types",
-            subjectNotes => +"a keyword",
+            subjectNotes => pl( qp( "a keyword" ) ),
             reason => +"is not a",
             obstructorNotes => +"a type or subtype" );
      else
@@ -3076,16 +3076,16 @@ begin
   -- the type as well as the root type.
 
   if identifiers( leftType ).list and not identifiers( rightType ).list then
-    msg := +"type " & name_em( leftType ) &
+    msg := pl( qp( "type " ) ) & name_em( leftType ) &
            pl( "is an array but type " ) &
            name_em( rightType) &
            pl( " is not an array" );
   elsif not identifiers( leftType ).list and identifiers( rightType ).list then
-    msg := +"type " & name_em( leftType ) &
+    msg := pl( qp( "type " ) ) & name_em( leftType ) &
            pl( "is not an array but type " ) & name_em( rightType ) &
            pl( " is an array" );
   elsif effectiveLeftType /= effectiveRightType then
-    msg := +"type " & name_em( leftType );
+    msg := pl( qp( "type " ) ) & name_em( leftType );
     if effectiveLeftType = root_enumerated_t then
        msg := msg & pl( " (an enumerated type)" );
     elsif identifiers( leftType ).kind /= variable_t then
@@ -3287,7 +3287,7 @@ begin
   if effectiveLeftType /= effectiveRightType then
         err(
           context => contextId,
-          subjectNotes => +"the element of " & name_em( leftId ),
+          subjectNotes => pl( qp( "the element of " ) ) & name_em( leftId ),
           subjectType => leftType,
           reason => +"should have the compatible type to",
           obstructorNotes => +"the element of " & name_em( rightId ),
@@ -3465,7 +3465,7 @@ begin
        --err( "a variable has no value or a value is out-of-range" );
         err(
             contextNotes => +"casting types",
-            subjectNotes => +"the value",
+            subjectNotes => pl( qp( "the value" ) ),
             reason => +"is out-of-range of a",
             obstructor => kind,
             remedy => +"it has no value assigned, is too big, or is too small" );

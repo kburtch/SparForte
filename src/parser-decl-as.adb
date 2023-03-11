@@ -707,7 +707,7 @@ begin
   if token /= symbol_t or identifiers( token ).value.all /= "=>" then
     err(                                                 -- "=>"
        contextNotes => +"in case procedure when part",
-       subjectNotes => +"the list of input values",
+       subjectNotes => pl( qp( "the list of input values" ) ),
        reason => +"should end with a '=>' but found a",
        obstructor => token
     );
@@ -717,7 +717,7 @@ begin
   if token = symbol_t and identifiers( token ).value.all = ";" then
     err(                                                 -- "=>"
        contextNotes => +"in case procedure when part",
-       subjectNotes => +"the list of output values",
+       subjectNotes => pl( qp( "the list of output values" ) ),
        reason => +"is",
        obstructorNotes => +"missing"
     );
@@ -778,7 +778,7 @@ begin
   if token /= symbol_t or identifiers( token ).value.all /= ";" then
      err(                                                 -- "=>"
         contextNotes => +"in the case procedure when part",
-        subjectNotes => +"the list of output values",
+        subjectNotes => pl( qp( "the list of output values" ) ),
         reason => +"should end with a ';' but found a",
         obstructor => token
      );
@@ -919,7 +919,7 @@ begin
      if token = symbol_t and identifiers( token ).value.all = "=>" then
        err(                                                 -- "=>"
           contextNotes => +"in the case when part",
-          subjectNotes => +"the when conditions",
+          subjectNotes => pl( qp( "the when conditions" ) ),
           reason => +"are",
           obstructorNotes => +"missing"
        );
@@ -1123,7 +1123,7 @@ begin
      if token /= others_t then                                -- a little clearer
         err(
            contextNotes => +"in the case procedure",
-           subjectNotes => +"when others",
+           subjectNotes => pl( qp( "when others" ) ),
            reason => +"is",
            obstructorNotes => +"missing"
         );                        -- if pointing at
@@ -3363,7 +3363,7 @@ begin
   declarationLine := getLineNo;
 
   if onlyAda95 then
-     err( subjectNotes => em( "case procedures" ),
+     err( subjectNotes => em( qp( "case procedures" ) ),
           reason => +"are not allowed with",
           obstructorNotes => em( "pragma ada_95" ),
           remedy => pl( "a case statement is in a declaration section, or you " &

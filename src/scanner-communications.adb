@@ -1237,12 +1237,15 @@ begin
         msg := msg & pl(" ") & subjectNotes;
      else
         -- if not context, upper-case first letter of subject notes
-        msg.templateMessage := msg.templateMessage &
-           ToUpper( Head( subjectNotes.templateMessage, 1 ) & "" ) &
-           Slice( subjectNotes.templateMessage, 2, length( subjectNotes.templateMessage ) ) ;
-        msg.gccMessage     := msg.gccMessage &
-           ToUpper( Head( subjectNotes.gccMessage, 1 ) & "" ) &
-           Slice( subjectNotes.gccMessage, 2, length( subjectNotes.gccMessage ) ) ;
+        -- However, we can't tell what the first letter is because these are
+        -- formatted by this point.  Upper-case must happen earlier.
+        --msg.templateMessage := msg.templateMessage &
+        --   ToUpper( Head( subjectNotes.templateMessage, 1 ) & "" ) &
+        --   Slice( subjectNotes.templateMessage, 2, length( subjectNotes.templateMessage ) ) ;
+        --msg.gccMessage     := msg.gccMessage &
+        --   ToUpper( Head( subjectNotes.gccMessage, 1 ) & "" ) &
+        --   Slice( subjectNotes.gccMessage, 2, length( subjectNotes.gccMessage ) ) ;
+        msg := msg & subjectNotes;
      end if;
   end if;
 
@@ -1369,14 +1372,14 @@ begin
     end if;
   end if;
 
-   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
-   if obstructor = eof_t then
-      obstructorNotes := em( "end of file" );
-   else
-      obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
-   end if;
+  subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
+  if obstructor = eof_t then
+     obstructorNotes := em( "end of file" );
+  else
+     obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
+  end if;
 
-   err(
+  err(
     userLanguage    => userLanguage,
     contextType     => contextType,
     contextNotes    => contextNotes,
@@ -1412,11 +1415,11 @@ procedure err(
   subjectNotes    : messageStrings;
   obstructorNotes : messageStrings;
 begin
-   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
+   subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
    if obstructor = eof_t then
       obstructorNotes := em( "end of file" );
    else
-      obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
+      obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
    end if;
 
    err(
@@ -1457,15 +1460,15 @@ procedure err(
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
    if obstructor = eof_t then
       obstructorNotes := em( "end of file" );
    else
-      obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
+      obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
    end if;
 
    err(
@@ -1506,12 +1509,12 @@ procedure err(
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
-   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
+   subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
 
    err(
     userLanguage    => userLanguage,
@@ -1548,7 +1551,7 @@ procedure err(
     seeAlso         : messageStrings := nullMessageStrings ) is
   obstructorNotes : messageStrings;
 begin
-   obstructorNotes := em( to_string( toEscaped( identifiers( obstructor ).name ) ) );
+   obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
@@ -1584,7 +1587,7 @@ procedure err(
     seeAlso         : messageStrings := nullMessageStrings ) is
   subjectNotes    : messageStrings;
 begin
-   subjectNotes := em( to_string( toEscaped( identifiers( subject ).name ) ) );
+   subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
 
    err(
     userLanguage    => userLanguage,
@@ -1623,9 +1626,9 @@ procedure err(
 begin
   if context /= eof_t then
     if context < keywords_top then
-      contextNotes := pl( "In this " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
+      contextNotes := pl( "In this " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     else
-      contextNotes := pl( "In " ) & em( to_string( toEscaped( identifiers( context ).name ) ) );
+      contextNotes := pl( "In " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
 

@@ -2510,9 +2510,31 @@ begin
  if s = "" then
      return pl( "''" );
   else
-     return em( toSecureData( to_string( toEscaped( s ) ) ) );
+     return em( toSecureData( to_string( toCtrlEscaped( s ) ) ) );
   end if;
 end em_value;
+
+
+-----------------------------------------------------------------------------
+--  QP (Quiet Proper)
+--
+-- Uppercase the first letter of the string if quiet option is in use.
+-- The string should then passed to pl() or em() to turn into a message string.
+-- This depends on English being the display language as other languages may
+-- differ but this has not taken the display language into account.
+-----------------------------------------------------------------------------
+
+function qp( s : string ) return string is
+  -- TODO: this should be more efficient and not use an unbounded string
+  unb : unbounded_string := to_unbounded_string( s );
+begin
+  if quietOpt then
+     if s /= "" then
+        return to_string( ToUpper( Head( unb, 1 ) ) & Slice( unb, 2, length( unb ) ) );
+     end if;
+  end if;
+  return s;
+end qp;
 
 
 -----------------------------------------------------------------------------

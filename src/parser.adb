@@ -1441,7 +1441,7 @@ begin
      expectSymbol(
         expectedValue => ")",
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the subexpression",
+        subjectNotes => pl( qp( "the subexpression" ) ),
         subjectType => kind,
         reason => +"is closing and"
      );
@@ -1578,7 +1578,7 @@ begin
         kind := eof_t;
         err(                                              -- if/case function
            contextNotes => +"in this expression",
-           subjectNotes => +"SparForte",
+           subjectNotes => pl( qp( "SparForte" ) ),
            reason => +"does not permit",
            obstructorNotes => +"Ada 2012 style if and case expressions",
            remedy => +"use the statement version which is easier to debug and maintain"
@@ -1592,7 +1592,7 @@ begin
            identifiers( token ).value.all = ";" ) then
            err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => +"the expression",
+              subjectNotes => pl( qp( "the expression" ) ),
               reason => +"expects an operand not",
               obstructor => token,
               remedy => +"an operand or expression is missing"
@@ -1600,7 +1600,7 @@ begin
         else
            err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => +"the expression",
+              subjectNotes => pl( qp( "the expression" ) ),
               reason => +"expects an operand not",
               obstructor => token,
               remedy => +"an expression factor expects a variable, value or subexpression"          );
@@ -1678,7 +1678,7 @@ begin
          identifiers( token ).value.all = ";" ) then
          err(
             -- redundant contextNotes => "in this expression",
-            subjectNotes => +"the expression",
+            subjectNotes => pl( qp( "the expression" ) ),
             reason => +"expects an operand not",
             obstructor => token,
               remedy => +"an operand or expression is missing"
@@ -1686,7 +1686,7 @@ begin
       else
          err(
             -- redundant contextNotes => "in this expression",
-            subjectNotes => +"the expression",
+            subjectNotes => pl( qp( "the expression" ) ),
             reason => +"expects an operand not",
             obstructor => token,
             remedy => +"an expression factor expects a variable, value or subexpression"
@@ -1749,7 +1749,7 @@ begin
      --err( "operator expected");
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator symbol",
         remedy => +"'**'."
@@ -1836,7 +1836,7 @@ begin
   elsif Token /= symbol_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a term operator like '*', '/' or '&'."
@@ -1844,7 +1844,7 @@ begin
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a term operator like '*', '/' or '&'."
@@ -2060,7 +2060,7 @@ begin
   if Token /= symbol_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a simple expression operator like '+' or '-'."
@@ -2068,7 +2068,7 @@ begin
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a simple expression operator like '+' or '-'."
@@ -2250,7 +2250,7 @@ begin
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a relational operator like '=', '/=' or 'in'"
@@ -2264,7 +2264,7 @@ begin
         Token /= in_t and Token /= not_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a relational operator like '=', '/=' or 'in'"
@@ -2278,7 +2278,7 @@ begin
      if Token /= in_t then
         err(
            -- redundant contextNotes => "in this expression",
-           subjectNotes => +"the expression",
+           subjectNotes => pl( qp( "the expression" ) ),
            reason => +"expects",
            obstructorNotes => +"an operator",
            remedy => +"a relational operator like '=', '/=' or 'in'."
@@ -2328,7 +2328,7 @@ begin
            expectSymbol(                           -- keeps error messages nice
               expectedValue => "..",
               contextNotes => +"in this expression",
-              subjectNotes => +"the in / not in range",
+              subjectNotes => pl( qp( "the in / not in range" ) ),
               subjectType => kind1
            );
            ParseFactor( se3, kind3 );       -- should probably restructure
@@ -2486,7 +2486,7 @@ begin
      err( +"boolean operator expected");
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => +"the expression",
+        subjectNotes => pl( qp( "the expression" ) ),
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a boolean operator like 'and', 'or' or 'xor'."
@@ -2621,7 +2621,7 @@ begin
         else
            err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => +"this expression",
+              subjectNotes => pl( qp( "this expression" ) ),
               reason => +"expects",
               obstructorNotes => +"a boolean or a number"
            );

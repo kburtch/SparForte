@@ -24,8 +24,9 @@ Priority Issues (Fix These First)
   - coverage tests
 
 - bug
-  - first word of quiet errors should not be capitalized if it's an
+  - test if fixed: first word of quiet errors should not be capitalized if it's an
     identifier name
+
   - ^-^ In primes, the end of the statement expects ';' where primes is
     a variable in assignment...is incorrect.  At least, it should be
     "in primes assigment"

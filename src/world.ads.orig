@@ -1202,6 +1202,10 @@ function em_value( s : unbounded_string ) return messageStrings;
 -- combines bold, secured data and escaped.  A null value will
 -- return double single quotes.
 
+function qp( s : string ) return string;
+-- Uppercase the first letter of the string if quiet option is in use.
+-- The string is then passed to pl() or em() to turn into a message string.
+
 procedure put_trace( msg : string; icon : string := "" );
 -- display a trace message to standard error
 
