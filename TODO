@@ -15,13 +15,16 @@ Priority Issues (Fix These First)
   - checking error display rewrite
     - security testing
       - I should write tests that validate we're escaping
+  - the error pointer arithmetic in getCommandLine assumes a 195
+    character for UTF-8 but this may not always be true.
 
   - colour does not always switch back to the correct colour (i.e. bright
     white may revert to dim white after showing help index)
     - it may be impossible but setting the colour to bright what by default
       may be a partial solution
 
-  - coverage tests
+  - review toEscape use for foreign characters
+  - coverage tests of recent changes
 
 - bug
   - test if fixed: first word of quiet errors should not be capitalized if it's an

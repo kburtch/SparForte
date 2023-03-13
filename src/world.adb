@@ -2547,9 +2547,9 @@ end qp;
 procedure put_trace( msg : string; icon : string := "" ) is
 begin
   if icon /= "" and boolean( colourOpt ) then
-     put_line( standard_error, adorn_green( to_string( "=> (" & icon & " " & toEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
+     put_line( standard_error, adorn_green( to_string( "=> (" & icon & " " & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
   else
-     put_line( standard_error, adorn_green( to_string( "=> (" & toEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
+     put_line( standard_error, adorn_green( to_string( "=> (" & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
   end if;
 end put_trace;
 

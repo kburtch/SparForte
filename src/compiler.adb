@@ -342,6 +342,10 @@ begin
   if token_firstpos > length( cmdline.gccMessage ) then   -- past end of cmd?
      -- token_firstpos := line_lastpos+1-line_firstpos;
      token_firstpos := length( cmdline.gccMessage )+1;    -- treat token as
+     -- KLUDGE:  UTF-8 extended ASCII may begin with character 195
+     -- I'm not sure if this is always true.  Discount this when calculating
+     -- the string length.
+     token_firstpos := token_firstpos - ada.strings.unbounded.count(cmdline.gccMessage, "" & character'val( 195 ) );
      token_lastpos := token_firstpos;                     -- one char past end
   end if;
 end getCommandLine;
