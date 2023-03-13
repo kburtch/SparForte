@@ -1252,7 +1252,11 @@ begin
   if subjectType /= eof_t then
      -- if the type is keyword, it's not really meaningful
      if subjectType /= keyword_t then
-        msg := msg & pl( " (" ) & em( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) );
+        if subjectType = new_t then
+           msg := msg & pl( " (" ) & em( "not declared" );
+        else
+           msg := msg & pl( " (" ) & em( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) );
+        end if;
         if subjectLocation = nullMessageStrings then
            msg := msg & pl( ")" );
         end if;
