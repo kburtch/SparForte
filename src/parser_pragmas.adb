@@ -45,6 +45,7 @@ use ada.text_io,
     ada.strings.unbounded,
     ada.strings.unbounded.text_io,
     ada.calendar,
+    pegasoft,
     pegasock.memcache,
     pegasoft.user_io,
     pegasoft.user_io.getline,
@@ -728,7 +729,7 @@ begin
      expect( number_t );
   elsif var_id = teams_work_priority_cvss_t then
      declare
-        v1 : long_float;
+        v1 : numericValue;
      begin
         v1 := to_numeric( identifiers( token ).value.all );
         if v1 < 0.0 or v1 > 10.0 then

@@ -52,9 +52,9 @@ procedure append( m : in out string_hashed_maps.map; k, e : unbounded_string );
 
 procedure prepend( m : in out string_hashed_maps.map; k, e : unbounded_string );
 
-procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
+procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : numericValue );
 
-procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float );
+procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : numericValue );
 
 procedure extract( m : in out string_hashed_maps.map; k : unbounded_string; result :out unbounded_string );
 

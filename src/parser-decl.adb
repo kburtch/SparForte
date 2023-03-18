@@ -44,6 +44,7 @@ with gnat.source_info,
     parser_params,
     interpreter; -- circular relationship for breakout prompt
 use spar_os,
+    pegasoft,
     pegasoft.user_io,
     pegasoft.strings,
     performance_monitoring,

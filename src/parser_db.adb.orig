@@ -45,6 +45,7 @@ use  ada.text_io,
 #end if;
      spar_os.tty,
      signal_flags,
+     pegasoft,
      pegasoft.strings,
      pegasoft.user_io,
      world,

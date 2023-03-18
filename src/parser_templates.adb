@@ -25,11 +25,13 @@
 
 with
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner.communications,
     parser_params;
 use
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,

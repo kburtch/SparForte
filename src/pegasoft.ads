@@ -34,8 +34,10 @@ type integerOutputType is delta 0.1 digits System.Max_Digits-2;
 --   without rounding or resorting to scientific notation.  Why
 --   -2? Anything higher resulted in rounding of Max_Int and Min_Int.
 
-function to_numeric( s : unbounded_string ) return long_float;
+type numericValue is new long_float;
 
-function to_unbounded_string( f : long_float ) return unbounded_string;
+function to_numeric( s : unbounded_string ) return numericValue;
+
+function to_unbounded_string( f : numericValue ) return unbounded_string;
 
 end pegasoft;

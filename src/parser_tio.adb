@@ -40,6 +40,7 @@ use interfaces.c,
     ada.exceptions,
     ada.text_io,
     ada.strings.unbounded.text_io,
+    pegasoft,
     pegasoft.user_io,
     pegasoft.strings,
     signal_flags,
@@ -1309,14 +1310,14 @@ begin
         -- For universal numeric, represent it as an integer string if possible
         -- to make it human-readable.
         declare
-           val : long_float; -- := to_numeric( expr_val );
+           val : numericValue; -- := to_numeric( expr_val );
         begin
            val := to_numeric( expr_val );
            -- Within the range of a SparForte integer and no decimal (e.g.
            -- casting results in the same value?
-           if val >= long_float( integerOutputType'first+0.9 ) and
+           if val >= numericValue( integerOutputType'first+0.9 ) and
               val <= maxInteger then
-              if val = long_float'floor( val ) then
+              if val = numericValue'floor( val ) then
                  expr_val := to_unbounded_string( val );
               end if;
            end if;

@@ -36,6 +36,7 @@ use  ada.strings.unbounded,
      spar_os.l10n,
 #end if;
      world,
+     pegasoft,
      pegasoft.strings,
      scanner,
      scanner.communications,

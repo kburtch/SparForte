@@ -41,6 +41,7 @@ use  interfaces.c,
      spar_os,
      pegasoft.strings,
      world,
+     pegasoft,
      pegasoft.user_io,
      pegasoft.script_io,
      reports,
@@ -240,7 +241,7 @@ package body builtins.help is
                   workPriorityCompleted := workPriorityCompleted + 1;
                elsif measure = teams_work_priority_cvss_t then
                   declare
-                    u : long_float;
+                    u : numericValue;
                   begin
                     u := to_numeric( units );
                     if u < 4.0 then

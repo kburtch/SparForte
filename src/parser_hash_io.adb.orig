@@ -52,6 +52,7 @@ use
     ada.exceptions,
     ada.strings.unbounded,
     world,
+    pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
     scanner,
@@ -1134,7 +1135,7 @@ procedure ParseHashIncrement is
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
-  oldItemValue : long_float;
+  oldItemValue : numericValue;
 begin
   if rshOpt then
      err( +"increment not allowed in a " & em( "restricted shell" ) );
@@ -1163,7 +1164,7 @@ begin
           --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+             put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
           else
              put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
           end if;
@@ -1201,7 +1202,7 @@ procedure ParseHashDecrement is
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
-  oldItemValue : long_float;
+  oldItemValue : numericValue;
 begin
   if rshOpt then
      err( +"decrement not allowed in a " & em( "restricted shell" ) );
@@ -1229,7 +1230,7 @@ begin
          --if oldItem /= null_unbounded_string then
          oldItemValue := to_numeric( oldItem );
          if hasAmt then
-            put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+            put( theFile.hash.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
          else
             put( theFile.hash.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
          end if;

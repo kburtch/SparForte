@@ -24,10 +24,12 @@
 --with ada.text_io;use ada.text_io;
 
 with ada.strings.unbounded,
+    pegasoft,
     world,
     scanner.communications,
     parser_params;
 use ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
@@ -94,7 +96,7 @@ units_MB2bytes_t   : identifier;
 
 procedure ParseSimpleConversion( result : out unbounded_string;
   expr_val : in unbounded_string;
-  factor   : in long_float ) is
+  factor   : in numericValue ) is
 -- Many conversions are simple multiplication.  Using this procedure
 -- cuts the (binary) size of this package in half.
 begin

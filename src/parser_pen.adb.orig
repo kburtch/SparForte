@@ -36,6 +36,7 @@ with system,
     parser_params,
     parser;
 use interfaces.c,
+    pegasoft,
     pegasoft.pen,
     spar_os,
     spar_os.sdl,
@@ -77,13 +78,13 @@ procedure penRect2bushRect( pen_rect : aRect; bush_rect : identifier ) is
   left_field_t, top_field_t, right_field_t, bottom_field_t : identifier;
 begin
   findField( bush_rect, 1, left_field_t );
-     identifiers( left_field_t ).value.all := to_unbounded_string( long_float( pen_rect.left ) );
+     identifiers( left_field_t ).value.all := to_unbounded_string( numericValue( pen_rect.left ) );
   findField( bush_rect, 2, top_field_t );
-     identifiers( top_field_t ).value.all := to_unbounded_string( long_float( pen_rect.top ) );
+     identifiers( top_field_t ).value.all := to_unbounded_string( numericValue( pen_rect.top ) );
   findField( bush_rect, 3, right_field_t );
-     identifiers( right_field_t ).value.all := to_unbounded_string( long_float( pen_rect.right ) );
+     identifiers( right_field_t ).value.all := to_unbounded_string( numericValue( pen_rect.right ) );
   findField( bush_rect, 4, bottom_field_t );
-     identifiers( bottom_field_t ).value.all := to_unbounded_string( long_float( pen_rect.bottom ) );
+     identifiers( bottom_field_t ).value.all := to_unbounded_string( numericValue( pen_rect.bottom ) );
 end penRect2bushRect;
 
 #if OPENGL
@@ -856,7 +857,7 @@ begin
         newScreenCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( numericValue( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -925,7 +926,7 @@ begin
         newGLScreenCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( numericValue( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -990,7 +991,7 @@ begin
         newWindowCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( numericValue( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1055,7 +1056,7 @@ begin
         newGLWindowCanvas( positive( to_numeric( h_val ) ),
                          positive( to_numeric( v_val ) ),
                          C_Res, id );
-        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( numericValue( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -1132,7 +1133,7 @@ begin
                          positive( to_numeric( v_val ) ),
                          old_canvas_id, id );
         end if;
-        identifiers( canvas_ref.id ).value.all := to_unbounded_string( long_float( id ) );
+        identifiers( canvas_ref.id ).value.all := to_unbounded_string( numericValue( id ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -2158,9 +2159,9 @@ begin
           blend_g,
           blend_b
        );
-       AssignParameter( r3, to_unbounded_string( long_float( blend_r ) ) );
-       AssignParameter( g3, to_unbounded_string( long_float( blend_g ) ) );
-       AssignParameter( b3, to_unbounded_string( long_float( blend_b ) ) );
+       AssignParameter( r3, to_unbounded_string( numericValue( blend_r ) ) );
+       AssignParameter( g3, to_unbounded_string( numericValue( blend_g ) ) );
+       AssignParameter( b3, to_unbounded_string( numericValue( blend_b ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -2237,9 +2238,9 @@ begin
           blend_g,
           blend_b
        );
-       AssignParameter( r3, to_unbounded_string( long_float( blend_r ) ) );
-       AssignParameter( g3, to_unbounded_string( long_float( blend_g ) ) );
-       AssignParameter( b3, to_unbounded_string( long_float( blend_b ) ) );
+       AssignParameter( r3, to_unbounded_string( numericValue( blend_r ) ) );
+       AssignParameter( g3, to_unbounded_string( numericValue( blend_g ) ) );
+       AssignParameter( b3, to_unbounded_string( numericValue( blend_b ) ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -2288,7 +2289,7 @@ begin
      begin
         -- copy values into an Ada array
         for i in first..last loop
-            values(i) := to_numeric( identifiers( array_var_id ).avalue( i ) );
+            values(i) := long_float( to_numeric( identifiers( array_var_id ).avalue( i ) ) );
         end loop;
         Plot( aCanvasID( to_numeric( identifiers( canvas_id ).value.all ) ), values );
      exception when others =>
@@ -3191,7 +3192,7 @@ begin
   ParseSingleNumericParameter( eof_t, cap_val, cap_type, pen_glenum_t ); -- cap : GLenum
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glIsEnabled( GLenum( to_numeric( cap_val ) ) ) ) );
+      result := to_unbounded_string( numericValue( glIsEnabled( GLenum( to_numeric( cap_val ) ) ) ) );
       if raiseGlExceptions then
          check_opengl_err;
       end if;
@@ -3481,7 +3482,7 @@ begin
   ParseSingleNumericParameter( eof_t, mode_val, mode_type, pen_glrendermodes_t ); -- mode : GLrendermodes
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glRenderMode( GLrendermodes( to_numeric( mode_val ) ) ) ) );
+      result := to_unbounded_string( numericValue( glRenderMode( GLrendermodes( to_numeric( mode_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -3509,7 +3510,7 @@ begin
     declare
       errNum : GLerrors := glGetError;
     begin
-      result := to_unbounded_string( long_float( errNum ) );
+      result := to_unbounded_string( numericValue( errNum ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -4463,7 +4464,7 @@ begin
   ParseSingleNumericParameter( eof_t, list_val, list_type, pen_gluint_t ); -- list : GLuint
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glIsList( GLuint( to_numeric( list_val ) ) ) ) );
+      result := to_unbounded_string( numericValue( glIsList( GLuint( to_numeric( list_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -4522,7 +4523,7 @@ begin
   ParseSingleNumericParameter( eof_t, rng_val, rng_type, pen_glsizei_t ); -- rng : GLsizei
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glGenLists( GLsizei( to_numeric( rng_val ) ) ) ) );
+      result := to_unbounded_string( numericValue( glGenLists( GLsizei( to_numeric( rng_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -12740,7 +12741,7 @@ begin
       param2_array : GL_Boolean_Array_Access := new bool_array( 0..0 );
       param2_ptr   : GL_Boolean_Array_Ptr := GL_Boolean_Array_Conv.To_Address( param2_array );
     begin
-      result := to_unbounded_string( long_float( glAreTexturesResident( GLsizei( to_numeric( n_val ) ), param_ptr, param2_ptr ) ) );
+      result := to_unbounded_string( numericValue( glAreTexturesResident( GLsizei( to_numeric( n_val ) ), param_ptr, param2_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -12768,7 +12769,7 @@ begin
   ParseSingleNumericParameter( eof_t, texture_val, texture_type, pen_gluint_t ); -- texture : GL_UInt_Array_Ptr
   if isExecutingCommand then
     begin
-      result := to_unbounded_string( long_float( glIsTexture( GLuint( to_numeric( texture_val ) ) ) ) );
+      result := to_unbounded_string( numericValue( glIsTexture( GLuint( to_numeric( texture_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -18772,7 +18773,7 @@ begin
   if isExecutingCommand then
     begin
       -- TODO: MESA specific
-      null; -- esult := to_unbounded_string( long_float( glCreateDebugObjectMESA ) );
+      null; -- esult := to_unbounded_string( numericValue( glCreateDebugObjectMESA ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -18894,7 +18895,7 @@ begin
   if isExecutingCommand then
     begin
 -- TODO: MESA specific
-      null; -- result := to_unbounded_string( long_float( glGetDebugLogLengthMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) ) ) );
+      null; -- result := to_unbounded_string( numericValue( glGetDebugLogLengthMESA( GLhandleARB( to_numeric( obj_val ) ), GLenum( to_numeric( logType_val ) ), GLenum( to_numeric( shaderType_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19291,7 +19292,7 @@ begin
       dummy_ptr : system.address := dummy'address;
     begin
       -- TODO: no man page?
-      result := to_unbounded_string( long_float( gluBuild1DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluBuild1DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19339,7 +19340,7 @@ begin
       dummy : boolean;
       dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild1DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluBuild1DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19399,7 +19400,7 @@ begin
       dummy : boolean;
       dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild2DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluBuild2DMipmapLevels( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19450,7 +19451,7 @@ begin
       dummy : boolean;
       dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild2DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluBuild2DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19513,7 +19514,7 @@ begin
       dummy : boolean;
       dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild3DMipmapLevels( GLenum( to_numeric( taraget_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluBuild3DMipmapLevels( GLenum( to_numeric( taraget_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), GLint( to_numeric( level_val ) ), GLint( to_numeric( base_val ) ), GLint( to_numeric( max_val ) ), dummy_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19567,7 +19568,7 @@ begin
       dummy : boolean;
       dummy_ptr : system.address := dummy'address;
     begin
-      result := to_unbounded_string( long_float( gluBuild3DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluBuild3DMipmaps( GLenum( to_numeric( target_val ) ), GLbuffers( to_numeric( internalFormat_val ) ), GLsizei( to_numeric( width_val ) ), GLsizei( to_numeric( height_val ) ), GLsizei( to_numeric( depth_val ) ), GLbuffers( to_numeric( format_val ) ), GLtypes( to_numeric( kind_val ) ), dummy_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19601,7 +19602,7 @@ begin
   -- ParseLastNumericParameter( eof_t, extString_val, extString_type, pen_char_array_t ); -- extString : char_array
   if isExecutingCommand then
     begin
-      null; -- result := to_unbounded_string( long_float( gluCheckExtension( char_array( to_numeric( extName_val ) ), char_array( to_numeric( extString_val ) ) ) ) );
+      null; -- result := to_unbounded_string( numericValue( gluCheckExtension( char_array( to_numeric( extName_val ) ), char_array( to_numeric( extString_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -19999,7 +20000,7 @@ begin
     begin
       -- TODO: char_array_ptr is a system.address but we need to convert the C array to an
       -- unbounded_string
-      null; -- result := to_unbounded_string( long_float( gluGetString( GLenum( to_numeric( name_val ) ) ) ) );
+      null; -- result := to_unbounded_string( numericValue( gluGetString( GLenum( to_numeric( name_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -20156,7 +20157,7 @@ begin
   if isExecutingCommand then
     begin
       -- TODO: returns a system.address but SparForte doesn't handle this yet
-      null; -- result := to_unbounded_string( long_float( gluNewNurbsRenderer ) );
+      null; -- result := to_unbounded_string( numericValue( gluNewNurbsRenderer ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -20184,7 +20185,7 @@ begin
   if isExecutingCommand then
     begin
       -- TODO: returns a system.address but SparForte doesn't handle this yet
-      null; -- result := to_unbounded_string( long_float( gluNewQuadric ) );
+      null; -- result := to_unbounded_string( numericValue( gluNewQuadric ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -20212,7 +20213,7 @@ begin
   if isExecutingCommand then
     begin
       -- TODO: returns a system.address but SparForte doesn't handle this yet
-      null; -- result := to_unbounded_string( long_float( gluNewTess ) );
+      null; -- result := to_unbounded_string( numericValue( gluNewTess ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -20731,7 +20732,7 @@ begin
       -- winZ : GLdouble;
     begin
       -- TODO: in SparForte, functions cannot return values
-      null; -- result := to_unbounded_string( long_float( gluProject( GLdouble( to_numeric( objX_val ) ), GLdouble( to_numeric( objY_val ) ), GLdouble( to_numeric( objZ_val ) ), model_ptr, proj_ptr, view_ptr, winX, winY, winZ ) ) );
+      null; -- result := to_unbounded_string( numericValue( gluProject( GLdouble( to_numeric( objX_val ) ), GLdouble( to_numeric( objY_val ) ), GLdouble( to_numeric( objZ_val ) ), model_ptr, proj_ptr, view_ptr, winX, winY, winZ ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -21002,7 +21003,7 @@ begin
       dummy2 : boolean;
       dummy2_ptr : system.address := dummy2'address;
     begin
-      result := to_unbounded_string( long_float( gluScaleImage( GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( wIn_val ) ), GLsizei( to_numeric( hIn_val ) ), GLtypes( to_numeric( typeIn_val ) ), dummy_ptr, GLsizei( to_numeric( wOut_val ) ), GLsizei( to_numeric( hOut_val ) ), GLtypes( to_numeric( typeOut_val ) ), dummy2_ptr ) ) );
+      result := to_unbounded_string( numericValue( gluScaleImage( GLbuffers( to_numeric( format_val ) ), GLsizei( to_numeric( wIn_val ) ), GLsizei( to_numeric( hIn_val ) ), GLtypes( to_numeric( typeIn_val ) ), dummy_ptr, GLsizei( to_numeric( wOut_val ) ), GLsizei( to_numeric( hOut_val ) ), GLtypes( to_numeric( typeOut_val ) ), dummy2_ptr ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -21366,7 +21367,7 @@ begin
   --ParseLastNumericParameter( eof_t, objZ_val, objZ_type, pen_gl_double_array_ptr_t ); -- objZ : GL_Double_Array_Ptr
   if isExecutingCommand then
     begin
-      null; -- result := to_unbounded_string( long_float( gluUnProject( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ) ) ) );
+      null; -- result := to_unbounded_string( numericValue( gluUnProject( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -21432,7 +21433,7 @@ begin
   --ParseLastNumericParameter( eof_t, objW_val, objW_type, pen_gl_double_array_ptr_t ); -- objW : GL_Double_Array_Ptr
   if isExecutingCommand then
     begin
-      null; -- result := to_unbounded_string( long_float( gluUnProject4( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GLdouble( to_numeric( clipW_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GLdouble( to_numeric( nearVal_val ) ), GLdouble( to_numeric( farVal_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( objW_val ) ) ) ) );
+      null; -- result := to_unbounded_string( numericValue( gluUnProject4( GLdouble( to_numeric( winX_val ) ), GLdouble( to_numeric( winY_val ) ), GLdouble( to_numeric( winZ_val ) ), GLdouble( to_numeric( clipW_val ) ), GL_Double_Array_Ptr( to_numeric( model_val ) ), GL_Double_Array_Ptr( to_numeric( proj_val ) ), GL_Int_Array_Ptr( to_numeric( view_val ) ), GLdouble( to_numeric( nearVal_val ) ), GLdouble( to_numeric( farVal_val ) ), GL_Double_Array_Ptr( to_numeric( objX_val ) ), GL_Double_Array_Ptr( to_numeric( objY_val ) ), GL_Double_Array_Ptr( to_numeric( objZ_val ) ), GL_Double_Array_Ptr( to_numeric( objW_val ) ) ) ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -22338,287 +22339,287 @@ end declarePenStandardTypes;
 procedure declarePenGLConstants is
   function float_to_string( i : GLenum  ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLboolean ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtypes ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLprimitives ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLvertexarrays ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLmodes ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLpoints ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLlines ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLpolygons ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLdlists ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLalphacompare ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLdbuffer ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLlighting ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLusercplane ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLabuffer ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLatesting ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLblending ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLrendermodes ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLfeedback ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLselection ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLfog ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLlogicops ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLstencil ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLscissorbox ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLuint ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLbuffers ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLlimits ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLhints ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtransposemat ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLgets ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLhintmodes ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtextureenvdot3 ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLobsolete ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLpixelmode ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLutility ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtextureenvcomb ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtexturemapping ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLerrors ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLpushbits ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLmultitexture ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLmultisample ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLarbmapping ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtexturecubemap ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLtexturecomp ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLmultitexturearb ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLdebugshaders ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLevaluators ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUquaddrawstyle ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUquadricnormal ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUquadorientation ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUnurbscallbacks ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUnurbsproperties ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUtesscallbacks ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUtesscontour ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( i : GLUtessproperties ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( i ) ) );
+    return to_string( to_unbounded_string( numericValue( i ) ) );
   end float_to_string;
 
   function float_to_string( us : Interfaces.C.unsigned_short ) return string is
   begin
-    return to_string( to_unbounded_string( long_float( us ) )  );
+    return to_string( to_unbounded_string( numericValue( us ) )  );
   end float_to_string;
 
   function float_to_string( lf : long_float  ) return string is
   begin
-    return to_string( to_unbounded_string( lf )  );
+    return to_string( to_unbounded_string( numericValue( lf ) )  );
   end float_to_string;
 
 begin

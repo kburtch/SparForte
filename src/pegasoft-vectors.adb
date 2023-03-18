@@ -66,7 +66,7 @@ end prepend;
 --
 ------------------------------------------------------------------------------
 
-procedure increment( v : in out vector_string_lists.vector; i : vector_index; n : long_float ) is
+procedure increment( v : in out vector_string_lists.vector; i : vector_index; n : numericValue ) is
   the_string : unbounded_string;
 begin
   the_string := Vector_String_Lists.Element( v, i );
@@ -80,7 +80,7 @@ end increment;
 --
 ------------------------------------------------------------------------------
 
-procedure decrement( v : in out vector_string_lists.vector; i : vector_index; n : long_float ) is
+procedure decrement( v : in out vector_string_lists.vector; i : vector_index; n : numericValue ) is
   the_string : unbounded_string;
 begin
   the_string := Vector_String_Lists.Element( v, i );

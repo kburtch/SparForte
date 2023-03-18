@@ -24,11 +24,13 @@
 --with text_io;use text_io;
 
 with ada.strings.unbounded,
+    pegasoft,
     scanner.calendar,
     scanner.communications,
     parser_params,
     spar_os;
 use ada.strings.unbounded,
+    pegasoft,
     scanner,
     scanner.calendar,
     scanner.communications,
@@ -153,7 +155,7 @@ begin
   ParseSingleNumericParameter( cal_seconds_t, expr_val, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( long_float( seconds( time( to_numeric( expr_val ) ) ) )'img );
+       result := to_unbounded_string( numericValue( seconds( time( to_numeric( expr_val ) ) ) )'img );
      exception when others =>
        err_exception_raised;
      end;

@@ -50,6 +50,7 @@ use  ada.text_io,
      APQ,
 #end if;
 #end if;
+     pegasoft,
      pegasoft.strings,
      jobs,
      pegasoft.user_io,

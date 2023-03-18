@@ -25,6 +25,7 @@
 
 with
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
@@ -33,6 +34,7 @@ with
     parser_params;
 use
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
@@ -420,7 +422,7 @@ procedure ParseDHTIncrement is
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
-  oldItemValue : long_float;
+  oldItemValue : numericValue;
 begin
   expectAdaScript( subject => dht_increment_t, remedy => +"use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_increment_t, tableId, dht_table_t );
@@ -443,7 +445,7 @@ begin
        if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) );
+             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr ) ) ) ) );
           else
              Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue + 1.0 ) );
           end if;
@@ -472,7 +474,7 @@ procedure ParseDHTDecrement is
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
-  oldItemValue : long_float;
+  oldItemValue : numericValue;
 begin
   expectAdaScript( subject => dht_decrement_t, remedy => +"use get and set" );
   ParseFirstInOutInstantiatedParameter( dht_decrement_t, tableId, dht_table_t );
@@ -495,7 +497,7 @@ begin
        if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) );
+             Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr ) ) ) ) );
           else
              Dynamic_String_Hash_Tables.Set( theTable.dsht, keyExpr, to_unbounded_string( oldItemValue - 1.0 ) );
           end if;

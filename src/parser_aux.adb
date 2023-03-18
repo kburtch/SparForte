@@ -35,6 +35,7 @@ with ada.text_io,
      parser.decl.as;
 use  ada.text_io,
      Interfaces.C,
+     pegasoft,
      pegasoft.strings,
      pegasoft.script_io,
      pegasoft.user_io,

@@ -23,12 +23,14 @@
 
 with ada.command_line,
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
     parser;
 use ada.command_line,
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,

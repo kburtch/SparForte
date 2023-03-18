@@ -35,6 +35,7 @@ with system,
 use ada.strings.unbounded,
   ada.calendar,
   software_models,
+  pegasoft,
   pegasock.memcache,
   spar_os;
 #if APQ
@@ -91,7 +92,7 @@ sessions_session_variable_value_str : constant unbounded_string := to_unbounded_
 -- Decimal type for formatted numbers
 --
 
-type integerOutputType is delta 0.1 digits System.Max_Digits-2;
+--type integerOutputType is delta 0.1 digits System.Max_Digits-2;
 --   delta can't be 1, so we'll settle for 0.1.  This is the largest
 --   long float number we can convert to an integer (and vice vera)
 --   without rounding or resorting to scientific notation.  Why
@@ -1034,24 +1035,20 @@ lastNamespaceId     : identifier;
 -- Type Representation
 -----------------------------------------------------------------------------
 
-maxInteger : long_float;
--- equivalent to BUSH's System.Max_Int, the largest integer representable
--- by BUSH (it is not long_integer'last).  Set during scanner startup.
+maxInteger : numericValue;
+-- equivalent to System.Max_Int, the largest integer representable
+-- by Spar (it is not long_integer'last).  Set during scanner startup.
 
-function to_numeric( s : unbounded_string ) return long_float;
--- Convert an unbounded string to a long float (BUSH's numeric representation)
 
-function to_numeric( id : identifier ) return long_float;
--- Look up an identifier's value and return it as a long float
--- (BUSH's numeric representation).
+function to_numeric( id : identifier ) return numericValue;
+-- Look up an identifier's value and return it as a numeric value.
+-- The string version is in the pegasoft package.
 
 function to_bush_boolean( AdaBoolean : boolean ) return unbounded_string;
   -- convert an Ada boolean into a BUSH boolean (a string containing
   -- the position, no leading blank).
 
-function to_unbounded_string( f : long_float ) return unbounded_string;
--- convert a numeric value to a bush string, dropping of decimal portion
--- if a small integer
+-- to_unbounded_string for numeric value is in the pegasoft package.
 
 -----------------------------------------------------------------------------
 -- Character Conversion

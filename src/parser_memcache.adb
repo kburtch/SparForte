@@ -33,6 +33,7 @@ with pegasoft.gen_list,
     pegasock.memcache.highread;
 use ada.strings,
     ada.strings.unbounded,
+    pegasoft,
     pegasoft.user_io,
     world,
     scanner,
@@ -241,7 +242,7 @@ begin
         memcacheClusterIdTop := memcacheClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheClusterList.Queue( memcacheCluster, cluster_entry );
-        result := to_unbounded_string( long_float( cluster_id_value ) );
+        result := to_unbounded_string( numericValue( cluster_id_value ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -705,7 +706,7 @@ begin
         memcacheDualClusterIdTop := memcacheDualClusterIdTop + 1;
         cluster_entry.id := cluster_id_value;
         memcacheDualClusterList.Queue( memcacheDualCluster, cluster_entry );
-        result := to_unbounded_string( long_float( cluster_id_value ) );
+        result := to_unbounded_string( numericValue( cluster_id_value ) );
      exception when others =>
         err_exception_raised;
      end;

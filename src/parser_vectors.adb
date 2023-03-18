@@ -36,6 +36,7 @@ with
     parser_containers;
 use
     ada.strings.unbounded,
+    pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
     pegasoft.vectors,
@@ -2330,7 +2331,7 @@ begin
         startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr ) ) );
 
         positionIdx := Vector_String_Lists.Find_Index( theVector.vslVector, itemExpr, startIdx );
-        positionvalue := to_unbounded_string( long_float( toUserVectorIndex( vectorId, positionIdx ) ) );
+        positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
             positionIdxRef,
@@ -2379,7 +2380,7 @@ begin
         startIdx := toRealVectorIndex( vectorId, integer( to_numeric( startIdxExpr ) ) );
 
         positionIdx := Vector_String_Lists.Reverse_Find_Index( theVector.vslVector, itemExpr, startIdx );
-        positionvalue := to_unbounded_string( long_float( toUserVectorIndex( vectorId, positionIdx ) ) );
+        positionvalue := to_unbounded_string( numericValue( toUserVectorIndex( vectorId, positionIdx ) ) );
 
         AssignParameter(
             positionIdxRef,
@@ -2434,10 +2435,10 @@ begin
   end if;
   if isExecutingCommand then
      declare
-       floatVal  : long_float;
+       floatVal  : numericValue;
      begin
        if hasAmt then
-          floatVal := long_float( natural( to_numeric( numExpr ) ) );
+          floatVal := numericValue( natural( to_numeric( numExpr ) ) );
        else
           floatVal := 1.0;
        end if;
@@ -2505,10 +2506,10 @@ begin
   end if;
   if isExecutingCommand then
      declare
-       floatVal  : long_float;
+       floatVal  : numericValue;
      begin
        if hasAmt then
-          floatVal := long_float( natural( to_numeric( numExpr ) ) );
+          floatVal := numericValue( natural( to_numeric( numExpr ) ) );
        else
           floatVal := 1.0;
        end if;

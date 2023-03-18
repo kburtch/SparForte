@@ -28,6 +28,7 @@ with ada.strings,
     parser_sidefx,
     parser.decl.as;
 use ada.strings,
+    pegasoft,
     pegasoft.user_io,
     scanner,
     scanner.communications,

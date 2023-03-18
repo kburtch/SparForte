@@ -2093,12 +2093,12 @@ procedure declareStandardPackage is
 begin
   declareNamespace( "System" );
   declareStandardConstant( "System.System_Name", uni_string_t, "SYSTEM_NAME_SPARFORTE" );
-  declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( long_float( integerOutputType'first+0.9 ) ) ) );
-  -- out minimum integer is the limit of a long_float's mantissa.  should
+  declareStandardConstant( "System.Min_Int", uni_numeric_t, to_string( to_unbounded_string( numericValue( integerOutputType'first+0.9 ) ) ) );
+  -- out minimum integer is the limit of a numericValue's mantissa.  should
   -- probably check that system.min_int isn't smaller, but Gnat gives bogus
-  -- result on long_float( max_int ) if mantissa isn't big enough.
+  -- result on numericValue( max_int ) if mantissa isn't big enough.
   declareStandardConstant( "System.Max_Int", uni_numeric_t, to_string( to_unbounded_string( maxInteger ) ) );
-  -- out maximum integer is the limit of a long_float's mantissa
+  -- out maximum integer is the limit of a numericValue's mantissa
   -- probably check that system.min_max isn't smaller
   declareStandardConstant( "System.Max_Binary_Modulus", uni_numeric_t,
     long_long_float'image( long_long_float( system.max_binary_modulus ) ) );
@@ -2111,7 +2111,7 @@ begin
   declareStandardConstant( "System.Tick", uni_numeric_t, system.tick'img );
   declareStandardConstant( "System.Storage_Unit", uni_numeric_t, system.storage_unit'img );
   declareStandardConstant( "System.Word_Size", uni_numeric_t, system.word_size'img );
-  declareStandardConstant( "System.Memory_Size", uni_numeric_t, long_float'image( long_float( system.memory_size ) ) );
+  declareStandardConstant( "System.Memory_Size", uni_numeric_t, numericValue'image( numericValue( system.memory_size ) ) );
   -- NOTE: This was a universal integer but memory_size of 512 MB or larger gave an 'img error
   -- so it is now a long float.
   declareStandardConstant( "System.Default_Bit_Order", uni_string_t, system.default_bit_order'img );
@@ -2563,7 +2563,7 @@ procedure startScanner is
 
 begin
 
-  maxInteger := long_float( integerOutputType'last-0.9 );
+  maxInteger := numericValue( integerOutputType'last-0.9 );
 
   saveInitialEnvironment;
   -- save a copy of the O/S environment
@@ -3363,7 +3363,7 @@ end renamingTypesOk;
 -- a new variable (instance) of that type.
 -----------------------------------------------------------------------------
 
-function castToType( val : long_float; kind : identifier ) return unbounded_string is
+function castToType( val : numericValue; kind : identifier ) return unbounded_string is
   baseType : identifier;
   roundedVal : long_long_integer;
   str : unbounded_string;
@@ -3427,7 +3427,7 @@ begin
      kind = long_integer_t or
      kind = long_long_integer_t then
      begin
-       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+       roundedVal := long_long_integer( numericValue'value( to_string( val ) ) );
      exception when constraint_error =>
        err( +"a variable has no value or a value is out-of-range" );
      when others =>
@@ -3438,7 +3438,7 @@ begin
   --elsif baseType = natural_t then
   elsif kind = natural_t then
      begin
-       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+       roundedVal := long_long_integer( numericValue'value( to_string( val ) ) );
      exception when constraint_error =>
        err( +"a variable has no value or a value is out-of-range" );
      when others =>
@@ -3460,7 +3460,7 @@ begin
   --elsif baseType = positive_t then
   elsif kind = positive_t then
      begin
-       roundedVal := long_long_integer( long_float'value( to_string( val ) ) );
+       roundedVal := long_long_integer( numericValue'value( to_string( val ) ) );
      exception when constraint_error =>
        --err( "a variable has no value or a value is out-of-range" );
         err(
@@ -4407,7 +4407,7 @@ begin
                end if;
                -- try to see if it is a valid long float
                declare
-                  lf : long_float;
+                  lf : numericValue;
                begin
                   lf := to_numeric( item );
                   ok := true;
@@ -4812,7 +4812,7 @@ begin
         end if;
         -- try to see if it is a valid long float
         declare
-          lf : long_float;
+          lf : numericValue;
         begin
           lf := to_numeric( tempStr );
           ok := true;

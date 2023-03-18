@@ -46,3 +46,6 @@ CHANGES SINCE 2.5
 
 21. New: configure --jobs option.
 
+22. Refactor: standardized numeric values in the language to a dedicated type
+instead of using long_float's.
+

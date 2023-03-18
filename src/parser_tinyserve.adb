@@ -33,6 +33,7 @@ with
     parser_params;
 use
     pegasock,
+    pegasoft,
     pegasock.tinyserve,
     pegasoft.user_io,
     scanner,

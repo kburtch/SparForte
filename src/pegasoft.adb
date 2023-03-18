@@ -30,14 +30,14 @@ package body pegasoft is
 -- Convert an unbounded string to a long float (Spar's numeric representation)
 ------------------------------------------------------------------------------
 
-function to_numeric( s : unbounded_string ) return long_float is
+function to_numeric( s : unbounded_string ) return numericValue is
 begin
   if Element( s, 1 ) = '-' then                               -- leading -?
-     return long_float'value( to_string( s ) );               -- OK for 'value
+     return numericValue'value( to_string( s ) );             -- OK for 'value
   elsif Element( s, 1 ) = ' ' then                            -- leading space?
-     return long_float'value( to_string( s ) );               -- OK for 'value
+     return numericValue'value( to_string( s ) );             -- OK for 'value
   else                                                        -- otherwise add
-     return long_float'value( " " & to_string( s ) );         -- space & 'value
+     return numericValue'value( " " & to_string( s ) );       -- space & 'value
   end if;
 end to_numeric;
 
@@ -50,8 +50,8 @@ end to_numeric;
 -- it is returned without a decimal part.
 ------------------------------------------------------------------------------
 
-function to_unbounded_string( f : long_float ) return unbounded_string is
-  f_trunc : constant long_float := long_float'truncation( f );
+function to_unbounded_string( f : numericValue ) return unbounded_string is
+  f_trunc : constant numericValue := numericValue'truncation( f );
 begin
 
   -- integer value?  Try to return without a decimal part
@@ -60,15 +60,15 @@ begin
    if f - f_trunc = 0.0 then
       -- There's no guarantee that a long_long_integer will fit into
       -- a long_float's mantissa, so we'll use a decimal type.
-      if f <= long_float( integerOutputType'last ) and
-         f >= long_float( integerOutputType'first ) then
+      if f <= numericValue( integerOutputType'last ) and
+         f >= numericValue( integerOutputType'first ) then
          return to_unbounded_string( long_long_integer( f )'img );
       end if;
    end if;
 
   -- Otherwise, return a long float using 'image
 
-   return to_unbounded_string( long_float'image( f ) );
+   return to_unbounded_string( numericValue'image( f ) );
 end to_unbounded_string;
 
 end pegasoft;

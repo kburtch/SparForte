@@ -46,6 +46,7 @@ with ada.command_line,
     parser_cal;
 use ada.command_line,
     spar_os,
+    pegasoft,
     pegasoft.user_io,
     pegasoft.strings,
     performance_monitoring,
@@ -1911,9 +1912,9 @@ begin
                  end;
              elsif operator = "/" then
                 declare
-                  t : long_float;
-                  p : long_float;
-                  z : long_float := 0.0;
+                  t : numericValue;
+                  p : numericValue;
+                  z : numericValue := 0.0;
                 begin
                   -- mark the type that was targetted by the cast
                   if syntax_check then
@@ -1954,7 +1955,7 @@ begin
                   if isExecutingCommand then
                      term := castToType(
                         --long_long_integer'image(
-                        long_float(
+                        numericValue(
                         long_long_integer( to_numeric( term ) ) mod
                         long_long_integer( to_numeric( pterm2 ) ) ),
                      term_type );
@@ -1975,7 +1976,7 @@ begin
                   if isExecutingCommand then
                      term := castToType(
                         --long_long_integer'image(
-                        long_float(
+                        numericValue(
                         long_long_integer( to_numeric( term ) ) rem
                         long_long_integer( to_numeric( pterm2 ) ) ),
                      term_type );
@@ -2542,7 +2543,7 @@ begin
               begin
                 if isExecutingCommand then
                    re1 := to_unbounded_string(
-                      long_float(
+                      numericValue(
                       bitwise_number( to_numeric( re1 ) ) and
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
@@ -2560,7 +2561,7 @@ begin
               begin
                 if isExecutingCommand then
                    re1 := to_unbounded_string(
-                      long_float(
+                      numericValue(
                       bitwise_number( to_numeric( re1 ) ) or
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
@@ -2578,7 +2579,7 @@ begin
               begin
                 if isExecutingCommand then
                    re1 := to_unbounded_string(
-                      long_float(
+                      numericValue(
                       bitwise_number( to_numeric( re1 ) ) xor
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
@@ -3130,9 +3131,9 @@ begin
                  end;
              elsif operator = "/" then
                 declare
-                  t : long_float;
-                  p : long_float;
-                  z : long_float := 0.0;
+                  t : numericValue;
+                  p : numericValue;
+                  z : numericValue := 0.0;
                 begin
                   -- mark the type that was targetted by the cast
                   if syntax_check then
@@ -3173,7 +3174,7 @@ begin
                   if isExecutingStaticCommand then
                      term := castToType(
                         --long_long_integer'image(
-                        long_float(
+                        numericValue(
                         long_long_integer( to_numeric( term ) ) mod
                         long_long_integer( to_numeric( pterm2 ) ) ),
                      term_type );
@@ -3194,7 +3195,7 @@ begin
                   if isExecutingStaticCommand then
                      term := castToType(
                         --long_long_integer'image(
-                        long_float(
+                        numericValue(
                         long_long_integer( to_numeric( term ) ) rem
                         long_long_integer( to_numeric( pterm2 ) ) ),
                      term_type );
@@ -3700,7 +3701,7 @@ begin
               begin
                 if isExecutingStaticCommand then
                    re1 := to_unbounded_string(
-                      long_float(
+                      numericValue(
                       bitwise_number( to_numeric( re1 ) ) and
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
@@ -3718,7 +3719,7 @@ begin
               begin
                 if isExecutingStaticCommand then
                    re1 := to_unbounded_string(
-                      long_float(
+                      numericValue(
                       bitwise_number( to_numeric( re1 ) ) or
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;
@@ -3736,7 +3737,7 @@ begin
               begin
                 if isExecutingStaticCommand then
                    re1 := to_unbounded_string(
-                      long_float(
+                      numericValue(
                       bitwise_number( to_numeric( re1 ) ) xor
                       bitwise_number( to_numeric( re2 ) ) ) );
                 end if;

@@ -25,12 +25,14 @@
 
 with gnat.lock_files,
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
     parser;
 use gnat.lock_files,
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,

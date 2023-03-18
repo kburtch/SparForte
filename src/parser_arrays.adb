@@ -36,6 +36,7 @@ with gnat.bubble_sort_a,
      parser_params;
 use  ada.strings.unbounded,
      world,
+     pegasoft,
      pegasoft.strings,
      scanner,
      scanner.communications,

@@ -53,6 +53,7 @@ use
     spar_os,
     pegasoft.user_io,
     world,
+    pegasoft,
     pegasoft.strings,
     compiler,
     scanner,
@@ -503,7 +504,7 @@ begin
   ParseSingleOutParameter( logs_level_begin_t, ref, log_level_t );
   if isExecutingCommand then
      begin
-        AssignParameter(ref, to_unbounded_string( long_float( level ) ) );
+        AssignParameter(ref, to_unbounded_string( numericValue( level ) ) );
         level := level + 1;
      exception when constraint_error =>
         err( +"constraint_error raised" );
@@ -934,13 +935,13 @@ begin
   ParseLastOutParameter(  logs_metrics_t, error_ref, natural_t );
   if isExecutingCommand then
      assignParameter( ok_ref,
-        to_unbounded_string( long_float( checkpointMetrics.ok_count ) ) );
+        to_unbounded_string( numericValue( checkpointMetrics.ok_count ) ) );
      assignParameter( info_ref,
-        to_unbounded_string( long_float( checkpointMetrics.info_count ) ) );
+        to_unbounded_string( numericValue( checkpointMetrics.info_count ) ) );
      assignParameter( warning_ref,
-        to_unbounded_string( long_float( checkpointMetrics.warning_count ) ) );
+        to_unbounded_string( numericValue( checkpointMetrics.warning_count ) ) );
      assignParameter( error_ref,
-        to_unbounded_string( long_float( checkpointMetrics.error_count ) ) );
+        to_unbounded_string( numericValue( checkpointMetrics.error_count ) ) );
   end if;
 end ParseMetrics;
 

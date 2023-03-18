@@ -50,9 +50,9 @@ procedure append( v : in out vector_string_lists.vector; i :vector_index; e : un
 
 procedure prepend( v : in out vector_string_lists.vector; i :vector_index; e : unbounded_string );
 
-procedure increment( v : in out vector_string_lists.vector; i : vector_index; n : long_float );
+procedure increment( v : in out vector_string_lists.vector; i : vector_index; n : numericValue );
 
-procedure decrement( v : in out vector_string_lists.vector; i : vector_index; n : long_float );
+procedure decrement( v : in out vector_string_lists.vector; i : vector_index; n : numericValue );
 
 
 -- function extract( m : in out string_hashed_maps.map; k : unbounded_string ) return unbounded_string;

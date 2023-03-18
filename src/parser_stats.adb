@@ -23,10 +23,11 @@
 --with ada.text_io; use ada.text_io;
 
 with gnat.source_info,
-     ada.numerics.long_elementary_functions,
+     pegasoft.numerics,
      scanner.communications,
      parser;
-use  ada.numerics.long_elementary_functions,
+use  pegasoft,
+     pegasoft.numerics.elementary_functions,
      scanner.communications,
      parser;
 
@@ -53,7 +54,7 @@ procedure ParseStatsMax( f : out unbounded_string; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   -- array_id : arrayID;
-  max : long_float;
+  max : numericValue;
   max_string : unbounded_string;
 begin
   kind := universal_t;
@@ -98,7 +99,7 @@ procedure ParseStatsMin( f : out unbounded_string; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   -- array_id : arrayID;
-  min : long_float;
+  min : numericValue;
   min_string : unbounded_string;
 begin
   kind := universal_t;
@@ -143,7 +144,7 @@ procedure ParseStatsSum( f : out unbounded_string; kind : out identifier ) is
   var_id : identifier;
   first, last : long_integer;
   -- array_id : arrayID;
-  sum : long_float;
+  sum : numericValue;
 begin
   kind := universal_t;
   expect( stats_sum_t );
@@ -184,7 +185,7 @@ procedure ParseStatsAverage( f : out unbounded_string; kind : out identifier ) i
   first, last : long_integer;
   len    : long_integer;
   --array_id : arrayID;
-  sum : long_float;
+  sum : numericValue;
 begin
   kind := universal_t;
   expect( stats_average_t );
@@ -207,7 +208,7 @@ begin
            for i in first..last loop
                sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
            end loop;
-           f := to_unbounded_string( sum / long_float( len ) );
+           f := to_unbounded_string( sum / numericValue( len ) );
         else
            f := to_unbounded_string(0);
            err( +"array is empty" );
@@ -226,10 +227,10 @@ procedure ParseStatsVariance( f : out unbounded_string; kind : out identifier ) 
   first, last : long_integer;
   len      : long_integer;
   -- array_id : arrayID;
-  sum      : long_float;
-  diff     : long_float;
-  mean     : long_float;
-  sum_diff_sq : long_float;
+  sum      : numericValue;
+  diff     : numericValue;
+  mean     : numericValue;
+  sum_diff_sq : numericValue;
 begin
   kind := universal_t;
   expect( stats_variance_t );
@@ -252,13 +253,13 @@ begin
            for i in first..last loop
                sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
            end loop;
-           mean := sum / long_float( len );
+           mean := sum / numericValue( len );
            sum_diff_sq := 0.0;
            for i in first..last loop
                diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
                sum_diff_sq := sum_diff_sq + diff * diff;
            end loop;
-           f := to_unbounded_string( sum_diff_sq / long_float( len-1 ) );
+           f := to_unbounded_string( sum_diff_sq / numericValue( len-1 ) );
         else
            f := to_unbounded_string( 0 );
            err( +"array is empty" );
@@ -278,10 +279,10 @@ procedure ParseStatsStandardDeviation( f : out unbounded_string; kind : out iden
   first, last : long_integer;
   len      : long_integer;
   -- array_id : arrayID;
-  sum      : long_float;
-  diff     : long_float;
-  mean     : long_float;
-  sum_diff_sq : long_float;
+  sum      : numericValue;
+  diff     : numericValue;
+  mean     : numericValue;
+  sum_diff_sq : numericValue;
 begin
   expect( stats_standard_deviation_t );
   expect( symbol_t, "(" );
@@ -302,13 +303,13 @@ begin
         for i in first..last loop
             sum := sum + to_numeric( identifiers( var_id ).avalue( i ) );
         end loop;
-        mean := sum / long_float( len );
+        mean := sum / numericValue( len );
         sum_diff_sq := 0.0;
         for i in first..last loop
             diff := to_numeric( identifiers( var_id ).avalue( i ) ) - mean;
             sum_diff_sq := sum_diff_sq + diff * diff;
         end loop;
-        f := to_unbounded_string( sqrt( sum_diff_sq / long_float( len-1 ) ) );
+        f := to_unbounded_string( sqrt( sum_diff_sq / numericValue( len-1 ) ) );
      else
         f := to_unbounded_string( 0 );
         err( +"array is empty" );

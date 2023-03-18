@@ -24,6 +24,7 @@
 --with text_io;use text_io;
 
 with ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
@@ -31,6 +32,7 @@ with ada.strings.unbounded,
     parser_aux,
     spar_os;
 use ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications,

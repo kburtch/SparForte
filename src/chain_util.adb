@@ -24,9 +24,11 @@
 
 with ada.strings.unbounded,
      ada.calendar,
+     pegasoft,
      world,
      scanner;
 use  ada.strings.unbounded,
+     pegasoft,
      world,
      scanner;
 

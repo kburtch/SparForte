@@ -25,11 +25,13 @@
 
 with
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications;
 use
     ada.strings.unbounded,
+    pegasoft,
     world,
     scanner,
     scanner.communications;
@@ -84,7 +86,7 @@ begin
      if err_exception.deleted then
         result := to_unbounded_string( "0" );
      else
-        result := to_unbounded_string( long_float( character'pos( element( err_exception.value.all, 1 ) ) ) );
+        result := to_unbounded_string( numericValue( character'pos( element( err_exception.value.all, 1 ) ) ) );
      end if;
   end if;
 end ParseExceptionsExceptionStatusCode;

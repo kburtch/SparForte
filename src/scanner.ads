@@ -25,9 +25,11 @@
 
 with
   ada.strings.unbounded,
+  pegasoft,
   world,
   compiler;
 use ada.strings.unbounded,
+  pegasoft,
   world,
   compiler;
 
@@ -307,7 +309,7 @@ function renamingTypesOk( renamingType, canonicalType : identifier ) return
 -- Type Casting
 -----------------------------------------------------------------------------
 
-function castToType( val : long_float; kind : identifier ) return unbounded_string;
+function castToType( val : numericValue; kind : identifier ) return unbounded_string;
 function castToType( val : unbounded_string; kind : identifier ) return unbounded_string;
 -- If a value is an integer type (i.e. positive, natural or integer),
 -- round the value.  Otherwise do not round the value.  Return the

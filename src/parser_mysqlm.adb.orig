@@ -50,6 +50,7 @@ use  ada.strings.unbounded,
      world,
      world.utf8,
      signal_flags,
+     pegasoft,
      pegasoft.strings,
      pegasoft.user_io,
      scanner,
@@ -2725,7 +2726,7 @@ begin
                           -- a MySQL boolean isn't exactly the same as an Ada boolean
                           -- Its boolean is a tiny int, non-zero is true
                           declare
-                            lf : long_float;
+                            lf : numericValue;
                           begin
                             lf := to_numeric( field );
                             if lf = 0.0 then
@@ -2749,7 +2750,7 @@ begin
                             identifiers( j ).kind );
                        elsif getUniType( elementKind ) = uni_numeric_t then
                           declare
-                            lf : long_float;
+                            lf : numericValue;
                           begin
                             lf := to_numeric( field );
                             identifiers( j ).value.all := castToType( field,

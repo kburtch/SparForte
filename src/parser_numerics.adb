@@ -23,9 +23,7 @@
 
 --with ada.text_io; use ada.text_io;
 
-with ada.numerics.long_elementary_functions,
-    ada.numerics.float_random,
-    ada.numerics.long_complex_types,
+with ada.numerics.float_random,
     ada.strings,
     interfaces,
     gnat.sha1,
@@ -40,11 +38,12 @@ with ada.numerics.long_elementary_functions,
     parser_params,
     parser,
     md5;
-use ada.numerics.long_elementary_functions,
-    ada.numerics.long_complex_types,
-    interfaces,
+use interfaces,
+    pegasoft,
     pegasoft.user_io,
     pegasoft.numerics,
+    pegasoft.numerics.elementary_functions,
+    pegasoft.numerics.complex_types,
     world,
     scanner,
     scanner.communications,
@@ -54,7 +53,7 @@ use ada.numerics.long_elementary_functions,
 
 package body parser_numerics is
 
-serialNumber : long_float := 0.0;
+serialNumber : numericValue := 0.0;
 
 ------------------------------------------------------------------------------
 -- Numerics package identifiers
@@ -152,7 +151,7 @@ begin
   result := null_unbounded_string;
   expect( random_t );
   if isExecutingCommand then
-     result := to_unbounded_string( long_float( Ada.Numerics.Float_Random.Random(
+     result := to_unbounded_string( numericValue( Ada.Numerics.Float_Random.Random(
        random_generator ) ) );
   end if;
 end ParseNumericsRandom;
@@ -171,7 +170,7 @@ begin
   ParseLastNumericParameter( shift_left_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( long_float( shift_left(
+        result := to_unbounded_string( numericValue( shift_left(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
         ) ) );
@@ -195,7 +194,7 @@ begin
   ParseLastNumericParameter( shift_right_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( long_float( shift_right(
+        result := to_unbounded_string( numericValue( shift_right(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
         ) ) );
@@ -219,7 +218,7 @@ begin
   ParseLastNumericParameter( rotate_left_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( long_float( rotate_left(
+        result := to_unbounded_string( numericValue( rotate_left(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
         ) ) );
@@ -243,7 +242,7 @@ begin
   ParseLastNumericParameter( rotate_right_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( long_float( rotate_right(
+        result := to_unbounded_string( numericValue( rotate_right(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
         ) ) );
@@ -267,7 +266,7 @@ begin
   ParseLastNumericParameter( shift_right_arith_t, amt_val, amt_type, natural_t );
   begin
      if isExecutingCommand then
-        result := to_unbounded_string( long_float( shift_right_arithmetic(
+        result := to_unbounded_string( numericValue( shift_right_arithmetic(
            unsigned_64( to_numeric( expr_val ) ),
            natural( to_numeric( amt_val ) )
         ) ) );
@@ -395,7 +394,7 @@ begin
           result := to_unbounded_string( cos( to_numeric( expr_val ) ) );
        else
           result := to_unbounded_string( cos( to_numeric( expr_val ),
-            to_numeric( cycle_val ) ) );
+             to_numeric( cycle_val ) ) );
        end if;
     end if;
   exception when others =>
@@ -548,7 +547,7 @@ begin
     if isExecutingCommand then
        if cycle_type = eof_t then
           result := to_unbounded_string( arctan( to_numeric( expr_val ),
-            to_numeric( expr2_val )) );
+            to_numeric( expr2_val ) ) );
        else
           result := to_unbounded_string( arctan( to_numeric( expr_val ),
             to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
@@ -583,7 +582,7 @@ begin
     if isExecutingCommand then
        if cycle_type = eof_t then
           result := to_unbounded_string( arccot( to_numeric( expr_val ),
-            to_numeric( expr2_val )) );
+            to_numeric( expr2_val ) ) );
        else
           result := to_unbounded_string( arccot( to_numeric( expr_val ),
             to_numeric( expr2_val ), to_numeric( cycle_val ) ) );
@@ -659,7 +658,7 @@ begin
   ParseSingleNumericParameter( coth_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( coth( to_numeric( expr_val ) ) );
+       result := to_unbounded_string( coth(  to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -749,7 +748,7 @@ begin
   ParseSingleNumericParameter( floor_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( long_float'floor( to_numeric( expr_val ) ) );
+       result := to_unbounded_string( numericValue'floor( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
      err_exception_raised;
@@ -767,7 +766,7 @@ begin
   ParseSingleNumericParameter( ceiling_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_unbounded_string( long_float'ceiling( to_numeric( expr_val ) ) );
+       result := to_unbounded_string( numericValue'ceiling( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -785,7 +784,7 @@ begin
   ParseSingleNumericParameter( rounding_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( long_float'rounding( to_numeric( expr_val ) ) );
+      result := to_unbounded_string( numericValue'rounding( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -803,7 +802,7 @@ begin
   ParseSingleNumericParameter( unbiased_rounding_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( long_float'unbiased_rounding( to_numeric( expr_val ) ) );
+      result := to_unbounded_string( numericValue'unbiased_rounding( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -821,7 +820,7 @@ begin
   ParseSingleNumericParameter( truncation_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( long_float'truncation( to_numeric( expr_val ) ) );
+      result := to_unbounded_string( numericValue'truncation( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -842,7 +841,7 @@ begin
   ParseLastNumericParameter( remainder_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( long_float'remainder( to_numeric( expr_val ),
+       result := to_unbounded_string( numericValue'remainder( to_numeric( expr_val ),
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
@@ -861,7 +860,7 @@ begin
   ParseSingleNumericParameter( exponent_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( long_float( long_float'exponent( to_numeric( expr_val ) ) ) );
+      result := to_unbounded_string( numericValue( numericValue'exponent( to_numeric( expr_val ) ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -879,7 +878,7 @@ begin
   ParseSingleNumericParameter( fraction_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( long_float'fraction( to_numeric( expr_val ) ) );
+      result := to_unbounded_string( numericValue'fraction( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -900,7 +899,7 @@ begin
   ParseLastNumericParameter( leading_part_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( long_float'leading_part( to_numeric( expr_val ),
+       result := to_unbounded_string( numericValue'leading_part( to_numeric( expr_val ),
          integer( to_numeric( expr2_val ) ) ) );
      end if;
   exception when others =>
@@ -922,7 +921,7 @@ begin
   ParseLastNumericParameter( copy_sign_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( long_float'copy_sign( to_numeric( expr_val ),
+       result := to_unbounded_string( numericValue'copy_sign( to_numeric( expr_val ),
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
@@ -939,7 +938,7 @@ procedure ParseNumericsSturges( result : out unbounded_string; kind : out identi
   hi_type : identifier;
   total_val : unbounded_string;
   total_type : identifier;
-  lo, hi, total : long_float;
+  lo, hi, total : numericValue;
 begin
   kind := uni_numeric_t;
   expect( sturges_t );
@@ -951,7 +950,11 @@ begin
         lo := to_numeric( lo_val );
         hi := to_numeric( hi_val );
         total := to_numeric( total_val );
-        result := to_unbounded_string( long_float'rounding( (hi-lo) / (1.0+log( total ) ) ) ); -- TODO: this is wrong
+        result := to_unbounded_string(
+           numericValue'rounding(
+              (hi-lo) / 1.0+log( total )
+           )
+        ); -- TODO: this is wrong
      end if;
   exception when others =>
      err_exception_raised;
@@ -972,7 +975,7 @@ begin
   ParseLastNumericParameter( max_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( long_float'max( to_numeric( expr_val ),
+       result := to_unbounded_string( numericValue'max( to_numeric( expr_val ),
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
@@ -994,7 +997,7 @@ begin
   ParseLastNumericParameter( min_t, expr2_val, expr2_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( long_float'min( to_numeric( expr_val ),
+       result := to_unbounded_string( numericValue'min( to_numeric( expr_val ),
          to_numeric( expr2_val ) ) );
      end if;
   exception when others =>
@@ -1013,7 +1016,7 @@ begin
   ParseSingleNumericParameter( machine_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-      result := to_unbounded_string( long_float'machine( to_numeric( expr_val ) ) );
+      result := to_unbounded_string( numericValue'machine( to_numeric( expr_val ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1034,7 +1037,7 @@ begin
   ParseLastNumericParameter( scaling_t, expr2_val, expr2_type, integer_t );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( long_float'scaling( to_numeric( expr_val ),
+       result := to_unbounded_string( numericValue'scaling( to_numeric( expr_val ),
          integer( to_numeric( expr2_val ) ) ) );
      end if;
   exception when others =>
@@ -1170,7 +1173,7 @@ begin
   begin
      if isExecutingCommand then
         -- from pegasoft.numerics
-        result := to_unbounded_string( long_float( rnd( positive( to_numeric( expr_val ) ) ) ) );
+        result := to_unbounded_string( numericValue( rnd( positive( to_numeric( expr_val ) ) ) ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1234,7 +1237,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       result := to_unbounded_string( Re( c ) );
+       result := to_unbounded_string( numericValue( Re( c ) ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1262,7 +1265,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       result := to_unbounded_string( Im( c ) );
+       result := to_unbounded_string( numericValue( Im( c ) ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1296,7 +1299,7 @@ begin
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
        Set_Re( c, to_numeric( expr_val ) );
-       identifiers( real_t ).value.all := to_unbounded_string( c.re );
+       identifiers( real_t ).value.all := to_unbounded_string( numericValue( c.re ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1331,7 +1334,7 @@ begin
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
        Set_Im( c, to_numeric( expr_val ) );
-       identifiers( img_t ).value.all := to_unbounded_string( c.Im );
+       identifiers( img_t ).value.all := to_unbounded_string( numericValue( c.Im ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1382,7 +1385,7 @@ begin
        findField( record_id, 2, img_t );
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
-       result := to_unbounded_string( Modulus( c ) );
+       result := to_unbounded_string( numericValue( Modulus( c ) ) );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1421,9 +1424,9 @@ begin
        c.re := to_numeric( identifiers( real_t ).value.all );
        c.im := to_numeric( identifiers( img_t ).value.all );
        if has_cycle then
-          result := to_unbounded_string( Argument( c, to_numeric( cycle_val ) ) );
+          result := to_unbounded_string( numericValue( Argument( c, to_numeric( cycle_val ) ) ) );
        else
-          result := to_unbounded_string( Argument( c ) );
+          result := to_unbounded_string( numericValue( Argument( c ) ) );
        end if;
      end if;
   exception when others =>
@@ -1491,7 +1494,7 @@ begin
   begin
     if isExecutingCommand then
        limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( long_float( hash_of( expr1_val, limit ) ) );
+       result := to_unbounded_string( numericValue( hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1514,7 +1517,7 @@ begin
   begin
     if isExecutingCommand then
        limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( long_float( sdbm_hash_of( expr1_val, limit ) ) );
+       result := to_unbounded_string( numericValue( sdbm_hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1537,7 +1540,7 @@ begin
   begin
     if isExecutingCommand then
        limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( long_float( fnv_hash_of( expr1_val, limit ) ) );
+       result := to_unbounded_string( numericValue( fnv_hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1560,7 +1563,7 @@ begin
   begin
     if isExecutingCommand then
        limit := hash_integer( to_numeric( expr2_val ) );
-       result := to_unbounded_string( long_float( murmur_hash_of( expr1_val, limit ) ) );
+       result := to_unbounded_string( numericValue( murmur_hash_of( expr1_val, limit ) ) );
     end if;
   exception when others =>
     err_exception_raised;

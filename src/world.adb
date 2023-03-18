@@ -1634,48 +1634,12 @@ end copyValue;
 -- Type Conversions
 
 
-function to_numeric( s : unbounded_string ) return long_float is
--- Convert an unbounded string to a long float (BUSH's numeric representation)
-begin
-  if Element( s, 1 ) = '-' then                               -- leading -?
-     return long_float'value( to_string( s ) );               -- OK for 'value
-  elsif Element( s, 1 ) = ' ' then                            -- leading space?
-     return long_float'value( to_string( s ) );               -- OK for 'value
-  else                                                        -- otherwise add
-     return long_float'value( " " & to_string( s ) );         -- space & 'value
-  end if;
-end to_numeric;
-
-function to_numeric( id : identifier ) return long_float is
+function to_numeric( id : identifier ) return numericValue is
 -- Look up an identifier's value and return it as a long float
--- (BUSH's numeric representation).
+-- (Spar's numeric representation).
 begin
    return to_numeric( identifiers( id ).value.all );
 end to_numeric;
-
-function to_unbounded_string( f : long_float ) return unbounded_string is
--- Convert a long_float (BUSH's numeric representation) to an
--- unbounded string.  If the value is representable as an integer,
--- it is returned without a decimal part.
-  f_trunc : constant long_float := long_float'truncation( f );
-begin
-
-  -- integer value?  Try to return without a decimal part
-  -- provided it will fit into a long float's mantissa.
-
-   if f - f_trunc = 0.0 then
-      -- There's no guarantee that a long_long_integer will fit into
-      -- a long_float's mantissa, so we'll use a decimal type.
-      if f <= long_float( integerOutputType'last ) and
-         f >= long_float( integerOutputType'first ) then
-         return to_unbounded_string( long_long_integer( f )'img );
-      end if;
-   end if;
-
-  -- Otherwise, return a long float using 'image
-
-   return to_unbounded_string( long_float'image( f ) );
-end to_unbounded_string;
 
 function To_Bush_Boolean( AdaBoolean : boolean ) return unbounded_string is
   -- convert an Ada boolean into a BUSH boolean (a string containing

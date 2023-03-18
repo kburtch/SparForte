@@ -25,12 +25,14 @@
 
 with ada.strings.unbounded,
     cgi,
+    pegasoft,
     world,
     scanner,
     scanner.communications,
     parser;
 use ada.strings.unbounded,
     world,
+    pegasoft,
     scanner,
     scanner.communications,
     parser;

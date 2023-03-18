@@ -37,6 +37,7 @@ with
     parser_containers;
 use
     ada.strings.unbounded,
+    pegasoft,
     world,
     pegasoft.user_io,
     scanner,
@@ -228,7 +229,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := to_unbounded_string( long_float ( Doubly_Linked_String_Lists.Length( theList.dlslList ) ) );
+       result := to_unbounded_string( numericValue ( Doubly_Linked_String_Lists.Length( theList.dlslList ) ) );
      end;
   end if;
 end ParseDoublyLength;

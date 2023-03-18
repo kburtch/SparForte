@@ -88,10 +88,10 @@ end prepend;
 --
 ------------------------------------------------------------------------------
 
-procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float ) is
-  floatVal : long_float;
+procedure increment( m : in out string_hashed_maps.map; k : unbounded_string; n : numericValue ) is
+  floatVal : numericValue;
 begin
-  floatVal := long_float( to_numeric( String_Hashed_Maps.Element( m, k ) ) ) + n;
+  floatVal := numericValue( to_numeric( String_Hashed_Maps.Element( m, k ) ) ) + n;
   String_Hashed_Maps.Include( m, k, to_unbounded_string( floatVal'img ) );
 end increment;
 
@@ -101,10 +101,10 @@ end increment;
 --
 ------------------------------------------------------------------------------
 
-procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : long_float ) is
-  floatVal : long_float;
+procedure decrement( m : in out string_hashed_maps.map; k : unbounded_string; n : numericValue ) is
+  floatVal : numericValue;
 begin
-  floatVal := long_float( to_numeric( String_Hashed_Maps.Element( m, k ) ) ) - n;
+  floatVal := numericValue( to_numeric( String_Hashed_Maps.Element( m, k ) ) ) - n;
   String_Hashed_Maps.Include( m, k, to_unbounded_string( floatVal'img ) );
 end decrement;
 

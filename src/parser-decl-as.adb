@@ -53,6 +53,7 @@ use Interfaces.C,
     ada.strings.unbounded.text_io,
     spar_os,
     spar_os.exec,
+    pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
     world.utf8,
@@ -1738,7 +1739,7 @@ procedure ParseForBlock is
   expr1_type : identifier;
   expr2_val  : unbounded_string;
   expr2_type : identifier;
-  expr2_num  : long_float;
+  expr2_num  : numericValue;
   for_var    : identifier;
   firstTime  : boolean := true;
   isReverse  : boolean := false;
@@ -1886,13 +1887,13 @@ begin
            if isExecutingCommand then
               -- GCC Ada 7.4 says a conversion warning but it is wrong
               identifiers( for_var ).value.all := to_unbounded_string(
-                  long_float( to_numeric( identifiers( for_var ).value.all ) - 1.0 ) );
+                  numericValue( to_numeric( identifiers( for_var ).value.all ) - 1.0 ) );
            end if;
         else
            if isExecutingCommand then
               -- GCC Ada 7.4 says a conversion warning but it is wrong
               identifiers( for_var ).value.all := to_unbounded_string(
-                  long_float( to_numeric( identifiers( for_var ).value.all ) + 1.0 ) );
+                  numericValue( to_numeric( identifiers( for_var ).value.all ) + 1.0 ) );
            end if;
         end if;
      end if;

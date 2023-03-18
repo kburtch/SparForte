@@ -40,6 +40,7 @@ with
 use
     ada.strings.unbounded,
     world,
+    pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
     pegasoft.hmaps,
@@ -737,7 +738,7 @@ procedure ParseHashedMapsIncrement is
   keyType : identifier;
   incVal  : unbounded_string;
   incType : identifier;
-  floatVal : long_float;
+  floatVal : numericValue;
   hasAmt  : boolean := false;
   subprogramId : constant identifier := hashed_maps_increment_t;
 begin
@@ -758,7 +759,7 @@ begin
   if isExecutingCommand then
      begin
        if hasAmt then
-          floatVal := long_float( natural( to_numeric( incVal ) ) );
+          floatVal := numericValue( natural( to_numeric( incVal ) ) );
        else
           floatVal := 1.0;
        end if;
@@ -793,7 +794,7 @@ procedure ParseHashedMapsDecrement is
   keyType : identifier;
   decVal  : unbounded_string;
   decType : identifier;
-  floatVal : long_float;
+  floatVal : numericValue;
   hasAmt  : boolean := false;
   subprogramId : constant identifier := hashed_maps_decrement_t;
 begin
@@ -814,7 +815,7 @@ begin
   if isExecutingCommand then
      begin
        if hasAmt then
-          floatVal := long_float( natural( to_numeric( decVal ) ) );
+          floatVal := numericValue( natural( to_numeric( decVal ) ) );
        else
           floatVal := 1.0;
        end if;

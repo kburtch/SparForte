@@ -21,10 +21,18 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with ada.numerics.generic_elementary_functions;
+with ada.numerics.generic_complex_types;
+
 package pegasoft.numerics is
 
 type hash_integer is mod 2**32;
 
+package elementary_functions is new ada.numerics.generic_elementary_functions( numericValue );
+-- elementary math functions
+
+package complex_types is new ada.numerics.generic_complex_types( numericValue );
+-- complex numbers and their functions
 
 ------------------------------------------------------------------------------
 --

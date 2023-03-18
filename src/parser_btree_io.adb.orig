@@ -32,6 +32,7 @@ with
     gnat.source_info,
     --spar_os,
     world,
+    pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
     scanner,
@@ -53,6 +54,7 @@ use
     ada.strings.unbounded,
     gnat.directory_operations,
     world,
+    pegasoft,
     pegasoft.strings,
     pegasoft.user_io,
     scanner,
@@ -1227,7 +1229,7 @@ procedure ParseBtreeIncrement is
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
-  oldItemValue : long_float;
+  oldItemValue : numericValue;
 begin
   if rshOpt then
      err( +"increment not allowed in a " & em( "restricted shell" ) );
@@ -1255,7 +1257,7 @@ begin
           --if oldItem /= null_unbounded_string then
           oldItemValue := to_numeric( oldItem );
           if hasAmt then
-             put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+             put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue + numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
           else
              put( theFile.btree.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue + 1.0 ) ) );
           end if;
@@ -1298,7 +1300,7 @@ procedure ParseBtreeDecrement is
   amtType  : identifier;
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
-  oldItemValue : long_float;
+  oldItemValue : numericValue;
 begin
   if rshOpt then
      err( +"decrement not allowed in a " & em( "restricted shell" ) );
@@ -1326,7 +1328,7 @@ begin
          --if oldItem /= null_unbounded_string then
             oldItemValue := to_numeric( oldItem );
             if hasAmt then
-               put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - long_float( natural( to_numeric( amtExpr ) ) ) ) ) );
+               put( theFile.btree.session, to_string( keyExpr ),  to_string( to_unbounded_string( oldItemValue - numericValue( natural( to_numeric( amtExpr ) ) ) ) ) );
             else
                put( theFile.btree.session, to_string( keyExpr ), to_string( to_unbounded_string( oldItemValue - 1.0 ) ) );
             end if;
