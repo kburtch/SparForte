@@ -30,22 +30,18 @@ Priority Issues (Fix These First)
       strings and ambiguity over string functions
   - ongoing conversion of error message to give additional context
 
+  - bash compatibility audit
   - coverage tests of recent changes
 
-- bug
-  - ^-^ In primes, the end of the statement expects ';' where primes is
-    a variable in assignment...is incorrect.  At least, it should be
-    "in primes assigment"
-- test templates
-  - bug: in an html template, "? HOME = 7 ;" should be a type error but it
-    runs without an error
-- bug: logging is showing duplicate lines?
 - when tab completing a partial directory containing a backslashed space,
   after the attempted completion it resets the command line to before the
   first space character
   - files seem OK but...
   - mkdir "t 1 2 3" / ls t\ 1<tab><tab> => ls ./t (dropping "space 1")
   - issue might be in c_rl.c ... ada seems OK
+- test templates
+  - bug: in an html template, "? HOME = 7 ;" should be a type error but it
+    runs without an error
 - Security
   - allow history disabling - record and/or saving to disk
 - memory leak tests - check to make sure that resources are being cleared
@@ -125,6 +121,12 @@ Priority Issues (Fix These First)
     could fool a procedure call into thinking a return statement can have
     a return value (which never gets used).  We'll need to do some redesign
     work to solve this.
+- bug
+  - ^-^ In primes, the end of the statement expects ';' where primes is
+    a variable in assignment...is incorrect.  At least, it should be
+    "in primes assigment".  It is difficult to tell you are in an
+    assignment, as the procedures are designed.
+- bug: logging is showing duplicate lines?
 
 - on errors of identifiers, display declaration line with the comment
 - get_line and GNU readline autocomplete options from a user's array

@@ -6694,6 +6694,8 @@ begin
         end if;
      else
         itself_type := new_t;
+        -- TODO: In an assignment, the variable being assigned is not a
+        -- meaningful context.
         expectStatementSemicolon( context => startToken );
      end if;
   end if;
@@ -7095,6 +7097,8 @@ begin
         end if;
      else
         itself_type := new_t;
+        -- TODO: In an assignment, the variable being assigned is not a
+        -- meaningful context.
         expectStatementSemicolon( context => startToken );
      end if;
   end if;

@@ -1619,17 +1619,21 @@ fi
 if [ -z "$HAS_POSTGRES" ] ; then
    PGLIBSSUB=""
 else
+   PGVERSION=`pg_config --version | cut -d' ' -f2 | cut -d'.' -f1`
+   # e.g. PostgreSQL 14.7... becomes 14
    PGLIBSSUB="`pg_config --libdir` `pg_config --libs`"
    # There is a known bug with pg_config in that it reports the compiling
    # libraries for the PostgreSQL server, not libpg.  So it reports more
    # libraries than we need.  Strip out any libraries we don't need.
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lxslt//g;s/\ \-lxml2//g;s/\ \-lkrb5//g;s/\ \-lgssapi_krb5//g;s/\ \-lcom_err//g;s/\ \-lcrypto//g;s/\ \-lcrypt//g'`
    # On Raspberry Pi, I confirmed pam and edit weren't necessary to link
-   PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g;s/\ \-lpgport//g;s/\ \-lreadline//g'`
+   PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g;s/\ \-lpgport//g;s/\ \-lreadline//g;s/\ \-llz4//g'`
    # On Raspberry Pi 4, libpgcommon isn't in the path
    # TODO: these should not be hard-coded.
    # Jesse (I think)
-   if [ -d "/usr/lib/postgresql/11" ] ; then
+   if [ -d "/usr/lib/postgresql/$PGVERSION" ] ; then
+      PGLIBSSUB="/usr/lib/postgresql/$PGVERSION/lib -L""$PGLIBSSUB"
+   elif [ -d "/usr/lib/postgresql/11" ] ; then
       PGLIBSSUB="/usr/lib/postgresql/11/lib -L""$PGLIBSSUB"
    # Buster
    elif [ -d "/usr/lib/postgresql/12" ] ; then
@@ -1637,8 +1641,11 @@ else
    # Bullseye
    elif [ -d "/usr/lib/postgresql/13" ] ; then
       PGLIBSSUB="/usr/lib/postgresql/13/lib -L""$PGLIBSSUB"
+   elif [ -d "/usr/lib/postgresql/14" ] ; then
+      PGLIBSSUB="/usr/lib/postgresql/14/lib -L""$PGLIBSSUB"
    fi
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+echo "**** $PGLIBSSUB"  # DEBUG
 fi
 if [ -z "$HAS_MYSQL" ] ; then
    MYSQLLIBSSUB=""
