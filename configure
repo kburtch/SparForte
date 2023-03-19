@@ -1645,7 +1645,6 @@ else
       PGLIBSSUB="/usr/lib/postgresql/14/lib -L""$PGLIBSSUB"
    fi
    PGLIBSSUB=`echo "-L""$PGLIBSSUB" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-echo "**** $PGLIBSSUB"  # DEBUG
 fi
 if [ -z "$HAS_MYSQL" ] ; then
    MYSQLLIBSSUB=""
