@@ -33,15 +33,11 @@ Priority Issues (Fix These First)
   - bash compatibility audit
   - coverage tests of recent changes
 
-- when tab completing a partial directory containing a backslashed space,
-  after the attempted completion it resets the command line to before the
-  first space character
-  - files seem OK but...
-  - mkdir "t 1 2 3" / ls t\ 1<tab><tab> => ls ./t (dropping "space 1")
-  - issue might be in c_rl.c ... ada seems OK
 - test templates
   - bug: in an html template, "? HOME = 7 ;" should be a type error but it
     runs without an error
+- universal typeless loses its properties when a custom type or subtype
+  is derived from it
 - Security
   - allow history disabling - record and/or saving to disk
 - memory leak tests - check to make sure that resources are being cleared

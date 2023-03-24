@@ -1323,8 +1323,6 @@ begin
                  begin
 -- TODO: messy.  too many string conversions
 -- TODO: does not follow links
--- put_line(" Found dir" ); -- DEBUG
--- put_line( To_Ada( completionFileAsc ) );
                     fileDirectoryCount:=fileDirectoryCount+1; -- DEBUG
                     lastDirectory := to_unbounded_string( needleDir & completionFile(1..completionFileLen ) );
                     return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
@@ -1370,7 +1368,12 @@ begin
 
   if fileDirectoryCount = 1 then
      fileDirectoryCount := 0;
-     return New_String( to_string( lastDirectory ) & "/./" );
+     declare
+        completionFileAsC : aliased char_array := To_C(
+                  escapeSpacesWithBackslashes( to_string( lastDirectory ) & "/./" ) );
+     begin
+        return C_strdup( To_Chars_Ptr( completionFileAsC'unchecked_access ) );
+     end;
   end if;
 
   return Null_Ptr;

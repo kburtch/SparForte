@@ -49,3 +49,5 @@ CHANGES SINCE 2.5
 22. Refactor: standardized numeric values in the language to a dedicated type
 instead of using long_float's.
 
+23. Fix: directories with spaces now tab complete correctly.
+
