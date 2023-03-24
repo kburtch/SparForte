@@ -52,7 +52,7 @@ package world is
 version   : constant string  := "2.5";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
-copyright : constant string  :=  " Copyright (c)2001-2022 Free Software Foundation";
+copyright : constant string  :=  " Copyright (c)2001-2023 Free Software Foundation";
 
 globalConfigPath  : constant string := "/etc/sparforte_config";
 globalPolicyPath  : constant string := "/etc/sparforte_policy";
