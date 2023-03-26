@@ -51,3 +51,5 @@ instead of using long_float's.
 
 23. Fix: directories with spaces now tab complete correctly.
 
+24. Fix: type errors are now caught again in templates.
+

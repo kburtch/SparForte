@@ -423,6 +423,10 @@ begin
             compileTemplate( uncompressedScript, startingLineNo );
             inputMode := fromScriptFile;               -- running a script
             exit_block := false;                       -- not exit-ing a block
+            -- The inputMode will be fromScriptFile and no syntax_check was
+            -- done.  Therefore, force type checking.
+            --type_checks_done := not (inputMode = interactive) and not syntax_check;
+            type_checks_done := false;
             cmdpos := firstScriptCommandOffset;        -- start at first char
             token := identifiers'first;                -- dummy, replaced by g_n_t
             -- don't reset line number (for error msgs) lineno := 1;

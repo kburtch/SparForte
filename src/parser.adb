@@ -22,8 +22,8 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
---with ada.text_io;
---use ada.text_io;
+with ada.text_io;
+use ada.text_io;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -2340,7 +2340,7 @@ begin
      else
         ParseSimpleExpression( se2, kind2 );
      end if;
-    if type_checks_done or else baseTypesOK( kind1, kind2 ) then
+     if type_checks_done or else baseTypesOK( kind1, kind2 ) then
         operation := getUniType( kind1 );
         if operation = universal_t then
            operation := getUniType( kind2 );

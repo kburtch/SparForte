@@ -25,19 +25,15 @@ Priority Issues (Fix These First)
       may be a partial solution
 
   - review toEscape use for foreign characters
-    - output is in UTF-8 and toCtrlEscape should take UTF-8 into account
     - the general need of better handling of variants of unbounded
       strings and ambiguity over string functions
+    - UTF-8 handling needs to be rethought to support multibyte
+      characters
   - ongoing conversion of error message to give additional context
 
   - bash compatibility audit
   - coverage tests of recent changes
 
-- test templates
-  - bug: in an html template, "? HOME = 7 ;" should be a type error but it
-    runs without an error
-- universal typeless loses its properties when a custom type or subtype
-  is derived from it
 - Security
   - allow history disabling - record and/or saving to disk
 - memory leak tests - check to make sure that resources are being cleared
@@ -45,6 +41,8 @@ Priority Issues (Fix These First)
   - check each of the SDLC modes
   - review non-block tests
 - for an out parameter, it should not be 'not declared' error on unstructured script
+- universal typeless loses its properties when a custom type or subtype
+  is derived from it
 - tests for ada 95 and strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json
 - negative tests for l10n package
 - box <> allowed in case when conditions needs negative tests
