@@ -53,3 +53,5 @@ instead of using long_float's.
 
 24. Fix: type errors are now caught again in templates.
 
+25. Fix: built-in functions with out parameters no longer require the out variable to be declared first.
+

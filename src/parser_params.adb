@@ -965,16 +965,19 @@ begin
   -- mode with no restrictions and no errors, declare the identifier as
   -- an identifier of the default type.  Otherwise, just accept an existing
   -- identifer as normal.
-  if identifiers( token ).kind = new_t and not onlyAda95 and not restriction_no_auto_declarations and not error_found and (inputMode = interactive or inputMode = breakout) then
+  if identifiers( token ).kind = new_t and not onlyAda95 and not
+        restriction_no_auto_declarations and not error_found then
      ParseNewIdentifier( ref.id );
      if index( identifiers( ref.id ).name, "." ) /= 0 then
         err( +"Identifier not declared.  Cannot auto-declare a record field" );
      else
         identifiers( ref.id ).kind := defaultType;
         identifiers( ref.id ).class := varClass;
-        put_trace( "Assuming " & to_string( identifiers( ref.id ).name ) &
-            " is a new " & to_string( identifiers( defaultType ).name ) &
-            " variable" );
+        if inputMode = interactive or inputMode = breakout then
+           put_trace( "Assuming " & to_string( identifiers( ref.id ).name ) &
+              " is a new " & to_string( identifiers( defaultType ).name ) &
+              " variable" );
+        end if;
      end if;
      isNew := true;
   else
