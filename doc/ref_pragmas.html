@@ -87,6 +87,7 @@ environment.</p>
   <b>pragma</b> restriction( no_memcache )
   <b>pragma</b> restriction( no_mysql_database )
   <b>pragma</b> restriction( no_postgresql_database )
+  <b>pragma</b> restriction( no_prompt_history )
   <b>pragma</b> restriction( no_risky_side_effects )
   <b>pragma</b> restriction( no_unused_identifiers )
   <b>pragma</b> restriction( no_volatiles )
@@ -446,6 +447,11 @@ connections to a MySQL database.  Doesn't prevent the mysql client or
 other programs from using MySQL.</li>
   <li> <b>pragma restriction( no_postgresql_database )</b> - disable
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
+other programs from using PostgreSQL.</li>
+  <li> <b>pragma restriction( no_prompt_history )</b> - when this
+pragma is used, the interative prompt history will not be saved when
+SparForte is shutting down.  Perhaps useful for admin users to prevent
+confidential information from being saved in clear text.</li>
 other programs from using PostgreSQL.</li>
   <li> <b>pragma restriction( no_risky_side_effects )</b> - enable
 checking for some common risky side-effect behaviours.  It also makes

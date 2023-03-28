@@ -1268,7 +1268,9 @@ end startInterpreter;
 
 procedure shutdownInterpreter is
 begin
-  pegasoft.user_io.getline.shutdownGetline;
+  pegasoft.user_io.getline.shutdownGetline(
+    save_history => restriction_no_prompt_history = false
+  );
 end shutdownInterpreter;
 
 end interpreter;

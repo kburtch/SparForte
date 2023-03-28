@@ -65,7 +65,7 @@ type a_readline_callback is access procedure;
 procedure startupGetLine(optionOffset : natural;
   idle_callback : a_readline_callback);
 
-procedure shutdownGetLine;
+procedure shutdownGetLine( save_history : boolean );
 
 private
 

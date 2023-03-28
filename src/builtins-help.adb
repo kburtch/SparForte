@@ -1242,6 +1242,7 @@ begin
   content( e, "pragma restriction( no_memcache ) - disable connections to memcache" );
   content( e, "pragma restriction( no_mysql_database ) - disable connections to mysql" );
   content( e, "pragma restriction( no_postgresql_database ) - disable connections to postgresql" );
+  content( e, "pragma restriction( no_prompt_history ) - disable saving interactive prompt history" );
   content( e, "pragma restriction( no_unused_identifiers ) - stricter unused tests" );
   content( e, "pragma restriction( no_volatiles ) - volatile identifiers not allowed" );
   content( e, "pragma session_export_script( `commands` ) - commands to export session variables" );

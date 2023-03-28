@@ -118,6 +118,7 @@ type aPragmaKind is (
      restriction_postgresql,
      restriction_todos,
      restriction_volatiles,
+     restriction_history,
      session_export_script,
      session_import_script,
      software_model,
@@ -1717,6 +1718,8 @@ begin
         pragmaKind := restriction_volatiles;
      elsif expr_val = "no_declarations_in_executable_statements" then
         pragmaKind := restriction_declarations;
+     elsif expr_val = "no_prompt_history" then
+        pragmaKind := restriction_history;
      else
         err( +"unknown restriction" );
         return;
@@ -2494,6 +2497,8 @@ begin
         restriction_no_annotate_todos := true;
      when restriction_volatiles =>
         restriction_no_volatiles := true;
+     when restriction_history =>
+        restriction_no_prompt_history := true;
      when promptChange =>
         if not error_found then
            promptScript := expr_val;

@@ -55,3 +55,5 @@ instead of using long_float's.
 
 25. Fix: built-in functions with out parameters no longer require the out variable to be declared first.
 
+26. New: pragma restriction( no_prompt_history ) to disable saving interactive prompt history when SparForte is shutting down.
+

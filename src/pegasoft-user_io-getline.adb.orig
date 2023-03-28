@@ -2358,13 +2358,14 @@ end startupGetline;
 --  SHUTDOWN READLINE
 --
 -- Shutdown this package and GNU Readline library, performing any cleanup
--- tasks.
+-- tasks.  If no_history is true, do not save the history to the history
+-- file.
 --  Exception: COMPLETION_MEMORY_LEAK is raised if there are C strings
 -- that weren't deallocated.
 -----------------------------------------------------------------------------
 
 #if READLINE
-procedure shutdownGetline is
+procedure shutdownGetline( save_history : boolean ) is
   historyPath : unbounded_string;
   historyFile : file_type;
   home_id     : identifier;
@@ -2383,24 +2384,26 @@ begin
             historyPath := identifiers( home_id ).value.all & directory_delimiter &
                ".sparforte_" & sessionName & "_history.txt";
         end if;
-        create( historyFile, out_file, to_string( historyPath ) );
-        for i in history'first..history'last loop
-            -- TODO date conversion
-            split( history(i).time, year, month, day, seconds );
-            put_line( historyFile, year'img );
-            put_line( historyFile, month'img );
-            put_line( historyFile, day'img );
-            put_line( historyFile, seconds'img );
-            put_line( historyFile, to_string( history(i).pwd ) );
-            put_line( historyFile, to_string( history(i).line ) );
-        end loop;
-        put_line( historyFile, historyNext'img);
-        close( historyFile );
+        if save_history then
+           create( historyFile, out_file, to_string( historyPath ) );
+           for i in history'first..history'last loop
+               -- TODO date conversion
+               split( history(i).time, year, month, day, seconds );
+               put_line( historyFile, year'img );
+               put_line( historyFile, month'img );
+               put_line( historyFile, day'img );
+               put_line( historyFile, seconds'img );
+               put_line( historyFile, to_string( history(i).pwd ) );
+               put_line( historyFile, to_string( history(i).line ) );
+           end loop;
+           put_line( historyFile, historyNext'img);
+           close( historyFile );
+        end if;
      end if;
   end if;
 end shutdownGetline;
 #else
-procedure shutdownGetline is
+procedure shutdownGetline( save_history : boolean ) is
 begin
   null;
 end shutdownGetline;

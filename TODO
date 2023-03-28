@@ -34,8 +34,7 @@ Priority Issues (Fix These First)
   - bash compatibility audit
   - coverage tests of recent changes
 
-- Security
-  - allow history disabling - record and/or saving to disk
+- test for pragma restriction( no_prompt_history )
 - memory leak tests - check to make sure that resources are being cleared
 - check the end-of-block usage checks and error messages
   - check each of the SDLC modes

@@ -220,6 +220,7 @@ restriction_no_memcache          : boolean := false; -- pragma restriction
 restriction_no_mysql_database    : boolean := false; -- pragma restriction
 restriction_no_postgresql_database: boolean := false; -- pragma restriction
 restriction_no_volatiles         : boolean := false; -- pragma restriction
+restriction_no_prompt_history    : boolean := false; -- pragma restriction
 no_command_hash                  : boolean := false; -- pragma restriction
 suppress_word_quoting            : boolean := false; -- pragma suppress
 suppress_no_empty_command_subs   : boolean := false; -- pragma suppress
