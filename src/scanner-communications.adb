@@ -61,92 +61,81 @@ templateErrorHeader : constant unbounded_string := to_unbounded_string( "SparFor
 
 
 -----------------------------------------------------------------------------
---  CONVERT TO HTML
+--  PUT LINE RETRY
 --
--- Change an error message so that it is formatted as HTML
+-- On some operating systems, put_line can raise a device_error when an
+-- interrupted system call occurs.
+-- TODO: this is a workaround.  A better solution is needed
+-- TODO: should probably use these functions throughout
 -----------------------------------------------------------------------------
---
---function convertToHTML( oldString : unbounded_string ) return unbounded_string is
---   s : unbounded_string := oldString;
---   p : natural;
---
---begin
---
---   -- replace end-of-lines / spaces
---   -- do this first as the spans we may insert have spaces
---
---   p := 1;
---   while p <= length( s ) loop
---      if element( s, p ) = ASCII.LF then
---         delete( s, p, p );
---         insert( s, p, "<br>" );
---      elsif element( s, p ) = ' ' then
---         delete( s, p, p );
---         insert( s, p, "&nbsp;" );
---      end if;
---      p := p + 1;
---   end loop;
---
---   return s;
---end convertToHTML;
+
+procedure put_line_retry( output_file : file_type; s : string ) is
+  retryCnt : natural := 0;
+begin
+  loop
+     begin
+        put_line( output_file, s );
+        retryCnt := 2;
+     exception when device_error =>
+        retryCnt := retryCnt + 1;
+     end;
+     exit when retryCnt >= 2;
+  end loop;
+end put_line_retry;
+
+procedure put_line_retry( s : string ) is
+begin
+  put_line_retry( standard_output, s );
+end put_line_retry;
+
+procedure put_line_retry( output_file : file_type; us : unbounded_string ) is
+begin
+  put_line_retry( output_file, to_string( us ) );
+end put_line_retry;
+
+procedure put_line_retry( us : unbounded_string ) is
+begin
+  put_line_retry( standard_output, to_string( us ) );
+end put_line_retry;
 
 
 -----------------------------------------------------------------------------
---  CONVERT TO PLAIN TEXT
+--  PUT RETRY
 --
--- Change an error message so that it is formatted as plain text
--- for a web server log file.  By default, all line feeds are removed.
+-- On some operating systems, put_line can raise a device_error when an
+-- interrupted system call occurs.
+-- TODO: this is a workaround.  A better solution is needed
+-- TODO: should probably use these functions throughout
 -----------------------------------------------------------------------------
 
---type plainTextOptions is ( no_lf, with_lf );
---
---function convertToPlainText( oldString : unbounded_string; options : plainTextOptions := no_lf ) return unbounded_string is
---  s : unbounded_string := oldString;
---  p : natural;
---  -- timeout : natural;
---
---   --  STRIP TERMINAL CHARS
---   --
---   -- Search for and remove occurrences of terminal control sequences.  If
---   -- the control sequence is nothing, then do nothing.  A timeout prevents
---   -- infinite loops.
---   --------------------------------------------------------------------------
---
---   procedure stripTerminalChars(
---         s : in out unbounded_string;
---         controlSeq : unbounded_string ) is
---      timeout : natural;
---   begin
---      if controlSeq = "" then
---         return;
---      end if;
---      timeout := 0;
---      loop
---         p := index( s, to_string( controlSeq ) );
---      exit when p = 0 or timeout = 10;
---         delete( s, p, p - 1 + length( controlSeq ) );
---         -- insert( s, p, replacementHTML );
---         timeout := timeout + 1;
---      end loop;
---   end stripTerminalChars;
---
---begin
---
---  -- remove any end-of-lines to ensure message is on one line
---
---  if options = no_lf then
---     p := 1;
---     while p <= length( s ) loop
---        if element( s, p ) = ASCII.LF then
---           delete( s, p, p );
---           insert( s, p, " " );
---        end if;
---        p := p + 1;
---     end loop;
---  end if;
---
---  return s;
---end convertToPlainText;
+procedure put_retry( output_file : file_type; s : string ) is
+  retryCnt : natural := 0;
+begin
+  loop
+     begin
+        put( output_file, s );
+        retryCnt := 2;
+     exception when device_error =>
+        retryCnt := retryCnt + 1;
+     end;
+     exit when retryCnt >= 2;
+  end loop;
+end put_retry;
+
+procedure put_retry( s : string ) is
+begin
+  put_retry( standard_output, s );
+end put_retry;
+
+procedure put_retry( output_file : file_type; us : unbounded_string ) is
+begin
+  put_retry( output_file, to_string( us ) );
+end put_retry;
+
+procedure put_retry( us : unbounded_string ) is
+begin
+  put_retry( standard_output, to_string( us ) );
+end put_retry;
 
 
 -----------------------------------------------------------------------------
@@ -1087,11 +1076,11 @@ begin
 
   -- Show the test result message immediately
 
-  put_line( standard_error, ourFullErrorMessage.gccMessage );
+  put_line_retry( standard_error, ourFullErrorMessage.gccMessage );
   -- may or may not have a template at this point, so check
   if hasTemplate then
      putTemplateHeader( templateHeader );
-     put_line( ourFullTemplateErrorMessage );
+     put_line_retry( ourFullTemplateErrorMessage );
   end if;
 
 end err_test_result;
@@ -1111,12 +1100,12 @@ begin
   location := scriptFilePath & ":" & getLineNo'img & ": ";
   fullMsg  := location & "warning--" & msg.templateMessage;
 
-  put_line( standard_error, fullMsg );
+  put_line_retry( standard_error, fullMsg );
 
   if hasTemplate and boolean( debugOpt or not maintenanceOpt ) then
      case templateHeader.templateType is
      when htmlTemplate | wmlTemplate =>
-        put( "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
+        put_retry( "<div style=""border: 1px solid; margin: 10px 5px padding: 15px 10px 15px 50px; color: #00529B; background-color: #BDE5F8; width:100%; overflow:auto"">" &
            "<div style=""float:left;font: 32px Times New Roman,serif; font-style:italic; border-radius:50%; height:50px; width:50px; color: #FFFFFF; background-color:#00529B; text-align: center; vertical-align: middle; line-height: 50px; margin: 5px"">i</div>" &
            "<div style=""float:left;font: 12px Courier New,Courier,monospace; color: #00529B; background-color: transparent"">" &
            "<p style=""font: 14px Verdana,Arial,Helvetica,sans-serif; font-weight:bold"">" & templateErrorHeader & "</p>" &
@@ -1125,13 +1114,13 @@ begin
            "</div>" &
            "<br />" );
      when cssTemplate | jsTemplate =>
-        put( "/* " & templateErrorHeader & " " & fullMsg &  " */" );
+        put_retry( "/* " & templateErrorHeader & " " & fullMsg &  " */" );
      when xmlTemplate =>
-        put( "<!-- " & templateErrorHeader & " " & fullMsg & " -->" );
+        put_retry( "<!-- " & templateErrorHeader & " " & fullMsg & " -->" );
      when tomlTemplate | yamlTemplate =>
-        put( "# " & fullMsg );
+        put_retry( "# " & fullMsg );
      when noTemplate | textTemplate | jsonTemplate =>
-        put( fullMsg );
+        put_retry( fullMsg );
      end case;
   end if;
 end warn;

@@ -29,18 +29,29 @@ Priority Issues (Fix These First)
       strings and ambiguity over string functions
     - UTF-8 handling needs to be rethought to support multibyte
       characters
-  - ongoing conversion of error message to give additional context
 
+  - ongoing conversion of error message to give additional context
   - bash compatibility audit
   - coverage tests of recent changes
 
 - test for pragma restriction( no_prompt_history )
+- universal typeless loses its properties when a custom type or subtype
+  is derived from it
+- text_io.put_line may raise device_error on interrupted system calls,
+  especially on Raspian Linux.  scanner.communications updated but there
+  may be other references.
+- terminal issues
+  - e.g. less a file.  The arrow keys work.  TERM is correct.
+  - eg. run spar then less a file.  The arrow keys do not work.  TERM is
+   correct.
+  - tput reset does not help
+  - I don't change the Linux tty settings unless I do an inkey()
+  - I am not certain of the cause
+
 - memory leak tests - check to make sure that resources are being cleared
 - check the end-of-block usage checks and error messages
   - check each of the SDLC modes
   - review non-block tests
-- universal typeless loses its properties when a custom type or subtype
-  is derived from it
 - tests for ada 95 and strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json
 - negative tests for l10n package
 - box <> allowed in case when conditions needs negative tests
@@ -64,10 +75,6 @@ Priority Issues (Fix These First)
   - with separate policy, with separate configuration, with separate process in addition to normal with separate
 - templates
   - templates that are not for HTTP
-- terminal emulation issues - why "less' doesn't always work correctly from a SparForte session, compare with Bash.  It's as if the TERM is wrong, but when I test I see TERM.  Is it related to screen command?
-- errors should support err_previous
-- put_line may raise device_error on interrupted system calls, especially
-  on Raspian Linux
 - check btree/hash_io get next mark the variable as written
   with the constant check
 - investigate "return value" (result_value_str) vs world.adb "return result for" and ensure they are consistent throughout sparforte.
@@ -83,6 +90,7 @@ Priority Issues (Fix These First)
   - array elements of vectors / doubly / hashed_maps and their cursors and
     handling in the various package subprograms
     - if cannot be done, at least provide an appropriate error when it is attempted
+- errors should support err_previous
 - logs package - whether or not something should be escallated
   to an "error" severity based on appearence of common stop words
   in the message (SecTor)
