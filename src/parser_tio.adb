@@ -230,12 +230,12 @@ begin
              exit;
           end if;
           DoGet( file_ref );
-          exit when ch = ASCII.LF or error_found or wasSIGINT;
+          exit when ch = ASCII.LF or error_found or wasSIGINT or wasSIGTERM;
           str := str & ch;
         end loop;
      else
         pegasoft.user_io.getline.getLine( str );
-        if wasSIGINT then
+        if wasSIGINT or wasSIGTERM then
            new_line;  -- user didn't press enter
            -- wasSIGINT will be cleared later
         end if;

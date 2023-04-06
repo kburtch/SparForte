@@ -27,10 +27,14 @@ package signal_flags is
 
   wasSIGCHLD  : boolean := false;
   wasSIGINT   : boolean := false;
+  wasSIGTERM  : boolean := false;
   wasSIGWINCH : boolean := false;
   wasSIGPIPE  : boolean := false;
 
   procedure startSignalFlags;
   procedure shutdownSignalFlags;
+
+  procedure addSigtermSignalFlag;
+  -- for interactive shells
 
 end signal_flags;

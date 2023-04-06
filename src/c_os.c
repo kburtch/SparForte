@@ -412,8 +412,11 @@ void C_day_of_week( int * wday, int year, int month, int day ) {
 
 int *sigchld_flag = 0;         // Address of Ada boolean variable
 int *sigint_flag = 0;          // Address of Ada boolean variable
+int *sigterm_flag = 0;         // Address of Ada boolean variable
 int *sigwinch_flag = 0;        // Address of Ada boolean variable
 int *sigpipe_flag = 0;         // Address of Ada boolean variable
+
+// SIGINT
 
 void sigint_handler( int sig ) {
   *sigint_flag = 1;
@@ -437,6 +440,54 @@ int C_install_sigint_handler( int *flag_address ) {
   return handler_installed;
 }
 
+// SIGQUIT: Bash shell: specifically ignored by the shell
+// Shells do not core dump.
+
+int C_install_sigquit_handler() {
+  static unsigned int handler_installed = 0;
+  sigset_t signalmask;
+  struct sigaction old_sigquit;
+  struct sigaction sa;
+  int res = 0;
+
+  sigfillset( &signalmask );                     // block all during handling
+  sa.sa_handler = SIG_IGN;                       // what to do on signal - ignore
+  sa.sa_mask    = signalmask;                    // mask all signals
+  sa.sa_flags   = 0;                             // trap zombie children
+  res = sigaction( SIGQUIT, &sa, &old_sigquit );  // setup signal trap
+  if ( res == 0 )                                // OK?
+     handler_installed = 1;                      // mark as installed
+  return handler_installed;
+}
+
+// SIGTERM: Bash shell: SIGTERM for interactive sessions only
+// The polite terminiation request.
+
+void sigterm_handler( int sig ) {
+  *sigterm_flag = 1;
+}
+
+int C_install_sigterm_handler( int *flag_address ) {
+  static unsigned int handler_installed = 0;
+  sigset_t signalmask;
+  struct sigaction old_sigterm;
+  struct sigaction sa;
+  int res = 0;
+
+  sigterm_flag = flag_address;                   // where to flag occurence
+  sigfillset( &signalmask );                     // block all during handling
+  sa.sa_handler = sigterm_handler;               // what to do on signal
+  sa.sa_mask    = signalmask;                    // mask all signals
+  sa.sa_flags   |= SA_RESTART;                   // trap zombie children
+	                                             // SA_RESTART => no EINTR (Bash 4)
+  res = sigaction( SIGTERM, &sa, &old_sigterm ); // setup signal trap
+  if ( res == 0 )                                // OK?
+     handler_installed = 1;                      // mark as installed
+  return handler_installed;
+}
+
+// SIGCHILD
+
 void sigchld_handler( int sig ) {
   *sigchld_flag = 1;
 }
@@ -452,12 +503,15 @@ int C_install_sigchld_handler( int *flag_address ) {
   sigfillset( &signalmask );                     // block all during handling
   sa.sa_handler = sigchld_handler;               // what to do on signal
   sa.sa_mask    = signalmask;                    // mask all signals
-  sa.sa_flags   = 0;                             // trap zombie children
+  sa.sa_flags   |= SA_RESTART;                   // trap zombie children
+	                                             // SA_RESTART => no EINTR (Bash 4)
   res = sigaction( SIGCHLD, &sa, &old_sigchld ); // setup signal trap
   if ( res == 0 )                                // OK?
      handler_installed = 1;                      // mark as installed
   return handler_installed;
 }
+
+// SIGWINCH
 
 void sigwinch_handler( int sig ) {
   *sigwinch_flag = 1;
@@ -474,12 +528,15 @@ int C_install_sigwinch_handler( int *flag_address ) {
   sigfillset( &signalmask );                     // block all during handling
   sa.sa_handler = sigwinch_handler;              // what to do on signal
   sa.sa_mask    = signalmask;                    // mask all signals
-  sa.sa_flags   = 0;                             // trap zombie children
+  sa.sa_flags   |= SA_RESTART;                   // trap zombie children
+	                                             // SA_RESTART => no EINTR (Bash 4)
   res = sigaction( SIGWINCH, &sa, &old_sigwinch ); // setup signal trap
   if ( res == 0 )                                // OK?
      handler_installed = 1;                      // mark as installed
   return handler_installed;
 }
+
+// SIGPIPE
 
 void sigpipe_handler( int sig ) {
   *sigpipe_flag = 1;

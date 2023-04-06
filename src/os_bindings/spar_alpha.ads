@@ -620,6 +620,14 @@ function C_install_sigint_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigint_handler, "C_install_sigint_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGINT occurs
 
+function C_install_sigquit_handler return boolean;
+pragma import( C, C_install_sigquit_handler, "C_install_sigquit_handler" );
+--  SIGQUIT is ignored
+
+function C_install_sigterm_handler( flag : system.address ) return boolean;
+pragma import( C, C_install_sigterm_handler, "C_install_sigterm_handler" );
+--  SIGTERM is ignored
+
 function C_install_sigchld_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigchld_handler, "C_install_sigchld_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGCHLD occurs

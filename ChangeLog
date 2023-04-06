@@ -57,3 +57,7 @@ instead of using long_float's.
 
 26. New: pragma restriction( no_prompt_history ) to disable saving interactive prompt history when SparForte is shutting down.
 
+27. Change: the SIGQUIT signal is now ignored, as in the BASH shell.
+
+28. Change: the SIGTERM signal is handled for interfactive sessions, as in the BASH shell.
+

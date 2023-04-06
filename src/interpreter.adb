@@ -182,7 +182,7 @@ end putCommandPrompt;
 --  INTERACTIVE SESSION
 --
 -- Begin an interactive session, processing a set of commands typed in by the
--- user.  Handle SIGINT at the command prompt as well as restoring standard
+-- user.  Handle SIGINT/TERM at the command prompt as well as restoring standard
 -- output/etc. as required so that lines can be typed in from the console.
 -- Continue until the done flag is set.
 --   This is run by parse, as the command line options dictate.  This is also
@@ -196,7 +196,8 @@ begin
   loop                                        -- repeatedly
     -- A control-c will abort the prompt script, so we need to handle it first.
     -- This will be a control-c from running the last command.
-    wasSIGINT := false;                         -- clear sig flag
+    wasSIGINT := false;                       -- clear sig flag
+    wasSIGTERM := false;                      -- clear sig flag
     updateJobStatus;                          -- cleanup any background jobs
     error_found := false;                     -- no err for prompt
     prompt := null_unbounded_string;
@@ -210,6 +211,11 @@ begin
     if wasSIGINT then                         -- control-c at prompt?
        command := null_unbounded_string;      -- pretend empty command
        wasSIGINT := false;                    -- we handled it
+       new_line;                              -- user didn't push enter
+    end if;
+    if wasSIGTERM then                        -- SIGTERM at prompt?
+       command := null_unbounded_string;      -- pretend empty command
+       wasSIGTERM := false;                   -- we handled it
        new_line;                              -- user didn't push enter
     end if;
     -- has user redirected standard in/out/error? then redirect them for
@@ -1193,6 +1199,7 @@ begin
      if traceOpt then                                   -- -x / --trace?
         trace := true;                                  -- turn on trace
      end if;
+     addSigtermSignalFlag;                              -- we catch these
      interactiveSession;                                -- start the session
   else
      doGlobalPolicy;                                -- architecture policies

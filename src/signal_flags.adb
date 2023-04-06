@@ -32,6 +32,9 @@ package body signal_flags is
     if not C_install_sigint_handler( wasSIGINT'address ) then
        put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGINT handler" );
     end if;
+    if not C_install_sigquit_handler then
+       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGQUIT handler" );
+    end if;
     if not C_install_sigchld_handler( wasSIGCHLD'address ) then
        put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGCHLD handler" );
     end if;
@@ -47,5 +50,12 @@ package body signal_flags is
   begin
     null;
   end shutdownSignalFlags;
+
+  procedure addSigtermSignalFlag is
+  begin
+    if not C_install_sigterm_handler( wasSIGTERM'address ) then
+       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGTERM handler" );
+    end if;
+  end addSigtermSignalFlag;
 
 end signal_flags;

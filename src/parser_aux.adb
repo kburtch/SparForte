@@ -28,6 +28,7 @@ with ada.text_io,
      pegasoft.strings,
      pegasoft.script_io,
      pegasoft.user_io,
+     world.utf8,
      compiler,
      scanner,
      scanner.communications,
@@ -39,6 +40,7 @@ use  ada.text_io,
      pegasoft.strings,
      pegasoft.script_io,
      pegasoft.user_io,
+     world.utf8,
      compiler,
      scanner,
      scanner.communications,
@@ -520,6 +522,27 @@ begin
      put_trace( "Returning" );
   end if;
 end DoReturn;
+
+
+------------------------------------------------------------------------------
+--  DO START BREAKOUT
+--
+-- Start a breakout session
+------------------------------------------------------------------------------
+
+procedure DoStartBreakout( execution_position : out unbounded_string ) is
+begin
+  for i in 1..identifiers_top-1 loop
+      if identifiers( i ).inspect then
+         Put_Identifier( i );
+      end if;
+  end loop;
+  execution_position :=  get_script_execution_position(
+      inv( "Break: return to continue, logout to quit" ),
+      utf_wristwatch ); -- show stop posn
+  put_line( standard_error, to_string( execution_position ) );
+  error_found := true;
+end DoStartBreakout;
 
 
 ------------------------------------------------------------------------------

@@ -6399,17 +6399,18 @@ begin
         wasSIGINT := false;                              -- clear flag
         DoQuit;                                          -- stop BUSH
      else                                                -- running script?
-        for i in 1..identifiers_top-1 loop
-            if identifiers( i ).inspect then
-               Put_Identifier( i );
-            end if;
-        end loop;
-        --BREAKDBG
-        execution_position := get_script_execution_position(
-           inv( "Break: return to continue, logout to quit" ),
-           utf_wristwatch ); -- show stop posn
-        put_line( standard_error, execution_position);
-        error_found := true;
+        DoStartBreakout( execution_position );
+     end if;
+  elsif wasSIGTERM then                                  -- normal 'kill'
+    -- this only occurs in interactive sessions
+    wasSIGTERM := false;
+    if trace then
+       put_trace( "Received sigterm signal" );
+    end if;
+    if not breakoutOpt then                              -- no breakouts?
+        DoQuit;                                          -- stop Spar
+     else                                                -- running script?
+        DoStartBreakout( execution_position );
      end if;
   elsif wasSIGWINCH then                                 -- window change?
      findIdent( to_unbounded_string( "TERM" ), term_id );
@@ -6795,20 +6796,20 @@ begin
         wasSIGINT := false;                              -- just ignore
      elsif not breakoutOpt then                          -- no breakouts?
         wasSIGINT := false;                              -- clear flag
-        DoQuit;                                          -- stop BUSH
+        DoQuit;                                          -- stop Spar
      else                                                -- running script?
-        for i in 1..identifiers_top-1 loop
-            if identifiers( i ).inspect then
-               Put_Identifier( i );
-            end if;
-        end loop;
-        --BREAKDBG
-        execution_position :=  get_script_execution_position(
-            inv( "Break: return to continue, logout to quit" ),
-            utf_wristwatch ); -- show stop posn
-        put_line( standard_error, execution_position );
-        error_found := true;
-        --err( optional_inverse( "Break: return to continue, logout to quit" ) ); -- show stop posn
+        DoStartBreakout( execution_position );
+     end if;
+  elsif wasSIGTERM then                                  -- normal 'kill'
+    -- this only occurs in interactive sessions
+    wasSIGTERM := false; 
+    if trace then
+       put_trace( "Received sigterm signal" );
+    end if;
+    if not breakoutOpt then                              -- no breakouts?
+        DoQuit;                                          -- stop Spar
+     else                                                -- running script?
+        DoStartBreakout( execution_position );
      end if;
   elsif wasSIGWINCH then                                 -- window change?
      findIdent( to_unbounded_string( "TERM" ), term_id );

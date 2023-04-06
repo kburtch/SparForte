@@ -81,6 +81,9 @@ procedure DoQuit;
 procedure DoReturn;
 -- return to execution in breakout mode
 
+procedure DoStartBreakout( execution_position : out unbounded_string );
+-- start a breakout session
+
 -- Parsing Symbols
 
 procedure parseProcedureCallSemicolon;

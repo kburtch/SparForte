@@ -684,9 +684,14 @@ pragma import( C, C_file_access_time, "C_file_access_time" );
 procedure C_day_of_week( wday : out integer; year, month, day : integer );
 pragma import( C, C_day_of_week, "C_day_of_week" );
 --  Return modify time of the file
+
 function C_install_sigint_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigint_handler, "C_install_sigint_handler" );
 --  Mark an Ada boolean variable that will be TRUE if SIGINT occurs
+
+function C_install_sigquit_handler return boolean;
+pragma import( C, C_install_sigquit_handler, "C_install_sigquit_handler" );
+--  SIGQUIT is ignored
 
 function C_install_sigchld_handler( flag : system.address ) return boolean;
 pragma import( C, C_install_sigchld_handler, "C_install_sigchld_handler" );

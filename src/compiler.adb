@@ -2404,8 +2404,9 @@ begin
   --
   -- Use the appropriate compiler for the context.
 
-<<next>> if wasSIGINT then
+<<next>> if wasSIGINT or wasSIGTERM then
       wasSIGINT := false;
+      wasSIGTERM := false;
       done := true;                             -- stop parsing
       exit_block := true;                       -- exit any block
       done_sub := false;                        -- only leaving subprogram
@@ -2533,8 +2534,9 @@ begin
           line := line + 1;
           if i /= length( ci.compressedScript ) then
              new_line;
-             if wasSIGINT then
+             if wasSIGINT or wasSIGTERM then
                 wasSIGINT := false;
+                wasSIGTERM := false;
                 done := true;                          -- stop parsing
                 exit_block := true;                    -- exit any block
                 done_sub := false;                     -- only leaving subprogram
