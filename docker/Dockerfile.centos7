@@ -26,8 +26,8 @@ RUN git clone https://github.com/kburtch/SparForte.git
 # configure script.  Here, OpenGL and GStreamer are disabled.
 
 WORKDIR /SparForte
-RUN /bin/sh provision.sh
-RUN /bin/sh configure --without-opengl --without-sound
+RUN /bin/sh provision.sh --without-opengl --without-sdl --without-sound
+RUN /bin/sh configure --without-opengl --without-sdl --without-sound
 RUN make max
 RUN make install
 WORKDIR /

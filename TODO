@@ -116,7 +116,6 @@ Priority Issues (Fix These First)
 - in out parameters for built-in subprograms should use references
 - check for TODO's
 - Beader: that variables with same spelling but different cases should be an error
-- provision script ought to support the "without" configure options
 - provision script should search for the EPEL RPM version, not be hard-coded
 - templates
   - templates that are not for HTTP

@@ -61,3 +61,5 @@ instead of using long_float's.
 
 28. Change: the SIGTERM signal is handled for interfactive sessions, as in the BASH shell.
 
+29. Change: the provision script supports "without" options.  A full install of all software dependencies is no longer required.
+

@@ -89,7 +89,7 @@ while [ $# -gt 0 ] ; do
       echo "  --without-postgres    disable PostgreSQL support"
       echo "  --without-readline    disable GNU readline support"
       echo "  --without-sdl         disable SDL and SDLImage support"
-      echo "  --without-sound       disable OSS sound support"
+      echo "  --without-sound       disable GStreamer sound support"
       echo
       echo "Read INSTALL for further information on these options"
       exit 0

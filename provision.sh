@@ -11,15 +11,75 @@
 DISTRO=""
 TMP=""
 
-# Show help
-
-if [ $# -ne 0 ] ; then
-   echo "A simple script to attempt to identify your operating system and"
-   echo "install all SparForte dependences needed to enable all packages."
-   echo "It is especially useful for deploying virtualized or cloud instances."
-   echo "You may be prompted for the administrator password."
-   exit 1
-fi
+while [ $# -gt 0 ] ; do
+  TMP=`echo "$1" | cut -d= -f1`
+  if [ -z "$TMP" ] ; then
+     $TMP="$1"
+  fi
+  case "$TMP" in
+  -h|--help)
+      echo "SparForte provision script"
+      echo
+      echo "A simple script to attempt to identify your operating system and"
+      echo "install SparForte software dependences needed to build the language."
+      echo "It is especially useful for deploying virtualized or cloud instances."
+      echo "You may be prompted for the administrator password."
+      echo
+      echo "Additional options:"
+      #echo "  --prefix=PREFIX       root installation directory"
+      echo "  --without-bdb         do not Berkeley DB"
+      echo "  --without-l10n        do not install GNU localization"
+      echo "  --without-memcached   do not install memcached"
+      echo "  --without-mysql       do not install MySQL/MariaDB"
+      echo "  --without-opengl      do not install OpenGL"
+      echo "  --without-pcre        do not install PCRE library"
+      echo "  --without-postgres    do not install PostgreSQL"
+      echo "  --without-readline    do not install GNU readline"
+      echo "  --without-sdl         do not install SDL and SDLImage"
+      echo "  --without-sound       do not install GStreamer"
+      echo
+      echo "Read INSTALL for further information on these options"
+      exit 0
+      ;;
+  #--prefix)
+  #    PREFIX=`echo "$1" | cut -d= -f2`
+  #    ;;
+  --without-bdb)
+      NO_BDB=1
+      ;;
+  --without-l10n)
+      NO_L10N=1
+      ;;
+  --without-memcached)
+      NO_MEMCACHED=1
+      ;;
+  --without-mysql)
+      NO_MYSQL=1
+      ;;
+  --without-opengl)
+      NO_OPENGL=1
+      ;;
+  --without-pcre)
+      NO_PCRE=1  # does not do anything as pcre is usually installed by default
+      ;;
+  --without-postgres)
+      NO_POSTGRES=1
+      ;;
+  --without-readline)
+      NO_READLINE=1
+      ;;
+  --without-sdl)
+      NO_SDL=1
+      ;;
+  --without-sound)
+      NO_SOUND=1
+      ;;
+  *)
+      echo "Unrecognized option $TMP"
+      exit 192
+  esac
+  shift
+done
 
 
 # Runners
@@ -132,54 +192,80 @@ redhat )
       else
          rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
       fi
-      # Containres may not have these
+      # Containers may not have these
       yum_install make
       #
       yum_install bzip2
       yum_install gcc-gnat
       yum_install git
-      yum_install gstreamer1
-      yum_install gstreamer1-devel
-      yum_install libdb-devel
-      yum_install mariadb
-      yum_install mariadb-devel
-      yum_install mariadb-server
-      yum_install mlocate
-      yum_install postgresql
-      yum_install postgresql-devel
-      yum_install postgresql-server
-      yum_install SDL
-      yum_install SDL-devel
-      yum_install SDL_image
-      yum_install SDL_image-devel
       yum_install bc
-      yum_install memcached
-      yum_install readline-devel
+      yum_install mlocate
+      if [ -z "$NO_SOUND" ] ; then
+         yum_install gstreamer1
+         yum_install gstreamer1-devel
+      fi
+      if [ -z "$NO_BDB" ] ; then
+         yum_install libdb-devel
+      fi
+      if [ -z "$NO_MYSQL" ] ; then
+         yum_install mariadb
+         yum_install mariadb-devel
+         yum_install mariadb-server
+      fi
+      if [ -z "$NO_POSTGRES" ] ; then
+         yum_install postgresql
+         yum_install postgresql-devel
+         yum_install postgresql-server
+      fi
+      if [ -z "$NO_SDL" ] ; then
+         yum_install SDL
+         yum_install SDL-devel
+         yum_install SDL_image
+         yum_install SDL_image-devel
+      fi
+      if [ -z "$NO_MEMCACHED" ] ; then
+         yum_install memcached
+      fi
+      if [ -z "$NO_READLINE" ] ; then
+         yum_install readline-devel
+      fi
       set +e
    fi
    ;;
 suse)
    set -e
    zypper_install make
-   zypper_install mlocate
    zypper_install gcc-ada
    zypper_install git
-   zypper_install gstreamer-devel
    zypper_install libopenssl-devel
-   zypper_install libSDL-devel
-   zypper_install libSDL_image-devel
-   zypper_install libmariadb-devel 
-   zypper_install postgresql
-   zypper_install postgresql-devel
-   zypper_install postgresql-server-devel  # for pg_config
-   zypper_install rpmlint
-   zypper_install memcached
-   zypper_install libdb-4_8-devel
+   zypper_install mlocate
+   # zypper_install rpmlint
+   if [ -z "$NO_SOUND" ] ; then
+      zypper_install gstreamer-devel
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      zypper_install libSDL-devel
+      zypper_install libSDL_image-devel
+   fi
+   if [ -z "$NO_MYSQL" ] ; then
+      zypper_install libmariadb-devel
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      zypper_install postgresql
+      zypper_install postgresql-devel
+      zypper_install postgresql-server-devel  # for pg_config
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      zypper_install memcached
+   fi
+   if [ -z "$NO_BDB" ] ; then
+      zypper_install libdb-4_8-devel
+   fi
    set +e
    ;;
 ubuntu )
    set -e
-   # Container
+   # Containers may not have these
    apt_install apt-utils
    apt_install ncurses-bin
    #
@@ -187,20 +273,34 @@ ubuntu )
    apt_install bzip2
    apt_install gnat
    apt_install git
-   apt_install libdb-dev
-   apt_install libmysqlclient-dev
-   apt_install mysql-server
-   apt_install locate
-   apt_install postgresql-client
-   apt_install postgresql-server-dev-all
-   #sudo -u root apt-get -q -y install libgstreamer0.10-dev
-   apt_install libgstreamer1.0-dev
-   apt_install libsdl1.2-dev
-   apt_install libsdl-image1.2-dev
    apt_install wget
    apt_install bc
-   apt_install memcached
-   apt_install libreadline-dev
+   apt_install locate
+   if [ -z "$NO_BDB" ] ; then
+      apt_install libdb-dev
+   fi
+   if [ -z "$NO_MYSQL" ] ; then
+      apt_install libmysqlclient-dev
+      apt_install mysql-server
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      apt_install postgresql-client
+      apt_install postgresql-server-dev-all
+   fi
+   if [ -z "$NO_SOUND" ] ; then
+      #sudo -u root apt-get -q -y install libgstreamer0.10-dev
+      apt_install libgstreamer1.0-dev
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      apt_install libsdl1.2-dev
+      apt_install libsdl-image1.2-dev
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      apt_install memcached
+   fi
+   if [ -z "$NO_READLINE" ] ; then
+      apt_install libreadline-dev
+   fi
    set +e
    ;;
 debian )
@@ -209,45 +309,73 @@ debian )
    apt_install bzip2
    apt_install gnat
    apt_install git
-   apt_install libdb-dev
-   apt_install libmariadbclient-dev
-   apt_install libmariadb-dev-compat # R Pi 4
-   apt_install mariadb-server
-   apt_install locate
-   apt_install postgresql-client
-   apt_install postgresql-server-dev-all
-   apt_install libgstreamer1.0-dev
-   apt_install libsdl1.2-dev
-   apt_install libsdl-image1.2-dev
    apt_install wget
    apt_install bc
-   apt_install memcached
    apt_install libssl1.1
-   apt_install libreadline-dev
+   apt_install locate
+   if [ -z "$NO_BDB" ] ; then
+      apt_install libdb-dev
+   fi
+   if [ -z "$NO_MYSQL" ] ; then
+      apt_install libmariadbclient-dev
+      apt_install libmariadb-dev-compat # R Pi 4
+      apt_install mariadb-server
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      apt_install postgresql-client
+      apt_install postgresql-server-dev-all
+   fi
+   if [ -z "$NO_SOUND" ] ; then
+      apt_install libgstreamer1.0-dev
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      apt_install libsdl1.2-dev
+      apt_install libsdl-image1.2-dev
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      apt_install memcached
+   fi
+   if [ -z "$NO_READLINE" ] ; then
+      apt_install libreadline-dev
+   fi
    set +e
    ;;
 freebsd )
    set -e
    echo "y" | pkg install bash
    echo "y" | pkg install gmake
-   echo "y" | pkg install mysql57-client
    echo "y" | pkg install bzip2
    echo "y" | pkg install gcc6-aux  # Ada support expires 2022-02
    # echo "y" | pkg install xmlada
    echo "y" | pkg install git
-   # echo "y" | pkg install libdb-dev
-   # echo "y" | pkg install libmysqlclient-dev
-   echo "y" | pkg install mysql57-server
-   echo "y" | pkg install postgresql12-client
-   echo "y" | pkg install postgresql12-server
-   # echo "y" | pkg install postgresql-server-dev-all
-   echo "y" | pkg install gstreamer1
-   echo "y" | pkg install sdl # libsdl1.2-dev
-   echo "y" | pkg install sdl_image # libsdl-image1.2-dev
    echo "y" | pkg install wget
-   echo "y" | pkg install memcached
-   echo "y" | pkg install readline
-   echo "y" | pkg install db18
+   if [ -z "$NO_MYSQL" ] ; then
+      # echo "y" | pkg install libmysqlclient-dev
+      echo "y" | pkg install mysql57-client
+      echo "y" | pkg install mysql57-server
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      echo "y" | pkg install postgresql12-client
+      echo "y" | pkg install postgresql12-server
+   fi
+   if [ -z "$NO_SOUND" ] ; then
+      # echo "y" | pkg install postgresql-server-dev-all
+      echo "y" | pkg install gstreamer1
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      echo "y" | pkg install sdl # libsdl1.2-dev
+      echo "y" | pkg install sdl_image # libsdl-image1.2-dev
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      echo "y" | pkg install memcached
+   fi
+   if [ -z "$NO_READLINE" ] ; then
+      echo "y" | pkg install readline
+   fi
+   if [ -z "$NO_BDB" ] ; then
+      # echo "y" | pkg install libdb-dev
+      echo "y" | pkg install db18
+   fi
    set +x
    set +e
    ;;
