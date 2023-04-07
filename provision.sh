@@ -268,7 +268,7 @@ ubuntu )
    # Containers may not have these
    apt_install apt-utils
    apt_install ncurses-bin
-   if [ -z "NO_PCRE" ] ; then
+   if [ -z "$NO_PCRE" ] ; then
       apt_install libpcre3-dev
    fi
    #
