@@ -41,6 +41,8 @@ Priority Issues (Fix These First)
 - text_io.put_line may raise device_error on interrupted system calls,
   especially on Raspian Linux.  scanner.communications updated but there
   may be other references.
+- ubuntu container failing because l10n constants are not defined (they
+  are defined in a regular ubuntu install)
 - less command issues
   - e.g. less a file.  The arrow keys work.  TERM is correct.
   - eg. run spar then less a file.  The arrow keys do not work.  TERM is
