@@ -30,8 +30,9 @@ Priority Issues (Fix These First)
   - coverage tests of recent changes
 
 - ssds project crash
-  - all syntax checks pass
-  - wash_blocked and all daemons run manually without issue
+  - an exception was raised that, when it finally was received at the
+    top level, had lost the message.  This occurred in the washed_blocked
+    script.  It may be difficult to reproduce and determine the cause.
 
 - in `find ... \; ;` it becomes ; ; - is this correct?
 - pascal's concerns over locate in configure

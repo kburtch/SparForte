@@ -1632,7 +1632,7 @@ begin
 
   pushBlock( newScope => false, newName => "loop loop" );  -- start new scope
 
-  if syntax_check or exit_block then
+  if syntax_check or exit_block or done then
      expect( loop_t );                                     -- "loop"
      ParseBlock;                                           -- check loop block
      goto loop_done;
@@ -1675,7 +1675,7 @@ procedure ParseWhileBlock is
 begin
   pushBlock( newScope => false, newName => "while loop" ); -- start new scope
 
-  if syntax_check or exit_block then
+  if syntax_check or exit_block or done then
      expect( while_t );                                    -- "while"
      if token = while_t then                               -- this is from
         err( +"redundant " & em( "while" ) );              -- GNAT
