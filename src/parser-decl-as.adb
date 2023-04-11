@@ -6802,7 +6802,7 @@ begin
      end if;
   elsif wasSIGTERM then                                  -- normal 'kill'
     -- this only occurs in interactive sessions
-    wasSIGTERM := false; 
+    wasSIGTERM := false;
     if trace then
        put_trace( "Received sigterm signal" );
     end if;

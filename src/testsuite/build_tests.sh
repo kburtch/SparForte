@@ -9,7 +9,7 @@ cd ../..
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-bdb
+./configure --jobs=1 --without-bdb
 make all
 if [ $? -ne 0 ] ; then
    echo "failed"
@@ -24,7 +24,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure
+./configure --jobs=1
 make all
 if [ $? -ne 0 ] ; then
    echo "failed"
@@ -44,7 +44,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-mysql
+./configure --jobs=1 --without-mysql
 make all
 if [ $? -ne 0 ] ; then
    echo "failed"
@@ -64,7 +64,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-postgres
+./configure --jobs=1 --without-postgres
 make all
 if [ $? -ne 0 ] ; then
    echo "failed"
@@ -84,7 +84,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-mysql --without-postgres
+./configure --jobs=1 --without-mysql --without-postgres
 make all
 if [ $? -ne 0 ] ; then
    echo "failed"
@@ -105,7 +105,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-readline
+./configure --jobs=1 --without-readline
 make all
 if [ $? -ne 0 ] ; then
    echo "without-readline failed"
@@ -116,7 +116,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-sound
+./configure --jobs=1 --without-sound
 make all
 if [ $? -ne 0 ] ; then
    echo "without-sound failed"
@@ -127,7 +127,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-opengl
+./configure --jobs=1 --without-opengl
 make all
 if [ $? -ne 0 ] ; then
    echo "without-opengl failed"
@@ -138,7 +138,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-sdl
+./configure --jobs=1 --without-sdl
 make all
 if [ $? -ne 0 ] ; then
    echo "without-sdl failed"
@@ -149,7 +149,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-pcre
+./configure --jobs=1 --without-pcre
 make all
 if [ $? -ne 0 ] ; then
    echo "without-pcre failed"
@@ -160,7 +160,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure --without-l10n
+./configure -jobs=1 --without-l10n
 make all
 if [ $? -ne 0 ] ; then
    echo "without-pcre failed"
