@@ -166,67 +166,67 @@ procedure putResource( rp : resPtr ) is
 begin
   case rp.rt is
   when mysql_connection =>
-       put_line( "mysql connection" );
+       put_line_retry( "mysql connection" );
   when mysql_query =>
-       put_line( "mysql query" );
+       put_line_retry( "mysql query" );
   when postgresql_connection =>
-       put_line( "postgresql connection" );
+       put_line_retry( "postgresql connection" );
   when postgresql_query =>
-       put_line( "postgresql query" );
+       put_line_retry( "postgresql query" );
   when complex_number =>
-       put_line( "complex number" );
+       put_line_retry( "complex number" );
   when directory =>
-       put_line( "directory type" );
+       put_line_retry( "directory type" );
   when memcache_connection =>
-       put_line( "memcache connection" );
+       put_line_retry( "memcache connection" );
   when pen_canvas =>
-       put_line( "pen canvas" );
+       put_line_retry( "pen canvas" );
   when vector_string_list =>
-       put_line( "vector/singly linked list" );
+       put_line_retry( "vector/singly linked list" );
   when vector_string_list_cursor =>
-       put_line( "vector/singly linked list cursor" );
+       put_line_retry( "vector/singly linked list cursor" );
   when doubly_linked_string_list =>
-       put_line( "doubly linked list" );
+       put_line_retry( "doubly linked list" );
   when doubly_linked_string_list_cursor =>
-       put_line( "doubly linked list cursor" );
+       put_line_retry( "doubly linked list cursor" );
   when dynamic_string_hash_table =>
-       put_line( "dynamic hash table" );
+       put_line_retry( "dynamic hash table" );
   when string_hashed_map_cursor =>
-       put_line( "hashed map cursor" );
+       put_line_retry( "hashed map cursor" );
   when string_hashed_map =>
-       put_line( "hashed map" );
+       put_line_retry( "hashed map" );
   when string_hashed_set_cursor =>
-       put_line( "hashed set cursor" );
+       put_line_retry( "hashed set cursor" );
   when string_hashed_set =>
-       put_line( "hashed set" );
+       put_line_retry( "hashed set" );
   when gl_byte_array  =>
-       put_line( "OpenGL byte array" );
+       put_line_retry( "OpenGL byte array" );
   when gl_short_array  =>
-       put_line( "OpenGL short array" );
+       put_line_retry( "OpenGL short array" );
   when gl_int_array =>
-       put_line( "OpenGL int array" );
+       put_line_retry( "OpenGL int array" );
   when gl_float_array  =>
-       put_line( "OpenGL float array" );
+       put_line_retry( "OpenGL float array" );
   when gl_double_array  =>
-       put_line( "OpenGL doubly array" );
+       put_line_retry( "OpenGL doubly array" );
   when btree_file =>
-       put_line( "btree file" );
+       put_line_retry( "btree file" );
   when hash_file =>
-       put_line( "hash file" );
+       put_line_retry( "hash file" );
   when recno_file =>
-       put_line( "recno file" );
+       put_line_retry( "recno file" );
   when btree_cursor =>
-       put_line( "btree cursor" );
+       put_line_retry( "btree cursor" );
   when hash_cursor =>
-       put_line( "hash cursor" );
+       put_line_retry( "hash cursor" );
   when recno_cursor =>
-       put_line( "recno cursor" );
+       put_line_retry( "recno cursor" );
   when tinyserve_socket_server =>
-       put_line( "tinyserve socket server" );
+       put_line_retry( "tinyserve socket server" );
   when none =>
-       put_line( "undefined resource" );
+       put_line_retry( "undefined resource" );
   when others =>
-       put_line( standard_error, gnat.source_info.source_location & ": internal error: unexpected resource" );
+       put_line_retry( standard_error, gnat.source_info.source_location & ": internal error: unexpected resource" );
   end case;
 end putResource;
 

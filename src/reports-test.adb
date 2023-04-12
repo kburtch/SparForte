@@ -25,6 +25,7 @@ with Ada.Characters.Latin_1,
      Ada.Strings.Unbounded.Text_IO,
      Ada.Calendar.Arithmetic,
      pegasoft.strings,
+     pegasoft.user_io,
      world,
      compiler; -- Circular dependency...
 use  Ada.Strings,
@@ -32,6 +33,7 @@ use  Ada.Strings,
      Ada.Strings.Unbounded.Text_IO,
      Ada.Calendar.Arithmetic,
      pegasoft.strings,
+     pegasoft.user_io,
      world,
      compiler;
 
@@ -374,10 +376,10 @@ package body reports.test is
     else
        create( test_result_file, out_file, to_string( path ) );
     end if;
-    put_line( test_result_file, "<?xml version=" & Quotation & "1.0" &
+    put_line_retry( test_result_file, "<?xml version=" & Quotation & "1.0" &
       Quotation & " encoding="  & Quotation &
       "UTF-8"  & Quotation & "?>" );
-    put_line( test_result_file, "<testsuites>" );
+    put_line_retry( test_result_file, "<testsuites>" );
   end startJunit;
 
   procedure startJUnitTestCase( report: in out xmlTestReport;
@@ -429,23 +431,23 @@ package body reports.test is
     jts.failureCnt := jts.failureCnt + jtc.failureCnt;
     jts.errorCnt := jts.errorCnt + jtc.errorCnt;
     Difference( ada.calendar.clock, jtc.startTime, elapsedDays, elapsedSeconds, elapsedLeapSeconds );
-    put( test_case_file, "  <testcase name=" & Quotation & to_string( jtc.name ) & Quotation & " " );
-    put( test_case_file, "class=" & Quotation & to_string( jtc.class ) & Quotation & " " );
-    put( test_case_file, "file=" & Quotation & to_string( jtc.file ) & Quotation & " " );
-    put( test_case_file, "line=" & Quotation & to_string( trim( jtc.line, both ) ) & Quotation & " " );
-    put( test_case_file, "assertions=" & Quotation & trim( jtc.assertionCnt'img, both ) & Quotation & " " );
-    put( test_case_file, "failures=" & Quotation & trim( jtc.failureCnt'img, both ) & Quotation & " " );
-    put( test_case_file, "errors=" & Quotation & trim( jtc.errorCnt'img, both ) & Quotation & " " );
-    put( test_case_file, "time=" & Quotation & trim( elapsedSeconds'img, both ) & Quotation & ">" );
-    new_line( test_case_file );
+    put_retry( test_case_file, "  <testcase name=" & Quotation & to_string( jtc.name ) & Quotation & " " );
+    put_retry( test_case_file, "class=" & Quotation & to_string( jtc.class ) & Quotation & " " );
+    put_retry( test_case_file, "file=" & Quotation & to_string( jtc.file ) & Quotation & " " );
+    put_retry( test_case_file, "line=" & Quotation & to_string( trim( jtc.line, both ) ) & Quotation & " " );
+    put_retry( test_case_file, "assertions=" & Quotation & trim( jtc.assertionCnt'img, both ) & Quotation & " " );
+    put_retry( test_case_file, "failures=" & Quotation & trim( jtc.failureCnt'img, both ) & Quotation & " " );
+    put_retry( test_case_file, "errors=" & Quotation & trim( jtc.errorCnt'img, both ) & Quotation & " " );
+    put_retry( test_case_file, "time=" & Quotation & trim( elapsedSeconds'img, both ) & Quotation & ">" );
+    new_line_retry( test_case_file );
     -- TODO: should be cleaned up
     while not failureList.isEmpty( jtc.failureMsgs ) loop
        failureList.Pull( jtc.failureMsgs, msg );
        if jtc.description = "" then
-          put_line( test_case_file, "    <failure message=" & Quotation & encode_message( msg ) &
+          put_line_retry( test_case_file, "    <failure message=" & Quotation & encode_message( msg ) &
             Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) & "</failure>" );
        else
-          put_line( test_case_file, "    <failure message=" & Quotation & encode_message( msg ) &
+          put_line_retry( test_case_file, "    <failure message=" & Quotation & encode_message( msg ) &
             Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) &
             ":" & encode_message( jtc.description ) & "</failure>" );
        end if;
@@ -454,19 +456,19 @@ package body reports.test is
     while not errorList.isEmpty( jtc.errorMsgs ) loop
        errorList.Pull( jtc.errorMsgs, msg );
        if jtc.description = "" then
-          put_line( test_case_file, "    <error message=" & Quotation & encode_message( msg ) &
+          put_line_retry( test_case_file, "    <error message=" & Quotation & encode_message( msg ) &
             Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) & "</error>" );
        else
-          put_line( test_case_file, "    <error message=" & Quotation & encode_message( msg ) &
+          put_line_retry( test_case_file, "    <error message=" & Quotation & encode_message( msg ) &
             Quotation & ">" & jtc.file & ":" & trim( jtc.line, both ) &
             ":" & encode_message( jtc.description ) & "</error>" );
        end if;
     end loop;
     -- TODO: nothing actually skipped yet.
     if jtc.skipped then
-       put( test_case_file, "<skipped />" );
+       put_retry( test_case_file, "<skipped />" );
     end if;
-    put_line( test_case_file, "  </testcase>" );
+    put_line_retry( test_case_file, "  </testcase>" );
     jtc.isOpen := false;
     isTestCaseStarted := false;
   end endJunitTestCase;
@@ -540,24 +542,24 @@ package body reports.test is
     s : unbounded_string;
   begin
     Difference( ada.calendar.clock, jts.startTime, elapsedDays, elapsedSeconds, elapsedLeapSeconds );
-    put( test_result_file, "<testsuite name=" & Quotation & encode_class( jts.name ) & Quotation & " " );
-    put( test_result_file, "file=" & Quotation & to_string( jts.path ) & Quotation & " " );
-    put( test_result_file, "tests=" & Quotation & trim( jts.testCnt'img, both ) & Quotation & " " ); -- TODO: trim
-    put( test_result_file, "assertions=" & Quotation & trim( jts.assertionCnt'img, both ) & Quotation & " " );
-    put( test_result_file, "failures=" & Quotation & trim( jts.failureCnt'img, both ) & Quotation & " " );
-    put( test_result_file, "errors=" & Quotation & trim( jts.errorCnt'img, both ) & Quotation & " " );
-    put( test_result_file, "time=" & Quotation & trim( elapsedSeconds'img, both ) & Quotation & ">" );
-    new_line( test_result_file );
+    put_retry( test_result_file, "<testsuite name=" & Quotation & encode_class( jts.name ) & Quotation & " " );
+    put_retry( test_result_file, "file=" & Quotation & to_string( jts.path ) & Quotation & " " );
+    put_retry( test_result_file, "tests=" & Quotation & trim( jts.testCnt'img, both ) & Quotation & " " ); -- TODO: trim
+    put_retry( test_result_file, "assertions=" & Quotation & trim( jts.assertionCnt'img, both ) & Quotation & " " );
+    put_retry( test_result_file, "failures=" & Quotation & trim( jts.failureCnt'img, both ) & Quotation & " " );
+    put_retry( test_result_file, "errors=" & Quotation & trim( jts.errorCnt'img, both ) & Quotation & " " );
+    put_retry( test_result_file, "time=" & Quotation & trim( elapsedSeconds'img, both ) & Quotation & ">" );
+    new_line_retry( test_result_file );
     -- insert test cases
     if is_open( test_case_file ) then
        reset( test_case_file, in_file );
        while not end_of_file( test_case_file ) loop
          s := get_line( test_case_file );
-         put_line( test_result_file, s );
+         put_line_retry( test_result_file, s );
        end loop;
        delete( test_case_file );
     end if;
-    put_line( test_result_file, "</testsuite>" );
+    put_line_retry( test_result_file, "</testsuite>" );
     jts.isOpen := false;
     isTestCaseStarted := false;
   end endJunitTestSuite;
@@ -583,7 +585,7 @@ package body reports.test is
 
   procedure endJunit( report : in out xmlTestReport ) is
   begin
-    put_line( test_result_file, "</testsuites>" );
+    put_line_retry( test_result_file, "</testsuites>" );
     close( test_result_file );
   end endJunit;
 

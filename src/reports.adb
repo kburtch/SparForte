@@ -120,7 +120,7 @@ package body reports is
     reset( r.outputfile, in_file );
     while not end_of_file( r.outputFile ) loop
        s := get_line( r.outputfile );
-       put_line( to_string( s ) );
+       put_line_retry( to_string( s ) );
     end loop;
     delete( r.outputfile );
   end finish;
@@ -180,12 +180,12 @@ package body reports is
           end if;
        end if;
        -- display substring and delete it
-       put_line( r.outputfile, slice( partialString, 1, pos ) );
+       put_line_retry( r.outputfile, slice( partialString, 1, pos ) );
        delete( partialString, 1, pos );
        -- maintain indent, if any, and if more text to do
        if length( s ) > 0 then
           if initialIndent > 1 then
-             put( r.outputfile, to_string( initialIndent * " " ) );
+             put_retry( r.outputfile, to_string( initialIndent * " " ) );
           end if;
        end if;
     end loop;
@@ -203,7 +203,7 @@ package body reports is
   procedure renderText( r : in out textReport'class; name : string; s : unbounded_string ) is
   begin
      if length( s ) > 0 then
-        new_line( r.outputfile );
+        new_line_retry( r.outputfile );
         if name'length > 0 then
            renderRequiredText( r,  optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " & s );
         else
@@ -222,8 +222,8 @@ package body reports is
   procedure renderDescription( r : in out textReport'class; indent : positive; s : unbounded_string ) is
   begin
      if length( s ) > 0 then
-        new_line( r.outputfile );
-        put( r.outputfile, indent * " " );
+        new_line_retry( r.outputfile );
+        put_retry( r.outputfile, indent * " " );
         r.lineWidth := r.lineWidth + indent;
         renderRequiredText( r, s );
      end if;
@@ -240,21 +240,21 @@ package body reports is
     s : unbounded_string;
   begin
    if not contentList.isEmpty( l ) then
-      put_line( r.outputfile, optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " );
+      put_line_retry( r.outputfile, optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " );
       while not contentList.isEmpty( l ) loop
          contentList.Pull( l, s );
          newLineWidth := r.lineWidth + columnWidth + 1;
          if newLineWidth > r.screenWidth then
             r.lineWidth := 0;
-            new_line( r.outputfile );
+            new_line_retry( r.outputfile );
          elsif r.lineWidth > 0 then
-            put( r.outputfile, to_string( integer( columnWidth-length(s) + 1 ) * " " ) );
+            put_retry( r.outputfile, to_string( integer( columnWidth-length(s) + 1 ) * " " ) );
          end if;
-         put( r.outputfile, to_string( s ) );
+         put_retry( r.outputfile, to_string( s ) );
          r.lineWidth := r.lineWidth + columnWidth + 1;
       end loop;
       r.lineWidth := 0;
-      new_line( r.outputfile );
+      new_line_retry( r.outputfile );
    end if;
   end renderTable;
 
@@ -270,7 +270,7 @@ package body reports is
     firstNewLine : boolean := true;
   begin
     if not contentList.isEmpty( l ) then
-      new_line( r.outputfile );
+      new_line_retry( r.outputfile );
       nextTab := indentWidth;
       r.lineWidth := indentWidth;
       while not contentList.isEmpty( l ) loop
@@ -278,17 +278,17 @@ package body reports is
 
          -- a blank line denotes a new section
          if length( s ) = 0 then
-           new_line( r.outputfile );
+           new_line_retry( r.outputfile );
            -- suppress first newline or we'll get a double-space
            if firstNewLine then
              firstnewLine := false;
            else
-             new_line( r.outputfile );
+             new_line_retry( r.outputfile );
            end if;
             if not contentList.isEmpty( l ) then
                contentList.Pull( l, s );
-               put_line( r.outputfile, optional_yellow( to_string( s ), boolean( gccOpt), boolean( colourOpt ) ) );
-               new_line( r.outputfile );
+               put_line_retry( r.outputfile, optional_yellow( to_string( s ), boolean( gccOpt), boolean( colourOpt ) ) );
+               new_line_retry( r.outputfile );
             end if;
             r.lineWidth := 0;
             nextTab := indentWidth;
@@ -300,19 +300,19 @@ package body reports is
             if newLineWidth > r.screenWidth then
                r.lineWidth := 0;
                nextTab := indentWidth;
-               new_line( r.outputfile );
+               new_line_retry( r.outputfile );
             --elsif r.lineWidth > 0 then
             end if;
             if nextTab > 0 then
-               put( r.outputfile, nextTab * " " );
+               put_retry( r.outputfile, nextTab * " " );
             end if;
-            put( r.outputfile, to_string( s ) );
+            put_retry( r.outputfile, to_string( s ) );
             r.lineWidth := r.lineWidth + columnWidth + 1;
             nextTab := columnWidth-length(s) + 1;
          end if;
       end loop;
       r.lineWidth := 0;
-      new_line( r.outputfile );
+      new_line_retry( r.outputfile );
     end if;
   end renderPackageContent;
 
@@ -330,16 +330,16 @@ package body reports is
     s : unbounded_string;
   begin
    if not contentList.isEmpty( l ) then
-      new_line( r.outputfile );
-      put( r.outputfile, optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " );
+      new_line_retry( r.outputfile );
+      put_retry( r.outputfile, optional_yellow( name, boolean( gccOpt), boolean( colourOpt ) ) & ": " );
       if contentList.length( l ) = 1 then
          contentList.Pull( l, s );
-         put_line( r.outputfile, to_string( s ) );
+         put_line_retry( r.outputfile, to_string( s ) );
       else
-         new_line( r.outputfile );
+         new_line_retry( r.outputfile );
          while not contentList.isEmpty( l ) loop
             contentList.Pull( l, s );
-            put_line( r.outputfile, " " & utf_bullet & " " & to_string( s ) );
+            put_line_retry( r.outputfile, " " & utf_bullet & " " & to_string( s ) );
          end loop;
       end if;
    end if;
@@ -360,8 +360,8 @@ package body reports is
   procedure renderText( r : in out htmlReport'class; name : string; s : unbounded_string ) is
   begin
     if length( s ) > 0 then
-       put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
-       put_line( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
+       put_line_retry( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
+       put_line_retry( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
     end if;
   end renderText;
 
@@ -373,15 +373,15 @@ package body reports is
   begin
     -- TOOD: indent not tested
     --if indent > 0 then
-       put_line( r.outputfile, "<div style=" & ASCII.Quotation &
+       put_line_retry( r.outputfile, "<div style=" & ASCII.Quotation &
           "margin-left:" & positive'image(indent) & "px" &
           ASCII.Quotation & ">" );
     --end if;
-    put_line( r.outputfile, "<p style=" & ASCII.Quotation &
+    put_line_retry( r.outputfile, "<p style=" & ASCII.Quotation &
        "padding: 0px 20px 0px 20px" &
        ASCII.Quotation & ">" & html_encode( to_string( s ) ) & "</p>" );
     -- if indent > 0 then
-       put_line( r.outputfile, "</div>" );
+       put_line_retry( r.outputfile, "</div>" );
     -- end if;
   end renderDescription;
 
@@ -394,20 +394,20 @@ package body reports is
   begin
     -- columnWidth does not apply to an HTML report
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
+       put_line_retry( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
        if contentList.length( l ) = 1 then
           contentList.Pull( l, s );
-          put_line( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
+          put_line_retry( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
        else
-          put_line( r.outputfile, "<table>" );
+          put_line_retry( r.outputfile, "<table>" );
           -- TODO: handle columns in table
           while not contentList.isEmpty( l ) loop
              contentList.Pull( l, s );
-             put_line( r.outputfile, "<tr>" );
-             put_line( r.outputfile, "<td>" & html_encode( to_string( s ) ) & "</td>" );
-             put_line( r.outputfile, "</tr>" );
+             put_line_retry( r.outputfile, "<tr>" );
+             put_line_retry( r.outputfile, "<td>" & html_encode( to_string( s ) ) & "</td>" );
+             put_line_retry( r.outputfile, "</tr>" );
           end loop;
-          put_line( r.outputfile, "</table>" );
+          put_line_retry( r.outputfile, "</table>" );
        end if;
     end if;
   end renderTable;
@@ -428,9 +428,9 @@ package body reports is
     procedure table_tag is
     begin
        if table_open then
-          put_line( r.outputfile, "</tr></table>" );
+          put_line_retry( r.outputfile, "</tr></table>" );
        end if;
-       put_line( r.outputfile, "<table style=" & ASCII.Quotation &
+       put_line_retry( r.outputfile, "<table style=" & ASCII.Quotation &
            "margin: 0px 10px 0px 20px" &
            ASCII.Quotation & "><tr>" );
        table_open := true;
@@ -438,7 +438,7 @@ package body reports is
 
     procedure td_tag( s : unbounded_string ) is
     begin
-      put_line( r.outputfile, "<td style=" & ASCII.Quotation &
+      put_line_retry( r.outputfile, "<td style=" & ASCII.Quotation &
                 "padding: 10px" &
                 ASCII.Quotation & ">" & html_encode( to_string( s ) ) & "</td>" );
     end td_tag;
@@ -446,10 +446,10 @@ package body reports is
     procedure h3_tag( s : unbounded_string ) is
     begin
        if table_open then
-          put_line( r.outputfile, "</tr></table>" );
+          put_line_retry( r.outputfile, "</tr></table>" );
           table_open := false;
        end if;
-      put_line( r.outputfile, "<h3>" & html_encode( to_string( s ) ) & "</h3>" );
+      put_line_retry( r.outputfile, "<h3>" & html_encode( to_string( s ) ) & "</h3>" );
     end h3_tag;
 
   begin
@@ -488,7 +488,7 @@ package body reports is
              row_count := row_count + 1;
           elsif row_count > num_per_row then
              row_count := 1;
-             put_line( r.outputfile, "</tr><tr>" );
+             put_line_retry( r.outputfile, "</tr><tr>" );
              td_tag( s );
           else
              td_tag( s );
@@ -496,7 +496,7 @@ package body reports is
           end if;
        end loop;
        if table_open then
-          put_line( r.outputfile, "</tr></table>" );
+          put_line_retry( r.outputfile, "</tr></table>" );
        end if;
     end if;
   end renderPackageContent;
@@ -509,17 +509,17 @@ package body reports is
     s : unbounded_string;
   begin
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
+       put_line_retry( r.outputfile, "<h3>" & html_encode( name ) & "</h3>" );
        if contentList.length( l ) = 1 then
           contentList.Pull( l, s );
-          put_line( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
+          put_line_retry( r.outputfile, "<p>" & html_encode( to_string( s ) ) & "</p>" );
        else
-          put_line( r.outputfile, "<ul>" );
+          put_line_retry( r.outputfile, "<ul>" );
           while not contentList.isEmpty( l ) loop
              contentList.Pull( l, s );
-             put_line( r.outputfile, "<li>" & html_encode( to_string( s ) ) & "</li>" );
+             put_line_retry( r.outputfile, "<li>" & html_encode( to_string( s ) ) & "</li>" );
           end loop;
-          put_line( r.outputfile, "</ul>" );
+          put_line_retry( r.outputfile, "</ul>" );
        end if;
     end if;
   end renderBulletList;
@@ -539,12 +539,12 @@ package body reports is
   begin
     if length( s ) > 0 then
        if name'length > 0 then
-          put_line( r.outputfile, ".SH " &
+          put_line_retry( r.outputfile, ".SH " &
                to_string( ToUpper( to_unbounded_string( name ) ) ) );
        else
-          put_line( r.outputfile, ".SH ADDITIONAL NOTES" );
+          put_line_retry( r.outputfile, ".SH ADDITIONAL NOTES" );
        end if;
-       put_line( r.outputfile, to_string( s ) );
+       put_line_retry( r.outputfile, to_string( s ) );
     end if;
   end renderText;
   -- TODO: probably need a renderFooter
@@ -555,8 +555,8 @@ package body reports is
 
   procedure renderDescription( r : in out manPageReport'class; indent : positive; s : unbounded_string ) is
   begin
-    put_line( r.outputfile, ".SH DESCRIPTION" );
-    put_line( r.outputfile, s );
+    put_line_retry( r.outputfile, ".SH DESCRIPTION" );
+    put_line_retry( r.outputfile, s );
   end renderDescription;
 
   --  RENDER TABLET (Man Page)
@@ -568,11 +568,11 @@ package body reports is
   begin
     -- columnwidth is not used
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, ".SH " &
+       put_line_retry( r.outputfile, ".SH " &
           to_string(  ToUpper( to_unbounded_string( name ) ) ) );
        while not contentList.isEmpty( l ) loop
           contentList.Pull( l, s );
-          put_line( r.outputfile, s );
+          put_line_retry( r.outputfile, s );
        end loop;
     end if;
   end renderTable;
@@ -585,11 +585,11 @@ package body reports is
     s : unbounded_string;
   begin
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, ".SH " &
+       put_line_retry( r.outputfile, ".SH " &
           to_string( ToUpper( to_unbounded_string( name ) ) ) );
        while not contentList.isEmpty( l ) loop
           contentList.Pull( l, s );
-          put_line( r.outputfile, to_string( s ) );
+          put_line_retry( r.outputfile, to_string( s ) );
        end loop;
     end if;
   end renderBulletList;
@@ -608,20 +608,20 @@ package body reports is
        while not contentList.isEmpty( l ) loop
           contentList.Pull( l, s );
           if new_subsection then
-             put_line( r.outputfile, s );
-             put_line( r.outputfile, ".PP" );
+             put_line_retry( r.outputfile, s );
+             put_line_retry( r.outputfile, ".PP" );
              new_subsection := false;
           -- A blank line indicates the end of a section
           elsif length( s ) = 0 then
              new_subsection := true;
-             put_line( r.outputfile, ".PP" );
+             put_line_retry( r.outputfile, ".PP" );
           else
-             put_line( r.outputfile, ".IP \[bu] 2" );
-             put_line( r.outputfile, s );
+             put_line_retry( r.outputfile, ".IP \[bu] 2" );
+             put_line_retry( r.outputfile, s );
           end if;
        end loop;
 
-       put_line( r.outputfile, ".PP" );
+       put_line_retry( r.outputfile, ".PP" );
     end if;
   end renderPackageContent;
 
@@ -645,10 +645,10 @@ package body reports is
     if length( s ) > 0 then
        if name'length > 0 then
           -- headings in markdown are underlined
-          put_line( r.outputfile, name );
-          put_line( r.outputfile, name'length * "-" );
+          put_line_retry( r.outputfile, name );
+          put_line_retry( r.outputfile, name'length * "-" );
        end if;
-       put_line( r.outputfile, to_string( s ) );
+       put_line_retry( r.outputfile, to_string( s ) );
     end if;
   end renderText;
 
@@ -660,8 +660,8 @@ package body reports is
 
   procedure renderDescription( r : in out markdownReport'class; indent : positive; s : unbounded_string ) is
   begin
-    put( r.outputfile, indent * " " );
-    put_line( r.outputfile, s );
+    put_retry( r.outputfile, indent * " " );
+    put_line_retry( r.outputfile, s );
     -- TODO: not sure if this is right
   end renderDescription;
 
@@ -676,21 +676,21 @@ package body reports is
     s : unbounded_string;
   begin
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, name );
-       put_line( r.outputfile, name'length * "-" );
+       put_line_retry( r.outputfile, name );
+       put_line_retry( r.outputfile, name'length * "-" );
        if contentList.length( l ) = 1 then
           contentList.Pull( l, s );
-          put_line( r.outputfile, "<p>" & s & "</p>" );
+          put_line_retry( r.outputfile, "<p>" & s & "</p>" );
        else
-          put_line( r.outputfile, "<table>" );
+          put_line_retry( r.outputfile, "<table>" );
           -- TODO: handle columns in table
           while not contentList.isEmpty( l ) loop
              contentList.Pull( l, s );
-             put_line( r.outputfile, "<tr>" );
-             put_line( r.outputfile, "<td>" & s & "</td>" );
-             put_line( r.outputfile, "</tr>" );
+             put_line_retry( r.outputfile, "<tr>" );
+             put_line_retry( r.outputfile, "<td>" & s & "</td>" );
+             put_line_retry( r.outputfile, "</tr>" );
           end loop;
-          put_line( r.outputfile, "</table>" );
+          put_line_retry( r.outputfile, "</table>" );
        end if;
     end if;
   end renderTable;
@@ -707,15 +707,15 @@ package body reports is
     s : unbounded_string;
   begin
     if not contentList.isEmpty( l ) then
-       put_line( r.outputfile, name );
-       put_line( r.outputfile, length( s ) * "-" );
+       put_line_retry( r.outputfile, name );
+       put_line_retry( r.outputfile, length( s ) * "-" );
        if contentList.length( l ) = 1 then
           contentList.Pull( l, s );
-          put_line( r.outputfile, s );
+          put_line_retry( r.outputfile, s );
        else
           while not contentList.isEmpty( l ) loop
              contentList.Pull( l, s );
-             put_line( r.outputfile, "* " & s );
+             put_line_retry( r.outputfile, "* " & s );
           end loop;
        end if;
     end if;

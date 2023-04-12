@@ -1765,7 +1765,7 @@ begin
         -- Rewind the clear and prepare to show the results
 
         Rewind( Q );
-        new_line;
+        new_line_retry;
 
         -- Use a tabular display only if will fit in the current display
 
@@ -1774,9 +1774,9 @@ begin
         -- Draw the columns
 
         if tabularDisplay then
-           put( " " );
+           put_retry( " " );
            for i in 1..columns( Q ) loop
-               put(
+               put_retry(
                   to_string(
                       ada.strings.unbounded.Head(
                           to_unbounded_string(
@@ -1785,20 +1785,20 @@ begin
                   )
                );
                if i /= columns( Q ) then
-                  put( " " & utf_verticalLine & " " );
+                  put_retry( " " & utf_verticalLine & " " );
                end if;
            end loop;
-           new_line;
-           put( utf_horizontalLine );
+           new_line_retry;
+           put_retry( utf_horizontalLine );
            for i in 1..columns( Q ) loop
-               put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
+               put_retry( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                if i /= columns( Q ) then
-                  put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
+                  put_retry( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                else
-                  put( utf_horizontalLine );
+                  put_retry( utf_horizontalLine );
                end if;
            end loop;
-           new_line;
+           new_line_retry;
         end if;
 
         -- Draw the query results
@@ -1806,33 +1806,33 @@ begin
         while not end_of_query( Q ) loop
             fetch( Q );
             if tabularDisplay then
-               put( " " );
+               put_retry( " " );
             end if;
             for i in 1..columns( Q ) loop
                 if tabularDisplay then
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      put_retry( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    else
-                      put( to_string( ada.strings.unbounded.Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                      put_retry( to_string( ada.strings.unbounded.Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
                    if i /= columns( Q ) then
-                      put( " " & utf_verticalLine & " " );
+                      put_retry( " " & utf_verticalLine & " " );
                    end if;
                 else
-                   put( to_string( head( ada.strings.unbounded.to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
-                   put( ": " );
+                   put_retry( to_string( head( ada.strings.unbounded.to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put_retry( ": " );
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( "NULL" ) );
+                      put_retry( inverse( "NULL" ) );
                       wasNull := true;
                    else
-                      put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                      put_retry( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                    end if;
-                   new_line;
+                   new_line_retry;
                 end if;
                 exit when wasSIGINT or wasSIGTERM;
             end loop;
-            new_line;
+            new_line_retry;
         end loop;
      end if;
 
@@ -1840,22 +1840,22 @@ begin
 
      if tuples( Q ) > 1 and columns ( Q ) > 1 then
         if tuples( Q ) = 1 then
-           put( " 1 Row" );
+           put_retry( " 1 Row" );
         else
-           put( Tuple_Index_Type'image( tuples( Q ) ) );
-           put( " Rows" );
+           put_retry( Tuple_Index_Type'image( tuples( Q ) ) );
+           put_retry( " Rows" );
         end if;
         if wasNull then
-           put( " with nulls" );
+           put_retry( " with nulls" );
         end if;
         if columns( Q ) = 1 then
-           put( " and 1 Column" );
+           put_retry( " and 1 Column" );
         else
-           put( " and" );
-           put( integer'image( columns( Q ) ) );
-           put( " Columns" );
+           put_retry( " and" );
+           put_retry( integer'image( columns( Q ) ) );
+           put_retry( " Columns" );
         end if;
-        new_line;
+        new_line_retry;
      end if;
      exception when no_tuple =>
        err( +"no tuple" );
@@ -1979,7 +1979,7 @@ begin
         -- Rewind the clear and prepare to show the results
 
         Rewind( Q );
-        new_line;
+        new_line_retry;
 
         -- Use a tabular display only if will fit in the current display
 
@@ -1988,9 +1988,9 @@ begin
         -- Draw the columns
 
         if tabularDisplay then
-           put( " " );
+           put_retry( " " );
            for i in 1..columns( Q ) loop
-               put(
+               put_retry(
                   to_string(
                       ada.strings.unbounded.Head(
                           to_unbounded_string(
@@ -1999,20 +1999,20 @@ begin
                   )
                );
                if i /= columns( Q ) then
-                  put( " " & utf_verticalLine & " " );
+                  put_retry( " " & utf_verticalLine & " " );
                end if;
            end loop;
-           new_line;
-           put( utf_horizontalLine );
+           new_line_retry;
+           put_retry( utf_horizontalLine );
            for i in 1..columns( Q ) loop
-               put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
+               put_retry( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                if i /= columns( Q ) then
-                  put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
+                  put_retry( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                else
-                  put( utf_horizontalLine );
+                  put_retry( utf_horizontalLine );
                end if;
            end loop;
-           new_line;
+           new_line_retry;
         end if;
 
         -- Draw the query results
@@ -2020,36 +2020,36 @@ begin
         while not end_of_query( Q ) loop
             fetch( Q );
             if tabularDisplay then
-               put( " " );
+               put_retry( " " );
             end if;
             for i in 1..columns( Q ) loop
                 if tabularDisplay then
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      put_retry( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    elsif i = 3 then -- column 2 is table type
-                      put( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                      put_retry( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                    else
-                      put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                      put_retry( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
                    if i /= columns( Q ) then
-                      put( " " & utf_verticalLine & " " );
+                      put_retry( " " & utf_verticalLine & " " );
                    end if;
                 else
-                   put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
-                   put( ": " );
+                   put_retry( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put_retry( ": " );
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( "NULL" ) );
+                      put_retry( inverse( "NULL" ) );
                       wasNull := true;
                    elsif i = 3 then
-                      put( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      put_retry( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    else
-                      put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                      put_retry( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                    end if;
-                   new_line;
+                   new_line_retry;
                 end if;
             end loop;
-            new_line;
+            new_line_retry;
             exit when wasSIGINT or wasSIGTERM;
         end loop;
      end if;
@@ -2057,22 +2057,22 @@ begin
      -- Draw the summary line
 
      if tuples( Q ) = 1 then
-        put( " 1 Row" );
+        put_retry( " 1 Row" );
      else
-        put( Tuple_Index_Type'image( tuples( Q ) ) );
-        put( " Rows" );
+        put_retry( Tuple_Index_Type'image( tuples( Q ) ) );
+        put_retry( " Rows" );
      end if;
      if wasNull then
-        put( " with nulls" );
+        put_retry( " with nulls" );
      end if;
      if columns( Q ) = 1 then
-        put( " and 1 Column" );
+        put_retry( " and 1 Column" );
      else
-        put( " and" );
-        put( integer'image( columns( Q ) ) );
-        put( " Columns" );
+        put_retry( " and" );
+        put_retry( integer'image( columns( Q ) ) );
+        put_retry( " Columns" );
      end if;
-     new_line;
+     new_line_retry;
      exception when no_tuple =>
        err( +"no tuple" );
      when null_value =>
@@ -2198,7 +2198,7 @@ begin
         -- Rewind the clear and prepare to show the results
 
         Rewind( Q );
-        new_line;
+        new_line_retry;
 
         -- Use a tabular display only if will fit in the current display
 
@@ -2207,10 +2207,10 @@ begin
         -- Draw the columns
 
         if tabularDisplay then
-           put( " " );
+           put_retry( " " );
            for i in 1..columns( Q ) loop
                if i /= 3 then -- column 3 is type length (not shown)
-                  put(
+                  put_retry(
                      to_string(
                          ada.strings.unbounded.Head(
                              to_unbounded_string(
@@ -2219,23 +2219,23 @@ begin
                      )
                   );
                   if i /= columns( Q ) then
-                     put( " " & utf_verticalLine & " " );
+                     put_retry( " " & utf_verticalLine & " " );
                   end if;
                end if;
            end loop;
-           new_line;
-           put( utf_horizontalLine );
+           new_line_retry;
+           put_retry( utf_horizontalLine );
            for i in 1..columns( Q ) loop
                if i /= 3 then -- column 3 is type length (not shown)
-                  put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
+                  put_retry( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                   if i /= columns( Q ) then
-                     put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
+                     put_retry( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                   else
-                     put( utf_horizontalLine );
+                     put_retry( utf_horizontalLine );
                   end if;
                end if;
            end loop;
-           new_line;
+           new_line_retry;
         end if;
 
         -- Draw the query results
@@ -2243,95 +2243,95 @@ begin
         while not end_of_query( Q ) loop
             fetch( Q );
             if tabularDisplay then
-               put( " " );
+               put_retry( " " );
             end if;
             for i in 1..columns( Q ) loop
                 if i /= 3 then -- column 3 is type length (not shown)
                    if tabularDisplay then
                       if is_null( Q, Column_Index_Type( i ) ) then
-                         put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                         put_retry( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                          wasNull := true;
                       elsif i = 2 then -- column 2 is column type
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Head( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ), columnWidths( i ) ) ) );
                       elsif i = 4 then
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Head( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                       elsif i = 5 then
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Head( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                       else
-                         put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       end if;
                       if i /= columns( Q ) then
-                         put( " " & utf_verticalLine & " " );
+                         put_retry( " " & utf_verticalLine & " " );
                       end if;
                    else
-                      put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
-                      put( ": " );
+                      put_retry( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                      put_retry( ": " );
                       if is_null( Q, Column_Index_Type( i ) ) then
-                         put( inverse( "NULL" ) );
+                         put_retry( inverse( "NULL" ) );
                          wasNull := true;
                       elsif i = 2 then
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ) ) ) );
+                         put_retry( bold( to_string( ToEscaped( to_unbounded_string( pg_column_type_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i+1 ) ) ) ) ) ) ) );
                       elsif i = 4 then
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                         put_retry( bold( to_string( ToEscaped( to_unbounded_string( pg_not_null_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                       elsif i = 5 then
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                         put_retry( bold( to_string( ToEscaped( to_unbounded_string( pg_default_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                       else
-                         put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                         put_retry( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                       end if;
-                      new_line;
+                      new_line_retry;
                    end if;
                 end if;
             end loop;
-            new_line;
+            new_line_retry;
         end loop;
      end if;
 
      -- Draw the summary line
 
      if tuples( Q ) = 1 then
-        put( " 1 Row" );
+        put_retry( " 1 Row" );
      else
-        put( Tuple_Index_Type'image( tuples( Q ) ) );
-        put( " Rows" );
+        put_retry( Tuple_Index_Type'image( tuples( Q ) ) );
+        put_retry( " Rows" );
      end if;
      if wasNull then
-        put( " with nulls" );
+        put_retry( " with nulls" );
      end if;
      if columns( Q ) = 1 then
-        put( " and 1 Column" );
+        put_retry( " and 1 Column" );
      else
-        put( " and" );
-        put( integer'image( columns( Q ) ) );
-        put( " Columns" );
+        put_retry( " and" );
+        put_retry( integer'image( columns( Q ) ) );
+        put_retry( " Columns" );
      end if;
-     new_line;
+     new_line_retry;
      prepare( Q, "select c.relname, i.indisprimary, i.indisunique, i.indkey from pg_index i, pg_class c" &
                  " where c.oid = i.indexrelid and i.indrelid in " &
                  " (select i.indrelid from pg_index, pg_class c2 where i.indrelid = c2.oid and c2.relname='" & to_string( exprVal ) & "') order by c.relname" );
      execute( Q, connection.PG_C );
      if tuples( Q ) > 0 then
-        put_line( "Indexes:" );
+        put_line_retry( "Indexes:" );
         while not end_of_query( Q ) loop
             fetch( Q );
-            put( "    " );
+            put_retry( "    " );
             declare
                indexName   : constant string := Value( Q, 1 );
                primaryKey  : constant string := Value( Q, 2 );
                uniqueIndex : constant string := Value( Q, 3 );
                colList     : constant string := Value( Q, 4 );
             begin
-               put( bold( indexName ) );
-               put( " " );
+               put_retry( bold( indexName ) );
+               put_retry( " " );
                if primaryKey = "t" then
-                  put( "primary key " );
+                  put_retry( "primary key " );
                end if;
                if uniqueIndex = "t" then
-                  put( "unique " );
+                  put_retry( "unique " );
                end if;
-               put( "on columns " );
-               put( bold( colList ) );
+               put_retry( "on columns " );
+               put_retry( bold( colList ) );
             end;
-            new_line;
+            new_line_retry;
         end loop;
      end if;
 
@@ -2434,7 +2434,7 @@ begin
         -- Rewind the clear and prepare to show the results
 
         Rewind( Q );
-        new_line;
+        new_line_retry;
 
         -- Use a tabular display only if will fit in the current display
 
@@ -2443,10 +2443,10 @@ begin
         -- Draw the columns
 
         if tabularDisplay then
-           put( " " );
+           put_retry( " " );
            for i in 1..columns( Q ) loop
                if i /= 4 then
-                  put(
+                  put_retry(
                      to_string(
                          ada.strings.unbounded.Head(
                              to_unbounded_string(
@@ -2455,23 +2455,23 @@ begin
                      )
                   );
                   if i /= 3 then
-                     put( " " & utf_verticalLine & " " );
+                     put_retry( " " & utf_verticalLine & " " );
                   end if;
                end if;
            end loop;
-           new_line;
-           put( utf_horizontalLine );
+           new_line_retry;
+           put_retry( utf_horizontalLine );
            for i in 1..columns( Q ) loop
                if i /= 4 then
-                  put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
+                  put_retry( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                   if i /= 3 then
-                     put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
+                     put_retry( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                   else
-                     put( utf_horizontalLine );
+                     put_retry( utf_horizontalLine );
                   end if;
                end if;
            end loop;
-           new_line;
+           new_line_retry;
         end if;
 
         -- Draw the query results
@@ -2479,62 +2479,62 @@ begin
         while not end_of_query( Q ) loop
             fetch( Q );
             if tabularDisplay then
-               put( " " );
+               put_retry( " " );
             end if;
             for i in 1..columns( Q ) loop
                 if i /= 4 then
                    if tabularDisplay then
                       if is_null( Q, Column_Index_Type( i ) ) then
-                         put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                         put_retry( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                          wasNull := true;
                       elsif i = 2 then -- right-aligned
-                         put( to_string( Tail( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Tail( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       elsif i = 3 then -- column 3 and 4 are attributes
-                         put( to_string( Head( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Head( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                       else
-                         put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                         put_retry( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                       end if;
                       if i /= 3 then
-                         put( " " & utf_verticalLine & " " );
+                         put_retry( " " & utf_verticalLine & " " );
                       end if;
                    else
-                      put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
-                      put( ": " );
+                      put_retry( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                      put_retry( ": " );
                       if is_null( Q, Column_Index_Type( i ) ) then
-                         put( inverse( "NULL" ) );
+                         put_retry( inverse( "NULL" ) );
                          wasNull := true;
                       elsif i = 3 then -- column 3 and 4 are attributes
-                         put( bold( to_string( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                         put_retry( bold( to_string( ToEscaped( to_unbounded_string( pg_userattributes_to_string( value( Q, Column_Index_Type( i ) ), Value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                       else
-                         put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                         put_retry( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                       end if;
-                      new_line;
+                      new_line_retry;
                    end if;
                 end if;
             end loop;
-            new_line;
+            new_line_retry;
         end loop;
      end if;
 
      -- Draw the summary line
 
      if tuples( Q ) = 1 then
-        put( " 1 Row" );
+        put_retry( " 1 Row" );
      else
-        put( Tuple_Index_Type'image( tuples( Q ) ) );
-        put( " Rows" );
+        put_retry( Tuple_Index_Type'image( tuples( Q ) ) );
+        put_retry( " Rows" );
      end if;
      if wasNull then
-        put( " with nulls" );
+        put_retry( " with nulls" );
      end if;
      if columns( Q ) = 1 then
-        put( " and 1 Column" );
+        put_retry( " and 1 Column" );
      else
-        put( " and" );
-        put( integer'image( columns( Q ) ) );
-        put( " Columns" );
+        put_retry( " and" );
+        put_retry( integer'image( columns( Q ) ) );
+        put_retry( " Columns" );
      end if;
-     new_line;
+     new_line_retry;
      exception when no_tuple =>
        err( +"no tuple" );
      when null_value =>
@@ -2631,7 +2631,7 @@ begin
         -- Rewind the clear and prepare to show the results
 
         Rewind( Q );
-        new_line;
+        new_line_retry;
 
         -- Use a tabular display only if will fit in the current display
 
@@ -2640,9 +2640,9 @@ begin
         -- Draw the columns
 
         if tabularDisplay then
-           put( " " );
+           put_retry( " " );
            for i in 1..columns( Q ) loop
-               put(
+               put_retry(
                   to_string(
                       ada.strings.unbounded.Head(
                           to_unbounded_string(
@@ -2651,20 +2651,20 @@ begin
                   )
                );
                if i /= columns( Q ) then
-                  put( " " & utf_verticalLine & " " );
+                  put_retry( " " & utf_verticalLine & " " );
                end if;
            end loop;
-           new_line;
-           put( utf_horizontalLine );
+           new_line_retry;
+           put_retry( utf_horizontalLine );
            for i in 1..columns( Q ) loop
-               put( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
+               put_retry( ada.strings.unbounded.to_string( columnWidths( i ) * utf_horizontalLine ) );
                if i /= columns( Q ) then
-                  put( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
+                  put_retry( utf_horizontalLine & utf_crossedLines & utf_horizontalLine );
                else
-                  put( utf_horizontalLine );
+                  put_retry( utf_horizontalLine );
                end if;
            end loop;
-           new_line;
+           new_line_retry;
         end if;
 
         -- Draw the query results
@@ -2672,58 +2672,58 @@ begin
         while not end_of_query( Q ) loop
             fetch( Q );
             if tabularDisplay then
-               put( " " );
+               put_retry( " " );
             end if;
             for i in 1..columns( Q ) loop
                 if tabularDisplay then
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
+                      put_retry( inverse( to_string( ada.strings.unbounded.Head( to_unbounded_string( "NULL" ), columnWidths( i ) ) ) ) );
                       wasNull := true;
                    elsif i = 3 then -- column 2 is table type
-                      put( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
+                      put_retry( to_string( Head( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ), columnWidths( i ) ) ) );
                    else
-                      put( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
+                      put_retry( to_string( Head( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ), columnWidths( i ) ) ) );
                    end if;
                    if i /= columns( Q ) then
-                      put( " " & utf_verticalLine & " " );
+                      put_retry( " " & utf_verticalLine & " " );
                    end if;
                 else
-                   put( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
-                   put( ": " );
+                   put_retry( to_string( ada.strings.unbounded.head( to_unbounded_string( column_name( Q, Column_Index_Type( i ) ) ), headingWidth ) ) );
+                   put_retry( ": " );
                    if is_null( Q, Column_Index_Type( i ) ) then
-                      put( inverse( "NULL" ) );
+                      put_retry( inverse( "NULL" ) );
                       wasNull := true;
                    elsif i = 3 then
-                      put( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
+                      put_retry( bold( to_string( ToEscaped( to_unbounded_string( pg_kind_to_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) ) );
                    else
-                      put( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
+                      put_retry( bold( to_string( ToEscaped( to_unbounded_string( value( Q, Column_Index_Type( i ) ) ) ) ) ) );
                    end if;
-                   new_line;
+                   new_line_retry;
                 end if;
             end loop;
-            new_line;
+            new_line_retry;
         end loop;
      end if;
 
      -- Draw the summary line
 
      if tuples( Q ) = 1 then
-        put( " 1 Row" );
+        put_retry( " 1 Row" );
      else
-        put( Tuple_Index_Type'image( tuples( Q ) ) );
-        put( " Rows" );
+        put_retry( Tuple_Index_Type'image( tuples( Q ) ) );
+        put_retry( " Rows" );
      end if;
      if wasNull then
-        put( " with nulls" );
+        put_retry( " with nulls" );
      end if;
      if columns( Q ) = 1 then
-        put( " and 1 Column" );
+        put_retry( " and 1 Column" );
      else
-        put( " and" );
-        put( integer'image( columns( Q ) ) );
-        put( " Columns" );
+        put_retry( " and" );
+        put_retry( integer'image( columns( Q ) ) );
+        put_retry( " Columns" );
      end if;
-     new_line;
+     new_line_retry;
      exception when no_tuple =>
        err( +"no tuple" );
      when null_value =>

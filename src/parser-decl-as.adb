@@ -6714,7 +6714,7 @@ begin
         scriptState : aScriptState;                   -- current script
      begin
         --BREAKDBG: 2
-        put_line( standard_error, fullErrorMessage.templateMessage );
+        put_line_retry( standard_error, fullErrorMessage.templateMessage );
         wasSIGINT := false;                            -- clear sig flag
         saveScript( scriptState );                     -- save position
         error_found := false;                          -- not a real error
@@ -6726,7 +6726,7 @@ begin
         if breakoutContinue then                       -- continuing execution?
            resumeScanning( cmdStart );                 -- start of command
            --BREAKDBG
-           put_line( standard_error, get_script_execution_position(
+           put_line_retry( standard_error, get_script_execution_position(
               ok( "resuming here" ), utf_checkmark ) ); -- redisplay line
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
@@ -7117,7 +7117,7 @@ begin
         scriptState : aScriptState;                   -- current script
      begin
         --BREAKDBG: 2
-        put_line( standard_error, fullErrorMessage.templateMessage );
+        put_line_retry( standard_error, fullErrorMessage.templateMessage );
         wasSIGINT := false;                            -- clear sig flag
         saveScript( scriptState );                     -- save position
         error_found := false;                          -- not a real error
@@ -7133,7 +7133,7 @@ begin
            --err( optional_inverse( "resuming here" ) ); -- redisplay line
            execution_position := get_script_execution_position(
               ok( "resuming here" ), utf_checkmark ); -- redisplay line
-           put_line( standard_error, execution_position );
+           put_line_retry( standard_error, execution_position );
            done := false;                              --   clear logout flag
            error_found := false;                       -- not a real error
            exit_block := false;                        --   and don't exit

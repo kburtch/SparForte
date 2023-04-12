@@ -23,12 +23,19 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with system.address_to_access_conversions;
-with ada.text_io; use ada.text_io;
-with spar_os.sdl; use spar_os.sdl;
-with interfaces; use interfaces;
-with interfaces.c; use interfaces.c;
-use spar_os.sdl.SDL_Surface_Conv;
+with system.address_to_access_conversions,
+     interfaces,
+     interfaces.c,
+     ada.text_io,
+     pegasoft.user_io,
+     spar_os.sdl;
+
+ use interfaces,
+     interfaces.c,
+     ada.text_io,
+     pegasoft.user_io,
+     spar_os.sdl,
+     spar_os.sdl.SDL_Surface_Conv;
 
 package body pegasoft.pen is
 
@@ -177,7 +184,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      setPenInk( theCanvas, c );
@@ -209,7 +216,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      setPenInk( theCanvas, r, g, b );
@@ -232,14 +239,14 @@ begin
   theBrush.id := pattern_id;
   canvasList.Find( canvas, theBrush, 1, brushIndex );
   if brushIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & pattern_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & pattern_id'img );
   else
      canvasList.Find( canvas, brushIndex, theBrush );
   end if;
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      setPenInk( theCanvas, theBrush );
@@ -267,7 +274,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      getPenInk( theCanvas, R, G, B );
@@ -291,7 +298,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      setPenBrush( theCanvas, newBrush );
@@ -306,7 +313,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, theCanvas, 1, canvasIndex );
      canvasList.Find( canvas, canvasIndex, theCanvas );
@@ -339,14 +346,14 @@ begin
   theBrush.id := pattern_id;
   canvasList.Find( canvas, theBrush, 1, brushIndex );
   if brushIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & pattern_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & pattern_id'img );
   else
      canvasList.Find( canvas, brushIndex, theBrush );
   end if;
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      setPenPattern( theCanvas, theBrush );
@@ -384,7 +391,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      setPenMode( theCanvas, newMode );
@@ -404,7 +411,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
   end if;
@@ -638,7 +645,7 @@ procedure startupPen is
 begin
   res_int := SDL_Init( SDL_INIT_VIDEO );
   if res_int < 0 then
-     put_line( standard_error, "startupPen: sdl_init failed, SDL error = " & to_string( get_sdl_error ) );
+     put_line_retry( standard_error, "startupPen: sdl_init failed, SDL error = " & to_string( get_sdl_error ) );
   else
     --res := TTF_Init;
     --if res = SDL_Failed then
@@ -697,7 +704,7 @@ procedure waitToReveal( theCanvas : in out aCanvas ) is
 begin
   if theCanvas.pen.revealCount  = 0 then
      if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-        put_line( standard_error, "SDL_LockSurface failed" );
+        put_line_retry( standard_error, "SDL_LockSurface failed" );
      end if;
   end if;
   theCanvas.pen.revealCount := theCanvas.pen.revealCount + 1;
@@ -710,7 +717,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      waitToReveal( theCanvas );
@@ -756,7 +763,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      reveal( theCanvas );
@@ -797,7 +804,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      revealNow( theCanvas );
@@ -828,7 +835,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      Clear( theCanvas );
@@ -847,7 +854,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      Clear( theCanvas, r, g, b );
@@ -866,7 +873,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      fillRect( theCanvas, allRect, ColourNames(c).red, ColourNames(c).green, ColourNames(c).blue );
@@ -906,7 +913,7 @@ begin
   when tile =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Rect_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -924,7 +931,7 @@ begin
   when stamp =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Rect_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -945,7 +952,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      if theCanvas.clipRect = allRect then
@@ -1009,7 +1016,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      frameRect( theCanvas, r );
@@ -1060,7 +1067,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect( theCanvas.surface, svga_x1, svga_y1,
@@ -1077,7 +1084,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -1098,7 +1105,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect_Pattern( theCanvas.Surface, svga_x1,
@@ -1116,7 +1123,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect_Pattern( theCanvas.surface, svga_x1,
@@ -1133,7 +1140,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Rect( theCanvas.surface, svga_x1, svga_y1,
@@ -1157,7 +1164,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      fillRect( theCanvas, theRect, r, g, b );
@@ -1176,7 +1183,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      fillRect( theCanvas, theRect, ColourNames(c).red, ColourNames(c).green, ColourNames(c).blue );
@@ -1211,7 +1218,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect( theCanvas.surface, svga_x1, svga_y1,
@@ -1228,7 +1235,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -1249,7 +1256,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect_Pattern( theCanvas.Surface, svga_x1,
@@ -1267,7 +1274,7 @@ begin
      if theCanvas.pen.mode /= copy then
         if theCanvas.pen.revealCount = 0 then
            if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-              put_line( standard_error, "unable to lock SDL surface" );
+              put_line_retry( standard_error, "unable to lock SDL surface" );
            end if;
         end if;
         SDL_EXT_Fill_Rect_Pattern( theCanvas.surface, svga_x1,
@@ -1284,7 +1291,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Rect( theCanvas.surface, svga_x1, svga_y1,
@@ -1310,7 +1317,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      paintRect( theCanvas, r );
@@ -1337,7 +1344,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      framedRect( theCanvas, r, fore_r, fore_g, fore_b, back_r, back_g, back_b );
@@ -1376,7 +1383,7 @@ begin
   when tile =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Frame_Ellipse_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -1388,7 +1395,7 @@ begin
   when stamp =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Frame_Ellipse_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -1403,7 +1410,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Frame_Ellipse( theCanvas.surface, svga_x1, svga_y1,
@@ -1427,7 +1434,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      frameEllipse( theCanvas, r );
@@ -1522,7 +1529,7 @@ begin
   when stretch => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse( theCanvas.surface, svga_x1, svga_y1,
@@ -1534,7 +1541,7 @@ begin
   when tile =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -1546,7 +1553,7 @@ begin
   when stamp =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse_Pattern( theCanvas.Surface, svga_x1,
@@ -1558,7 +1565,7 @@ begin
   when smear => -- not done
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse_Pattern( theCanvas.surface, svga_x1,
@@ -1571,7 +1578,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse( theCanvas.surface, svga_x1, svga_y1,
@@ -1595,7 +1602,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      paintEllipse( theCanvas, r );
@@ -1629,7 +1636,7 @@ begin
   when stretch => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse( theCanvas.surface, svga_x1, svga_y1,
@@ -1641,7 +1648,7 @@ begin
   when tile =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse_Pattern( theCanvas.surface, svga_x1, svga_y1,
@@ -1653,7 +1660,7 @@ begin
   when stamp =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse_Pattern( theCanvas.Surface, svga_x1,
@@ -1665,7 +1672,7 @@ begin
   when smear => -- not done
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse_Pattern( theCanvas.surface, svga_x1,
@@ -1678,7 +1685,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_Fill_Ellipse( theCanvas.surface, svga_x1, svga_y1,
@@ -1702,7 +1709,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      fillEllipse( theCanvas, theRect, r, g, b );
@@ -1721,7 +1728,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      fillEllipse( theCanvas, theRect, ColourNames(c).red, ColourNames(c).green, ColourNames(c).blue );
@@ -1772,7 +1779,7 @@ begin
   newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newcanvas.surface_ptr = null then
-     put_line( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line_retry( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := screen;
   newcanvas.drawingType := raster;
@@ -1819,10 +1826,10 @@ begin
   newcanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   res := SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   if res /= SDL_OK then
-     put_line( standard_error, "newGLWindowCanvas: double buffer failed" );
+     put_line_retry( standard_error, "newGLWindowCanvas: double buffer failed" );
   end if;
   if newcanvas.surface_ptr = null then
-     put_line( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line_retry( standard_error, "newScreenCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   -- This is a kludge.  The first frame will not draw unless this is called
@@ -1871,7 +1878,7 @@ begin
   newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
-     put_line( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line_retry( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := window;
   newcanvas.drawingType := raster;
@@ -1918,11 +1925,11 @@ begin
   newCanvas.surface := SDL_SetVideoMode( Interfaces.C.int( H_Res ), Interfaces.C.int( V_Res ), Interfaces.C.int( C_Res ), videoFlags );
   res := SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   if res /= SDL_OK then
-     put_line( standard_error, "newGLWindowCanvas: double buffer failed" );
+     put_line_retry( standard_error, "newGLWindowCanvas: double buffer failed" );
   end if;
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
-     put_line( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line_retry( standard_error, "newWindowCanvas: failed for " & H_Res'img & V_Res'img & C_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   -- This is a kludge.  The first frame will not draw unless this is called
   -- once at the start.  Not sure why.  KB: 14/06/02
@@ -1971,7 +1978,7 @@ begin
      oldCanvasPixelFormat_ptr.Amask );
   newCanvas.surface_ptr := SDL_Surface_Conv.To_Pointer( newcanvas.surface );
   if newCanvas.surface_ptr = null then
-     put_line( standard_error, "newCanvas: failed for " & H_Res'img & V_Res'img & "SDL error = " & to_string( get_sdl_error ) );
+     put_line_retry( standard_error, "newCanvas: failed for " & H_Res'img & V_Res'img & "SDL error = " & to_string( get_sdl_error ) );
   end if;
   newCanvas.kind := offscreen;
   newcanvas.drawingType := raster;
@@ -1995,7 +2002,7 @@ begin
   if newcanvas.surface_ptr /= null then
     newCanvas.name := to_unbounded_string( path );
   else
-    put_line( standard_error, "Load failed, SDL error = " & to_string( get_sdl_error ) );
+    put_line_retry( standard_error, "Load failed, SDL error = " & to_string( get_sdl_error ) );
   end if;
   newcanvas.kind := offscreen;
   newcanvas.drawingType := raster;
@@ -2022,14 +2029,14 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      canvasList.Replace( canvas, canvasIndex, theCanvas );
      if theCanvas.kind = window then
         res := SDL_EXT_Save_BMP( theCanvas.surface, path & ASCII.NUL );
         if res /= 0 then
-           put_line( standard_error, "unable to save canvas id -" & canvas_id'img );
+           put_line_retry( standard_error, "unable to save canvas id -" & canvas_id'img );
         end if;
      end if;
   end if;
@@ -2057,7 +2064,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      theCanvas.name := title;
@@ -2082,7 +2089,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      SDL_FreeSurface( theCanvas.surface );
@@ -2117,7 +2124,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      clipRect( theCanvas, r );
@@ -2144,7 +2151,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      moveTo( theCanvas, x, y );
@@ -2165,7 +2172,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      move( theCanvas, dx, dy );
@@ -2194,7 +2201,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      lineTo( theCanvas, x, y );
@@ -2219,7 +2226,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      line( theCanvas, dx, dy );
@@ -2234,7 +2241,7 @@ begin
   when stretch => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_HLine_Pattern( theCanvas.surface, svgah( theCanvas, x1 ), svgah( theCanvas, x2 ), svgav( theCanvas, y ), theCanvas.pen.pattern, 0, 0, theCanvas.pen.mode );
@@ -2245,7 +2252,7 @@ begin
   when tile =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_HLine_Pattern( theCanvas.surface, svgah( theCanvas, x1 ), svgah( theCanvas, x2 ), svgav( theCanvas, y ), theCanvas.pen.pattern, 0, 0, theCanvas.pen.mode );
@@ -2256,7 +2263,7 @@ begin
   when stamp =>
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_HLine_Pattern( theCanvas.surface, svgah( theCanvas, x1 ), svgah( theCanvas, x2 ), svgav( theCanvas, y ), theCanvas.pen.pattern, svgah( theCanvas, x1 ), svgav( theCanvas, y ), theCanvas.pen.mode );
@@ -2267,7 +2274,7 @@ begin
   when smear => -- not done
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_HLine_Pattern( theCanvas.surface, svgah( theCanvas, x1 ), svgah( theCanvas, x2 ), svgav( theCanvas, y ), theCanvas.pen.pattern, 0, 0, theCanvas.pen.mode );
@@ -2278,7 +2285,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_HLine( theCanvas.surface, svgah( theCanvas, x1 ), svgah( theCanvas, x2 ), svgav( theCanvas, y ), theCanvas.pen.pixel, theCanvas.pen.mode );
@@ -2298,7 +2305,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      hline( theCanvas, x1, x2, y );
@@ -2313,10 +2320,10 @@ begin
   when stretch => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
-     put_line( standard_error, "not yet written" );
+     put_line_retry( standard_error, "not yet written" );
         --SDL_EXT_VLine_Pattern( theCanvas.surface, svgah( theCanvas, x ), svgav( theCanvas, y1 ), svgav( theCanvas, y2 ), theCanvas.pen.pattern, 0, 0, theCanvas.pen.mode );
      if theCanvas.pen.revealCount = 0 then
         SDL_UnlockSurface( theCanvas.surface  );
@@ -2325,10 +2332,10 @@ begin
   when tile => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
-     put_line( standard_error, "not yet written" );
+     put_line_retry( standard_error, "not yet written" );
         --SDL_EXT_VLine_Pattern( theCanvas.surface, svgah( theCanvas, x ), svgav( theCanvas, y1 ), svgav( theCanvas, y2 ), theCanvas.pen.pattern, 0, 0, theCanvas.pen.mode );
      if theCanvas.pen.revealCount = 0 then
         SDL_UnlockSurface( theCanvas.surface  );
@@ -2337,11 +2344,11 @@ begin
   when stamp => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
         --SDL_EXT_VLine_Pattern( theCanvas.surface, svgah( theCanvas, x ), svgav( theCanvas, y1 ), svgav( theCanvas, y2 ), theCanvas.pen.pattern, svgah( theCanvas, x1 ), svgav( theCanvas, y ), theCanvas.pen.mode );
-     put_line( standard_error, "not yet written" );
+     put_line_retry( standard_error, "not yet written" );
      if theCanvas.pen.revealCount = 0 then
         SDL_UnlockSurface( theCanvas.surface  );
      end if;
@@ -2349,10 +2356,10 @@ begin
   when smear => -- not complete
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
-     put_line( standard_error, "not yet written" );
+     put_line_retry( standard_error, "not yet written" );
         --SDL_EXT_VLine_Pattern( theCanvas.surface, svgah( theCanvas, x ), svgav( theCanvas, y1 ), svgav( theCanvas, y2 ), theCanvas.pen.pattern, 0, 0, theCanvas.pen.mode );
      if theCanvas.pen.revealCount = 0 then
         SDL_UnlockSurface( theCanvas.surface  );
@@ -2361,7 +2368,7 @@ begin
   when others => -- including pencil
      if theCanvas.pen.revealCount = 0 then
         if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-           put_line( standard_error, "unable to lock SDL surface" );
+           put_line_retry( standard_error, "unable to lock SDL surface" );
         end if;
      end if;
      SDL_EXT_VLine( theCanvas.surface, svgah( theCanvas, x ), svgav( theCanvas, y1 ), svgav( theCanvas, y2 ), theCanvas.pen.pixel, theCanvas.pen.mode );
@@ -2381,7 +2388,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      vline( theCanvas, x, y1, y2 );
@@ -2401,7 +2408,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      plot( theCanvas, values );
@@ -2455,7 +2462,7 @@ begin
   scaledSurface := SDL_CreateRGBSurface( SDL_SWSURFACE, Interfaces.C.int( scaled_x2 ), Interfaces.C.int( scaled_y2 ), Interfaces.C.int( sourceCanvas.displayInfo.C_Res ), Rmask, Gmask, Bmask, Amask );
   surface_ptr := SDL_Surface_Conv.To_Pointer( scaledSurface );
   if surface_ptr = null then
-     put_line( standard_error, to_string( get_sdl_error ) );
+     put_line_retry( standard_error, to_string( get_sdl_error ) );
      return;
   end if;
   NoVerticalChange  := (source_y2 = scaled_y2);
@@ -2506,8 +2513,8 @@ SDL_EXT_Frame_Rect( targetcanvas.surface, target_range.x, target_range.y, target
   -- res := SDL_UpperBlit( scaledSurface, source_range, targetCanvas.surface, target_range );
   res := SDL_UpperBlit( scaledSurface, source_range, targetCanvas.surface, target_range );
   if res < 0 then
-     put( standard_error, "SDL_UpperBlit blit failed: " & to_string( get_sdl_error ) );
-     new_line( standard_error );
+     put_retry( standard_error, "SDL_UpperBlit blit failed: " & to_string( get_sdl_error ) );
+     new_line_retry( standard_error );
   end if;
 
   -- free scaled surface here else memory leak
@@ -2536,7 +2543,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
     canvasList.Find( canvas, canvasIndex, theCanvas );
     declare
@@ -2567,7 +2574,7 @@ end SetFont;
 -----------------------------------------------------------------------------
 -- TODO: this is not working
 
-procedure Put( canvas_id : aCanvasID; str : unbounded_string ) is
+procedure put( canvas_id : aCanvasID; str : unbounded_string ) is
   theCanvas : aCanvas;
   canvasIndex : canvasList.aListIndex := 0;
   --textSurface : system.address;
@@ -2578,15 +2585,15 @@ procedure Put( canvas_id : aCanvasID; str : unbounded_string ) is
   r : aRect;
   --textSurface_ptr : SDL_Surface_Ptr;
 begin
-put_line( "Put on canvas " & canvas_id'img );
+--put_line( "Put on canvas " & canvas_id'img );
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
      canvasList.Find( canvas, canvasIndex, theCanvas );
      if theCanvas.hasFont then
-put_line( "has font" );
+--put_line( "has font" );
 
        -- render the text on a separate off-screen surface.  (Alpha blending not yet implemented)
 
@@ -2615,30 +2622,30 @@ put_line( "has font" );
        svga_y1 := 10;
        --svga_x2 := svga_x1 + SDL_HCoordinate( textSurface_ptr.w );
        --svga_y2 := svga_y1 + SDL_VCoordinate( textSurface_ptr.h );
-put_line( "(" & svga_x1'img & "," & svga_y1'img & ") (" & svga_x2'img & "," & svga_y2'img & ")" );
+--put_line( "(" & svga_x1'img & "," & svga_y1'img & ") (" & svga_x2'img & "," & svga_y2'img & ")" );
        -- draw the text as any other.  lock the surface if waitToReveal is not used.  Free
        -- the text surface when done.
 
-put_line( "text" );
+--put_line( "text" );
        setPenInk( theCanvas, grey );
        --SDL_EXT_Copy_Fill_Rect_Pattern( theCanvas.surface, svga_x1, svga_y1, svga_x2, svga_y2, textSurface );
        -- SDL_BlitSurface(
        --SDL_FreeSurface( textSurface );
 
        if theCanvas.pen.revealCount = 0 then
-put_line( "lock" );
+--put_line( "lock" );
           if SDL_LockSurface( theCanvas.surface  ) /= SDL_OK then
-             put_line( standard_error, "unable to lock SDL surface" );
+             put_line_retry( standard_error, "unable to lock SDL surface" );
           end if;
        end if;
-put_line( "rect" );
+--put_line( "rect" );
        --SDL_Ext_Line( theCanvas.surface, svga_x1, svga_y1, svga_x2, svga_y1, theCanvas.pen.pixel, copy, true );
        --SDL_Ext_Line( theCanvas.surface, svga_x1, svga_y1, svga_x1, svga_y2, theCanvas.pen.pixel, copy, true );
        --SDL_Ext_Line( theCanvas.surface, svga_x1, svga_y2, svga_x2, svga_y1, theCanvas.pen.pixel, copy, true );
        --SDL_Ext_Line( theCanvas.surface, svga_x2, svga_y1, svga_x2, svga_y2, theCanvas.pen.pixel, copy, true );
 
        if theCanvas.pen.revealCount = 0 then
-put_line( "unlock" );
+--put_line( "unlock" );
           SDL_UnlockSurface( theCanvas.surface  );
        end if;
 
@@ -2660,7 +2667,7 @@ begin
   theCanvas.id := canvas_id;
   canvasList.Find( canvas, theCanvas, 1, canvasIndex );
   if canvasIndex = 0 then
-     put_line( standard_error, "no such canvas id -" & canvas_id'img );
+     put_line_retry( standard_error, "no such canvas id -" & canvas_id'img );
   else
     canvasList.Find( canvas, canvasIndex, theCanvas );
     --if theCanvas.hasFont then

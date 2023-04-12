@@ -22,27 +22,27 @@
 ------------------------------------------------------------------------------
 -- CVS: $Id: signal_flags.adb,v 1.2 2005/02/11 02:59:31 ken Exp $
 
-with Ada.Text_IO, Gnat.Source_Info, spar_os;
-use Ada.Text_IO,  Gnat.Source_Info, spar_os;
+with Ada.Text_IO, Gnat.Source_Info, spar_os, pegasoft.user_io;
+use  Ada.Text_IO, Gnat.Source_Info, spar_os, pegasoft.user_io;
 
 package body signal_flags is
 
   procedure startSignalFlags is
   begin
     if not C_install_sigint_handler( wasSIGINT'address ) then
-       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGINT handler" );
+       put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGINT handler" );
     end if;
     if not C_install_sigquit_handler then
-       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGQUIT handler" );
+       put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGQUIT handler" );
     end if;
     if not C_install_sigchld_handler( wasSIGCHLD'address ) then
-       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGCHLD handler" );
+       put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGCHLD handler" );
     end if;
     if not C_install_sigwinch_handler( wasSIGWINCH'address ) then
-       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGWINCH handler" );
+       put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGWINCH handler" );
     end if;
     if not C_install_sigpipe_handler( wasSIGPIPE'address ) then
-       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGPIPE handler" );
+       put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGPIPE handler" );
     end if;
   end startSignalFlags;
 
@@ -54,7 +54,7 @@ package body signal_flags is
   procedure addSigtermSignalFlag is
   begin
     if not C_install_sigterm_handler( wasSIGTERM'address ) then
-       put_line( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGTERM handler" );
+       put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": failed to install SIGTERM handler" );
     end if;
   end addSigtermSignalFlag;
 

@@ -371,14 +371,14 @@ package body reports.help is
   procedure render( r : in out longHelpReport; e : in out aHelpEntry ) is
   begin
      -- display the help topic and the header if there is one
-     put( r.outputfile, optional_green( to_string( e.topic ), boolean( gccOpt ), boolean( colourOpt ) ) );
+     put_retry( r.outputfile, optional_green( to_string( e.topic ), boolean( gccOpt ), boolean( colourOpt ) ) );
      if length( e.summary ) > 0 then
-        put( r.outputfile, " " & utf_diamond & " " & to_string( e.summary ) );
+        put_retry( r.outputfile, " " & utf_diamond & " " & to_string( e.summary ) );
      end if;
      if length( e.category ) > 0 then
-        put( r.outputfile, " " & utf_diamond & " " & adorn_red( to_string( e.category ), boolean(colourOpt) ) );
+        put_retry( r.outputfile, " " & utf_diamond & " " & adorn_red( to_string( e.category ), boolean(colourOpt) ) );
      end if;
-     new_line( r.outputfile );
+     new_line_retry( r.outputfile );
 
      if length( e.iconPath ) > 0 then
         renderText( r, "Icon", e.iconPath );
@@ -434,15 +434,15 @@ package body reports.help is
   procedure render( r : in out longHtmlHelpReport; e : in out aHelpEntry ) is
   begin
      -- display the help topic and the header if there is one
-     put( r.outputfile, "<h2>" & html_encode( to_string( e.topic ) )  );
+     put_retry( r.outputfile, "<h2>" & html_encode( to_string( e.topic ) )  );
      if length( e.category ) > 0 then
-        put( r.outputfile, " (" & html_encode( to_string( e.category ) ) & ")" );
+        put_retry( r.outputfile, " (" & html_encode( to_string( e.category ) ) & ")" );
      end if;
-     put_line( r.outputfile, "</h2>" );
+     put_line_retry( r.outputfile, "</h2>" );
      if length( e.summary ) > 0 then
-        put( r.outputfile, "<p>" & html_encode( to_string( e.summary ) ) & "</p>" );
+        put_retry( r.outputfile, "<p>" & html_encode( to_string( e.summary ) ) & "</p>" );
      end if;
-     new_line( r.outputfile );
+     new_line_retry( r.outputfile );
      if length( e.iconPath ) > 0 then
         renderText( r, "Icon", e.iconPath );
      end if;
@@ -504,27 +504,27 @@ package body reports.help is
     genDate := integer'image( ada.calendar.year( clock ) ) & "-" & genDate;
     delete( genDate, 1, 1 );
 
-     put( r.outputfile, "./" & ASCII.Quotation & "man page " );
-     put_line( r.outputfile, to_string( e.topic ) & ".9" );
+     put_retry( r.outputfile, "./" & ASCII.Quotation & "man page " );
+     put_line_retry( r.outputfile, to_string( e.topic ) & ".9" );
      -- display the help topic and the header if there is one
-     put( r.outputfile, ".TH " & ASCII.Quotation & to_string( e.topic ) &
+     put_retry( r.outputfile, ".TH " & ASCII.Quotation & to_string( e.topic ) &
         ASCII.Quotation & " 9 " );
      -- TODO: the date
-     put( r.outputfile, ASCII.Quotation & genDate & ASCII.Quotation );
+     put_retry( r.outputfile, ASCII.Quotation & genDate & ASCII.Quotation );
      -- TODO: company name
-     put( r.outputfile, " " );
-     put( r.outputfile, ASCII.Quotation & "Company" & ASCII.Quotation );
-     put( r.outputfile, " " );
-     put_line( r.outputfile, ASCII.Quotation & "Manual" & ASCII.Quotation );
+     put_retry( r.outputfile, " " );
+     put_retry( r.outputfile, ASCII.Quotation & "Company" & ASCII.Quotation );
+     put_retry( r.outputfile, " " );
+     put_line_retry( r.outputfile, ASCII.Quotation & "Manual" & ASCII.Quotation );
 
      if length( e.summary ) > 0 then
         -- TODO: render required text
-        put_line( r.outputfile, e.summary );
+        put_line_retry( r.outputfile, e.summary );
      end if;
      if length( e.category ) > 0 then
         -- TODO: render required text
-        put_line( r.outputfile, ".SH CATEGORY" );
-        put_line( r.outputfile,  e.category );
+        put_line_retry( r.outputfile, ".SH CATEGORY" );
+        put_line_retry( r.outputfile,  e.category );
      end if;
 
      if length( e.iconPath ) > 0 then

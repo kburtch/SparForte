@@ -188,7 +188,7 @@ begin
      loop
         retry := false;
         begin
-          Put_Line( standard_error, to_string( expr_val ) );
+          put_line_retry( standard_error, to_string( expr_val ) );
         exception when msg: device_error =>
           if exception_message( msg ) = "interrupted system call" then
              retry := true;
@@ -400,7 +400,7 @@ begin
      -- if there were multiple dups, show the count
      if dup_count = 1 then
         if log_mode = file_log or log_mode = echo_log then
-           put_line( log_file, to_string( string_header & last_message ) );
+           put_line_retry( log_file, to_string( string_header & last_message ) );
         end if;
         if log_mode = stderr_log or log_mode = echo_log then
            writeCurrentError( string_header & last_message );
@@ -415,7 +415,7 @@ begin
         log_indent_message( repeat_message, false );
         repeat_message := repeat_message &  "... repeated" & natural'image( dup_count ) & " times";
         if log_mode = file_log or log_mode = echo_log then
-           put_line( log_file, to_string( string_header & repeat_message ) );
+           put_line_retry( log_file, to_string( string_header & repeat_message ) );
         end if;
         if log_mode = stderr_log or log_mode = echo_log then
            writeCurrentError( string_header & repeat_message );
@@ -426,7 +426,7 @@ begin
 
      -- Log the message
      if log_mode = file_log or log_mode = echo_log then
-        put_line( log_file, to_string( string_header & string_message ) );
+        put_line_retry( log_file, to_string( string_header & string_message ) );
      end if;
      if log_mode = stderr_log or log_mode = echo_log then
         writeCurrentError( string_header & string_message );

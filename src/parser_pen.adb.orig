@@ -10225,7 +10225,7 @@ begin
       -- TODO: load sparforte array into the array param_array
       for i in identifiers( value_id ).avalue'first .. identifiers( value_id ).avalue'last loop -- NEW
           param_array( pai ) := GLFloat( to_numeric( identifiers( value_id ).avalue( i ) ) ); -- NEW
-put_line( "pos" & pai'img & " = " & param_array( pai )'img ); -- DEBUG
+--put_line( "pos" & pai'img & " = " & param_array( pai )'img ); -- DEBUG
           pai := pai + 1;
       end loop; -- NEW
       glLightfv( GLenum( to_numeric( light_val ) ), GLlighting( to_numeric( pname_val ) ), param_ptr );

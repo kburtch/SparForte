@@ -1584,7 +1584,7 @@ begin
 --        end if;
         identifiers( id ).openNamespace := p;
      else
-        put_line( gnat.source_info.source_location & ": internal error: open namespace tag not found" );
+        put_line_retry( gnat.source_info.source_location & ": internal error: open namespace tag not found" );
      end if;
      identifiers( id ).parentNamespace := identifiers( identifiers( id ).openNamespace ).parentNamespace;
 --     put_line( "   open tag " & to_string( identifiers( id ).openNamespace.name ) ); -- DEBUG

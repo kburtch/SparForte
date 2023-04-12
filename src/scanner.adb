@@ -162,87 +162,87 @@ package body scanner is
 procedure Put_Token is
 begin
   -- show name
-  Put( "'" & toEscaped( identifiers( token ).name ) & "'" );
+  put_retry( "'" & toEscaped( identifiers( token ).name ) & "'" );
   -- show parser status
   if done then
-     Put( " [DONE]" );
+     put_retry( " [DONE]" );
   end if;
   if done_sub then
-     Put( " [SUB]" );
+     put_retry( " [SUB]" );
   end if;
   if error_found then
-     Put( " [ERR]" );
+     put_retry( " [ERR]" );
   end if;
   if exit_block then
-     Put( " [EXITBLK]" );
+     put_retry( " [EXITBLK]" );
   end if;
   if syntax_check then
-     Put( " [SYN]" );
+     put_retry( " [SYN]" );
   end if;
-  New_Line;
+  new_line_retry;
   -- show details
-  Put_Line( "    Symbol Table pos =" & token'img );
-  Put_Line( "    Instruction counter first/current/last =" &
+  put_line_retry( "    Symbol Table pos =" & token'img );
+  put_line_retry( "    Instruction counter first/current/last =" &
     firstPos'img & "/" & cmdpos'img & "/" & lastPos'img );
   if not identifiers( token ).kind'valid then
-     Put_Line( "    Token type = OUT-OF-RANGE VALUE" & identifiers( token ).kind'img );
+     put_line_retry( "    Token type = OUT-OF-RANGE VALUE" & identifiers( token ).kind'img );
   else
     begin
-       Put_Line( "    Token type = " & identifiers( identifiers( token ).kind ).name );
+       put_line_retry( "    Token type = " & identifiers( identifiers( token ).kind ).name );
     exception
     when constraint_error =>
-      put_line( standard_error, "put_token: constraint_error raised on token type" );
+      put_line_retry( standard_error, "put_token: constraint_error raised on token type" );
      end;
   end if;
   if identifiers( token ).value = null then
-     Put_Line( "    Token value = null" );
+     put_line_retry( "    Token value = null" );
   else
-     Put_Line( "    Token value = '" & ToEscaped( identifiers( token ).value.all ) & "'" );
+     put_line_retry( "    Token value = '" & ToEscaped( identifiers( token ).value.all ) & "'" );
   end if;
-  Put( "    Token properties = " );
+  put_retry( "    Token properties = " );
   if identifiers( token ).import then
-     Put( "import " );
+     put_retry( "import " );
   end if;
   if identifiers( token ).export then
-     Put( "export " );
+     put_retry( "export " );
   end if;
   if identifiers( token ).inspect then
-     Put( "inspected " );
+     put_retry( "inspected " );
   end if;
   if identifiers( token ).list then
-     Put( "array" );
+     put_retry( "array" );
   end if;
   if identifiers( token ).field_of /= eof_t and identifiers( token ).class = subClass then
-     Put( "field of record " );
+     put_retry( "field of record " );
      begin
-       put( identifiers( identifiers( token ).field_of ).name );
+       put_retry( identifiers( identifiers( token ).field_of ).name );
      exception when others =>
-       put( "unknown" );
+       put_retry( "unknown" );
      end;
   end if;
   if identifiers( token ).field_of /= eof_t and identifiers( token ).usage = constantUsage then
-     Put( "formal parameter of " );
+     put_retry( "formal parameter of " );
      begin
-       put( identifiers( identifiers( token ).field_of ).name );
+       put_retry( identifiers( identifiers( token ).field_of ).name );
      exception when others =>
-       put( "unknown" );
+       put_retry( "unknown" );
      end;
   end if;
   if identifiers (token ).renaming_of /= identifiers'first then
-     put( "renaming of" & to_string( identifiers( identifiers( token ).renaming_of ).name ) );
+     put_retry( "renaming of" & to_string( identifiers( identifiers( token ).renaming_of ).name ) );
   end if;
   if identifiers (token ).renamed_count /= 0 then
-     put( "renamed" & identifiers( token ).renamed_count'img & " times" );
+     put_retry( "renamed" & identifiers( token ).renamed_count'img & " times" );
   end if;
   if is_keyword( token ) then
-     Put( "(reserved keyword) " );
+     put_retry( "(reserved keyword) " );
   end if;
-  New_Line;
+  new_line_retry;
 exception
   when constraint_error =>
-    put_line( standard_error, "put_token: constraint_error raised" );
+    put_line_retry( standard_error, "put_token: constraint_error raised" );
   when storage_error =>
-    put_line( standard_error, "put_token: storage_error raised" );
+    put_line_retry( standard_error, "put_token: storage_error raised" );
 end Put_Token;
 
 
@@ -260,53 +260,53 @@ begin
   -- if a renaming, nothing more...
   -- TODO: depends on what kind of renaming because params can be renamed
   if ident.renaming_of /= identifier'first then
-     put( "renaming of " &
+     put_retry( "renaming of " &
         to_string( identifiers( ident.renaming_of ).name ) );
      return;
   end if;
 
      if ident.import then
-        put( "imported " );
+        put_retry( "imported " );
      end if;
      if ident.export then
-        put( "exported " );
+        put_retry( "exported " );
      end if;
      if ident.volatile = checked then
-        put( "volatile " );
+        put_retry( "volatile " );
      elsif ident.volatile = unchecked then
-        put( "unchecked volatile " );
+        put_retry( "unchecked volatile " );
      end if;
      if ident.inspect then
-        put( "inspected " );
+        put_retry( "inspected " );
      end if;
      if ident.resource then
-        put( "resource " );
+        put_retry( "resource " );
      end if;
 
      -- if imported or exported, show the method
 
      if ident.import or ident.export then
         case ident.method is
-        when http_cgi       => put( "HTTP CGI " );
-        when local_memcache => put( "local memcache " );
-        when memcache       => put( "memcache " );
-        when shell          => put( "shell environment " );
-        when session        => put( "session " );
-        when others         => put( "unknown " );
+        when http_cgi       => put_retry( "HTTP CGI " );
+        when local_memcache => put_retry( "local memcache " );
+        when memcache       => put_retry( "memcache " );
+        when shell          => put_retry( "shell environment " );
+        when session        => put_retry( "session " );
+        when others         => put_retry( "unknown " );
         end case;
         if ident.mapping = json then
-           put( "json " );
+           put_retry( "json " );
         end if;
      end if;
 
      -- Parameters and Passing Mode
 
      if ident.passingMode = in_mode then
-           put( "in mode " );
+           put_retry( "in mode " );
      elsif ident.passingMode = out_mode then
-           put( "out mode " );
+           put_retry( "out mode " );
      elsif ident.passingMode = in_out_mode then
-           put( "in out mode " );
+           put_retry( "in out mode " );
      end if;
 
      -- Show the class (type, constant, etc.)
@@ -314,16 +314,16 @@ begin
      case ident.class is
      when subClass =>
         if ident.field_of = eof_t then
-           put( "subtype of " );
+           put_retry( "subtype of " );
         end if;
         -- abstract/limited are the type itself, not its parent
         case ident.usage is
         when abstractUsage =>
-           put( "abstract " );
+           put_retry( "abstract " );
         when limitedUsage =>
-           put( "limited " );
+           put_retry( "limited " );
         when constantUsage =>
-           put( "constant " );
+           put_retry( "constant " );
         when fullUsage =>
            null;
         when others =>
@@ -331,85 +331,85 @@ begin
         end case;
      when typeClass =>
         if not ident.list then
-           put( "new type of " );
+           put_retry( "new type of " );
         end if;
         -- abstract/limited are the type itself, not its parent
         case ident.usage is
         when abstractUsage =>
-           put( "abstract " );
+           put_retry( "abstract " );
         when limitedUsage =>
-           put( "limited " );
+           put_retry( "limited " );
         when constantUsage =>
-           put( "constant " );
+           put_retry( "constant " );
         when fullUsage =>
            null;
         when others =>
            err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
         end case;
      when funcClass =>
-        put( "built-in " );
+        put_retry( "built-in " );
         if ident.usage = abstractUsage then
-           put( "abstract " );
+           put_retry( "abstract " );
         end if;
-        put( "function " );
+        put_retry( "function " );
      when procClass =>
-        put( "built-in " );
+        put_retry( "built-in " );
         if ident.usage = abstractUsage then
-           put( "abstract " );
+           put_retry( "abstract " );
         end if;
-        put( "procedure " );
+        put_retry( "procedure " );
      when userProcClass =>
         if ident.usage = abstractUsage then
-           put( "abstract " );
+           put_retry( "abstract " );
         end if;
-        put( "procedure " );
+        put_retry( "procedure " );
      when userFuncClass =>
         if ident.usage = abstractUsage then
-           put( "abstract " );
+           put_retry( "abstract " );
         end if;
-        put( "function return " );
+        put_retry( "function return " );
      when userCaseProcClass =>
         if ident.usage = abstractUsage then
-           put( "abstract " );
+           put_retry( "abstract " );
         end if;
-        put( "case procedure " );
+        put_retry( "case procedure " );
      when mainProgramClass =>
-        put( "main program " );
+        put_retry( "main program " );
      when exceptionClass =>
-        put( "exception " );
+        put_retry( "exception " );
      when namespaceClass =>
-        put( "namespace " );
+        put_retry( "namespace " );
      when enumClass =>
-        put( "enumerated item of the type " );
+        put_retry( "enumerated item of the type " );
      when policyClass =>
-        put( "policy block " );
+        put_retry( "policy block " );
      when configurationClass =>
-        put( "configuration block " );
+        put_retry( "configuration block " );
      when genericTypeClass =>
-        put( "generic type using " );
+        put_retry( "generic type using " );
      when others =>
         case ident.usage is
         when abstractUsage =>
-           put( "abstract " );
+           put_retry( "abstract " );
         when limitedUsage =>
-           put( "limited " );
+           put_retry( "limited " );
         when constantUsage =>
-           put( "constant " );
+           put_retry( "constant " );
         when fullUsage =>
            null;
         when others =>
            err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
         end case;
-        put( "identifier of the type " );
+        put_retry( "identifier of the type " );
      end case;
 
      -- Usage qualifier
 
      case kind.usage is
      when limitedUsage =>
-        put( "limited " );
+        put_retry( "limited " );
      when constantUsage =>
-        put( "constant " );
+        put_retry( "constant " );
      when fullUsage =>
         null;
      when others =>
@@ -428,7 +428,7 @@ begin
            ident.class /= userCaseProcClass and
            ident.class /= mainProgramClass and
            ident.class /= namespaceClass then
-           put( "keyword" );
+           put_retry( "keyword" );
         end if;
      elsif ident.class = exceptionClass then
         null;
@@ -441,39 +441,39 @@ begin
      else
         if kind.name = "an anonymous array" then
            -- special handling since they're not easily visible
-           put( "anonymous array" );
+           put_retry( "anonymous array" );
            begin
-             -- put( firstBound( arrayID( to_numeric( kind.value ) ) )'img );
-             put( identifiers( getBaseType( ident.kind ) ).firstBound'img );
+             -- put_retry( firstBound( arrayID( to_numeric( kind.value ) ) )'img );
+             put_retry( identifiers( getBaseType( ident.kind ) ).firstBound'img );
            exception when others =>
-             put( " unknown" );
+             put_retry( " unknown" );
            end;
-           put( " .." );
+           put_retry( " .." );
            begin
              -- put( lastBound( arrayID( to_numeric( kind.value ) ) )'img );
-             put( identifiers( getBaseType( ident.kind ) ).lastBound'img );
+             put_retry( identifiers( getBaseType( ident.kind ) ).lastBound'img );
            exception when others =>
-             put( " unknown" );
+             put_retry( " unknown" );
            end;
-           put( " of " );
+           put_retry( " of " );
            if ident.kind = eof_t then
-              put( " unknown" );
+              put_retry( " unknown" );
            else
-              put( identifiers( identifiers( ident.kind ).kind ).name );
+              put_retry( identifiers( identifiers( ident.kind ).kind ).name );
            end if;
 
         elsif ident.field_of /= eof_t and ident.class = subClass then
-           put( "field of record type " );
-           put( identifiers( ident.field_of ).name );
-           put( " of type " );
-           put( kind.name );
+           put_retry( "field of record type " );
+           put_retry( identifiers( ident.field_of ).name );
+           put_retry( " of type " );
+           put_retry( kind.name );
         elsif ident.field_of /= eof_t and ident.usage = constantUsage then
-           put( "formal parameter of " );
-           put( identifiers( ident.field_of ).name );
-           put( " of type " );
-           put( kind.name );
+           put_retry( "formal parameter of " );
+           put_retry( identifiers( ident.field_of ).name );
+           put_retry( " of type " );
+           put_retry( kind.name );
         elsif ident.list and (ident.class = typeClass or ident.class = subClass) then
-           put( "array" );
+           put_retry( "array" );
            declare
               base : identifier := id;
            begin
@@ -483,11 +483,11 @@ begin
                  base := getBaseType( id );
               end if;
              --put( firstBound( arrayID( to_numeric( ident.value ) ) )'img );
-              put( identifiers( base ).firstBound'img );
+              put_retry( identifiers( base ).firstBound'img );
            exception when others =>
-             put( " unknown" );
+             put_retry( " unknown" );
            end;
-           put( " .." );
+           put_retry( " .." );
            declare
               base : identifier := id;
            begin
@@ -497,25 +497,25 @@ begin
                  base := getBaseType( id );
               end if;
              --put( lastBound( arrayID( to_numeric( ident.value ) ) )'img );
-              put( identifiers( base ).lastBound'img );
+              put_retry( identifiers( base ).lastBound'img );
            exception when others =>
-             put( " unknown" );
+             put_retry( " unknown" );
            end;
-           put( " of " );
+           put_retry( " of " );
            if ident.kind = eof_t then
-              put( " unknown" );
+              put_retry( " unknown" );
            else
-              put( kind.name );
+              put_retry( kind.name );
            end if;
         elsif ident.kind = root_record_t then -- base record type
-           put( "record with " & ident.value.all & " fields" );
+           put_retry( "record with " & ident.value.all & " fields" );
         elsif ident.kind = procedure_t then -- procedure's "kind" is procedure
            null;
         else
            if ident.kind = eof_t then
-              put( " unknown" );
+              put_retry( " unknown" );
            else
-              put( kind.name );
+              put_retry( kind.name );
               -- If it's a generic type, show the instantiated types
               declare
                  baseType : identifier;
@@ -527,13 +527,13 @@ begin
                     basetype := ident.kind;
                  end if;
                  if identifiers( baseType ).class = genericTypeClass then
-                    put( "(" );
-                    put( to_string( identifiers( ident.genKind ).name ) );
+                    put_retry( "(" );
+                    put_retry( to_string( identifiers( ident.genKind ).name ) );
                     if ident.genKind2 /= eof_t then
-                       put( ", " );
-                       put( to_string( identifiers( ident.genKind2 ).name ) );
+                       put_retry( ", " );
+                       put_retry( to_string( identifiers( ident.genKind2 ).name ) );
                     end if;
-                    put( ")" );
+                    put_retry( ")" );
                  end if;
               end;
            end if;
@@ -556,50 +556,50 @@ procedure Put_Identifier( id : identifier ) is
   ident : declaration renames identifiers( id );              -- the identifier
 begin
   if ident.deleted then
-     put_line( "This identifier has been deleted" );
+     put_line_retry( "This identifier has been deleted" );
   else
 
      -- Is it a reserved keyword?  then nothing else to report
 
      if id <= reserved_top-1 then
-        put_line( " ( AdaScript reserved word )" );
+        put_line_retry( " ( AdaScript reserved word )" );
         return;
      end if;
 
      -- Enumerated?  this is prettier than "new type of root_enumerated"
      if ident.kind = root_enumerated_t then
-        put_line( " ( enumerated type )" );
+        put_line_retry( " ( enumerated type )" );
         return;
      elsif ident.kind = variable_t then
-        put_line( " ( private type )" );
+        put_line_retry( " ( private type )" );
         return;
      end if;
 
      -- Show the value of the variable
 
       if ident.kind /= keyword_t then
-        put( ident.name );
+        put_retry( ident.name );
         if ident.renaming_of /= identifier'first then
             null;
         elsif not ident.list and ident.kind /= root_record_t and ident.class /= exceptionClass then
-            put( " := " );
+            put_retry( " := " );
             if ident.class = userProcClass then
                 -- this appears first because getBaseType will fail on a
                 -- procedure
-                put( '"' );
-                put( ToEscaped( ident.value.all ) );
-                put( '"' );
+                put_retry( '"' );
+                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( '"' );
                 -- (should really used root type to determine quoting)
             elsif ident.class = userCaseProcClass then
-                put( '"' );
-                put( ToEscaped( ident.value.all ) );
-                put( '"' );
+                put_retry( '"' );
+                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( '"' );
             elsif ident.class = userFuncClass then
-                put( '"' );
-                put( ToEscaped( ident.value.all ) );
-                put( '"' );
+                put_retry( '"' );
+                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( '"' );
             elsif identifiers( getBaseType( ident.kind ) ).kind = root_record_t then
-                put( "(" );
+                put_retry( "(" );
                 declare
                    field_id  : identifier;
                    numFields : natural;
@@ -607,49 +607,49 @@ begin
                    numFields := natural( to_numeric( identifiers( getBaseType( ident.kind ) ).value.all ) );
                    for i in 1..numFields loop
                        findField( id, i, field_id );
-                       put( delete( identifiers( field_id ).name, 1, length( ident.name ) + 1 ) ); -- skip record name + '.'
-                       put( " =>" );
-                       put( ToEscaped( identifiers( field_id ).value.all ) );
+                       put_retry( delete( identifiers( field_id ).name, 1, length( ident.name ) + 1 ) ); -- skip record name + '.'
+                       put_retry( " =>" );
+                       put_retry( ToEscaped( identifiers( field_id ).value.all ) );
                        if i /= numFields then
-                          put( "," );
+                          put_retry( "," );
                        end if;
                    end loop;
                 end;
-                put( ")" );
+                put_retry( ")" );
             elsif ident.kind = string_t then
-                put( '"' );
-                put( ToEscaped( ident.value.all ) );
-                put( '"' );
+                put_retry( '"' );
+                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( '"' );
             elsif ident.kind = character_t then
-                put( "'" );
-                put( ToEscaped( ident.value.all ) );
-                put( "'" );
+                put_retry( "'" );
+                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( "'" );
             elsif ident.class = enumClass then
-                put( '"' );
-                put( ToEscaped( ident.value.all ) );
-                put( '"' );
+                put_retry( '"' );
+                put_retry( ToEscaped( ident.value.all ) );
+                put_retry( '"' );
             elsif getUniType( ident.kind ) = root_enumerated_t then
                 for i in identifiers'first..identifiers_top-1 loop
                     if identifiers( i ).kind = ident.kind then
                        if identifiers( i ).class = enumClass then
                           if identifiers( i ).value = ident.value then
-                             put( ToEscaped( identifiers( i ).name ) );
+                             put_retry( ToEscaped( identifiers( i ).name ) );
                              exit;
                           end if;
                        end if;
                     end if;
                end loop;
             elsif not ident.list then
-                put( ToEscaped( ident.value.all ) );
+                put_retry( ToEscaped( ident.value.all ) );
             end if;
         end if;
      end if;
 
      -- Show the attributes
 
-     put( "; -- " );
+     put_retry( "; -- " );
      put_identifier_attributes( id );
-     new_line;
+     new_line_retry;
 
      -- if a renaming, use recusion
 
@@ -691,31 +691,31 @@ begin
               --put_line( "A" );
               --put_line( identifiers( i ).name );
               if length( identifiers( i ).name ) > maxNameWidth then
-                 put( identifiers( i ).name );
+                 put_retry( identifiers( i ).name );
               else
                  -- pad name to fit
-                 put( head( identifiers( i ).name, maxNameWidth ) );
+                 put_retry( head( identifiers( i ).name, maxNameWidth ) );
               end if;
            else
               -- additional rounds is blank space in name column
-              put( head( " ", maxNameWidth ) );
+              put_retry( head( " ", maxNameWidth ) );
            end if;
-           put( " " & utf_verticalLine & " " );
+           put_retry( " " & utf_verticalLine & " " );
            if length( escapedValue ) > 0 then
               firstChar := (round-1)*maxValueWidth+1;
               lastChar  := round*maxValueWidth;
               if lastChar > length( escapedValue ) then
                  lastChar := length( escapedValue );
               end if;
-              put( head( slice( escapedValue, firstChar, lastChar ), maxValueWidth ) );
+              put_retry( head( slice( escapedValue, firstChar, lastChar ), maxValueWidth ) );
            else
-              put( to_unbounded_string( integer( maxValueWidth ) * " ") );
+              put_retry( to_unbounded_string( integer( maxValueWidth ) * " ") );
            end if;
-           put( " " & utf_verticalLine & " " );
+           put_retry( " " & utf_verticalLine & " " );
            if round = 1 then
               put_identifier_attributes( i );
            end if;
-           new_line;
+           new_line_retry;
            exit when lastChar = length( escapedValue );
            round := round+1;
          end loop;
@@ -1267,12 +1267,12 @@ begin
       if inputMode /= interactive and inputMode /= breakout then -- in a script?
          scriptLineStart := blocks( blocks_top-1).startpos;     -- current line
          if trace and not exit_block and not error_found then   -- display
-            put( standard_error, "=> " & '"' );                 -- line if
+            put_retry( standard_error, "=> " & '"' );                 -- line if
             getCommandLine( cmdline, firstpos, lastpos, lineno, discard_percentage_distance, fileno );
-            put( standard_error, toEscaped( cmdline.gccMessage ) );
-            put( standard_error, """ [" );
-            put( standard_error, lineno'img );
-            put_line( standard_error, "]" );
+            put_retry( standard_error, toEscaped( cmdline.gccMessage ) );
+            put_retry( standard_error, """ [" );
+            put_retry( standard_error, lineno'img );
+            put_line_retry( standard_error, "]" );
          end if;
       end if;
   end if;
@@ -1537,9 +1537,9 @@ end getBlockException;
 procedure dumpSymbolTable is
   count : natural := 0;
 begin
-  put_line( "-- Symbol Table Dump ---------------------------------------------" );
+  put_line_retry( "-- Symbol Table Dump ---------------------------------------------" );
   for i in reverse 1..identifiers_top-1 loop
-      put( "symbol" & i'img & ": " );
+      put_retry( "symbol" & i'img & ": " );
       Put_Identifier( i );
   exit when count = 10;
       count := count + 1;
@@ -4879,17 +4879,17 @@ begin
       if trace then
          if syntax_check or (not exit_block and not error_found) then
             cmdpos := cmdpos + 2; -- first character of next command
-            put( standard_error, "=> " & '"' );
+            put_retry( standard_error, "=> " & '"' );
             getCommandLine( gnt_commandLine, token_firstpos, token_lastpos, lineno, discard_distance_percent, fileno );
-            put( standard_error, toEscaped( gnt_commandLine.gccMessage ) );
-            put( standard_error, """ [" );
+            put_retry( standard_error, toEscaped( gnt_commandLine.gccMessage ) );
+            put_retry( standard_error, """ [" );
             if fileno > 1 then -- don't bother naming main file
                sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( fileno ), sfr );
-               put( standard_error, toEscaped( sfr.name ) );
-               put( standard_error, ":" );
+               put_retry( standard_error, toEscaped( sfr.name ) );
+               put_retry( standard_error, ":" );
             end if;
-            put( standard_error, lineno'img );
-            put_line( standard_error, "]" );
+            put_retry( standard_error, lineno'img );
+            put_line_retry( standard_error, "]" );
             cmdpos := cmdpos - 2;
          end if;
       end if;

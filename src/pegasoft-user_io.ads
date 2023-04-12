@@ -62,6 +62,7 @@ procedure put_retry( s : string );
 procedure put_retry( output_file : file_type; us : unbounded_string );
 procedure put_retry( us : unbounded_string );
 procedure put_retry( ch : character );
+procedure new_line_retry( output_file : file_type );
 procedure new_line_retry;
 
 

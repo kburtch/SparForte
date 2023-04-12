@@ -82,18 +82,23 @@ begin
   put_line_retry( standard_output, to_string( us ) );
 end put_line_retry;
 
-procedure new_line_retry is
+procedure new_line_retry( output_file : file_type ) is
   retryCnt : natural := 0;
 begin
   loop
      begin
-        new_line;
+        new_line( output_file );
         retryCnt := 2;
      exception when device_error =>
         retryCnt := retryCnt + 1;
      end;
      exit when retryCnt >= 2;
   end loop;
+end new_line_retry;
+
+procedure new_line_retry is
+begin
+  new_line( standard_output );
 end new_line_retry;
 
 
