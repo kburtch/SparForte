@@ -346,7 +346,7 @@ begin
              theCursor.shmCursor, result );
           AssignParameter( insertRef, to_bush_boolean( result ) );
        when others =>
-          put_line( gnat.source_info.source_location &
+          put_line_retry( gnat.source_info.source_location &
              ": internal error: unknown insert version" );
        end case;
 

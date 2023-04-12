@@ -184,7 +184,7 @@ begin
      err( pl( "cannot access " ) & em_value( path ) );
   end if;
   if showPath then
-     put_line( current_working_directory );
+     put_line_retry( current_working_directory );
   end if;
 end old_cd;
 
@@ -267,7 +267,7 @@ begin
         -- umask never fails
         oldMask := spar_os.umask( 0 );
         discard := spar_os.umask( oldMask );
-        put_line( oldMask'img );
+        put_line_retry( oldMask'img );
         -- TODO: we cannot guarantee that put_line will handle redirection
         -- properly.
      end if;
@@ -396,13 +396,13 @@ begin
     end if;
     if length( history( i ).line ) > 0 then
        if showHistory then
-          put( i'img );
-          put( ": " );
-          put( getDateString( history( i ).time ) );
-          put( " " & utf_verticalLine & " " );
-          put( history( i ).pwd );
-          put( " " & utf_verticalLine & " " );
-          put_line( history( i ).line );
+          put_retry( i'img );
+          put_retry( ": " );
+          put_retry( getDateString( history( i ).time ) );
+          put_retry( " " & utf_verticalLine & " " );
+          put_retry( history( i ).pwd );
+          put_retry( " " & utf_verticalLine & " " );
+          put_line_retry( history( i ).line );
        end if;
     end if;
     i := i + 1;
@@ -499,7 +499,7 @@ begin
   if ap'length /= 0 then
      err( +"no arguments expected" );
   elsif isExecutingCommand then
-     put_line( old_pwd );
+     put_line_retry( old_pwd );
   end if;
 end pwd;
 
@@ -579,9 +579,9 @@ begin
   if ap'length = 0 then
      if isExecutingCommand then
         if trace then
-           put_line( "Trace is currently on" );
+           put_line_retry( "Trace is currently on" );
         else
-           put_line( "Trace is currently off" );
+           put_line_retry( "Trace is currently off" );
         end if;
      end if;
   elsif ap'length > 1 then
@@ -602,11 +602,11 @@ begin
            err( +"the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
         else
            trace := true;
-           put_line( "Trace is on" );
+           put_line_retry( "Trace is on" );
         end if;
      elsif ( tempStr = "false" & ASCII.NUL ) or ( tempStr = "0" & ASCII.NUL ) then
         trace := false;
-        put_line( "Trace is off" );
+        put_line_retry( "Trace is off" );
      else
         err( +"expected true or false" );
      end if;

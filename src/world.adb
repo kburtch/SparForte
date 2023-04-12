@@ -1240,7 +1240,7 @@ begin
       end if;
       numFields := natural( to_numeric( identifiers( recordBaseTypeId ).value.all ) );
    exception when others =>
-      put_line( standard_error, gnat.source_info.source_location &
+      put_line_retry( standard_error, gnat.source_info.source_location &
         "internal errror: unable to get number of fields for " &
         to_string( identifiers( recordBaseTypeId ).name ) );
       raise;
@@ -2128,7 +2128,7 @@ begin
 
   -- The HTTP header ends with a blank line
 
-  put( s & ASCII.CR & ASCII.LF );
+  put_retry( s & ASCII.CR & ASCII.LF );
 
 end putTemplateHeader;
 
@@ -2511,9 +2511,9 @@ end qp;
 procedure put_trace( msg : string; icon : string := "" ) is
 begin
   if icon /= "" and boolean( colourOpt ) then
-     put_line( standard_error, adorn_green( to_string( "=> (" & icon & " " & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
+     put_line_retry( standard_error, adorn_green( to_string( "=> (" & icon & " " & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
   else
-     put_line( standard_error, adorn_green( to_string( "=> (" & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
+     put_line_retry( standard_error, adorn_green( to_string( "=> (" & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
   end if;
 end put_trace;
 

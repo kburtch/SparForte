@@ -178,7 +178,7 @@ begin
   -- raised later.
 
   if cmdpos > script'length then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: getCommandLine: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
+     put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: getCommandLine: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
      cmdline        := nullMessageStrings;
      token_firstpos := cmdpos;
      token_lastpos  := cmdpos;
@@ -542,16 +542,16 @@ begin
            end if;
         end if;
         sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( getByteCodeFileNo ), sfr );
-        put( standard_error, sfr.name );              -- show it
-        put( standard_error, ":" );
-        put( standard_error, to_string( lineStr ) );
-        put( standard_error, ":1:" );
+        put_retry( standard_error, sfr.name );         -- show it
+        put_retry( standard_error, ":" );
+        put_retry( standard_error, to_string( lineStr ) );
+        put_retry( standard_error, ":1:" );
      else
         sourceFilesList.Find( sourceFiles, sourceFilesList.aListIndex( getByteCodeFileNo ), sfr );
-        put( standard_error, sfr.name );            -- otherwise
-        put( standard_error, ":" );                 -- leave leading
-        put( standard_error,lineStr );              -- spaces in
-        put( standard_error, ":1:" );
+        put_retry( standard_error, sfr.name );         -- otherwise
+        put_retry( standard_error, ":" );              -- leave leading
+        put_retry( standard_error,lineStr );           -- spaces in
+        put_retry( standard_error, ":1:" );
      end if;
   else
      if gccOpt then                                    -- gcc style?
@@ -562,48 +562,48 @@ begin
               delete( lineStr, 1, 1 );
            end if;
         end if;
-        put( standard_error, to_string( lineStr ) );
-        put( standard_error, ":1:" );
+        put_retry( standard_error, to_string( lineStr ) );
+        put_retry( standard_error, ":1:" );
      else
-        put( standard_error, "In line" );                     -- show line num
-        put_line( standard_error, natural'image( getByteCodeLineNo ) );
+        put_retry( standard_error, "In line" );        -- show line num
+        put_line_retry( standard_error, natural'image( getByteCodeLineNo ) );
      end if;
   end if;
 
   -- Command line that errored (ie the current line)
 
   if not gccOpt then
-     new_line;
-     put_line( standard_error, cmdline );                     -- display line
+     new_line_retry;
+     put_line_retry( standard_error, cmdline );                     -- display line
 
      -- Error Pointer
 
      for i in 1..firstpos-1 loop                              -- move to token
-        put( standard_error, " " );
+        put_retry( standard_error, " " );
      end loop;
      if lastpos-1 > firstpos then
         if colourOpt then
-           put( standard_error, utf_left ); -- underline it
+           put_retry( standard_error, utf_left ); -- underline it
         else
-           put( standard_error, "^" );                        -- underline it
+           put_retry( standard_error, "^" );                        -- underline it
         end if;
         for i in 1..lastpos-firstpos-2 loop
            if colourOpt then
-              put( standard_error, "-" );
+              put_retry( standard_error, "-" );
            else
-              put( standard_error, utf_horizontalLineOnly );
+              put_retry( standard_error, utf_horizontalLineOnly );
            end if;
         end loop;
         if colourOpt then
-           put( standard_error, utf_right ); -- underline it
+           put_retry( standard_error, utf_right ); -- underline it
         else
-           put( standard_error, "^" );
+           put_retry( standard_error, "^" );
         end if;
      else
         if colourOpt then
-           put( standard_error, utf_triangle ); -- underline it
+           put_retry( standard_error, utf_triangle ); -- underline it
         else
-           put( standard_error, "^" );                        -- underline it
+           put_retry( standard_error, "^" );                        -- underline it
         end if;
      end if;
   -- TODO: if we include timestamps for templates, they should be in all error
@@ -615,11 +615,11 @@ begin
 
   -- Error Message
 
-  put( standard_error, " " );                                 -- display the
+  put_retry( standard_error, " " );                                 -- display the
   if colourOpt then
-     put( standard_error, utf_ballot & " " & msg );
+     put_retry( standard_error, utf_ballot & " " & msg );
   else
-     put_line( standard_error, msg );                         -- error msg
+     put_line_retry( standard_error, msg );                         -- error msg
   end if;
   error_found := true;                                        -- flag error
   token := eof_t;                                             -- stop parser
@@ -2516,24 +2516,24 @@ begin
    s := to_unbounded_string( to_string( 3*utf_horizontalLine ) );
    s := s & " Byte Code dump ";
    s := s & to_unbounded_string( to_string( (80-19) * utf_horizontalLine ) );
-   put_line( to_string( s ) );
-   put( "  H:   1:" );
-   put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 1 ) ) ) );
-   put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 2 ) ) ) );
-   put_line(
+   put_line_retry( to_string( s ) );
+   put_retry( "  H:   1:" );
+   put_retry( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 1 ) ) ) );
+   put_retry( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, 2 ) ) ) );
+   put_line_retry(
          optional_yellow(
             " Byte Code Version:" & character'pos( Element( ci.compressedScript, 1 ) )'img,
             as_plain => boolean( gccOpt ),
             in_colour => boolean( colourOpt )
          )
    );
-   put( "  0:   3:" );
+   put_retry( "  0:   3:" );
    for i in 3..length( ci.compressedScript ) loop
-       put( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, i ) ) ) );
+       put_retry( ToEscaped( to_unbounded_string( "" & Element( ci.compressedScript, i ) ) ) );
        if Element( ci.compressedScript, i ) = ASCII.NUL then
           line := line + 1;
           if i /= length( ci.compressedScript ) then
-             new_line;
+             new_line_retry;
              if wasSIGINT or wasSIGTERM then
                 wasSIGINT := false;
                 wasSIGTERM := false;
@@ -2546,15 +2546,15 @@ begin
                 exit;
              end if;
              put( line, width => 3 );
-             put( ":" );
+             put_retry( ":" );
              put( i+1, width => 4 );
-             put( ":" );
+             put_retry( ":" );
           end if;
        end if;
    end loop;
-   new_line;
-   put_line( 80*utf_horizontalLine );
-   put_line(
+   new_line_retry;
+   put_line_retry( 80*utf_horizontalLine );
+   put_line_retry(
       adorn_green(
          "=> (Byte Code Size =" & length( ci.compressedScript )'img & " bytes)",
          boolean( colourOpt ))
@@ -2776,10 +2776,10 @@ begin
   -- Show progress when compiling a large file (updated below)
   if verboseOpt then
      if colourOpt then
-        put_line( standard_error, adorn_green( "=> (" & utf_wristwatch & " Compiling Line 1 ...)",
+        put_line_retry( standard_error, adorn_green( "=> (" & utf_wristwatch & " Compiling Line 1 ...)",
            boolean(colourOpt) ) );
      else
-        put_line( standard_error, "=> (Compiling Line 1 ...)" );
+        put_line_retry( standard_error, "=> (Compiling Line 1 ...)" );
      end if;
   end if;
 
@@ -2789,11 +2789,11 @@ begin
         if getByteCodeLineNo >= lastLineNumber + 500 then
            lastLineNumber := getByteCodeLineNo;
            if colourOpt then
-              put_line( standard_error, to_string( term( up ) &
+              put_line_retry( standard_error, to_string( term( up ) &
                   adorn_green( "=> (" & utf_wristwatch &
                   "Compiling Line" & lastLineNumber'img & " ...)", boolean(colourOpt) ) ) );
            else
-              put_line( standard_error, to_string( term( up ) &
+              put_line_retry( standard_error, to_string( term( up ) &
                  "=> (Compiling Line" & lastLineNumber'img & " ...)" ) );
            end if;
         end if;
@@ -2826,10 +2826,10 @@ begin
   if verboseOpt then
      if not error_found then
         if colourOpt then
-           put_line( standard_error, to_string( term( up ) &
+           put_line_retry( standard_error, to_string( term( up ) &
               adorn_green( "=> (" & utf_checkmark & " Compiled)             ", boolean(colourOpt) ) ) );
         else
-           put_line( standard_error, to_string( term( up ) & "=> (Compiled)             " ) );
+           put_line_retry( standard_error, to_string( term( up ) & "=> (Compiled)             " ) );
         end if;
      end if;
      dumpByteCode( ci );
@@ -2855,14 +2855,14 @@ begin
   -- later.
 
   if script = null then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: copyByteCodeLines: script is null" );
+     put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: copyByteCodeLines: script is null" );
      return "";
   end if;
 
   -- Invalid range test
 
   if point1 > point2 then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal error: copyByteCodeLines: point1 " & point1'img & " is greater than point2 " & point2'img );
+     put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": internal error: copyByteCodeLines: point1 " & point1'img & " is greater than point2 " & point2'img );
      return "";
   end if;
 
@@ -2870,7 +2870,7 @@ begin
   -- raised later.
 
   if point2 > script'length then
-     put_line( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: copyByteCodeLines: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
+     put_line_retry( standard_error, Gnat.Source_Info.Source_Location & ": internal_error: copyByteCodeLines: cmdpos " & cmdpos'img & " is greater than length of script " & script'length'img );
      return "";
   end if;
 
@@ -3050,7 +3050,7 @@ begin
   declareKeyword( eof_t, "End of File" );
   toByteCode( eof_t, eof_character, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error,
+     put_line_retry( standard_error,
        gnat.source_info.source_location &
         ": internal error: eof_t is declared too late" );
   end if;
@@ -3191,25 +3191,25 @@ begin
   declareIdent( imm_delim_t, "", symbol_t );
   toByteCode( imm_delim_t, immediate_word_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, gnat.source_info.source_location & ": internal error: imm_delim_t is declared too late" );
+     put_line_retry( standard_error, gnat.source_info.source_location & ": internal error: imm_delim_t is declared too late" );
   end if;
 
   declareIdent( imm_sql_delim_t, "", symbol_t );
   toByteCode( imm_sql_delim_t, immediate_sql_word_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, gnat.source_info.source_location &": internal error: imm_sql_delim_t is declared too late" );
+     put_line_retry( standard_error, gnat.source_info.source_location &": internal error: imm_sql_delim_t is declared too late" );
   end if;
 
   declareIdent( imm_symbol_delim_t, "", symbol_t );
   toByteCode( imm_symbol_delim_t, immediate_symbol_delimiter, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, gnat.source_info.source_location & ": internal error: imm_symbol_t is declared too late" );
+     put_line_retry( standard_error, gnat.source_info.source_location & ": internal error: imm_symbol_t is declared too late" );
   end if;
 
   declareIdent( char_escape_t, "", symbol_t );
   toByteCode( char_escape_t, high_ascii_escape, discard_char );
   if discard_char /= ASCII.NUL then
-     put_line( standard_error, gnat.source_info.source_location & ": internal error: high_ascii_escape is declared too late" );
+     put_line_retry( standard_error, gnat.source_info.source_location & ": internal error: high_ascii_escape is declared too late" );
   end if;
 
   declareIdent( word_t, "Shell Word", uni_string_t );

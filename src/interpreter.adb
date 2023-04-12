@@ -89,7 +89,7 @@ begin
   if promptIdleScript /= null_unbounded_string then
      CompileAndRun( promptIdleScript, fragment => false );
      if error_found then
-        put_line( current_error, fullErrorMessage.templateMessage );
+        put_line_retry( current_error, fullErrorMessage.templateMessage );
      end if;
   end if;
 end promptIdleCallback;
@@ -113,7 +113,7 @@ begin
     if length( promptScript ) /= 0 then
        CompileRunAndCaptureOutput( promptScript, prompt );
        if error_found then
-          put_line( current_error, fullErrorMessage.templateMessage );
+          put_line_retry( current_error, fullErrorMessage.templateMessage );
           prompt := null_unbounded_string;
        elsif terminalWindowNaming then
           -- set the xterm window title
@@ -163,7 +163,7 @@ begin
           termTitle := termTitle & ASCII.BEL;
 
           -- Apply the xterm window title
-          put( termTitle );
+          put_retry( termTitle );
        end if;
     end if;
 
@@ -172,7 +172,7 @@ begin
 
     if length( prompt ) = 0 then
        if terminalWindowNaming then
-          put( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  );
+          put_retry( ASCII.ESC & "]2;" & "SparForte" & ASCII.BEL  );
        end if;
     end if;
 end putCommandPrompt;
@@ -281,11 +281,11 @@ begin
           if error_found then
              -- Not sure if templates are possible here but...
              if hasTemplate then
-                put_line( standard_error, fullErrorMessage.gccMessage );
+                put_line_retry( standard_error, fullErrorMessage.gccMessage );
                 putTemplateHeader( templateHeader );
-                put_line( fullErrorMessage.templateMessage );
+                put_line_retry( fullErrorMessage.templateMessage );
              else
-                put_line( standard_error, fullErrorMessage.templateMessage );
+                put_line_retry( standard_error, fullErrorMessage.templateMessage );
              end if;
           end if;
        end if;
@@ -748,11 +748,11 @@ begin
   if error_found then                              -- was there an error?
      -- may or may not have a template at this point, so check
      if hasTemplate then
-        put_line( standard_error, fullErrorMessage.gccMessage );
+        put_line_retry( standard_error, fullErrorMessage.gccMessage );
         putTemplateHeader( templateHeader );
-        put_line( fullErrorMessage.templateMessage );
+        put_line_retry( fullErrorMessage.templateMessage );
      else
-        put_line( standard_error, fullErrorMessage.templateMessage );
+        put_line_retry( standard_error, fullErrorMessage.templateMessage );
      end if;
      if last_status = 0 then                       -- no last command status?
         set_exit_status( Failure );                -- just set to 1
@@ -867,7 +867,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.templateMessage );
+     put_line_retry( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -918,7 +918,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.templateMessage );
+     put_line_retry( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -963,7 +963,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.templateMessage );
+     put_line_retry( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1022,7 +1022,7 @@ begin
      end if;
   end if;
   if error_found then
-     put_line( standard_error, fullErrorMessage.templateMessage );
+     put_line_retry( standard_error, fullErrorMessage.templateMessage );
   end if;
   rshOpt := save_rshOpt;                          -- restore rsh setting
   execOpt := save_execOpt;                        -- restore -e setting
@@ -1047,7 +1047,7 @@ end doLocalProfile;
 procedure checkAndInterpretScript( fullScriptPath : string ) is
 begin
   if tail( ada.strings.unbounded.to_unbounded_string( fullScriptPath ), 3 ) = ".sh" then
-     put_line( standard_error, ".sh probably means " & fullScriptPath & " (if it exists) is not a SparForte script" );
+     put_line_retry( standard_error, ".sh probably means " & fullScriptPath & " (if it exists) is not a SparForte script" );
      set_exit_status( Failure );
      return;
   elsif syntaxOpt then                               -- -c / --check?
@@ -1062,7 +1062,7 @@ begin
   --   end if;
   --   interpretScript( Argument( OptionOffset ) );    -- run the script
      if error_found then
-        put_line( standard_error, fullErrorMessage.templateMessage );
+        put_line_retry( standard_error, fullErrorMessage.templateMessage );
      end if;
   else
      syntax_check := true;                           -- check syntax only
@@ -1086,11 +1086,11 @@ begin
      if error_found then
         -- may or may not have a template at this point, so check
         if hasTemplate then
-           put_line( standard_error, fullErrorMessage.gccMessage );
+           put_line_retry( standard_error, fullErrorMessage.gccMessage );
            putTemplateHeader( templateHeader );
-           put_line( fullErrorMessage.templateMessage );
+           put_line_retry( fullErrorMessage.templateMessage );
         else
-           put_line( standard_error, fullErrorMessage.templateMessage );
+           put_line_retry( standard_error, fullErrorMessage.templateMessage );
         end if;
      end if;
      if length( depreciatedMsg ) > 0 then            -- pragma depreciated?
@@ -1148,8 +1148,8 @@ begin
         -- be written into a server log).  The template header has already
         -- been written.
         if error_found then
-           put_line( standard_error, fullErrorMessage.gccMessage );
-           put_line( fullErrorMessage.templateMessage );
+           put_line_retry( standard_error, fullErrorMessage.gccMessage );
+           put_line_retry( fullErrorMessage.templateMessage );
         end if;
         -- if there was a formal script with a main program, the main program
         -- block is left un-pulled for use by the template.  We can now

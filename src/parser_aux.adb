@@ -343,13 +343,13 @@ begin
                mode := outputTemplate;              -- not a tag
                tagCount := 0;                       -- forget it
                if last_status = 0 then              -- we are outputting?
-                  put( to_string( tag ) );          -- output template text
+                  put_retry( to_string( tag ) );    -- output template text
                end if;
             end if;
             if end_of_line( f ) then                -- EOL?
               -- lineno := lineno + 1;              -- template line
               if last_status = 0 then               -- we are outputting?
-                 new_line;                          -- output a line feed
+                 new_line_retry;                    -- output a line feed
               end if;
             end if;
          elsif ch = bushStartTag( tagCount ) then   -- but if last matches
@@ -360,12 +360,12 @@ begin
             mode := outputTemplate;                 -- not a tag
             tagCount := 0;                          -- forget it
             if last_status = 0 then                 -- we are outputting?
-               put( to_string( tag ) );             -- output template text
+               put_retry( to_string( tag ) );       -- output template text
             end if;
             if end_of_line( f ) then                -- EOL?
               -- lineno := lineno + 1;              -- template line
               if last_status = 0 then               -- we are outputting?
-                 new_line;                          -- output a line feed
+                 new_line_retry;                    -- output a line feed
               end if;
             end if;
          end if;
@@ -457,15 +457,15 @@ begin
             mode := gatheringStartTag;              -- looking for tag
          elsif end_of_line( f ) then                -- otherwise EOL?
             if last_status = 0 then                 -- we are outputting?
-               put( ch );                           -- write character
+               put_retry( ch );                     -- write character
             end if;
             -- lineno := lineno + 1;                   -- count template line
             if last_status = 0 then                 -- we are outputting?
-               new_line;                            -- output a line feed
+               new_line_retry;                      -- output a line feed
             end if;
          else                                       -- not EOL?
             if last_status = 0 then                 -- we are outputting?
-               put( ch );                           -- write character
+               put_retry( ch );                     -- write character
             end if;
          end if;
 
@@ -540,7 +540,7 @@ begin
   execution_position :=  get_script_execution_position(
       inv( "Break: return to continue, logout to quit" ),
       utf_wristwatch ); -- show stop posn
-  put_line( standard_error, to_string( execution_position ) );
+  put_line_retry( standard_error, to_string( execution_position ) );
   error_found := true;
 end DoStartBreakout;
 

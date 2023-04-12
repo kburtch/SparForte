@@ -21,15 +21,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.text_io,
-    ada.strings.unbounded.text_io,
+with ada.strings.unbounded.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
     pegasoft.numerics,
     pegasoft.strings;
-use ada.text_io,
-    ada.strings.unbounded.text_io,
+use ada.strings.unbounded.text_io,
     ada.calendar,
     spar_os,
     spar_os.tty,
@@ -37,6 +35,120 @@ use ada.text_io,
     pegasoft.strings;
 
 package body pegasoft.user_io is
+
+
+-----------------------------------------------------------------------------
+--
+-- SUPPORT FUNCTIONS FOR MESSAGES
+--
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  PUT LINE RETRY
+--
+-- On some operating systems, put_line can raise a device_error when an
+-- interrupted system call occurs.
+-- TODO: this is a workaround.  A better solution is needed
+-- TODO: should probably use these functions throughout
+-----------------------------------------------------------------------------
+
+procedure put_line_retry( output_file : file_type; s : string ) is
+  retryCnt : natural := 0;
+begin
+  loop
+     begin
+        put_line( output_file, s );
+        retryCnt := 2;
+     exception when device_error =>
+        retryCnt := retryCnt + 1;
+     end;
+     exit when retryCnt >= 2;
+  end loop;
+end put_line_retry;
+
+procedure put_line_retry( s : string ) is
+begin
+  put_line_retry( standard_output, s );
+end put_line_retry;
+
+procedure put_line_retry( output_file : file_type; us : unbounded_string ) is
+begin
+  put_line_retry( output_file, to_string( us ) );
+end put_line_retry;
+
+procedure put_line_retry( us : unbounded_string ) is
+begin
+  put_line_retry( standard_output, to_string( us ) );
+end put_line_retry;
+
+procedure new_line_retry is
+  retryCnt : natural := 0;
+begin
+  loop
+     begin
+        new_line;
+        retryCnt := 2;
+     exception when device_error =>
+        retryCnt := retryCnt + 1;
+     end;
+     exit when retryCnt >= 2;
+  end loop;
+end new_line_retry;
+
+
+-----------------------------------------------------------------------------
+--  PUT RETRY
+--
+-- On some operating systems, put_line can raise a device_error when an
+-- interrupted system call occurs.
+-- TODO: this is a workaround.  A better solution is needed
+-- TODO: should probably use these functions throughout
+-----------------------------------------------------------------------------
+
+procedure put_retry( output_file : file_type; s : string ) is
+  retryCnt : natural := 0;
+begin
+  loop
+     begin
+        put( output_file, s );
+        retryCnt := 2;
+     exception when device_error =>
+        retryCnt := retryCnt + 1;
+     end;
+     exit when retryCnt >= 2;
+  end loop;
+end put_retry;
+
+procedure put_retry( s : string ) is
+begin
+  put_retry( standard_output, s );
+end put_retry;
+
+procedure put_retry( output_file : file_type; us : unbounded_string ) is
+begin
+  put_retry( output_file, to_string( us ) );
+end put_retry;
+
+procedure put_retry( us : unbounded_string ) is
+begin
+  put_retry( standard_output, to_string( us ) );
+end put_retry;
+
+procedure put_retry( ch : character ) is
+  retryCnt : natural := 0;
+begin
+  loop
+     begin
+        put( ch );
+        retryCnt := 2;
+     exception when device_error =>
+        retryCnt := retryCnt + 1;
+     end;
+     exit when retryCnt >= 2;
+  end loop;
+end put_retry;
+
 
 -----------------------------------------------------------------------------
 --  BEEP

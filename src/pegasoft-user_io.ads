@@ -21,11 +21,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.calendar,
+with ada.text_io,
+     ada.calendar,
      ada.strings.unbounded;
-     --world;
-use  ada.strings.unbounded;
-     --world;
+use  ada.strings.unbounded,
+     ada.text_io;
 
 
 package pegasoft.user_io is
@@ -44,6 +44,25 @@ promptIdleScript   : unbounded_string := null_unbounded_string;
 -- script created by pragma prompt_idle_script
 prompt         : unbounded_string := defaultPrompt;
 -- the last prompt displayed (set by parser)
+
+
+-----------------------------------------------------------------------------
+--  PUT / PUT LINE RETRY
+--
+-- On some operating systems, put_line can raise a device_error when an
+-- interrupted system call occurs.
+-----------------------------------------------------------------------------
+
+procedure put_line_retry( output_file : file_type; s : string );
+procedure put_line_retry( s : string );
+procedure put_line_retry( output_file : file_type; us : unbounded_string );
+procedure put_line_retry( us : unbounded_string );
+procedure put_retry( output_file : file_type; s : string );
+procedure put_retry( s : string );
+procedure put_retry( output_file : file_type; us : unbounded_string );
+procedure put_retry( us : unbounded_string );
+procedure put_retry( ch : character );
+procedure new_line_retry;
 
 
 ------------------------------------------------------

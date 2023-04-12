@@ -168,7 +168,7 @@ package body builtins.help is
                end if;
                expect( symbol_t, ")" );
                if LicenseOutput then
-                  put_line( to_string( info ) );
+                  put_line_retry( to_string( info ) );
                end if;
             end if;
          elsif pragmaKind = todo_str then
@@ -264,7 +264,7 @@ package body builtins.help is
                end if;
                expect( symbol_t, ")" );
                if TodoOutput then
-                  put_line( to_string( info ) );
+                  put_line_retry( to_string( info ) );
                end if;
             end if;
          elsif pragmaKind = advise_str or
@@ -285,7 +285,7 @@ package body builtins.help is
                info := info & "," & ToCSV( exprVal ); -- message
                expect( symbol_t, ")" );
                if CollabOutput then
-                  put_line( to_string( info ) );
+                  put_line_retry( to_string( info ) );
                end if;
             end if;
          elsif pragmaKind = annotate_str then
@@ -458,10 +458,10 @@ package body builtins.help is
           genDate := integer'image( ada.calendar.year( clock ) ) & "-" & genDate;
           delete( genDate, 1, 1 );
           if HTMLoutput then
-             put_line( "<p><u><b>File</b>: " & to_string( scriptFilePath ) & "</u></p><p>" );
+             put_line_retry( "<p><u><b>File</b>: " & to_string( scriptFilePath ) & "</u></p><p>" );
           elsif MANOutput then
-             put_line( "./" & ASCII.Quotation & "man page " & to_string( scriptFilePath ) & ".9" );
-             put_line( ".TH " & ASCII.Quotation & to_string( scriptFilePath ) & ASCII.Quotation &
+             put_line_retry( "./" & ASCII.Quotation & "man page " & to_string( scriptFilePath ) & ".9" );
+             put_line_retry( ".TH " & ASCII.Quotation & to_string( scriptFilePath ) & ASCII.Quotation &
                  " 9 " &
                  ASCII.Quotation & to_string( genDate ) & ASCII.Quotation & " " &
                  ASCII.Quotation & "Company" & ASCII.Quotation & " " &
@@ -509,87 +509,87 @@ package body builtins.help is
           if TodoOutput then
             -- produce summary
              if todoTotal > 0 then
-                new_line;
-                put_line( "Amount of Work" );
-                new_line;
+                new_line_retry;
+                put_line_retry( "Amount of Work" );
+                new_line_retry;
                 if workMeasureCntUnknown > 0 then
-                   put_line( "Unknown:" & workMeasureCntUnknown'img );
+                   put_line_retry( "Unknown:" & workMeasureCntUnknown'img );
                 end if;
                 if workMeasureCntHours > 0 then
-                   put_line( "Hours:" & workMeasureCntHours'img );
+                   put_line_retry( "Hours:" & workMeasureCntHours'img );
                 end if;
                 if workMeasureCntFpoints > 0 then
-                   put_line( "Function Points:" & workMeasureCntFpoints'img );
+                   put_line_retry( "Function Points:" & workMeasureCntFpoints'img );
                 end if;
                 if workMeasureCntSpoints > 0 then
-                   put_line( "Story Points:" & workMeasureCntSpoints'img );
+                   put_line_retry( "Story Points:" & workMeasureCntSpoints'img );
                 end if;
                 if workMeasureCntSloc > 0 then
-                   put_line( "Lines-of-Code:" & workMeasureCntSloc'img );
+                   put_line_retry( "Lines-of-Code:" & workMeasureCntSloc'img );
                 end if;
                 if workMeasureCntSizeS > 0 then
-                   put_line( "Small:" & workMeasureCntSizeS'img );
+                   put_line_retry( "Small:" & workMeasureCntSizeS'img );
                 end if;
                 if workMeasureCntSizeM > 0 then
-                   put_line( "Medium:" & workMeasureCntSizeM'img );
+                   put_line_retry( "Medium:" & workMeasureCntSizeM'img );
                 end if;
                 if workMeasureCntSizeL > 0 then
-                   put_line( "Large:" & workMeasureCntSizeL'img );
+                   put_line_retry( "Large:" & workMeasureCntSizeL'img );
                 end if;
                 if workMeasureCntSizeXL > 0 then
-                   put_line( "Extra Large:" & workMeasureCntSizeXL'img );
+                   put_line_retry( "Extra Large:" & workMeasureCntSizeXL'img );
                 end if;
 
-                new_line;
-                put_line( "Priorities of Work" );
-                new_line;
+                new_line_retry;
+                put_line_retry( "Priorities of Work" );
+                new_line_retry;
                 if workPriorityCntUnknown > 0 then
-                   put_line( "Unknown:" & workPriorityCntUnknown'img );
+                   put_line_retry( "Unknown:" & workPriorityCntUnknown'img );
                 end if;
                 if workPriorityCompleted > 0 then
-                   put_line( "Completed:" & workPriorityCompleted'img );
+                   put_line_retry( "Completed:" & workPriorityCompleted'img );
                 end if;
                 if workPriorityCntLevelL > 0 then
-                   put_line( "Low:" & workPriorityCntLevelL'img );
+                   put_line_retry( "Low:" & workPriorityCntLevelL'img );
                 end if;
                 if workPriorityCntLevelM > 0 then
-                   put_line( "Medium:" & workPriorityCntLevelM'img );
+                   put_line_retry( "Medium:" & workPriorityCntLevelM'img );
                 end if;
                 if workPriorityCntLevelH > 0 then
-                   put_line( "High:" & workPriorityCntLevelH'img );
+                   put_line_retry( "High:" & workPriorityCntLevelH'img );
                 end if;
                 if workPriorityCntSeverity1 > 0 then
-                   put_line( "Severity 1:" & workPriorityCntSeverity1'img );
+                   put_line_retry( "Severity 1:" & workPriorityCntSeverity1'img );
                 end if;
                 if workPriorityCntSeverity2 > 0 then
-                   put_line( "Severity 2:" & workPriorityCntSeverity2'img );
+                   put_line_retry( "Severity 2:" & workPriorityCntSeverity2'img );
                 end if;
                 if workPriorityCntSeverity3 > 0 then
-                   put_line( "Severity 3:" & workPriorityCntSeverity3'img );
+                   put_line_retry( "Severity 3:" & workPriorityCntSeverity3'img );
                 end if;
                 if workPriorityCntSeverity4 > 0 then
-                   put_line( "Severity 4:" & workPriorityCntSeverity4'img );
+                   put_line_retry( "Severity 4:" & workPriorityCntSeverity4'img );
                 end if;
                 if workPriorityCntSeverity5 > 0 then
-                   put_line( "Severity 5:" & workPriorityCntSeverity5'img );
+                   put_line_retry( "Severity 5:" & workPriorityCntSeverity5'img );
                 end if;
                 if workPriorityCntRisk > 0 then
-                   put_line( "Risk:" & workPriorityCntRisk'img );
+                   put_line_retry( "Risk:" & workPriorityCntRisk'img );
                 end if;
                 if workPriorityCntCVSSMinor > 0 then
-                   put_line( "CVSS Minor:" & workPriorityCntCVSSMinor'img );
+                   put_line_retry( "CVSS Minor:" & workPriorityCntCVSSMinor'img );
                 end if;
                 if workPriorityCntCVSSMajor > 0 then
-                   put_line( "CVSS Major:" & workPriorityCntCVSSMajor'img );
+                   put_line_retry( "CVSS Major:" & workPriorityCntCVSSMajor'img );
                 end if;
                 if workPriorityCntCVSSCrit > 0 then
-                   put_line( "CVSS Critical:" & workPriorityCntCVSSCrit'img );
+                   put_line_retry( "CVSS Critical:" & workPriorityCntCVSSCrit'img );
                 end if;
 
-                new_line;
-                put_line( "Number of To-Do Items:" & todoTotal'img );
+                new_line_retry;
+                put_line_retry( "Number of To-Do Items:" & todoTotal'img );
              else
-                put_line( "No todo's found" );
+                put_line_retry( "No todo's found" );
              end if;
           elsif not LicenseOutput and not CollabOutput then
              if not isEmpty( e ) then

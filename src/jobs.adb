@@ -196,7 +196,7 @@ procedure addCommandHash( cmd, full : unbounded_string; builtin : boolean ) is
 begin
   bin := hashOf( cmd );
   if builtin and length( cmdHash( bin ).fullPath ) /= 0 then
-    put_line( standard_error, gnat.source_info.source_location & ": internal error: builtin command hash clash for builtin "
+    put_line_retry( standard_error, gnat.source_info.source_location & ": internal error: builtin command hash clash for builtin "
         & toEscaped( cmd ) );
   else
     cmdHash( bin ).cmd := cmd;
@@ -520,7 +520,7 @@ begin
             newJob.quiet := not boolean( inputMode = interactive ) or boolean( inputMode = breakout );
             jobList.Insert( jobs, newJob );
             if not newJob.quiet then
-               put_line( cmd & " (" & myPID'img & ") has started" );
+               put_line_retry( cmd & " (" & myPID'img & ") has started" );
             end if;
             Success := true;
          end if;
@@ -930,7 +930,7 @@ begin
          end if;
      end loop;
      if not oldJob.quiet then
-        put_line( oldJob.cmd &" (" & pid'img & ") is finished" );
+        put_line_retry( oldJob.cmd &" (" & pid'img & ") is finished" );
      end if;
   end loop;
 end wait4children;
@@ -958,7 +958,7 @@ begin
   end if;
   jobList.Clear( jobs, numberOfJobs );
   if not lastJob.quiet then
-     put_line( lastJob.cmd &" (" & lastJob.pid'img & ") is finished" );
+     put_line_retry( lastJob.cmd &" (" & lastJob.pid'img & ") is finished" );
   end if;
   last_status := aStatusCode( status mod 256 ); -- is this right?
 end wait4LastJob;
@@ -987,19 +987,19 @@ begin
       elsif result = -1 then                      -- no such job? (ECHILD)
          jobList.Clear( jobs, i );                -- then it's done
           if not job.quiet then
-            put_line( job.cmd &" (" & job.pid'img & ") has finished" );
+            put_line_retry( job.cmd &" (" & job.pid'img & ") has finished" );
           end if;
       elsif result = 0 then                       -- unable to get status?
          if job.status /= running then            -- show status on a change
             if not job.quiet then
-              put_line( job.cmd &" (" & job.pid'img & ") is running" );
+              put_line_retry( job.cmd &" (" & job.pid'img & ") is running" );
             end if;
          end if;
          job.status := running;                   -- still running
       else                                        -- able to get status?
          if job.status /= stopped then            -- show status on a change
             if not job.quiet then
-              put_line( job.cmd &" (" & job.pid'img & ") has stopped" );
+              put_line_retry( job.cmd &" (" & job.pid'img & ") has stopped" );
             end if;
          end if;
          job.status := stopped;                   -- probably stopped
@@ -1017,23 +1017,23 @@ begin
   for i in 1..numberOfJobs loop
       jobList.Find( jobs, i, oldJob );
       if not oldJob.quiet then
-         put( oldJob.cmd &" (" & oldJob.pid'img & ") is " );
+         put_retry( oldJob.cmd &" (" & oldJob.pid'img & ") is " );
          case oldJob.status is
          when running =>
-           put_line( "running" );
+           put_line_retry( "running" );
          when stopped =>
-           put_line( "stopped" );
+           put_line_retry( "stopped" );
          when others =>
-           put_line( "unknown status" );
+           put_line_retry( "unknown status" );
          end case;
       end if;
   end loop;
   if numberOfJobs = 1 then
-     put( "There is" & jobList.Length( jobs )'img & " job" );
+     put_retry( "There is" & jobList.Length( jobs )'img & " job" );
   else
-     put( "There are" & jobList.Length( jobs )'img & " jobs" );
+     put_retry( "There are" & jobList.Length( jobs )'img & " jobs" );
   end if;
-  put_line( " (including hidden ones)" );
+  put_line_retry( " (including hidden ones)" );
 end putJobList;
 
 end jobs;
