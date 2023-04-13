@@ -25,7 +25,6 @@ Priority Issues (Fix These First)
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
   is derived from it
-- text_io.put_line may raise device_error on interrupted system calls,
   especially on Raspian Linux.  scanner.communications updated but there
   may be other references.
 - ubuntu container failing because l10n constants are not defined (they

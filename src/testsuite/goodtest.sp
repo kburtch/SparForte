@@ -3687,6 +3687,22 @@ s  := "abc";
 s1 := `echo ${s:+}`;
 pragma assert( s1 = "" );
 
+-- SparForte Extensions of expansions
+
+f := -1234.5;
+s := `echo "${f|}"`;
+pragma assert( s = "-1235" );
+
+s := `echo "${f|^}"`;
+pragma assert( s = "-1234" );
+
+s := `echo "${f|,}"`;
+pragma assert( s = "-1235" );
+
+i := -1234;
+s := `echo "${i||}"`;
+pragma assert( s = "1234" );
+
 -- New features of shell rewrite: dollar process substitutions
 
 s := `echo $(pwd)`;

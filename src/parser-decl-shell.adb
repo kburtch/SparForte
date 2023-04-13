@@ -22,7 +22,8 @@
 ------------------------------------------------------------------------------
 -- with ada.text_io; use ada.text_io;
 
-with pegasoft.gen_list,
+with pegasoft,
+     pegasoft.gen_list,
      ada.command_line,
      gnat.directory_operations,
      gnat.regexp,
@@ -39,6 +40,7 @@ use  world,
      gnat.directory_operations,
      gnat.regexp,
      spar_os,
+     pegasoft,
      pegasoft.strings,
      pegasoft.user_io,
      scanner.communications,
@@ -1116,6 +1118,210 @@ end doVariableLowercaseExpansion;
 
 
 -----------------------------------------------------------------------------
+--  DO VARIABLE ABSOLUTE VALUE EXPANSION
+--
+-- Perform a dollar variable absolute value expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableAbsoluteValueExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+   absValue : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+
+   if length( subword ) > 0 then
+      if Element( subword, 1 ) /= ' ' and Element( subword, 1 ) /= '-' then
+         subword := " " & subword;
+      end if;
+   end if;
+
+   if isExecutingCommand then
+      begin
+         absValue :=
+            ada.strings.unbounded.to_unbounded_string(
+                long_integer'image(
+                    abs(
+                       long_integer'value( to_string( subword ) )
+                    )
+                )
+           );
+      exception when others =>
+        err( +"unable to convert value to absolute value" );
+      end;
+   end if;
+
+   if length( absValue ) > 0 then
+      if Element( absValue, 1 ) = ' ' then
+         absValue := delete( absValue, 1, 1 );
+      end if;
+   end if;
+
+   globPattern := globPattern & aGlobShellWord( absValue );
+
+end doVariableAbsoluteValueExpansion;
+
+
+-----------------------------------------------------------------------------
+--  DO VARIABLE ROUNDING EXPANSION
+--
+-- Perform a dollar variable rounding of value expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableRoundingExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+   roundValue : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+
+   if length( subword ) > 0 then
+      if Element( subword, 1 ) /= ' ' and Element( subword, 1 ) /= '-' then
+         subword := " " & subword;
+      end if;
+   end if;
+
+   if isExecutingCommand then
+      begin
+         roundValue :=
+            ada.strings.unbounded.to_unbounded_string(
+                long_integer'image(
+                    long_integer(
+                       numericValue'value( to_string( subword ) )
+                    )
+                )
+            );
+      exception when others=>
+        err( +"unable to round value" );
+     end;
+   end if;
+
+   if length( roundValue ) > 0 then
+      if Element( roundValue, 1 ) = ' ' then
+         roundValue := delete( roundValue, 1, 1 );
+      end if;
+   end if;
+
+   globPattern := globPattern & aGlobShellWord( roundValue );
+
+end doVariableRoundingExpansion;
+
+
+-----------------------------------------------------------------------------
+--  DO VARIABLE CEILING EXPANSION
+--
+-- Perform a dollar variable ceiling expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableCeilingExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+   ceilingValue : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+
+   if length( subword ) > 0 then
+      if Element( subword, 1 ) /= ' ' and Element( subword, 1 ) /= '-' then
+         subword := " " & subword;
+      end if;
+   end if;
+
+   if isExecutingCommand then
+      begin
+         ceilingValue :=
+            ada.strings.unbounded.to_unbounded_string(
+                long_integer'image(
+                    long_integer(
+                       numericValue'ceiling(
+                          numericValue'value( to_string( subword ) )
+                       )
+                    )
+                )
+           );
+      exception when others =>
+        err( +"unable to do ceiling expansion" );
+      end;
+   end if;
+
+   if length( ceilingValue ) > 0 then
+      if Element( ceilingValue, 1 ) = ' ' then
+         ceilingValue := delete( ceilingValue, 1, 1 );
+      end if;
+   end if;
+
+   globPattern := globPattern & aGlobShellWord( ceilingValue );
+
+end doVariableCeilingExpansion;
+
+
+-----------------------------------------------------------------------------
+--  DO VARIABLE FLOOR EXPANSION
+--
+-- Perform a dollar variable floor expansion.
+-----------------------------------------------------------------------------
+
+procedure doVariableFloorExpansion(
+      expansionVar : unbounded_string;
+      globPattern : in out aGlobShellWord;
+      whitespaceOption : whitespaceOptions;
+      wordPos : natural ) is
+   subword      : unbounded_string;
+   floorValue : unbounded_string;
+begin
+   -- Perform the expansion
+
+   getExpansionValue( expansionVar, subword, whitespaceOption, wordPos );
+
+   if length( subword ) > 0 then
+      if Element( subword, 1 ) /= ' ' and Element( subword, 1 ) /= '-' then
+         subword := " " & subword;
+      end if;
+   end if;
+
+   if isExecutingCommand then
+      begin
+         floorValue :=
+            ada.strings.unbounded.to_unbounded_string(
+                long_integer'image(
+                    long_integer(
+                       numericValue'floor(
+                          numericValue'value( to_string( subword ) )
+                       )
+                    )
+                )
+           );
+      exception when others =>
+        err( +"unable to do floor expansion" );
+      end;
+   end if;
+
+   if length( floorValue ) > 0 then
+      if Element( floorValue, 1 ) = ' ' then
+         floorValue := delete( floorValue, 1, 1 );
+      end if;
+   end if;
+
+   globPattern := globPattern & aGlobShellWord( floorValue );
+
+end doVariableFloorExpansion;
+
+
+-----------------------------------------------------------------------------
 --  DO COMMAND SUBSTITUTION
 --
 -- Perform a command substitution.  Run the specified commands and return
@@ -1218,6 +1424,10 @@ procedure parseDollarBraceExpansion(
    isUppercaseExpansion : boolean := false;
    isProperExpansion : boolean := false;
    isLowercaseExpansion : boolean := false;
+   isAbsoluteValueExpansion : boolean := false;
+   isRoundingExpansion : boolean := false;
+   isCeilingExpansion : boolean := false;
+   isFloorExpansion : boolean := false;
    defaultMode  : defaultModes := none;
 
    --  GET BRACE OPERATOR DEFAULT VALUE
@@ -1355,6 +1565,20 @@ begin
          else
             isProperExpansion := true;
          end if;
+     elsif element( rawWordValue, wordPos ) = '|' then
+         expectChar( '|', rawWordValue, wordLen, wordPos  );
+         if element( rawWordValue, wordPos ) = '^' then
+            expectChar( '^', rawWordValue, wordLen, wordPos  );
+            isCeilingExpansion := true;
+         elsif element( rawWordValue, wordPos ) = ',' then
+            expectChar( ',', rawWordValue, wordLen, wordPos  );
+            isFloorExpansion := true;
+         elsif element( rawWordValue, wordPos ) = '|' then
+            expectChar( '|', rawWordValue, wordLen, wordPos  );
+            isAbsolutevalueExpansion := true;
+         else
+            isRoundingExpansion := true;
+         end if;
       elsif element( rawWordValue, wordPos ) = ',' then
          expectChar( ',', rawWordValue, wordLen, wordPos  );
          if element( rawWordValue, wordPos ) = ',' then
@@ -1379,6 +1603,18 @@ begin
          expansionVar, globPattern, whitespaceOption, wordPos );
    elsif isLowercaseExpansion then
       doVariableLowercaseExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isRoundingExpansion then
+      doVariableRoundingExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isAbsolutevalueExpansion then
+      doVariableAbsoluteValueExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isCeilingExpansion then
+      doVariableCeilingExpansion(
+         expansionVar, globPattern, whitespaceOption, wordPos );
+   elsif isFloorExpansion then
+      doVariableFloorExpansion(
          expansionVar, globPattern, whitespaceOption, wordPos );
    else
       doVariableExpansion( rawWordValue, expansionVar, defaultValue, defaultMode,

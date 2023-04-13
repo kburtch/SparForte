@@ -63,3 +63,7 @@ instead of using long_float's.
 
 29. Change: the provision script supports "without" options.  A full install of all software dependencies is no longer required.
 
+30. Change: replaced some text_io functions within the language to deal with interrupted system calls based device_error exceptions.
+
+31. New: Bourne shell expansions: ${X||} for absolute value, ${X|} for rounded value, ${X|^} for ceiling value, ${X|,} for floor value.
+

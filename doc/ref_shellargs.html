@@ -260,7 +260,7 @@ in SparForte.</p>
     <tr>
       <td style="vertical-align: top;"><span>Variable Uppercase First</span><br>
       </td>
-      <td style="vertical-align: top;">S := "kEn" <tt>${S^}</tt><br>
+      <td style="vertical-align: top;"><tt>S := "kEn" ... ${S^}</tt><br>
 
       </td>
       <td style="vertical-align: top;"><tt>KEn</tt></br>
@@ -272,12 +272,60 @@ in SparForte.</p>
     <tr>
       <td style="vertical-align: top;"><span>Variable Lowercase First</span><br>
       </td>
-      <td style="vertical-align: top;">S := "KeN" <tt>${S^}</tt><br>
+      <td style="vertical-align: top;"><tt>S := "KeN" ... ${S^}</tt><br>
 
       </td>
       <td style="vertical-align: top;"><tt>keN</tt></br>
       </td>
       <td style="vertical-align: top;"><span>not implemented</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Rounding</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>N := -1234.2 ... ${N|}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>1234</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>SparForte extension</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Absolute Value</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>N := -1234 ... ${N||}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>1234</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>SparForte extension</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Ceiling</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>N := 1233.7 ... ${N|^}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>1234</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>SparForte extension</span><br>
+      </td>
+
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span>Variable Floor</span><br>
+      </td>
+      <td style="vertical-align: top;"><tt>N := 1234.5 ... ${N|,}</tt><br>
+
+      </td>
+      <td style="vertical-align: top;"><tt>1234</tt></br>
+      </td>
+      <td style="vertical-align: top;"><span>SparForte extension</span><br>
       </td>
 
     </tr>
@@ -426,11 +474,49 @@ compatibility with the Bourne shell.</p>
 <p><b>Ada 95</b>: Bourne shell features are not available with
 pragma ada_95, the Ada compatibility mode.</p>
 
+<h3>SparForte Extensions</h3>
+
+<p>These are SparForte extensions to shell expansions and are not a part of
+the Bourne shell standard.</p>
+
+<h4>Variable Rounding ${X|}</h4>
+
+<p><b>Introduced</b>: SparForte 2.6</p>
+
+<p>Replace the expansion with the value of variable X rounded to the nearest
+integer.  Any leading space will be removed.  There is an error if the value
+is not numeric.  No type check is performed.</p>
+
+<p>The vertical bar denotes cutting off the decimal portion of the value.</p>
+
+<h4>Variable Absolute Value ${X||}</h4>
+
+<p><b>Introduced</b>: SparForte 2.6</p>
+<p>Replace the expansion with the absolute value of the value of variable X.
+Any leading space will be removed.  There is an error if the value is not
+an integer.  No type check is performed.</p>
+
+<h4>Variable Ceiling ${X|^}</h4>
+
+<p><b>Introduced</b>: SparForte 2.6</p>
+
+<p>Replace the expansion with the value of variable X rounded up to the nearest
+integer.  Any leading space will be removed.  There is an error if the value
+is not numeric.  No type check is performed.</p>
+
+<h4>Variable Floor ${X|,}</h4>
+
+<p><b>Introduced</b>: SparForte 2.6</p>
+
+<p>Replace the expansion with the value of variable X rounded down to the
+nearest integer.  Any leading space will be removed.  There is an error if the
+value is not numeric.  No type check is performed.</p>
+
 <h3>Assignments and SparForte Process Substitution</h3>
 
 <p>There is a case where SparForte differs from a Bourne shell: assigning commands to a variable.</p>
 
-<p>In the following, X is assigned a string value with the characters "`date`" in the string.</p>
+<p>In the following, X is assigned a string value with the characters "`date`" in the string.  No type check is performed.</p>
 
 <center>
    <div class="code">
