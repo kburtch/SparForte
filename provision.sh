@@ -101,9 +101,9 @@ fi
 
 yum_install () {
   if [ -n "$HAS_SUDO" ] ; then
-     sudo -u root yum install -q -y $@
+     sudo -u root dnf install -q -y $@
   else
-     yum install -q -y $@
+     dnf install -q -y $@
   fi
 }
 
@@ -129,8 +129,13 @@ zypper_install () {
 
 # CentOS/Red hat
 
+RHVERSION7=""
 if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
+   TMP=`fgrep "7." "/etc/redhat-release"`
+   if [ -z "$TMP" ] ; then
+      RHVERSION7="7"
+   fi
 fi
 
 if test -f "/etc/SUSE-brand" ; then
@@ -174,7 +179,6 @@ if [ -z "$DISTRO" ] ; then
    fi
 fi
 
-
 # Install software dependences
 # ----------------------------------------------------------------------------
 
@@ -188,49 +192,60 @@ redhat )
    if [ $? -eq 1 ] ; then
       set -e
       if [ -n "$HAS_SUDO" ] ; then
-         sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
+         if [ -z "$RHVERSION7" ] ; then
+            sudo dnf config-manager --set-enabled
+	    sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+	 else
+            sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-latest-7.noarch.rpm
+	 fi
       else
-         rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
+         if [ -z "$RHVERSION7" ] ; then
+            dnf config-manager --set-enabled
+	    dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+	 else
+            rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-latest-7.noarch.rpm
+	 fi
       fi
-      # Containers may not have these
-      yum_install make
-      #
-      yum_install bzip2
-      yum_install gcc-gnat
-      yum_install git
-      yum_install bc
-      yum_install mlocate
-      if [ -z "$NO_SOUND" ] ; then
-         yum_install gstreamer1
-         yum_install gstreamer1-devel
-      fi
-      if [ -z "$NO_BDB" ] ; then
-         yum_install libdb-devel
-      fi
-      if [ -z "$NO_MYSQL" ] ; then
-         yum_install mariadb
-         yum_install mariadb-devel
-         yum_install mariadb-server
-      fi
-      if [ -z "$NO_POSTGRES" ] ; then
-         yum_install postgresql
-         yum_install postgresql-devel
-         yum_install postgresql-server
-      fi
-      if [ -z "$NO_SDL" ] ; then
-         yum_install SDL
-         yum_install SDL-devel
-         yum_install SDL_image
-         yum_install SDL_image-devel
-      fi
-      if [ -z "$NO_MEMCACHED" ] ; then
-         yum_install memcached
-      fi
-      if [ -z "$NO_READLINE" ] ; then
-         yum_install readline-devel
-      fi
-      set +e
    fi
+   # Containers may not have these
+   yum_install make
+   #
+   yum_install bzip2
+   yum_install gcc-gnat
+   yum_install git
+   yum_install bc
+   yum_install mlocate
+   if [ -z "$NO_SOUND" ] ; then
+      yum_install gstreamer1
+      yum_install gstreamer1-devel
+   fi
+   if [ -z "$NO_BDB" ] ; then
+      yum_install libdb-devel
+   fi
+   if [ -z "$NO_MYSQL" ] ; then
+      yum_install mariadb
+      yum_install mariadb-server
+      yum_install mariadb-connector-c
+      yum_install mariadb-devel  # Older versions of Red Hat
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      yum_install postgresql
+      yum_install postgresql-devel
+      yum_install postgresql-server
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      yum_install SDL
+      yum_install SDL-devel
+      yum_install SDL_image
+      yum_install SDL_image-devel
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      yum_install memcached
+   fi
+   if [ -z "$NO_READLINE" ] ; then
+      yum_install readline-devel
+   fi
+   set +e
    ;;
 suse)
    set -e

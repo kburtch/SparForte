@@ -36,7 +36,8 @@ char *getlocale(int lc) {
 }
 
 // Define missing items for macOS
-#if defined(__APPLE__)
+// Red Hat Linux disabes these also (check USE_GNU).
+#if defined(__APPLE__) || !defined( __USE_GNU)
 #define	DECIMAL_POINT -1
 #define	THOUSANDS_SEP -1
 #define	CURRENCY_SYMBOL -1
@@ -483,15 +484,13 @@ char *langinfo_abmon_12() {
  *
  */
 
+char *langinfo_decimal_point() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_decimal_point() {
    return undefined;
-}
 #else
-char *langinfo_decimal_point() {
    return nl_langinfo( DECIMAL_POINT );
-}
 #endif
+}
 
 
 /**
@@ -499,15 +498,13 @@ char *langinfo_decimal_point() {
  *
  */
 
+char *langinfo_thousands_sep() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_thousands_sep() {
    return undefined;
-}
 #else
-char *langinfo_thousands_sep() {
    return nl_langinfo( THOUSANDS_SEP );
-}
 #endif
+}
 
 
 /**
@@ -535,15 +532,13 @@ char *langinfo_noexpr() {
  *
  */
 
+char *langinfo_currency_symbol() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_currency_symbol() {
    return undefined;
-}
 #else
-char *langinfo_currency_symbol() {
    return nl_langinfo( CURRENCY_SYMBOL );
-}
 #endif
+}
 
 
 /**
@@ -581,15 +576,13 @@ char *langinfo_t_fmt_ampm() {
  *
  */
 
+char *langinfo_positive_sign() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_positive_sign() {
    return undefined;
-}
 #else
-char *langinfo_positive_sign() {
    return nl_langinfo( POSITIVE_SIGN );
-}
 #endif
+}
 
 
 /**
@@ -597,15 +590,13 @@ char *langinfo_positive_sign() {
  *
  */
 
+char *langinfo_negative_sign() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_negative_sign() {
    return undefined;
-}
 #else
-char *langinfo_negative_sign() {
    return nl_langinfo( NEGATIVE_SIGN );
-}
 #endif
+}
 
 
 /**
@@ -613,15 +604,13 @@ char *langinfo_negative_sign() {
  *
  */
 
+char *langinfo_int_curr_symbol() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_int_curr_symbol() {
    return undefined;
-}
 #else
-char *langinfo_int_curr_symbol() {
    return nl_langinfo( INT_CURR_SYMBOL );
-}
 #endif
+}
 
 
 /**
@@ -629,30 +618,26 @@ char *langinfo_int_curr_symbol() {
  *
  */
 
+char *langinfo_grouping() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_grouping() {
    return "\0";
-}
 #else
-char *langinfo_grouping() {
    return nl_langinfo( GROUPING );
-}
 #endif
+}
 
 /**
  *  LANGINFO FRAC (tional) DIGITS
  *
  */
 
+char *langinfo_frac_digits() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_frac_digits() {
    return undefined;
-}
 #else
-char *langinfo_frac_digits() {
    return nl_langinfo( FRAC_DIGITS );
-}
 #endif
+}
 
 /**
  *  LANGINFO INT(ternational) FRAC (tional) DIGITS
@@ -672,105 +657,91 @@ char *langinfo_int_frac_digits() {
  *
  */
 
+char *langinfo_p_cs_precedes() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_p_cs_precedes() {
    return undefined;
-}
 #else
-char *langinfo_p_cs_precedes() {
    return nl_langinfo( P_CS_PRECEDES );
-}
 #endif
+}
 
 /**
  *  LANGINFO P(ositive) SEP BY PRECEDES
  *
  */
 
+char *langinfo_p_sep_by_space() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_p_sep_by_space() {
    return undefined;
-}
 #else
-char *langinfo_p_sep_by_space() {
    return nl_langinfo( P_SEP_BY_SPACE );
-}
 #endif
+}
 
 /**
  *  LANGINFO P(ositive) SIGN POSN (position)
  *
  */
 
+char *langinfo_p_sign_posn() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_p_sign_posn() {
    return undefined;
-}
 #else
-char *langinfo_p_sign_posn() {
    return nl_langinfo( P_SIGN_POSN );
-}
 #endif
+}
 
 /**
  *  LANGINFO N(egative) CS PRECEDES
  *
  */
 
+char *langinfo_n_cs_precedes() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_n_cs_precedes() {
    return undefined;
-}
 #else
-char *langinfo_n_cs_precedes() {
    return nl_langinfo( N_CS_PRECEDES );
-}
 #endif
+}
 
 /**
  *  LANGINFO N(egative) SEP BY PRECEDES
  *
  */
 
+char *langinfo_n_sep_by_space() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_n_sep_by_space() {
    return undefined;
-}
 #else
-char *langinfo_n_sep_by_space() {
    return nl_langinfo( N_SEP_BY_SPACE );
-}
 #endif
+}
 
 /**
  *  LANGINFO N(egative) SIGN POSN (position)
  *
  */
 
+char *langinfo_n_sign_posn() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_n_sign_posn() {
    return undefined;
-}
 #else
-char *langinfo_n_sign_posn() {
    return nl_langinfo( N_SIGN_POSN );
-}
 #endif
+}
 
 /**
  *  LANGINFO MON(etary) DECIMAL POINT
  *
  */
 
+char *langinfo_mon_decimal_point() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_mon_decimal_point() {
    return undefined;
-}
 #else
-char *langinfo_mon_decimal_point() {
    return nl_langinfo( MON_DECIMAL_POINT );
-}
 #endif
+}
 
 
 /**
@@ -778,30 +749,26 @@ char *langinfo_mon_decimal_point() {
  *
  */
 
+char *langinfo_mon_thousands_sep() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_mon_thousands_sep() {
    return undefined;
-}
 #else
-char *langinfo_mon_thousands_sep() {
    return nl_langinfo( MON_THOUSANDS_SEP );
-}
 #endif
+}
 
 /**
  *  LANGINFO MON(etary) GROUPING
  *
  */
 
+char *langinfo_mon_grouping() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_mon_grouping() {
    return "\0";
-}
 #else
-char *langinfo_mon_grouping() {
    return nl_langinfo( MON_GROUPING );
-}
 #endif
+}
 
 /**
  *  LANGINFO (Alternate) ERA
@@ -818,15 +785,13 @@ char *langinfo_era() {
  *
  */
 
+char *langinfo_era_year() {
 #if defined(__APPLE__) || defined(__FreeBSD__)
-char *langinfo_era_year() {
    return undefined;
-}
 #else
-char *langinfo_era_year() {
    return nl_langinfo( ERA_YEAR );
-}
 #endif
+}
 
 
 /**
