@@ -225,7 +225,7 @@ redhat )
    if [ -z "$NO_MYSQL" ] ; then
       yum_install mariadb
       yum_install mariadb-server
-      yum_install mariadb-connector-c
+      yum_install mariadb-connector-c-devel
       yum_install mariadb-devel  # Older versions of Red Hat
    fi
    if [ -z "$NO_POSTGRES" ] ; then
@@ -238,6 +238,8 @@ redhat )
       yum_install SDL-devel
       yum_install SDL_image
       yum_install SDL_image-devel
+      yum_install mesa-libGL-devel
+      yum_install mesa-libGLU-devel
    fi
    if [ -z "$NO_MEMCACHED" ] ; then
       yum_install memcached

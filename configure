@@ -894,7 +894,7 @@ if [ -z "$TMP" ] ; then
       fi
    fi
    if [ -z "$SDLLIBS" ] ; then
-      echo "guessing at SDL configation (may be incorrect)... "
+      echo "guessing at SDL configuration (may be incorrect)... "
       # Cannot find SDL_config?  Use these defaults for makefile sed...
       if [ "$OS" = "FreeBSD" ] ; then
          SDLLIBS="-L/usr/local/lib -lSDL-1.1 -lSDL_image -lpthread"
@@ -902,6 +902,10 @@ if [ -z "$TMP" ] ; then
       elif [ "$OS" = "darwin" ] ; then
          SDLLIBS="/Library/Frameworks/SDL.framework/SDL /Library/Frameworks/SDL_image.framework/SDL_image"
          SDLINCL="-I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers"
+      elif [ -r "/usr/lib64/libSDL-1.2.so.0" ] ; then
+         # Red Hat 9
+         SDLLIBS="-L/usr/lib64/ -l:libSDL-1.2.so.0"
+         SDLINCL="-I/usr/local/include/SDL"
       else
          SDLLIBS="-L/usr/local/lib -lSDL -lSDL_image"
          SDLINCL="-I/usr/local/include/SDL"
@@ -1019,6 +1023,10 @@ if [ -z "$TMP" ] ; then
        SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
        echo "yes"
     fi
+ elif [ -r "/usr/lib64/libSDL_image-1.2.so.0" ] ; then
+      # Red Hat 9
+      SDLLIBSTYPE="$SDLLIBSTYPE""\ -l:libSDL_image-1.2.so.0\ "
+      echo "yes (Red Hat)"
  else
   SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
   echo "yes"
@@ -1082,7 +1090,7 @@ if [ -z "$NO_OPENGL" ] ; then
          MESALIBSTYPE=""
          MESAINCLTYPE=""
          echo "no"
-         echo "guessing at OpenGL configation (may be incorrect)... "
+         echo "guessing at OpenGL configuration (may be incorrect)... "
          MESALIBSTYPE="-lGLU\ -lGL\ \ "
          MESAINCLTYPE="-I\/usr\/include\/libdrm\ \ "
       else
@@ -1092,7 +1100,7 @@ if [ -z "$NO_OPENGL" ] ; then
    else
       echo "no"
       echo
-      echo "guessing at OpenGL configation (may be incorrect)... "
+      echo "guessing at OpenGL configuration (may be incorrect)... "
       if [ "$OS" = "darwin" ]; then
           MESALIBSTYPE="-Wl,-framework,OpenGL"
           MESAINCLTYPE=""
@@ -1626,6 +1634,11 @@ else
    # libraries for the PostgreSQL server, not libpg.  So it reports more
    # libraries than we need.  Strip out any libraries we don't need.
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lxslt//g;s/\ \-lxml2//g;s/\ \-lkrb5//g;s/\ \-lgssapi_krb5//g;s/\ \-lcom_err//g;s/\ \-lcrypto//g;s/\ \-lcrypt//g'`
+   # On Red Hat 9, PostgreSQL has no libpgcommon for some reason
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libpgcommon`
+   if [ -z "$TMP" ] ; then
+      PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpgcommon//g'`
+   fi
    # On Raspberry Pi, I confirmed pam and edit weren't necessary to link
    PGLIBSSUB=`echo "$PGLIBSSUB" | sed 's/\ \-lpam//g;s/\ \-ledit//g;s/\ \-lpgport//g;s/\ \-lreadline//g;s/\ \-llz4//g'`
    # On Raspberry Pi 4, libpgcommon isn't in the path

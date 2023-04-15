@@ -5552,7 +5552,7 @@ procedure loadIncludeFile( includeName : unbounded_string; fileLocation : out So
 
   function load_include_file( include_file : file_type; path : string ) return unbounded_string is
   begin
-    if trace or verboseOpt = true then
+    if trace or (verboseOpt = true) then
        put_trace( "Including " & toSecureData( to_string( toEscaped( to_unbounded_string( path ) ) ) ) );
     end if;
     while not end_of_file( include_file ) loop
@@ -5567,7 +5567,7 @@ begin
   fileLocation := find_include_file( includeName );
 
   if fileLocation /= 0 then                                -- already incl.?
-     if trace or verboseOpt = true then
+     if trace or (verboseOpt = true) then
         put_trace( "file already included" );              -- note it
      end if;
   elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
