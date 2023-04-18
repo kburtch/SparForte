@@ -101,8 +101,10 @@ fi
 
 yum_install () {
   if [ -n "$HAS_SUDO" ] ; then
+     echo $@
      sudo -u root dnf install -q -y $@
   else
+     echo $@
      dnf install -q -y $@
   fi
 }
@@ -129,12 +131,16 @@ zypper_install () {
 
 # CentOS/Red hat
 
-RHVERSION7=""
+RHVERSION=""
 if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
    TMP=`fgrep "7." "/etc/redhat-release"`
    if [ -z "$TMP" ] ; then
-      RHVERSION7="7"
+      RHVERSION="7"
+   fi
+   TMP=`fgrep "9." "/etc/redhat-release"`
+   if [ -z "$TMP" ] ; then
+      RHVERSION="9"
    fi
 fi
 
@@ -192,14 +198,14 @@ redhat )
    if [ $? -eq 1 ] ; then
       set -e
       if [ -n "$HAS_SUDO" ] ; then
-         if [ -z "$RHVERSION7" ] ; then
+         if [ "$RHVERSION" != "7" ] ; then
             sudo dnf config-manager --set-enabled
 	    sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 	 else
             sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-latest-7.noarch.rpm
 	 fi
       else
-         if [ -z "$RHVERSION7" ] ; then
+         if [ "$RHVERSION" != "7" ] ; then
             dnf config-manager --set-enabled
 	    dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
 	 else
@@ -225,8 +231,16 @@ redhat )
    if [ -z "$NO_MYSQL" ] ; then
       yum_install mariadb
       yum_install mariadb-server
-      yum_install mariadb-connector-c-devel
-      yum_install mariadb-devel  # Older versions of Red Hat
+      # Unfortunately, dnf doesn't return an error status for something not
+      # found
+      TMP=`dnf search mariadb-connector-c-devel 2>&1 | fgrep "No match"`
+      if [ -z "$TMP" ] ; then
+	 # Newer versions of Red Hat
+         yum_install mariadb-connector-c-devel
+      else
+	 # Older versions of Red Hat
+         yum_install mariadb-devel
+      fi
    fi
    if [ -z "$NO_POSTGRES" ] ; then
       yum_install postgresql
@@ -234,9 +248,17 @@ redhat )
       yum_install postgresql-server
    fi
    if [ -z "$NO_SDL" ] ; then
+      if [ "$RHVERSION" != "9" ] ; then
+	 echo "Please provision using --without-sdl.  SDL1.2 is not included "
+	 echo "with Red Hat 9"
+	 exit 1
+      fi
       yum_install SDL
+      # Does not exist with Red Hat 9 but is also included with SDL
       yum_install SDL-devel
       yum_install SDL_image
+      # On Red Hat 9, this will error because SDL-devel does not exist
+      # SparForte will still build but not SDL will not work.
       yum_install SDL_image-devel
       yum_install mesa-libGL-devel
       yum_install mesa-libGLU-devel

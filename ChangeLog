@@ -67,7 +67,7 @@ instead of using long_float's.
 
 31. New: Bourne shell expansions: ${X||} for absolute value, ${X|} for rounded value, ${X|^} for ceiling value, ${X|,} for floor value.
 
-23. New: provision.sh updates for Red Hat Linux 9.
+23. New: provision.sh updates for Red Hat Linux 9, but SDL 1.2 is not fully included and it must be built --without-sdl.
 
 24. Changes: l10n changed to support Red Hat Linux 9 which disables GNU extensions.
 
