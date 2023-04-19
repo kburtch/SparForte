@@ -3,7 +3,7 @@
 # $ docker build -t sparforte_ubuntu .
 # $ docker run sparforte_ubuntu
 
-FROM ubuntu:22.04
+FROM ubuntu:kinetic
 
 # Update the installer repositories
 
