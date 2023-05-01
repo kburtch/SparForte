@@ -468,6 +468,11 @@ void sigterm_handler( int sig ) {
 }
 
 int C_install_sigterm_handler( int *flag_address ) {
+#if defined(__FreeBSD__)
+// On FreeBSD, this is giving me an invalid parameter.  Do not
+// know why.  We'll ignore the SIGTERM handler.
+  return 1;
+#else
   static unsigned int handler_installed = 0;
   sigset_t signalmask;
   struct sigaction old_sigterm;
@@ -480,10 +485,12 @@ int C_install_sigterm_handler( int *flag_address ) {
   sa.sa_mask    = signalmask;                    // mask all signals
   sa.sa_flags   |= SA_RESTART;                   // trap zombie children
 	                                             // SA_RESTART => no EINTR (Bash 4)
+
   res = sigaction( SIGTERM, &sa, &old_sigterm ); // setup signal trap
   if ( res == 0 )                                // OK?
      handler_installed = 1;                      // mark as installed
   return handler_installed;
+#endif
 }
 
 // SIGCHILD

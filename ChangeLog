@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Bug fixes following 2.5 and reducing technical debt.  Foundations of AI and data security.
+Objective: Shell modernization and reducing technical debt.
 
 CHANGES SINCE 2.5
 
@@ -46,8 +46,7 @@ CHANGES SINCE 2.5
 
 21. New: configure --jobs option.
 
-22. Refactor: standardized numeric values in the language to a dedicated type
-instead of using long_float's.
+22. Refactor: standardized numeric values in the language to a dedicated type instead of using long_float's.
 
 23. Fix: directories with spaces now tab complete correctly.
 
@@ -67,7 +66,7 @@ instead of using long_float's.
 
 31. New: Bourne shell expansions: ${X||} for absolute value, ${X|} for rounded value, ${X|^} for ceiling value, ${X|,} for floor value.
 
-23. New: provision.sh updates for Red Hat Linux 9, but SDL 1.2 is not fully included and it must be built --without-sdl.
+32. New: provision.sh updates for Red Hat Linux 9, but SDL 1.2 is not fully included and it must be built --without-sdl.
 
-24. Changes: l10n changed to support Red Hat Linux 9 which disables GNU extensions.
+33. Change: l10n changed to support Red Hat Linux 9 which disables GNU extensions.
 
