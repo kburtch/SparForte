@@ -408,6 +408,10 @@ elif [ "$ARCH" = "armv7l" ] ; then
    # v6.
    CPU_ARCH="armv6"
    ARCH="armv6"
+elif [ "$ARCH" = "aarch64" ] ; then
+   # Recent Rasp Pi 4
+   CPU_ARCH="armv6"
+   ARCH="armv6"
 else
    CPU_ARCH="$ARCH"
 fi
