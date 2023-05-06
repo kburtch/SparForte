@@ -1746,7 +1746,7 @@ procedure getLine( line : out unbounded_string; prompt : unbounded_string := nul
             listCount := listCount + 1;
             isListing := listCount /= 10; -- no more than 10
             if not isListing then
-               put_line( optional_bold( "[Maybe More]" ) );
+               put_line( bold( "[Maybe More]" ) );
             end if;
          end if;
          if count = 1 then
