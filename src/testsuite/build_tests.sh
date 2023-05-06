@@ -165,7 +165,7 @@ fi
 # ---------------------------------------------------------------------------
 
 make distclean
-./configure -jobs=1 --without-l10n
+./configure --jobs=1 --without-l10n
 make all
 if [ $? -ne 0 ] ; then
    echo "without-pcre failed"
