@@ -107,7 +107,7 @@ begin
          err( +"exception when opening sound file " & em( path ) );
      end;
 #else
-      err( "sound support not installed" );
+      err( +"sound support not installed" );
 #end if;
   end if;
 end ParsePlay;
@@ -140,7 +140,7 @@ begin
 #if SOUND
      StopCD;
 #else
-      +err( "sound support not installed" );
+      err( +"sound support not installed" );
 #end if;
   end if;
 end ParseStopCD;
