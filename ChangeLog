@@ -1,72 +1,11 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Shell modernization and reducing technical debt.
+Objective: TBD
 
-CHANGES SINCE 2.5
+CHANGES SINCE 2.6
 
-1. New: --session option to store history and local profiles under alternate names.
+1. Fix: --without-sound now builds successfully.
 
-2. New: System.Session_Name to read the name from --session.
+2. Fix: --without-readline now builds successfully.
 
-3. New: pragma prompt_idle_script and prompt_idle_speed.
-
-4. New: New examples rock.sp, user_input.sp, primes_asc.sp.
-
-5. New: case in is now case procedure.
-
-6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
-
-7. Fix: non-limited volatiles, which cannot be used in expressions, no longer have an error for not being declared limited.
-
-8. Fix: usable parameters in null subprograms no longer report an error if they are not used or are not referenced.
-
-9. Refactor: end-of-line CR/LF definitions are now in the os_binding files.
-
-10. Fix: --gcc-errors no longer hides error messages at an interactive prompt.
-
-11. Fix: with APQ, Makeincl no longer aborts a make clean because this generated file was removed in a previous make clean.
-
-12. Refactor: error reporting functions have been redesigned for better security and support for European characters.  Also, highlighted keywords in source lines in error messages.
-
-13. Fix: libc group_member() missing from some Ubuntu Linux where __USE_GNU is not set.  Occurred on a recent Ubuntu update.  Added workaround based on BSD hack.
-
-14. Fix: if an error occurs while parsing a pragma template, do not enable templates and get an internal error when rendering the HTTP header.
-
-15. Fix: template error messages are now consistently written to standard error as a single line for logging purposes.
-
-16. New: basic TOML/INI template support.
-
-17. New: error messages include the percentage of distance through the script where the error occurred.
-
-18. Fix: extended ASCII characters render correctly in log package messages.
-
-19. Change: normal errors (not GCC format) show the line before the error line as well as the error line, for more context.
-
-20. Change: replaced "let" commands in shell scripts with $((..)) to make them compatible with feature-poor dash shell.
-
-21. New: configure --jobs option.
-
-22. Refactor: standardized numeric values in the language to a dedicated type instead of using long_float's.
-
-23. Fix: directories with spaces now tab complete correctly.
-
-24. Fix: type errors are now caught again in templates.
-
-25. Fix: built-in functions with out parameters no longer require the out variable to be declared first.
-
-26. New: pragma restriction( no_prompt_history ) to disable saving interactive prompt history when SparForte is shutting down.
-
-27. Change: the SIGQUIT signal is now ignored, as in the BASH shell.
-
-28. Change: the SIGTERM signal is handled for interfactive sessions, as in the BASH shell.
-
-29. Change: the provision script supports "without" options.  A full install of all software dependencies is no longer required.
-
-30. Change: replaced some text_io functions within the language to deal with interrupted system calls based device_error exceptions.
-
-31. New: Bourne shell expansions: ${X||} for absolute value, ${X|} for rounded value, ${X|^} for ceiling value, ${X|,} for floor value.
-
-32. New: provision.sh updates for Red Hat Linux 9, but SDL 1.2 is not fully included and it must be built --without-sdl.
-
-33. Change: l10n changed to support Red Hat Linux 9 which disables GNU extensions.
 

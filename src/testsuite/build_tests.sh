@@ -109,6 +109,7 @@ make distclean
 make all
 if [ $? -ne 0 ] ; then
    echo "without-readline failed"
+   exit 192
 fi
 # TODO: readline not checked by running spar.  an easy way??
 
@@ -120,6 +121,7 @@ make distclean
 make all
 if [ $? -ne 0 ] ; then
    echo "without-sound failed"
+   exit 192
 fi
 # TODO: sound not checked by running spar.
 
@@ -131,6 +133,7 @@ make distclean
 make all
 if [ $? -ne 0 ] ; then
    echo "without-opengl failed"
+   exit 192
 fi
 # TODO: opengl not checked by running spar.
 
@@ -142,6 +145,7 @@ make distclean
 make all
 if [ $? -ne 0 ] ; then
    echo "without-sdl failed"
+   exit 192
 fi
 # TODO: pcre not checked by running spar.
 
@@ -153,6 +157,7 @@ make distclean
 make all
 if [ $? -ne 0 ] ; then
    echo "without-pcre failed"
+   exit 192
 fi
 # TODO: pcre not checked by running spar.
 
@@ -164,6 +169,7 @@ make distclean
 make all
 if [ $? -ne 0 ] ; then
    echo "without-pcre failed"
+   exit 192
 fi
 # TODO: pcre not checked by running spar.
 

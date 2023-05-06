@@ -1,125 +1,72 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Bug fixes following 2.4 and reducing technical debt.
+Objective: Shell modernization and reducing technical debt.
 
-CHANGES SINCE 2.4
+CHANGES SINCE 2.5
 
-1. New: doubly_linked_lists.parcel.
+1. New: --session option to store history and local profiles under alternate names.
 
-2. Fix: fixed "positive value is less than zero" error for a zero.
+2. New: System.Session_Name to read the name from --session.
 
-3. New: renaming a generic type.
+3. New: pragma prompt_idle_script and prompt_idle_speed.
 
-4. Fix: missing filename at end-of-line for >, 2>, < no longer produce an exception.
+4. New: New examples rock.sp, user_input.sp, primes_asc.sp.
 
-5. Change: forgetting a "when" in a case statement with strings, which looks
-like a shell command, is now an error, detected by the presence of the big arrow
-(=>).
+5. New: case in is now case procedure.
 
-6. Fix: out mode formal parameters that are not written to will have a
-"declared but not written to" error.
+6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
 
-7. Fix: . and .. directories ignored on file completions ending with a /.
+7. Fix: non-limited volatiles, which cannot be used in expressions, no longer have an error for not being declared limited.
 
-8. New: strings.to_hexadecimal_digits
+8. Fix: usable parameters in null subprograms no longer report an error if they are not used or are not referenced.
 
-9. Fix: added policy and configuration to built-in help.
+9. Refactor: end-of-line CR/LF definitions are now in the os_binding files.
 
-10. Fix: strings package csv_field, csv_replace, field, is_slashed_date, is_typo_of, mktemp, split, to_base64, to_escaped, to_hexadecimal_digits, to_json are now not allowed with pragma ada_95.  I don't remember if there was a reason there were allowed previously.
+10. Fix: --gcc-errors no longer hides error messages at an interactive prompt.
 
-11. Fix: structured scripts no longer auto-declare variables.  unstructured scripts will still auto-declare variables.
+11. Fix: with APQ, Makeincl no longer aborts a make clean because this generated file was removed in a previous make clean.
 
-12. New: tilde works with tab completions on files and commands..
+12. Refactor: error reporting functions have been redesigned for better security and support for European characters.  Also, highlighted keywords in source lines in error messages.
 
-13. Fix: tab completion of a single directory now works correctly.
+13. Fix: libc group_member() missing from some Ubuntu Linux where __USE_GNU is not set.  Occurred on a recent Ubuntu update.  Added workaround based on BSD hack.
 
-14. New: basic sudo tab completion handling.
+14. Fix: if an error occurs while parsing a pragma template, do not enable templates and get an internal error when rendering the HTTP header.
 
-15. Fix: tab completion of a command no longer adds "./" where there is none.
+15. Fix: template error messages are now consistently written to standard error as a single line for logging purposes.
 
-16. Change: homonymn checking no longer applies to unstructured scripts.
+16. New: basic TOML/INI template support.
 
-CHANGES SINCE 2.4.1
+17. New: error messages include the percentage of distance through the script where the error occurred.
 
-17. New: umask built-in command (not octal values).
+18. Fix: extended ASCII characters render correctly in log package messages.
 
-18. Fix: issue with the number "2" in shell words treated as a number fixed.
+19. Change: normal errors (not GCC format) show the line before the error line as well as the error line, for more context.
 
-19. Fix: "return" no longer produces an error with pragma annotate.
+20. Change: replaced "let" commands in shell scripts with $((..)) to make them compatible with feature-poor dash shell.
 
-20. Change: style issues no longer enforced for unstructured scripts.  Double-quoted shell word check no longer treated as a style issue.
+21. New: configure --jobs option.
 
-21. New: btree_io.recover, hash_io.recover.
+22. Refactor: standardized numeric values in the language to a dedicated type instead of using long_float's.
 
-22. New: pragma volatile can have a timeout duration in seconds.
+23. Fix: directories with spaces now tab complete correctly.
 
-23. New: opengl_third, opengl_fourth examples.
+24. Fix: type errors are now caught again in templates.
 
-24. New: strings.levenshtein, strings.soundex, strings.replace_all, strings.starts, strings.ends, strings.word_count, strings.compare, strings.index_set.
+25. Fix: built-in functions with out parameters no longer require the out variable to be declared first.
 
-25. Fix: to_hexadecimal_digits no longer allowed with pragma ada_95.
+26. New: pragma restriction( no_prompt_history ) to disable saving interactive prompt history when SparForte is shutting down.
 
-26. New: l10n package.
+27. Change: the SIGQUIT signal is now ignored, as in the BASH shell.
 
-27. New: hashed_maps package.
+28. Change: the SIGTERM signal is handled for interfactive sessions, as in the BASH shell.
 
-28. New: vectors package.
+29. Change: the provision script supports "without" options.  A full install of all software dependencies is no longer required.
 
-29. New: case in statement can have multiple test variables and return expressions.
+30. Change: replaced some text_io functions within the language to deal with interrupted system calls based device_error exceptions.
 
-30. New: case with multiple variables (like rust, python, and some other languages).
+31. New: Bourne shell expansions: ${X||} for absolute value, ${X|} for rounded value, ${X|^} for ceiling value, ${X|,} for floor value.
 
-31. New: box <> allowed in case when conditions.
+32. New: provision.sh updates for Red Hat Linux 9, but SDL 1.2 is not fully included and it must be built --without-sdl.
 
-32. New: demonstration examples contracts, design_examples, scheduler, side_effects.
-
-33. Fix: parent contracts which raise an exception now propogate the exception.
-
-34. Change: Improved some error messages for context and ease of understanding.
-
-35. Fix: restored a unreachable code by raise test that was removed when raise..when was added.
-
-36. Fix: [Blady] various OS/X changes.
-
-37. Fix: [Zhu] Slackware / GCC 11 fix.
-
-38. New: Support for Raspian / Debian 11.1 (Bullseye) on Raspberry Pi.
-
-39. New: Support for YAML substitutions.
-
-40. Change: [Beader] identifiers must differ by more than underscores in formal scripts.
-
-41. Change: Changes to configure and provision scripts to support building in Ubuntu Docker container.  Changes not yet made for other O/S.  Example Dockerfile included with source code.
-
-42. Fix: use of constant on record fields vs variable fixed.  Fixed subsequent issues with affirm clauses.  Fixed impacted example programs.
-
-43. Fix: test cases in pragma test are now syntax checked.
-
-44. Fix: written variable test for out parameters only applies if the variable is not auto-declared.
-
-45: New: ${X^^}, ${X^}, ${X,,} for uppercase, lowercase, proper case.
-
-46: Change: default for makefile is to build with 4 threads.
-
-47: Fix: doubly linked lists parameters should work correctly.
-
-48: Fix: recursion no longer confused by new parameters being created in some circumstances.
-
-49: New: more examples: luhn.sp, hanoi.sp, ipv4.sp.
-
-50: New: -q / --quiet for brief error messages.  The default is detailed error messages.
-
-51: Fix: function return values expressions now type checked and type casted where necessary.
-
-52. Fix: certain user functions not allowing return values fixed.
-
-53. Fix: contract failures in subprogram parameters no longer hidden or raised later.
-
-54: New: new logs procedures for simple metrics: logs.metrics, logs.checkpoint
-
-55: Fix: a blank line at the start of a with separate file no longer raises an exception.
-
-56: Fix: provision.sh script updated and fixed for SuSE Linux.
-
-57: Change: Updates for FreeBSD 13.  Build successful without BDB support (FreeBSD BDB is very old).  Tests not passing, perhaps GCC Ada is too old on FreeBSD.
+33. Change: l10n changed to support Red Hat Linux 9 which disables GNU extensions.
 
