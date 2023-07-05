@@ -2270,6 +2270,159 @@ end ParseAffirmClause;
 
 
 -----------------------------------------------------------------------------
+--  PARSE CASE AFFIRM BLOCK
+--
+-- Handle an contract affirm block.  Parse Case Affirm Clause handles the
+-- setup for this procedure.
+-- Syntax: case affirm ... begin ... end affirm;
+-----------------------------------------------------------------------------
+
+procedure ParseCaseAffirmBlock is
+   case_id : identifier;
+begin
+   -- Verify context
+   expect( case_t );
+   expect( affirm_t );
+
+  -- this will have an error during compilation.
+  -- Case #1: case procedure when ... =>    ;
+
+   if token /= when_t then                                 -- first when missing?
+      expect( when_t );                                    -- force error
+   end if;
+
+   while token = when_t loop
+      expect( when_t );
+      if token = symbol_t and identifiers( token ).value.all = "=>" then
+         err(                                                 -- "=>"
+            contextNotes => +"in the case when part",
+            subjectNotes => pl( qp( "the when conditions" ) ),
+            reason => +"are",
+            obstructorNotes => +"missing"
+         );
+      end if;
+   exit when token = others_t;
+      ParseIdentifier( case_id );
+      if identifiers( case_id ).class /= typeClass and
+         identifiers( case_id ).class /= subClass then
+         -- TODO: fix me for proper format
+         err(                                                 -- "=>"
+            contextNotes => +"in the case affirm when part",
+            subjectNotes => pl( qp( "the when conditions" ) ),
+            reason => +"should be",
+            obstructorNotes => +"a type or subtype"
+         );
+      else
+         while token = symbol_t and identifiers( token ).value.all = "|" loop
+            expect( symbol_t, "|" );
+            ParseIdentifier( case_id );
+            if identifiers( case_id ).class /= typeClass and
+               identifiers( case_id ).class /= subClass then
+               -- TODO: fix me for proper format
+               err(                                                 -- "=>"
+                  contextNotes => +"in the case affirm when part",
+                  subjectNotes => pl( qp( "the when conditions" ) ),
+                  reason => +"should be",
+                  obstructorNotes => +"a type or subtype"
+               );
+            end if;
+            -- exit when error_found or token = others_t;
+            exit when error_found;
+         end loop;
+      end if;
+
+      if token /= symbol_t or identifiers( token ).value.all /= "=>" then
+         err(                                                 -- "=>"
+            contextNotes => +"in case affirm when part",
+            subjectNotes => pl( qp( "the list of input values" ) ),
+            reason => +"should end with a '=>' but found a",
+            obstructor => token
+         );
+      else
+         getNextToken; -- expectSymbol( "=>" );
+      end if;
+      ParseBlock( when_t );
+   end loop;
+
+   -- others part
+
+   if token /= others_t then                                -- a little clearer
+      err(
+         contextNotes => +"in the case procedure",
+         subjectNotes => pl( qp( "when others" ) ),
+         reason => +"is",
+         obstructorNotes => +"missing"
+      );                        -- if pointing at
+   end if;                                                  -- end case
+   expect( others_t );                                      -- "others"
+   if token /= symbol_t or identifiers( token ).value.all /= "=>" then
+      err(                                                 -- "=>"
+         contextNotes => +"in case affirm when part",
+         subjectNotes => pl( qp( "the list of input values" ) ),
+         reason => +"should end with a '=>' but found a",
+         obstructor => token
+      );
+   else
+      getNextToken; -- expectSymbol( "=>" );
+   end if;
+   ParseBlock;
+   expect( end_t );
+   expect( affirm_t );
+end ParseCaseAffirmBlock;
+
+
+-----------------------------------------------------------------------------
+--  PARSE CASE AFFIRM CLAUSE
+--
+-- Setup an case affirm block.  This happens at compile-time.  Create a new block
+-- scope, declare the identifier representing the value, parse the affirm,
+-- save the byte code into the data type's contract field.
+-- To execute a contract, we cannot use a function since we cannot
+-- define one without knowing the data type of type_value.
+-- TODO: handle backquoted affirm clause
+-----------------------------------------------------------------------------
+
+procedure ParseCaseAffirmClause( newtype_id : identifier ) is
+   type_value_id : identifier;
+   blockStart    : natural;
+   blockEnd      : natural;
+   old_syntax_check : constant boolean := syntax_check;
+   oldRshOpt : constant commandLineOption := rshOpt;
+begin
+   -- declare type_value
+   if onlyAda95 then
+      err( +"affirm clauses are not allowed with " & em( "pragma ada_95" ) );
+   else
+      pushBlock(
+        newScope => true,
+        newName => case_affirm_clause_str,
+        newFlow => identifiers( newtype_id ).name & " affirm"
+      );
+      declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
+      -- The type variable may or may not be written to and we don't want
+      -- a warning that it should be limited, constant, etc.
+      identifiers( type_value_id ).wasReferenced := true;
+      identifiers( type_value_id ).wasWritten := true;
+      -- for now, treat as a restricted shell to reduce the risk of side-effects.
+      rshOpt := true;
+
+      blockStart := firstPos;
+      syntax_check := true;
+      ParseCaseAffirmBlock;
+
+      rshOpt := oldRshOpt;
+      syntax_check := old_syntax_check;
+      blockEnd := lastPos+1; -- include EOL ASCII.NUL
+      if not syntax_check then
+         -- TODO: copyByteCodeLines to be fixed
+         identifiers( newtype_id ).contract := to_unbounded_string( copyByteCodeLines( blockStart, blockEnd ) );
+      end if;
+      pullBlock;
+   end if;
+end ParseCaseAffirmClause;
+
+
+-----------------------------------------------------------------------------
 --  PARSE TYPE
 --
 -- Handle a user-defined type declaration.
@@ -2494,7 +2647,9 @@ begin
 
      -- Programming-by-contract (affirm clause)
 
-     if token = affirm_t then
+     if token = case_t then
+        ParseCaseAffirmClause( newtype_id );
+     elsif token = affirm_t then
         ParseAffirmClause( newtype_id );
      elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
         err( +"affirm or ';' expected" );
@@ -2592,7 +2747,9 @@ begin
       end if;
 
       -- Programming-by-contract (affirm clause)
-      if token = affirm_t then
+      if token = case_t then
+         ParseCaseAffirmClause( newtype_id );
+      elsif token = affirm_t then
          ParseAffirmClause( newtype_id );
       elsif token /= symbol_t and identifiers( token ).value.all /= ";" then
          err( +"affirm or ';' expected" );

@@ -21,6 +21,13 @@ Priority Issues (Fix These First)
     top level, had lost the message.  This occurred in the washed_blocked
     script.  It may be difficult to reproduce and determine the cause.
 
+- case affirm
+  - in an affirm clause, x := x + 1 type statement where x is a type may
+    need wasReferenced to be true before hand.  Check this.  Uncovered
+    this working on Case Affirm.
+  - base types ok use
+  - syntax ok but execution needs to be written
+  - tests needed
 - pascal's concerns over locate in configure
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
