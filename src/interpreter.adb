@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2022 Free Software Foundation              --
+--            Copyright (C) 2001-2023 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -1188,7 +1188,10 @@ end checkAndInterpretScript;
 
 procedure interpret is
 begin
+put_line("A");
   if optionOffset = 0 then                       -- no arguments or '-'?
+put_line("B");
+
      if isLoginShell or boolean(profileOpt) then -- login shell? find profile
         doGlobalProfile;                         -- or --profile option
         if not error_found then

@@ -21,6 +21,11 @@ Priority Issues (Fix These First)
     top level, had lost the message.  This occurred in the washed_blocked
     script.  It may be difficult to reproduce and determine the cause.
 
+- while testing the command line, type x is new integer; y : x; y := "foo"
+  worked but should have reported an error.
+- with a space change, a simple prompt script reported a statement
+  expected error.  Check this on the ending token.
+  pragma prompt_script( `put("=>");` );
 - pascal's concerns over locate in configure
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
@@ -667,43 +672,57 @@ New Unique Concepts
       one updating these rules.
     - object-oriented rules (having data attached to rules)
     - the executable part of the when should not allow if or case statements
+    - each relation starts a recursive search
     - investigate: SQL is very similar to rules pattern matching.  Can this be leveraged
       as SparForte understands SQL?
+    - reach relation requires
+      - guard conditions (dependencies needed for a relation)
+      - weights
+      - state data
+      - timeout?
+      - the scheduler must pattern match appropriate rules in the agenda,
+        the table of valid relations that can be considered next
+      - is it more like a grammar (flat) or prolog (recursion)?
+    - other issues
+      - how does the boolean shortcut become a fact?
+      - how do relations function in a restricted shell
+      - what is the rule conflict detection and resolution strategy
     - examples:
-In its simplest form, we need a block for business
-users to enter options.  We would like to limit what
-is visible to the business user.
 
-options business_settings(i, j, k : integer) is
+      In its simplest form, we need a block for business
+      users to enter options.  We would like to limit what
+      is visible to the business user.
 
-  tax_rate : constant float := 13.5;
+      options business_settings(i, j, k : integer) is
 
-end business_settings;
+        tax_rate : constant float := 13.5;
 
-An options block may only contain constants.
+      end business_settings;
 
-The main purpose, though, is to provide a place to
-hold business rules.
+      An options block may only contain constants.
 
-relation Male(X) return boolean is
-  -- a relation is essentially a list of case/when
-begin
-  when X = ken => 
-     return true;
-  when others =>
-     return false;
-end Male;
+      The main purpose, though, is to provide a place to
+      hold business rules.
 
-relation Male(X) return true when X = ken;
--- maybe one liners
+      relation Male(X) return boolean is
+        -- a relation is essentially a list of case/when
+      begin
+        when X = ken =>
+           return true;
+        when others =>
+           return false;
+      end Male;
 
-relation Love(X,Y) return boolean is
-  when others =>
-     return Male(X) and not Male(Y);
-end Love;
+      relation Male(X) return true when X = ken;
+      -- maybe one liners
 
-Relations require namespacing or all relations will
-fire.
+      relation Love(X,Y) return boolean is
+        when others =>
+           return Male(X) and not Male(Y);
+      end Love;
+
+      Relations require namespacing or all relations will
+      fire.
 
 
 -------------------------------------------------------------------------------
