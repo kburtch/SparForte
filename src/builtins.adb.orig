@@ -38,6 +38,7 @@ with ada.text_io,
      world.utf8,
      scanner.communications,
      jobs,
+     parser_aux,
      parser_db,
      parser_mysql;
 use  ada.text_io,
@@ -58,6 +59,7 @@ use  ada.text_io,
      world.utf8,
      scanner,
      scanner.communications,
+     parser_aux,
      parser_db,
      parser_mysql;
 
@@ -80,8 +82,14 @@ begin
   C_reset_errno;
   getcwd( buffer, buffer'length );
   if C_errno /= 0 then
-     err( pl( "findPwd: error getting current working directory, errno "
-       & C_errno'img ) );
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+            " while finding the current working directory" ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because syscall getcwd() returned",
+         obstructorNotes => getEmOSError,
+         remedy => +"the directory no longer exists or has become inaccessible"
+     );
      current_working_directory := null_unbounded_string;
   end if;
   current_working_directory := to_unbounded_string(
@@ -140,6 +148,7 @@ end old_pwd;
 -----------------------------------------------------------------------------
 
 procedure old_cd( s : unbounded_string ) is
+  obstructorStr : unbounded_string;
   pwd, oldpwd : identifier;
   path : unbounded_string := s;
   showPath : boolean := false;
@@ -181,7 +190,22 @@ begin
         identifiers( pwd ).value.all := current_working_directory;
      end if;
   else
-     err( pl( "cannot access " ) & em_value( path ) );
+     -- better messages for common cd use cases
+     if c_errno = ENOENT then
+        obstructorStr := to_unbounded_string( "the directory does not exist" );
+     elsif c_errno = ENOTDIR then
+        obstructorStr := to_unbounded_string( "it is not a directory" );
+     elsif c_errno = EACCES or c_errno = EFAULT then
+        obstructorStr := to_unbounded_string( "it is not accessible" );
+     else
+        obstructorStr := to_unbounded_string( "syscall chdir returned " & OSerror( c_errno ) );
+     end if;
+     err(
+         contextNotes => pl( "in " )  & unb_pl( current_working_directory ),
+         subjectNotes => em_value( path ),
+         reason => +"could not be selected because",
+         obstructorNotes => unb_em( obstructorStr )
+     );
   end if;
   if showPath then
      put_line_retry( current_working_directory );
@@ -201,12 +225,24 @@ procedure alter( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( +"one argument expected" );
+     err(
+         contextNotes => contextInSQL,
+         subjectNotes => em( "alter" ),
+         reason => +"expects arguments but",
+         obstructorNotes => em( "there are no arguments" ),
+         seeAlso => +"doc/ref_db.html"
+     );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( +"no database connection open" );
+         err(
+             contextNotes => contextInSQL,
+             subjectNotes => em( "alter" ),
+             reason => +"needs a database connection but",
+             obstructorNotes => em( "no connection is open" ),
+             remedy => +"open a connection with the mysql or db package"
+         );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "alter " & tempStr );
@@ -220,7 +256,13 @@ begin
         err( +"mysql support not configured" );
 #end if;
      else
-        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " in the SQL statement" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it did not expect",
+            obstructorNotes => pl( "database engine " & currentEngine'img )
+        );
      end if;
   end if;
 end alter;
@@ -237,7 +279,14 @@ procedure clear( ap : argumentListPtr ) is
   term_id : identifier;
 begin
   if ap'length /= 0 then
-     err( +"zero argument expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "clear" ),
+         reason => +"expects no arguments but",
+         -- the problem here is is/are for 1+ arguments if the length is used
+         obstructorNotes => em( "there are arguments" ),
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif isExecutingCommand then
      findIdent( to_unbounded_string( "TERM" ), term_id );
      terminalClear( identifiers( term_id ).value.all );
@@ -258,10 +307,16 @@ procedure umask( ap : argumentListPtr ) is
   oldMask  : mode_t;
   discard  : mode_t;
 begin
-  if rshOpt then
-     err( +"umask is not allowed in a " & em( "restricted shell" ) );
-  elsif ap'length > 1 then
-     err( +"zero or one argument expected" );
+  expectNonRestrictedShell( "umask" );
+  if ap'length > 1 then
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "umask" ),
+         reason => +"expects zero or one arguments but",
+         obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
+         remedy => +"read the summary of umask with in help command",
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif ap'length = 0 then
      if isExecutingCommand then
         -- umask never fails
@@ -279,12 +334,25 @@ begin
         -- At least in Linux,the umask can only be the file
         -- permission bits (0777 = 511).
         if newMask > 511 then
-           err( +"value should be in range 0..511" );
+           err(
+               contextNotes => +"in the " & em( "umask" ) & pl( " command" ),
+               subjectNotes => +"the decimal " & em( "mask value " ) &
+                  em_value( tempStr ),
+               reason => +"is not in the range of",
+               obstructorNotes => em( "0..511" )
+           );
+           -- err( +"value should be in range 0..511" );
         else
            -- umask never fails
            discard := spar_os.umask( newMask );
         end if;
      exception when constraint_error =>
+           err(
+               contextNotes => +"in the " & em( "umask" ) & pl( " command" ),
+               subjectNotes => +"the decimal " & em( "mask value" ),
+               reason => +"was expected to be numeric but is",
+               obstructorNotes => em_value( tempStr )
+           );
         err( pl( toSecureData( to_string( tempstr ) ) & " is not numeric" ) );
      when others =>
         err_exception_raised;
@@ -304,12 +372,24 @@ procedure delete( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( +"one argument expected" );
+     err(
+         contextNotes => contextInSQL,
+         subjectNotes => em( "delete" ),
+         reason => +"expects arguments but",
+         obstructorNotes => em( "there are no arguments" ),
+         seeAlso => +"doc/ref_db.html"
+     );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( +"no database connection open" );
+         err(
+             contextNotes => contextInSQL,
+             subjectNotes => em( "delete" ),
+             reason => +"needs a database connection but",
+             obstructorNotes => em( "no connection is open" ),
+             remedy => +"open a connection with the mysql or db package"
+         );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "delete " & tempStr );
@@ -323,7 +403,13 @@ begin
         err( +"mysql support not configured" );
 #end if;
      else
-        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while " ) & contextInSQL,
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it did not expect",
+            obstructorNotes => pl( "database engine " & currentEngine'img )
+        );
      end if;
   end if;
 end delete;
@@ -346,7 +432,14 @@ begin
   if ap'length = 0 then
      null;
   elsif ap'length /= 1 then
-     err( +"zero or one argument expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "history" ),
+         reason => +"expects zero or one arguments but",
+         obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
+         remedy => +"read the summary of history in the help command",
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
      return;
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
@@ -421,12 +514,24 @@ procedure insert( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( +"one argument expected" );
+     err(
+         contextNotes => contextInSQL,
+         subjectNotes => em( "insert" ),
+         reason => +"expects arguments but",
+         obstructorNotes => em( "there are no arguments" ),
+         seeAlso => +"doc/ref_db.html"
+     );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( +"no database connection open" );
+         err(
+             contextNotes => contextInSQL,
+             subjectNotes => em( "insert" ),
+             reason => +"needs a database connection but",
+             obstructorNotes => em( "no connection is open" ),
+             remedy => +"open a connection with the mysql or db package"
+         );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "insert " & tempStr );
@@ -440,7 +545,13 @@ begin
         err( +"mysql support not configured" );
 #end if;
      else
-        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while " ) & contextInSQL,
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it did not expect",
+            obstructorNotes => pl( "database engine " & currentEngine'img )
+        );
      end if;
   end if;
 end insert;
@@ -456,10 +567,16 @@ end insert;
 procedure cd( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
-  if rshOpt then
-     err( +"cd is not allowed in a " & em( "restricted shell" ) );
-  elsif ap'length /= 1 then
-     err( +"one argument expected" );
+  expectNonRestrictedShell( "cd -|dirname" );
+  if ap'length /= 1 then
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "cd" ),
+         reason => +"expects one arguments but",
+         obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
+         remedy => +"read the summary of trace in the help command",
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
@@ -479,7 +596,14 @@ procedure jobs( ap : argumentListPtr ) is
 -- jobs: list running jobs
 begin
   if ap'length /= 0 then
-     err( +"no arguments expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "jobs" ),
+         reason => +"expects no arguments but",
+         -- the problem here is is/are for 1+ arguments if the length is used
+         obstructorNotes => em( "there are arguments" ),
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif isExecutingCommand then
      putJobList;
   end if;
@@ -497,7 +621,14 @@ procedure pwd( ap : argumentListPtr ) is
 -- pwd: present working directory (also updated current_working_directory)
 begin
   if ap'length /= 0 then
-     err( +"no arguments expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "pwd" ),
+         reason => +"expects no arguments but",
+         -- the problem here is is/are for 1+ arguments if the length is used
+         obstructorNotes => em( "there are arguments" ),
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif isExecutingCommand then
      put_line_retry( old_pwd );
   end if;
@@ -519,12 +650,24 @@ begin
    -- put_line( "param = " & ap( 1 ).all );
 -- end if;
   if ap'length /= 1 then
-     err( +"one argument expected" );
+     err(
+         contextNotes => +"in the SQL statement",
+         subjectNotes => em( "select" ),
+         reason => +"expects arguments but",
+         obstructorNotes => em( "there are no arguments" ),
+         seeAlso => +"doc/ref_db.html"
+     );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( +"no database connection open" );
+         err(
+             contextNotes => contextInSQL,
+             subjectNotes => em( "select" ),
+             reason => +"needs a database connection but",
+             obstructorNotes => em( "no connection is open" ),
+             remedy => +"open a connection with the mysql or db package"
+         );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLSelect( "select " & tempStr );
@@ -538,7 +681,13 @@ begin
         err( +"mysql support not supported" );
 #end if;
      else
-        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while " ) & contextInSQL,
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it did not expect",
+            obstructorNotes => pl( "database engine " & currentEngine'img )
+        );
      end if;
   end if;
 end SQLselect;
@@ -550,13 +699,27 @@ end SQLselect;
 -- step: in breakout mode, run the next line and show a command prompt
 -- Syntax: step
 -----------------------------------------------------------------------------
+-- See also ParseStep in parser.
 
 procedure step( ap : argumentListPtr ) is
 begin
   if ap'length /= 0 then
-     err( +"zero arguments expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "step" ),
+         reason => +"expects no arguments but",
+         -- the problem here is is/are for 1+ arguments if the length is used
+         obstructorNotes => em( "there are arguments" ),
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif inputMode /= breakout then
-     err( +"step can only be used when you break out of a script" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "step" ),
+         reason => +"can only be used when you",
+         obstructorNotes => em( "break out of a script" ),
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif isExecutingCommand then
      done := true;
      breakoutContinue := true;
@@ -585,7 +748,14 @@ begin
         end if;
      end if;
   elsif ap'length > 1 then
-     err( +"zero or one argument expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "trace" ),
+         reason => +"expects zero or one arguments but",
+         obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
+         remedy => +"read the summary of trace in the help command",
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   elsif isExecutingCommand then -- or syntax_check then -- when debugging
      -- true (boolean) will be a value of 1, but true (shell word) will be
      -- "true".  This is not ideal since it should really check types.
@@ -599,7 +769,13 @@ begin
         -- it in continuous integration before going to production.
         -- GCC Ada 7.4 gives a conversion warning but is incorrect.
         if inputMode /= breakout and boolean(maintenanceOpt or testOpt) then
-           err( +"the trace command is not allowed in testing or maintenance phase mode unless at the breakout prompt" );
+           err(
+             contextNotes => contextInCommand,
+             subjectNotes => em( "trace" ),
+             reason => +"cannot be changed in testing or maintenance phase mode unless at",
+             obstructorNotes => em( "a breakout prompt" ),
+             seeAlso => +"doc/ref_shellcmds.html"
+           );
         else
            trace := true;
            put_line_retry( "Trace is on" );
@@ -608,7 +784,13 @@ begin
         trace := false;
         put_line_retry( "Trace is off" );
      else
-        err( +"expected true or false" );
+        err(
+            contextNotes => contextInCommand,
+            subjectNotes => em( "trace" ),
+            reason => +"expected a boolean value not",
+            obstructorNotes => em_value( delete( tempStr, length( tempStr ), length( tempStr ) ) ),
+            seeAlso => seeShellCmds
+        );
      end if;
   end if;
 end do_trace;
@@ -627,33 +809,60 @@ procedure unset( ap : argumentListPtr ) is
   tempStr : unbounded_string;
   identToUnset : identifier;
 begin
-  if rshOpt then
-     err( +"unset is not allowed in a " & em( "restricted shell" ) );
-  elsif ap'length /= 1 then
-     err( +"one argument expected" );
+  expectNonRestrictedShell( "unset" );
+  if ap'length /= 1 then
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "unset" ),
+         reason => +"expects one arguments but",
+         obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
+         remedy => +"read the summary of unset in the help command",
+         seeAlso => seeShellCmds
+     );
   elsif inputMode /= interactive and inputMode /= breakout then
-     err( +"unset is only allowed in an interactive session" );
+      err(
+          contextNotes => contextInCommand,
+          subjectNotes => em( "unset" ),
+          reason => +"must be used at an interactive or breakout prompt not",
+          obstructorNotes => +"a script file",
+          seeAlso => seeShellCmds
+      );
+  -- this does not work under ada 95 because it assumes a text string
+  -- parameter.  can it be modified?
   elsif onlyAda95 then
-     err( +"unset is not allowed with " & em( "pragma ada_95" ) );
+      err(
+          contextNotes => contextInCommand,
+          subjectNotes => em( "unset" ),
+          reason => +"does not work with",
+          obstructorNotes => em( "pragma ada_95" ),
+          seeAlso => seeShellCmds
+      );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      findIdent( tempStr, identToUnset );
      if identToUnset = eof_t then
         -- it is possible a mistaken variable substitution could reveal data
-        err( pl( "identifier " ) & em_value( tempStr ) & pl( " not declared" ) );
-     elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
-        err( pl( "unsetting PATH is not allowed in a " ) &
-          em( "restricted shell" ) );
-     elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "HOME" then
-        err( +"unsetting HOME is not allowed in a " &
-          em( "restricted shell" ) );
-     elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PWD" then
-        err( pl( "unsetting PWD is not allowed in a " ) &
-          em( "restricted shell" ) );
-     elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "OLDPWD" then
-        err( pl( "unsetting OLDPWD is not allowed in a " ) &
-          em( "restricted shell" ) );
+        err(
+            contextNotes => +"in " & em( "unset" ),
+            subjectNotes => em_value( tempStr ),
+            reason => +"is",
+            obstructorNotes => em( "not declared" )
+        );
+        --err( pl( "identifier " ) & em_value( tempStr ) & pl( " not declared" ) );
+     -- the whole command will not run in a restricted shell
+     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
+     --   err( pl( "unsetting PATH is not allowed in a " ) &
+     --     em( "restricted shell" ) );
+     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "HOME" then
+     --   err( +"unsetting HOME is not allowed in a " &
+     --     em( "restricted shell" ) );
+     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PWD" then
+     --   err( pl( "unsetting PWD is not allowed in a " ) &
+     --     em( "restricted shell" ) );
+     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "OLDPWD" then
+     --   err( pl( "unsetting OLDPWD is not allowed in a " ) &
+     --     em( "restricted shell" ) );
      elsif identifiers( identToUnset ).renamed_count > 0 then
         err_renaming( identToUnset );
      elsif isExecutingCommand then
@@ -662,7 +871,12 @@ begin
            for i in keywords_top..identifiers_top - 1 loop
                if identifiers( i ).field_of = identToUnset and not identifiers( i ).deleted then
                 if not deleteIdent( i ) then
-                     err( pl( "unable to unset identifier field " ) & em_value( identifiers( i ).name ) );
+                   err(
+            		   contextNotes => +"in " & em( "unset" ),
+                       subjectNotes => em_value( identifiers( i ).name ),
+                       reason => +"had an internal error because",
+                       obstructorNotes => +"it cound not be deleted"
+                    );
                   end if;
                end if;
            end loop;
@@ -672,7 +886,12 @@ begin
         --   clearArray( arrayID( to_numeric( identifiers( identToUnset ).value ) ) );
         end if;
         if not deleteIdent( identToUnset ) then
-           err( +"unable to unset identifier" );
+           err(
+               contextNotes => +"in " & em( "unset" ),
+               subject => identToUnset,
+               reason => +"had an internal error because",
+               obstructorNotes => +"it cound not be deleted"
+            );
         end if;
      end if;
   end if;
@@ -692,10 +911,16 @@ procedure env( ap : argumentListPtr ) is
   tempStr : unbounded_string;
   identToShow : identifier;
 begin
-  if rshOpt then
-     err( pl( "env is not allowed in a " ) & em( "restricted shell" ) );
-  elsif ap'length > 1 then
-     err( +"zero or one argument expected" );
+  expectNonRestrictedShell( "env" );
+  if  ap'length > 1 then
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "env" ),
+         reason => +"expects zero or one arguments but",
+         obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
+         remedy => +"read the summary of env in the help command",
+         seeAlso => seeShellCmds
+     );
   -- elsif inputMode /= interactive and inputMode /= breakout then
   --    err( +"env is only allowed in an interactive session" );
   elsif isExecutingCommand then
@@ -704,26 +929,39 @@ begin
      else
         tempStr := to_unbounded_string( ap( 1 ).all );
         if length( tempStr ) <= 1 then
-           err( pl( gnat.source_info.source_location & ": internal error: name of identifier to find is empty" ) );
+            err(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                  " in the shell command" ),
+               subjectNotes => subjectInterpreter,
+               reason => +"had an internal error because it cannot search for",
+               obstructorNotes => pl( "an empty identifier" )
+           );
         else
            -- remove ASCII.NUL from C string
            delete( tempStr, length( tempStr ), length( tempStr ) );
            findIdent( tempStr, identToShow );
            if identToShow = eof_t then
               -- it is possible a mistaken variable substitution could reveal data
-              err( pl( "identifier " ) & em_value( tempStr ) & pl( " not declared" ) );
-           elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
-              err( pl( "env PATH is not allowed in a " ) &
-                em( "restricted shell" ) );
-           elsif boolean(rshOpt) and then identifiers( identToShow ).name = "HOME" then
-              err( pl( "env HOME is not allowed in a " ) &
-                 em( "restricted shell" ) );
-           elsif boolean(rshOpt) and then identifiers( identToShow ).name = "PWD" then
-              err( pl( "env PWD is not allowed in a " ) &
-                em( "restricted shell" ) );
-           elsif boolean(rshOpt) and then identifiers( identToShow ).name = "OLDPWD" then
-              err( pl( "env OLDPWD is not allowed in a " ) &
-                em( "restricted shell" ) );
+              err(
+                 contextNotes => +"in the " & em( "env" ) & pl( " command" ),
+                 subjectNotes =>  pl( "identifier " ) & em_value( tempStr ),
+                 reason => +"is",
+                 obstructorNotes => em( "not declared" )
+              );
+           -- commented out: env does not run at all in a restricted shell
+           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
+           --    expectNonRestrictedShell( "env PATH" );
+           --   -- err( pl( "env PATH is not allowed in a " ) &
+           --    --  em( "restricted shell" ) );
+           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name = "HOME" then
+           --    err( pl( "env HOME is not allowed in a " ) &
+           --       em( "restricted shell" ) );
+           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name = "PWD" then
+           --    err( pl( "env PWD is not allowed in a " ) &
+           --      em( "restricted shell" ) );
+           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name = "OLDPWD" then
+           --    err( pl( "env OLDPWD is not allowed in a " ) &
+           --      em( "restricted shell" ) );
            elsif isExecutingCommand then
               Put_Identifier( identToShow );
            end if;
@@ -748,12 +986,24 @@ procedure update( ap : argumentListPtr ) is
   tempStr : unbounded_string;
 begin
   if ap'length /= 1 then
-     err( +"one argument expected" );
+     err(
+         contextNotes => contextInSQL,
+         subjectNotes => em( "update" ),
+         reason => +"expects arguments but",
+         obstructorNotes => em( "there are no arguments" ),
+         seeAlso => seeDB
+     );
   elsif isExecutingCommand then
      tempStr := to_unbounded_string( ap( 1 ).all );
      delete( tempStr, length( tempStr ), length( tempStr ) );
      if not engineOpen then
-        err( +"no database connection open" );
+         err(
+             contextNotes => contextInSQL,
+             subjectNotes => em( "update" ),
+             reason => +"needs a database connection but",
+             obstructorNotes => em( "no connection is open" ),
+             remedy => +"open a connection with the mysql or db package"
+         );
      elsif currentEngine = Engine_PostgreSQL then
 #if POSTGRES
         DoSQLStatement( "update " & tempStr );
@@ -767,7 +1017,13 @@ begin
         err( +"mysql support not supported" );
 #end if;
      else
-        err( pl( gnat.source_info.source_location & ": internal error: unrecognized database engine" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " in the SQL statement" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it did not expect",
+            obstructorNotes => pl( "database engine " & currentEngine'img )
+        );
      end if;
   end if;
 end update;
@@ -783,7 +1039,14 @@ end update;
 procedure wait( ap : argumentListPtr ) is
 begin
   if ap'length /= 0 then
-     err( +"zero arguments expected" );
+     err(
+         contextNotes => contextInCommand,
+         subjectNotes => em( "wait" ),
+         reason => +"expects no arguments but",
+         -- the problem here is is/are for 1+ arguments if the length is used
+         obstructorNotes => em( "there are arguments" ),
+         seeAlso => seeShellCmds
+     );
   elsif isExecutingCommand then
      wait4children;
   end if;

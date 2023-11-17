@@ -50,9 +50,6 @@ function stringField( r : reference; f : natural ) return unbounded_string;
 procedure replaceField( r : reference; f : natural; field : string );
 -- same as string_util.replaceField except users an identifier's value
 
-function OSerror( e : integer ) return string;
--- return an OS error message for error number e
-
 function openSocket( serverName : unbounded_string; port : integer ) return ASocketFD;
 -- open a TCP/IP socket
 
@@ -84,13 +81,6 @@ procedure DoReturn;
 procedure DoStartBreakout( execution_position : out unbounded_string );
 -- start a breakout session
 
--- Parsing Symbols
-
-procedure parseProcedureCallSemicolon;
--- more informative than expect( .. ";" );
-
-procedure parseFunctionCallSemicolon;
--- more informative than expect( .. ";" );
 
 -- Renaming Support
 

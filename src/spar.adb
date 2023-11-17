@@ -26,7 +26,7 @@ with ada.text_io,
      ada.command_line,
      world.splashes,
      compiler,
-     scanner,
+     scanner.communications,
      pegasoft.user_io,
      pegasoft.strings,
      parser,
@@ -40,6 +40,7 @@ use ada.text_io,
     world.splashes,
     compiler,
     scanner,
+    scanner.communications,
     pegasoft.user_io,
     pegasoft.strings,
     parser,
@@ -343,6 +344,7 @@ begin
   -- Start the byte code compiler, scanner.  Setup the display.  Start the
   -- parser.
 
+  startCommunications;
   startCompiler;
   startScanner;
   findIdent( to_unbounded_string( "TERM" ), term_id );
@@ -368,5 +370,6 @@ begin
   shutdownScanner;
   shutdownCompiler;
   shutdownSignalFlags;
+  shutdownCommunications;
 
 end spar;

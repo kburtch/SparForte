@@ -224,19 +224,34 @@ begin
     if currentStandardInput /= originalStandardInput then
        result := dup2( currentStandardInput, stdin );   -- restore stdin
        if result < 0 then
-          err( +"Unable to redirect standard input" );
+          err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                           " while starting the interactive session" ),
+               subjectNotes => subjectInterpreter,
+               reason => +"was unable to redirect standard input because syscall dup2() returned",
+               obstructorNotes => getEmOSError
+             );
        end if;
     end if;
     if currentStandardOutput /= originalStandardOutput then
        result := dup2( currentStandardOutput, stdout ); -- restore stdout
        if result < 0 then
-          err( +"Unable to redirect standard output" );
+          err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                           " while starting the interactive session" ),
+               subjectNotes => subjectInterpreter,
+               reason => +"was unable to redirect standard output because syscall dup2() returned",
+               obstructorNotes => getEmOSError
+             );
        end if;
     end if;
     if currentStandardError /= originalStandardError then
        result := dup2( currentStandardError, stderr );  -- restore stderr
        if result < 0 then
-          err( +"Unable to redirect standard error" );
+          err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                           " while starting the interactive session" ),
+               subjectNotes => subjectInterpreter,
+               reason => +"was unable to redirect standard error because syscall dup2() returned",
+               obstructorNotes => getEmOSError
+             );
        end if;
     end if;
     error_found := false;                               -- no err found (prompt)
@@ -296,21 +311,33 @@ begin
        if C_errno = EINTR then
           goto retry1;
        end if;
-       err( +"Unable to restore standard input" );
+       err( contextNotes => +"starting the interactive session",
+            subjectNotes => subjectInterpreter,
+            reason => +"was unable to restore standard input because syscall dup2() returned",
+            obstructorNotes => getEmOSError
+        );
     end if;
 <<retry2>> result := dup2( originalStandardOutput, stdout ); -- restore standard output
     if result < 0 then
        if C_errno = EINTR then
           goto retry2;
        end if;
-       err( +"Unable to restore standard output" );
+       err( contextNotes => +"starting the interactive session",
+            subjectNotes => subjectInterpreter,
+            reason => +"was unable to restore standard output because syscall dup2() returned",
+            obstructorNotes => getEmOSError
+        );
     end if;
 <<retry3>>    result := dup2( originalStandardError, stderr );  -- restore standard error
     if result < 0 then
        if C_errno = EINTR then
           goto retry3;
        end if;
-       err( +"Unable to restore standard error" );
+       err( contextNotes => +"starting the interactive session",
+            subjectNotes => subjectInterpreter,
+            reason => +"was unable to restore standard error because syscall dup2() returned",
+            obstructorNotes => getEmOSError
+        );
     end if;
     exit when done;                                   -- and stop when done
   end loop;
@@ -370,7 +397,12 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          err( +"unable to read first line of script" );
+          err(
+               contextNotes => contextStarting,
+               subjectNotes => pl( "policy '" & policyPath & "'" ),
+               reason => +"could not be used because",
+               obstructorNotes => +"the first line could not be read"
+          );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -399,12 +431,20 @@ begin
         end if;
      end if;
   elsif C_errno = 2 then                           -- file not found?
-     err( +"unable to open policy file '" &
-       pl( policyPath & "' : file not found" ) );
+     err(
+          contextNotes => contextStarting,
+          subjectNotes => pl( "policy '" & policyPath & "'" ),
+          reason => +"could not be opened because",
+          obstructorNotes => +"the file was not found"
+     );
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     err( +"unable to open policy file '" &
-       pl( policyPath & "' : " & OSerror( C_errno ) ) );
+     err(
+          contextNotes => contextStarting,
+          subjectNotes => pl( "policy '" & policyPath & "'" ),
+          reason => +"could not be opened because",
+          obstructorNotes => getEmOSError
+     );
   end if;
 <<error>>
   if error_found then                              -- was there an error?
@@ -473,7 +513,12 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          err( +"unable to read first line of script" );
+          err(
+               contextNotes => contextStarting,
+               subjectNotes => pl( "configuration '" & configPath & "'" ),
+               reason => +"could not be used because",
+               obstructorNotes => +"the first line could not be read"
+          );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -498,12 +543,20 @@ begin
         expect( eof_t );                        -- should be nothing else
      end if;
   elsif C_errno = 2 then                             -- file not found?
-     err( +"unable to open config file '" &
-       pl( configPath & "' : file not found" ) );
+     err(
+          contextNotes => contextStarting,
+          subjectNotes => pl( "configuration '" & configPath & "'" ),
+          reason => +"could not be opened because",
+          obstructorNotes => +"the file was not found"
+     );
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     err( +"unable to open config file '" &
-       pl( configPath & "' : " & OSerror( C_errno ) ) );
+     err(
+          contextNotes => contextStarting,
+          subjectNotes => pl( "configuration '" & configPath & "'" ),
+          reason => +"could not be opened because",
+          obstructorNotes => getEmOSError
+     );
   end if;
 <<error>>
   if error_found then                              -- was there an error?
@@ -574,7 +627,13 @@ begin
      when executing =>
         Put_Trace( "Executing Commands", utf_checkmark  );
      when others =>
-        err( +"internal error: unexpected interpreter phase" );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while checking the script" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it entered",
+            obstructorNotes => pl( "an unexpected phase " & interpreterPhase'img )
+        );
      end case;
   end if;
   inputMode := fromScriptFile;                     -- running a script
@@ -616,10 +675,20 @@ begin
     if scriptFile > 0 then
        scriptDir := dirname( scriptFilePath );
        if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-         err( +"the script directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+         err(
+             contextNotes => +"checking the script",
+             subjectNotes => +"the script directory " & unb_em( scriptDir ),
+             reason => +"cannot be read or is not secure because",
+             obstructorNotes => pl("is either not readable, is world writable, is not a regular file or is empty" )
+         );
          goto error;
        elsif not C_is_includable_file( to_string( scriptFilePath ) & ASCII.NUL ) then
-         err( +"the script file " & unb_em( scriptFilePath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
+         err(
+             contextNotes => +"checking the script",
+             subjectNotes => +"the script file " & unb_em( scriptFilePath ),
+             reason => +"cannot be read or is not secure because",
+             obstructorNotes => pl( "is either not readable, is world writable, is not a regular file or is empty" )
+         );
          goto error;
        end if;
     end if;
@@ -634,7 +703,13 @@ begin
        error_found := false;                         -- no error found
        exit_block := false;                          -- not exit-ing a block
        if not LineRead( firstLine'access ) then        -- read first line
-          err( +"unable to read first line of script" );
+          err(
+              contextNotes => +"compiling the script",
+              subjectNotes => +"the first line of script file " & unb_em( scriptFilePath ),
+              reason => +"cannot be read because",
+              obstructorNotes => +"an O/S error occurred"
+              -- the error will be shown on standard error by LineRead
+          );
           goto error;                                -- and interpreting
        end if;
        if not alreadyCompiled then
@@ -665,12 +740,20 @@ begin
         end if;
      end if;
   elsif C_errno = 2 then                             -- file not found?
-     err( +"unable to open script file '" &
-       pl( scriptPath & "' : file not found" ) );
+     err(
+         contextNotes => +"compiling the script",
+         subjectNotes => +"the script file " & unb_em( scriptFilePath ),
+         reason => +"cannot be opened because",
+         obstructorNotes => +"it was not found"
+     );
   elsif C_errno /= 0 then                          -- some other error?
      -- use /= 0 in case user aborts with control-c
-     err( +"unable to open script file '" &
-       pl( scriptPath & "' : " & OSerror( C_errno ) ) );
+     err(
+         contextNotes => +"compiling the script",
+         subjectNotes => +"the script file " & unb_em( scriptFilePath ),
+         reason => +"cannot be opened because",
+         obstructorNotes => getEmOSError
+     );
   end if;
 
 <<error>>
@@ -706,7 +789,13 @@ begin
      when executing =>
         null; -- Put_Trace( "Done executing Commands", utf_checkmark );
      when others =>
-        err( +"internal error: unexpected interpreter phase" );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while finishing the script" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it entered",
+            obstructorNotes => pl( "an unexpected phase " & interpreterPhase'img )
+        );
      end case;
   end if;
 end interpretScript;
@@ -735,7 +824,13 @@ begin
         Put_Trace( "Executing Commands", utf_checkmark );
      end if;
   when others =>
-     err( +"internal error: unexpected interpreter phase" );
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+            " while finishing the commands" ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because it entered",
+         obstructorNotes => pl( "an unexpected phase " & interpreterPhase'img )
+     );
   end case;
   scriptFilePath := to_unbounded_string( commandLineSource ); -- "script" name
   sourceFilesList.Clear( SourceFiles );
@@ -855,10 +950,20 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( globalPolicyPath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( +"the global policy directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+          err(
+              contextNotes => +"checking the script",
+              subjectNotes => +"the global policy directory " & unb_em( scriptDir ),
+              reason => +"cannot be read or is not secure because",
+              obstructorNotes => +"is either not readable, is world writable, is not a directory"
+          );
           raise BAD_PROFILE with "global policy directory '" & globalPolicyPath & "' is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( globalPolicyPath & ASCII.NUL ) then
-          err( +"global policy file " & em( globalPolicyPath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
+          err(
+              contextNotes => +"checking the script",
+              subjectNotes => +"the global policy file " & em( globalPolicyPath ),
+              reason => +"cannot be read or is not secure because",
+              obstructorNotes => +" is either not readable, is world writable, is not a regular file or is empty"
+          );
           raise BAD_PROFILE with "global policy file '" & globalPolicyPath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalPolicyPath ) ) ) );
@@ -906,10 +1011,20 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( globalConfigPath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( +"the global config directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+          err(
+              contextNotes => +"checking the script",
+              subjectNotes => +"the global config directory " & unb_em( scriptDir ),
+              reason => +"cannot be read or is not secure because",
+              obstructorNotes => +"is either not readable, is world writable, is not a directory"
+          );
           raise BAD_PROFILE with "global config directory '" & globalConfigPath & "' is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( globalConfigPath & ASCII.NUL ) then
-          err( +"global config file " & em( globalConfigPath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
+          err(
+              contextNotes => +"checking the script",
+              subjectNotes => +"the global config file " & em( globalConfigPath ),
+              reason => +"cannot be read or is not secure because",
+              obstructorNotes => +" is either not readable, is world writable, is not a regular file or is empty"
+          );
           raise BAD_PROFILE with "global config file '" & globalConfigPath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalConfigPath ) ) ) );
@@ -951,10 +1066,20 @@ begin
      if C_errno = 0 then
         scriptDir := dirname( to_unbounded_string( globalProfilePath ) );
         if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-          err( +"the global profile directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+          err(
+              contextNotes => +"checking the script",
+              subjectNotes => +"the global profile directory " & unb_em( scriptDir ),
+              reason => +"cannot be read or is not secure because",
+              obstructorNotes => +"is either not readable, is world writable, is not a directory"
+          );
           raise BAD_PROFILE with "global profile directory '" & globalProfilePath & "' is either not readable, is world writable, is not a directory";
         elsif not C_is_includable_file( globalProfilePath & ASCII.NUL ) then
-          err( +"global profile file " & em( globalProfilePath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
+          err(
+              contextNotes => +"checking the script",
+              subjectNotes => +"the global profile file " & em( globalProfilePath ),
+              reason => +"cannot be read or is not secure because",
+              obstructorNotes => +" is either not readable, is world writable, is not a regular file or is empty"
+          );
           raise BAD_PROFILE with "global profile file '" & globalProfilePath & "' is either not readable, is world writable, is not a regular file or is empty";
         end if;
         sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( to_unbounded_string( globalProfilePath ) ) ) );
@@ -1009,10 +1134,20 @@ begin
         if C_errno = 0 then
            scriptDir := dirname( profilePath );
            if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
-             err( +"the local profile directory " & unb_em( scriptDir ) & pl( " is either not readable, is world writable, is not a directory" ) );
+             err(
+                 contextNotes => +"checking the script",
+                 subjectNotes => +"the local profile directory " & unb_em( scriptDir ),
+                 reason => +"cannot be read or is not secure because",
+                 obstructorNotes => +"is either not readable, is world writable, is not a directory"
+             );
              raise BAD_PROFILE with "local profile directory '" & to_string( profilePath ) & "' is either not readable, is world writable, is not a directory";
            elsif not C_is_includable_file( to_string( profilePath ) & ASCII.NUL ) then
-             err( +"the local profile file " & unb_em( profilePath ) & pl( " is either not readable, is world writable, is not a regular file or is empty" ) );
+             err(
+                 contextNotes => +"checking the script",
+                 subjectNotes => +"the global profile file " & unb_em( profilePath ),
+                 reason => +"cannot be read or is not secure because",
+                 obstructorNotes => +" is either not readable, is world writable, is not a regular file or is empty"
+             );
              raise BAD_PROFILE with "local profile file '" & to_string( profilePath ) & "' is either not readable, is world writable, is not a regular file or is empty";
            end if;
            sourceFilesList.Push( SourceFiles, aSourceFile'( pos => 0, name => basename( profilePath ) ) );
@@ -1104,14 +1239,24 @@ begin
         if hasTemplate then
            putTemplateHeader( templateHeader );
         end if;
-        warn( +"annotations are required but missing" );
+        err(
+            contextNotes => +"checking the script",
+            subjectNotes => +"annotations",
+            reason => +"are expected but missing because of",
+            obstructorNotes => +"pragma restriction " & em( "annotations_not_optional" )
+        );
      end if;
      if restriction_no_annotate_todos and annotationTodoFound then
         -- pragma restriction( annotations_no_todos )
         if hasTemplate then
            putTemplateHeader( templateHeader );
         end if;
-        warn( +"annotation todo found but none expected" );
+        err(
+            contextNotes => +"checking the script",
+            subjectNotes => +"todo annotations",
+            reason => +"are not expected because of",
+            obstructorNotes => +"pragma restriction " & em( "no_annotate_todos" )
+        );
      end if;
      if processingTemplate and not error_found then  -- doing a template
         if verboseOpt then
@@ -1122,19 +1267,38 @@ begin
            processTemplate;
         exception
         when STATUS_ERROR =>
-           err( +"cannot open template " & unb_em( templatePath ) &
-               pl( " - file may be locked" ) );
+           err(
+               contextNotes => +"checking the template",
+               subjectNotes => +"the template" & unb_em( templatePath ),
+               reason => +"cannot be opened because of",
+               obstructorNotes => +"a status_error exception",
+               remedy => +"the file is locked"
+           );
         when NAME_ERROR =>
-           err( +"template " & unb_em( templatePath ) &
-               pl( " doesn't exist or is not readable" ) );
+           err(
+               contextNotes => +"checking the template",
+               subjectNotes => +"the template" & unb_em( templatePath ),
+               reason => +"cannot be opened because of",
+               obstructorNotes => +"a name_error exception",
+               remedy => +"the file does not exist or is not readable"
+           );
         when MODE_ERROR =>
-           err( pl( gnat.source_info.source_location &
-                ": internal error: mode error on template " ) & unb_em( templatePath ) );
+           err(
+               contextNotes => +"At " & pl( gnat.source_info.source_location &
+                 " while checking the template" ),
+               subjectNotes => +"the template" & unb_em( templatePath ),
+               reason => +"had an internal error because",
+               obstructorNotes => +"a mode_error exception was raised"
+           );
         when END_ERROR =>
-           err( pl( gnat.source_info.source_location &
-                ": internal error: end of file reached on template " ) & unb_em(templatePath ) );
-        -- when others =>
-       --  err( "unable to open template " & optional_yellow( to_string( templatePath ) ) );
+           err(
+               contextNotes => +"At " & pl( gnat.source_info.source_location &
+                  " while checking the template" ),
+               subjectNotes => +"the template" & unb_em( templatePath ),
+               reason => +"had an internal error because",
+               obstructorNotes => +"a end_error exception was raised",
+               remedy => +"SparForte read past the end of file"
+           );
         end;
         -- Not sure this makes sense in a template, but we'll include it here.
         if testOpt then
@@ -1188,10 +1352,7 @@ end checkAndInterpretScript;
 
 procedure interpret is
 begin
-put_line("A");
   if optionOffset = 0 then                       -- no arguments or '-'?
-put_line("B");
-
      if isLoginShell or boolean(profileOpt) then -- login shell? find profile
         doGlobalProfile;                         -- or --profile option
         if not error_found then

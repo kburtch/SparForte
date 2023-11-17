@@ -67,7 +67,10 @@ begin
   s := null_unbounded_string;
   mkstemp( result, LinuxPath );
   if result < 0 then
-     err( pl( "makeTempFile: mkstemp failed" & OSError( C_errno ) ) );
+     err( contextNotes => +"in /tmp",
+          subjectNotes => +"a temporary file",
+          reason => +"could not be created because ",
+          obstructorNotes => +"syscall mkstemp failed with " & em( OSError( C_errno ) ) );
      s := null_unbounded_string;
   else
 <<retry1>> closeResult := close( result ); -- not the most secure
@@ -151,27 +154,6 @@ end replaceField;
 
 
 -----------------------------------------------------------------------------
---  OS ERROR
---
--- return an OS error message for error number e
------------------------------------------------------------------------------
-
-function OSerror( e : integer ) return string is
-  lastchar : natural := 0;
-  ep       : anErrorPtr;
-begin
-  ep := strerror( e );
-  for i in ep.all'range loop
-      if ep(i) = ASCII.NUL then
-         lastchar := i-1;
-         exit;
-      end if;
-  end loop;
-  return string( ep( 1..lastchar ) );
-end OSerror;
-
-
------------------------------------------------------------------------------
 --  OPEN SOCKET
 --
 -- Initialize a new TCP/IP socket
@@ -194,7 +176,9 @@ begin
 
   mySocket := Socket( PF_INET, SOCK_STREAM, 0 );
   if mySocket = -1 then
-     err( pl( "error making socket: " & OSError( C_errno ) ) );
+     err( subjectNotes => +"a network socket",
+          reason => +"could not be created because ",
+          obstructorNotes => +"syscall Socket failed with " & em( OSError( C_errno ) ) );
      return -1;
   end if;
   --New_Line;
@@ -207,9 +191,14 @@ begin
   myServerPtr := HEptrs.To_Pointer( myServer );
   if myServerPtr = null then
      if C_errno = 0 then
-        err( pl( "there is no server by the name '" & to_string( serverName ) & "'" ) );
+        err( subjectNotes => +"a network socket",
+             reason => +"could not be created because ",
+             obstructorNotes => pl( "there is no host by the name " ) & 
+                em_value( serverName ) );
      else
-        err( pl( "error looking up host: " & OSError( C_errno ) ) );
+        err( subjectNotes => +"a network socket",
+             reason => +"could not be created because ",
+             obstructorNotes => +"syscall GetHostByName failed with " & em( OSError( C_errno ) ) );
      end if;
      return -1;
   end if;
@@ -240,7 +229,9 @@ begin
      if C_errno = EINTR then
         goto retry1;
      end if;
-     err( pl( "error connecting to server: " & OSerror( C_errno ) ) );
+        err( subjectNotes => +"a network socket",
+             reason => +"could not be connected because ",
+             obstructorNotes => +"syscall connect failed with " & em( OSError( C_errno ) ) );
 <<retry2>> Result := close( aFileDescriptor( mySocket ) );
      if Result < 0 then
         if C_errno = EINTR then
@@ -470,8 +461,13 @@ begin
          end if;
 
       when others =>                             -- unexpected mode
-        err( pl( gnat.source_info.source_location &
-             ": internal error: unknown template mode" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while reading the template" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because it entered",
+            obstructorNotes => pl( "an unexpected template mode " & mode'img )
+        );
       end case;
 
    end loop;                                     -- continue while text
@@ -546,74 +542,6 @@ end DoStartBreakout;
 
 
 ------------------------------------------------------------------------------
---  PARSE PROCEDURE CALL SEMICOLON
---
--- Expect a semi-colon but produced ore descriptive errors on other tokens.
-------------------------------------------------------------------------------
-
-procedure parseProcedureCallSemicolon is
-begin
-  if token = symbol_t then
-     if identifiers( token ).value.all = ";" then
-        getNextToken;
-     elsif identifiers( token ).value.all = "|" then
-        err( +"procedures cannot be used in a pipeline like commands" );
-     elsif identifiers( token ).value.all = ">" then
-        err( +"procedure output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = ">>" then
-        err( +"procedure output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "<" then
-        err( +"procedure input cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "2>" then
-        err( +"procedure error output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "2>>" then
-        err( +"procedure error output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "&" then
-        err( +"procedures cannot be run in the background like commands" );
-     else
-        expect( symbol_t, ";" );
-     end if;
-  else
-     expect( symbol_t, ";" );
-  end if;
-end parseProcedureCallSemicolon;
-
-
-------------------------------------------------------------------------------
---  PARSE FUNCTION CALL SEMICOLON
---
--- Expect a semi-colon but produced ore descriptive errors on other tokens.
-------------------------------------------------------------------------------
-
-procedure parseFunctionCallSemicolon is
-begin
-  if token = symbol_t then
-     if identifiers( token ).value.all = ";" then
-        getNextToken;
-     elsif identifiers( token ).value.all = "|" then
-        err( +"functions cannot be used in a pipeline like commands" );
-     elsif identifiers( token ).value.all = ">" then
-        err( +"function output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = ">>" then
-        err( +"function output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "<" then
-        err( +"function input cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "2>" then
-        err( +"function error output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "2>>" then
-        err( +"function error output cannot be redirected like commands" );
-     elsif identifiers( token ).value.all = "&" then
-        err( +"functions cannot be run in the background like commands" );
-     else
-        expect( symbol_t, ";" );
-     end if;
-  else
-     expect( symbol_t, ";" );
-  end if;
-end parseFunctionCallSemicolon;
-
-
-------------------------------------------------------------------------------
 --
 -- Renaming Support
 --
@@ -675,12 +603,24 @@ begin
         canonicalRef.id ).kind ).value.all ) );
   exception when storage_error =>
     numFields := 0;
-    err( pl( gnat.source_info.source_location &
-         "internal error: storage_error: unable to determine the number of fields" ) );
+    err(
+       contextNotes => pl( "At " & gnat.source_info.source_location &
+          " while fixing a record" ),
+       subjectNotes => subjectInterpreter,
+       reason => pl( "had an internal error " &
+          "while determining the number of fields because of "),
+       obstructorNotes => +"a storage_error exception"
+    );
   when constraint_error =>
     numFields := 0;
-    err( pl( gnat.source_info.source_location &
-         "internal error: constraint_error: unable to determine the number of fields" ) );
+    err(
+       contextNotes => pl( "At " & gnat.source_info.source_location &
+          " while fixing a record" ),
+       subjectNotes => subjectInterpreter,
+       reason => pl( "had an internal error while determining " &
+          "while determining the number of fields because of "),
+       obstructorNotes => +"a constraint_error exception"
+    );
   end;
 
   canonicalField := canonicalRef.id + 1;
@@ -703,8 +643,14 @@ begin
 
      -- no more identifiers means we didn't find it.
      if canonicalField = identifiers_top then
-        err( pl( gnat.source_info.source_location &
-           "internal error: record field not found" ) );
+        err(
+           contextNotes => pl( "At " & gnat.source_info.source_location &
+              " while fixing a record" ),
+           subjectNotes => subjectInterpreter,
+           reason => pl( "had an internal error while determining " &
+              "while determining the number of fields because "),
+           obstructorNotes => +"a field was not found"
+        );
         exit;
      end if;
 
@@ -728,13 +674,17 @@ begin
         -- the record type, so there's no reason to do a brute-force lookup.
         findIdent( fieldName, renamingField );
         if renamingField = eof_t then
-           err( pl( gnat.source_info.source_location &
-                ": internal error: " &
-                "cannot find field in the renaming record; " &
-                "Identifier" & canonicalField'img &
+           err(
+              contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while fixing a record" ),
+              subjectNotes => subjectInterpreter,
+              reason => pl( "had an internal error when it " &
+                 "could not find a field in the renaming record"),
+              obstructorNotes => pl( "Identifier" & canonicalField'img &
                 ": Canonical field " ) &
                 name_em( canonicalField ) & pl( "/" &
-                "Renaming Field " ) & unb_em( fieldName ) );
+                "Renaming Field " ) & unb_em( fieldName )
+           );
         else
            -- The renaming is created by copying data.  Correct
            -- the fields to be owned

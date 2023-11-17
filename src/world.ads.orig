@@ -1196,6 +1196,9 @@ function name_em( id : identifier ) return messageStrings;
 function em_esc( s : unbounded_string ) return messageStrings;
 -- escape plus emphasize
 
+function em_esc( c : character ) return messageStrings;
+-- escape plus emphasize
+
 function em_value( s : unbounded_string ) return messageStrings;
 -- combines bold, secured data and escaped.  A null value will
 -- return double single quotes.
@@ -1206,5 +1209,8 @@ function qp( s : string ) return string;
 
 procedure put_trace( msg : string; icon : string := "" );
 -- display a trace message to standard error
+
+function OSerror( e : integer ) return string;
+-- return an OS error message for error number e
 
 end world;

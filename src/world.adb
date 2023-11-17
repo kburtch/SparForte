@@ -2461,6 +2461,11 @@ begin
   return em( to_string( toEscaped( s ) ) );
 end em_esc;
 
+function em_esc( c : character ) return messageStrings is
+begin
+  return em_esc( to_unbounded_string( "" & c ) );
+end em_esc;
+
 
 -----------------------------------------------------------------------------
 --  EM (emphasis) VALUE
@@ -2516,5 +2521,26 @@ begin
      put_line_retry( standard_error, adorn_green( to_string( "=> (" & toCtrlEscaped( to_unbounded_string( msg ) ) ) & ")", boolean( colourOpt ) ) );
   end if;
 end put_trace;
+
+
+-----------------------------------------------------------------------------
+--  OS ERROR
+--
+-- return an OS error message for error number e
+-----------------------------------------------------------------------------
+
+function OSerror( e : integer ) return string is
+  lastchar : natural := 0;
+  ep       : anErrorPtr;
+begin
+  ep := strerror( e );
+  for i in ep.all'range loop
+      if ep(i) = ASCII.NUL then
+         lastchar := i-1;
+         exit;
+      end if;
+  end loop;
+  return string( ep( 1..lastchar ) );
+end OSerror;
 
 end world;

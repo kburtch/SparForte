@@ -8,4 +8,3 @@ CHANGES SINCE 2.6
 
 2. Fix: --without-readline now builds successfully.
 
-

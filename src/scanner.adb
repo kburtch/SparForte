@@ -153,6 +153,8 @@ use ada.text_io,
 
 package body scanner is
 
+jsonErrorDisplayLength : constant natural := 128;
+
 -----------------------------------------------------------------------------
 --  PUT TOKEN
 --
@@ -327,7 +329,10 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
+           internalErrorUsageQualifier(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                  " while checking the subtype attributes" ),
+               subject => id );
         end case;
      when typeClass =>
         if not ident.list then
@@ -344,7 +349,10 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
+           internalErrorUsageQualifier(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                  " while checking the type attributes" ),
+               subject => id );
         end case;
      when funcClass =>
         put_retry( "built-in " );
@@ -398,7 +406,10 @@ begin
         when fullUsage =>
            null;
         when others =>
-           err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
+           internalErrorUsageQualifier(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                  " while checking the identifier attributes" ),
+               subject => id );
         end case;
         put_retry( "identifier of the type " );
      end case;
@@ -413,8 +424,11 @@ begin
      when fullUsage =>
         null;
      when others =>
-        -- bastract should not occur
-        err( pl( gnat.source_info.source_location & ": internal error: unexpected usage qualifier " & ident.usage'img ) );
+        -- abstract should not occur
+        internalErrorUsageQualifier(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while checking the identifier attributes" ),
+            subject => id );
      end case;
 
      -- Show the type
@@ -996,7 +1010,7 @@ begin
                         contextNotes => pl( "While checking identifiers in this block" ),
                         subject => i,
                         subjectType => identifiers( i ).kind,
-                        reason => pl( "was declared but" ),
+                        reason => pl( "is declared but" ),
                         obstructorNotes => pl( "was not used" ),
                         remedy => pl( "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                      );
@@ -1008,7 +1022,7 @@ begin
                      contextNotes => pl( "While checking identifiers in this block" ),
                      subject => i,
                      subjectType => identifiers( i ).kind,
-                     reason => pl( "was declared but" ),
+                     reason => pl( "is declared but" ),
                      obstructorNotes => pl( "was not used" ),
                      remedy => pl( "during development, run SparForte in development phase mode to check only variables. When designing, run in design phase mode to check only types.  If this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished.  Otherwise, delete it if it is not needed" )
                   );
@@ -1018,7 +1032,7 @@ begin
                      contextNotes => pl( "While checking identifiers in this block" ),
                      subject => i,
                      subjectType => identifiers( i ).kind,
-                     reason => pl( "was declared but" ),
+                     reason => pl( "is declared but" ),
                      obstructorNotes => pl( "was not used" ),
                      remedy => pl( "if this is shared and not always read, use pragma assumption( used" & ", " & to_string( identifiers( i ).name ) & " ) as a workaround until user packages are finished" )
                   );
@@ -1100,10 +1114,15 @@ begin
                identifiers( i ).class = userCaseProcClass or
                identifiers( i ).class = varClass then
                if identifiers( i ).specAt /= noSpec then
-                  err( name_em( i ) & pl(
-                       " has a specification but is not implemented (at " &
-                       to_string( identifiers( i ).specFile) & ":" &
-                       identifiers( i ).specAt'img & ")" ) );
+                  err(
+                     contextNotes => pl( "While checking identifiers in this block" ),
+                     subject => i,
+                     subjectType => identifiers( i ).kind,
+                     subjectLocation=> pl( to_string( identifiers( i ).specFile) & ":" &
+                         identifiers( i ).specAt'img  ),
+                     reason => pl( " has a specification but" ),
+                     obstructorNotes => pl( "is not implemented" )
+                  );
                end if;
             end if;
 
@@ -1125,7 +1144,7 @@ begin
                      contextNotes => pl( "While checking identifiers in this block" ),
                      subject => i,
                      subjectType => identifiers( i ).kind,
-                     reason => pl( "was declared but" ),
+                     reason => pl( "is declared but" ),
                      obstructorNotes => pl( "was not used" )
                   );
 --           end if;
@@ -1261,7 +1280,13 @@ procedure topOfBlock is
   cmdLine  : messageStrings;
 begin
    if blocks_top = blocks'first then                            -- in a block?
-      err( pl( gnat.source_info.source_location & ": internal error: topOfBlock: not in a block" ) );
+      err(
+          contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while checking identifiers in this block" ),
+          subjectNotes => em( "topOfBlock" ),
+          reason => pl( "was called when the interpreter was" ),
+          obstructorNotes => pl( "not in a block" )
+      );
    else
       resumeScanning( blocks( blocks_top-1 ).state );           -- move to top
       if inputMode /= interactive and inputMode /= breakout then -- in a script?
@@ -1523,7 +1548,13 @@ begin
         b := b - 1;                                       -- keep looking
      end loop;
   else
-     err( pl( gnat.source_info.source_location & ": internal error: getting exception but not in an exception block" ) );
+     err(
+          contextNotes => pl( "At " & gnat.source_info.source_location &
+               " while checking identifiers in this block" ),
+          subjectNotes => em( "getBlockException" ),
+          reason => pl( "was called when the interpreter was" ),
+          obstructorNotes => pl( "not in an exception block" )
+      );
   end if;
 end getBlockException;
 
@@ -2817,8 +2848,13 @@ begin
      temp_id := identifiers( temp_id ).kind;
      count := count + 1;
      if count >= 100 then
-        err( pl( gnat.source_info.source_location &
-             ": internal error: circular type relationship when checking root types" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while root type checking" ),
+            subject => original,
+            reason => +"had an internal error because of",
+            obstructorNotes => pl( "a circular type relationship" )
+        );
         exit;
      end if;
   end loop;
@@ -2893,8 +2929,13 @@ begin
      temp_id := identifiers( temp_id ).kind;
      count := count + 1;
      if count >= 100 then
-        err( pl( gnat.source_info.source_location &
-             ": internal error: circular type relationship when checking base types" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while base type checking" ),
+            subject => original,
+            reason => +"had an internal error because of",
+            obstructorNotes => pl( "a circular type relationship" )
+        );
         exit;
      end if;
   end loop;
@@ -2915,8 +2956,13 @@ function class_ok( id : identifier; class : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= class then
      if id = eof_t then
-        err( pl( gnat.source_info.source_location &
-             ": internal error: eof given as the identifier to class_ok(1)" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while in class_ok(1)" ),
+            subjectNotes => +"the identifier",
+            reason => +"caused an internal error because",
+            obstructorNotes => pl( "it was an eof token" )
+        );
      elsif id = exception_t then
         err_previous( pl( "While checking the identifier category," &
            "an " ) & em( "exception" ) &
@@ -2954,7 +3000,13 @@ function class_ok( id : identifier; c1,c2 : anIdentifierClass ) return boolean i
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 then
      if id = eof_t then
-        err( pl( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(2)" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while in class_ok(2)" ),
+            subjectNotes => +"the identifier",
+            reason => +"caused an internal error because",
+            obstructorNotes => pl( "it was an eof token" )
+        );
      elsif id = exception_t then
         err_previous( pl( "While checking the identifier category," &
            "an " ) & em( "exception" ) &
@@ -2998,7 +3050,13 @@ function class_ok( id : identifier; c1,c2,c3 : anIdentifierClass ) return boolea
 begin
   if identifiers( id ).class /= c1 and identifiers( id ).class /= c2 and identifiers( id ).class /= c3 then
      if id = eof_t then
-        err( pl( gnat.source_info.source_location & ": internal error: eof given as the identifier to class_ok(3)" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while in class_ok(3)" ),
+            subjectNotes => +"the identifier",
+            reason => +"caused an internal error because",
+            obstructorNotes => pl( "it was an eof token" )
+        );
      elsif id = exception_t then
         err_previous( pl( "While checking the identifier category," &
            "an " ) & em( "exception" ) &
@@ -3429,7 +3487,23 @@ begin
      begin
        roundedVal := long_long_integer( numericValue'value( to_string( val ) ) );
      exception when constraint_error =>
-       err( +"a variable has no value or a value is out-of-range" );
+        if val = null_unbounded_string then
+           err(
+               contextNotes => +"casting to an integer type",
+               subjectNotes => +"the value",
+               subjectType => kind,
+               reason => +"could not be cast because",
+               obstructorNotes => em( "it has no value" )
+           );
+        else
+           err(
+               contextNotes => +"casting to an integer type",
+               subjectNotes => +"the value",
+               subjectType => kind,
+               reason => +"could not be cast because",
+               obstructorNotes => em( "it was out-of-range" )
+           );
+        end if;
      when others =>
        err_exception_raised;
      end;
@@ -3440,7 +3514,23 @@ begin
      begin
        roundedVal := long_long_integer( numericValue'value( to_string( val ) ) );
      exception when constraint_error =>
-       err( +"a variable has no value or a value is out-of-range" );
+        if val = null_unbounded_string then
+           err(
+               contextNotes => +"casting to a natural type",
+               subjectNotes => +"the value",
+               subjectType => kind,
+               reason => +"could not be cast because",
+               obstructorNotes => em( "it has no value" )
+           );
+        else
+           err(
+               contextNotes => +"casting to a natural type",
+               subjectNotes => +"the value",
+               subjectType => kind,
+               reason => +"could not be cast because",
+               obstructorNotes => em( "it was out-of-range" )
+           );
+        end if;
      when others =>
        err_exception_raised;
      end;
@@ -3462,13 +3552,23 @@ begin
      begin
        roundedVal := long_long_integer( numericValue'value( to_string( val ) ) );
      exception when constraint_error =>
-       --err( "a variable has no value or a value is out-of-range" );
-        err(
-            contextNotes => +"casting types",
-            subjectNotes => pl( qp( "the value" ) ),
-            reason => +"is out-of-range of a",
-            obstructor => kind,
-            remedy => +"it has no value assigned, is too big, or is too small" );
+        if val = null_unbounded_string then
+           err(
+               contextNotes => +"casting to a positive type",
+               subjectNotes => +"the value",
+               subjectType => kind,
+               reason => +"could not be cast because",
+               obstructorNotes => em( "it has no value" )
+           );
+        else
+           err(
+               contextNotes => +"casting to a positive type",
+               subjectNotes => +"the value",
+               subjectType => kind,
+               reason => +"could not be cast because",
+               obstructorNotes => em( "it was out-of-range" )
+           );
+        end if;
      when others =>
        err_exception_raised;
      end;
@@ -3529,7 +3629,13 @@ function deleteIdent( id : identifier ) return boolean is
     elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then
         null; -- for numbers, JSON is as-is
     else
-        err( +"json export not yet written for this type" );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while converting to JSON" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"had an internal error because",
+            obstructorNotes => pl( "json export is not yet written for this type" )
+        );
     end if;
     return tempStr;
   end ConvertValueToJson;
@@ -3571,7 +3677,12 @@ function deleteIdent( id : identifier ) return boolean is
         end;
     when session =>
         if length( sessionExportScript ) = 0 then
-           err( +"session export script not defined" );
+           err(
+               contextNotes => +"exporting the session",
+               subjectNotes => unb_em( sessions_session_variable_name_str ),
+               reason => +"cannot be exported because",
+               obstructorNotes => em( "no session export script has been defined" )
+           );
         else
            declare
              old_rshOpt : constant commandLineOption := rshOpt;
@@ -3617,7 +3728,13 @@ function deleteIdent( id : identifier ) return boolean is
     when http_cgi =>
         null; -- does not save on variable destruction
     when others =>
-        err( pl( gnat.source_info.source_location & ": internal error: unexpected export mapping in ExportValue" ) );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while exporting identifiers at destruction" ),
+            subject => id,
+            reason => +"had an internal error because of",
+            obstructorNotes => pl( "an unexpected export mapping in ExportValue" )
+        );
     end case;
   end ExportValue;
 
@@ -3643,8 +3760,14 @@ begin
              identifiers( derefed_id ).renamed_count :=
               identifiers( derefed_id ).renamed_count - 1;
           else
-              err( pl( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
-                 "unexpectedly zero  for " )  & name_em( derefed_id ) );
+              err(
+                  contextNotes => pl( "At " & gnat.source_info.source_location &
+                      " while exporting identifiers at destruction" ),
+                  subject => id,
+                  reason => pl( "had an internal error because the dereferenced identifier's renamed_count "  &
+                       "is unexpectedly zero for" ),
+                  obstructor => derefed_id
+              );
           end if;
         end;
      end if;
@@ -3693,8 +3816,14 @@ begin
           identifiers( derefed_id ).renamed_count :=
              identifiers( derefed_id ).renamed_count - 1;
        else
-           err( pl( gnat.source_info.source_location & ": internal error: dereferenced identifier's renamed_count " &
-                "unexpectedly zero  for " ) & name_em( derefed_id ) );
+           err(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                   " while exporting identifiers at destruction" ),
+               subject => id,
+               reason => pl( "had an internal error because the dereferenced identifier's renamed_count "  &
+                    "is unexpectedly zero for" ),
+               obstructor => derefed_id
+           );
        end if;
      end;
   end if;
@@ -3807,10 +3936,36 @@ begin
      if ch = expectedChar then
          start := start + 1;
      else
-         err( pl( expectedChar & " expected in JSON string at" & start'img ) );
+         -- if relatively short, show the string context
+         if length( jsonString ) < jsonErrorDisplayLength then
+            err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( jsonString ) ) ) ),
+                 subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
+                 reason => pl( "is expected at position" & start'img & " but found character" ),
+                 obstructorNotes => em_esc( ch )
+            );
+         else
+            err( contextNotes => +"reading the JSON value",
+                 subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
+                 reason => pl( "is expected at position" & start'img & " but found character" ),
+                 obstructorNotes => em_esc( ch )
+            );
+         end if;
      end if;
   else
-     err( pl( expectedChar & " expected in JSON string at" & start'img ) );
+     -- if relatively short, show the string context
+     if length( jsonString ) < jsonErrorDisplayLength then
+        err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( jsonString ) ) ) ),
+             subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
+             reason => pl( "is expected at position" & start'img & " but reached" ),
+             obstructorNotes => em( "the end of the string" )
+        );
+     else
+        err( contextNotes => +"reading the JSON value",
+             subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
+             reason => pl( "is expected at position" & start'img & " but reached" ),
+             obstructorNotes => em( "the end of the string" )
+        );
+     end if;
   end if;
 end JSONexpect;
 
@@ -3975,7 +4130,20 @@ begin
      end if;
   end if;
   if not ok then
-     err( em( "JSON string value" ) & pl( " expected in string """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" ) );
+     -- if relatively short, show the string context
+     if length( expr_val ) < jsonErrorDisplayLength then
+        err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( expr_val ) ) ) ),
+             subjectNotes => +"an opening double quote",
+             reason => pl( "is expected" ),
+             obstructorNotes => nullMessageStrings
+        );
+     else
+        err( contextNotes => +"reading the JSON string value",
+             subjectNotes => +"an opening double quote",
+             reason => pl( "is expected" ),
+             obstructorNotes => nullMessageStrings
+        );
+     end if;
      return;
   end if;
   i := i + 1;
@@ -4057,7 +4225,13 @@ begin
                elsif enum_val = 1 then
                   item := to_unbounded_string( "true" );
                else
-                  err( pl( gnat.source_info.source_location & ": internal error: unexpect boolean position" & enum_val'img ) );
+                  err(
+                      contextNotes => pl( "At " & gnat.source_info.source_location &
+                          " while encoding an array to JSON" ),
+                      subjectNotes => subjectInterpreter,
+                      reason => +"had an internal error because of",
+                      obstructorNotes => pl( "an unexpect boolean position" & enum_val'img )
+                  );
                end if;
                if arrayElementPos /= source_last then
                   result := result & item & to_unbounded_string( "," );
@@ -4100,12 +4274,30 @@ begin
         result := result & data & to_unbounded_string( "]" );
      else
         -- private types are unique types extending variable_t
-        err( +"private type elements cannot be encoded as JSON" );
+        err(
+            contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while encoding an array to JSON" ),
+            subjectNotes => subjectInterpreter,
+            reason => +"cannot encode the array as JSON because",
+            obstructorNotes => pl( "it has private type elements" )
+         );
      end if;
 exception when CONSTRAINT_ERROR =>
-  err( pl( gnat.source_info.source_location & ": internal error: constraint_error" ) );
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while converting an array to JSON" ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because",
+         obstructorNotes => pl( "a constraint_error was raised" )
+     );
 when STORAGE_ERROR =>
-  err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while converting an array to JSON" ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because",
+         obstructorNotes => pl( "a storage_error was raised" )
+     );
 end DoArrayToJson;
 
 
@@ -4153,9 +4345,34 @@ begin
           if ch = '{' then
             err( pl( "JSON array expected but found object" ) );
           elsif ch /= '[' then
-             err( em( "JSON array expected" ) & pl( " but found string """ & toSecureData( to_string( toEscaped( source_val ) ) ) & '"' ) );
+            -- if relatively short, show the string context
+            if length( source_val ) < jsonErrorDisplayLength then
+               err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                    subjectNotes => +"an opening '['",
+                    reason => pl( "is expected for an array" ),
+                    obstructorNotes => nullMessageStrings
+               );
+            else
+               err( contextNotes => +"decoding the JSON string value to an array",
+                    subjectNotes => +"an opening '['",
+                    reason => pl( "is expected for an array" ),
+                    obstructorNotes => nullMessageStrings
+               );
+            end if;
           elsif element( source_val, length( source_val ) ) /= ']' then
-             err( pl( "expected trailing ]" ) );
+            if length( source_val ) < jsonErrorDisplayLength then
+               err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                     subjectNotes => +"a closing ']'",
+                     reason => pl( "is expected for an array" ),
+                     obstructorNotes => nullMessageStrings
+                );
+            else
+                err( contextNotes => +"decoding the JSON string value to an array",
+                     subjectNotes => +"a closing ']'",
+                     reason => pl( "is expected for an array" ),
+                     obstructorNotes => nullMessageStrings
+                );
+            end if;
           end if;
        end if;
      end;
@@ -4194,13 +4411,37 @@ begin
                      exit;
                   end if;
                else
-                  err( pl( "JSON parse error on character" & i'img ) );
+                  if length( source_val ) < jsonErrorDisplayLength then
+                     err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                          subjectNotes => subjectInterpreter,
+                          reason => pl( "at position" & i'img & " and found unexpect character" ),
+                          obstructorNotes => em_esc( ch )
+                     );
+                  else
+                     err( contextNotes => +"decoding the JSON string value to an array",
+                          subjectNotes => subjectInterpreter,
+                          reason => pl( "at position" & i'img & " and found unexpect character" ),
+                          obstructorNotes => em_esc( ch )
+                     );
+                  end if;
                   exit;
                end if;
             end if;
           end loop;
        else
-          err( pl( "JSON parse error on character" & i'img ) );
+          if length( source_val ) < jsonErrorDisplayLength then
+            err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                 subjectNotes => subjectInterpreter,
+                 reason => pl( "at position" & i'img & " and found" ),
+                 obstructorNotes => em( "the end of the string" )
+            );
+          else
+            err( contextNotes => +"decoding the JSON string value to an array",
+                 subjectNotes => subjectInterpreter,
+                 reason => pl( "at position" & i'img & " and found" ),
+                 obstructorNotes => em( "the end of the string" )
+            );
+          end if;
        end if;
      end;
 
@@ -4212,10 +4453,19 @@ begin
      if sourceLen = 0 and target_len = 0 then
         null;
      elsif sourceLen /= target_len then
-       err( pl( "array has" &
-            target_len'img &
-            " item(s) but JSON string has" &
-            sourceLen'img ) );
+        if length( source_val ) < jsonErrorDisplayLength then
+            err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                 subjectNotes => pl( "the JSON string length of" & sourceLen'img & " elements" ),
+                 reason => +"does not equal the target array length of",
+                 obstructorNotes => em( target_len'img & " elements" )
+            );
+        else
+            err( contextNotes => +"decoding the JSON string value to an array",
+                 subjectNotes => pl( "the JSON string length of" & sourceLen'img & " elements" ),
+                 reason => +"does not equal the target array length of",
+                 obstructorNotes => em( target_len'img & " elements" )
+            );
+         end if;
      elsif kind = root_enumerated_t then
 
         -- In JSON, booleans are stored by the name,
@@ -4239,7 +4489,19 @@ begin
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   else
-                     err( em( toSecureData( to_string( item ) ) ) & pl( " is neither JSON true nor false" ) );
+                     if length( source_val ) < jsonErrorDisplayLength then
+                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                              subjectNotes => +"a JSON boolean value",
+                              reason => +"is expected but instead found",
+                              obstructorNotes => em_value( item )
+                         );
+                     else
+                         err( contextNotes => +"decoding the JSON string value to an array",
+                              subjectNotes => +"a JSON boolean value",
+                              reason => +"is expected but instead found",
+                              obstructorNotes => em_value( item )
+                         );
+                     end if;
                   end if;
                else
                   item := item & ch;
@@ -4275,10 +4537,19 @@ begin
                   if ch = ',' or ch = ']' then
                      enumVal := integer'value( ' ' & to_string( item ) );
                      if enumVal < 0 or enumVal > maxEnum then
-                        err( +"enumerated position " &
-                             unb_em( item ) &
-                             pl( " is out of range for " ) &
-                             name_em( elementKind ) );
+                        if length( source_val ) < jsonErrorDisplayLength then
+                           err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                                subjectNotes => +"a JSON enumerated position ",
+                                reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
+                                obstructorNotes => +"position " & em_value( item )
+                           );
+                        else
+                           err( contextNotes => +"decoding the JSON string value to an array",
+                                subjectNotes => +"a JSON enumerated position ",
+                                reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
+                                obstructorNotes => +"position " & em_value( item )
+                           );
+                        end if;
                      else
                         -- assignElement( targetArrayId, arrayElement, ' ' & item );
                         identifiers( target_var_id ).avalue( arrayElement ) := ' ' & item;
@@ -4316,7 +4587,19 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( pl( "JSON parse error on character" & i'img ) );
+                      if length( source_val ) < jsonErrorDisplayLength then
+                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " found unexpect character" ),
+                              obstructorNotes => em_esc( ch )
+                        );
+                      else
+                         err( contextNotes => +"decoding the JSON string value to an array",
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " found unexpect character" ),
+                              obstructorNotes => em_esc( ch )
+                         );
+                      end if;
                    end if;
                end if;
 
@@ -4328,7 +4611,19 @@ begin
                if i <= length( source_val ) then
                   ch := element( source_val, i );
                   if ch /= '"' then
-                     err( +"JSON string value expected" );
+                      if length( source_val ) < jsonErrorDisplayLength then
+                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " a string value expects a double quote not a " ),
+                              obstructorNotes => em_esc( ch )
+                        );
+                      else
+                         err( contextNotes => +"decoding the JSON string value to an array",
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " a string value expects a double quote not a " ),
+                              obstructorNotes => em_esc( ch )
+                         );
+                      end if;
                   end if;
                end if;
 
@@ -4369,7 +4664,19 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( pl( "JSON parse error on character" & i'img ) );
+                      if length( source_val ) < jsonErrorDisplayLength then
+                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
+                              obstructorNotes => em_esc( ch )
+                        );
+                      else
+                         err( contextNotes => +"decoding the JSON string value to an array",
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
+                              obstructorNotes => em_esc( ch )
+                         );
+                      end if;
                    end if;
                end if;
 
@@ -4414,7 +4721,19 @@ begin
                exception when others => null;
                end;
                if not ok then
-                  err( em( "JSON number value" ) & pl( " expected in string """ & toSecureData( to_string( toEscaped( item ) ) ) & """" ) );
+                  if length( source_val ) < jsonErrorDisplayLength then
+                     err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                          subjectNotes => subjectInterpreter,
+                          reason => pl( "at position" & i'img & " expected a numeric value but found" ),
+                          obstructorNotes => em_value( item )
+                     );
+                  else
+                     err( contextNotes => +"decoding the JSON string value to an array",
+                          subjectNotes => subjectInterpreter,
+                          reason => pl( "at position" & i'img & " expected a numeric value but found" ),
+                          obstructorNotes => em_value( item )
+                     );
+                  end if;
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).avalue( arrayElement ) := item;
@@ -4425,25 +4744,78 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( pl( "JSON parse error on character" & i'img ) );
+                      if length( source_val ) < jsonErrorDisplayLength then
+                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
+                              obstructorNotes => em_esc( ch )
+                        );
+                      else
+                         err( contextNotes => +"decoding the JSON string value to an array",
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
+                              obstructorNotes => em_esc( ch )
+                         );
+                      end if;
                    end if;
                else
-                   err( pl( "JSON parse error on character" & i'img ) );
+                   if length( source_val ) < jsonErrorDisplayLength then
+                      err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                           subjectNotes => subjectInterpreter,
+                           reason => pl( "at position" & i'img & " expected a comma or ']' but reached" ),
+                           obstructorNotes => +"the end of the string"
+                      );
+                   else
+                      err( contextNotes => +"decoding the JSON string value to an array",
+                           subjectNotes => subjectInterpreter,
+                           reason => pl( "at position" & i'img & " expected a comma or ']' but reached" ),
+                           obstructorNotes => +"the end of the string"
+                      );
+                   end if;
                    exit;
                end if;
              end loop;
           else
-             err( pl( "JSON parse error on character" & i'img ) );
+             if length( source_val ) < jsonErrorDisplayLength then
+                err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
+                     subjectNotes => subjectInterpreter,
+                     reason => pl( "at position" & i'img & " expected a '[' but found" ),
+                     obstructorNotes => +"the end of the string"
+                );
+             else
+                err( contextNotes => +"decoding the JSON string value to an array",
+                     subjectNotes => subjectInterpreter,
+                     reason => pl( "at position" & i'img & " expected a '[' but found" ),
+                     obstructorNotes => +"the end of the string"
+                );
+             end if;
           end if;
         end;
      else
         -- private types are unique types extending variable_t
-        err( +"private type elements cannot be used to store JSON data" );
+        err( contextNotes => +"decoding the JSON string value to an array",
+             subjectNotes => +"the element",
+             subjectType => kind,
+             reason => pl( "cannot receive a value because" ),
+             obstructorNotes => +"it is a private field"
+        );
      end if;
 exception when CONSTRAINT_ERROR =>
-  err( pl( gnat.source_info.source_location & ": internal error: constraint_error" ) );
+  err(
+      contextNotes => pl( "At " & gnat.source_info.source_location &
+          " while converting JSON string value to an array" ),
+      subjectNotes => subjectInterpreter,
+      reason => +"had an internal error because",
+      obstructorNotes => pl( "constraint_error was raised" )
+  );
 when STORAGE_ERROR =>
-  err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
+  err(
+      contextNotes => pl( "At " & gnat.source_info.source_location &
+          " while converting JSON string value to an array" ),
+      subjectNotes => subjectInterpreter,
+      reason => +"had an internal error because",
+      obstructorNotes => pl( "storage_error was raised" )
+  );
 end DoJsonToArray;
 
 
@@ -4479,8 +4851,11 @@ begin
                       fieldName := identifiers( source_var_id ).name & "." & jsonFieldName;
                       findIdent( fieldName, field_t );
                       if field_t = eof_t then
-                         err( pl( "unable to find record field " ) &
-                            unb_em( fieldName ) );
+                         err( contextNotes => +"encoding a record to a JSON string value",
+                              subjectNotes => subjectInterpreter,
+                              reason => pl( "at position" & i'img & " cannot find a record field named" ),
+                              obstructorNotes => unb_em( fieldName )
+                         );
                       else
                          if firstField then
                             firstField := false;
@@ -4498,10 +4873,11 @@ begin
                                   result := result & "true";
                                end if;
                             exception when others =>
-                               err( pl( "unable to parse boolean value " &
-                                  ASCII.Quotation &
-                                  toSecureData( to_string( identifiers( field_t ).value.all ) ) &
-                                  ASCII.Quotation ) );
+                               err( contextNotes => +"encoding a record to a JSON string value",
+                                    subjectNotes => subjectInterpreter,
+                                    reason => pl( "at position" & i'img & " expected a boolean value but found" ),
+                                    obstructorNotes => em_value( identifiers( field_t ).value.all )
+                               );
                             end;
                          elsif uniFieldType = uni_numeric_t then
 -- trim?
@@ -4518,9 +4894,11 @@ begin
                             result := result & item;
                          else
                             -- private types are unique types extending variable_t
-                            err( pl( "private type fields like " ) &
-                                unb_em( fieldName ) &
-                                pl( " cannot be encoded as JSON" ) );
+                            err( contextNotes => +"encoding a record to a JSON string value",
+                                 subjectNotes => subjectInterpreter,
+                                 reason => pl( "at position" & i'img & " cannot encode a private field like" ),
+                                 obstructorNotes => unb_em( fieldName )
+                            );
                          end if;
                       end if;
                 end if;
@@ -4564,11 +4942,23 @@ begin
        if length( item ) > 0 then
           ch := element( item, i );
           if ch = '[' then
-            err( pl( "JSON object expected but found array" ) );
+             err( contextNotes => +"decoding JSON string value to a record",
+                  subjectNotes => subjectInterpreter,
+                  reason => pl( "at position" & i'img & " expected a '{' but found" ),
+                  obstructorNotes => em( "" & ch & " for an array" )
+             );
           elsif ch /= '{' then
-             err( em( "JSON object expected" ) & pl( " but found string """ & toSecureData( to_string( toEscaped( item ) ) ) & '"' ) );
+             err( contextNotes => +"decoding JSON string value to a record",
+                  subjectNotes => subjectInterpreter,
+                  reason => pl( "at position" & i'img & " expected a '{' but found" ),
+                  obstructorNotes => em_esc( ch )
+             );
           elsif element( item, length( item ) ) /= '}' then
-             err( pl( "expected trailing }" ) );
+             err( contextNotes => +"decoding JSON string value to a record",
+                  subjectNotes => subjectInterpreter,
+                  reason => pl( "at end of JSON object expected" ),
+                  obstructorNotes => em( "}" )
+             );
           end if;
        end if;
      end;
@@ -4600,12 +4990,20 @@ begin
                   end if;
                end if;
             else
-               err( pl( "JSON parse error on character" & i'img ) );
+               err( contextNotes => +"decoding JSON string value to a record",
+                    subjectNotes => subjectInterpreter,
+                    reason => pl( "reached the end of the string value but did not find" ),
+                    obstructorNotes => em( "}" )
+               );
                exit;
             end if;
           end loop;
         else
-          err( pl( "JSON parse error on character" & i'img ) );
+          err( contextNotes => +"decoding JSON string value to a record",
+               subjectNotes => subjectInterpreter,
+               reason => pl( "reached the end of the string value but did not find" ),
+               obstructorNotes => em( "{" )
+          );
        end if;
      end;
 --put_line( "new length = " & sourceLen'img ); -- DEBUG
@@ -4666,9 +5064,11 @@ begin
                        elsif decodedItemValue = "false" then
                           identifiers( j ).value.all :=  to_unbounded_string( "0" );
                        else
-                          err( unb_em( toEscaped( decodedItemName ) ) & pl( " has a value of " ) &
-                            em( toSecureData( to_string( toEscaped( decodedItemValue ) ) ) ) &
-                            pl( " but expected JSON true or false" ) );
+                          err( contextNotes => +"decoding the JSON string value to a record",
+                               subjectNotes => +"a JSON boolean value",
+                               reason => +"is expected but instead found",
+                               obstructorNotes => em_value( decodedItemValue )
+                          );
                        end if;
 
 -- range check the valuse for enumerateds
@@ -4692,10 +5092,11 @@ begin
                         end loop;
                         enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
                         if enumVal < 0 or enumVal > maxEnum then
-                           err( pl( "enumerated position " ) &
-                                em_esc( decodedItemValue ) &
-                                pl( " is out of range for " ) &
-                                name_em( elementKind) );
+                          err( contextNotes => +"decoding the JSON string value to a record",
+                               subjectNotes => +"a JSON enumerated position ",
+                               reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
+                               obstructorNotes => +"position " & em_value( decodedItemValue )
+                          );
                         end if;
                         -- Space is required for findEnumImage.  Values are
                         -- stored with leading space.
@@ -4709,7 +5110,12 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( em( "JSON string value" ) & pl( " expected for " & toSecureData( to_string( ToEscaped( searchName ) ) ) ) );
+                            err( contextNotes => +"decoding the JSON string value to a record",
+                                 subject => j,
+                                 subjectType => elementKind,
+                                 reason => +"expected",
+                                 obstructorNotes => +"a " & em( "string value" )
+                            );
                          end if;
                          -- strip of quotes and un-escape any characters.
                          if length( decodedItemValue ) > 0 then
@@ -4728,15 +5134,23 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( em( "JSON number value" ) & pl( " expected in """ & toSecureData( to_string( toEscaped( searchName ) ) ) & """" ) );
+                         err( contextNotes => +"decoding the JSON string value to a record",
+                              subject => j,
+                              subjectType => elementKind,
+                              reason => +"expected",
+                              obstructorNotes => +"a " & em( "number value" )
+                         );
                       end if;
                       identifiers( j ).value.all := castToType( decodedItemValue,
                          identifiers( j ).kind );
                     else
                        -- private types are unique types extending variable_t
-                       err( pl( "private type fields like " ) &
-                             name_em( j ) &
-                             pl( " cannot store JSON data" ) );
+                       err( contextNotes => +"decoding the JSON string value to a record",
+                            subject => j,
+                            subjectType => elementKind,
+                            reason => pl( "cannot be receive a value because" ),
+                            obstructorNotes => +"it is a private field"
+                       );
                     end if;
                  end if;
                  exit; -- the searchName may occur more than once.  stop when found first match
@@ -4744,7 +5158,11 @@ begin
               end if;
           end loop; -- j
           if not found then
-             err( pl( to_string( toEscaped( searchName ) ) & " not declared" ) );
+             err( contextNotes => +"decoding the JSON string value to a record",
+                  subjectNotes => em_esc( searchName ),
+                  reason => +"is not declared",
+                  obstructorNotes => nullMessageStrings
+             );
           end if;
 
           if i <= length( sourceVal ) then
@@ -4758,10 +5176,14 @@ begin
        end loop; -- i
        end;
     else
-       err( pl( "record has" ) &
-            unb_pl( identifiers( identifiers( target_var_id ).kind ).value.all  ) &
-            pl( " field(s) but JSON string has" &
-            sourceLen'img ) );
+       err( contextNotes => +"decoding the JSON string value to a record",
+            subject => target_var_id,
+            subjectType => identifiers( target_var_id ).kind,
+            reason => +"has " &
+               unb_pl( identifiers( identifiers( target_var_id ).kind ).value.all  ) &
+               pl( " field(s) but JSON string has" ),
+            obstructorNotes => em( sourceLen'img )
+       );
     end if;
 end DoJsonToRecord;
 
@@ -4823,7 +5245,12 @@ begin
   if ok then
      expr_val := jsonString;
   else
-     err( em( "JSON number value" ) & pl( " expected in string """ & toSecureData( to_string( toEscaped( jsonString ) ) ) & """" ) );
+     err(
+         contextNotes => pl( "decoding the JSON value string to a number" ),
+         subjectNotes => em( "JSON number" ),
+         reason => +"is expected not",
+         obstructorNotes => em_value( jsonString )
+     );
   end if;
 end DoJsonToNumber;
 
@@ -4902,7 +5329,13 @@ begin
          exception when constraint_error =>
             -- at 50,000 lines per second, this theoretically happens at
             -- 5.8 million years on my 64-bit Linux laptop computer.
-            err( +"performance stats: line count overflow" );
+             err(
+                 contextNotes => pl( "At " & gnat.source_info.source_location &
+                     " while scanning the source code" ),
+                 subjectNotes => +"reading a new line",
+                 reason => +"had an internal error because",
+                 obstructorNotes => pl( "the line counter overflowed" )
+             );
          end;
       end if;
       cmdpos := cmdpos+nextScriptCommandOffset; -- line header and indent marker
@@ -5095,7 +5528,15 @@ begin
      end loop;
      lastpos := lastpos - 1;
      if script( lastpos ) = '.' then
-        err( +"no digits after decimal" );
+        err(
+            contextNotes => +"reading the byte code",
+            -- GNT doesn't have much context
+            subjectNotes => +"the numeric literal",
+              reason => +"should have a " & em( "valid value" ) & pl(" with"),
+            obstructorNotes => em( "digits after a decimal" ),
+            remedy => +"use '.0', remove the period or provide the digits",
+            seeAlso => seeLiterals
+        );
         cmdpos := lastpos+1;                                 -- advance posn
         return;
      end if;
@@ -5104,7 +5545,15 @@ begin
            identifiers( number_t ).value.all := to_unbounded_string(
               natural'image( natural'value( ' ' & script( cmdpos..lastpos ) ) ) );
         exception when others =>
-           err( +"invalid based numeric literal" );
+          err(
+              contextNotes => +"reading the byte code",
+              -- GNT doesn't have much context
+              subjectNotes => +"the based numeric literal",
+              reason => +"should have a " & em( "valid value" ) & pl(" not"),
+              obstructorNotes => em_value( to_unbounded_string( script( cmdpos..lastpos ) ) ),
+              remedy => +"a character is out of range or the value is too big",
+              seeAlso => seeLiterals
+          );
         end;
      else
         identifiers( number_t ).value.all := To_Unbounded_String( -- extract number
@@ -5293,12 +5742,27 @@ begin
              cmdpos := cmdpos + 1;
           end if;
      when '_' =>                                              -- _ test
-          err( +"Leading underscores not allowed in identifiers" );
+          err(
+              contextNotes => +"reading the byte code",
+              -- GNT doesn't have much context
+              subjectNotes => +"an identifier",
+              reason => +"should not begin with",
+              obstructorNotes => +"a leading underscore",
+              seeAlso => seeTypes
+              -- TODO: Identifier names probably shouldn't be in types.html
+          );
           cmdpos := cmdpos+1;                                 -- advance posn
           return;
      when '!' =>                                              -- ! / != test
           if script( cmdpos+1 ) = '=' then
-             err( +"/= expected" );
+              err(
+                  contextNotes => +"reading the byte code",
+                  -- GNT doesn't have much context
+                  subjectNotes => em( "not equals" ) & pl(" (!=)" ),
+                  reason => +"should be",
+                  obstructorNotes => pl("'") & em( "/=" ) & pl("'"),
+                  seeAlso => seeAssign
+              );
           end if;
           cmdpos := cmdpos+2;                                 -- advance posn
           return;
@@ -5418,7 +5882,13 @@ end isValid;
 procedure saveScript( scriptState : out aScriptState ) is
 begin
   if script = null then
-     err( pl( gnat.source_info.source_location & ": Internal error: saveScript has no script to save" ) );
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while saving a script " ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because",
+         obstructorNotes => +"the script to save is null"
+     );
   end if;
   markScanner( scriptState.scannerState );
   scriptState.script := script;
@@ -5439,7 +5909,13 @@ end saveScript;
 procedure restoreScript( scriptState : in out aScriptState ) is
 begin
   if scriptState.script = null then
-     err( pl( gnat.source_info.source_location & ": Internal error: restoreScript has no script to restore" ) );
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while restoring a saved script " ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because",
+         obstructorNotes => +"the script to restore is null"
+     );
   end if;
   if script /= null then
      free( script );
@@ -5572,7 +6048,12 @@ begin
      end if;
   elsif sourceFilesList.Length( sourceFiles ) = 255 then   -- too many?
      -- 255 is one byte minus 0, which is reserved
-     err( inv( "too many include files and subunits" ) );
+     err(
+         contextNotes => +"including a separate file",
+         subjectNotes =>  em_value( includeName ),
+         reason => +"cannot be included because the interpreter has reached",
+         obstructorNotes => +"the maximum number of separate files and subunits"
+     );
   else                                                     -- new file
 
      includeFileGood := true;
@@ -5606,21 +6087,44 @@ begin
           close( include_file );
         exception
             when STATUS_ERROR =>
-              err( +"cannot open include file" & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
-                 pl( " - file may be locked" ) );
+              err(
+                  contextNotes => pl( "At " & gnat.source_info.source_location &
+                     " while including separate file " ) & em_value( includeName ),
+                  subjectNotes => subjectInterpreter,
+                  reason => +"had an internal error because",
+                  obstructorNotes => +"the file may be locked"
+              );
               return;
             when NAME_ERROR =>
                 if traceOpt then
                    put_trace( "Cannot open " & toSecureData( to_string( toEscaped( libraryPrefix & includeName ) ) ) );
                 end if;
             when MODE_ERROR =>
-                err( pl( "interal error: mode error on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
-                 return;
+              err(
+                  contextNotes => pl( "At " & gnat.source_info.source_location &
+                     " while including separate file " ) & em_value( includeName ),
+                  subjectNotes => subjectInterpreter,
+                  reason => +"had an internal error because",
+                  obstructorNotes => +"a mode_error exception was raised"
+              );
+              return;
             when END_ERROR =>
-              err( pl( "interal error: end of file reached on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
-            return;
+              err(
+                  contextNotes => pl( "At " & gnat.source_info.source_location &
+                     " while including separate file " ) & em_value( includeName ),
+                  subjectNotes => subjectInterpreter,
+                  reason => +"had an internal error because",
+                  obstructorNotes => +"the end of file was reached early"
+              );
+              return;
             when others =>
-               err( pl( "interal error: unexpected error reading " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+              err(
+                  contextNotes => pl( "At " & gnat.source_info.source_location &
+                     " while including separate file " ) & em_value( includeName ),
+                  subjectNotes => subjectInterpreter,
+                  reason => +"had an internal error because",
+                  obstructorNotes => +"an unexpected exception was raised"
+               );
                return;
         end;
 
@@ -5684,21 +6188,44 @@ begin
              end if;
            exception
                when STATUS_ERROR =>
-                 err( pl( "cannot open include file" ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) &
-                    pl( " - file may be locked" ) );
+                 err(
+                     contextNotes => pl( "At " & gnat.source_info.source_location &
+                        " while including separate file " ) & em_value( includeName ),
+                     subjectNotes => subjectInterpreter,
+                     reason => +"had an internal error because",
+                     obstructorNotes => +"the file may be locked"
+                 );
                  return;
                when NAME_ERROR =>
                    if traceOpt then
                       put_trace( "Cannot open " & toSecureData( to_string( toEscaped( libraryPrefix & includeName ) ) ) );
                    end if;
                when MODE_ERROR =>
-                   err( pl( "interal error: mode error on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
-                    return;
+                 err(
+                     contextNotes => pl( "At " & gnat.source_info.source_location &
+                        " while including separate file " ) & em_value( includeName ),
+                     subjectNotes => subjectInterpreter,
+                     reason => +"had an internal error because",
+                     obstructorNotes => +"a mode_error exception was raised"
+                 );
+                 return;
                when END_ERROR =>
-                 err( pl( "interal error: end of file reached on include file " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
-               return;
+                 err(
+                     contextNotes => pl( "At " & gnat.source_info.source_location &
+                        " while including separate file " ) & em_value( includeName ),
+                     subjectNotes => subjectInterpreter,
+                     reason => +"had an internal error because",
+                     obstructorNotes => +"the end of file was reached early"
+                 );
+                 return;
                when others =>
-                  err( pl( "interal error: unexpected error reading " ) & em( toSecureData( to_string( toEscaped( includeName ) ) ) ) );
+                 err(
+                     contextNotes => pl( "At " & gnat.source_info.source_location &
+                        " while including separate file " ) & em_value( includeName ),
+                     subjectNotes => subjectInterpreter,
+                     reason => +"had an internal error because",
+                     obstructorNotes => +"an unexpected exception was raised"
+                  );
                   return;
            end;
            libraryPrefixNumber := libraryPrefixNumber + 1;  -- next prefix
@@ -5710,14 +6237,26 @@ begin
      -- existing file.
 
      if not includeFileGood then
-        err( pl( "with separate file " ) & em_esc( includeName ) &
-             pl( " is not readable, is world writable, is not a file or is empty" ) );
+        err(
+            contextNotes => +"including a separate file",
+            subjectNotes =>  em_value( includeName ),
+            reason => +"cannot be included because the file is",
+            obstructorNotes =>pl( "not readable, is world writable, is not a file or is empty" )
+        );
      elsif not includeDirGood then
-        err( pl( "with separate file " ) & em_esc( includeName ) &
-             pl( " is in a directory that not readable, is world writable, or is not a directory" ) );
+        err(
+            contextNotes => +"including a separate file",
+            subjectNotes =>  em_value( includeName ),
+            reason => +"cannot be included because the directory of the file is",
+            obstructorNotes =>pl( "not readable, is world writable, is not a file or is empty" )
+        );
      elsif not includeFileOpened then
-        err( pl( "with separate file " ) & em_esc( includeName ) &
-             pl( " doesn't exist or is not readable" ) );
+        err(
+            contextNotes => +"including a separate file",
+            subjectNotes =>  em_value( includeName ),
+            reason => +"cannot be included because the directory of the file is",
+            obstructorNotes =>pl( "missing or is not readable" )
+        );
         fileLocation := SourceFilesList.aListIndex'last;
      end if;
   end if;
@@ -5740,7 +6279,12 @@ procedure insertInclude( includeName : unbounded_string ) is
   includeText : unbounded_string;
 begin
   if script = null then                                       -- no script?
-     err( pl( Gnat.Source_Info.Source_Location & "internal_error: no script" ) );
+     err( contextNotes => pl( "At " & gnat.source_info.source_location &
+          " while including separate file " ) & em_esc( includeName ),
+          subjectNotes => subjectInterpreter,
+          reason => +"had an internal error because",
+          obstructorNotes => +"the current script is should not be null"
+    );
   else
 
      -- includes are based on a byte code position (the file name is not

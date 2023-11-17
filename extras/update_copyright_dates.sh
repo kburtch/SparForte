@@ -1,6 +1,6 @@
-ls *.orig | (while read FILE ; do
+ls *.adb | (while read FILE ; do
 
-  sed 's/2001-2020/2001-2021/g' < "$FILE" > t.t
+  sed 's/2001-2022/2001-2023/g' < "$FILE" > t.t
   mv t.t "$FILE"
 done)
 

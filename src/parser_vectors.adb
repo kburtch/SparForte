@@ -2111,7 +2111,7 @@ begin
         err(
           context => subprogramId,
           subjectNotes => pl( qp( "a second index" ) ),
-          reason => +"was expected not",
+          reason => +"is expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
@@ -2182,7 +2182,7 @@ begin
           context => subprogramId,
           subjectNotes => pl( qp( "a vector element" ) ),
           subjectType => identifiers( vectorId ).genKind2,
-          reason => +"was expected not",
+          reason => +"is expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );
@@ -2253,7 +2253,7 @@ begin
           context => subprogramId,
           subjectNotes => pl( qp( "a vector element" ) ),
           subjectType => identifiers( vectorId ).genKind2,
-          reason => +"was expected not",
+          reason => +"is expected not",
           obstructor => token,
           obstructorType => identifiers( token ).kind
         );

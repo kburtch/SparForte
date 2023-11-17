@@ -5888,12 +5888,19 @@ end CompileRunAndCaptureOutput;
 --
 -- debugger: step one instruction forward.  Do this by activating SIGINT
 -----------------------------------------------------------------------------
+-- See also builtins.step.
 
 procedure ParseStep is
 begin
   expect( step_t );
   if inputMode /= breakout then
-     err( +"step can only be used when you break out of a script" );
+     err(
+         contextNotes => +"in the shell command",
+         subjectNotes => em( "step" ),
+         reason => +"can only be used when you",
+         obstructorNotes => em( "break out of a script" ),
+         seeAlso => +"doc/ref_shellcmds.html"
+     );
   else
      done := true;
      breakoutContinue := true;
@@ -6576,14 +6583,14 @@ begin
   elsif token = procedure_t then
      err(
          subject => token,
-         reason => +"was not expected in",
+         reason => +"is not expected in",
          obstructorNotes => em( "executable statements" ),
          remedy => +"this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & em( "begin" )
      );
   elsif token = function_t then
      err(
          subject => token,
-         reason => +"was not expected in",
+         reason => +"is not expected in",
          obstructorNotes => em( "executable statements" ),
          remedy => +"this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & em( "begin" )
      );
@@ -6980,14 +6987,14 @@ begin
   elsif token = procedure_t then
      err(
          subject => token,
-         reason => +"was not expected in",
+         reason => +"is not expected in",
          obstructorNotes => em( "general statements" ),
          remedy => +"this is a procedure in an unstructured script but procedures need to be within a main program.  Else procedures should be declared in a block before " & em( "begin" )
      );
   elsif token = function_t then
      err(
          subject => token,
-         reason => +"was not expected in",
+         reason => +"is not expected in",
          obstructorNotes => em( "general statements" ),
          remedy => +"this is a function in an unstructured script but functions need to be within a main program.  Else functions should be declared in a block before " & em( "begin" )
      );

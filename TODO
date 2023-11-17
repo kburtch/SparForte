@@ -13,9 +13,14 @@ Priority Issues (Fix These First)
 
 - ongoing
   - conversion of error message to give additional context
+    - qp() - quiet mode capitalize first - and subjectNotes in err()
+    - in scanner, JSON routines need to support alterantive text
+      for long JSON contexts.  What is the best way to implement?
+    - messages in present or past tense not both
+  - review scanner JSON error messages for length tests and accuracy
+    of messages and context
   - bash compatibility audit
   - coverage tests of recent changes
-
 
   - an exception was raised that, when it finally was received at the
     top level, had lost the message.  This occurred in the washed_blocked
@@ -470,6 +475,8 @@ Nice to Haves / Missing Functionality
     - should disallow access to certain files or directories like /etc/password by
       default, unless security pragma allows otherwise.  This is similar to Java's
       Security Manager.
+      - while URL's can be aliased, paste-bin URLs should not appear in strings.
+        However, should we be doing this type of malware filtering?
     - pragma deprecated is designed for scripts, but there is no way to deprecate
       subprograms, types, etc.  In general, I need to expand end-of-life
       and migration features.
@@ -1011,7 +1018,7 @@ ISSUES (Bourne Shell)
     case, but it also raises the issue of scope with pullBlock--technically,
     j is a global but pullBlock treats all internal declarations as local.
    - an undo for unset
-
+   - unset does not work under pragma ada_95 but should
 
 MAJOR REDESIGNS
 

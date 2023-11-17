@@ -78,6 +78,35 @@ procedure warn( msg : messageStrings );
 --
 ------------------------------------------------------------------------------
 
+-- Common Context Strings
+
+contextInCommand   : constant messageStrings := +"in the shell command";
+contextInPipeline  : constant messageStrings := +"in the pipeline";
+contextInSQL       : constant messageStrings := +"in the SQL statement";
+contextStarting    : constant messageStrings := +"starting the interpreter";
+
+-- Common Subject Strings
+-- These are generated on startup because qp() depends on command line options
+
+subjectOS          :  messageStrings;
+subjectInterpreter :  messageStrings;
+subjectProgram     :  messageStrings;
+subjectScriptInterpreter :  messageStrings;
+
+-- Common Obstructor Strings
+
+obstructorAda95    : constant messageStrings := em( "pragma ada_95" );
+
+-- Common See Also Strings
+
+seeAssign          : constant messageStrings := +"doc/ref_assign.html";
+seeDB              : constant messageStrings := +"doc/ref_db.html";
+seeLiterals        : constant messageStrings := +"doc/ref_literals.html";
+seePragmas         : constant messageStrings := +"doc/ref_pragmas.html";
+seeShellCmds       : constant messageStrings := +"doc/ref_shellcmds.html";
+seeTypes           : constant messageStrings := +"doc/ref_types.html";
+
+------------------------------------------------------------------------------
 
 type rootUserLanguage is abstract tagged null record;
 
@@ -444,6 +473,36 @@ procedure expectAdaScriptDifferences(
 -- like expectAdaScript, must makes it clear Ada and SparForte both have the
 -- subject but they may vary in parameters or function/procedure.
 
+-----------------------------------------------------------------------------
+-- Restricted Shell
+-----------------------------------------------------------------------------
+
+procedure expectNonRestrictedShell( subjectNotes : string );
+
+-----------------------------------------------------------------------------
+-- Internal errors
+-----------------------------------------------------------------------------
+
+procedure internalErrorUsageQualifier(
+    contextNotes    : messageStrings := nullMessageStrings;
+    subject         : identifier := eof_t;
+    remedy          : messageStrings := nullMessageStrings );
+
+-----------------------------------------------------------------------------
+-- Operating System errors
+-----------------------------------------------------------------------------
+
+function getEmOSError( code : integer ) return messageStrings;
+function getEmOSError return messageStrings;
+
+
+-----------------------------------------------------------------------------
+--Housekeeping
+-----------------------------------------------------------------------------
+
+
+procedure startCommunications;
+procedure shutdownCommunications;
 
 -----------------------------------------------------------------------------
 PRIVATE

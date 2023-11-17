@@ -2049,6 +2049,7 @@ end expectIdentifier;
 -----------------------------------------------------------------------------
 
 procedure expectStatementSemicolon( context : identifier := eof_t ) is
+   errState : aScannerState;
 begin
   -- in interactive modes, a comment will hide the semi-colon automatically
   -- added by SparForte.  This can also happen with `..`
@@ -2066,6 +2067,72 @@ begin
        expectedValue => ";",
        context => context,
        reason => +"':' could be a mistake because the end of the statement"
+     );
+  elsif token = symbol_t and identifiers( token ).value.all = "|" then
+     expectSymbol(
+       expectedValue => ";",
+       context => context,
+       reason => +"'|' could be a mistake because the end of the statement",
+       remedy => +"this is not a command so standard output cannot be used in a command pipeline"
+     );
+  -- > and >>
+  elsif token = symbol_t and identifiers( token ).value.all = ">" then
+     markScanner( errState );
+     getNextToken;
+     if identifiers( token ).value.all = ">" then
+        -- the error cursor may not be correct here
+        resumeScanning( errState );
+        expectSymbol(
+          expectedValue => ";",
+          context => context,
+          reason => +"'>>' could be a mistake because the end of the statement",
+          remedy => +"this is not a command so the standard output cannot be redirected like commands"
+        );
+     else
+        -- the error cursor may not be correct here
+        resumeScanning( errState );
+        expectSymbol(
+          expectedValue => ";",
+          context => context,
+          reason => +"'>' could be a mistake because the end of the statement",
+          remedy => +"this is not a command so the standard output cannot be redirected like commands"
+        );
+     end if;
+  elsif token = symbol_t and identifiers( token ).value.all = "<" then
+     expectSymbol(
+       expectedValue => ";",
+       context => context,
+       reason => +"'<' could be a mistake because the end of the statement",
+       remedy => +"this is not a command so the standard input cannot be redirected like commands"
+     );
+  -- 2> and 2>>
+  elsif token = number_t and identifiers( token ).value.all = " 2" then
+     markScanner( errState );
+     getNextToken;
+     if identifiers( token ).value.all = ">" then
+        -- the error cursor may not be correct here
+        resumeScanning( errState );
+        expectSymbol(
+          expectedValue => ";",
+          context => context,
+          reason => +"'2>' or '2>>' could be a mistake because the end of the statement",
+          remedy => +"this is not a command so the standard error cannot be redirected like commands"
+        );
+     else
+        -- the error cursor may not be correct here
+        resumeScanning( errState );
+           expectSymbol(
+           expectedValue => ";",
+           context => context,
+           reason => +"the end of the statement"
+        );
+     end if;
+  elsif identifiers( token ).value.all = "&" then
+     expectSymbol(
+       expectedValue => ";",
+       context => context,
+       reason => +"'&' could be a mistake because the end of the statement",
+       remedy => +"this is a procedure so it cannot run as a background command"
      );
   else
      expectSymbol(
@@ -2548,7 +2615,7 @@ begin
         contextType => contextType,
         subject => subject,
         reason => +"is not compatible with",
-        obstructorNotes => em( "pragma ada_95" ),
+        obstructorNotes => obstructorAda95,
         remedy => remedy
      );
   end if;
@@ -2568,7 +2635,7 @@ begin
         contextNotes => contextNotes,
         subject => subject,
         reason => +"is not compatible with",
-        obstructorNotes => em( "pragma ada_95" ),
+        obstructorNotes => obstructorAda95,
         remedy => remedy
      );
   end if;
@@ -2596,7 +2663,7 @@ begin
         contextType => contextType,
         subject => subject,
         reason => +"has differences with Ada's version and is not fully compatible with" ,
-        obstructorNotes => em( "pragma ada_95" ),
+        obstructorNotes => obstructorAda95,
         remedy => remedy
      );
   end if;
@@ -2616,16 +2683,95 @@ begin
         contextNotes => contextNotes,
         subject => subject,
         reason => +"has differences with Ada's version and is not fully compatible with" ,
-        obstructorNotes => em( "pragma ada_95" ),
+        obstructorNotes => obstructorAda95,
         remedy => remedy
      );
   end if;
   expect( subject );
 end expectAdaScriptDifferences;
 
+-----------------------------------------------------------------------------
+-- Restricted Shell
+-----------------------------------------------------------------------------
 
+procedure expectNonRestrictedShell( subjectNotes : string ) is
+begin
+  if rshOpt then
+      err(
+          subjectNotes => em( subjectNotes ),
+          reason => +"is not allowed in a",
+          obstructorNotes => em( "restricted shell" )
+      );
+  end if;
+end expectNonRestrictedShell;
+
+
+-----------------------------------------------------------------------------
+-- Internal errors
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  INTERNAL ERROR USAGE QUALIFIER
+--
+-- An unexpected usage qualifier was found, usually appearning in a case
+-- others clause
+-----------------------------------------------------------------------------
+
+procedure internalErrorUsageQualifier(
+    contextNotes    : messageStrings := nullMessageStrings;
+    subject         : identifier := eof_t;
+    remedy          : messageStrings := nullMessageStrings ) is
+begin
+    err(
+        contextNotes => contextNotes,
+        subject => subject,
+        reason => +"had an internal error because it had",
+        obstructorNotes => pl( "an unexpected usage qualifier " &
+           identifiers( subject ).usage'img )
+    );
+end internalErrorUsageQualifier;
+
+
+-----------------------------------------------------------------------------
+-- Operating System errors
+-----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+-- EM OS ERROR
+--
+-- A short function to return a formatted OS error message for operating
+-- system errors.
+-----------------------------------------------------------------------------
+
+function getEmOSError( code : integer ) return messageStrings is
+begin
+  return em( OSError( code ) & "(" & code'img & ")" );
+end getEmOSError;
+
+function getEmOSError return messageStrings is
+begin
+  return getEmOSError( C_errno );
+end getEmOSError;
+
+procedure startCommunications is
 begin
   -- the user language is hard coded, for now, to English
   userLanguage  := new englishUserLanguage;
+
+  -- QP is only valid after command line options are processed
+
+  subjectOS                := pl( qp( "the O/S" ) );
+  subjectInterpreter       := pl( qp( "the SparForte interpreter" ) );
+  subjectProgram           := pl( qp( "the program" ) );
+  subjectScriptInterpreter := pl( qp( "the script interpreter" ) );
+end startCommunications;
+
+procedure shutdownCommunications is
+begin
+  null;
+end shutdownCommunications;
+
 end scanner.communications;
 

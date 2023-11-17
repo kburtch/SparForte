@@ -369,12 +369,20 @@ begin
    end if;
    cdrom_fd := open( to_string( CDPath ) & ASCII.NUL, O_RDONLY+O_NONBLOCK, 0 );
    if cdrom_fd < 0 then
-      err( pl( "Error openning CD-ROM drive: " & OSError( C_errno ) ) );
+      err( contextNotes => +"using the optical drive",
+           subjectNotes => +"the drive",
+           reason => +"could not be opened because syscall open() returned",
+           obstructorNotes => getEmOSError
+      );
       StopCD;
    end if;
    ioctl_cdromstart( ioctl_result, cdrom_fd, CDROMSTART, dummy );
    if ioctl_result < 0 then
-      err( pl( "Error spinning up the CDROM drive: " & OSError( C_errno ) ) );
+      err( contextNotes => +"using the optical drive",
+           subjectNotes => +"the disk",
+           reason => +"could not be started because syscall ioctl() returned",
+           obstructorNotes => getEmOSError
+      );
       StopCD;
    end if;
    playinfo.start_track := 1; -- first track
@@ -384,9 +392,17 @@ begin
    ioctl_playtrkind( ioctl_result, cdrom_fd, CDROMPLAYTRKIND, playinfo );
    if ioctl_result < 0 then
       if C_errno = EINVAL then
-         err( pl( "CD is not an audio CD" ) );
+         err( contextNotes => +"using the optical drive",
+              subjectNotes => +"a disk track",
+              reason => +"could not be started because syscall ioctl() returned",
+              obstructorNotes => em( "CD is not an audio CD" )
+         );
       else
-         err( pl( "Error starting audio CD music: " & OSError( C_errno ) ) );
+         err( contextNotes => +"using the optical drive",
+              subjectNotes => +"a disk track",
+              reason => +"could not be started because syscall ioctl() returned",
+              obstructorNotes => getEmOSError
+         );
       end if;
       StopCD;
    end if;
@@ -403,7 +419,11 @@ begin
    end if;
    ioctl_cdromstop( ioctl_result, cdrom_fd, CDROMSTOP, dummy );
    if ioctl_result < 0 then
-      err( pl( "Error stopping audio CD: " & OSError( C_errno ) ) );
+      err( contextNotes => +"using the optical drive",
+           subjectNotes => +"a disk track",
+           reason => +"could not be stopped because syscall ioctl() returned",
+           obstructorNotes => getEmOSError
+      );
    end if;
 <<retry>>
    res := close( cdrom_fd );
