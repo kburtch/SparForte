@@ -960,9 +960,8 @@ procedure ParseArraysToJSON is
   jsonString    : unbounded_string;
 begin
   expect( arrays_to_json_t );
-  expect( symbol_t, "(" );
-  ParseOutParameter( target_ref, json_string_t );
-  expectParameterComma;
+  ParseFirstOutParameter( arrays_to_json_t, target_ref, json_string_t );
+  expectParameterComma( arrays_to_json_t );
   ParseIdentifier( source_var_id );
   --if identifiers( source_var_id ).class = typeClass or identifiers( source_var_id ).class = subClass then
   --   source_base_id := getBaseType( source_var_id );

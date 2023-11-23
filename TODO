@@ -20,6 +20,8 @@ Priority Issues (Fix These First)
     - qp() - quiet mode capitalize first - and subjectNotes in err()
     - review scanner JSON error messages for length tests and accuracy
       of messages and context
+    - arrays.to_json( a, js ), that is, with parameters reversed
+      produces '( expected' but I'm not sure where
   - bash compatibility audit
   - coverage tests of recent changes
 
@@ -35,6 +37,7 @@ Priority Issues (Fix These First)
       - proper error messages should be provided on unavailable
         functions
 
+- building with SDL may be giving spar_os.sdl errors
 - while testing the command line, type x is new integer; y : x; y := "foo"
   worked but should have reported an error.
 - with a space change, a simple prompt script reported a statement

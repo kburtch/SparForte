@@ -503,6 +503,10 @@ altTextDisplayLength : constant natural := 128;
 
 function contextAltText( normal : unbounded_string; too_long : string )
    return messageStrings;
+function jsonDecodeContextAltText( normal : unbounded_string; too_long : string )
+   return messageStrings;
+function jsonEncodeContextAltText( normal : unbounded_string; too_long : string )
+   return messageStrings;
 
 function getEmOSError( code : integer ) return messageStrings;
 function getEmOSError return messageStrings;

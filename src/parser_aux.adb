@@ -193,7 +193,7 @@ begin
      if C_errno = 0 then
         err( subjectNotes => +"a network socket",
              reason => +"could not be created because ",
-             obstructorNotes => pl( "there is no host by the name " ) & 
+             obstructorNotes => pl( "there is no host by the name " ) &
                 em_value( serverName ) );
      else
         err( subjectNotes => +"a network socket",

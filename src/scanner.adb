@@ -4104,7 +4104,7 @@ procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_st
 begin
   result := null_unbounded_string;
   if length( expr_val ) < 2 then
-     err( contextNotes => contextAltText( expr_val, "reading the JSON string value" ),
+     err( contextNotes => jsonDecodeContextAltText( expr_val, "decoding the JSON string value" ),
           subjectNotes => +"the length",
           reason => pl( "should at least 2 characters because there should be" ),
           obstructorNotes => em( "2 double quotes" )
@@ -4119,7 +4119,7 @@ begin
      end if;
   end if;
   if not ok then
-     err( contextNotes => contextAltText( expr_val, "reading the JSON string value" ),
+     err( contextNotes => jsonDecodeContextAltText( expr_val, "decoding the JSON string value" ),
           subjectNotes => +"a " & em( "double quote" ),
           reason => pl( "should begin the string" ),
           obstructorNotes => nullMessageStrings
@@ -4157,7 +4157,7 @@ begin
      i := i + 1;
   end loop;
   if element( expr_val, i ) /= '"' then
-     err( contextNotes => contextAltText( expr_val, "reading the JSON string value" ),
+     err( contextNotes => jsonDecodeContextAltText( expr_val, "decoding the JSON string value" ),
           subjectNotes => +"a " & em( "double quote" ),
           reason => pl( "should end the string" ),
           obstructorNotes => nullMessageStrings
@@ -4173,7 +4173,6 @@ end DoJsonToString;
 -- can be reused elsewhere in the language as required.  Params are not
 -- checked.
 -----------------------------------------------------------------------------
--- TODO: target_ref should be an unbounded_string
 
 procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier ) is
   source_first  : long_integer;
@@ -4206,22 +4205,33 @@ begin
            for arrayElementPos in source_first..source_last loop
                -- data := arrayElement( sourceArrayId, arrayElementPos );
                data := identifiers( source_var_id ).avalue( arrayElementPos );
-               enum_val := integer( to_numeric( data ) );
-               if enum_val = 0 then
-                  item := to_unbounded_string( "false" );
-               elsif enum_val = 1 then
-                  item := to_unbounded_string( "true" );
-               else
+               if length( data ) = 0 then
                   err(
-                      contextNotes => pl( "At " & gnat.source_info.source_location &
-                          " while encoding an array to JSON" ),
-                      subjectNotes => subjectInterpreter,
-                      reason => +"had an internal error because of",
-                      obstructorNotes => pl( "an unexpect boolean position" & enum_val'img )
+                      contextNotes => +"enoding the JSON array value",
+                      subject => source_var_id,
+                      subjectType => identifiers( source_var_id ).kind,
+                      reason => pl( "has an " ) & em( "undefined value" ) &
+                         pl(" at index" & arrayElementPos'img ),
+                      obstructorNotes => nullMessageStrings
                   );
-               end if;
-               if arrayElementPos /= source_last then
-                  result := result & item & to_unbounded_string( "," );
+               else
+                  enum_val := integer( to_numeric( data ) );
+                  if enum_val = 0 then
+                     item := to_unbounded_string( "false" );
+                  elsif enum_val = 1 then
+                     item := to_unbounded_string( "true" );
+                  else
+                     err(
+                         contextNotes => pl( "At " & gnat.source_info.source_location &
+                             " while enoding the JSON array value" ),
+                         subjectNotes => subjectInterpreter,
+                         reason => +"had an internal error because of",
+                         obstructorNotes => pl( "an unexpect boolean position" & enum_val'img )
+                     );
+                  end if;
+                  if arrayElementPos /= source_last then
+                     result := result & item & to_unbounded_string( "," );
+                  end if;
                end if;
            end loop;
            result := result & item & to_unbounded_string( "]" );
@@ -4251,7 +4261,16 @@ begin
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
            data := identifiers( source_var_id ).avalue( arrayElementPos );
-           if element( data, 1 ) = ' ' then
+           if length( data ) = 0 then
+              err(
+                  contextNotes => +"enoding the JSON array value",
+                  subject => source_var_id,
+                  subjectType => identifiers( source_var_id ).kind,
+                  reason => pl( "has an " ) & em( "undefined value" ) &
+                     pl(" at index" & arrayElementPos'img ),
+                  obstructorNotes => nullMessageStrings
+              );
+           elsif element( data, 1 ) = ' ' then
               delete( data, 1, 1 );
            end if;
            if arrayElementPos /= source_last then
@@ -4262,8 +4281,7 @@ begin
      else
         -- private types are unique types extending variable_t
         err(
-            contextNotes => pl( "At " & gnat.source_info.source_location &
-                " while encoding an array to JSON" ),
+            contextNotes => +"enoding the JSON array value",
             subjectNotes => subjectInterpreter,
             reason => +"cannot encode the array as JSON because",
             obstructorNotes => pl( "it has private type elements" )
@@ -4272,7 +4290,7 @@ begin
 exception when CONSTRAINT_ERROR =>
      err(
          contextNotes => pl( "At " & gnat.source_info.source_location &
-             " while converting an array to JSON" ),
+             " while enoding the JSON array value" ),
          subjectNotes => subjectInterpreter,
          reason => +"had an internal error because",
          obstructorNotes => pl( "a constraint_error was raised" )
@@ -4280,7 +4298,7 @@ exception when CONSTRAINT_ERROR =>
 when STORAGE_ERROR =>
      err(
          contextNotes => pl( "At " & gnat.source_info.source_location &
-             " while converting an array to JSON" ),
+             " while encoding an array to JSON" ),
          subjectNotes => subjectInterpreter,
          reason => +"had an internal error because",
          obstructorNotes => pl( "a storage_error was raised" )
@@ -4300,7 +4318,7 @@ procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_stri
   target_first  : long_integer;
   target_last   : long_integer;
   target_len    : long_integer;
-  sourceLen     : long_integer;
+  numItems      : long_integer;
   item          : unbounded_string;
   decoded_item  : unbounded_string;
   -- targetArrayId : arrayID;
@@ -4312,50 +4330,47 @@ procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_stri
   inQuotes      : boolean;
 begin
   -- look up the array information
-  -- targetArrayId := arrayID( to_numeric( identifiers( target_var_id ).value ) );
-  -- target_first := firstBound( targetArrayID );
-  -- target_last  := lastBound( targetArrayID );
   target_first := identifiers( target_var_id ).avalue'first;
   target_last  := identifiers( target_var_id ).avalue'last;
   target_len   := target_last - target_first + 1;
   kind := getUniType( identifiers( target_var_id ).kind );
   elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
 
-     -- basic JSon validation.  Important to verify it isn't a record.
-     declare
-       i : integer := 1;
-       ch: character;
-     begin
-       skipJSONWhitespace( source_val, i );
-       if length( source_val ) > 0 then
-          ch := element( source_val, i );
-          if ch = '{' then
-            err( pl( "JSON array expected but found object" ) );
-          elsif ch /= '[' then
-            err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-                 subjectNotes => +"an opening '['",
-                 reason => pl( "is expected for an array" ),
-                 obstructorNotes => nullMessageStrings
-            );
-          elsif element( source_val, length( source_val ) ) /= ']' then
-            err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-                 subjectNotes => +"a closing ']'",
-                 reason => pl( "is expected for an array" ),
-                 obstructorNotes => nullMessageStrings
-            );
-          end if;
+  -- basic JSon validation.  Important to verify it isn't a record.
+  declare
+    i : integer := 1;
+    ch: character;
+  begin
+    skipJSONWhitespace( source_val, i );
+    if length( source_val ) > 0 then
+       ch := element( source_val, i );
+       if ch = '{' then
+          err( pl( "JSON array expected but found object" ) );
+       elsif ch /= '[' then
+         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+              subjectNotes => +"an opening '['",
+              reason => pl( "is expected for an array" ),
+              obstructorNotes => nullMessageStrings
+         );
+       elsif element( source_val, length( source_val ) ) /= ']' then
+         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+              subjectNotes => +"a closing ']'",
+              reason => pl( "is expected for an array" ),
+              obstructorNotes => nullMessageStrings
+         );
        end if;
-     end;
+    end if;
+  end;
 
-     -- Count the number of items in the JSON string, handling escaping as
-     -- required.  Source len will be the number of items.
+  -- Count the number of items in the JSON string, handling escaping as
+  -- required.  Source len will be the number of items.
 
-     sourceLen := 0;
+  numItems := 0;
 
-     declare
-       i : integer := 1;
-       discard : unbounded_string;
-     begin
+  declare
+    i : integer := 1;
+    discard : unbounded_string;
+  begin
        while i <= length( source_val ) loop
          ch := element( source_val, i );
          if ch = '[' then
@@ -4367,11 +4382,12 @@ begin
        if i <= length( source_val ) then
           i := i + 1; -- skip [
           loop
+            --SkipJSONWhitespace( source_val, i );
             ParseJSONItem( source_val, discard, i );
             if i > length( source_val ) then
                exit;
             else
-               sourceLen := sourceLen + 1;
+               numItems := numItems + 1;
                SkipJSONWhitespace( source_val, i );
                if i <= length( source_val ) then
                   ch := element( source_val, i );
@@ -4404,11 +4420,11 @@ begin
 
     -- Check to see if the length matches that of the array we are assigning
     -- to.  Null array is a special case.
-     if sourceLen = 0 and target_len = 0 then
+     if numItems = 0 and target_len = 0 then
         null;
-     elsif sourceLen /= target_len then
+     elsif numItems /= target_len then
         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-             subjectNotes => pl( "the JSON string length of" & sourceLen'img & " elements" ),
+             subjectNotes => pl( "the JSON string length of" & numItems'img & " elements" ),
              reason => +"does not equal the target array length of",
              obstructorNotes => em( target_len'img & " elements" )
         );
@@ -4421,30 +4437,42 @@ begin
            -- for a boolean array, we will have to convert true or false
            -- as well as raise an error on illegal values
            arrayElement := target_first;
-           for i in 2..length( source_val ) loop
-               ch := element( source_val, i );
-               if ch = ',' or ch = ']' then
-                  if item = "false" then
-                     -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
-                     identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "0" );
-                     arrayElement := arrayElement + 1;
-                     item := null_unbounded_string;
-                  elsif item = "true" then
-                     -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
-                     identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "1" );
-                     arrayElement := arrayElement + 1;
-                     item := null_unbounded_string;
+           declare
+              i : integer := 2;
+           begin
+              -- read true/false
+              while i <= length( source_val ) loop
+                 -- skip leading whitespace
+                 while i <= length( source_val ) loop
+                    ch := element( source_val, i );
+                    exit when ch /= ' ' and ch /= ASCII.HT;
+                    i := i + 1;
+                 end loop;
+                  ch := element( source_val, i );
+                  if ch = ',' or ch = ']' or ch = ' ' or ch = ASCII.HT then
+                     if item = "false" then
+                        -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
+                        identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "0" );
+                        arrayElement := arrayElement + 1;
+                        item := null_unbounded_string;
+                     elsif item = "true" then
+                        -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
+                        identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "1" );
+                        arrayElement := arrayElement + 1;
+                        item := null_unbounded_string;
+                     else
+                        err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value to an array" ),
+                             subjectNotes => +"a JSON boolean value",
+                             reason => +"is expected but instead found",
+                             obstructorNotes => em_value( item )
+                        );
+                     end if;
                   else
-                     err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-                          subjectNotes => +"a JSON boolean value",
-                          reason => +"is expected but instead found",
-                          obstructorNotes => em_value( item )
-                     );
+                     item := item & ch;
                   end if;
-               else
-                  item := item & ch;
-               end if;
-           end loop;
+                  i := i + 1;
+              end loop;
+           end;
         else
            -- for non-boolean array of enumerated types, use the ordinal
            -- position and treat it as an array of integers

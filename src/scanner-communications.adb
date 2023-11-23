@@ -1123,9 +1123,14 @@ begin
      end if;
 
      if contextType /= eof_t then
-        msg := msg & pl( " (" ) &
-         ( em( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) &
-         pl( ")" ) );
+        if head( identifiers( contextType ).name, 3 ) = "an " then
+           -- kind already has an AorAN (e.g. "an anonymous aray")
+           msg := msg & pl( " (" ) & em( to_string( toEscaped( identifiers( contextType ).name ) ) );
+        else
+           msg := msg & pl( " (" ) &
+             ( em( to_string( toEscaped( AorAN( identifiers( contextType ).name ) ) ) ) &
+             pl( ")" ) );
+        end if;
      elsif msg /= nullMessageStrings then
        msg := msg & pl( "," );
      end if;
@@ -1158,6 +1163,9 @@ begin
      if subjectType /= keyword_t then
         if subjectType = new_t then
            msg := msg & pl( " (" ) & em( "not declared" );
+        elsif head( identifiers( subjectType ).name, 3 ) = "an " then
+           -- kind already has an AorAN (e.g. "an anonymous aray")
+           msg := msg & pl( " (" ) & em( to_string( toEscaped( identifiers( subjectType ).name ) ) );
         else
            msg := msg & pl( " (" ) & em( to_string( toEscaped( AorAN( identifiers( subjectType ).name ) ) ) );
         end if;
@@ -1213,7 +1221,12 @@ begin
            obstructorTypeNeeded := true;
         end if;
         if obstructorTypeNeeded then
-           msg := msg & pl( " (" ) & ( em( to_string( toEscaped( AorAN( identifiers( obstructorType ).name ) ) ) ) & pl( ")" ) );
+           if head( identifiers( obstructorType ).name, 3 ) = "an " then
+              -- kind already has an AorAN (e.g. "an anonymous aray")
+              msg := msg & pl( " (" ) & em( to_string( toEscaped( identifiers( obstructorType ).name ) ) );
+           else
+              msg := msg & pl( " (" ) & ( em( to_string( toEscaped( AorAN( identifiers( obstructorType ).name ) ) ) ) & pl( ")" ) );
+           end if;
         end if;
      end;
   end if;
@@ -2749,10 +2762,28 @@ function contextAltText( normal : unbounded_string; too_long : string ) return m
 begin
   if length( normal ) < altTextDisplayLength then
      -- return pl( "in " & toSecureData( to_string( toCtrlEscaped( normal ) ) ) );
-     return pl( "In the JSON value " ) & em_value( normal );
+     return pl( "In the value " ) & em_value( normal );
   end if;
   return pl( too_long );
 end contextAltText;
+
+function jsonDecodeContextAltText( normal : unbounded_string; too_long : string ) return messageStrings is
+begin
+  if length( normal ) < altTextDisplayLength then
+     -- return pl( "in " & toSecureData( to_string( toCtrlEscaped( normal ) ) ) );
+     return pl( "While decoding the JSON value " ) & em_value( normal );
+  end if;
+  return pl( too_long );
+end jsonDecodeContextAltText;
+
+function jsonEncodeContextAltText( normal : unbounded_string; too_long : string ) return messageStrings is
+begin
+  if length( normal ) < altTextDisplayLength then
+     -- return pl( "in " & toSecureData( to_string( toCtrlEscaped( normal ) ) ) );
+     return pl( "While encoding the JSON value " ) & em_value( normal );
+  end if;
+  return pl( too_long );
+end jsonEncodeContextAltText;
 
 
 -----------------------------------------------------------------------------

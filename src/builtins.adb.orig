@@ -872,7 +872,7 @@ begin
                if identifiers( i ).field_of = identToUnset and not identifiers( i ).deleted then
                 if not deleteIdent( i ) then
                    err(
-            		   contextNotes => +"in " & em( "unset" ),
+                       contextNotes => +"in " & em( "unset" ),
                        subjectNotes => em_value( identifiers( i ).name ),
                        reason => +"had an internal error because",
                        obstructorNotes => +"it cound not be deleted"
