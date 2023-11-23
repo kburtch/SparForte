@@ -8,3 +8,10 @@ CHANGES SINCE 2.6
 
 2. Fix: --without-readline now builds successfully.
 
+
+CHANGES SINCE 2.6.1
+
+3. New: more error messages updated to new format.
+
+4. Fix: additional error checks for JSON encode/decode.
+

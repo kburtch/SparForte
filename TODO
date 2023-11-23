@@ -13,18 +13,27 @@ Priority Issues (Fix These First)
 
 - ongoing
   - conversion of error message to give additional context
-    - qp() - quiet mode capitalize first - and subjectNotes in err()
-    - in scanner, JSON routines need to support alterantive text
+    - in scanner, JSON routines need to support alternative text
       for long JSON contexts.  What is the best way to implement?
     - messages in present or past tense not both
-  - review scanner JSON error messages for length tests and accuracy
-    of messages and context
+    - search for appropriate remedies
+    - qp() - quiet mode capitalize first - and subjectNotes in err()
+    - review scanner JSON error messages for length tests and accuracy
+      of messages and context
   - bash compatibility audit
   - coverage tests of recent changes
 
   - an exception was raised that, when it finally was received at the
     top level, had lost the message.  This occurred in the washed_blocked
     script.  It may be difficult to reproduce and determine the cause.
+
+  - upgrade SDL
+    - need to upgrade to 2.0
+    - net to fix pointer issues to SDL/OpenGL structures
+    - fix SDL disable
+      - spar_os.sdl should not be included
+      - proper error messages should be provided on unavailable
+        functions
 
 - while testing the command line, type x is new integer; y : x; y := "foo"
   worked but should have reported an error.

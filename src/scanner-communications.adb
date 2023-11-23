@@ -2734,8 +2734,25 @@ end internalErrorUsageQualifier;
 
 
 -----------------------------------------------------------------------------
--- Operating System errors
+-- MISCELLANEOUS
 -----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  CONTEXT ALT TEXT
+--
+-- Return a context string for a secured value, or return the alternative
+-- too long text if the text is very long.
+-----------------------------------------------------------------------------
+
+function contextAltText( normal : unbounded_string; too_long : string ) return messageStrings is
+begin
+  if length( normal ) < altTextDisplayLength then
+     -- return pl( "in " & toSecureData( to_string( toCtrlEscaped( normal ) ) ) );
+     return pl( "In the JSON value " ) & em_value( normal );
+  end if;
+  return pl( too_long );
+end contextAltText;
 
 
 -----------------------------------------------------------------------------
@@ -2754,6 +2771,12 @@ function getEmOSError return messageStrings is
 begin
   return getEmOSError( C_errno );
 end getEmOSError;
+
+
+-----------------------------------------------------------------------------
+--Housekeeping
+-----------------------------------------------------------------------------
+
 
 procedure startCommunications is
 begin

@@ -153,7 +153,6 @@ use ada.text_io,
 
 package body scanner is
 
-jsonErrorDisplayLength : constant natural := 128;
 
 -----------------------------------------------------------------------------
 --  PUT TOKEN
@@ -3936,36 +3935,18 @@ begin
      if ch = expectedChar then
          start := start + 1;
      else
-         -- if relatively short, show the string context
-         if length( jsonString ) < jsonErrorDisplayLength then
-            err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( jsonString ) ) ) ),
-                 subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
-                 reason => pl( "is expected at position" & start'img & " but found character" ),
-                 obstructorNotes => em_esc( ch )
-            );
-         else
-            err( contextNotes => +"reading the JSON value",
-                 subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
-                 reason => pl( "is expected at position" & start'img & " but found character" ),
-                 obstructorNotes => em_esc( ch )
-            );
-         end if;
+         err( contextNotes => contextAltText( jsonString, "reading the JSON value" ),
+              subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
+              reason => pl( "is expected at position" & start'img & " but found character" ),
+              obstructorNotes => em_esc( ch )
+         );
      end if;
   else
-     -- if relatively short, show the string context
-     if length( jsonString ) < jsonErrorDisplayLength then
-        err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( jsonString ) ) ) ),
-             subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
-             reason => pl( "is expected at position" & start'img & " but reached" ),
-             obstructorNotes => em( "the end of the string" )
-        );
-     else
-        err( contextNotes => +"reading the JSON value",
-             subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
-             reason => pl( "is expected at position" & start'img & " but reached" ),
-             obstructorNotes => em( "the end of the string" )
-        );
-     end if;
+     err( contextNotes => contextAltText( jsonString, "reading the JSON value" ),
+          subjectNotes => em_esc( to_unbounded_string( "" & expectedChar ) ),
+          reason => pl( "is expected at position" & start'img & " but reached" ),
+          obstructorNotes => em( "the end of the string" )
+     );
   end if;
 end JSONexpect;
 
@@ -4122,6 +4103,14 @@ procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_st
   ok : boolean := false;
 begin
   result := null_unbounded_string;
+  if length( expr_val ) < 2 then
+     err( contextNotes => contextAltText( expr_val, "reading the JSON string value" ),
+          subjectNotes => +"the length",
+          reason => pl( "should at least 2 characters because there should be" ),
+          obstructorNotes => em( "2 double quotes" )
+     );
+     return;
+  end if;
   i := 1;
   SkipJSONWhitespace( expr_val, i );
   if i < length( expr_val ) then
@@ -4130,20 +4119,11 @@ begin
      end if;
   end if;
   if not ok then
-     -- if relatively short, show the string context
-     if length( expr_val ) < jsonErrorDisplayLength then
-        err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( expr_val ) ) ) ),
-             subjectNotes => +"an opening double quote",
-             reason => pl( "is expected" ),
-             obstructorNotes => nullMessageStrings
-        );
-     else
-        err( contextNotes => +"reading the JSON string value",
-             subjectNotes => +"an opening double quote",
-             reason => pl( "is expected" ),
-             obstructorNotes => nullMessageStrings
-        );
-     end if;
+     err( contextNotes => contextAltText( expr_val, "reading the JSON string value" ),
+          subjectNotes => +"a " & em( "double quote" ),
+          reason => pl( "should begin the string" ),
+          obstructorNotes => nullMessageStrings
+     );
      return;
   end if;
   i := i + 1;
@@ -4176,6 +4156,13 @@ begin
      end if;
      i := i + 1;
   end loop;
+  if element( expr_val, i ) /= '"' then
+     err( contextNotes => contextAltText( expr_val, "reading the JSON string value" ),
+          subjectNotes => +"a " & em( "double quote" ),
+          reason => pl( "should end the string" ),
+          obstructorNotes => nullMessageStrings
+     );
+  end if;
 end DoJsonToString;
 
 
@@ -4345,34 +4332,17 @@ begin
           if ch = '{' then
             err( pl( "JSON array expected but found object" ) );
           elsif ch /= '[' then
-            -- if relatively short, show the string context
-            if length( source_val ) < jsonErrorDisplayLength then
-               err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                    subjectNotes => +"an opening '['",
-                    reason => pl( "is expected for an array" ),
-                    obstructorNotes => nullMessageStrings
-               );
-            else
-               err( contextNotes => +"decoding the JSON string value to an array",
-                    subjectNotes => +"an opening '['",
-                    reason => pl( "is expected for an array" ),
-                    obstructorNotes => nullMessageStrings
-               );
-            end if;
+            err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                 subjectNotes => +"an opening '['",
+                 reason => pl( "is expected for an array" ),
+                 obstructorNotes => nullMessageStrings
+            );
           elsif element( source_val, length( source_val ) ) /= ']' then
-            if length( source_val ) < jsonErrorDisplayLength then
-               err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                     subjectNotes => +"a closing ']'",
-                     reason => pl( "is expected for an array" ),
-                     obstructorNotes => nullMessageStrings
-                );
-            else
-                err( contextNotes => +"decoding the JSON string value to an array",
-                     subjectNotes => +"a closing ']'",
-                     reason => pl( "is expected for an array" ),
-                     obstructorNotes => nullMessageStrings
-                );
-            end if;
+            err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                 subjectNotes => +"a closing ']'",
+                 reason => pl( "is expected for an array" ),
+                 obstructorNotes => nullMessageStrings
+            );
           end if;
        end if;
      end;
@@ -4411,37 +4381,21 @@ begin
                      exit;
                   end if;
                else
-                  if length( source_val ) < jsonErrorDisplayLength then
-                     err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                          subjectNotes => subjectInterpreter,
-                          reason => pl( "at position" & i'img & " and found unexpect character" ),
-                          obstructorNotes => em_esc( ch )
-                     );
-                  else
-                     err( contextNotes => +"decoding the JSON string value to an array",
-                          subjectNotes => subjectInterpreter,
-                          reason => pl( "at position" & i'img & " and found unexpect character" ),
-                          obstructorNotes => em_esc( ch )
-                     );
-                  end if;
+                  err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                       subjectNotes => subjectInterpreter,
+                       reason => pl( "at position" & i'img & " and found unexpect character" ),
+                       obstructorNotes => em_esc( ch )
+                  );
                   exit;
                end if;
             end if;
           end loop;
        else
-          if length( source_val ) < jsonErrorDisplayLength then
-            err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                 subjectNotes => subjectInterpreter,
-                 reason => pl( "at position" & i'img & " and found" ),
-                 obstructorNotes => em( "the end of the string" )
-            );
-          else
-            err( contextNotes => +"decoding the JSON string value to an array",
-                 subjectNotes => subjectInterpreter,
-                 reason => pl( "at position" & i'img & " and found" ),
-                 obstructorNotes => em( "the end of the string" )
-            );
-          end if;
+          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+               subjectNotes => subjectInterpreter,
+               reason => pl( "at position" & i'img & " and found" ),
+               obstructorNotes => em( "the end of the string" )
+          );
        end if;
      end;
 
@@ -4453,19 +4407,11 @@ begin
      if sourceLen = 0 and target_len = 0 then
         null;
      elsif sourceLen /= target_len then
-        if length( source_val ) < jsonErrorDisplayLength then
-            err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                 subjectNotes => pl( "the JSON string length of" & sourceLen'img & " elements" ),
-                 reason => +"does not equal the target array length of",
-                 obstructorNotes => em( target_len'img & " elements" )
-            );
-        else
-            err( contextNotes => +"decoding the JSON string value to an array",
-                 subjectNotes => pl( "the JSON string length of" & sourceLen'img & " elements" ),
-                 reason => +"does not equal the target array length of",
-                 obstructorNotes => em( target_len'img & " elements" )
-            );
-         end if;
+        err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+             subjectNotes => pl( "the JSON string length of" & sourceLen'img & " elements" ),
+             reason => +"does not equal the target array length of",
+             obstructorNotes => em( target_len'img & " elements" )
+        );
      elsif kind = root_enumerated_t then
 
         -- In JSON, booleans are stored by the name,
@@ -4489,19 +4435,11 @@ begin
                      arrayElement := arrayElement + 1;
                      item := null_unbounded_string;
                   else
-                     if length( source_val ) < jsonErrorDisplayLength then
-                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                              subjectNotes => +"a JSON boolean value",
-                              reason => +"is expected but instead found",
-                              obstructorNotes => em_value( item )
-                         );
-                     else
-                         err( contextNotes => +"decoding the JSON string value to an array",
-                              subjectNotes => +"a JSON boolean value",
-                              reason => +"is expected but instead found",
-                              obstructorNotes => em_value( item )
-                         );
-                     end if;
+                     err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                          subjectNotes => +"a JSON boolean value",
+                          reason => +"is expected but instead found",
+                          obstructorNotes => em_value( item )
+                     );
                   end if;
                else
                   item := item & ch;
@@ -4537,19 +4475,11 @@ begin
                   if ch = ',' or ch = ']' then
                      enumVal := integer'value( ' ' & to_string( item ) );
                      if enumVal < 0 or enumVal > maxEnum then
-                        if length( source_val ) < jsonErrorDisplayLength then
-                           err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                                subjectNotes => +"a JSON enumerated position ",
-                                reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
-                                obstructorNotes => +"position " & em_value( item )
-                           );
-                        else
-                           err( contextNotes => +"decoding the JSON string value to an array",
-                                subjectNotes => +"a JSON enumerated position ",
-                                reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
-                                obstructorNotes => +"position " & em_value( item )
-                           );
-                        end if;
+                        err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                             subjectNotes => +"a JSON enumerated position ",
+                             reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
+                             obstructorNotes => +"position " & em_value( item )
+                        );
                      else
                         -- assignElement( targetArrayId, arrayElement, ' ' & item );
                         identifiers( target_var_id ).avalue( arrayElement ) := ' ' & item;
@@ -4587,19 +4517,11 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      if length( source_val ) < jsonErrorDisplayLength then
-                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " found unexpect character" ),
-                              obstructorNotes => em_esc( ch )
-                        );
-                      else
-                         err( contextNotes => +"decoding the JSON string value to an array",
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " found unexpect character" ),
-                              obstructorNotes => em_esc( ch )
-                         );
-                      end if;
+                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                           subjectNotes => subjectInterpreter,
+                           reason => pl( "at position" & i'img & " found unexpect character" ),
+                           obstructorNotes => em_esc( ch )
+                      );
                    end if;
                end if;
 
@@ -4611,19 +4533,11 @@ begin
                if i <= length( source_val ) then
                   ch := element( source_val, i );
                   if ch /= '"' then
-                      if length( source_val ) < jsonErrorDisplayLength then
-                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " a string value expects a double quote not a " ),
-                              obstructorNotes => em_esc( ch )
-                        );
-                      else
-                         err( contextNotes => +"decoding the JSON string value to an array",
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " a string value expects a double quote not a " ),
-                              obstructorNotes => em_esc( ch )
-                         );
-                      end if;
+                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                           subjectNotes => subjectInterpreter,
+                           reason => pl( "at position" & i'img & " a string value expects a double quote not a " ),
+                           obstructorNotes => em_esc( ch )
+                      );
                   end if;
                end if;
 
@@ -4664,19 +4578,11 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      if length( source_val ) < jsonErrorDisplayLength then
-                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
-                              obstructorNotes => em_esc( ch )
-                        );
-                      else
-                         err( contextNotes => +"decoding the JSON string value to an array",
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
-                              obstructorNotes => em_esc( ch )
-                         );
-                      end if;
+                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                           subjectNotes => subjectInterpreter,
+                           reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
+                           obstructorNotes => em_esc( ch )
+                      );
                    end if;
                end if;
 
@@ -4721,19 +4627,11 @@ begin
                exception when others => null;
                end;
                if not ok then
-                  if length( source_val ) < jsonErrorDisplayLength then
-                     err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                          subjectNotes => subjectInterpreter,
-                          reason => pl( "at position" & i'img & " expected a numeric value but found" ),
-                          obstructorNotes => em_value( item )
-                     );
-                  else
-                     err( contextNotes => +"decoding the JSON string value to an array",
-                          subjectNotes => subjectInterpreter,
-                          reason => pl( "at position" & i'img & " expected a numeric value but found" ),
-                          obstructorNotes => em_value( item )
-                     );
-                  end if;
+                  err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                       subjectNotes => subjectInterpreter,
+                       reason => pl( "at position" & i'img & " expected a numeric value but found" ),
+                       obstructorNotes => em_value( item )
+                  );
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
                identifiers( target_var_id ).avalue( arrayElement ) := item;
@@ -4744,51 +4642,27 @@ begin
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      if length( source_val ) < jsonErrorDisplayLength then
-                         err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
-                              obstructorNotes => em_esc( ch )
-                        );
-                      else
-                         err( contextNotes => +"decoding the JSON string value to an array",
-                              subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
-                              obstructorNotes => em_esc( ch )
-                         );
-                      end if;
+                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                           subjectNotes => subjectInterpreter,
+                           reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
+                           obstructorNotes => em_esc( ch )
+                      );
                    end if;
                else
-                   if length( source_val ) < jsonErrorDisplayLength then
-                      err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                           subjectNotes => subjectInterpreter,
-                           reason => pl( "at position" & i'img & " expected a comma or ']' but reached" ),
-                           obstructorNotes => +"the end of the string"
-                      );
-                   else
-                      err( contextNotes => +"decoding the JSON string value to an array",
-                           subjectNotes => subjectInterpreter,
-                           reason => pl( "at position" & i'img & " expected a comma or ']' but reached" ),
-                           obstructorNotes => +"the end of the string"
-                      );
-                   end if;
+                   err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                        subjectNotes => subjectInterpreter,
+                        reason => pl( "at position" & i'img & " expected a comma or ']' but reached" ),
+                        obstructorNotes => +"the end of the string"
+                   );
                    exit;
                end if;
              end loop;
           else
-             if length( source_val ) < jsonErrorDisplayLength then
-                err( contextNotes => pl( "in" & toSecureData( to_string( toCtrlEscaped( source_val ) ) ) ),
-                     subjectNotes => subjectInterpreter,
-                     reason => pl( "at position" & i'img & " expected a '[' but found" ),
-                     obstructorNotes => +"the end of the string"
-                );
-             else
-                err( contextNotes => +"decoding the JSON string value to an array",
-                     subjectNotes => subjectInterpreter,
-                     reason => pl( "at position" & i'img & " expected a '[' but found" ),
-                     obstructorNotes => +"the end of the string"
-                );
-             end if;
+             err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                  subjectNotes => subjectInterpreter,
+                  reason => pl( "at position" & i'img & " expected a '[' but found" ),
+                  obstructorNotes => +"the end of the string"
+             );
           end if;
         end;
      else

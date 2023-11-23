@@ -399,6 +399,7 @@ procedure expectIdentifier( what, receivedDescription : string );
 
 pragma inline( expectIdentifier );
 
+
 -----------------------------------------------------------------------------
 -- Missing Round Bracket / Paranthesis
 -----------------------------------------------------------------------------
@@ -415,6 +416,7 @@ pragma inline( expectStatementSemicolon );
 pragma inline( expectDeclarationSemicolon );
 pragma inline( expectReturnSemicolon );
 
+
 -----------------------------------------------------------------------------
 -- Missing Commas
 -----------------------------------------------------------------------------
@@ -424,6 +426,7 @@ procedure expectPragmaComma;
 -- expect a comma, check for semi-colon
 
 pragma inline( expectParameterComma );
+
 
 -----------------------------------------------------------------------------
 -- Missing Round Bracket / Paranthesis
@@ -441,6 +444,7 @@ pragma inline( expectParameterOpen );
 pragma inline( expectParameterClose );
 
 pragma inline( expect );
+
 
 -----------------------------------------------------------------------------
 -- Use of Non-Ada 95 Feature under Pragma Ada 95
@@ -473,11 +477,13 @@ procedure expectAdaScriptDifferences(
 -- like expectAdaScript, must makes it clear Ada and SparForte both have the
 -- subject but they may vary in parameters or function/procedure.
 
+
 -----------------------------------------------------------------------------
 -- Restricted Shell
 -----------------------------------------------------------------------------
 
 procedure expectNonRestrictedShell( subjectNotes : string );
+
 
 -----------------------------------------------------------------------------
 -- Internal errors
@@ -488,18 +494,23 @@ procedure internalErrorUsageQualifier(
     subject         : identifier := eof_t;
     remedy          : messageStrings := nullMessageStrings );
 
+
 -----------------------------------------------------------------------------
--- Operating System errors
+-- Miscellaneous
 -----------------------------------------------------------------------------
+
+altTextDisplayLength : constant natural := 128;
+
+function contextAltText( normal : unbounded_string; too_long : string )
+   return messageStrings;
 
 function getEmOSError( code : integer ) return messageStrings;
 function getEmOSError return messageStrings;
 
 
 -----------------------------------------------------------------------------
---Housekeeping
+-- Housekeeping
 -----------------------------------------------------------------------------
-
 
 procedure startCommunications;
 procedure shutdownCommunications;
