@@ -4345,17 +4345,21 @@ begin
     if length( source_val ) > 0 then
        ch := element( source_val, i );
        if ch = '{' then
-          err( pl( "JSON array expected but found object" ) );
+         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+              subjectNotes => +"an opening '['",
+              reason => pl( "at position" & i'img & " is expected for an array not a" ),
+              obstructorNotes => +"'{' for a JSON object"
+         );
        elsif ch /= '[' then
          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
               subjectNotes => +"an opening '['",
-              reason => pl( "is expected for an array" ),
-              obstructorNotes => nullMessageStrings
+              reason => pl( "at position" & i'img & " is expected for an array not a" ),
+              obstructorNotes => pl( "'" ) & em_esc( ch ) & pl( "'" )
          );
        elsif element( source_val, length( source_val ) ) /= ']' then
          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
               subjectNotes => +"a closing ']'",
-              reason => pl( "is expected for an array" ),
+              reason => pl( "is expected for an array not a" ),
               obstructorNotes => nullMessageStrings
          );
        end if;
@@ -4383,6 +4387,13 @@ begin
           i := i + 1; -- skip [
           loop
             --SkipJSONWhitespace( source_val, i );
+            if element( source_val, i ) = ',' then
+               err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                    subjectNotes => subjectInterpreter,
+                    reason => pl( "at position" & i'img & " expected an array item but found a" ),
+                    obstructorNotes => pl("'") & em_esc( ch ) & pl("'")
+               );              
+            end if;
             ParseJSONItem( source_val, discard, i );
             if i > length( source_val ) then
                exit;
@@ -4399,8 +4410,8 @@ begin
                else
                   err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
                        subjectNotes => subjectInterpreter,
-                       reason => pl( "at position" & i'img & " and found unexpect character" ),
-                       obstructorNotes => em_esc( ch )
+                       reason => pl( "at position" & i'img & " and found an unexpected character" ),
+                       obstructorNotes => pl("'") & em_esc( ch ) & pl("'")
                   );
                   exit;
                end if;
@@ -4443,6 +4454,8 @@ begin
               -- read true/false
               while i <= length( source_val ) loop
                  -- skip leading whitespace
+                 skipJSONWhitespace( source_val, i );
+                 exit when i > length( source_val );
                  while i <= length( source_val ) loop
                     ch := element( source_val, i );
                     exit when ch /= ' ' and ch /= ASCII.HT;
@@ -4531,8 +4544,10 @@ begin
           i : integer := 2;
         begin
 
-          skipJSONWhitespace( source_val, i );
           while i <= length( source_val ) loop
+            skipJSONWhitespace( source_val, i );
+            exit when i > length( source_val );
+
             ch := element( source_val, i );
 
             if elementKind = json_string_t then
@@ -4570,7 +4585,23 @@ begin
                end if;
 
                ParseJSONItem( source_val, item, i );
+               if length( item ) < 2 then
+                  err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value" ),
+                       subjectNotes => +"the string field",
+                       reason => pl( "at position" & i'img & "should at least 2 characters because there should be" ),
+                       obstructorNotes => em( "2 double quotes" )
+                  );
+                  exit;
+               elsif element( item, length( item ) ) /= '"' then
+                  err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value" ),
+                       subjectNotes => +"the string field",
+                       reason => pl( "at position" & i'img & " should have" ),
+                       obstructorNotes => em( "a final double quote" )
+                  );
+                  exit;
+               end if;
 
+--put_line( "item=''"&to_string( item ) & "'" );
                decoded_item := null_unbounded_string;
                for j in 2..length( item )-1 loop
                    ch := element( item, j );
@@ -4630,7 +4661,7 @@ begin
         arrayElement := target_first;
         declare
           i : integer := 1;
-          ok : boolean := false;
+          ok : boolean;
           ch : character;
         begin
           skipJSONWhitespace( source_val, i );
@@ -4643,16 +4674,18 @@ begin
                -- assume that it's OK if it starts with a numeric character
                -- TODO: better validation based on actual type
                ch := element( item, 1 );
-               if ch /= '-' and ch /= ' ' and ch /= '+' then
+               --if ch /= '-' and ch /= ' ' and ch /= '+' then
+               if ch in '0'..'9' then
                   item := ' ' & item;
                end if;
+               --end if;
                -- try to see if it is a valid long float
                declare
                   lf : numericValue;
                begin
                   lf := to_numeric( item );
                   ok := true;
-               exception when others => null;
+               exception when others => ok := false;
                end;
                if not ok then
                   err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
