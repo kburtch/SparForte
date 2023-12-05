@@ -4786,9 +4786,11 @@ begin
                       fieldName := identifiers( source_var_id ).name & "." & jsonFieldName;
                       findIdent( fieldName, field_t );
                       if field_t = eof_t then
-                         err( contextNotes => +"encoding a record to a JSON string value",
+                         err(
+                              contextNotes => pl( "At " & gnat.source_info.source_location &
+                                 " while encoding the record" ),
                               subjectNotes => subjectInterpreter,
-                              reason => pl( "at position" & i'img & " cannot find a record field named" ),
+                              reason => +"had an internal error because it could not find a record field named",
                               obstructorNotes => unb_em( fieldName )
                          );
                       else
@@ -4802,27 +4804,65 @@ begin
                          uniFieldType := getUniType( identifiers( field_t ).kind );
                          if getBaseType( identifiers( field_t ).kind ) = boolean_t then
                             begin
-                               if integer( to_numeric( identifiers( field_t ).value.all ) ) = 0 then
+                               if identifiers( field_t ).value.all = "" then
+                                   err( contextNotes => +"encoding a record to a JSON string value",
+                                        subject => field_t,
+                                        subjectType => identifiers( field_t ).kind,
+                                        reason => pl( "has an " ) & em( "undefined value" ),
+                                        obstructorNotes => nullMessageStrings
+                                   );
+                               elsif integer( to_numeric( identifiers( field_t ).value.all ) ) = 0 then
                                   result := result & "false";
                                else
                                   result := result & "true";
                                end if;
                             exception when others =>
-                               err( contextNotes => +"encoding a record to a JSON string value",
-                                    subjectNotes => subjectInterpreter,
-                                    reason => pl( "at position" & i'img & " expected a boolean value but found" ),
-                                    obstructorNotes => em_value( identifiers( field_t ).value.all )
-                               );
+                               err(
+                                   contextNotes => pl( "At " & gnat.source_info.source_location &
+                                      " while encoding the record" ),
+                                   subjectNotes => subjectInterpreter,
+                                   reason => +"had an internal error because it expected a boolean value but found",
+                                   obstructorNotes => em_value( identifiers( field_t ).value.all )
+                              );
                             end;
+                         -- in most cases you just copy the data as-is.
+                         -- however, we still must handle undefined values
                          elsif uniFieldType = uni_numeric_t then
--- trim?
-                            result := result & identifiers( field_t ).value.all;
+                            if identifiers( field_t ).value.all = "" then
+                               err( contextNotes => +"encoding a record to a JSON string value",
+                                    subject => field_t,
+                                    subjectType => identifiers( field_t ).kind,
+                                    reason => pl( "has an " ) & em( "undefined value" ),
+                                    obstructorNotes => nullMessageStrings
+                               );
+                            else
+                               result := result & identifiers( field_t ).value.all;
+                            end if;
                          elsif uniFieldType = root_enumerated_t then
-                            result := result & identifiers( field_t ).value.all;
+                            if identifiers( field_t ).value.all = "" then
+                               err( contextNotes => +"encoding a record to a JSON string value",
+                                    subject => field_t,
+                                    subjectType => identifiers( field_t ).kind,
+                                    reason => pl( "has an " ) & em( "undefined value" ),
+                                    obstructorNotes => nullMessageStrings
+                               );
+                            else
+                               result := result & identifiers( field_t ).value.all;
+                            end if;
                          elsif getBaseType( identifiers( field_t ).kind ) = json_string_t then
-                            -- if it's a JSON string, just copy the data
-                            result := result & identifiers( field_t ).value.all;
+                            -- if it's a JSON string, just copy the JSON data
+                            if identifiers( field_t ).value.all = "" then
+                               err( contextNotes => +"encoding a record to a JSON string value",
+                                    subject => field_t,
+                                    subjectType => identifiers( field_t ).kind,
+                                    reason => pl( "has an " ) & em( "undefined value" ),
+                                    obstructorNotes => nullMessageStrings
+                               );
+                            else
+                               result := result & identifiers( field_t ).value.all;
+                            end if;
                          elsif uniFieldType = uni_string_t or uniFieldType = universal_t then
+                            -- universal and universal string are strings
                             item := to_unbounded_string( """" );
                             item := item & ToJSONEscaped( identifiers( field_t ).value.all );
                             item := item & '"';
