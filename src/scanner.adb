@@ -645,7 +645,7 @@ begin
                 for i in identifiers'first..identifiers_top-1 loop
                     if identifiers( i ).kind = ident.kind then
                        if identifiers( i ).class = enumClass then
-                          if identifiers( i ).value = ident.value then
+                          if identifiers( i ).value.all = ident.value.all then
                              put_retry( ToEscaped( identifiers( i ).name ) );
                              exit;
                           end if;
@@ -4839,7 +4839,8 @@ begin
                                result := result & identifiers( field_t ).value.all;
                             end if;
                          elsif uniFieldType = root_enumerated_t then
-                            if identifiers( field_t ).value.all = "" then
+                            if identifiers( field_t ).value.all = " 0" or
+                               identifiers( field_t ).value.all = "" then
                                err( contextNotes => +"encoding a record to a JSON string value",
                                     subject => field_t,
                                     subjectType => identifiers( field_t ).kind,
@@ -4908,7 +4909,7 @@ begin
      k := 2; -- skip leading { in JSON
      item := sourceVal;
 
-     -- basic JSon validation.  Important to verify it isn't an array.
+     -- basic JSON validation.  Important to verify it isn't an array.
      declare
        i : integer := 1;
        ch: character;
@@ -5038,8 +5039,16 @@ begin
                           identifiers( j ).value.all := to_unbounded_string( "1" );
                        elsif decodedItemValue = "false" then
                           identifiers( j ).value.all :=  to_unbounded_string( "0" );
+                       -- this cannot happen because it will get a parse error first
+                       --elsif decodedItemValue = "" then
+                       --    err( contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                       --         subject => j,
+                       --         subjectType => identifiers( j ).kind,
+                       --         reason => pl( "has an " ) & em( "undefined value" ),
+                       --         obstructorNotes => nullMessageStrings
+                       --    );
                        else
-                          err( contextNotes => +"decoding the JSON string value to a record",
+                          err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
                                subjectNotes => +"a JSON boolean value",
                                reason => +"is expected but instead found",
                                obstructorNotes => em_value( decodedItemValue )
@@ -5065,14 +5074,22 @@ begin
                                end if;
                             end if;
                         end loop;
-                        enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
-                        if enumVal < 0 or enumVal > maxEnum then
-                          err( contextNotes => +"decoding the JSON string value to a record",
-                               subjectNotes => +"a JSON enumerated position ",
-                               reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
-                               obstructorNotes => +"position " & em_value( decodedItemValue )
-                          );
-                        end if;
+                        begin
+                           enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
+                           if enumVal < 0 or enumVal > maxEnum then
+                          err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                                  subjectNotes => +"a JSON enumerated position ",
+                                  reason => +"was out of range for " & name_em( elementKind ) & pl( " with" ),
+                                  obstructorNotes => +"position " & em_value( decodedItemValue )
+                             );
+                           end if;
+                        exception when constraint_error =>
+                           err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
+                                subjectNotes => +"a JSON enumerated position",
+                                reason => +"was expected to be a numeric value not",
+                                obstructorNotes => em_value( decodedItemValue )
+                           );
+                        end;
                         -- Space is required for findEnumImage.  Values are
                         -- stored with leading space.
                         identifiers( j ).value.all := ' ' & decodedItemValue;
@@ -5085,7 +5102,7 @@ begin
                       -- needs to be un-escaped.
                       if elementKind /= json_string_t then
                          if not jsonStringType then
-                            err( contextNotes => +"decoding the JSON string value to a record",
+                            err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
                                  subject => j,
                                  subjectType => elementKind,
                                  reason => +"expected",
@@ -5109,7 +5126,7 @@ begin
                       -- Numbers
                       -- Numbers shouldn't need to have special characters decoded.
                       if jsonStringType then
-                         err( contextNotes => +"decoding the JSON string value to a record",
+                         err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
                               subject => j,
                               subjectType => elementKind,
                               reason => +"expected",
@@ -5120,7 +5137,7 @@ begin
                          identifiers( j ).kind );
                     else
                        -- private types are unique types extending variable_t
-                       err( contextNotes => +"decoding the JSON string value to a record",
+                       err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
                             subject => j,
                             subjectType => elementKind,
                             reason => pl( "cannot be receive a value because" ),
@@ -5133,13 +5150,16 @@ begin
               end if;
           end loop; -- j
           if not found then
-             err( contextNotes => +"decoding the JSON string value to a record",
+             err( contextAltText( sourceVal, "decoding the JSON string value to a record" ),
                   subjectNotes => em_esc( searchName ),
                   reason => +"is not declared",
                   obstructorNotes => nullMessageStrings
              );
           end if;
 
+          -- Look for a comma or end of record
+
+		  SkipJSONWhitespace(sourceVal, i );
           if i <= length( sourceVal ) then
              ch := element( sourceVal, i );
              if ch = ',' then
@@ -5151,7 +5171,7 @@ begin
        end loop; -- i
        end;
     else
-       err( contextNotes => +"decoding the JSON string value to a record",
+       err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
             subject => target_var_id,
             subjectType => identifiers( target_var_id ).kind,
             reason => +"has " &
@@ -5221,8 +5241,8 @@ begin
      expr_val := jsonString;
   else
      err(
-         contextNotes => pl( "decoding the JSON value string to a number" ),
-         subjectNotes => em( "JSON number" ),
+         contextNotes => contextAltText( jsonString, "decoding the JSON value string to a number" ),
+         subjectNotes => +"a" & em( "JSON number" ),
          reason => +"is expected not",
          obstructorNotes => em_value( jsonString )
      );

@@ -2215,6 +2215,17 @@ begin
   js := "{" &
        ASCII.Quotation & "s" & ASCII.Quotation &
        ":" &
+       ASCII.Quotation & " this " & ASCII.Quotation &
+       "," &
+       ASCII.Quotation & "n" & ASCII.Quotation &
+       ": 5 }";
+  records.to_record( rs2, js );
+  pragma assert( rs2.s = " this " );
+  pragma assert( rs2.n = 5 );
+
+  js := "{" &
+       ASCII.Quotation & "s" & ASCII.Quotation &
+       ":" &
        ASCII.Quotation & "this" & ASCII.Quotation &
        "," &
        ASCII.Quotation & "n" & ASCII.Quotation &

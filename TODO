@@ -11,15 +11,11 @@ These are new issues identified but not entered into the outstanding bug list
 Priority Issues (Fix These First)
 ---------------------------------
 
-- ongoing
+- ongoing major rework
   - conversion of error message to give additional context
-    - in scanner, JSON routines need to support alternative text
-      for long JSON contexts.  What is the best way to implement?
     - messages in present or past tense not both
     - search for appropriate remedies
     - qp() - quiet mode capitalize first - and subjectNotes in err()
-    - review scanner JSON error messages for length tests and accuracy
-      of messages and context
     - arrays.to_json( a, js ), that is, with parameters reversed
       produces '( expected' but I'm not sure where
   - bash compatibility audit
