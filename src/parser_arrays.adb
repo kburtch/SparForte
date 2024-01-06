@@ -20,7 +20,7 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-
+with ada.text_io; use ada.text_io;
 with gnat.bubble_sort_a,
      gnat.heap_sort_a,
      gnat.source_info,
@@ -76,6 +76,70 @@ arrays_to_json_t     : identifier;
 --
 ---------------------------------------------------------
 
+procedure expectArrayOrArrayType( sub_id, id : identifier ) is
+begin
+  if identifiers( sub_id ).class = funcClass then
+     err( context => sub_id,
+          subject => id,
+          subjectType => identifiers( id ).kind,
+          reason => +"was used but the function expects",
+          obstructorNotes => pl( qp( "an " ) ) & em( "array or array type" ),
+          seeAlso => seeArrays
+     );
+  else
+     err( context => sub_id,
+          subject => id,
+          subjectType => identifiers( id ).kind,
+          reason => +"was used but the procedure expects",
+          obstructorNotes => pl( qp( "an " ) ) & em( "array or array type" ),
+          seeAlso => seeArrays
+     );
+  end if;
+end expectArrayOrArrayType;
+
+procedure expectArray( sub_id, id : identifier ) is
+begin
+  if identifiers( sub_id ).class = funcClass then
+     err( context => sub_id,
+          subject => id,
+          subjectType => identifiers( id ).kind,
+          reason => +"was used but the function expects",
+          obstructorNotes => pl( qp( "an " ) ) & em( "array" ),
+          seeAlso => seeArrays
+     );
+  else
+     err( context => sub_id,
+          subject => id,
+          subjectType => identifiers( id ).kind,
+          reason => +"was used but the procedure expects",
+          obstructorNotes => pl( qp( "an " ) ) & em( "array" ),
+          seeAlso => seeArrays
+     );
+  end if;
+end expectArray;
+
+procedure expectSortableArray( sub_id, id : identifier ) is
+begin
+   err( context => sub_id,
+        subject => id,
+        subjectType => identifiers( id ).kind,
+        reason => +"cannot be sorted because it must have a",
+        obstructorNotes => +"a string, numeric or enumerated element type",
+        seeAlso => seeArrays
+   );
+end expectSortableArray;
+
+
+------------------------------------------------------------------------------
+--  ERR STORAGE
+--
+------------------------------------------------------------------------------
+
+procedure err_storage is
+begin
+  err( +"storage_error raised" );
+end err_storage;
+
 
 -----------------------------------------------------------------------------
 --  PARSE ARRAYS FIRST
@@ -86,19 +150,19 @@ arrays_to_json_t     : identifier;
 
 procedure ParseArraysFirst( f : out unbounded_string; kind : out identifier ) is
   var_id   : identifier;
-  --array_id : arrayID;
+  subprogramId : constant identifier := arrays_first_t;
 begin
-  expect( arrays_first_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if identifiers( var_id ).class = typeClass or
      identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
-        err( +"Array or array type expected" );
+        expectArrayOrArrayType( subprogramId, var_id );
      end if;
   elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -108,22 +172,24 @@ begin
         begin
            f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'first ) );
         exception when CONSTRAINT_ERROR =>
-           err( pl( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+           err(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                   " while in " ) & em( to_string( identifiers( subprogramId ).name ) ),
+               subjectNotes => subjectInterpreter,
+               reason => +"had an internal error because",
+               obstructorNotes => pl( "the index is out of range " &
+                   identifiers( var_id ).avalue'first'img & " .. " &
+                   identifiers( var_id ).avalue'last'img )
+           );
         when STORAGE_ERROR =>
-           err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
+           err_storage;
         end;
      end if;
      kind := identifiers( var_id ).genKind;
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --kind := indexType( array_id );
-     --f := to_unbounded_string( long_integer'image( firstBound( array_id ) ) );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   else                     -- exiting block, etc. still need type info...
      kind := identifiers( var_id ).genKind;
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --kind := indexType( array_id );
   end if;
 end ParseArraysFirst;
 
@@ -138,18 +204,19 @@ end ParseArraysFirst;
 procedure ParseArraysLast( f : out unbounded_string; kind : out identifier ) is
   var_id   : identifier;
   --array_id : arrayID;
+  subprogramId : constant identifier := arrays_last_t;
 begin
-  expect( arrays_last_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if identifiers( var_id ).class = typeClass or
      identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
-        err( +"Array or array type expected" );
+        expectArrayOrArrayType( subprogramId, var_id );
      end if;
   elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -159,22 +226,24 @@ begin
         begin
            f := to_unbounded_string( long_integer'image( identifiers( var_id ).aValue'last ) );
         exception when CONSTRAINT_ERROR =>
-           err( pl( gnat.source_info.source_location & ": internal error: constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img ) );
+           err(
+               contextNotes => pl( "At " & gnat.source_info.source_location &
+                   " while in " ) & em( to_string( identifiers( subprogramId ).name ) ),
+               subjectNotes => subjectInterpreter,
+               reason => +"had an internal error because",
+               obstructorNotes => pl( "the index is out of range " &
+                   identifiers( var_id ).avalue'first'img & " .. " &
+                   identifiers( var_id ).avalue'last'img )
+           );
         when STORAGE_ERROR =>
-           err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseFactor" ) );
+           err_storage;
         end;
      end if;
      kind := identifiers( var_id ).genKind;
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --kind := indexType( array_id );
-     --f := to_unbounded_string( long_integer'image( lastBound( array_id ) ) );
   elsif syntax_check then
      kind := universal_t; -- type is unknown during syntax check
   else                     -- exiting block, etc. still need type info...
      kind := identifiers( var_id ).genKind;
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --kind := indexType( array_id );
   end if;
 end ParseArraysLast;
 
@@ -188,19 +257,19 @@ end ParseArraysLast;
 
 procedure ParseArraysLength( f : out unbounded_string; kind : out identifier ) is
   var_id   : identifier;
-  -- array_id : arrayID;
+  subprogramId : constant identifier := arrays_length_t;
 begin
   kind := natural_t;
-  expect( arrays_length_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
      var_id := getBaseType( var_id );
      if not identifiers( var_id ).list then
-        err( +"Array or array type expected" );
+        expectArrayOrArrayType( subprogramId, var_id );
      end if;
   elsif not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -209,8 +278,6 @@ begin
      else
         f := to_unbounded_string( long_integer'image( identifiers( var_id ).avalue'length ) );
      end if;
-     -- array_id := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- f := to_unbounded_string( long_integer'image( lastBound( array_id ) - firstBound( array_id ) + 1 ) );
   end if;
 end ParseArraysLength;
 
@@ -226,7 +293,6 @@ end ParseArraysLength;
 --
 -------------------------------------------------------------------------------
 
---arrayIdBeingSorted     : arrayID;
 offsetArrayBeingSorted : long_integer;
 ZeroElement            : unbounded_string;
 arrayBeingSortedId     : identifier;
@@ -244,13 +310,11 @@ begin
   if From = 0 then
      data := ZeroElement;
   else
-     -- data := arrayElement( arrayIdBeingSorted, long_integer(From)+offsetArrayBeingSorted);
      data := identifiers( arrayBeingSortedId ).avalue( long_integer(From)+offsetArrayBeingSorted );
   end if;
   if To = 0 then
      ZeroElement := data;
   else
-     -- assignElement( arrayIdBeingSorted, long_integer(To)+offsetArrayBeingSorted, data );
      identifiers( arrayBeingSortedId ).avalue( long_integer(To)+offsetArrayBeingSorted ) := data;
    end if;
 end moveElement;
@@ -314,20 +378,30 @@ end Lt_string_descending;
 
 function Lt_numeric( Op1, Op2 : natural ) return boolean is
   data1, data2 : unbounded_string;
+  result : boolean := false;
 begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     -- data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
      data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     -- data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
      data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
-  return to_numeric( data1 ) < to_numeric( data2 );
+  begin
+    result := to_numeric( data1 ) < to_numeric( data2 );
+  exception when others =>
+    err( contextNotes => +"comparing values during the sort",
+         subject => arrayBeingSortedId,
+         subjectType => identifiers( arrayBeingSortedId ).kind,
+         reason => pl( "cannot be sorted because it has an " ) & em( "undefined value" ) &
+                   pl(" at index" & Op1'img & " or" & Op2'img),
+         obstructorNotes => nullMessageStrings
+    );
+  end;
+  return result;
 end Lt_numeric;
 
 
@@ -339,20 +413,30 @@ end Lt_numeric;
 
 function Lt_numeric_descending( Op1, Op2 : natural ) return boolean is
   data1, data2 : unbounded_string;
+  result : boolean := false;
 begin
   if Op1 = 0 then
      data1 := ZeroElement;
   else
-     -- data1 := arrayElement( arrayIdBeingSorted, long_integer( Op1 )+offsetArrayBeingSorted);
      data1 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op1 )+offsetArrayBeingSorted );
   end if;
   if Op2 = 0 then
      data2 := ZeroElement;
   else
-     -- data2 := arrayElement( arrayIdBeingSorted, long_integer( Op2 )+offsetArrayBeingSorted);
      data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
-  return to_numeric( data1 ) > to_numeric( data2 );
+  begin
+    result := to_numeric( data1 ) < to_numeric( data2 );
+  exception when others =>
+    err( contextNotes => +"comparing values during the sort",
+         subject => arrayBeingSortedId,
+         subjectType => identifiers( arrayBeingSortedId ).kind,
+         reason => pl( "cannot be sorted because it has an " ) & em( "undefined value" ) &
+                   pl(" at index" & Op1'img & " or" & Op2'img),
+         obstructorNotes => nullMessageStrings
+    );
+  end;
+  return result;
 end Lt_numeric_descending;
 
 
@@ -371,18 +455,13 @@ procedure ParseArraysBubbleSort is
   var_id : identifier;
   first, last : long_integer;
   kind   : identifier;
+  subprogramId : constant identifier := arrays_bubble_sort_t;
 begin
-  expect( arrays_bubble_sort_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArray( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -395,9 +474,6 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
-     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- first := firstBound( arrayIdBeingSorted );
-     -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
@@ -409,7 +485,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
         else
-           err( +"unable to sort this element type" );
+           expectSortableArray( subprogramId, var_id );
         end if;
      end if;
   end if;
@@ -425,18 +501,13 @@ procedure ParseArraysBubbleSortDescending is
   var_id : identifier;
   first, last : long_integer;
   kind   : identifier;
+  subprogramId : constant identifier := arrays_bubble_sort_descending_t;
 begin
-  expect( arrays_bubble_sort_descending_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArray( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -449,9 +520,6 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
-     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- first := firstBound( arrayIdBeingSorted );
-     -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
@@ -463,7 +531,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Bubble_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
         else
-           err( +"unable to sort this element type" );
+           expectSortableArray( subprogramId, var_id );
         end if;
      end if;
   end if;
@@ -479,18 +547,13 @@ procedure ParseArraysHeapSort is
   var_id : identifier;
   first, last : long_integer;
   kind   : identifier;
+  subprogramId : constant identifier := arrays_heap_sort_t;
 begin
-  expect( arrays_heap_sort_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArray( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -502,10 +565,7 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     arrayBeingSortedId := var_id;
-     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- first := firstBound( arrayIdBeingSorted );
-     -- last  := lastBound( arrayIdBeingSorted );
+    arrayBeingSortedId := var_id;
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
@@ -517,7 +577,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric'access );
         else
-           err( +"unable to sort this element type" );
+           expectSortableArray( subprogramId, var_id );
         end if;
      end if;
   end if;
@@ -533,18 +593,13 @@ procedure ParseArraysHeapSortDescending is
   var_id : identifier;
   first, last : long_integer;
   kind   : identifier;
+  subprogramId : constant identifier := arrays_heap_sort_descending_t;
 begin
-  expect( arrays_heap_sort_descending_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
-  --if identifiers( var_id ).class = typeClass or identifiers( var_id ).class = subClass then
-  --   var_id := getBaseType( var_id );
-  --   if not identifiers( var_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( var_id, otherClass ) and identifiers( var_id ).list) then
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArray( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -557,9 +612,6 @@ begin
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
      arrayBeingSortedId := var_id;
-     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- first := firstBound( arrayIdBeingSorted );
-     -- last  := lastBound( arrayIdBeingSorted );
      first := identifiers( var_id ).avalue'first;
      last  := identifiers( var_id ).avalue'last;
      -- do not sort an empty array
@@ -571,7 +623,7 @@ begin
         elsif kind = uni_numeric_t or kind = root_enumerated_t then
            GNAT.Heap_Sort_A.Sort( natural( last - first ) + 1, moveElement'access, lt_numeric_descending'access );
         else
-           err( +"unable to sort this element type" );
+           expectSortableArray( subprogramId, var_id );
         end if;
      end if;
   end if;
@@ -586,17 +638,16 @@ end ParseArraysHeapSortDescending;
 
 procedure ParseArraysShuffle is
   var_id : identifier;
-  -- first, last : long_integer;
   newpos : long_integer;
   len    : long_integer;
-  -- array_id : arrayID;
   tmp : unbounded_string;
+  subprogramId : constant identifier := arrays_shuffle_t;
 begin
-  expect( arrays_shuffle_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -629,9 +680,18 @@ begin
             identifiers( var_id ).avalue( newpos ) := tmp;
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : index out of range when shuffling range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while shuffling" ),
+             subject => var_id,
+             subjectType => identifiers( var_id ).kind,
+             reason => pl( "an index out of range " &
+                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'last'img &
+                 " because" ),
+             obstructorNotes => +"a constraint error was raised"
+        );
      when STORAGE_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when shuffling array" ) );
+        err_storage;
      end;
   end if;
 end ParseArraysShuffle;
@@ -649,12 +709,13 @@ procedure ParseArraysFlip is
   newpos : long_integer;
   -- array_id : arrayID;
   tmp    : unbounded_string;
+  subprogramId : constant identifier := arrays_flip_t;
 begin
-  expect( arrays_flip_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array expected" );
+     expectArray( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -683,9 +744,18 @@ begin
            end loop;
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : index out of range when copying" & oldpos'img & " and" & newpos'img & " in" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while flipping" ),
+             subject => var_id,
+             subjectType => identifiers( var_id ).kind,
+             reason => pl( "an index out of range " &
+                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'last'img &
+                 " because" ),
+             obstructorNotes => +"a constraint error was raised"
+        );
      when STORAGE_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when flipping arrays" ) );
+        err_storage;
      end;
   end if;
 end ParseArraysFlip;
@@ -698,14 +768,13 @@ end ParseArraysFlip;
 
 procedure ParseArraysShiftRight is
   var_id : identifier;
-  --first, last : long_integer;
-  --len    : long_integer;
+  subprogramId : constant identifier := arrays_shift_right_t;
 begin
-  expect( arrays_shift_right_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array expected" );
+     expectArray( subprogramId, var_id );
   end if;
   -- mark as being altered for later tests
   if syntax_check then
@@ -717,20 +786,23 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --first := firstBound( arrayIdBeingSorted );
-     --last  := lastBound( arrayIdBeingSorted );
-     --len   := last-first+1;
-     --offsetArrayBeingSorted := first-1;
      begin
         for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
             identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
-            --moveElement( integer(i), integer(i+1) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while shifting right" ),
+             subject => var_id,
+             subjectType => identifiers( var_id ).kind,
+             reason => pl( "an index out of range " &
+                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'last'img &
+                 " because" ),
+             obstructorNotes => +"a constraint error was raised"
+        );
      when STORAGE_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" ) );
+        err_storage;
      end;
   end if;
 end ParseArraysShiftRight;
@@ -743,14 +815,13 @@ end ParseArraysShiftRight;
 
 procedure ParseArraysShiftLeft is
   var_id : identifier;
-  --first, last : long_integer;
-  --len    : long_integer;
+  subprogramId : constant identifier := arrays_shift_left_t;
 begin
-  expect( arrays_shift_left_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -762,20 +833,23 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --first := firstBound( arrayIdBeingSorted );
-     --last  := lastBound( arrayIdBeingSorted );
-     --len   := last-first+1;
-     --offsetArrayBeingSorted := first-1;
      begin
         for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
             identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
-            --moveElement( integer(i+1), integer(i) );
         end loop;
      exception when CONSTRAINT_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : index out of range when shifting range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while shifting left" ),
+             subject => var_id,
+             subjectType => identifiers( var_id ).kind,
+             reason => pl( "an index out of range " &
+                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'last'img &
+                 " because" ),
+             obstructorNotes => +"a constraint error was raised"
+        );
      when STORAGE_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when shifting array" ) );
+        err_storage;
      end;
   end if;
 end ParseArraysShiftLeft;
@@ -788,15 +862,14 @@ end ParseArraysShiftLeft;
 
 procedure ParseArraysRotateRight is
   var_id : identifier;
-  -- first, last : long_integer;
-  -- len    : long_integer;
   tmp    : unbounded_string;
+  subprogramId : constant identifier := arrays_rotate_right_t;
 begin
-  expect( arrays_rotate_right_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -808,26 +881,28 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     -- arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     -- first := firstBound( arrayIdBeingSorted );
-     -- last  := lastBound( arrayIdBeingSorted );
-     -- len   := last-first+1;
-     -- offsetArrayBeingSorted := first-1;
-     -- moveElement( integer( len ), 0 );
      begin
         if identifiers( var_id ).avalue'length > 0 then
            tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'last );
            for i in reverse identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
                identifiers( var_id ).avalue( i+1 ) := identifiers( var_id ).avalue( i );
-               -- moveElement( integer(i), integer(i+1) );
            end loop;
            identifiers( var_id ).avalue( identifiers( var_id ).avalue'first ) := tmp;
         end if;
         --moveElement( 0, 1 );
      exception when CONSTRAINT_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img ) );
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while rotate right" ),
+             subject => var_id,
+             subjectType => identifiers( var_id ).kind,
+             reason => pl( "an index out of range " &
+                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'last'img &
+                 " because" ),
+             obstructorNotes => +"a constraint error was raised"
+        );
      when STORAGE_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" ) );
+        err_storage;
      end;
   end if;
 end ParseArraysRotateRight;
@@ -840,15 +915,14 @@ end ParseArraysRotateRight;
 
 procedure ParseArraysRotateLeft is
   var_id : identifier;
-  --first, last : long_integer;
-  --len    : long_integer;
   tmp : unbounded_string;
+  subprogramId : constant identifier := arrays_rotate_left_t;
 begin
-  expect( arrays_rotate_left_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     err( +"Array or array type expected" );
+     expectArrayOrArrayType( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
@@ -860,29 +934,27 @@ begin
      checkDoubleDataFlowWrite( var_id );
      --checkDoubleGlobalWrite( var_id );
      identifiers( var_id ).writtenOn := perfStats.lineCnt;
-     --arrayIdBeingSorted := arrayID( to_numeric( identifiers( var_id ).value ) );
-     --first := firstBound( arrayIdBeingSorted );
-     --last  := lastBound( arrayIdBeingSorted );
-     --len   := last-first+1;
-     --offsetArrayBeingSorted := first-1;
-     --moveElement( 1, 0 );
-     --for i in 1..len-1 loop
-         --moveElement( integer(i+1), integer(i) );
-     --end loop;
-     --moveElement( 0, integer( len ) );
      begin
         if identifiers( var_id ).avalue'length > 0 then
            tmp := identifiers( var_id ).avalue( identifiers( var_id ).avalue'first );
            for i in identifiers( var_id ).avalue'first..identifiers( var_id ).avalue'last-1 loop
                identifiers( var_id ).avalue( i ) := identifiers( var_id ).avalue( i+1 );
-               -- moveElement( integer(i), integer(i+1) );
            end loop;
            identifiers( var_id ).avalue( identifiers( var_id ).avalue'last ) := tmp;
         end if;
      exception when CONSTRAINT_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : index out of range when rotating range" & identifiers( var_id ).avalue'first'img & " .." & identifiers( var_id ).avalue'last'img  ));
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while rotate left" ),
+             subject => var_id,
+             subjectType => identifiers( var_id ).kind,
+             reason => pl( "an index out of range " &
+                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'last'img &
+                 " because" ),
+             obstructorNotes => +"a constraint error was raised"
+        );
      when STORAGE_ERROR =>
-        err( pl( gnat.source_info.source_location & ": internal error : storage error raised when rotating array" ) );
+        err_storage;
      end;
   end if;
 end ParseArraysRotateLeft;
@@ -902,21 +974,15 @@ end ParseArraysRotateLeft;
 
 procedure ParseArraysToArray is
   target_var_id : identifier;
-  --target_base_id: identifier;
   source_val    : unbounded_string;
   source_type   : identifier;
+  subprogramId : constant identifier := arrays_to_array_t;
 begin
-  expect( arrays_to_array_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   ParseIdentifier( target_var_id );
-  --if identifiers( target_var_id ).class = typeClass or identifiers( target_var_id ).class = subClass then
-  --   target_base_id := getBaseType( target_var_id );
-  --   if not identifiers( target_base_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( target_var_id, otherClass ) and identifiers( target_var_id ).list) then
   if not (class_ok( target_var_id, varClass ) and identifiers( target_var_id ).list) then
-     err( +"Array expected" );
+     expectArray( subprogramId, target_var_id );
   end if;
   expectParameterComma;
   ParseExpression( source_val, source_type );
@@ -933,11 +999,16 @@ begin
      --checkDoubleGlobalWrite( target_var_id );
      identifiers( target_var_id ).writtenOn := perfStats.lineCnt;
      -- DoJsonToArray actually populates the array, so you don't use assign parameter
-     -- assignParameter( target_var_id, jsonString );
      begin
        DoJsonToArray( target_var_id, source_val );
      exception when constraint_error =>
-       err( pl( "bad JSON string " & to_string( toEscaped( source_val ) ) ) );
+        err( contextNotes => pl( "At " & gnat.source_info.source_location &
+                " while decoding the JSON string" ),
+             subject => target_var_id,
+             subjectType => identifiers( target_var_id ).kind,
+             reason =>  +"the decoding failed because",
+             obstructorNotes => +"a constraint error was raised"
+        );
      when others =>
        err_exception_raised;
      end;
@@ -958,19 +1029,14 @@ procedure ParseArraysToJSON is
   source_var_id : identifier;
   target_ref    : reference;
   jsonString    : unbounded_string;
+  subprogramId : constant identifier := arrays_to_array_t;
 begin
-  expect( arrays_to_json_t );
+  expect( subprogramId );
   ParseFirstOutParameter( arrays_to_json_t, target_ref, json_string_t );
   expectParameterComma( arrays_to_json_t );
   ParseIdentifier( source_var_id );
-  --if identifiers( source_var_id ).class = typeClass or identifiers( source_var_id ).class = subClass then
-  --   source_base_id := getBaseType( source_var_id );
-  --   if not identifiers( source_base_id ).list then
-  --      err( "Array or array type expected" );
-  --   end if;
-  --elsif not (class_ok( source_var_id, otherClass ) and identifiers( source_var_id ).list) then
   if not (class_ok( source_var_id, varClass ) and identifiers( source_var_id ).list) then
-     err( +"Array expected" );
+     expectArray( subprogramId, source_var_id );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then

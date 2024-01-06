@@ -290,12 +290,12 @@ begin
                        obstructorNotes => em( "arguments limit" )
                   );
   when ENOEXEC => err( contextNotes => contextInCommand,
-                       subjectNotes => +"this file",
+                       subjectNotes => pl( qp( "this file" ) ),
                        reason => +"cannot be",
                        obstructorNotes => +"an executable program"
                   );
   when EMLINK  => err( contextNotes => contextInCommand,
-                       subjectNotes => +"the pathanme",
+                       subjectNotes => pl( qp( "the pathanme" ) ),
                        reason => +"is a link with",
                        obstructorNotes => em( "a circular path" )
                   );
@@ -326,25 +326,25 @@ begin
                   );
   when EACCES  => err( contextNotes => pl( "At " & gnat.source_info.source_location &
                            " while " ) & contextInCommand,
-                       subjectNotes => +"the run() family",
+                       subjectNotes => pl( qp( "the run() syscall family" ) ),
                        reason => +"had an internal error because they",
                        obstructorNotes => em( "could not access the program" )
                   );
   when EPERM   => err( contextNotes => pl( "At " & gnat.source_info.source_location &
                            " while " ) & contextInCommand,
-                       subjectNotes => +"the run() family",
+                       subjectNotes => pl( qp( "the run() syscall family" ) ),
                        reason => +"had an internal error because they",
                        obstructorNotes => em( "do not have permission to run the program" )
                   );
   when ENOTDIR => err( contextNotes => pl( "At " & gnat.source_info.source_location &
                            " while " ) & contextInCommand,
-                       subjectNotes => +"the run() family",
+                       subjectNotes => pl( qp( "the run() syscallfamily" ) ),
                        reason => +"had an internal error because",
                        obstructorNotes => em( "the pathname was good when a directory in it was wrong" )
                   );
   when ECHILD  => err( contextNotes => pl( "At " & gnat.source_info.source_location &
                            " while " ) & contextInCommand,
-                       subjectNotes => +"the run() family",
+                       subjectNotes => pl( qp( "the run() syscall family" ) ),
                        reason => +"had an internal error because",
                        obstructorNotes => em( "spawn() failed to catch an ECHILD signal" )
                   );
@@ -356,7 +356,7 @@ begin
                   );
   when 0       => err( contextNotes => pl( "At " & gnat.source_info.source_location &
                            " while " ) & contextInCommand,
-                       subjectNotes => +"the run() family",
+                       subjectNotes => pl( qp( "the run() syscall family" ) ),
                        reason => +"had an internal error because",
                        obstructorNotes => em( "they reported an error when the error code has no error" )
                   );
@@ -389,7 +389,7 @@ begin
                   );
   when others  => -- out of memory, IO error
        err( contextNotes => contextInCommand,
-                       subjectNotes => +"the run() family",
+                       subjectNotes => pl( qp( "the run() syscall family" ) ),
                        reason => +"had an error regarding",
                        obstructorNotes => getEmOSError( code )
                   );
@@ -1109,7 +1109,7 @@ begin
      goto retry;                              -- retry it
   elsif result = -1 and C_errno /= ECHILD then  -- error if any error
      err( contextNotes => +"waiting for the last job",
-          subjectNotes => pl( "job" & numberOfJobs'img ),
+          subjectNotes => pl( qp( "job" ) & numberOfJobs'img ),
           reason => +"did not finish because waitpid() returned",
           obstructorNotes => getEmOSError
      );
@@ -1142,7 +1142,7 @@ begin
          goto retry;                              -- retry it
       elsif result = -1 and C_errno /= ECHILD then  -- error if any error
          err( contextNotes => +"updating a job status",
-              subjectNotes => pl( "job" & i'img ),
+              subjectNotes => pl( qp( "job" ) & i'img ),
               reason => +"the status is uncertain because waitpid() returned",
               obstructorNotes => getEmOSError
          );

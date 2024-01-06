@@ -19,3 +19,5 @@ CHANGES SINCE 2.6.1
 
 6. Fix: boolean values now shown in env command.
 
+7. Fix: an error is reported when bubble or heap sorting arrays containing undefined numeric or enumerated values, instead of raising an exception.
+

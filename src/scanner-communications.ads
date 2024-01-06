@@ -84,6 +84,7 @@ contextInCommand   : constant messageStrings := +"in the shell command";
 contextInPipeline  : constant messageStrings := +"in the pipeline";
 contextInSQL       : constant messageStrings := +"in the SQL statement";
 contextStarting    : constant messageStrings := +"starting the interpreter";
+contextReadingBC   : constant messageStrings := +"reading the byte code";
 
 -- Common Subject Strings
 -- These are generated on startup because qp() depends on command line options
@@ -105,6 +106,7 @@ seeLiterals        : constant messageStrings := +"doc/ref_literals.html";
 seePragmas         : constant messageStrings := +"doc/ref_pragmas.html";
 seeShellCmds       : constant messageStrings := +"doc/ref_shellcmds.html";
 seeTypes           : constant messageStrings := +"doc/ref_types.html";
+seeArrays          : constant messageStrings := +"doc/pkg_arrays.html";
 
 ------------------------------------------------------------------------------
 

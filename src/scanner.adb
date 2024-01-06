@@ -2958,7 +2958,7 @@ begin
         err(
             contextNotes => pl( "At " & gnat.source_info.source_location &
                 " while in class_ok(1)" ),
-            subjectNotes => +"the identifier",
+            subjectNotes => pl( qp( "the identifier" ) ),
             reason => +"caused an internal error because",
             obstructorNotes => pl( "it was an eof token" )
         );
@@ -3002,7 +3002,7 @@ begin
         err(
             contextNotes => pl( "At " & gnat.source_info.source_location &
                 " while in class_ok(2)" ),
-            subjectNotes => +"the identifier",
+            subjectNotes => pl( qp( "the identifier" ) ),
             reason => +"caused an internal error because",
             obstructorNotes => pl( "it was an eof token" )
         );
@@ -3052,7 +3052,7 @@ begin
         err(
             contextNotes => pl( "At " & gnat.source_info.source_location &
                 " while in class_ok(3)" ),
-            subjectNotes => +"the identifier",
+            subjectNotes => pl( qp( "the identifier" ) ),
             reason => +"caused an internal error because",
             obstructorNotes => pl( "it was an eof token" )
         );
@@ -3489,7 +3489,7 @@ begin
         if val = null_unbounded_string then
            err(
                contextNotes => +"casting to an integer type",
-               subjectNotes => +"the value",
+               subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
                obstructorNotes => em( "it has no value" )
@@ -3497,7 +3497,7 @@ begin
         else
            err(
                contextNotes => +"casting to an integer type",
-               subjectNotes => +"the value",
+               subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
                obstructorNotes => em( "it was out-of-range" )
@@ -3516,7 +3516,7 @@ begin
         if val = null_unbounded_string then
            err(
                contextNotes => +"casting to a natural type",
-               subjectNotes => +"the value",
+               subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
                obstructorNotes => em( "it has no value" )
@@ -3524,7 +3524,7 @@ begin
         else
            err(
                contextNotes => +"casting to a natural type",
-               subjectNotes => +"the value",
+               subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
                obstructorNotes => em( "it was out-of-range" )
@@ -3554,7 +3554,7 @@ begin
         if val = null_unbounded_string then
            err(
                contextNotes => +"casting to a positive type",
-               subjectNotes => +"the value",
+               subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
                obstructorNotes => em( "it has no value" )
@@ -3562,7 +3562,7 @@ begin
         else
            err(
                contextNotes => +"casting to a positive type",
-               subjectNotes => +"the value",
+               subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
                obstructorNotes => em( "it was out-of-range" )
@@ -4105,7 +4105,7 @@ begin
   result := null_unbounded_string;
   if length( expr_val ) < 2 then
      err( contextNotes => jsonDecodeContextAltText( expr_val, "decoding the JSON string value" ),
-          subjectNotes => +"the length",
+          subjectNotes => pl( qp( "the length" ) ),
           reason => pl( "should at least 2 characters because there should be" ),
           obstructorNotes => em( "2 double quotes" )
      );
@@ -4120,7 +4120,7 @@ begin
   end if;
   if not ok then
      err( contextNotes => jsonDecodeContextAltText( expr_val, "decoding the JSON string value" ),
-          subjectNotes => +"a " & em( "double quote" ),
+          subjectNotes => pl( qp( "a " ) ) & em( "double quote" ),
           reason => pl( "should begin the string" ),
           obstructorNotes => nullMessageStrings
      );
@@ -4158,7 +4158,7 @@ begin
   end loop;
   if element( expr_val, i ) /= '"' then
      err( contextNotes => jsonDecodeContextAltText( expr_val, "decoding the JSON string value" ),
-          subjectNotes => +"a " & em( "double quote" ),
+          subjectNotes => pl( qp( "a " ) ) & em( "double quote" ),
           reason => pl( "should end the string" ),
           obstructorNotes => nullMessageStrings
      );
@@ -4346,19 +4346,19 @@ begin
        ch := element( source_val, i );
        if ch = '{' then
          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-              subjectNotes => +"an opening '['",
+              subjectNotes => pl( qp( "an opening '['" ) ),
               reason => pl( "at position" & i'img & " is expected for an array not a" ),
               obstructorNotes => +"'{' for a JSON object"
          );
        elsif ch /= '[' then
          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-              subjectNotes => +"an opening '['",
+              subjectNotes => pl( qp( "an opening '['" ) ),
               reason => pl( "at position" & i'img & " is expected for an array not a" ),
               obstructorNotes => pl( "'" ) & em_esc( ch ) & pl( "'" )
          );
        elsif element( source_val, length( source_val ) ) /= ']' then
          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-              subjectNotes => +"a closing ']'",
+              subjectNotes => pl( qp( "a closing ']'" ) ),
               reason => pl( "is expected for an array not a" ),
               obstructorNotes => nullMessageStrings
          );
@@ -4435,7 +4435,7 @@ begin
         null;
      elsif numItems /= target_len then
         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-             subjectNotes => pl( "the JSON string length of" & numItems'img & " elements" ),
+             subjectNotes => pl( qp( "the JSON string length of" ) & numItems'img & " elements" ),
              reason => +"does not equal the target array length of",
              obstructorNotes => em( target_len'img & " elements" )
         );
@@ -4475,7 +4475,7 @@ begin
                         item := null_unbounded_string;
                      else
                         err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value to an array" ),
-                             subjectNotes => +"a JSON boolean value",
+                             subjectNotes => pl( qp( "a JSON boolean value" ) ),
                              reason => +"is expected but instead found",
                              obstructorNotes => em_value( item )
                         );
@@ -4517,7 +4517,7 @@ begin
                      enumVal := integer'value( ' ' & to_string( item ) );
                      if enumVal < 0 or enumVal > maxEnum then
                         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
-                             subjectNotes => +"a JSON enumerated position ",
+                             subjectNotes => pl( qp( "a JSON enumerated position" ) ),
                              reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
                              obstructorNotes => +"position " & em_value( item )
                         );
@@ -4587,14 +4587,14 @@ begin
                ParseJSONItem( source_val, item, i );
                if length( item ) < 2 then
                   err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value" ),
-                       subjectNotes => +"the string field",
+                       subjectNotes => pl( qp( "the string field" ) ),
                        reason => pl( "at position" & i'img & "should at least 2 characters because there should be" ),
                        obstructorNotes => em( "2 double quotes" )
                   );
                   exit;
                elsif element( item, length( item ) ) /= '"' then
                   err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value" ),
-                       subjectNotes => +"the string field",
+                       subjectNotes => pl( qp( "the string field" ) ),
                        reason => pl( "at position" & i'img & " should have" ),
                        obstructorNotes => em( "a final double quote" )
                   );
@@ -4729,7 +4729,7 @@ begin
      else
         -- private types are unique types extending variable_t
         err( contextNotes => +"decoding the JSON string value to an array",
-             subjectNotes => +"the element",
+             subjectNotes => pl( qp( "the element" ) ),
              subjectType => kind,
              reason => pl( "cannot receive a value because" ),
              obstructorNotes => +"it is a private field"
@@ -5049,7 +5049,7 @@ begin
                        --    );
                        else
                           err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
-                               subjectNotes => +"a JSON boolean value",
+                               subjectNotes => pl( qp( "a JSON boolean value" ) ),
                                reason => +"is expected but instead found",
                                obstructorNotes => em_value( decodedItemValue )
                           );
@@ -5078,14 +5078,14 @@ begin
                            enumVal := integer'value( ' ' & to_string( decodedItemValue ) );
                            if enumVal < 0 or enumVal > maxEnum then
                           err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
-                                  subjectNotes => +"a JSON enumerated position ",
+                                  subjectNotes => pl( qp( "a JSON enumerated position " ) ),
                                   reason => +"was out of range for " & name_em( elementKind ) & pl( " with" ),
                                   obstructorNotes => +"position " & em_value( decodedItemValue )
                              );
                            end if;
                         exception when constraint_error =>
                            err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to a record" ),
-                                subjectNotes => +"a JSON enumerated position",
+                                subjectNotes => pl( qp( "a JSON enumerated position" ) ),
                                 reason => +"was expected to be a numeric value not",
                                 obstructorNotes => em_value( decodedItemValue )
                            );
@@ -5242,7 +5242,7 @@ begin
   else
      err(
          contextNotes => contextAltText( jsonString, "decoding the JSON value string to a number" ),
-         subjectNotes => +"a" & em( "JSON number" ),
+         subjectNotes => pl( qp( "a" ) ) & em( "JSON number" ),
          reason => +"is expected not",
          obstructorNotes => em_value( jsonString )
      );
@@ -5327,7 +5327,7 @@ begin
              err(
                  contextNotes => pl( "At " & gnat.source_info.source_location &
                      " while scanning the source code" ),
-                 subjectNotes => +"reading a new line",
+                 subjectNotes => pl( qp( "reading a new line" ) ),
                  reason => +"had an internal error because",
                  obstructorNotes => pl( "the line counter overflowed" )
              );
@@ -5524,9 +5524,9 @@ begin
      lastpos := lastpos - 1;
      if script( lastpos ) = '.' then
         err(
-            contextNotes => +"reading the byte code",
+            contextNotes => contextReadingBC,
             -- GNT doesn't have much context
-            subjectNotes => +"the numeric literal",
+            subjectNotes => pl( qp( "the numeric literal" ) ),
               reason => +"should have a " & em( "valid value" ) & pl(" with"),
             obstructorNotes => em( "digits after a decimal" ),
             remedy => +"use '.0', remove the period or provide the digits",
@@ -5541,9 +5541,9 @@ begin
               natural'image( natural'value( ' ' & script( cmdpos..lastpos ) ) ) );
         exception when others =>
           err(
-              contextNotes => +"reading the byte code",
+              contextNotes => contextReadingBC,
               -- GNT doesn't have much context
-              subjectNotes => +"the based numeric literal",
+              subjectNotes => pl( qp( "the based numeric literal" ) ),
               reason => +"should have a " & em( "valid value" ) & pl(" not"),
               obstructorNotes => em_value( to_unbounded_string( script( cmdpos..lastpos ) ) ),
               remedy => +"a character is out of range or the value is too big",
@@ -5738,9 +5738,9 @@ begin
           end if;
      when '_' =>                                              -- _ test
           err(
-              contextNotes => +"reading the byte code",
+              contextNotes => contextReadingBC,
               -- GNT doesn't have much context
-              subjectNotes => +"an identifier",
+              subjectNotes => pl( qp( "an identifier" ) ),
               reason => +"should not begin with",
               obstructorNotes => +"a leading underscore",
               seeAlso => seeTypes
@@ -5751,9 +5751,9 @@ begin
      when '!' =>                                              -- ! / != test
           if script( cmdpos+1 ) = '=' then
               err(
-                  contextNotes => +"reading the byte code",
+                  contextNotes => contextReadingBC,
                   -- GNT doesn't have much context
-                  subjectNotes => em( "not equals" ) & pl(" (!=)" ),
+                  subjectNotes => em( qp( "not equals" ) ) & pl(" (!=)" ),
                   reason => +"should be",
                   obstructorNotes => pl("'") & em( "/=" ) & pl("'"),
                   seeAlso => seeAssign
