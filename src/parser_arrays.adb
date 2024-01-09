@@ -685,7 +685,7 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'first'img & " .." &
                  identifiers( var_id ).avalue'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
@@ -749,7 +749,7 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'first'img & " .." &
                  identifiers( var_id ).avalue'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
@@ -796,7 +796,7 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'first'img & " .." &
                  identifiers( var_id ).avalue'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
@@ -843,7 +843,7 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'first'img & " .." &
                  identifiers( var_id ).avalue'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
@@ -896,7 +896,7 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'first'img & " .." &
                  identifiers( var_id ).avalue'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
@@ -948,7 +948,7 @@ begin
              subject => var_id,
              subjectType => identifiers( var_id ).kind,
              reason => pl( "an index out of range " &
-                 identifiers( var_id ).avalue'first'img & " .." & 
+                 identifiers( var_id ).avalue'first'img & " .." &
                  identifiers( var_id ).avalue'last'img &
                  " because" ),
              obstructorNotes => +"a constraint error was raised"
@@ -1029,7 +1029,7 @@ procedure ParseArraysToJSON is
   source_var_id : identifier;
   target_ref    : reference;
   jsonString    : unbounded_string;
-  subprogramId : constant identifier := arrays_to_array_t;
+  subprogramId : constant identifier := arrays_to_json_t;
 begin
   expect( subprogramId );
   ParseFirstOutParameter( arrays_to_json_t, target_ref, json_string_t );
