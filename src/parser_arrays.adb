@@ -426,7 +426,7 @@ begin
      data2 := identifiers( arrayBeingSortedId ).avalue( long_integer( Op2 )+offsetArrayBeingSorted );
   end if;
   begin
-    result := to_numeric( data1 ) < to_numeric( data2 );
+    result := to_numeric( data1 ) > to_numeric( data2 );
   exception when others =>
     err( contextNotes => +"comparing values during the sort",
          subject => arrayBeingSortedId,
