@@ -83,7 +83,7 @@ begin
           subject => id,
           subjectType => identifiers( id ).kind,
           reason => +"was used but the function expects",
-          obstructorNotes => pl( qp( "an " ) ) & em( "array or array type" ),
+          obstructorNotes => pl( "an " ) & em( "array or array type" ),
           seeAlso => seeArrays
      );
   else
@@ -91,7 +91,7 @@ begin
           subject => id,
           subjectType => identifiers( id ).kind,
           reason => +"was used but the procedure expects",
-          obstructorNotes => pl( qp( "an " ) ) & em( "array or array type" ),
+          obstructorNotes => pl( "an " ) & em( "array or array type" ),
           seeAlso => seeArrays
      );
   end if;
@@ -104,7 +104,7 @@ begin
           subject => id,
           subjectType => identifiers( id ).kind,
           reason => +"was used but the function expects",
-          obstructorNotes => pl( qp( "an " ) ) & em( "array" ),
+          obstructorNotes => pl( "an " ) & em( "array" ),
           seeAlso => seeArrays
      );
   else
@@ -112,7 +112,7 @@ begin
           subject => id,
           subjectType => identifiers( id ).kind,
           reason => +"was used but the procedure expects",
-          obstructorNotes => pl( qp( "an " ) ) & em( "array" ),
+          obstructorNotes => pl( "an " ) & em( "array" ),
           seeAlso => seeArrays
      );
   end if;
@@ -1002,8 +1002,8 @@ begin
      begin
        DoJsonToArray( target_var_id, source_val );
      exception when constraint_error =>
-        err( contextNotes => pl( "At " & gnat.source_info.source_location &
-                " while decoding the JSON string" ),
+        err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
+               contextAltText( source_val,"decoding the JSON string" ),
              subject => target_var_id,
              subjectType => identifiers( target_var_id ).kind,
              reason =>  +"the decoding failed because",

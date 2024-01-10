@@ -4392,7 +4392,7 @@ begin
                     subjectNotes => subjectInterpreter,
                     reason => pl( "at position" & i'img & " expected an array item but found a" ),
                     obstructorNotes => pl("'") & em_esc( ch ) & pl("'")
-               );              
+               );
             end if;
             ParseJSONItem( source_val, discard, i );
             if i > length( source_val ) then
@@ -5159,7 +5159,7 @@ begin
 
           -- Look for a comma or end of record
 
-		  SkipJSONWhitespace(sourceVal, i );
+          SkipJSONWhitespace( sourceVal, i );
           if i <= length( sourceVal ) then
              ch := element( sourceVal, i );
              if ch = ',' then

@@ -23,7 +23,8 @@
 
 --with ada.text_io;use ada.text_io;
 
-with ada.strings.unbounded,
+with gnat.source_info,
+     ada.strings.unbounded,
      world,
      pegasoft.strings,
      scanner,
@@ -47,6 +48,27 @@ package body parser_records is
 records_to_json_t        : identifier;
 records_to_record_t      : identifier;
 
+procedure expectRecord( sub_id, id : identifier ) is
+begin
+  if identifiers( sub_id ).class = funcClass then
+     err( context => sub_id,
+          subject => id,
+          subjectType => identifiers( id ).kind,
+          reason => +"was used but the function expects",
+          obstructorNotes => pl( "a " ) & em( "record" ),
+          seeAlso => seeArrays
+     );
+  else
+     err( context => sub_id,
+          subject => id,
+          subjectType => identifiers( id ).kind,
+          reason => +"was used but the procedure expects",
+          obstructorNotes => pl( "a " ) & em( "record" ),
+          seeAlso => seeArrays
+     );
+  end if;
+end expectRecord;
+
 ---------------------------------------------------------
 -- PARSE THE RECORDS PACKAGE
 ---------------------------------------------------------
@@ -57,6 +79,7 @@ procedure ParseRecordsToJson is
   target_ref    : reference;
   source_var_id : identifier;
   jsonString    : unbounded_string;
+  subprogramId  : constant identifier := records_to_json_t;
 begin
   expect( records_to_json_t );
   expect( symbol_t, "(" );
@@ -64,7 +87,7 @@ begin
   expectParameterComma;
   ParseIdentifier( source_var_id );
   if identifiers( getBaseType( identifiers( source_var_id ).kind ) ).kind /= root_record_t then
-     err( +"Record type expected" );
+     expectRecord( subprogramId, source_var_id );
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
@@ -81,8 +104,9 @@ procedure ParseRecordsToRecord is
   sourceVal     : unbounded_string;
   sourceType    : identifier;
   baseType      : identifier;
+  subprogramId  : constant identifier := records_to_record_t;
 begin
-  expect( records_to_record_t );
+  expect( subprogramId );
   expect( symbol_t, "(" );
   -- TODO: refactor this.
   --
@@ -105,7 +129,7 @@ begin
   pullBlock;
   baseType := getBaseType( identifiers( target_ref.id ).kind );
   if identifiers( baseType ).kind /= root_record_t then
-     err( +"Record type expected" );
+     expectRecord( subprogramId, target_ref.id  );
   end if;
   expectParameterComma;
   ParseExpression( sourceVal, sourceType );
@@ -116,14 +140,13 @@ begin
      begin
        DoJsonToRecord( target_ref.id, sourceVal );
      exception when constraint_error =>
-       err( pl( "bad JSON string " &
-               toSecureData(
-                 to_string(
-                     toEscaped( sourceVal )
-                 )
-               )
-            )
-        );
+       err( contextNotes => pl( "At " & gnat.source_info.source_location ) &
+               contextAltText( sourceVal,"decoding the JSON string" ),
+            subject => target_ref.id,
+            subjectType => identifiers( target_ref.id ).kind,
+            reason =>  +"the decoding failed because",
+            obstructorNotes => +"a constraint error was raised"
+       );
      when others =>
        err_exception_raised;
      end;
