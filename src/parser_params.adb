@@ -37,7 +37,7 @@ use ada.strings,
     parser,
     parser.decl.as;
 
--- with ada.text_io; use ada.text_io;
+with ada.text_io; use ada.text_io;
 
 package body parser_params is
 
@@ -960,6 +960,7 @@ procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
   expr_value : unbounded_string;
   arrayIndex : long_integer;
   isNew      : boolean := false;
+  discard    : boolean;
 begin
   -- If the identifier is undeclared (new_t) and we're in an an interactive
   -- mode with no restrictions and no errors, declare the identifier as
@@ -989,6 +990,10 @@ begin
   ref.index := 0;
   ref.kind := eof_t;
 
+  -- Basic type check on the parameter
+
+  discard :=  baseTypesOk(identifiers(ref.id).kind, defaultType );
+
   -- If this is an array reference, read the index value.  Check that
   -- the index value is within the index bounds for the array.
 
@@ -1000,6 +1005,8 @@ begin
         identifiers( getBaseType( expr_kind ) ).list then
         err( +"array index must be a scalar type" );
      end if;                                   -- variables are not
+put_line( to_string( identifiers( identifiers( ref.id ).kind ).name) ); -- DEBUG
+     --if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then
      if isExecutingCommand then                -- declared in syntax chk
          begin
             arrayIndex := long_integer(to_numeric(expr_value));-- convert to number

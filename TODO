@@ -16,8 +16,6 @@ Priority Issues (Fix These First)
     - messages in present or past tense not both
     - search for appropriate remedies
     - qp() - quiet mode capitalize first - and subjectNotes in err()
-    - arrays.to_json( a, js ), that is, with parameters reversed
-      produces '( expected' but I'm not sure where
   - bash compatibility audit
   - coverage tests of recent changes
 
