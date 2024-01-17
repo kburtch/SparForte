@@ -1564,7 +1564,11 @@ begin
         else
            if tail( codeFragment, 1 ) = " " or
               tail( codeFragment, 1 ) = "" & ASCII.HT then
-              err( +"trailing whitespace" );
+              err( contextNotes => +"in this expression",
+                   subjectNotes => pl( qp( "the backquoted commands" ) ),
+                   reason => +"have " & em( "trailing whitespace" ),
+                   obstructorNotes => nullMessageStrings
+              );
            elsif tail( codeFragment, 1 ) /= ";" then
               codeFragment := codeFragment & ";";
            end if;
@@ -2785,10 +2789,23 @@ begin
         -- There is a chance that the semi-colon could be hidden by a
         -- comment symbol (--).
         codeFragment := identifiers( token ).value.all;
-        if tail( codeFragment, 1 ) /= ";" then
-           codeFragment := codeFragment & ";";
+        if length( codeFragment ) = 0 then
+           if not suppress_no_empty_command_subs then
+              err( +"empty command substitution" );
+           end if;
+        else
+           if tail( codeFragment, 1 ) = " " or
+              tail( codeFragment, 1 ) = "" & ASCII.HT then
+              err( contextNotes => +"in this expression",
+                   subjectNotes => pl( qp( "the backquoted commands" ) ),
+                   reason => +"have " & em( "trailing whitespace" ),
+                   obstructorNotes => nullMessageStrings
+              );
+           elsif tail( codeFragment, 1 ) /= ";" then
+              codeFragment := codeFragment & ";";
+           end if;
+           CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         end if;
-        CompileRunAndCaptureOutput( codeFragment, f, getLineNo );
         getNextToken;
      -- Static expressions must not run built-in functions because they will
      -- accept regular expressions

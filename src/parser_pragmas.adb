@@ -1643,7 +1643,14 @@ begin
      else
         expr_val := identifiers( token ).value.all;
         if expr_val /= null_unbounded_string then
-           if tail( expr_val, 1 ) /= ";" then
+           if tail( expr_val, 1 ) = " " or
+              tail( expr_val, 1 ) = "" & ASCII.HT then
+              err( contextNotes => +"in pragma prompt_script",
+                   subjectNotes => pl( qp( "the backquoted commands" ) ),
+                   reason => +"have " & em( "trailing whitespace" ),
+                   obstructorNotes => nullMessageStrings
+              );
+           elsif tail( expr_val, 1 ) /= ";" then
               expr_val := expr_val & ";";
            end if;
         end if;

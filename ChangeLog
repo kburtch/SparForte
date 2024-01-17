@@ -23,3 +23,5 @@ CHANGES SINCE 2.6.1
 
 8. Fix: type checking on out mode parameters.
 
+9. Fix: trailing whitespace in a prompt script shows an appropriate message instead of "statement expected".
+
