@@ -56,7 +56,7 @@ begin
           subjectType => identifiers( id ).kind,
           reason => +"was used but the function expects",
           obstructorNotes => pl( "a " ) & em( "record" ),
-          seeAlso => seeArrays
+          seeAlso => seeRecords
      );
   else
      err( context => sub_id,
@@ -64,7 +64,7 @@ begin
           subjectType => identifiers( id ).kind,
           reason => +"was used but the procedure expects",
           obstructorNotes => pl( "a " ) & em( "record" ),
-          seeAlso => seeArrays
+          seeAlso => seeRecords
      );
   end if;
 end expectRecord;

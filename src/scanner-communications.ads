@@ -107,6 +107,7 @@ seePragmas         : constant messageStrings := +"doc/ref_pragmas.html";
 seeShellCmds       : constant messageStrings := +"doc/ref_shellcmds.html";
 seeTypes           : constant messageStrings := +"doc/ref_types.html";
 seeArrays          : constant messageStrings := +"doc/pkg_arrays.html";
+seeRecords         : constant messageStrings := +"doc/pkg_records.html";
 
 ------------------------------------------------------------------------------
 
