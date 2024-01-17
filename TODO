@@ -32,11 +32,6 @@ Priority Issues (Fix These First)
         functions
 
 - building with SDL may be giving spar_os.sdl errors
-- while testing the command line, type x is new integer; y : x; y := "foo"
-  worked but should have reported an error.
-- with a space change, a simple prompt script reported a statement
-  expected error.  Check this on the ending token.
-  pragma prompt_script( `put("=>");` );
 - pascal's concerns over locate in configure
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
