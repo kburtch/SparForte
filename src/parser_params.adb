@@ -1005,7 +1005,6 @@ begin
         identifiers( getBaseType( expr_kind ) ).list then
         err( +"array index must be a scalar type" );
      end if;                                   -- variables are not
-put_line( to_string( identifiers( identifiers( ref.id ).kind ).name) ); -- DEBUG
      --if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then
      if isExecutingCommand then                -- declared in syntax chk
          begin
