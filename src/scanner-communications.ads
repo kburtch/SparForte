@@ -93,6 +93,7 @@ subjectOS          :  messageStrings;
 subjectInterpreter :  messageStrings;
 subjectProgram     :  messageStrings;
 subjectScriptInterpreter :  messageStrings;
+subjectExpression  :  messageStrings;
 
 -- Common Obstructor Strings
 

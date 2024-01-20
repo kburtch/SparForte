@@ -1597,7 +1597,7 @@ begin
            identifiers( token ).value.all = ";" ) then
            err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => pl( qp( "the expression" ) ),
+              subjectNotes => subjectExpression,
               reason => +"expects an operand not",
               obstructor => token,
               remedy => +"an operand or expression is missing"
@@ -1605,7 +1605,7 @@ begin
         else
            err(
               -- redundant contextNotes => "in this expression",
-              subjectNotes => pl( qp( "the expression" ) ),
+              subjectNotes => subjectExpression,
               reason => +"expects an operand not",
               obstructor => token,
               remedy => +"an expression factor expects a variable, value or subexpression"          );
@@ -1683,7 +1683,7 @@ begin
          identifiers( token ).value.all = ";" ) then
          err(
             -- redundant contextNotes => "in this expression",
-            subjectNotes => pl( qp( "the expression" ) ),
+            subjectNotes => subjectExpression,
             reason => +"expects an operand not",
             obstructor => token,
               remedy => +"an operand or expression is missing"
@@ -1691,7 +1691,7 @@ begin
       else
          err(
             -- redundant contextNotes => "in this expression",
-            subjectNotes => pl( qp( "the expression" ) ),
+            subjectNotes => subjectExpression,
             reason => +"expects an operand not",
             obstructor => token,
             remedy => +"an expression factor expects a variable, value or subexpression"
@@ -1754,7 +1754,7 @@ begin
      --err( "operator expected");
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator symbol",
         remedy => +"'**'."
@@ -1841,7 +1841,7 @@ begin
   elsif Token /= symbol_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a term operator like '*', '/' or '&'."
@@ -1849,7 +1849,7 @@ begin
   elsif identifiers( Token ).value.all /= "*" and identifiers( Token ).value.all /= "/" and identifiers( Token ).value.all /= "&" then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a term operator like '*', '/' or '&'."
@@ -2065,7 +2065,7 @@ begin
   if Token /= symbol_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a simple expression operator like '+' or '-'."
@@ -2073,7 +2073,7 @@ begin
   elsif identifiers( Token ).value.all /= "+" and identifiers( Token ).value.all /= "-" then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a simple expression operator like '+' or '-'."
@@ -2255,7 +2255,7 @@ begin
   if Token /= symbol_t and Token /= in_t and Token /= not_t then
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a relational operator like '=', '/=' or 'in'"
@@ -2283,7 +2283,7 @@ begin
      if Token /= in_t then
         err(
            -- redundant contextNotes => "in this expression",
-           subjectNotes => pl( qp( "the expression" ) ),
+           subjectNotes => subjectExpression,
            reason => +"expects",
            obstructorNotes => +"an operator",
            remedy => +"a relational operator like '=', '/=' or 'in'."
@@ -2488,10 +2488,9 @@ begin
   if Token /= and_t and
      Token /= or_t and
      Token /= xor_t then
-     err( +"boolean operator expected");
      err(
         -- redundant contextNotes => "in this expression",
-        subjectNotes => pl( qp( "the expression" ) ),
+        subjectNotes => subjectExpression,
         reason => +"expects",
         obstructorNotes => +"an operator",
         remedy => +"a boolean operator like 'and', 'or' or 'xor'."

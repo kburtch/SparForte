@@ -2820,6 +2820,7 @@ begin
   subjectInterpreter       := pl( qp( "the SparForte interpreter" ) );
   subjectProgram           := pl( qp( "the program" ) );
   subjectScriptInterpreter := pl( qp( "the script interpreter" ) );
+  subjectExpression        := pl( qp( "the expression" ) );
 end startCommunications;
 
 procedure shutdownCommunications is

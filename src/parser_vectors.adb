@@ -355,7 +355,7 @@ begin
   if effectiveLeftType /= effectiveRightType then
      err(
        context => subprogram,
-       subjectNotes => pl( qp( "the expression" ) ),
+       subjectNotes => subjectExpression,
        subjectType => leftType,
        reason => +"is not compatible with",
        obstructorNotes => +"a cursor or the index of " & name_em( rightVectorItem ),
