@@ -514,6 +514,10 @@ type aVolatileMode is (none, unchecked, checked);
 
 noSpec : constant natural := 0;
 
+-- value indicating that where something was declared is unknown
+
+noDeclaredAt : constant natural := 0;
+
 ------------------------------------------------------------------------------
 -- Identifier Declarations
 --
@@ -547,6 +551,8 @@ type declaration is record
      field_of        : identifier;              -- record superclass
      inspect         : boolean := false;        -- show value on breakout
      deleted         : boolean := false;        -- marked for deletion
+     declaredAt      : natural := noSpec;       -- line where declared
+     declaredFile    : unbounded_string;        -- file of declared
      specAt          : natural := noSpec;       -- line where forward spec
      specFile        : unbounded_string         -- file of forward spec
                        := Null_Unbounded_String;

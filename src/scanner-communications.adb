@@ -1284,6 +1284,7 @@ procedure err(
   contextNotes    : messageStrings;
   subjectNotes    : messageStrings;
   obstructorNotes : messageStrings;
+  location        : messageStrings;
 begin
   if context /= eof_t then
     if context < keywords_top then
@@ -1300,12 +1301,20 @@ begin
      obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
   end if;
 
+  if identifiers( subject ).declaredAt /= noDeclaredAt then
+      location := pl( to_string( identifiers( subject ).declaredFile &
+                      to_unbounded_string( ":" &
+                      identifiers( subject ).declaredAt'img ) ) );
+  else
+      location := subjectLocation;
+  end if;
+
   err(
     userLanguage    => userLanguage,
     contextType     => contextType,
     contextNotes    => contextNotes,
     subjectType     => subjectType,
-    subjectLocation => subjectLocation,
+    subjectLocation => location,
     subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
@@ -1335,6 +1344,7 @@ procedure err(
     seeAlso         : messageStrings := nullMessageStrings ) is
   subjectNotes    : messageStrings;
   obstructorNotes : messageStrings;
+  location        : messageStrings;
 begin
    subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
    if obstructor = eof_t then
@@ -1343,12 +1353,20 @@ begin
       obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
    end if;
 
+   if identifiers( subject ).declaredAt /= noDeclaredAt then
+      location := pl( to_string( identifiers( subject ).declaredFile &
+                      to_unbounded_string( ":" &
+                      identifiers( subject ).declaredAt'img ) ) );
+   else
+      location := subjectLocation;
+   end if;
+
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
     contextNotes    => contextNotes,
     subjectType     => subjectType,
-    subjectLocation => subjectLocation,
+    subjectLocation => location,
     subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
@@ -1427,6 +1445,7 @@ procedure err(
     seeAlso         : messageStrings := nullMessageStrings ) is
   contextNotes    : messageStrings;
   subjectNotes    : messageStrings;
+  location        : messageStrings;
 begin
   if context /= eof_t then
     if context < keywords_top then
@@ -1435,14 +1454,22 @@ begin
       contextNotes := pl( "In " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
-   subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
+  subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
+
+  if identifiers( subject ).declaredAt /= noDeclaredAt then
+     location := pl( to_string( identifiers( subject ).declaredFile &
+                     to_unbounded_string( ":" &
+                     identifiers( subject ).declaredAt'img ) ) );
+  else
+     location := subjectLocation;
+  end if;
 
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
     contextNotes    => contextNotes,
     subjectType     => subjectType,
-    subjectLocation => subjectLocation,
+    subjectLocation => location,
     subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,
@@ -1507,15 +1534,24 @@ procedure err(
     remedy          : messageStrings := nullMessageStrings;            -- suggested solutions
     seeAlso         : messageStrings := nullMessageStrings ) is
   subjectNotes    : messageStrings;
+  location        : messageStrings;
 begin
    subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
+
+   if identifiers( subject ).declaredAt /= noDeclaredAt then
+      location := pl( to_string( identifiers( subject ).declaredFile &
+                      to_unbounded_string( ":" &
+                      identifiers( subject ).declaredAt'img ) ) );
+   else
+      location := subjectLocation;
+   end if;
 
    err(
     userLanguage    => userLanguage,
     contextType     => contextType,
     contextNotes    => contextNotes,
     subjectType     => subjectType,
-    subjectLocation => subjectLocation,
+    subjectLocation => location,
     subjectNotes    => subjectNotes,
     reason          => reason,
     obstructorType  => obstructorType,

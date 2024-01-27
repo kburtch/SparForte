@@ -1790,6 +1790,13 @@ begin
      declareIdent( for_var, for_name, uni_numeric_t);   -- declare for var
      -- the for index is not covered by unused identifiers because it
      -- might not be used within the loop...might just be a repeat loop
+     if not error_found then
+        identifiers( for_var ).declaredAt := getLineNo;
+        identifiers( for_var ).declaredFile := getSourceFileName;
+     else
+        identifiers( for_var ).declaredAt := noDeclaredAt;
+        identifiers( for_var ).declaredFile := null_unbounded_string;
+     end if;
      if syntax_check and then not error_found then
         identifiers( for_var ).wasReferenced := true;
         --identifiers( for_var ).referencedByFlow := getDataFlowName;

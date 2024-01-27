@@ -514,6 +514,8 @@ begin
               --      optional_yellow( to_string( fieldName ) ) );
            else                                                     -- declare it
               declareIdent( id, fieldName, new_t, varClass );
+              identifiers( id ).declaredAt := getLineNo;
+              identifiers( id ).declaredFile := getSourceFileName;
            end if;
         end if;
      end if;
@@ -531,6 +533,8 @@ begin
      else                                                     -- declare it
         discardUnusedIdentifier( token );
         declareIdent( id, fieldName, new_t, varClass );
+        identifiers( id ).declaredAt := getLineNo;
+        identifiers( id ).declaredFile := getSourceFileName;
      end if;
      getNextToken;
   end if;
@@ -585,6 +589,8 @@ begin
            else                                                     -- declare it
               declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
               identifiers( token ).class);
+              identifiers( id ).declaredAt := getLineNo;
+              identifiers( id ).declaredFile := getSourceFileName;
            end if;                                                  -- otherwise
         elsif isLocal( token ) then
            err( subject => token,
@@ -598,6 +604,8 @@ begin
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
            identifiers( token ).class);
+           identifiers( id ).declaredAt := getLineNo;
+           identifiers( id ).declaredFile := getSourceFileName;
         end if;
      end if;
      getNextToken;
@@ -814,10 +822,16 @@ begin
   elsif identifiers( token ).kind /= new_t then
      if isTokenValidIdentifier( "a variable" ) then
         if isLocal( token ) then
-           err( +"already declared " & name_em( token ) );
+           err( subject => token,
+                reason => +"is already defined",
+                obstructorNotes => +"and should be unique in the same block",
+                remedy => +"choose an unused name, define it in a different block or remove it if it's a duplicate."
+           );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
+           identifiers( id ).declaredAt := getLineNo;
+           identifiers( id ).declaredFile := getSourceFileName;
         end if;
      end if;
      getNextToken;
@@ -877,10 +891,16 @@ begin
   if identifiers( token ).kind /= new_t then
      if isTokenValidIdentifier( "a new identifier" ) then
         if isLocal( token ) then
-           err( +"already declared " & name_em( token ) );
+           err( subject => token,
+                reason => +"is already defined",
+                obstructorNotes => +"and should be unique in the same block",
+                remedy => +"choose an unused name, define it in a different block or remove it if it's a duplicate."
+           );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, new_t, varClass );
+           identifiers( id ).declaredAt := getLineNo;
+           identifiers( id ).declaredFile := getSourceFileName;
         end if;
      end if;
      getNextToken;
@@ -1154,6 +1174,8 @@ begin
    pushBlock( newScope => true, newName => affirm_clause_str, newFlow
      => identifiers( kind_id ).name & " affirm" );
    declareIdent( type_value_id, identifiers( kind_id ).name, kind_id );
+   identifiers( type_value_id ).declaredAt := getLineNo;
+   identifiers( type_value_id ).declaredFile := getSourceFileName;
 
    -- The type variable may or may not be written to and we don't want
    -- a warning that it should be limited, constant, etc.

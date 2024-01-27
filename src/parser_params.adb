@@ -23,6 +23,7 @@
 
 with ada.strings,
     pegasoft.user_io,
+    compiler,
     scanner.communications,
     performance_monitoring,
     parser_sidefx,
@@ -30,6 +31,7 @@ with ada.strings,
 use ada.strings,
     pegasoft,
     pegasoft.user_io,
+    compiler,
     scanner,
     scanner.communications,
     performance_monitoring,
@@ -1057,6 +1059,8 @@ begin
                          fieldName := delete( fieldName, 1, dotPos );
                          fieldName := identifiers( ref.id ).name & "." & fieldName;
                          declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
+                         identifiers( dont_care_t ).declaredAt := getLineNo;
+                         identifiers( dont_care_t ).declaredFile := getSourceFileName;
                       end;
                    end if;
                 end if;
@@ -1240,6 +1244,8 @@ begin
                       fieldName := delete( fieldName, 1, dotPos );
                       fieldName := identifiers( ref.id ).name & "." & fieldName;
                       declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
+                      identifiers( dont_care_t ).declaredAt := getLineNo;
+                      identifiers( dont_care_t ).declaredFile := getSourceFileName;
                       -- Fields of the formal parameter are not checked for these.
                       if syntax_check and then not error_found then
                          identifiers( dont_care_t ).wasReferenced := true;

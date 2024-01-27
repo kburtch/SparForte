@@ -169,11 +169,15 @@ end ParseLastCursorParameter;
 -- True if the file is open, otherwise an error occurs and false is returned.
 ------------------------------------------------------------------------------
 
-function isVerifiedOpenFile( fileId : identifier; theFile : resPtr ) return boolean is
+function isVerifiedOpenFile( subId, fileId : identifier; theFile : resPtr ) return boolean is
   result : boolean := true;
 begin
    if not theFile.btree.isOpen then
-      err( +"file " & name_em( fileId ) & pl( " is not open" ) );
+      err( context => subId,
+           subjectNotes => pl( qp( "the file " ) ) & name_em( fileId ),
+           reason => +"is not open",
+           obstructorNotes => nullMessageStrings
+      );
       result := false;
    end if;
    return result;
@@ -901,13 +905,14 @@ procedure ParseBTreeSet is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_set_t;
 begin
   if rshOpt then
      err( +"set not allowed in a " & em( "restricted shell" ) );
   end if;
-  expect( btree_set_t );
-  ParseFirstFileParameter( btree_set_t, fileId );
-  ParseNextStringParameter( btree_set_t, keyExpr, keyType, string_t );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, string_t );
   expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
@@ -929,7 +934,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -943,7 +948,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -958,7 +963,7 @@ begin
      else
         -- normal scalar expression
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            begin
               put( theFile.btree.session, to_string( keyExpr ), to_string( valExpr ) );
            exception when msg: berkeley_error =>
@@ -999,12 +1004,13 @@ procedure ParseBTreeGet is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_get_t;
 begin
   -- TODO: null string instead of exception to parallel dht
-  expect( btree_get_t );
-  ParseFirstFileParameter( btree_get_t, fileId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
   genKindId := identifiers( fileId ).genKind;
-  ParseNextStringParameter( btree_get_t, keyExpr, keyType, string_t );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, string_t );
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
   -- record?
@@ -1048,7 +1054,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1066,7 +1072,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1084,7 +1090,7 @@ begin
         end if;
      else
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               result : unbounded_string;
            begin
@@ -1123,6 +1129,7 @@ procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identi
   theFile    : resPtr;
   keyExpr    : unbounded_string;
   keyType    : identifier;
+  subprogramId : constant identifier := btree_has_element_t;
 begin
   kind := boolean_t;
   expect( btree_has_element_t );
@@ -1130,7 +1137,7 @@ begin
   ParseLastStringParameter( btree_has_element_t, keyExpr, keyType, string_t );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
            exists( theFile.btree.session, to_string( keyExpr ) );
            result := to_bush_boolean( true );
@@ -1164,6 +1171,7 @@ procedure ParseBTreeRemove is
   theCurs    : resPtr;
   keyExpr    : unbounded_string;
   keyType    : identifier;
+  subprogramId : constant identifier := btree_remove_t;
 begin
   if rshOpt then
      err( +"remove not allowed in a " & em( "restricted shell" ) );
@@ -1181,7 +1189,7 @@ begin
   expect( symbol_t, ")" );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         if cursId /= eof_t then
            begin
              findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
@@ -1230,6 +1238,7 @@ procedure ParseBtreeIncrement is
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
   oldItemValue : numericValue;
+  subprogramId : constant identifier := btree_increment_t;
 begin
   if rshOpt then
      err( +"increment not allowed in a " & em( "restricted shell" ) );
@@ -1250,7 +1259,7 @@ begin
   end if;
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           -- berkeley throws exception on not found
@@ -1301,6 +1310,7 @@ procedure ParseBtreeDecrement is
   hasAmt   : boolean := false;
   oldItem  : unbounded_string;
   oldItemValue : numericValue;
+  subprogramId : constant identifier := btree_decrement_t;
 begin
   if rshOpt then
      err( +"decrement not allowed in a " & em( "restricted shell" ) );
@@ -1321,7 +1331,7 @@ begin
   end if;
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
        begin
          get( theFile.btree.session, to_string( keyExpr ), oldItem );
          -- berkeley throws exception on not found
@@ -1373,6 +1383,7 @@ procedure ParseBtreeAdd is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_add_t;
 begin
   if rshOpt then
      err( +"add not allowed in a " & em( "restricted shell" ) );
@@ -1401,7 +1412,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1424,7 +1435,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               jsonString : unbounded_string;
            begin
@@ -1447,7 +1458,7 @@ begin
      else
         -- normal scalar expression
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            begin
               exists( theFile.btree.session, to_string( keyExpr ) );
            exception when storage_error =>
@@ -1496,6 +1507,7 @@ procedure ParseBtreeReplace is
   genKindId  : identifier;
   cursId   : identifier := eof_t;
   theCurs  : resPtr;
+  subprogramId : constant identifier := btree_replace_t;
 begin
   if rshOpt then
      err( +"replace not allowed in a " & em( "restricted shell" ) );
@@ -1533,7 +1545,7 @@ begin
         -- put where the cursor is
         if isRecord then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
                  temp_key    : unbounded_string;
@@ -1561,7 +1573,7 @@ begin
            end if;
         elsif isArray then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  temp_key    : unbounded_string;
                  temp_string : unbounded_string;
@@ -1589,7 +1601,7 @@ begin
            end if;
         else
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
              declare
                temp_key    : unbounded_string;
                temp_string : unbounded_string;
@@ -1618,7 +1630,7 @@ begin
        -- put, but only if the target exists
         if isRecord then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1637,7 +1649,7 @@ begin
            end if;
         elsif isArray then
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               declare
                  jsonString : unbounded_string;
               begin
@@ -1656,7 +1668,7 @@ begin
            end if;
         else
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
              begin
                exists( theFile.btree.session, to_string( keyExpr ) );
                put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr ) );
@@ -1697,6 +1709,7 @@ procedure ParseBtreeAppend is
   itemExpr : unbounded_string;
   itemType : identifier;
   oldItem  : unbounded_string;
+  subprogramId : constant identifier := btree_append_t;
 begin
   if rshOpt then
      err( +"append not allowed in a " & em( "restricted shell" ) );
@@ -1710,7 +1723,7 @@ begin
   ParseLastGenItemParameter( btree_append_t, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           put( theFile.btree.session, to_string( keyExpr ), to_string( oldItem & itemExpr ) );
@@ -1749,6 +1762,7 @@ procedure ParseBtreePrepend is
   itemExpr : unbounded_string;
   itemType : identifier;
   oldItem  : unbounded_string;
+  subprogramId : constant identifier := btree_prepend_t;
 begin
   if rshOpt then
      err( +"prepend not allowed in a " & em( "restricted shell" ) );
@@ -1762,7 +1776,7 @@ begin
   ParseLastGenItemParameter( btree_prepend_t, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
           get( theFile.btree.session, to_string( keyExpr ), oldItem );
           put( theFile.btree.session, to_string( keyExpr ), to_string( itemExpr & oldItem ) );
@@ -1796,12 +1810,13 @@ procedure ParseBTreePrepend renames not_configured;
 procedure ParseBTreeFlush is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := btree_flush_t;
 begin
   expect( btree_flush_t );
   ParseSingleFileParameter( btree_flush_t, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
            sync( theFile.btree.session );
         exception when msg: berkeley_error =>
@@ -1828,6 +1843,7 @@ procedure ParseBTreeFlush renames not_configured;
 procedure ParseBTreeTruncate is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := btree_truncate_t;
 begin
   if rshOpt then
      err( +"truncate not allowed in a " & em( "restricted shell" ) );
@@ -1836,7 +1852,7 @@ begin
   ParseSingleFileParameter( btree_truncate_t, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         declare
            cnt : natural;
         begin
@@ -1910,13 +1926,14 @@ procedure ParseBTreeOpenCursor is
   theFile    : resPtr;
   cursId     : identifier;
   theCurs    : resPtr;
+  subprogramId : constant identifier := btree_open_cursor_t;
 begin
   expect( btree_open_cursor_t );
   ParseFirstFileParameter( btree_open_cursor_t, fileId );
   ParseLastCursorParameter( btree_open_cursor_t, cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-     if isVerifiedOpenFile( fileId, theFile ) then
+     if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
         if theCurs.btree_cur.isOpen then
            err( +"cursor " &
@@ -1950,6 +1967,7 @@ procedure ParseBTreeCloseCursor is
   theFile    : resPtr;
   cursId     : identifier;
   theCurs    : resPtr;
+  subprogramId : constant identifier := btree_close_cursor_t;
 begin
   expect( btree_close_cursor_t );
   ParseFirstFileParameter( btree_close_cursor_t, fileId );
@@ -1957,7 +1975,7 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
            if not theCurs.btree_cur.isOpen then
               err( +"cursor " &
@@ -2000,6 +2018,7 @@ procedure ParseBTreeGetFirst is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_get_first_t;
 begin
   if rshOpt then
      err( +"get_first not allowed in a " & em( "restricted shell" ) );
@@ -2049,7 +2068,7 @@ begin
   if isExecutingCommand then
      if isRecord then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
@@ -2078,7 +2097,7 @@ begin
         end if;
      elsif isArray then
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               key : unbounded_string;
               jsonString : unbounded_string;
@@ -2107,7 +2126,7 @@ begin
         end if;
      else
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            declare
               key : unbounded_string;
               data : unbounded_string;
@@ -2164,6 +2183,7 @@ procedure ParseBTreeGetNext is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_get_next_t;
 begin
   if rshOpt then
      err( +"get_next not allowed in a " & em( "restricted shell" ) );
@@ -2209,7 +2229,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2238,7 +2258,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2267,7 +2287,7 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2320,6 +2340,7 @@ procedure ParseBTreeGetLast is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_get_last_t;
 begin
   if rshOpt then
      err( +"get_last not allowed in a " & em( "restricted shell" ) );
@@ -2373,7 +2394,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2402,7 +2423,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2431,7 +2452,7 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2484,6 +2505,7 @@ procedure ParseBTreeGetPrevious is
   isRecord   : boolean := false;
   isArray    : boolean := false;
   genKindId  : identifier;
+  subprogramId : constant identifier := btree_get_previous_t;
 begin
   if rshOpt then
      err( +"get_previous not allowed in a " & em( "restricted shell" ) );
@@ -2529,7 +2551,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2558,7 +2580,7 @@ begin
            jsonString : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2587,7 +2609,7 @@ begin
            data : unbounded_string;
         begin
            findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-           if isVerifiedOpenFile( fileId, theFile ) then
+           if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
               findResource( to_resource_id( identifiers( cursId ).value.all ), theCurs );
               if not theCurs.btree_cur.isOpen then
                  err( +"cursor " &
@@ -2630,6 +2652,7 @@ procedure ParseBTreeGetPrevious renames not_configured;
 procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := btree_will_raise_t;
 begin
   kind := boolean_t;
   expect( btree_will_raise_t );
@@ -2637,7 +2660,7 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            result := to_bush_boolean( will_raise( theFile.btree.session ) );
         end if;
      exception when berkeley_error =>
@@ -2663,6 +2686,7 @@ procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identif
 procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := bdb_db_error_t;
 begin
   kind := bdb_db_error_t;
   expect( btree_last_error_t );
@@ -2670,7 +2694,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-       if isVerifiedOpenFile( fileId, theFile ) then
+       if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
           result := to_unbounded_string( db_error'image( last_error( theFile.btree.session ) ) );
        end if;
      exception when msg: berkeley_error =>
@@ -2699,6 +2723,7 @@ procedure ParseBTreeRaiseExceptions is
   theFile    : resPtr;
   boolExpr   : unbounded_string;
   boolType   : identifier;
+  subprogramId : constant identifier := btree_raise_exceptions_t;
 begin
   expect( btree_raise_exceptions_t );
   ParseFirstFileParameter( btree_raise_exceptions_t, fileId );
@@ -2708,7 +2733,7 @@ begin
        raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        if isVerifiedOpenFile( fileId, theFile ) then
+        if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
            raise_exceptions( theFile.btree.session, raise_them, boolean( traceOpt ) );
         end if;
      exception when msg: berkeley_error =>

@@ -227,6 +227,8 @@ begin
   if not error_found then
      begin
        declareRenaming( new_id, canonicalRef );
+       identifiers( new_id ).declaredAt := getLineNo;
+       identifiers( new_id ).declaredFile := getSourceFileName;
 
        -- check to see that the usage qualifier isn't less restrictive
        -- compared to the canonical identifier being renamed
@@ -547,6 +549,8 @@ begin
            elementType, typeClass );
         identifiers( anonType ).list := true;
         identifiers( anonType ).wasReferenced := true; -- only referenced when declared
+        identifiers( anonType ).declaredAt := getLineNo;
+        identifiers( anonType ).declaredFile := getSourceFileName;
         --identifiers( anonType ).referencedByFlow := getDataFlowName;
         -- mark as limited, if necessary
         if limit then
@@ -948,6 +952,8 @@ begin
                fieldName := identifiers( id ).name & "." & fieldName;
                -- create the variable
                declareIdent( dont_care_t, fieldName, identifiers( j ).kind, varClass );
+               identifiers( dont_care_t ).declaredAt := getLineNo;
+               identifiers( dont_care_t ).declaredFile := getSourceFileName;
                -- fields have not been marked as children of the parent
                -- record.  However, to make sure the record is used, it
                -- is convenient to track the field.
@@ -1074,6 +1080,8 @@ begin
       findException( var_name, id );
       if id = eof_t then
          declareException( id, var_name, default_message, exception_status_code ); -- declare var
+         identifiers( id ).declaredAt := getLineNo;
+         identifiers( id ).declaredFile := getSourceFileName;
       else
          err( +"exception " & unb_em( var_name ) &
               pl( " already exists in a greater scope" ) );
@@ -1517,6 +1525,8 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     if getUniType( oldSpec.kind ) /= root_record_t then
 --put_line( "verify: New ident" ); -- DEBUG
        declareIdent( new_const_id, oldSpec.name, type_token, varClass );
+       identifiers( new_const_id ).declaredAt := getLineNo;
+       identifiers( new_const_id ).declaredFile := getSourceFileName;
     else
 --put_line( "verify: No new ident" ); -- DEBUG
        new_const_id := const_id;
@@ -1950,6 +1960,8 @@ begin
        -- and assign its type
 
        declareIdent( id, var_name, type_token, varClass );  -- declare var
+       identifiers( id ).declaredAt := getLineNo;
+       identifiers( id ).declaredFile := getSourceFileName;
        -- TODO: refactor this
        if is_constant then                                  -- a constant?
           identifiers( id ).usage := constantUsage;
@@ -2247,6 +2259,8 @@ begin
         newFlow => identifiers( newtype_id ).name & " affirm"
       );
       declareIdent( type_value_id, identifiers( newtype_id ).name, newtype_id );
+      identifiers( type_value_id ).declaredAt := getLineNo;
+      identifiers( type_value_id ).declaredFile := getSourceFileName;
       -- The type variable may or may not be written to and we don't want
       -- a warning that it should be limited, constant, etc.
       identifiers( type_value_id ).wasWritten := true;
