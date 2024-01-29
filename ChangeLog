@@ -25,3 +25,5 @@ CHANGES SINCE 2.6.1
 
 9. Fix: trailing whitespace in a prompt script shows an appropriate message instead of "statement expected".
 
+10. New: New style error messages may include the location where an identifier was declared.
+
