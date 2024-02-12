@@ -813,8 +813,11 @@ begin
   if identifiers( token ).specAt /= noSpec and isLocal( token ) then
      if identifiers( token ).usage /= constantUsage or
         identifiers( token ).class /= varClass then
-        err( em( "constant" ) & pl( " expected for a " &
-             "earlier specification" ) );
+        err( contextNotes => +"While checking naming style",
+             subject => token,
+             reason => em( "should be constant usage" ) & pl( " as in the" ),
+             obstructorNotes => +"earlier specification"
+           );
      end if;
      id := token;
      getNextToken;
@@ -843,17 +846,49 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err_style( +"name lowercase " & em( "l" ) & pl( " can be confused with the number one" ) );
+              err( contextNotes => +"While checking naming style",
+                   subject => id,
+                   reason => +"could be confused with a number",
+                   obstructorNotes => nullMessageStrings,
+                   remedy => +"it can be confused with the number one",
+                   seeALso => seeTypes
+              );
            elsif identifiers( id ).name = uppercase_o then
-              err_style( +"name uppercase " & em( "O" ) & pl( " can be confused with the number zero" ) );
+              err( contextNotes => +"While checking naming style",
+                   subject => id,
+                   reason => +"could be confused with a number",
+                   obstructorNotes => nullMessageStrings,
+                   remedy => +"it can be confused with the number zero",
+                   seeALso => seeTypes
+              );
            end if;
         end if;
         if element( nameAsLower, length( nameAsLower)-1 ) = '_' then
-           err( +"trailing underscores not allowed in identifiers" );
+           err( contextNotes => +"While checking naming style",
+                subject => id,
+                reason => +"has a trailing underscore but underscores should be",
+                obstructorNotes => +"in the middle of an identifier name",
+                remedy => pl( "there is a space in the name or the underscore " &
+                              "looks like an incomplete name" ),
+                seeAlso => seeTypes
+           );
         elsif index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err_style( +"name " & name_em( id ) & pl( " may not be descriptive or meaningful" ) );
+           err( contextNotes => +"While checking naming style",
+                subject => id,
+                reason => +"may be ambiguous",
+                obstructorNotes => nullMessageStrings,
+                remedy => +"may not be descriptive or meaningful to a reader",
+                seeALso => seeTypes
+           );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-           err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
+           err( contextNotes => +"While checking naming style",
+                subject => id,
+                reason => +"is similar to a reserved keyword",
+                obstructorNotes => nullMessageStrings,
+                remedy => +"words differing in case will be confusing to a reader",
+                seeALso => seeTypes
+           );
+           --err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
         elsif length( nameAsLower ) > 32 then
             if index( nameAsLower, "_" ) = 0 then
                err_style( +"long names are more readable when underscores are used" );
@@ -923,7 +958,14 @@ begin
             err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
         elsif element( identifiers(id).name,
             length( identifiers(id).name ) ) = '_' then
-               err( +"trailing underscores not allowed in identifiers" );
+               err( contextNotes => +"While checking naming style",
+                    subject => id,
+                    reason => +"has a trailing underscore but underscores should be",
+                    obstructorNotes => +"in the middle of an identifier name",
+                    remedy => pl( "there is a space in the name or the underscore " &
+                                  "looks like an incomplete name" ),
+                    seeAlso =>seeTypes
+               );
         elsif length( identifiers(id).name ) > 32 then
             if index( identifiers(id).name, "_" ) = 0 then
                err_style( +"long names are more readable when underscores are used" );

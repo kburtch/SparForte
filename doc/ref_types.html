@@ -57,7 +57,10 @@ In scripts, all variables must be declared.</p>
 <h3>Identifier Names</h3>
 
 <p>Identifiers must begin with a letter and may contain letters, numbers
-and underscores.  There is no minimum or maximum length to identifiers.</p>
+and underscores.</p>
+
+<p>There is no minimum or maximum length to identifiers.  For long
+names (more than 32 characters), the names should contain underscores.</p>
 
 <h4>Style Restrictions on Identifier Names</h4>
 
@@ -87,6 +90,11 @@ commands are not allowed, such as <b>"eval"</b>, <b>"exec"</b> or <b>"test"</b>.
 For example, if you name a program "test" and try to run it in
 a Bourne shell by typing "test", you'll run the built-in shell
 command instead of your program.  This prevents such confusion.</li>
+<li>Underscores may not appear at the start of an identifier because
+this is often used to represent system identifiers</li>
+<li>Underscores may not appear at the end of an identifier name
+as it looks like an incomplete name, and the underscore similar
+to a space character.</li>
 </ul>
 
 <p><b>Implementation Rationale</b>:  As much as possible, only

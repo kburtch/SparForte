@@ -32,25 +32,15 @@ Priority Issues (Fix These First)
         functions
 
 - building with SDL may be giving spar_os.sdl errors
-- pascal's concerns over locate in configure
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
   is derived from it
   especially on Raspian Linux.  scanner.communications updated but there
   may be other references.
+- check shell dollar expansion escaping for security
 - ubuntu container failing because l10n constants are not defined (they
   are defined in a regular ubuntu install)
 - in `find ... \; ;` it becomes ; ; - is this correct?
-- less command issues
-  - e.g. less a file.  The arrow keys work.  TERM is correct.
-  - eg. run spar then less a file.  The arrow keys do not work.  TERM is
-   correct.
-  - but the MORE command does work.
-  - tput reset does not help
-  - I don't change the Linux tty settings unless I do an inkey()
-  - I am not certain of the cause
-    - "unable to open script file ' /usr/bin/lesspipe src/parser.adb' : file not found" error on less during an interactive session?
-      - less seems to run spar after it starts.
 
 - memory leak tests - check to make sure that resources are being cleared
 - check the end-of-block usage checks and error messages
@@ -249,6 +239,16 @@ Priority Issues (Fix These First)
 Annoyances / Bugs with Workarounds / Updates
 --------------------------------------------
 
+- less command issues
+  - e.g. less a file.  The arrow keys work.  TERM is correct.
+  - eg. run spar then less a file.  The arrow keys do not work.  TERM is
+   correct.
+  - but the MORE command does work.
+  - tput reset does not help
+  - I don't change the Linux tty settings unless I do an inkey()
+  - I am not certain of the cause
+    - "unable to open script file ' /usr/bin/lesspipe src/parser.adb' : file not found" error on less during an interactive session?
+      - less seems to run spar after it starts.
 - when displaying error message in templates, using comments may not
   be enough to stop injecting bad data...perhaps, for example, the
   error happens in q quoted string.  It is necessary to escape the

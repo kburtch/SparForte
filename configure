@@ -269,8 +269,10 @@ fi
 # Check for GNU locate command
 #
 # LOCATE is set to the name of the locate command
+# If blank, use FINDLIB instead
 
 LOCATE="glocate"
+FINDLIB=
 echo -n "checking for locate ($LOCATE)... "
 "$LOCATE" --help >/dev/null 2>/dev/null
 if [ $? -ne 0 ] ; then
@@ -294,14 +296,10 @@ if [ $? -ne 0 ] ; then
 else
   echo "yes"
 fi
+# If there is no locate command, fallback to find
 if [ $? -ne 0 ] ; then
-   echo "Could not run locate"
-   echo
-   echo "Locate is used by this script to ensure you have all the required"
-   echo "software to build SparForte."
-   echo
-   echo "Please install GNU locate and run updatedb (as root)."
-   exit 1
+   LOCATE=
+   FINDLIB="find /usr/lib -type f"
 fi
 
 # OS Environment
@@ -648,22 +646,38 @@ if [ -z "$TMP" ] ; then
       else
          echo "no"
          echo -n "checking for libgnat.dylib (Darwin)..."
-         TMP=`"$LOCATE" adalib/libgnat.dylib`
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" adalib/libgnat.dylib`
+         else
+            TMP=`"$FINDLIB" -name 'libgnat.dylib' -print`
+         fi
          if [ ! -z "$TMP" ] ; then
              echo "yes"
          else
              echo "no"
              echo -n "checking for libgnat.dll.a (Cygwin)..."
-             TMP=`"$LOCATE" adalib/libgnat | fgrep dll.a`
+             if [ ! -z "$LOCATE" ] ; then
+                TMP=`"$LOCATE" adalib/libgnat | fgrep dll.a`
+             else
+                TMP=`"$FINDLIB" -name 'libgnat*' -print | fgrep dll.a`
+             fi
              if [ ! -z "$TMP" ] ; then
                  echo "yes"
              else
                  echo "no"
                  echo -n "checking for static libgnat.a only (e.g. Slackware)... "
                  # In some cases, this may return multiple files.
-                 TMP=`"$LOCATE" adalib/libgnat`
+                 if [ ! -z "$LOCATE" ] ; then
+                    TMP=`"$LOCATE" adalib/libgnat`
+                 else
+                    TMP=`"$FINDLIB" -name 'libgnat*' -print`
+                 fi
                  if [ $? -eq 0 ] ; then
-                    TMP2=`"$LOCATE" adalib/libgnat.a`
+                    if [ ! -z "$LOCATE" ] ; then
+                       TMP2=`"$LOCATE" adalib/libgnat.a`
+                    else
+                       TMP2=`"$FINDLIB" -name 'libgnat.a' -print`
+                    fi
                  else
                     TMP2="fail-me"
                  fi
@@ -801,13 +815,21 @@ TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | fgrep libssl.so.`
 if [ -z "$TMP" ] ; then
    echo "no"
    echo -n "checking for libssl.dylib (Darwin)..."
-   TMP=`"$LOCATE" libssl.dylib`
+   if [ ! -z "$LOCATE" ] ; then
+      TMP=`"$LOCATE" libssl.dylib`
+   else
+      TMP=`"$FINDLIB" -name 'libssl.dylib' -print`
+   fi
    if [ ! -z "$TMP" ] ; then
        echo "yes"
    else
        echo "no"
        echo -n "checking for lib/openssl (Cygwin)..."
-       TMP=`"$LOCATE" lib/openssl`
+       if [ ! -z "$LOCATE" ] ; then
+          TMP=`"$LOCATE" lib/openssl`
+       else
+          TMP=`"$FINDLIB" -name 'openssl*' -print`
+       fi
        if [ ! -z "$TMP" ] ; then
            echo "yes"
        else
@@ -858,7 +880,11 @@ if [ -z "$TMP" ] ; then
    if [ -z "$TMP" ] ; then
       echo "no"
       echo -n "checking for libSDL (locate, Darwin)... "
-      TMP=`"$LOCATE" libSDL libsdl`
+      if [ ! -z "$LOCATE" ] ; then
+         TMP=`"$LOCATE" libSDL libsdl`
+      else
+         TMP=`"$FINDLIB" -name 'libsdl*' -print`
+      fi
       if [ ! -z "$TMP" ] ; then
           echo "yes"
       else
@@ -1002,7 +1028,11 @@ if [ -z "$TMP" ] ; then
    if [ -z "$TMP" ] ; then
       echo "no"
       echo -n "checking for libSDL_image (locate, Darwin)... "
-      TMP=`"$LOCATE" libSDL_image`
+      if [ ! -z "$LOCATE" ] ; then
+         TMP=`"$LOCATE" libSDL_image`
+      else
+         TMP=`"$FINDLIB" -name 'libSDL_image*' -print`
+      fi
       if [ ! -z "$TMP" ] ; then
           SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
           echo "yes"
@@ -1214,7 +1244,11 @@ if [ -z "$NO_READLINE" ] ; then
    if [ -z "$READLINE_VERSION" ] ; then
       if [ "$OS" = "cygwin" ] ; then
          echo -n "checking for readline (locate, Cygwin)... "
-         TMP=`"$LOCATE" libreadline`
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" libreadline`
+         else
+            TMP=`"$FINDLIB" -name 'libreadline*' -print`
+         fi
          if [ -z "$TMP" ] ; then
             echo "no"
          else
@@ -1224,7 +1258,11 @@ if [ -z "$NO_READLINE" ] ; then
          fi
       else
          echo -n "checking for readline (locate, Darwin)... "
-         TMP=`"$LOCATE" libreadline`
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" libreadline`
+         else
+            TMP=`"$FINDLIB" -name 'libreadline*' -print`
+         fi
          if [ -z "$TMP" ] ; then
             echo "no"
          else
@@ -1315,7 +1353,11 @@ if [ -z "$NO_SOUND" ] ; then
       if [ -z "$TMP" ] ; then
          echo "no"
          echo -n "checking for gstreamer (locate, Darwin)... "
-         TMP=`"$LOCATE" libgstreamer`
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" libgstreamer`
+         else
+            TMP=`"$FINDLIB" -name 'libgstreamer*' -print`
+         fi
          if [ ! -z "$TMP" ] ; then
              GSTREAMERFLAG=-DGSTREAMER
              echo "yes"
@@ -1350,7 +1392,11 @@ if [ -z "$NO_PCRE" ] ; then
       if [ -z "$TMP" ] ; then
          echo "no"
          echo -n "checking for libpcre (locate, Darwin)... "
-         TMP=`"$LOCATE" libpcre`
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" libpcre`
+         else
+            TMP=`"$FINDLIB" -name 'libpcre*' -print`
+         fi
          if [ ! -z "$TMP" ] ; then
              HAS_PCRE=1
              echo "yes"

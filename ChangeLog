@@ -27,3 +27,5 @@ CHANGES SINCE 2.6.1
 
 10. New: New style error messages may include the location where an identifier was declared.
 
+11. Change: configure will try to use find /usr/lib if locate command is not installed [untested].
+
