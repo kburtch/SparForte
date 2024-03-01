@@ -851,7 +851,7 @@ begin
                    reason => +"could be confused with a number",
                    obstructorNotes => nullMessageStrings,
                    remedy => +"it can be confused with the number one",
-                   seeALso => seeTypes
+                   seeAlso => seeTypes
               );
            elsif identifiers( id ).name = uppercase_o then
               err( contextNotes => +"While checking naming style",
@@ -859,7 +859,7 @@ begin
                    reason => +"could be confused with a number",
                    obstructorNotes => nullMessageStrings,
                    remedy => +"it can be confused with the number zero",
-                   seeALso => seeTypes
+                   seeAlso => seeTypes
               );
            end if;
         end if;
@@ -878,7 +878,7 @@ begin
                 reason => +"may be ambiguous",
                 obstructorNotes => nullMessageStrings,
                 remedy => +"may not be descriptive or meaningful to a reader",
-                seeALso => seeTypes
+                seeAlso => seeTypes
            );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
            err( contextNotes => +"While checking naming style",
@@ -886,12 +886,17 @@ begin
                 reason => +"is similar to a reserved keyword",
                 obstructorNotes => nullMessageStrings,
                 remedy => +"words differing in case will be confusing to a reader",
-                seeALso => seeTypes
+                seeAlso => seeTypes
            );
-           --err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
         elsif length( nameAsLower ) > 32 then
             if index( nameAsLower, "_" ) = 0 then
-               err_style( +"long names are more readable when underscores are used" );
+               err( contextNotes => +"While checking naming style",
+                    subject => id,
+                    reason => +"should " & em( "include underscores" ) & pl(" because" ),
+                    obstructorNotes => +"it is over 32 characters long",
+                    remedy => +"underscores can make long identifier names easier to read",
+                    seeAlso => seeTypes
+               );
             end if;
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
             -- for performance, don't check in maintenance phase.  Also, only
@@ -947,15 +952,39 @@ begin
         -- if in a script, prohibit "l" and "O" as identifier names
         if inputMode /= interactive and inputMode /= breakout then
            if identifiers( id ).name = lowercase_l then
-              err_style( +"name lowercase " & em( "l" ) & pl( " can be confused with the number one" ) );
+              err( contextNotes => +"While checking naming style",
+                   subject => id,
+                   reason => +"could be confused with a number",
+                   obstructorNotes => nullMessageStrings,
+                   remedy => +"it can be confused with the number one",
+                   seeAlso => seeTypes
+              );
            elsif identifiers( id ).name = uppercase_o then
-              err_style( +"name uppercase " & em( "O" ) & pl( " can be confused with the number zero" ) );
+              err( contextNotes => +"While checking naming style",
+                   subject => id,
+                   reason => +"could be confused with a number",
+                   obstructorNotes => nullMessageStrings,
+                   remedy => +"it can be confused with the number zero",
+                   seeAlso => seeTypes
+              );
            end if;
         end if;
         if index( nonmeaningful_words, to_string( nameAsLower ) ) > 0 then
-           err_style( +"name " & name_em( id ) & pl( " may not be descriptive or meaningful" ) );
+           err( contextNotes => +"While checking naming style",
+                subject => id,
+                reason => +"may be ambiguous",
+                obstructorNotes => nullMessageStrings,
+                remedy => +"may not be descriptive or meaningful to a reader",
+                seeAlso => seeTypes
+           );
         elsif index( reserved_words, to_string( nameAsLower ) ) > 0 then
-            err_style( +"name " & name_em( id ) & pl( " is similar to a reserved keyword" ) );
+           err( contextNotes => +"While checking naming style",
+                subject => id,
+                reason => +"is similar to a reserved keyword",
+                obstructorNotes => nullMessageStrings,
+                remedy => +"words differing in case will be confusing to a reader",
+                seeAlso => seeTypes
+           );
         elsif element( identifiers(id).name,
             length( identifiers(id).name ) ) = '_' then
                err( contextNotes => +"While checking naming style",
@@ -968,7 +997,13 @@ begin
                );
         elsif length( identifiers(id).name ) > 32 then
             if index( identifiers(id).name, "_" ) = 0 then
-               err_style( +"long names are more readable when underscores are used" );
+               err( contextNotes => +"While checking naming style",
+                    subject => id,
+                    reason => +"should " & em( "include underscores" ) & pl(" because" ),
+                    obstructorNotes => +"it is over 32 characters long",
+                    remedy => +"underscores can make long identifier names easier to read",
+                    seeAlso => seeTypes
+               );
             end if;
         elsif not type_checks_done and then not boolean( maintenanceOpt ) then
            -- for performance, don't check in maintenance phase.  Also, only
@@ -1004,13 +1039,15 @@ begin
         -- if we're skipping a block, it doesn't matter if the identifier is
         -- declared, but it does if we're executing a block or checking syntax
         if isExecutingCommand or syntax_check then
-           for i in identifiers'first..identifiers_top-1 loop
+           for i in reverse identifiers'first..identifiers_top-1 loop
                if i /= token and not identifiers(i).deleted then
                   if typoOf( identifiers(i).name, identifiers(token).name ) then
                      discardUnusedIdentifier( token );
-                     err( name_em( token ) &
-                     pl( " is a possible typo of " ) &
-                     name_em( i ) );
+                     err( subject => token,
+                          reason => +"is not declared",
+                          obstructorNotes => nullMessageStrings,
+                          remedy => + "you mean " & name_em( i )
+                     );
                      exit;
                   end if;
               end if;
@@ -1021,7 +1058,10 @@ begin
              -- help for common mistakes
              -- php/shell - checking for echo/print doesn't work since these
              -- are Linux commands anyway and will be found.  Code removed.
-             err( name_em( token ) & pl( " not declared" ) );
+             err( subject => token,
+                  reason => +"is not declared",
+                  obstructorNotes => nullMessageStrings
+             );
           end if;
         end if;
         -- this only appears if err in typo loop didn't occur
@@ -1067,64 +1107,64 @@ end ParseIdentifier;
 -----------------------------------------------------------------------------
 
 procedure ParseStaticIdentifier( id : out identifier ) is
+  recId : identifier;
 begin
-  id := eof_t; -- assume failure
-  if token = number_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "number" ) );
-  elsif token = strlit_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "string literal" ) );
-  elsif token = backlit_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "backquoted literal" ) );
-  elsif token = charlit_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "character literal" ) );
-  elsif token = word_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "(shell immediate) word" ) );
-  elsif is_keyword( token ) and token /= eof_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "keyword" ) );
-  elsif token = symbol_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "symbol" ) );
-  elsif token = shell_symbol_t then
-     err( em( "identifier" ) & pl( " expected, not a " ) &
-          em( "shell symbol" ) );
-  elsif identifiers( token ).kind = new_t or identifiers( token ).deleted then
-     -- if we're skipping a block, it doesn't matter if the identifier is
-     -- declared, but it does if we're executing a block or checking syntax
-     if isExecutingCommand or syntax_check then
-        for i in identifiers'first..identifiers_top-1 loop
-            if i /= token and not identifiers(i).deleted then
-               if typoOf( identifiers(i).name, identifiers(token).name ) then
-                  discardUnusedIdentifier( token );
-                  err( name_em( token ) &
-                  pl( " is a possible typo of " ) &
-                  name_em( i ) );
-                  exit;
-               end if;
+  if isTokenValidIdentifier( "" ) then
+     if identifiers( token ).kind = new_t or identifiers( token ).deleted then
+        -- if we're skipping a block, it doesn't matter if the identifier is
+        -- declared, but it does if we're executing a block or checking syntax
+        if isExecutingCommand or syntax_check then
+           for i in reverse identifiers'first..identifiers_top-1 loop
+               if i /= token and not identifiers(i).deleted then
+                  if typoOf( identifiers(i).name, identifiers(token).name ) then
+                     discardUnusedIdentifier( token );
+                     err( subject => token,
+                          reason => +"is not declared",
+                          obstructorNotes => nullMessageStrings,
+                          remedy => + "you mean " & name_em( i )
+                     );
+                     exit;
+                  end if;
+              end if;
+          end loop;
+          if not error_found then
+             -- token will be eof_t if error has already occurred
+             discardUnusedIdentifier( token );
+             -- help for common mistakes
+             -- php/shell - checking for echo/print doesn't work since these
+             -- are Linux commands anyway and will be found.  Code removed.
+             err( subject => token,
+                  reason => +"is not declared",
+                  obstructorNotes => nullMessageStrings,
+                  remedy => +"it should be declared or should be static"
+             );
+          end if;
+        end if;
+        -- this only appears if err in typo loop didn't occur
+        --if not error_found then
+        --   discardUnusedIdentifier( token );
+        --end if;
+     else
+        if syntax_check and then not error_found then
+           -- for a record field, mark the record itself as used.
+           -- record fields are ignored in the unused identifier checks.
+           -- also do this for writing since it is hard to determine if
+           -- all record fields have been written to.
+           --
+           -- rather than eof, precaution against unexpected values
+           recId := identifiers( token ).field_of;
+           -- TODO: this could be more efficient
+           -- GCC Ada 7.4 was giving an 'always true' warning for the next
+           -- line but that is not correct.
+           if recId in reserved_top..identifiers'last then
+              identifiers( recId ).wasReferenced := true;
+              --identifiers( recId ).referencedByFlow := getDataFlowName;
+           else
+              -- mark the value as used because it was referred to
+              identifiers( token ).wasReferenced := true;
+              --identifiers( token ).referencedByFlow := getDataFlowName;
            end if;
-       end loop;
-       if not error_found then
-          -- token will be eof_t if error has already occurred
-          discardUnusedIdentifier( token );
-          err( name_em( token ) & pl( " not declared or is not static" ) );
-       end if;
-     end if;
-     -- this only appears if err in typo loop didn't occur
-     --if not error_found then
-     --   discardUnusedIdentifier( token );
-     --end if;
-  else
-     if syntax_check then
-           -- for declared but not used checking, assign a value of "REF" to
-           -- the value (during syntax check only because value is otherwise
-           -- unused).  When blocks are pulled, this will be checked.
-           identifiers( token ).wasReferenced := true;
-           --identifiers( token ).referencedByFlow := getDataFlowName;
+        end if;
      end if;
      id := token;
   end if;
@@ -1133,6 +1173,54 @@ exception when symbol_table_overflow =>
   err_symbol_table_overflow;
   token := eof_t; -- this exception cannot be handled
   done := true;   -- abort
+
+--  id := eof_t; -- assume failure
+--  if isTokenValidIdentifier( "" ) then
+--     if identifiers( token ).kind = new_t or identifiers( token ).deleted then
+--     -- if we're skipping a block, it doesn't matter if the identifier is
+--     -- declared, but it does if we're executing a block or checking syntax
+--     if isExecutingCommand or syntax_check then
+--        for i in reverse identifiers'first..identifiers_top-1 loop
+--            if i /= token and not identifiers(i).deleted then
+--            if typoOf( identifiers(i).name, identifiers(token).name ) then
+--                  discardUnusedIdentifier( token );
+--                     err( subject => token,
+--                          reason => +"is not declared",
+--                          obstructorNotes => nullMessageStrings,
+--                          remedy => + "you mean " & name_em( i )
+--                     );
+--               end if;
+--           end if;
+--       end loop;
+--       if not error_found then
+--          -- token will be eof_t if error has already occurred
+--          discardUnusedIdentifier( token );
+--          err( subject => token,
+--               reason => +"is not declared",
+--               obstructorNotes => nullMessageStrings,
+--               remedy => +"it should be declared or should be static"
+--          );
+--       end if;
+--     end if;
+--     -- this only appears if err in typo loop didn't occur
+--     --if not error_found then
+--     --   discardUnusedIdentifier( token );
+--     --end if;
+--  else
+--     if syntax_check then
+--           -- for declared but not used checking, assign a value of "REF" to
+--           -- the value (during syntax check only because value is otherwise
+--           -- unused).  When blocks are pulled, this will be checked.
+--           identifiers( token ).wasReferenced := true;
+--           --identifiers( token ).referencedByFlow := getDataFlowName;
+--     end if;
+--     id := token;
+--  end if;
+--  getNextToken;
+--exception when symbol_table_overflow =>
+--  err_symbol_table_overflow;
+--  token := eof_t; -- this exception cannot be handled
+--  done := true;   -- abort
 end ParseStaticIdentifier;
 
 

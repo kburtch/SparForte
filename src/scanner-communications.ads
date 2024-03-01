@@ -504,6 +504,7 @@ procedure internalErrorUsageQualifier(
 -----------------------------------------------------------------------------
 
 altTextDisplayLength : constant natural := 128;
+altTextIdentifierDisplayLength : constant natural := 64;
 
 function contextAltText( normal : unbounded_string; too_long : string )
    return messageStrings;
@@ -511,6 +512,7 @@ function jsonDecodeContextAltText( normal : unbounded_string; too_long : string 
    return messageStrings;
 function jsonEncodeContextAltText( normal : unbounded_string; too_long : string )
    return messageStrings;
+function identifierAltText( id : identifier ) return messageStrings;
 
 function getEmOSError( code : integer ) return messageStrings;
 function getEmOSError return messageStrings;

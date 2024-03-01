@@ -1294,12 +1294,8 @@ begin
     end if;
   end if;
 
-  subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
-  if obstructor = eof_t then
-     obstructorNotes := em( "end of file" );
-  else
-     obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
-  end if;
+  subjectNotes := identifierAltText( subject );
+  obstructorNotes := identifierAltText( obstructor );
 
   if identifiers( subject ).declaredAt /= noDeclaredAt then
       location := pl( to_string( identifiers( subject ).declaredFile &
@@ -1346,12 +1342,8 @@ procedure err(
   obstructorNotes : messageStrings;
   location        : messageStrings;
 begin
-   subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
-   if obstructor = eof_t then
-      obstructorNotes := em( "end of file" );
-   else
-      obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
-   end if;
+   subjectNotes := identifierAltText( subject );
+   obstructorNotes := identifierAltText( obstructor );
 
    if identifiers( subject ).declaredAt /= noDeclaredAt then
       location := pl( to_string( identifiers( subject ).declaredFile &
@@ -1404,11 +1396,7 @@ begin
       contextNotes := pl( "In " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
-   if obstructor = eof_t then
-      obstructorNotes := em( "end of file" );
-   else
-      obstructorNotes := em( to_string( toCtrlEscaped( identifiers( obstructor ).name ) ) );
-   end if;
+   obstructorNotes := identifierAltText( obstructor );
 
    err(
     userLanguage    => userLanguage,
@@ -1454,7 +1442,7 @@ begin
       contextNotes := pl( "In " ) & em( to_string( toCtrlEscaped( identifiers( context ).name ) ) );
     end if;
   end if;
-  subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
+  subjectNotes := identifierAltText( subject );
 
   if identifiers( subject ).declaredAt /= noDeclaredAt then
      location := pl( to_string( identifiers( subject ).declaredFile &
@@ -1536,7 +1524,7 @@ procedure err(
   subjectNotes    : messageStrings;
   location        : messageStrings;
 begin
-   subjectNotes := em( to_string( toCtrlEscaped( identifiers( subject ).name ) ) );
+   subjectNotes := identifierAltText( subject );
 
    if identifiers( subject ).declaredAt /= noDeclaredAt then
       location := pl( to_string( identifiers( subject ).declaredFile &
@@ -2821,6 +2809,22 @@ begin
   return pl( too_long );
 end jsonEncodeContextAltText;
 
+-----------------------------------------------------------------------------
+--  IDENTIFIER ALT TEXT
+--
+-- Return an emphasized identifier name, or if it is too long, just return
+-- the plain string "the identifier".
+-----------------------------------------------------------------------------
+
+function identifierAltText( id : identifier ) return messageStrings is
+begin
+  if id = eof_t then
+      return em( "end of file" );
+  elsif length( identifiers( id ).name ) < altTextIdentifierDisplayLength then
+     return unb_em( toCtrlEscaped( identifiers( id ).name ) );
+  end if;
+  return +"the identifier";
+end identifierAltText;
 
 -----------------------------------------------------------------------------
 -- EM OS ERROR

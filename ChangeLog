@@ -1,6 +1,6 @@
 For the latest news, visit the SparForte web site.
 
-Objective: TBD
+Objective: Error message improvements
 
 CHANGES SINCE 2.6
 
@@ -11,7 +11,7 @@ CHANGES SINCE 2.6
 
 CHANGES SINCE 2.6.1
 
-3. New: more error messages updated to new format.
+3. Change: more error messages updated to new format.
 
 4. Fix: additional error checks for JSON encoding/decoding.
 
@@ -28,4 +28,12 @@ CHANGES SINCE 2.6.1
 10. New: New style error messages may include the location where an identifier was declared.
 
 11. Change: configure will try to use find /usr/lib if locate command is not installed [untested].
+
+12. Change: very long identifier names will be replaced with the text "the identifier" in new style error messages.
+
+13. Change: when using cd on a path to a non-directory, cd will attempt to change directory to the directory containing the file with an "Assuming" warning.  In a script, this is a suggested remedy.
+
+14. Change: when using cd with a path with leading/trailing spaces, cd will attempt to change directory to the directory without spaces with an "Assuming" warning.  In a script, this is a suggested remedy.
+
+15. Change; when using cd with the wrong slash delimiter, cd will attempt to use the correct directory delimiter with an "Assuming" warning.  In a script, this is a suggested remedy.
 

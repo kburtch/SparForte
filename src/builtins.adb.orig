@@ -42,6 +42,7 @@ with ada.text_io,
      parser_db,
      parser_mysql;
 use  ada.text_io,
+     ada.strings,
      ada.strings.unbounded.text_io,
      ada.strings.fixed,
 #if POSTGRES
@@ -148,21 +149,52 @@ end old_pwd;
 -----------------------------------------------------------------------------
 
 procedure old_cd( s : unbounded_string ) is
-  obstructorStr : unbounded_string;
-  pwd, oldpwd : identifier;
+
+  -- APPLY CHANGE
+  --
+  -- Change the directory and, if successful, update related environment
+  -- variables.  Return true if change was successful.  Does not capture
+  -- errno value.
+  ----------------------------------------------------------------------------
+
+  function apply_change( s : unbounded_string ) return boolean is
+    pwd, oldpwd : identifier;
+    result : integer;
+  begin
+    result := chdir( to_string( s ) & ASCII.NUL );
+    if result = 0 then
+       bindPwd;
+       -- it should also not take into account the nesting (should be global)
+       findIdent( to_unbounded_string( "PWD" ), pwd );
+       findIdent( to_unbounded_string( "OLDPWD" ), oldpwd );
+       if pwd /= eof_t then
+          if oldpwd /= eof_t then
+             identifiers( oldpwd ).value.all := identifiers( pwd ).value.all;
+          end if;
+          identifiers( pwd ).value.all := current_working_directory;
+       end if;
+    end if;
+    return result = 0;
+  end apply_change;
+
   path : unbounded_string := s;
+  newpath : unbounded_string;
   showPath : boolean := false;
   temp_id : identifier;
+  obstructorStr : unbounded_string;
+  remedySuggestion : messageStrings := nullMessageStrings;
+  errno : integer := 0;
+
 begin
-  if length( path ) = 0 then                 -- no path?
-     path := to_unbounded_string( "$HOME" ); -- then go home
+  if length( path ) = 0 then                              -- no path?
+     path := to_unbounded_string( "$HOME" );              -- then go home
   -- Normally, tilde is substituted in a shell word expansion.
   -- However, we may end up here if AdaScript parameters are used.
-  elsif Element( path, 1 ) = '~' then        -- leading tilda?
-     Delete( path, 1, 1 );                   -- shortform for
-     Insert( path, 1, "$HOME" );             -- home
-  elsif path = "-" then                      -- minus path?
-     path := to_unbounded_string( "$OLDPWD" ); -- short for OLDPWD
+  elsif Element( path, 1 ) = '~' then                     -- leading tilde?
+     Delete( path, 1, 1 );                                -- shortform for
+     Insert( path, 1, "$HOME" );                          -- home
+  elsif path = "-" then                                   -- minus path?
+     path := to_unbounded_string( "$OLDPWD" );            -- short for OLDPWD
      showPath := inputMode = interactive or inputMode = breakout;
   end if;
   if head( path, 5 ) = "$HOME" then
@@ -178,24 +210,88 @@ begin
   -- CDPATH support not yet implmeneted.  Should go HERE, but
   -- is CDPATH such a good idea anyway?  Not usually!
 
-  if chdir( to_string( path ) & ASCII.NUL ) = 0 then
-     bindPwd;
--- it should also not take into account the nesting (should be global)
-     findIdent( to_unbounded_string( "PWD" ), pwd );
-     findIdent( to_unbounded_string( "OLDPWD" ), oldpwd );
-     if pwd /= eof_t then
-        if oldpwd /= eof_t then
-           identifiers( oldpwd ).value.all := identifiers( pwd ).value.all;
+  -- Apply the directory change.  If we're in an interactive mode, attempt
+  -- solutions to common problems.  Ignore an error on these solutions
+  -- and only show original error if the solutions do not help.
+
+  -- TODO: if not assumed, an effective solution should be in the error
+  -- message remedy
+
+  if not apply_change( path ) then
+     errno := c_errno;                                   -- save original error
+
+     -- user chose a file rather than a directory
+
+     if c_errno = ENOTDIR then                           -- not a directory?
+        newpath := dirname( path );                   -- try parent directory
+        if newpath /= "." then                        -- unless it's current
+           if inputMode = interactive or inputMode = breakout then
+              if apply_change( newpath ) then
+                 errno := c_errno;                       -- should be no error
+                 put_trace( "Assuming directory " & to_string( toCtrlEscaped( newpath ) ) );
+              end if;
+           else
+              remedySuggestion := +"select the parent directory of the file";
+           end if;
         end if;
-        identifiers( pwd ).value.all := current_working_directory;
      end if;
-  else
-     -- better messages for common cd use cases
+
+     -- user has a path with leading or trailing spaces
+     -- this only checks the path as a whole, not the individual items
+
+     if c_errno = ENOENT then                         -- no such path?
+        newpath := trim( path, both );                 -- try trimming space
+        if newpath /= path then                        -- unless no difference
+           if inputMode = interactive or inputMode = breakout then
+              if apply_change( newpath ) then
+                 errno := c_errno;                       -- should be no error
+                 put_trace( "Assuming leading or trailing spaces should be trimmed" );
+              end if;
+           else
+              remedySuggestion := +"trim leading or trailing spaces";
+           end if;
+        end if;
+     end if;
+
+     -- user has wrong directory delimiter
+
      if c_errno = ENOENT then
+        if index( path, "\" ) > 0 and directory_delimiter = '/' then
+           newpath := replaceAll( path, to_unbounded_string( "\" ),
+               to_unbounded_string( "/" ), false );
+           if inputMode = interactive or inputMode = breakout then
+              if apply_change( newpath ) then
+                 errno := c_errno;                       -- should be no error
+                 put_trace( "Assuming directory delimiter should be a forward slash" );
+              end if;
+           else
+              remedySuggestion := +"directory delimiter should be a forward slash";
+           end if;
+        end if;
+     end if;
+     if c_errno = ENOENT then
+        if index( path, "/" ) > 0 and directory_delimiter = '\' then
+           newpath := replaceAll( path, to_unbounded_string( "/" ),
+              to_unbounded_string( "\" ), false );
+           if inputMode = interactive or inputMode = breakout then
+              if apply_change( newpath ) then
+                 errno := c_errno;                       -- should be no error
+                 put_trace( "Assuming directory delimiter should be a backslash" );
+              end if;
+           else
+              remedySuggestion := +"directory delimiter should be a backslash";
+           end if;
+        end if;
+     end if;
+  end if;
+
+  if errno /= 0 then    
+     -- better messages for common cd use cases
+     if errno = ENOENT then
         obstructorStr := to_unbounded_string( "the directory does not exist" );
-     elsif c_errno = ENOTDIR then
+     elsif errno = ENOTDIR then
         obstructorStr := to_unbounded_string( "it is not a directory" );
-     elsif c_errno = EACCES or c_errno = EFAULT then
+     elsif errno = EACCES or c_errno = EFAULT then
         obstructorStr := to_unbounded_string( "it is not accessible" );
      else
         obstructorStr := to_unbounded_string( "syscall chdir returned " & OSerror( c_errno ) );
@@ -204,7 +300,8 @@ begin
          contextNotes => pl( "in " )  & unb_pl( current_working_directory ),
          subjectNotes => em_value( path ),
          reason => +"could not be selected because",
-         obstructorNotes => unb_em( obstructorStr )
+         obstructorNotes => unb_em( obstructorStr ),
+         remedy => remedySuggestion
      );
   end if;
   if showPath then

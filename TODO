@@ -34,7 +34,8 @@ Priority Issues (Fix These First)
 - building with SDL may be giving spar_os.sdl errors
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
-  is derived from it
+ is derived from it
+- ???
   especially on Raspian Linux.  scanner.communications updated but there
   may be other references.
 - check shell dollar expansion escaping for security
@@ -132,6 +133,11 @@ Priority Issues (Fix These First)
     "in primes assigment".  It is difficult to tell you are in an
     assignment, as the procedures are designed.
 - bug: logging is showing duplicate lines?
+- cd should better distinguish between AdaScript and shell parameters.
+  the ~ normally does not expand when in double quotes but it may
+  expand anyway because old_cd() does not distinguish if the parameters
+  are shell-style.
+
 
 - on errors of identifiers, display declaration line with the comment
 - get_line and GNU readline autocomplete options from a user's array
