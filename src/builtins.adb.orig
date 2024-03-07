@@ -74,22 +74,56 @@ package body builtins is
 -- Determine current working directory and assign it to the current_working_
 -- directory variable, else assign it a null string.
 -- loosely modelled on bash/builtins/cd.def
+-- cmd is the command asking for the pwd, or eof_t for the interpreter on
+-- startup.
 -----------------------------------------------------------------------------
 
 buffer : string( 1..4096 );
 
-procedure findPwd is
+procedure findPwd( cmd : identifier := eof_t ) is
 begin
   C_reset_errno;
   getcwd( buffer, buffer'length );
-  if C_errno /= 0 then
+  if C_errno = ENOENT then
+        if cmd = eof_t then
+           err(
+               subjectNotes => subjectInterpreter,
+               reason => +"cannot read your current directory because",
+               obstructorNotes => em("it was deleted"),
+               remedy => pl( "use " ) & em( "cd" ) & pl(" to select another known directory " ) &
+                         pl( "or use the " ) & em( "OLDPWD" ) & pl( " variable to see what your pwd was" )
+           );
+        else
+           err(
+               subject => cmd,
+               reason => +"cannot read your current directory because",
+               obstructorNotes => em("it was deleted"),
+               remedy => pl( "use " ) & em( "cd" ) & pl(" to select another known directory " ) &
+                         pl( "or use the " ) & em( "OLDPWD" ) & pl( " variable to see what your pwd was" )
+           );
+        end if;
+  elsif C_errno = EACCES then
+        if cmd = eof_t then
+            err(
+                subjectNotes => subjectInterpreter,
+                reason => +"cannot read your current directory because",
+                obstructorNotes => em("you don't have or no longer have permission")
+            );
+        else
+            err(
+                subject => cmd,
+                reason => +"cannot read your current directory because",
+                obstructorNotes => em("you don't have or no longer have permission")
+            );
+        end if;
+  elsif C_errno /= 0 then
+     -- other possibilities are out of range, too long, etc.
      err(
          contextNotes => pl( "At " & gnat.source_info.source_location &
             " while finding the current working directory" ),
          subjectNotes => subjectInterpreter,
          reason => +"had an internal error because syscall getcwd() returned",
-         obstructorNotes => getEmOSError,
-         remedy => +"the directory no longer exists or has become inaccessible"
+         obstructorNotes => getEmOSError
      );
      current_working_directory := null_unbounded_string;
   end if;
@@ -106,9 +140,9 @@ end findPwd;
 -- loosely modelled on bash/builtins/cd.def
 -----------------------------------------------------------------------------
 
-procedure bindPwd( symlinks : boolean := false ) is
+procedure bindPwd( cmd : identifier; symlinks : boolean := false ) is
 begin
-  findPwd;
+  findPwd( cmd );
   if current_working_directory /= null_unbounded_string then
      -- SYMBOLIC LINKS TO BE HANDLED HERE LATER
      --findIdent( to_unbounded_string( "PWD" ), pwd );
@@ -135,7 +169,7 @@ end bindPwd;
 function old_pwd return unbounded_string is
 -- pwd: present working directory
 begin
-   bindPwd;
+   bindPwd( pwd_t );
    return current_working_directory;
 end old_pwd;
 
@@ -163,7 +197,7 @@ procedure old_cd( s : unbounded_string ) is
   begin
     result := chdir( to_string( s ) & ASCII.NUL );
     if result = 0 then
-       bindPwd;
+       bindPwd( cd_t );
        -- it should also not take into account the nesting (should be global)
        findIdent( to_unbounded_string( "PWD" ), pwd );
        findIdent( to_unbounded_string( "OLDPWD" ), oldpwd );
@@ -265,7 +299,7 @@ begin
                  put_trace( "Assuming directory delimiter should be a forward slash" );
               end if;
            else
-              remedySuggestion := +"directory delimiter should be a forward slash";
+              remedySuggestion := +"directory delimiter is a forward slash";
            end if;
         end if;
      end if;
@@ -279,7 +313,7 @@ begin
                  put_trace( "Assuming directory delimiter should be a backslash" );
               end if;
            else
-              remedySuggestion := +"directory delimiter should be a backslash";
+              remedySuggestion := +"directory delimiter is a backslash";
            end if;
         end if;
      end if;
@@ -671,7 +705,7 @@ begin
          subjectNotes => em( "cd" ),
          reason => +"expects one arguments but",
          obstructorNotes => em( "there are" & ap'length'img & " arguments" ),
-         remedy => +"read the summary of trace in the help command",
+         remedy => pl( "use " & '"' & "cd ~" & '"' & " to return to your home directory" ),
          seeAlso => +"doc/ref_shellcmds.html"
      );
   elsif isExecutingCommand then
@@ -727,6 +761,7 @@ begin
          seeAlso => +"doc/ref_shellcmds.html"
      );
   elsif isExecutingCommand then
+     -- Old PWD is a function call.
      put_line_retry( old_pwd );
   end if;
 end pwd;
