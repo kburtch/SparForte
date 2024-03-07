@@ -22,10 +22,12 @@
 ------------------------------------------------------------------------------
 
 with ada.strings.unbounded,
-     spar_os.exec;
+     spar_os.exec,
+     world;
 use  ada.strings.unbounded,
      spar_os,
-     spar_os.exec;
+     spar_os.exec,
+     world;
 
 package builtins is
 
@@ -35,7 +37,7 @@ package builtins is
 current_working_directory : unbounded_string := null_unbounded_string;
 -- NULL if not known
 
-procedure findpwd;
+procedure findpwd( cmd : identifier := eof_t );
 -- run this on startup to initialize current_working_directory
 
 procedure alter( ap : argumentListPtr );
