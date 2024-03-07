@@ -319,7 +319,7 @@ begin
      end if;
   end if;
 
-  if errno /= 0 then    
+  if errno /= 0 then
      -- better messages for common cd use cases
      if errno = ENOENT then
         obstructorStr := to_unbounded_string( "the directory does not exist" );
