@@ -477,7 +477,7 @@ begin
               newMask := 18;
            elsif newMask = 700 then
               put_trace( "Assuming you mean octal 77 / decimaal 63" );
-              newMask := 63
+              newMask := 63;
            elsif newMask = 644 then
               put_trace( "Assuming you mean octal 133 / decimaal 91" );
               newMask := 91;
