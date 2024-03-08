@@ -37,3 +37,6 @@ CHANGES SINCE 2.6.1
 
 15. Change; when using cd with the wrong slash delimiter, cd will attempt to use the correct directory delimiter with an "Assuming" warning.  In a script, this is a suggested remedy.
 
+16. Change: umask will correct suspicious values, at the command prompt only.
+
+
