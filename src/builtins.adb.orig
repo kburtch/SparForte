@@ -437,6 +437,7 @@ procedure umask( ap : argumentListPtr ) is
   newMask  : mode_t;
   oldMask  : mode_t;
   discard  : mode_t;
+  remedySuggestion : unbounded_string;
 begin
   expectNonRestrictedShell( "umask" );
   if ap'length > 1 then
@@ -463,27 +464,44 @@ begin
      begin
         newMask := mode_t'value( to_string( tempStr ) );
 
-        -- at the command prompt, give hep for suspicious illegal values
+        -- At the command prompt, give help for suspicious illegal values,
+        -- This list is some common values and is not exhaustive.
 
-        if inputMode = interactive or inputMode = breakout then
-           if newMask = 777 then
-              put_trace( "Assuming you mean decimaal 0" );
+        if newMask = 777 then
+           remedySuggestion := to_unbounded_string( "you mean decimaal 0" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( remedySuggestion ) );
               newMask := 0;
-           elsif newMask = 775 then
-              put_trace( "Assuming you mean octal 3 / decimaal 3" );
+           end if;
+        elsif newMask = 775 then
+           remedySuggestion := to_unbounded_string( "you mean octal 3 / decimaal 3" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( remedySuggestion ) );
               newMask := 3;
-           elsif newMask = 755 then
-              put_trace( "Assuming you mean octal 22 / decimaal 18");
+           end if;
+        elsif newMask = 755 then
+           remedySuggestion := to_unbounded_string( "you mean octal 22 / decimaal 18" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( remedySuggestion ) );
               newMask := 18;
-           elsif newMask = 700 then
-              put_trace( "Assuming you mean octal 77 / decimaal 63" );
+           end if;
+        elsif newMask = 700 then
+           remedySuggestion := to_unbounded_string( "you mean octal 77 / decimaal 63" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( remedySuggestion ) );
               newMask := 63;
-           elsif newMask = 644 then
-              put_trace( "Assuming you mean octal 133 / decimaal 91" );
+           end if;
+        elsif newMask = 644 then
+           remedySuggestion := to_unbounded_string( "you mean octal 133 / decimaal 91" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( remedySuggestion ) );
               newMask := 91;
-           elsif newMask = 600 then
-              put_trace( "Assuming you mean octal 333 / decimaal 219");
-              newMask := 219;
+           end if;
+        elsif newMask = 600 then
+           remedySuggestion := to_unbounded_string( "you mean octal 177 / decimaal 127" );
+           if inputMode = interactive or inputMode = breakout then
+              put_trace( "Assuming " & to_string( remedySuggestion ) );
+              newMask := 127;
            end if;
         end if;
 
@@ -497,6 +515,7 @@ begin
                   em_value( tempStr ),
                reason => +"is not in the range of",
                obstructorNotes => em( "0..511" ),
+               remedy => unb_pl( remedySuggestion ),
                seeAlso => seeShellCmds
            );
            -- err( +"value should be in range 0..511" );
