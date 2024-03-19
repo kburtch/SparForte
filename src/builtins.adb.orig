@@ -1027,20 +1027,23 @@ begin
             reason => +"is",
             obstructorNotes => em( "not declared" )
         );
-        --err( pl( "identifier " ) & em_value( tempStr ) & pl( " not declared" ) );
-     -- the whole command will not run in a restricted shell
-     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PATH" then
-     --   err( pl( "unsetting PATH is not allowed in a " ) &
-     --     em( "restricted shell" ) );
-     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "HOME" then
-     --   err( +"unsetting HOME is not allowed in a " &
-     --     em( "restricted shell" ) );
-     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "PWD" then
-     --   err( pl( "unsetting PWD is not allowed in a " ) &
-     --     em( "restricted shell" ) );
-     --elsif boolean(rshOpt) and then identifiers( identToUnset ).name = "OLDPWD" then
-     --   err( pl( "unsetting OLDPWD is not allowed in a " ) &
-     --     em( "restricted shell" ) );
+     -- While unsetting these should not be allowed in a restricted shell,
+     -- the whole command will not run in a restricted shell.  But we should
+     -- deny unsetting these at all times so as not to permit confusion.
+     elsif identifiers( identToUnset ).name = "PATH" or
+           identifiers( identToUnset ).name = "HOME" or
+           identifiers( identToUnset ).name = "PWD" or
+           identifiers( identToUnset ).name = "OLDPWD" or
+           identifiers( identToUnset ).name = "TERM" then
+        err(
+            contextNotes => +"in " & em( "unset" ),
+            subjectNotes => em_value( identifiers( identToUnset ).name ),
+            reason => +"may not be deleted",
+            obstructorNotes => nullMessageStrings,
+            remedy => pl( "deleting a standard variable may cause confusion or " &
+                          "commands to run abnormally" ),
+            seeAlso => seeShellCmds
+        );
      elsif identifiers( identToUnset ).renamed_count > 0 then
         err_renaming( identToUnset );
      elsif isExecutingCommand then

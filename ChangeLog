@@ -39,4 +39,7 @@ CHANGES SINCE 2.6.1
 
 16. Change: umask will correct suspicious values, at the command prompt only.
 
+17. Change: standard names PATH, HOME, PWD, OLDPWD and TERM may no longer be deleted with unset.  These names also disallowed in declarations of new variables.
+
+18. Fix: design pragmas constrainst mode error messages updated for the correct names.
 

@@ -2067,8 +2067,10 @@ procedure expectIdentifier( what, receivedDescription : string ) is
 begin
   if what /= "" then
      err( +"an " & em( "identifier") & pl( " for " & what & " was expected but this looks like " ) & em( receivedDescription ) );
-  else
+  elsif receivedDescription /= "" then
      err( +"an " & em( "identifier") & pl( " was expected but this looks like " ) & em( receivedDescription ) );
+  else
+     err( em( "identifier" ) & pl( " expected" ) );
   end if;
 end expectIdentifier;
 

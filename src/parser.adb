@@ -296,7 +296,7 @@ homonymn_words : constant array(1..180) of a_homonym := (
 -- is especially bad since typing "test" (the Linux command) results in
 -- no output, making it look like the program didn't run.
 
-confusingprogram_words : constant unbounded_string := to_unbounded_string( " eval exec read test " );
+confusingprogram_words : constant unbounded_string := to_unbounded_string( " eval exec read test PATH HOME PWD OLDPWD TERM " );
 
 
 -- CHECK HOMONYMS
@@ -458,7 +458,7 @@ begin
   elsif token = word_t then
      expectIdentifier( what, "(immediate) shell word" );
   elsif token = eof_t then
-     err( em( "identifier" ) & pl( " expected" ) );
+     expectIdentifier( "", "" );
   elsif is_keyword( token ) and token /= eof_t then
      expectIdentifier( what, "keyword" );
   elsif token = symbol_t then
@@ -510,8 +510,6 @@ begin
                    obstructor => token,
                    remedy => +"choose an unused field name because fields must be unique in a record or remove the field if it's a duplicate."
               );
-              -- err( "already declared " &
-              --      optional_yellow( to_string( fieldName ) ) );
            else                                                     -- declare it
               declareIdent( id, fieldName, new_t, varClass );
               identifiers( id ).declaredAt := getLineNo;
@@ -568,8 +566,6 @@ begin
                obstructorNotes => +"but was expecting a simple identifier",
                remedy  => +"choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
           );
-           --err( optional_yellow( "identifier" ) & " expected, not a " &
-           --     optional_yellow( "field of a record type" ) );
         -- if old, don't redeclare if it was a forward declaration
         elsif identifiers( token ).class = userProcClass or         -- a proc?
               identifiers( token ).class = userFuncClass or        -- or func?
@@ -583,8 +579,6 @@ begin
                       obstructorNotes => +"and should be unique in the same block",
                       remedy => +"choose an unused name, define it in a different block or remove the subprogram if it's a duplicate."
                  );
-                 --err( "already declared " &
-                 --     optional_yellow( to_string( identifiers( token ).name ) ) );
               end if;                                               -- not local?
            else                                                     -- declare it
               declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
@@ -598,8 +592,6 @@ begin
                 obstructorNotes => +"and should be unique in the same block",
                 remedy => +"choose an unused name, define it in a different block or remove it if it's a duplicate."
            );
-           --err( "already declared " &
-           --     optional_yellow( to_string( identifiers( token ).name ) ) );
         else
            -- create a new one in this scope
            declareIdent( id, identifiers( token ).name, identifiers( token ).kind,
@@ -688,14 +680,24 @@ begin
      if isTokenValidIdentifier( "a design pragma constraint" ) then
         name := identifiers( token ).name;
         if toConstraintMode( name ) /= undefined then
-           err( pl( "unique, exclusive or local are not allowed for a constraint name" ) );
+           err( contextNotes => +"in the design pragma",
+                subjectNotes => unb_em( name ),
+                reason => +"is a constraint name but it should be different than a mode name like",
+                obstructorNotes => +"unique, file or subprogram",
+                seeAlso => seePragmas
+           );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toConstraintMode( name ) /= undefined then
-        err( pl( "unique, exclusive or local are not allowed for a constraint name" ) );
+        err( contextNotes => +"in the design pragma",
+             subjectNotes => unb_em( name ),
+             reason => +"is a constraint name but it should be different than a mode name like",
+             obstructorNotes => +"unique, file or subprogram",
+             seeAlso => seePragmas
+        );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -718,14 +720,24 @@ begin
      if isTokenValidIdentifier( "a design pragma affinity" ) then
         name := identifiers( token ).name;
         if toAffinityMode( name ) /= undefined then
-           err( +"inclusive is not allowed for an affinity name" );
+           err( contextNotes => +"in the design pragma",
+                subjectNotes => unb_em( name ),
+                reason => +"is an affinity name but it should be different than a mode name like",
+                obstructorNotes => +"file or subprogram",
+                seeAlso => seePragmas
+           );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toAffinityMode( name ) /= undefined then
-        err( +"inclusive is not allowed for an affinity name" );
+        err( contextNotes => +"in the design pragma",
+             subjectNotes => unb_em( name ),
+             reason => +"is an affinity name but it should be different than a mode name like",
+             obstructorNotes => +"file or subprogram",
+             seeAlso => seePragmas
+        );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -748,14 +760,24 @@ begin
      if isTokenValidIdentifier( "a design pragma mode" ) then
         name := identifiers( token ).name;
         if toConstraintMode( name ) = undefined then
-           err( +"unique, file or subprogram expected for a constraint Mode" );
+           err( contextNotes => +"in the design pragma",
+                subjectNotes => unb_em( name ),
+                reason => +"is not a constraint mode name like",
+                obstructorNotes => +"unique, file or subprogram",
+                seeAlso => seePragmas
+           );
         end if;
         getNextToken;
      end if;
   else
      name := identifiers( token ).name;
      if toConstraintMode( name ) = undefined then
-        err( +"unique, file or subprogram expected for a constraint Mode" );
+        err( contextNotes => +"in the design pragma",
+             subjectNotes => unb_em( name ),
+             reason => +"is not a constraint mode name like",
+             obstructorNotes => +"unique, file or subprogram",
+             seeAlso => seePragmas
+        );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
@@ -779,6 +801,12 @@ begin
      if isTokenValidIdentifier( "a design pragma affinity mode" ) then
         name := identifiers( token ).name;
         if toAffinityMode( name ) = undefined then
+           err( contextNotes => +"in the design pragma",
+                subjectNotes => unb_em( name ),
+                reason => +"is not an afinity mode name like",
+                obstructorNotes => +"file or subprogram",
+                seeAlso => seePragmas
+           );
            err( +"file or subprogram expected for an affinity mode" );
         end if;
         getNextToken;
@@ -786,7 +814,12 @@ begin
   else
      name := identifiers( token ).name;
      if toAffinityMode( name ) = undefined then
-        err( +"file or subprogram expected for an affinity mode" );
+        err( contextNotes => +"in the design pragma",
+             subjectNotes => unb_em( name ),
+             reason => +"is not an afinity mode name like",
+             obstructorNotes => +"file or subprogram",
+             seeAlso => seePragmas
+        );
      end if;
      discardUnusedIdentifier( token );
      getNextToken;
