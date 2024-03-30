@@ -407,10 +407,10 @@ elif [ "$ARCH" = "armv7l" ] ; then
    CPU_ARCH="armv6"
    ARCH="armv6"
 elif [ "$ARCH" = "aarch64" ] ; then
-   # Recent Rasp Pi 4
+   # Recent Rasp Pi 4 or Rasp Pi 5
    # was ARCH="armv6" but this is no longer valid
-   CPU_ARCH="armv9-a"
-   ARCH="armv9-a"
+   CPU_ARCH="native"
+   ARCH="native"
 else
    CPU_ARCH="$ARCH"
 fi
@@ -455,8 +455,8 @@ elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv7" ] ; then
 
 # Raspberry Pi 5
 
-elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "armv9-a" ] ; then
-   echo -n "Linux/ARM64 (assuming Raspberry Pi 5)"
+elif [ "$OS" = "Linux" -a "$CPU_ARCH" = "native" ] ; then
+   echo -n "Linux/AARCH64 (assuming Raspberry Pi)"
    if test -r spar_os.ads ; then
       echo " (cached, make distclean to remove)";
    else
