@@ -29,6 +29,7 @@ while [ $# -gt 0 ] ; do
       #echo "  --prefix=PREFIX       root installation directory"
       echo "  --without-bdb         do not Berkeley DB"
       echo "  --without-l10n        do not install GNU localization"
+      echo "  --without-locate      do not install GNU locate"
       echo "  --without-memcached   do not install memcached"
       echo "  --without-mysql       do not install MySQL/MariaDB"
       echo "  --without-opengl      do not install OpenGL"
@@ -49,6 +50,9 @@ while [ $# -gt 0 ] ; do
       ;;
   --without-l10n)
       NO_L10N=1
+      ;;
+  --without-locate)
+      NO_LOCATE=1
       ;;
   --without-memcached)
       NO_MEMCACHED=1
@@ -220,7 +224,9 @@ redhat )
    yum_install gcc-gnat
    yum_install git
    yum_install bc
-   yum_install mlocate
+   if [ -z "$NO_LOCATE" ] ; then
+      yum_install mlocate
+   fi
    if [ -z "$NO_SOUND" ] ; then
       yum_install gstreamer1
       yum_install gstreamer1-devel
@@ -277,7 +283,9 @@ suse)
    zypper_install gcc-ada
    zypper_install git
    zypper_install libopenssl-devel
-   zypper_install mlocate
+   if [ -z "$NO_LOCATE" ] ; then
+      zypper_install mlocate
+   fi
    # zypper_install rpmlint
    if [ -z "$NO_SOUND" ] ; then
       zypper_install gstreamer-devel
@@ -317,7 +325,9 @@ ubuntu )
    apt_install git
    apt_install wget
    apt_install bc
-   apt_install locate
+   if [ -z "$NO_LOCATE" ] ; then
+      apt_install locate
+   fi
    if [ -z "$NO_BDB" ] ; then
       apt_install libdb-dev
    fi
@@ -354,13 +364,20 @@ debian )
    apt_install wget
    apt_install bc
    apt_install libssl1.1
-   apt_install locate
+   if [ -z "$NO_LOCATE" ] ; then
+      apt_install locate
+   fi
    if [ -z "$NO_BDB" ] ; then
       apt_install libdb-dev
    fi
    if [ -z "$NO_MYSQL" ] ; then
-      apt_install libmariadbclient-dev
+      set +e
       apt_install libmariadb-dev-compat # R Pi 4
+      if [ $? -ne 0 ] ; then
+         # Raspberry Pi 3 and older
+         apt_install libmariadbclient-dev
+      fi
+      set -e
       apt_install mariadb-server
    fi
    if [ -z "$NO_POSTGRES" ] ; then
@@ -379,6 +396,9 @@ debian )
    fi
    if [ -z "$NO_READLINE" ] ; then
       apt_install libreadline-dev
+   fi
+   if [ -z "$NO_PCRE" ] ; then
+      apt_install libpcre3-dev
    fi
    set +e
    ;;
@@ -431,17 +451,19 @@ echo "Dependencies installed"
 # Update locate database
 # ----------------------------------------------------------------------------
 
-echo "Updating locate database..."
-if [ "$DISTRO" = "freebsd" ];then
-   if [ "$LOGNAME" != "root" ] ; then
-      echo "run /usr/libexec/locate.updatedb if you have not already"
+if [ -z "$NO_LOCATE" ] ; then
+   echo "Updating locate database..."
+   if [ "$DISTRO" = "freebsd" ];then
+      if [ "$LOGNAME" != "root" ] ; then
+         echo "run /usr/libexec/locate.updatedb if you have not already"
+      else
+         /usr/libexec/locate.updatedb
+      fi
+   elif [ "$HAS_SUDO" ] ; then
+      sudo -u root updatedb
    else
-      /usr/libexec/locate.updatedb
+      updatedb
    fi
-elif [ "$HAS_SUDO" ] ; then
-   sudo -u root updatedb
-else
-   updatedb
 fi
 
 # Done

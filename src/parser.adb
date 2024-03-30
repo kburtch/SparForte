@@ -807,7 +807,6 @@ begin
                 obstructorNotes => +"file or subprogram",
                 seeAlso => seePragmas
            );
-           err( +"file or subprogram expected for an affinity mode" );
         end if;
         getNextToken;
      end if;
@@ -1419,8 +1418,14 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
     kind := eof_t;
     ParseIdentifier( t );
     if identifiers( t ).volatile = checked then    -- volatile user identifier
-       err( unb_pl( identifiers( t ).name ) & pl( " is " ) & em( "volatile" ) &
-          pl( " and not allowed in expressions because it may cause side-effects" ) );
+       err( contextNotes => +"in the expression",
+            subject => t,
+            subjectType => identifiers( t ).kind,
+            reason => +"cannot be used because",
+            obstructorNotes => +"the value of a volatile identifiers may unexpectedly change",
+            remedy => +"use a copy of the value",
+            seeAlso => seePragmas
+       );
        --refreshVolatile( t );
        --f := identifiers( t ).value.all;
        --kind := identifiers( t ).kind;
