@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,21 +22,18 @@
 ------------------------------------------------------------------------------
 -- with ada.text_io; use ada.text_io;
 
-with pegasoft,
-     pegasoft.gen_list,
+with pegasoft.gen_list,
      ada.command_line,
      gnat.directory_operations,
      gnat.regexp,
      spar_os,
      pegasoft.strings,
      pegasoft.user_io,
-     world,
      scanner.communications,
      scanner.shell,
      parser.decl.as;
 
-use  world,
-     ada.command_line,
+use  ada.command_line,
      gnat.directory_operations,
      gnat.regexp,
      spar_os,
@@ -486,17 +483,17 @@ begin
 
       ch := Element( rawWordValue, wordPos );
       if ch = '#' then
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       elsif ch = '?' then
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar(wordLen, wordPos );
       elsif ch = '$' then
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       elsif ch = '!' then
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       elsif ch = '*' then
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       elsif ch = '@' then
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       else
 
          -- Environment variables can contain any character except equals, but
@@ -512,7 +509,7 @@ begin
             -- to support arrays, this will have to change
             exit when ch /= '_' and ch not in 'A'..'Z' and ch not in 'a'..'z'
                and ch not in '0'..'9';
-            getNextChar( rawWordValue, wordLen, wordPos );
+            getNextChar( wordLen, wordPos );
          end loop;
 
          -- Check for valid leading character
@@ -853,7 +850,7 @@ procedure doVariableExpansion(
       defaultValue : unbounded_string;
       defaultMode  : defaultModes;
       wordLen : natural;
-      wordPos : in out natural;
+      wordPos : natural;
       globPattern : in out aGlobShellWord;
       bourneShellWordList : in out bourneShellWordLists.List;
       whitespaceOption : whitespaceOptions;
@@ -1482,7 +1479,7 @@ procedure parseDollarBraceExpansion(
              defaultValue := defaultValue & ada.strings.unbounded.unbounded_string( globPattern );
        when others =>
           defaultValue := defaultValue & ch;
-          getNextChar( rawWordValue, wordLen, wordPos );
+          getNextChar( wordLen, wordPos );
        end case;
      end loop;
 -- put_line( "getBraceOperatorDefaultValue: " & to_string( defaultvalue ) ); -- DEBUG
@@ -1496,7 +1493,7 @@ begin
 
    firstPos := wordPos;
    if not endOfShellWord and then element( rawWordValue, wordPos) = '#' then
-      getNextChar( rawWordValue, wordLen, wordPos );
+      getNextChar( wordLen, wordPos );
       -- Edge-case ${#} is not a length expansion
       if not endOfShellWord and then element( rawWordValue, wordPos ) /= '}' then
          isLengthExpansion := true;
@@ -1687,7 +1684,7 @@ begin
         else
           commands := commands & ch;
           exit when wordPos = wordLen;
-          getNextChar( rawWordValue, wordLen, wordPos );
+          getNextChar( wordLen, wordPos );
         end if;
      end loop;
 
@@ -1843,7 +1840,7 @@ begin
       err_shell( +"missing character after backslash", wordPos );
    else
      globPattern := globPattern & "\" & element( rawWordValue, wordPos );
-     getNextChar( rawWordValue, wordLen, wordPos );
+     getNextChar( wordLen, wordPos );
    end if;
 end parseBackslash;
 
@@ -1908,17 +1905,17 @@ begin
       --      rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList );
                                                       -- is a glob char?
       when '~' => globPattern := globPattern & "\~";  -- escape \
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '\' => globPattern := globPattern & "\\";  -- escape \
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '*' => globPattern := globPattern & "\*";  -- escape *
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '[' => globPattern := globPattern & "\[";  -- escape [
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '?' => globPattern := globPattern & "\?";  -- escape ?
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when others => globPattern := globPattern & ch; -- others? no esc
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       end case;
    end loop;
 
@@ -1947,16 +1944,16 @@ begin
       err_shell( +"missing character after backslash", wordPos );
    elsif ch = '"' then
      globPattern := globPattern & "\" & ch;
-     getNextChar( rawWordValue, wordLen, wordPos );
+     getNextChar( wordLen, wordPos );
    elsif ch = '$' then
      globPattern := globPattern & "\" & ch;
-     getNextChar( rawWordValue, wordLen, wordPos );
+     getNextChar( wordLen, wordPos );
    elsif ch = '`' then
      globPattern := globPattern & "\" & ch;
-     getNextChar( rawWordValue, wordLen, wordPos );
+     getNextChar( wordLen, wordPos );
    elsif ch = '\' then
      globPattern := globPattern & "\" & ch;
-     getNextChar( rawWordValue, wordLen, wordPos );
+     getNextChar( wordLen, wordPos );
    else
      globPattern := globPattern & "\\";
    end if;
@@ -1999,15 +1996,15 @@ begin
             keep, bourneShellWordList );
                                                       -- is a glob char?
       when '~' => globPattern := globPattern & "\~";  -- escape \
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '*' => globPattern := globPattern & "\*";  -- escape *
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '[' => globPattern := globPattern & "\[";  -- escape [
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when '?' => globPattern := globPattern & "\?";  -- escape ?
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       when others => globPattern := globPattern & ch; -- others? no esc
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       end case;
    end loop;
 
@@ -2053,7 +2050,7 @@ begin
       --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
       --       keep, bourneShellWordList );
       when others => globPattern := globPattern & ch; -- others? no esc
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       end case;
    end loop;
 
@@ -2095,13 +2092,13 @@ begin
       when '$' =>                                     -- an expansion
          parseSQLDollarExpansion( rawWordValue, wordLen, wordPos, globPattern,
             bourneShellWordList, keep, sqlSingleNoGlob );
-         globPattern := globPattern;
+         -- globPattern := globPattern;
       -- when '`' =>
       --    -- This is permitted in double quotes in a Bourne shell
       --    parseBackQuotedShellSubword( rawWordValue, wordLen, wordPos, globPattern,
       --       keep, bourneShellWordList );
       when others => globPattern := globPattern & ch; -- others? no esc
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       end case;
    end loop;
 
@@ -2153,7 +2150,7 @@ begin
          parseBackslash( rawWordValue, wordLen, wordPos, aGlobShellWord( commands ), bourneShellWordList );
       else
          commands := commands & ch;
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       end if;
    end loop;
 
@@ -2197,7 +2194,7 @@ begin
          parseDollarExpansion( rawWordValue, wordLen, wordPos, globPattern, bourneShellWordList, trim );
       else
          globPattern := globPattern & ch;
-         getNextChar( rawWordValue, wordLen, wordPos );
+         getNextChar( wordLen, wordPos );
       end if;
    end loop;
 end parseBareShellSubword;
@@ -2289,7 +2286,7 @@ begin
             elsif first_ch = ' ' or first_ch = ASCII.HT then
                -- unlike shell words, sql words have whitespace in them
                globPattern := globPattern & first_ch;
-               getNextChar( shellWord, len, wordPos );
+               getNextChar( len, wordPos );
             else
                parseBareShellSubword( shellWord, len, wordPos, globPattern, bourneShellWordList );
             end if;

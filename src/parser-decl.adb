@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -32,7 +32,6 @@ pragma warnings( on );
 with gnat.source_info,
     spar_os,
     pegasoft.strings,
-    pegasoft.user_io,
     performance_monitoring,
     compiler,
     scanner,
@@ -45,7 +44,6 @@ with gnat.source_info,
     interpreter; -- circular relationship for breakout prompt
 use spar_os,
     pegasoft,
-    pegasoft.user_io,
     pegasoft.strings,
     performance_monitoring,
     compiler,

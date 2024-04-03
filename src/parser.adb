@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,8 +22,8 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
-with ada.text_io;
-use ada.text_io;
+--with ada.text_io;
+--use ada.text_io;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -33,7 +33,6 @@ with ada.command_line,
     gnat.source_info,
     spar_os,
     pegasoft.strings,
-    pegasoft.user_io,
     performance_monitoring,
     compiler,
     scanner.calendar,
@@ -47,7 +46,6 @@ with ada.command_line,
 use ada.command_line,
     spar_os,
     pegasoft,
-    pegasoft.user_io,
     pegasoft.strings,
     performance_monitoring,
     compiler,
@@ -459,7 +457,7 @@ begin
      expectIdentifier( what, "(immediate) shell word" );
   elsif token = eof_t then
      expectIdentifier( "", "" );
-  elsif is_keyword( token ) and token /= eof_t then
+  elsif is_keyword( token ) then -- EOF handled in previous case
      expectIdentifier( what, "keyword" );
   elsif token = symbol_t then
      expectIdentifier( what, "punctuation symbol" );

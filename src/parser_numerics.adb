@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -30,7 +30,7 @@ with ada.numerics.float_random,
     gnat.sha224,
     gnat.sha256,
     gnat.sha512,
-    pegasoft.user_io,
+    --pegasoft.user_io,
     pegasoft.numerics,
     world,
     scanner,
@@ -40,7 +40,7 @@ with ada.numerics.float_random,
     md5;
 use interfaces,
     pegasoft,
-    pegasoft.user_io,
+    --pegasoft.user_io,
     pegasoft.numerics,
     pegasoft.numerics.elementary_functions,
     pegasoft.numerics.complex_types,

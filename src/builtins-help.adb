@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,9 +25,7 @@ with interfaces.c,
      ada.characters.Latin_1,
      ada.text_io,
      ada.calendar,
-     spar_os,
      pegasoft.strings,
-     world,
      pegasoft.user_io,
      pegasoft.script_io,
      reports.help,
@@ -38,9 +36,7 @@ with interfaces.c,
 use  interfaces.c,
      ada.text_io,
      ada.calendar,
-     spar_os,
      pegasoft.strings,
-     world,
      pegasoft,
      pegasoft.user_io,
      pegasoft.script_io,

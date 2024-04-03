@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -27,10 +27,8 @@ pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
 
-with CGI,
-    ada.text_io,
+with ada.text_io,
     ada.integer_text_io,
-    ada.strings.unbounded.text_io,
     ada.characters.handling,
     gnat.source_info,
     spar_os.tty,
@@ -39,13 +37,9 @@ with CGI,
     pegasoft.script_io,
     pegasoft.strings,
     world.utf8,
-    scanner_res,
     performance_monitoring;
 use ada.text_io,
     ada.integer_text_io,
-    ada.command_line,
-    ada.command_line.environment,
-    ada.strings.unbounded.text_io,
     ada.characters.handling,
     spar_os,
     spar_os.tty,
@@ -54,7 +48,6 @@ use ada.text_io,
     pegasoft.script_io,
     pegasoft.strings,
     world.utf8,
-    scanner_res,
     performance_monitoring;
 
 package body compiler is

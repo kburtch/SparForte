@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -90,7 +90,7 @@ with system,
     parser_logs,
     parser_l10n,
     parser_hmaps;
-use ada.text_io,
+use  ada.text_io,
     ada.command_line,
     ada.command_line.environment,
     ada.strings.fixed,
@@ -1173,6 +1173,139 @@ begin
       end if;
   end loop;
 end completeSoftwareModelRequirements;
+
+
+------------------------------------------------------
+--
+-- Saving/Restoring Position
+--
+-- needed by push/pull block
+------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  MARK SCANNER
+--
+-- Record the current state of the scanner, including the token
+-- and the position in the current line.
+-----------------------------------------------------------------------------
+
+procedure markScanner( scannerState : out aScannerState ) is
+begin
+  scannerState.token   := token;
+  scannerState.first   := firstpos;
+  scannerState.cmdpos  := cmdpos;
+  scannerState.last    := lastpos;
+  scannerState.itself  := itself;
+  scannerState.itself_type := itself_type;
+  scannerState.last_output := last_output;
+  scannerState.last_output_type := last_output_type;
+  scannerState.err_exception := err_exception;
+  -- because value is now a pointer
+  scannerState.err_exception.value := scannerState.err_exception.svalue'unchecked_access;
+  if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
+     scannerState.value := identifiers( token ).value.all;
+  end if;
+end markScanner;
+
+
+-----------------------------------------------------------------------------
+--  RESUME SCANNING
+--
+-- Restore the scanner to a previously recorded position, to continue
+-- execution at that place.
+-----------------------------------------------------------------------------
+
+procedure resumeScanning( scannerState : aScannerState ) is
+begin
+  token    := scannerState.token;
+  firstpos := scannerState.first;
+  cmdpos   := scannerState.cmdpos;
+  lastpos  := scannerState.last;
+  itself   := scannerState.itself;
+  itself_type := scannerState.itself_type;
+  last_output := scannerState.last_output;
+  last_output_type := scannerState.last_output_type;
+  -- If an exception occurred, do not erase it from a previous state
+  -- because value is now a pointer, make sure it points to the right
+  -- stoarge.
+  if length( err_exception.name ) = 0 then
+     err_exception := scannerState.err_exception;
+     err_exception.value := err_exception.svalue'access;
+  end if;
+  if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
+     identifiers( token ).value.all := scannerState.value;
+  end if;
+end resumeScanning;
+
+
+-----------------------------------------------------------------------------
+--  IS VALID
+--
+-- True if the script state contains a saved script state.
+-----------------------------------------------------------------------------
+
+function isValid( scriptState : aScriptState ) return boolean is
+begin
+  return scriptState.script /= null;
+end isValid;
+
+
+-----------------------------------------------------------------------------
+--  SAVE SCRIPT
+--
+-- Save scanner state plus the current script so that a new
+-- script can be executed.  The error flag, syntax check flag,
+-- etc. are not saved.
+-----------------------------------------------------------------------------
+
+procedure saveScript( scriptState : out aScriptState ) is
+begin
+  if script = null then
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while saving a script " ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because",
+         obstructorNotes => +"the script to save is null"
+     );
+  end if;
+  markScanner( scriptState.scannerState );
+  scriptState.script := script;
+  scriptState.size := identifiers( source_info_script_size_t ).value.all;
+  scriptState.inputMode := inputMode;
+  script := null;
+end saveScript;
+
+
+-----------------------------------------------------------------------------
+--  RESTORE SCRIPT
+--
+-- Restore a previously saved script, destroying the current one
+-- (if any).  Execution will continue where it previously left
+-- off.
+-----------------------------------------------------------------------------
+
+procedure restoreScript( scriptState : in out aScriptState ) is
+begin
+  if scriptState.script = null then
+     err(
+         contextNotes => pl( "At " & gnat.source_info.source_location &
+             " while restoring a saved script " ),
+         subjectNotes => subjectInterpreter,
+         reason => +"had an internal error because",
+         obstructorNotes => +"the script to restore is null"
+     );
+  end if;
+  if script /= null then
+     free( script );
+  end if;
+  script := scriptState.script;
+  scriptState.script := null;
+  inputMode := scriptState.inputMode;
+  identifiers( source_info_script_size_t ).value.all := scriptState.size;
+  resumeScanning( scriptState.scannerState );
+end restoreScript;
 
 -----------------------------------------------------------------------------
 --  PUSH BLOCK
@@ -5789,138 +5922,6 @@ begin
   end loop;
   cmdPos := firstPos;
 end skipWhiteSpace;
-
-
-------------------------------------------------------
---
--- Saving/Restoring Position
---
-------------------------------------------------------
-
-
------------------------------------------------------------------------------
---  MARK SCANNER
---
--- Record the current state of the scanner, including the token
--- and the position in the current line.
------------------------------------------------------------------------------
-
-procedure markScanner( scannerState : out aScannerState ) is
-begin
-  scannerState.token   := token;
-  scannerState.first   := firstpos;
-  scannerState.cmdpos  := cmdpos;
-  scannerState.last    := lastpos;
-  scannerState.itself  := itself;
-  scannerState.itself_type := itself_type;
-  scannerState.last_output := last_output;
-  scannerState.last_output_type := last_output_type;
-  scannerState.err_exception := err_exception;
-  -- because value is now a pointer
-  scannerState.err_exception.value := scannerState.err_exception.svalue'unchecked_access;
-  if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
-     scannerState.value := identifiers( token ).value.all;
-  end if;
-end markScanner;
-
-
------------------------------------------------------------------------------
---  RESUME SCANNING
---
--- Restore the scanner to a previously recorded position, to continue
--- execution at that place.
------------------------------------------------------------------------------
-
-procedure resumeScanning( scannerState : aScannerState ) is
-begin
-  token    := scannerState.token;
-  firstpos := scannerState.first;
-  cmdpos   := scannerState.cmdpos;
-  lastpos  := scannerState.last;
-  itself   := scannerState.itself;
-  itself_type := scannerState.itself_type;
-  last_output := scannerState.last_output;
-  last_output_type := scannerState.last_output_type;
-  -- If an exception occurred, do not erase it from a previous state
-  -- because value is now a pointer, make sure it points to the right
-  -- stoarge.
-  if length( err_exception.name ) = 0 then
-     err_exception := scannerState.err_exception;
-     err_exception.value := err_exception.svalue'access;
-  end if;
-  if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
-     identifiers( token ).value.all := scannerState.value;
-  end if;
-end resumeScanning;
-
-
------------------------------------------------------------------------------
---  IS VALID
---
--- True if the script state contains a saved script state.
------------------------------------------------------------------------------
-
-function isValid( scriptState : aScriptState ) return boolean is
-begin
-  return scriptState.script /= null;
-end isValid;
-
-
------------------------------------------------------------------------------
---  SAVE SCRIPT
---
--- Save scanner state plus the current script so that a new
--- script can be executed.  The error flag, syntax check flag,
--- etc. are not saved.
------------------------------------------------------------------------------
-
-procedure saveScript( scriptState : out aScriptState ) is
-begin
-  if script = null then
-     err(
-         contextNotes => pl( "At " & gnat.source_info.source_location &
-             " while saving a script " ),
-         subjectNotes => subjectInterpreter,
-         reason => +"had an internal error because",
-         obstructorNotes => +"the script to save is null"
-     );
-  end if;
-  markScanner( scriptState.scannerState );
-  scriptState.script := script;
-  scriptState.size := identifiers( source_info_script_size_t ).value.all;
-  scriptState.inputMode := inputMode;
-  script := null;
-end saveScript;
-
-
------------------------------------------------------------------------------
---  RESTORE SCRIPT
---
--- Restore a previously saved script, destroying the current one
--- (if any).  Execution will continue where it previously left
--- off.
------------------------------------------------------------------------------
-
-procedure restoreScript( scriptState : in out aScriptState ) is
-begin
-  if scriptState.script = null then
-     err(
-         contextNotes => pl( "At " & gnat.source_info.source_location &
-             " while restoring a saved script " ),
-         subjectNotes => subjectInterpreter,
-         reason => +"had an internal error because",
-         obstructorNotes => +"the script to restore is null"
-     );
-  end if;
-  if script /= null then
-     free( script );
-  end if;
-  script := scriptState.script;
-  scriptState.script := null;
-  inputMode := scriptState.inputMode;
-  identifiers( source_info_script_size_t ).value.all := scriptState.size;
-  resumeScanning( scriptState.scannerState );
-end restoreScript;
 
 
 -----------------------------------------------------------------------------

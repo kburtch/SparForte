@@ -127,7 +127,7 @@ readline_idle_timeout  : duration;
 
 package completionLists is new ada.containers.vectors( Positive,
   chars_ptr );
-memoryLeakCnt : integer := 0;
+-- memoryLeakCnt : integer := 0;
 
 
 -----------------------------------------------------------------------------

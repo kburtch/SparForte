@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -20,17 +20,16 @@
 -- This is maintained at http://www.sparforte.com                           --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.strings.unbounded.text_io,
-     ada.calendar,
-     ada.text_io,
+with ada.calendar,
+     ada.strings,
+     -- ada.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,
      world.utf8;
 use  ada.strings,
-     ada.strings.unbounded.text_io,
      ada.calendar,
-     ada.text_io,
+     -- ada.text_io,
      cgi,
      pegasoft.strings,
      pegasoft.user_io,

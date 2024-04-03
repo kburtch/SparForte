@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -22,7 +22,7 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
-     ada.strings.unbounded.text_io,
+     --ada.strings.unbounded.text_io,
      ada.strings.fixed,
      gnat.source_info,
 #if POSTGRES
@@ -38,12 +38,12 @@ with ada.text_io,
      world.utf8,
      scanner.communications,
      jobs,
-     parser_aux,
+     --parser_aux,
      parser_db,
      parser_mysql;
 use  ada.text_io,
      ada.strings,
-     ada.strings.unbounded.text_io,
+     --ada.strings.unbounded.text_io,
      ada.strings.fixed,
 #if POSTGRES
      APQ,
@@ -56,11 +56,11 @@ use  ada.text_io,
      pegasoft.strings,
      jobs,
      pegasoft.user_io,
-     world,
+     --world,
      world.utf8,
      scanner,
      scanner.communications,
-     parser_aux,
+     --parser_aux,
      parser_db,
      parser_mysql;
 
@@ -140,7 +140,8 @@ end findPwd;
 -- loosely modelled on bash/builtins/cd.def
 -----------------------------------------------------------------------------
 
-procedure bindPwd( cmd : identifier; symlinks : boolean := false ) is
+procedure bindPwd( cmd : identifier ) is
+-- procedure bindPwd( cmd : identifier; symlinks : boolean := false ) is
 begin
   findPwd( cmd );
   if current_working_directory /= null_unbounded_string then

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -38,7 +38,6 @@ package body scanner.shell is
 -----------------------------------------------------------------------------
 
 procedure getNextChar(
-   rawWordValue : aRawShellWord;
    wordLen : natural;
    wordPos : in out natural ) is
 begin
@@ -65,7 +64,7 @@ begin
    if endOfShellWord then
       err( pl( "'" & expectedChar & "' expected" ) );
    elsif expectedChar = element( rawWordValue, wordPos ) then
-      getNextChar( rawWordValue, wordLen, wordPos );
+      getNextChar( wordLen, wordPos );
    elsif expectedChar = ''' then
       err( +"missing single quote" );
    elsif expectedChar = '"' then

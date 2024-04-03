@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -28,7 +28,6 @@ pragma warnings( on );
 with ada.text_io,
     ada.calendar,
     ada.command_line,
-    ada.strings.unbounded.text_io,
     ada.characters.handling,
     ada.numerics.float_random,
     gnat.source_info,
@@ -52,7 +51,6 @@ with ada.text_io,
 use ada.text_io,
     ada.calendar,
     ada.command_line,
-    ada.strings.unbounded.text_io,
     ada.characters.handling,
     spar_os,
     pegasoft.user_io,

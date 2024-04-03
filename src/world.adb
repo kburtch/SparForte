@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2023 Free Software Foundation            --
+--              Copyright (C) 2001-2024 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -27,19 +27,14 @@ pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
 pragma warnings( on );
 
-with system,
-    ada.text_io,
-    ada.strings.unbounded.text_io,
+with ada.text_io,
     gnat.source_info,
-    spar_os.tty,
     CGI,
     pegasoft.strings,
     pegasoft.user_io;
 use ada.text_io,
     ada.command_line,
     ada.command_line.environment,
-    ada.strings.unbounded.text_io,
-    spar_os.tty,
     pegasoft.strings,
     pegasoft.user_io;
 
@@ -2511,7 +2506,7 @@ end em_value;
 
 function qp( s : string ) return string is
   -- TODO: this should be more efficient and not use an unbounded string
-  unb : unbounded_string := to_unbounded_string( s );
+  unb : constant unbounded_string := to_unbounded_string( s );
 begin
   if quietOpt then
      if s /= "" then

@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -27,7 +27,6 @@ with ada.command_line.environment;
 pragma warnings( on );
 with Interfaces.C,
     ada.containers.vectors,
-    ada.strings.unbounded.text_io,
     gnat.source_info,
     spar_os.exec,
     pegasoft.strings,
@@ -50,7 +49,6 @@ with Interfaces.C,
     interpreter; -- circular relationship for breakout prompt
 use Interfaces.C,
     ada.containers,
-    ada.strings.unbounded.text_io,
     spar_os,
     spar_os.exec,
     pegasoft,
@@ -4583,7 +4581,7 @@ procedure DoUserDefinedCaseProcedure( s : unbounded_string ) is
   has_context  : boolean := false;
   last_in_chain: boolean := false;
   contextName  : unbounded_string;
-  old_error_found : constant boolean := error_found;
+  --old_error_found : constant boolean := error_found;
   old_exit_block : constant boolean := exit_block;
 begin
   proc_id := token;

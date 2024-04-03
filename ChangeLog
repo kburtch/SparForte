@@ -2,6 +2,14 @@ For the latest news, visit the SparForte web site.
 
 Objective: Error message improvements
 
+Known Issues
+
+Warnings from MariaDB libraries Raspberry Pi OS / Bullseye.
+
+Failure on OpenSuSE 15.5 on error in errmsg.h: MariaDB has mixed integers and string pointers in this file, which is illegal in C--presumably because a pointer may be a different size than an integer--and now strictly enforced by recent versions of GCC.  You may be able to edit errmsg.h and replace the strings near line 40 with integers as a kludge.
+
+Failing to build on Raspberry Pi OS / Bookworm due to an internal error in the Ada standard address to access conversions function.
+
 CHANGES SINCE 2.6
 
 1. Fix: --without-sound now builds successfully.
@@ -27,13 +35,13 @@ CHANGES SINCE 2.6.1
 
 10. New: New style error messages may include the location where an identifier was declared.
 
-11. Change: configure will try to use find /usr/lib if locate command is not installed [untested].
+11. Change: configure will try to use find /usr/lib if locate command is not installed.
 
 12. Change: very long identifier names will be replaced with the text "the identifier" in new style error messages.
 
-13. Change: when using cd on a path to a non-directory, cd will attempt to change directory to the directory containing the file with an "Assuming" warning.  In a script, this is a suggested remedy.
+13. Change: when using cd on a path to a non-directory, cd will attempt to change directory to the directory containing the file with an "Assuming" warning.  In a script, this is a suggested remedy in the error message.
 
-14. Change: when using cd with a path with leading/trailing spaces, cd will attempt to change directory to the directory without spaces with an "Assuming" warning.  In a script, this is a suggested remedy.
+14. Change: when using cd with a path with leading/trailing spaces, cd will attempt to change directory to the directory without spaces with an "Assuming" warning.  In a script, this is a suggested remedy in the error message.
 
 15. Change; when using cd with the wrong slash delimiter, cd will attempt to use the correct directory delimiter with an "Assuming" warning.  In a script, this is a suggested remedy.
 
@@ -41,5 +49,7 @@ CHANGES SINCE 2.6.1
 
 17. Change: standard names PATH, HOME, PWD, OLDPWD and TERM may no longer be deleted with unset.  These names also disallowed in declarations of new variables.
 
-18. Fix: design pragmas constrainst mode error messages updated for the correct names.
+18. Fix: design pragmas constraint mode error messages updated for the correct names.
+
+19. Change: support for newer Raspberry Pi OS Bullseye releases.  Bookworm failing to compile due to an Ada internal error.
 

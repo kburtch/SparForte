@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2017 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -30,11 +30,9 @@ with
     ada.strings.unbounded,
     gnat.directory_operations,
     gnat.source_info,
-    --spar_os,
     world,
     pegasoft,
     pegasoft.strings,
-    pegasoft.user_io,
     scanner,
     scanner.communications,
     scanner_res,
@@ -56,7 +54,6 @@ use
     world,
     pegasoft,
     pegasoft.strings,
-    pegasoft.user_io,
     scanner,
     scanner.communications,
     scanner_res,

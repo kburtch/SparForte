@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -26,13 +26,11 @@
 with interfaces.c,
     scanner.communications,
     pegasoft.strings,
-    pegasoft.user_io,
     parser_params;
 use interfaces.c,
     scanner,
     scanner.communications,
     pegasoft.strings,
-    pegasoft.user_io,
     parser_params;
 
 package body parser_strings_pcre is

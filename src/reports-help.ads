@@ -21,10 +21,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-
-use ada.strings.unbounded;
-
 with pegasoft.gen_list;
 
 package reports.help is

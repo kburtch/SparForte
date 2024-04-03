@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -23,15 +23,19 @@
 --with ada.text_io; use ada.text_io;
 
 with gnat.source_info,
+     ada.strings.unbounded,
      pegasoft.numerics,
      scanner.communications,
+     world,
+     scanner,
      parser;
-use  pegasoft,
+use  ada.strings.unbounded,
+     pegasoft,
      pegasoft.numerics.elementary_functions,
+     world,
+     scanner,
      scanner.communications,
-     parser;
-
---with ada.text_io; use ada.text_io;
+     parser; 
 
 package body parser_stats is
 

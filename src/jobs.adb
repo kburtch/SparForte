@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,7 +24,6 @@
 with interfaces.c,
     ada.text_io,
     ada.strings.fixed,
-    ada.strings.unbounded.text_io,
     gnat.source_info,
     compiler,
     scanner.communications,
@@ -37,7 +36,6 @@ with interfaces.c,
 use interfaces.c,
     ada.text_io,
     ada.strings.fixed,
-    ada.strings.unbounded.text_io,
     pegasoft.user_io,
     pegasoft.strings,
     builtins,

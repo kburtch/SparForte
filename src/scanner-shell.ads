@@ -21,9 +21,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-use  ada.strings.unbounded;
-
 package scanner.shell is
 
 -----------------------------------------------------------------------------
@@ -44,7 +41,6 @@ package scanner.shell is
 endOfShellWord : boolean;
 
 procedure getNextChar(
-   rawWordValue : aRawShellWord;
    wordLen : natural;
    wordPos : in out natural );
 

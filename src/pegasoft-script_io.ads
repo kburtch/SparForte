@@ -22,10 +22,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded,
-     spar_os;
-use ada.strings.unbounded,
-    spar_os;
+with spar_os;
+use  spar_os;
 
 package pegasoft.script_io is
 

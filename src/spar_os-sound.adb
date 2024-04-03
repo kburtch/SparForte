@@ -31,8 +31,8 @@ GNAT.Command_Line;
 --use WC.Streams.Wave;
 --use WC.Streams.Codec;
 
-with world, scanner.communications, parser_aux;
-use  world, scanner, scanner.communications, parser_aux;
+with world, scanner.communications;
+use  world, scanner, scanner.communications;
 
 package body spar_os.sound is
 

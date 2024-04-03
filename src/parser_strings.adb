@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -33,7 +33,6 @@ with interfaces.c,
     base64,
     spar_os,
     pegasoft.strings,
-    pegasoft.user_io,
     world,
     scanner.communications,
     parser_aux,
@@ -51,7 +50,6 @@ use interfaces.c,
     spar_os,
     pegasoft,
     pegasoft.strings,
-    pegasoft.user_io,
     world,
     scanner,
     scanner.communications,

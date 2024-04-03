@@ -5,7 +5,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -21,30 +21,23 @@
 -- This is maintained at http://www.pegasoft.ca                             --
 --                                                                          --
 ------------------------------------------------------------------------------
-with ada.text_io;
-use  ada.text_io;
-
-with gnat.source_info,
-     ada.characters.handling,
+with ada.text_io,
      ada.strings.fixed,
-     ada.strings.unbounded.text_io,
      pegasoft.script_io,
      pegasoft.strings,
      pegasoft.user_io,
-     spar_os.tty,
+     spar_os,
      world.utf8,
      -- TODO: references own parent.  This is messy to sort out.  Will
      -- deal with it later.
      scanner;
 
-use  ada.characters.handling,
-     ada.strings.unbounded.text_io,
+use  ada.text_io,
      ada.strings.fixed,
-     pegasoft.strings,
+     gipegasoft.strings,
      pegasoft.script_io,
      pegasoft.user_io,
      spar_os,
-     spar_os.tty,
      world.utf8,
      scanner;
 
@@ -340,6 +333,7 @@ end getSparFormatMessageHeader;
 -- This is the form of a notification used in breakout mode for displaying
 -- messages to standard error like "break" or "resuming", including the
 -- script position.
+-- TODO: utf_icon not used
 -----------------------------------------------------------------------------
 
 function get_script_execution_position( msg : messageStrings; utf_icon : string ) return unbounded_string is
@@ -459,7 +453,7 @@ begin
      when xmlTemplate =>
         fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
-        fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
+        null; -- fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
      when tomlTemplate | yamlTemplate =>
         fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
@@ -612,7 +606,7 @@ begin
      when xmlTemplate =>
         fullErrorMessage.templateMessage := "<!-- " & templateErrorHeader & " " & fullErrorMessage.templateMessage & " -->";
      when textTemplate =>
-        fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
+        null; -- fullErrorMessage.templateMessage := fullErrorMessage.templateMessage;
      when tomlTemplate | yamlTemplate =>
         fullErrorMessage.templateMessage := "# " & fullErrorMessage.templateMessage;
      when noTemplate | jsonTemplate =>
@@ -743,12 +737,8 @@ procedure raise_exception( msg : messageStrings ) is
   firstpos   : natural;
   lastpos    : natural;
   distance_percent : natural;
-  lineStr    : unbounded_string;
-  firstposStr : unbounded_string;
   lineno     : natural;
   fileno     : natural;
-  outLine    : unbounded_string;
-  gccOutLine : unbounded_string;
   needGccVersion : boolean := false;
   gccFormatMsg : messageStrings;
 begin
@@ -887,13 +877,9 @@ procedure err_test_result is
   discardCmdline    : messageStrings;
   firstpos   : natural;
   lastpos    : natural;
-  lineStr    : unbounded_string;
-  firstposStr : unbounded_string;
   lineno     : natural;
   distance_percent : natural;
   fileno     : natural;
-  outLine    : unbounded_string;
-  gccOutLine : messageStrings;
   needGccVersion : boolean := false;
   msg        : constant messageStrings := +"test failed";
   ourFullErrorMessage : messageStrings;
@@ -1039,23 +1025,6 @@ begin
      end case;
   end if;
 end warn;
-
-
------------------------------------------------------------------------------
---  ERR PREVIOUS
---
--- Same as err below, but don't hilight the current token because the error
--- actually happened before it.  Just mark start of current token.
------------------------------------------------------------------------------
-
-procedure err_previous( msg : messageStrings ) is
-  savepos : integer;
-begin
-  savepos := lastpos;     -- save current token's last character position
-  lastpos := firstpos;    -- token length is one to produce a single '^'
-  err( msg );             -- show message pointing at first character
-  lastpos := savepos;     -- restore current token's last character position
-end err_previous;
 
 
 -----------------------------------------------------------------------------
@@ -2767,7 +2736,8 @@ begin
         subject => subject,
         reason => +"had an internal error because it had",
         obstructorNotes => pl( "an unexpected usage qualifier " &
-           identifiers( subject ).usage'img )
+           identifiers( subject ).usage'img ),
+        remedy => remedy
     );
 end internalErrorUsageQualifier;
 

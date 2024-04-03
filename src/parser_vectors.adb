@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -25,7 +25,7 @@ with
     Ada.Containers,
     ada.strings.unbounded,
     pegasoft.strings,
-    pegasoft.user_io,
+    --pegasoft.user_io,
     pegasoft.vectors,
     world,
     scanner.communications,
@@ -38,7 +38,7 @@ use
     ada.strings.unbounded,
     pegasoft,
     pegasoft.strings,
-    pegasoft.user_io,
+    --pegasoft.user_io,
     pegasoft.vectors,
     world,
     scanner,

@@ -22,11 +22,8 @@
 ------------------------------------------------------------------------------
 
 with ada.text_io,
-     ada.calendar,
-     ada.strings.unbounded;
-use  ada.strings.unbounded,
-     ada.text_io;
-
+     ada.calendar;
+use  ada.text_io;
 
 package pegasoft.user_io is
 

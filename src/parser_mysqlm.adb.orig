@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -23,7 +23,7 @@
 
 with ada.io_exceptions,
      ada.strings.unbounded,
-     ada.text_io,
+     --ada.text_io,
 #if MYSQL
      APQ.MySQL.Client,
      pegasoft.mysql,
@@ -39,7 +39,7 @@ with ada.io_exceptions,
      parser_params,
      parser_db;
 use  ada.strings.unbounded,
-     ada.text_io,
+     --ada.text_io,
 #if MYSQL
      APQ,
      APQ.MySQL,

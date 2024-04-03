@@ -4,7 +4,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---            Copyright (C) 2001-2023 Free Software Foundation              --
+--            Copyright (C) 2001-2024 Free Software Foundation              --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -29,7 +29,7 @@ with ada.strings.unbounded,
     scanner,
     scanner.communications,
     parser_params,
-    parser_aux,
+    --parser_aux,
     spar_os;
 use ada.strings.unbounded,
     pegasoft,
@@ -37,7 +37,7 @@ use ada.strings.unbounded,
     scanner,
     scanner.communications,
     parser_params,
-    parser_aux,
+    --parser_aux,
     spar_os;
 
 package body parser_os is

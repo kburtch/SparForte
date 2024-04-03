@@ -21,10 +21,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with world,
-     scanner;
-use  world,
-     scanner;
+with world;
+use  world;
 
 package scanner_restypes is
 
