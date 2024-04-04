@@ -34,7 +34,7 @@ with ada.text_io,
 
 use  ada.text_io,
      ada.strings.fixed,
-     gipegasoft.strings,
+     pegasoft.strings,
      pegasoft.script_io,
      pegasoft.strings,
      pegasoft.user_io,
