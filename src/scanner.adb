@@ -4972,8 +4972,12 @@ begin
                                result := result & identifiers( field_t ).value.all;
                             end if;
                          elsif uniFieldType = root_enumerated_t then
-                            if identifiers( field_t ).value.all = " 0" or
-                               identifiers( field_t ).value.all = "" then
+                            -- The originally existed but " 0" is the first
+                            -- enum value.
+                            --if identifiers( field_t ).value.all = " 0" or
+                            if identifiers( field_t ).value.all = "" then
+put_line("A"); -- DEBUG
+put_line( identifiers( field_t ).value.all ); -- DEBUG
                                err( contextNotes => +"encoding a record to a JSON string value",
                                     subject => field_t,
                                     subjectType => identifiers( field_t ).kind,

@@ -53,3 +53,7 @@ CHANGES SINCE 2.6.1
 
 19. Change: support for newer Raspberry Pi OS Bullseye releases.  Bookworm failing to compile due to an Ada internal error.
 
+CHANGES SINCE 2.6.2
+
+20. Fix: first item in an enumerated type no longer gives an undefined error when converting a record to JSON.
+
