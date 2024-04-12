@@ -8,7 +8,7 @@ end rt;
 r : rt;
 
 r.a := ape;
-r.b := bat;
+--r.b := bat;
 records.to_json( js, r );
 env js;
 
