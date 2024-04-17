@@ -31,12 +31,14 @@ Priority Issues (Fix These First)
       - proper error messages should be provided on unavailable
         functions
 
+- exceptions are not propogating in wash_blocked SSDS script to the
+  main program exception handler.  exceptions.exception_info is empty.
+- reports that SparForte is failing to build on GCC 13
 - building with SDL may be giving spar_os.sdl errors
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
  is derived from it
-- ???
-  especially on Raspian Linux.  scanner.communications updated but there
+- ???  especially on Raspian Linux.  scanner.communications updated but there
   may be other references.
 - check shell dollar expansion escaping for security
 - ubuntu container failing because l10n constants are not defined (they

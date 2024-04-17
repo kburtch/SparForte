@@ -111,6 +111,7 @@ endif
 	@echo "   http://www.sparforte.com"
 	@echo "---------------------------------------------------------------"
 	@echo
+	# Use the following line for aggressive linting
 	# $(GNATMAKE) -j4 -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnatw.eDHM.Y -gnateEeEeF -gnatybdh -fstack-protector -c $(INCLUDE) spar
 	$(GNATMAKE) -j$(GMAKEJOBS) -c -i -O1 $(CPU_FLAG)=$(CPU) -we -gnat12 -gnatfaoN -gnatVaep -gnateEeEeF -fstack-protector -c $(INCLUDE) spar
 	gnatbind -x $(INCLUDE_BIND) spar.ali
@@ -396,14 +397,29 @@ srctar: distclean
 	chmod 440 spar_os-sdl-32bit.ads
 	chmod 440 spar_os-sdl-64bit.ads
 	(cd ..;  tar cfvz spar.tgz *; cd src)
-	@echo "Don't forget to unpack and repack under a descriptive directory"
+	@echo
+	@echo "Release checklist"
+	@echo
+	@echo "1. Download a fresh version from GitLab for best results"
+	@echo "   (Instead of using spar.tgz)"
+	@echo "2. Repack using tar cfvj under a sparforte-x.y-src directory name"
 
 rpm:	all
 
 bintar: c_os.o all
 	gnatbind -x $(INCLUDE_BIND) spar.ali
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS) ; ( cd ..; rm -f spar.tgz; tar cfvz spar.tgz src/spar src/spar.1 README COPYING INSTALL ChangeLog provision.sh examples doc GNUmakefile sparforte_f_icon.xpm  sparforte_sail_icon.xpm; rm -f spar )
-	@echo "Don't forget to unpack and repack under a descriptive directory"
+	@echo
+	@echo "Release checklist"
+	@echo
+	@echo "1. Ensure that the release tests are passing"
+	@echo "2. Test on several different operating systems before packaging"
+	@echo "3. Test all the example programs (not all run on release tests)"
+	@echo "4. Do an extended test on SSDS firewall project"
+	@echo "5. Ensure the copyright year is up-to-date"
+	@echo "6. Build with aggressive linting and clean up issues"
+	@echo "7. Ensure a tag has been created for GitHub"
+	@echo "8. Repack using tar cfvj under a sparforte-x.y-z.os directory name"
 
 install:
 ifdef RPM_BUILD_ROOT
