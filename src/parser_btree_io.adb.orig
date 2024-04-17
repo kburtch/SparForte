@@ -22,7 +22,10 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
---with text_io;use text_io;
+-- if text_io is commented out, then SSDS stops working, even though it is not
+-- used
+
+with text_io;use text_io;
 
 with
     Interfaces.C,
@@ -311,6 +314,8 @@ begin
        end if;
      exception when msg: berkeley_error =>
        err( pl( exception_message( msg ) ) );
+     when others =>
+        err_exception_raised;
      end;
   end if;
 end ParseBTreeClear;
@@ -380,7 +385,9 @@ begin
                    0 );
            close( theFile.btree.env );
         exception when msg: berkeley_error =>
-            err( pl( exception_message( msg ) & " on recovering the environment" ) );
+           err( pl( exception_message( msg ) & " on recovering the environment" ) );
+        when others =>
+           err_exception_raised;
         end;
      end;
   end if; -- is executing command
@@ -1065,6 +1072,8 @@ begin
               end if;
            when STORAGE_ERROR =>
               err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
+           when others =>
+              err_exception_raised;
            end;
         end if;
      elsif isArray then
@@ -1083,6 +1092,8 @@ begin
               end if;
            when STORAGE_ERROR =>
               err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
+           when others =>
+              err_exception_raised;
            end;
         end if;
      else
@@ -1142,6 +1153,8 @@ begin
            result := to_bush_boolean( false );
         when STORAGE_ERROR =>
            err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
+        when others =>
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -1278,6 +1291,8 @@ begin
           else
              err( pl( exception_message( msg ) ) );
           end if;
+        when others =>
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -1350,6 +1365,8 @@ begin
          else
             err( pl( exception_message( msg ) ) );
          end if;
+      when others =>
+         err_exception_raised;
        end;
      end if;
   end if;
@@ -1428,6 +1445,8 @@ begin
              else
                 err( pl( exception_message( msg ) ) );
              end if;
+           when others =>
+             err_exception_raised;
            end;
         end if;
      elsif isArray then
@@ -1566,6 +1585,8 @@ begin
                 err( pl( exception_message( msg ) ) );
               when CONSTRAINT_ERROR =>
                  err( +"constraint_error: value too big" );
+              when others =>
+                err_exception_raised;
               end;
            end if;
         elsif isArray then
@@ -1594,6 +1615,8 @@ begin
                 err( pl( exception_message( msg ) ) );
               when CONSTRAINT_ERROR =>
                  err( +"constraint_error: value too big" );
+              when others =>
+                 err_exception_raised;
               end;
            end if;
         else
@@ -1620,6 +1643,8 @@ begin
                err( pl( exception_message( msg ) ) );
              when CONSTRAINT_ERROR =>
                 err( +"constraint_error: value too big" );
+             when others =>
+                err_exception_raised;
              end;
            end if;
         end if;
@@ -1642,6 +1667,8 @@ begin
                  end if;
               when CONSTRAINT_ERROR =>
                  err( +"constraint_error: value too big" );
+              when others =>
+                 err_exception_raised;
               end;
            end if;
         elsif isArray then
@@ -1661,6 +1688,8 @@ begin
                  end if;
               when CONSTRAINT_ERROR =>
                  err( +"constraint_error: value too big" );
+              when others =>
+                 err_exception_raised;
               end;
            end if;
         else
@@ -1677,6 +1706,8 @@ begin
                 end if;
              when CONSTRAINT_ERROR =>
                 err( +"constraint_error: value too big" );
+             when others =>
+                err_exception_raised;
              end;
            end if;
         end if;
@@ -2090,6 +2121,8 @@ begin
               err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
               err( +"storage_error raised" );
+           when others =>
+             err_exception_raised;
            end;
         end if;
      elsif isArray then
@@ -2119,6 +2152,8 @@ begin
               err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
               err( +"storage_error raised" );
+           when others =>
+              err_exception_raised;
            end;
         end if;
      else
@@ -2148,6 +2183,8 @@ begin
               err( pl( exception_message( msg ) ) );
            when STORAGE_ERROR =>
               err( +"storage_error raised" );
+           when others =>
+              err_exception_raised;
            end;
         end if;
      end if;
@@ -2248,6 +2285,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      elsif isArray then
         declare
@@ -2277,6 +2316,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      else
         declare
@@ -2306,6 +2347,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -2413,6 +2456,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      elsif isArray then
         declare
@@ -2442,6 +2487,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      else
         declare
@@ -2471,6 +2518,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -2570,6 +2619,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( pl( "storage_error raised" ) );
+        when others =>
+           err_exception_raised;
         end;
      elsif isArray then
         declare
@@ -2599,6 +2650,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      else
         declare
@@ -2628,6 +2681,8 @@ begin
            err( pl( exception_message( msg ) ) );
         when STORAGE_ERROR =>
            err( +"storage_error raised" );
+        when others =>
+           err_exception_raised;
         end;
      end if;
   end if;
@@ -2696,6 +2751,8 @@ begin
        end if;
      exception when msg: berkeley_error =>
         err( pl( exception_message( msg ) ) );
+     when others =>
+        err_exception_raised;
      end;
   end if;
 end ParseBTreeLastError;
@@ -2735,6 +2792,8 @@ begin
         end if;
      exception when msg: berkeley_error =>
         err( pl( exception_message( msg ) ) );
+     when others =>
+        err_exception_raised;
      end;
   end if;
 end ParseBtreeRaiseExceptions;
