@@ -35,7 +35,7 @@ use  ada.strings.unbounded,
      world,
      scanner,
      scanner.communications,
-     parser; 
+     parser;
 
 package body parser_stats is
 

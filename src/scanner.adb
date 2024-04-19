@@ -4976,8 +4976,6 @@ begin
                             -- enum value.
                             --if identifiers( field_t ).value.all = " 0" or
                             if identifiers( field_t ).value.all = "" then
-put_line("A"); -- DEBUG
-put_line( identifiers( field_t ).value.all ); -- DEBUG
                                err( contextNotes => +"encoding a record to a JSON string value",
                                     subject => field_t,
                                     subjectType => identifiers( field_t ).kind,
@@ -5081,14 +5079,32 @@ begin
        i : integer := 1;
        discard : unbounded_string;
        stringEnd : constant natural := length( sourceVal );
+       openBracePos : natural := 1;
+       fieldName : unbounded_string;
      begin
        JSONexpect( sourceVal, i, '{' );
+       openBracePos := i;
        if i <= length( sourceVal ) then
           loop
-            ParseJSONItem( sourceVal, discard, i );
+            ParseJSONItem( sourceVal, fieldName, i );
+            if fieldName = ":" then
+               err( contextNotes => contextAltText( sourceVal,
+                       "decoding JSON string value to a record" ),
+                    subjectNotes => em( "a name is missing" ),
+                    reason => pl( "before" ),
+                    obstructorNotes => +"the " & em( ":" ) & pl( " at position" ) & pl( integer'image(i-1) )
+               );
+            end if;
             JSONexpect( sourceVal, i, ':' );
             ParseJSONItem( sourceVal, discard, i );
-            if i <= stringEnd then
+            if discard = "}" then
+               err( contextNotes => contextAltText( sourceVal,
+                       "decoding JSON string value to a record" ),
+                    subjectNotes => unb_em( fieldName ),
+                    reason => pl( "has a missing value before" ),
+                    obstructorNotes => +"the " & em( "}" ) & pl( " at position" ) & pl( integer'image(i-1) )
+               );
+            elsif i <= stringEnd then
                ch := element( sourceVal, i );
                sourceLen := sourceLen + 1;
                SkipJSONWhitespace( sourceVal, i );
@@ -5103,16 +5119,18 @@ begin
                   end if;
                end if;
             else
-               err( contextNotes => +"decoding JSON string value to a record",
-                    subjectNotes => subjectInterpreter,
-                    reason => pl( "reached the end of the string value but did not find" ),
-                    obstructorNotes => em( "}" )
+               err( contextNotes => contextAltText( sourceVal,
+                       "decoding JSON string value to a record" ),
+                    subjectNotes => em( "}" ),
+                    reason => pl( "was not found for" ),
+                    obstructorNotes => em( "{" ) & pl( " at position" ) & pl( integer'image(openBracePos-1) )
                );
                exit;
             end if;
           end loop;
         else
-          err( contextNotes => +"decoding JSON string value to a record",
+          err( contextNotes =>contextAltText( sourceVal,
+                  "decoding JSON string value to a record" ),
                subjectNotes => subjectInterpreter,
                reason => pl( "reached the end of the string value but did not find" ),
                obstructorNotes => em( "{" )
