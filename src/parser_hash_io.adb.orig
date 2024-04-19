@@ -22,7 +22,8 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
---with text_io;use text_io;
+with text_io;use text_io;
+-- may fail if text_io is not defined
 
 with
     Interfaces.C,
