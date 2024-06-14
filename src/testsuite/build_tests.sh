@@ -131,6 +131,15 @@ fi
 make distclean
 ./configure --jobs=1 --without-opengl
 make all
+if [ $? -eq 0 ] ; then
+   echo "without-opengl should fail without --without-sdl"
+   exit 192
+fi
+# TODO: opengl not checked by running spar.
+
+make distclean
+./configure --jobs=1 --without-opengl --without-sdl
+make all
 if [ $? -ne 0 ] ; then
    echo "without-opengl failed"
    exit 192

@@ -198,6 +198,13 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
+if [ -n "$NO_OPENGL" ] ; then
+   if [ -z "$NO_SDL" ] ; then
+      echo "--without-opengl requires --without-sdl"
+      exit 192
+   fi
+fi
+
 # Debian warning
 
 if [ -f "/etc/issue" ] ; then
@@ -1553,6 +1560,11 @@ if [ -z "$NO_L10N" ] ; then
 else
    GNATPREP_OPTS="$GNATPREP_OPTS -DL10N=false"
 fi
+if [ -z "$NO_SDL" ] ; then
+   GNATPREP_OPTS="$GNATPREP_OPTS -DSDL=true"
+else
+   GNATPREP_OPTS="$GNATPREP_OPTS -DSDL=false"
+fi
 # this is for world.ads. APQ=true if either DB is installed
 if [ -n "$NEEDS_APQ" ] ; then
    GNATPREP_OPTS="$GNATPREP_OPTS -DAPQ=true"
@@ -1588,12 +1600,6 @@ test -f scanner_res.adb && chmod 666 scanner_res.adb
 cp scanner_res.adb.orig temp.adb
 gnatprep $GNATPREP_OPTS temp.adb scanner_res.adb
 chmod 444 scanner_res.adb
-
-#echo "Updating...parser.adb"
-#test -f parser.adb && chmod 666 parser.adb
-#cp parser.adb.orig temp.adb
-#gnatprep $GNATPREP_OPTS temp.adb parser.adb
-#chmod 444 parser.adb
 
 echo "Updating...builtins.adb"
 test -f builtins.adb && chmod 666 builtins.adb

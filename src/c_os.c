@@ -1307,6 +1307,7 @@ void SDL_EXT_vline( SDL_Surface *screen, Sint16 x, Sint16 y1, Sint16 y2, Uint32 
 /* conversions, array bounds and SDL endian macros.                         */
 /* ------------------------------------------------------------------------ */
 
+#ifndef NO_SDL
 Uint32 SDL_EXT_raw_pixel( SDL_Surface *screen, SDL_Surface *target, Sint16 x, Sint16 y ) {
   Uint8  *ubuff8;
   Uint16 *ubuff16;
@@ -1349,7 +1350,6 @@ Uint32 SDL_EXT_raw_pixel( SDL_Surface *screen, SDL_Surface *target, Sint16 x, Si
   fprintf( stderr, "SDL_EXT_pixel unknown mode\n" );
   return 0;
 } /* SDL EXT raw pixel */
-
 
 /* ------------------------------------------------------------------------ */
 /* SDL EXT(ension) PIXEL                                                    */
@@ -1447,6 +1447,7 @@ void SDL_EXT_get_pixel_masks( int res, Uint32 *Rmask, Uint32 *Gmask, Uint32 *Bma
     *Amask = 0xff000000;
 #endif
 }
+#endif
 #endif
 
 /* end of c_os.c */

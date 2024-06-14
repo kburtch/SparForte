@@ -25,9 +25,14 @@ with text_io;use text_io;
 
 with system,
     interfaces.c,
+    spar_os,
+#if SDL
     pegasoft.pen,
     spar_os.sdl,
+#if OPENGL
     spar_os.opengl,
+#end if;
+#end if;
     pegasoft.user_io,
     world,
     scanner,
@@ -37,10 +42,16 @@ with system,
     parser;
 use interfaces.c,
     pegasoft,
+#if SDL
     pegasoft.pen,
+#end if;
     spar_os,
+#if SDL
     spar_os.sdl,
+#if OPENGL
     spar_os.opengl,
+#end if;
+#end if;
     pegasoft.user_io,
     world,
     scanner,
@@ -61,6 +72,7 @@ raiseGlExceptions : boolean := true;
 
 ----> Utils
 
+#if SDL
 procedure bushRect2penRect( pen_rect : out aRect; bush_rect : identifier ) is
   left_field_t, top_field_t, right_field_t, bottom_field_t : identifier;
 begin
@@ -86,6 +98,7 @@ begin
   findField( bush_rect, 4, bottom_field_t );
      identifiers( bottom_field_t ).value.all := to_unbounded_string( numericValue( pen_rect.bottom ) );
 end penRect2bushRect;
+#end if;
 
 #if OPENGL
 
@@ -22337,6 +22350,7 @@ begin
 end declarePenStandardTypes;
 
 procedure declarePenGLConstants is
+#if OPENGL
   function float_to_string( i : GLenum  ) return string is
   begin
     return to_string( to_unbounded_string( numericValue( i ) ) );
@@ -23764,6 +23778,10 @@ begin
   declareStandardConstant( pen_glu_tess_winding_negative_t, "pen.glu_tess_winding_negative", pen_glenum_t, float_to_string( GLU_TESS_WINDING_NEGATIVE ) );
   declareStandardConstant( pen_glu_tess_winding_abs_geq_two_t, "pen.glu_tess_winding_abs_geq_two", pen_glenum_t, float_to_string( GLU_TESS_WINDING_ABS_GEQ_TWO ) );
   declareStandardConstant( pen_glu_tess_max_coord_t, "pen.glu_tess_max_coord", long_float_t, float_to_string( GLU_TESS_MAX_COORD ) );
+#else
+begin
+  null;
+#end if;
 end declarePenGLConstants;
 
 
@@ -24429,7 +24447,9 @@ end StartupPen;
 procedure ShutdownPen is
 begin
   if penRunning then
+#if SDL
      pegasoft.pen.shutdownPen;
+#end if;
      penRunning := false;
   end if;
 end ShutdownPen;
