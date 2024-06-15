@@ -8,6 +8,9 @@ cd ../..
 # Make without Berkeley DB
 # ---------------------------------------------------------------------------
 
+echo "Build without Berkeley DB..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-bdb
 make all
@@ -23,6 +26,9 @@ fi
 # Make both MySQL and PostgreSQL
 # ---------------------------------------------------------------------------
 
+echo "Build with everything (both databases)..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1
 make all
@@ -43,6 +49,9 @@ fi
 # Make without MySQL
 # ---------------------------------------------------------------------------
 
+echo "Build without MySQL..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-mysql
 make all
@@ -63,6 +72,9 @@ fi
 # Make without PostgreSQL
 # ---------------------------------------------------------------------------
 
+echo "Build without PostgreSQL..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-postgres
 make all
@@ -83,6 +95,9 @@ fi
 # Make without MySQL and PostgreSQL
 # ---------------------------------------------------------------------------
 
+echo "Build without MySQL and without PostgreSQL..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-mysql --without-postgres
 make all
@@ -104,6 +119,9 @@ fi
 # Make without Readline
 # ---------------------------------------------------------------------------
 
+echo "Build without GNU Readline..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-readline
 make all
@@ -116,6 +134,9 @@ fi
 # Make without Sound
 # ---------------------------------------------------------------------------
 
+echo "Build without Sound..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-sound
 make all
@@ -128,6 +149,9 @@ fi
 # Make without OpenGL
 # ---------------------------------------------------------------------------
 
+echo "Build with SDL but without OpenGL..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-opengl
 make all
@@ -137,11 +161,14 @@ if [ $? -eq 0 ] ; then
 fi
 # TODO: opengl not checked by running spar.
 
+echo "Build without SDL or OpenGL..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-opengl --without-sdl
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-opengl failed"
+   echo "without-sdl and without-opengl failed"
    exit 192
 fi
 # TODO: opengl not checked by running spar.
@@ -149,6 +176,9 @@ fi
 # Make without SDL
 # ---------------------------------------------------------------------------
 
+echo "Build without SDL..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-sdl
 make all
@@ -161,6 +191,9 @@ fi
 # Make without PCRE
 # ---------------------------------------------------------------------------
 
+echo "Build without PCRE..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-pcre
 make all
@@ -173,6 +206,9 @@ fi
 # Make without L8N
 # ---------------------------------------------------------------------------
 
+echo "Build without L10N..."
+echo "-----------------------------------------------------------------------"
+echo
 make distclean
 ./configure --jobs=1 --without-l10n
 make all
