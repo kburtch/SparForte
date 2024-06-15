@@ -229,9 +229,9 @@ function tput( attr : termAttributes ) return unbounded_string is
   return ttyCode;
 
   exception when others =>
-       put_retry( standard_error, Gnat.Source_Info.Source_Location & ": Contraint thrown for " );
+       put_retry( standard_error, Gnat.Source_Info.Source_Location & ": Exception raised while getting tty " );
        put_line_retry( standard_error, attr'img );
-       return ttyCode;
+       return null_unbounded_string;
   end runTput;
 
   spacePos      : natural;
