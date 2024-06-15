@@ -889,86 +889,86 @@ fi
 # Check for the libSDL (Simple DirectMedia Layer) Library
 
 if [ -z "$NO_SDL" ] ; then
-echo -n "checking for libSDL (ldconfig -p, Linux)... "
-TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL`
-if [ -z "$TMP" ] ; then
-   echo "no"
-   echo -n "checking for libSDL (ldconfig -r, FreeBSD)... "
-   TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL`
+   echo -n "checking for libSDL (ldconfig -p, Linux)... "
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo -n "checking for libSDL (locate, Darwin)... "
-      if [ ! -z "$LOCATE" ] ; then
-         TMP=`"$LOCATE" libSDL libsdl`
-      else
-         TMP=`"$FINDLIB" -name 'libsdl*' -print`
-      fi
-      if [ ! -z "$TMP" ] ; then
-          echo "yes"
-      else
-          echo "no"
-          echo "No version of the Simple DirectMedia Layer (libSDL) was found"
-          echo "If you have installed libSDL, you may need to use ldconfig (as"
-          echo "root) to update the shared library search paths for libSDL"
-          echo
-          echo "libSDL is used by SparForte to access sound and graphics on your machine"
-          exit 1
-      fi
-    else
-       echo "yes"
-    fi
- else
-  echo "yes"
-fi
-
-if [ -z "$SDL_CONFIG" ] ; then
-   SDL_CONFIG="sdl-config"
-fi
-echo -n "configuring SDL (SDL_config)... "
-TMP=`(exec $SDL_CONFIG --version 2>/dev/null)`
-if [ -z "$TMP" ] ; then
-   echo "no"
-   if [ -n "$PKGCONFIG" ] ; then
-      echo -n "configuring SDL (pkg-config)... "
-      # bundled SDL here
-      SDLLIBS=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`" -lSDL_image"
-      SDLINCL=`(exec $PKGCONFIG --cflags sdl 2>/dev/null)`
-      if [ $? -ne 0 ] ; then
-         SDLLIBS=""
-         SDLINCL=""
+      echo -n "checking for libSDL (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL`
+      if [ -z "$TMP" ] ; then
          echo "no"
-      else
-         echo "yes"
-      fi
+         echo -n "checking for libSDL (locate, Darwin)... "
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" libSDL libsdl`
+         else
+            TMP=`"$FINDLIB" -name 'libsdl*' -print`
+         fi
+         if [ ! -z "$TMP" ] ; then
+             echo "yes"
+         else
+             echo "no"
+             echo "No version of the Simple DirectMedia Layer (libSDL) was found"
+             echo "If you have installed libSDL, you may need to use ldconfig (as"
+             echo "root) to update the shared library search paths for libSDL"
+             echo
+             echo "libSDL is used by SparForte to access sound and graphics on your machine"
+             exit 1
+         fi
+       else
+          echo "yes"
+       fi
+    else
+     echo "yes"
    fi
-   if [ -z "$SDLLIBS" ] ; then
-      echo "guessing at SDL configuration (may be incorrect)... "
-      # Cannot find SDL_config?  Use these defaults for makefile sed...
-      if [ "$OS" = "FreeBSD" ] ; then
-         SDLLIBS="-L/usr/local/lib -lSDL-1.1 -lSDL_image -lpthread"
-         SDLINCL="-I/usr/local/include/SDL11"
-      elif [ "$OS" = "darwin" ] ; then
-         SDLLIBS="/Library/Frameworks/SDL.framework/SDL /Library/Frameworks/SDL_image.framework/SDL_image"
-         SDLINCL="-I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers"
-      elif [ -r "/usr/lib64/libSDL-1.2.so.0" ] ; then
-         # Red Hat 9
-         SDLLIBS="-L/usr/lib64/ -l:libSDL-1.2.so.0"
-         SDLINCL="-I/usr/local/include/SDL"
-      else
-         SDLLIBS="-L/usr/local/lib -lSDL -lSDL_image"
-         SDLINCL="-I/usr/local/include/SDL"
-      fi
+
+   if [ -z "$SDL_CONFIG" ] ; then
+      SDL_CONFIG="sdl-config"
    fi
-else
-   # Remove -D_REENTRANT (not recognized by GCC Ada)
-   SDLLIBS=`$SDL_CONFIG --libs`" -lSDL_image"
-   SDLINCL=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
-   echo "yes"
-fi
+   echo -n "configuring SDL (SDL_config)... "
+   TMP=`(exec $SDL_CONFIG --version 2>/dev/null)`
+   if [ -z "$TMP" ] ; then
+      echo "no"
+      if [ -n "$PKGCONFIG" ] ; then
+         echo -n "configuring SDL (pkg-config)... "
+         # bundled SDL here
+         SDLLIBS=`(exec $PKGCONFIG --libs sdl 2>/dev/null)`" -lSDL_image"
+         SDLINCL=`(exec $PKGCONFIG --cflags sdl 2>/dev/null)`
+         if [ $? -ne 0 ] ; then
+            SDLLIBS=""
+            SDLINCL=""
+            echo "no"
+         else
+            echo "yes"
+         fi
+      fi
+      if [ -z "$SDLLIBS" ] ; then
+         echo "guessing at SDL configuration (may be incorrect)... "
+         # Cannot find SDL_config?  Use these defaults for makefile sed...
+         if [ "$OS" = "FreeBSD" ] ; then
+            SDLLIBS="-L/usr/local/lib -lSDL-1.1 -lSDL_image -lpthread"
+            SDLINCL="-I/usr/local/include/SDL11"
+         elif [ "$OS" = "darwin" ] ; then
+            SDLLIBS="/Library/Frameworks/SDL.framework/SDL /Library/Frameworks/SDL_image.framework/SDL_image"
+            SDLINCL="-I/Library/Frameworks/SDL.framework/Headers -I/Library/Frameworks/SDL_image.framework/Headers"
+         elif [ -r "/usr/lib64/libSDL-1.2.so.0" ] ; then
+            # Red Hat 9
+            SDLLIBS="-L/usr/lib64/ -l:libSDL-1.2.so.0"
+            SDLINCL="-I/usr/local/include/SDL"
+         else
+            SDLLIBS="-L/usr/local/lib -lSDL -lSDL_image"
+            SDLINCL="-I/usr/local/include/SDL"
+         fi
+      fi
+   else
+      # Remove -D_REENTRANT (not recognized by GCC Ada)
+      SDLLIBS=`$SDL_CONFIG --libs`" -lSDL_image"
+      SDLINCL=`$SDL_CONFIG --cflags | sed "s/\ -D_REENTRANT//g"`
+      echo "yes"
+   fi
 
 # Escape special characters (space and slash)
-SDLLIBSTYPE=`echo "$SDLLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
-SDLINCLTYPE=`echo "$SDLINCL" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+   SDLLIBSTYPE=`echo "$SDLLIBS" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
+   SDLINCLTYPE=`echo "$SDLINCL" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 
 #if [ -z "$SDL_CONFIG" ] ; then
 #   SDL_CONFIG="sdl-config"
@@ -998,91 +998,91 @@ SDLINCLTYPE=`echo "$SDLINCL" | sed 's/\ /\\\ /g;s/\//\\\\\//g'`
 # Bytes are aligned differently between 32-bit and 64-bit SDL data structures.
 # Default to 64-bit else use 32-bit.
 
-echo -n "selecting SDL binding... "
-if test -r spar_os-sdl.ads ; then
-   echo " (cached, make distclean to remove)";
-else
-   cd ../test
-   if [ "$OS" = "darwin" ] ; then
-      (exec "$CC" sdlversion.c $SDLINCL $SDLLIBS > /dev/null 2>/dev/null )
+   echo -n "selecting SDL binding... "
+   if test -r spar_os-sdl.ads ; then
+      echo " (cached, make distclean to remove)";
    else
-      (exec "$CC" sdlversion.c -I/usr/local/include/SDL -L/usr/local/lib -lSDL)
+      cd ../test
+      if [ "$OS" = "darwin" ] ; then
+         (exec "$CC" sdlversion.c $SDLINCL $SDLLIBS > /dev/null 2>/dev/null )
+      else
+         (exec "$CC" sdlversion.c -I/usr/local/include/SDL -L/usr/local/lib -lSDL)
+      fi
+      if [ -f "./a.exe" ] ; then # Cygwin makes Windows executables
+         TMP=`./a.exe`
+         rm ./a.exe
+      elif [ -f "./a.out" ] ; then
+         TMP=`./a.out`
+         rm ./a.out
+      fi
+      cd ../src
+      if [ "$TMP" = "32" ] ; then
+         cp spar_os-sdl-32bit.ads spar_os-sdl.ads
+         chmod u+w spar_os-sdl.ads
+         echo "32 bit"
+      elif [ "$TMP" = "64" ] ; then
+         cp spar_os-sdl-64bit.ads spar_os-sdl.ads
+         chmod u+w spar_os-sdl.ads
+         echo "64 bit"
+      else
+         echo "unknown"
+         echo
+         echo "Unable to determine if 32-bit or 64-bit SDL is being used."
+         echo "Do you have libSDL installed?"
+         exit 192
+      fi
+      cp -f spar_os_sdl.adb spar_os-sdl.adb
    fi
-   if [ -f "./a.exe" ] ; then # Cygwin makes Windows executables
-      TMP=`./a.exe`
-      rm ./a.exe
-   elif [ -f "./a.out" ] ; then
-      TMP=`./a.out`
-      rm ./a.out
-   fi
-   cd ../src
-   if [ "$TMP" = "32" ] ; then
-      cp spar_os-sdl-32bit.ads spar_os-sdl.ads
-      chmod u+w spar_os-sdl.ads
-      echo "32 bit"
-   elif [ "$TMP" = "64" ] ; then
-      cp spar_os-sdl-64bit.ads spar_os-sdl.ads
-      chmod u+w spar_os-sdl.ads
-      echo "64 bit"
-   else
-      echo "unknown"
-      echo
-      echo "Unable to determine if 32-bit or 64-bit SDL is being used."
-      echo "Do you have libSDL installed?"
-      exit 192
-   fi
-   cp -f spar_os_sdl.adb spar_os-sdl.adb
-fi
 
 # Check for the libSDL_image (Simple DirectMedia Layer image loading) Library
 # This is normally included with SDL but is not included with Fedora Core 4 Linux.
 
-echo -n "checking for libSDL_image (ldconfig -p, Linux)... "
-TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL_image`
-if [ -z "$TMP" ] ; then
-   echo "no"
-   echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
-   TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_image`
+   echo -n "checking for libSDL_image (ldconfig -p, Linux)... "
+   TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep libSDL_image`
    if [ -z "$TMP" ] ; then
       echo "no"
-      echo -n "checking for libSDL_image (locate, Darwin)... "
-      if [ ! -z "$LOCATE" ] ; then
-         TMP=`"$LOCATE" libSDL_image`
-      else
-         TMP=`"$FINDLIB" -name 'libSDL_image*' -print`
-      fi
-      if [ ! -z "$TMP" ] ; then
+      echo -n "checking for libSDL_image (ldconfig -r, FreeBSD)... "
+      TMP=`/sbin/ldconfig -r 2>/dev/null | grep libSDL_image`
+      if [ -z "$TMP" ] ; then
+         echo "no"
+         echo -n "checking for libSDL_image (locate, Darwin)... "
+         if [ ! -z "$LOCATE" ] ; then
+            TMP=`"$LOCATE" libSDL_image`
+         else
+            TMP=`"$FINDLIB" -name 'libSDL_image*' -print`
+         fi
+         if [ ! -z "$TMP" ] ; then
+             SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
+             echo "yes"
+         else
+             echo "no"
+             echo -n "checking for default libSDL_image (grep, Darwin)... "
+             TMP=`echo "$SDLLIBS" | grep SDL_image`
+             if [ ! -z "$TMP" ] ; then
+                 echo "yes"
+             else
+                 echo "No version of the Simple DirectMedia Layer image library (libSDL_Image) was found"
+                 echo "This auxillary library is normally included with libSDL."
+                 echo "Fedora users can install it using this command: yum install SDL_image"
+                 echo "If you have installed libSDL_image, you may need to use ldconfig (as"
+                 echo "root) to update the shared library search paths for libSDL_image"
+                 echo
+                 echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
+                 exit 1
+             fi
+         fi
+       else
           SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
           echo "yes"
-      else
-          echo "no"
-          echo -n "checking for default libSDL_image (grep, Darwin)... "
-          TMP=`echo "$SDLLIBS" | grep SDL_image`
-          if [ ! -z "$TMP" ] ; then
-              echo "yes"
-          else
-              echo "No version of the Simple DirectMedia Layer image library (libSDL_Image) was found"
-              echo "This auxillary library is normally included with libSDL."
-              echo "Fedora users can install it using this command: yum install SDL_image"
-              echo "If you have installed libSDL_image, you may need to use ldconfig (as"
-              echo "root) to update the shared library search paths for libSDL_image"
-              echo
-              echo "libSDL_image is used by SparForte to load image files (JPEGs, GIFs, etc.)"
-              exit 1
-          fi
-      fi
+       fi
+    elif [ -r "/usr/lib64/libSDL_image-1.2.so.0" ] ; then
+         # Red Hat 9
+         SDLLIBSTYPE="$SDLLIBSTYPE""\ -l:libSDL_image-1.2.so.0\ "
+         echo "yes (Red Hat)"
     else
-       SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
-       echo "yes"
-    fi
- elif [ -r "/usr/lib64/libSDL_image-1.2.so.0" ] ; then
-      # Red Hat 9
-      SDLLIBSTYPE="$SDLLIBSTYPE""\ -l:libSDL_image-1.2.so.0\ "
-      echo "yes (Red Hat)"
- else
-  SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
-  echo "yes"
-fi
+     SDLLIBSTYPE="$SDLLIBSTYPE""\ -lSDL_image\ "
+     echo "yes"
+   fi
 
 # Check for the libSDL_ttf (Simple DirectMedia Layer truetype font) Library
 
@@ -1120,9 +1120,9 @@ fi
 #  echo "yes"
 #fi
 else
-echo No SDL support
-cp -f spar_os_nosdl.ads spar_os-sdl.ads
-cp -f spar_os_nosdl.adb spar_os-sdl.adb
+   echo "Building without SDL Support"
+   cp -f spar_os_nosdl.ads spar_os-sdl.ads
+   cp -f spar_os_nosdl.adb spar_os-sdl.adb
 fi
 
 # Check for OpenGL

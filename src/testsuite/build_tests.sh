@@ -13,31 +13,39 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-bdb
+if [ $? -ne 0 ] ; then
+   echo "$0: without-bdb failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "failed"
+   echo "$0: make failed"
 fi
 TMP=`src/spar -e "f : btree_io.file; ? btree_io.is_open( f );"`
 if [ "$TMP" = "false" ] ; then
-   echo "without-bdb failed"
+   echo "$0: without-bdb failed"
    exit 192
 fi
 
 # Make both MySQL and PostgreSQL
 # ---------------------------------------------------------------------------
 
-echo "Build with everything (both databases)..."
+echo "Build with defaults (both databases)..."
 echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1
+if [ $? -ne 0 ] ; then
+   echo "$0: defaults failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "failed"
+   echo "$0: make failed"
 fi
 TMP=`src/spar -e "? mysql.is_connected;"`
 if [ "$TMP" != "false" ] ; then
-   echo "defaults failed"
+   echo "$0: defaults failed"
    exit 192
 fi
 TMP=`src/spar -e "? db.is_connected;"`
@@ -54,18 +62,22 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-mysql
+if [ $? -ne 0 ] ; then
+   echo "$0: without-mysql failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "failed"
+   echo "$0: make failed"
 fi
 TMP=`src/spar -e "? mysql.is_connected;"`
 if [ "$TMP" = "false" ] ; then
-   echo "without-mysql failed"
+   echo "$0: without-mysql failed"
    exit 192
 fi
 TMP=`src/spar -e "? db.is_connected;"`
 if [ "$TMP" != "false" ] ; then
-   echo "without-mysql failed"
+   echo "$0: without-mysql failed"
    exit 192
 fi
 
@@ -77,18 +89,22 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-postgres
+if [ $? -ne 0 ] ; then
+   echo "$0: without-postgres failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "failed"
+   echo "$0: make failed"
 fi
 TMP=`src/spar -e "? mysql.is_connected;"`
 if [ "$TMP" != "false" ] ; then
-   echo "without-postgres failed"
+   echo "$0: without-postgres failed"
    exit 192
 fi
 TMP=`src/spar -e "? db.is_connected;"`
 if [ "$TMP" = "false" ] ; then
-   echo "without-postgres failed"
+   echo "$0: without-postgres failed"
    exit 192
 fi
 
@@ -100,19 +116,23 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-mysql --without-postgres
+if [ $? -ne 0 ] ; then
+   echo "$0: without-mysql without-postgres failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "failed"
+   echo "$0: make failed"
 fi
 
 TMP=`src/spar -e "? mysql.is_connected;"`
 if [ "$TMP" = "false" ] ; then
-   echo "without-mysql without-postgres failed"
+   echo "$0: without-mysql without-postgres failed"
    exit 192
 fi
 TMP=`src/spar -e "? db.is_connected;"`
 if [ "$TMP" = "false" ] ; then
-   echo "without-mysql without-postgres failed"
+   echo "$0: without-mysql without-postgres failed"
    exit 192
 fi
 
@@ -124,9 +144,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-readline
+if [ $? -ne 0 ] ; then
+   echo "$0: without-readline failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-readline failed"
+   echo "$0: without-readline failed"
    exit 192
 fi
 # TODO: readline not checked by running spar.  an easy way??
@@ -139,9 +163,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-sound
+if [ $? -ne 0 ] ; then
+   echo "$0: without-sound failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-sound failed"
+   echo "$0: without-sound failed"
    exit 192
 fi
 # TODO: sound not checked by running spar.
@@ -154,9 +182,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-opengl
+if [ $? -eq 0 ] ; then
+   echo "$0: without-opengl should fail without --without-sdl"
+   exit 192
+fi
 make all
 if [ $? -eq 0 ] ; then
-   echo "without-opengl should fail without --without-sdl"
+   echo "$0: without-opengl should fail without --without-sdl"
    exit 192
 fi
 # TODO: opengl not checked by running spar.
@@ -166,9 +198,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-opengl --without-sdl
+if [ $? -ne 0 ] ; then
+   echo "$0: without-sdl and without-opengl failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-sdl and without-opengl failed"
+   echo "$0: without-sdl and without-opengl failed"
    exit 192
 fi
 # TODO: opengl not checked by running spar.
@@ -181,9 +217,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-sdl
+if [ $? -ne 0 ] ; then
+   echo "$0: without-sdl failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-sdl failed"
+   echo "$0: without-sdl failed"
    exit 192
 fi
 # TODO: pcre not checked by running spar.
@@ -196,9 +236,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-pcre
+if [ $? -ne 0 ] ; then
+   echo "$0: without-pcre failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-pcre failed"
+   echo "$0: without-pcre failed"
    exit 192
 fi
 # TODO: pcre not checked by running spar.
@@ -211,9 +255,13 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-l10n
+if [ $? -ne 0 ] ; then
+   echo "$0: without-pcre failed"
+   exit 192
+fi
 make all
 if [ $? -ne 0 ] ; then
-   echo "without-pcre failed"
+   echo "$0: without-pcre failed"
    exit 192
 fi
 # TODO: pcre not checked by running spar.
