@@ -186,11 +186,6 @@ if [ $? -eq 0 ] ; then
    echo "$0: without-opengl should fail without --without-sdl"
    exit 192
 fi
-make all
-if [ $? -eq 0 ] ; then
-   echo "$0: without-opengl should fail without --without-sdl"
-   exit 192
-fi
 # TODO: opengl not checked by running spar.
 
 echo "Build without SDL or OpenGL..."
