@@ -198,9 +198,9 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
-if [ -n "$NO_OPENGL" ] ; then
-   if [ -z "$NO_SDL" ] ; then
-      echo "--without-opengl requires --without-sdl"
+if [ -z "$NO_OPENGL" ] ; then
+   if [ -n "$NO_SDL" ] ; then
+      echo "--without-sdl requires --without-opengl"
       exit 192
    fi
 fi

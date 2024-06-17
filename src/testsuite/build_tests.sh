@@ -183,10 +183,15 @@ echo
 make distclean
 ./configure --jobs=1 --without-opengl
 if [ $? -eq 0 ] ; then
-   echo "$0: without-opengl should fail without --without-sdl"
+   echo "$0: without-opengl failed"
    exit 192
 fi
 # TODO: opengl not checked by running spar.
+make all
+if [ $? -ne 0 ] ; then
+   echo "$0: without-opengl failed"
+   exit 192
+fi
 
 echo "Build without SDL or OpenGL..."
 echo "-----------------------------------------------------------------------"
@@ -212,16 +217,10 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-sdl
-if [ $? -ne 0 ] ; then
-   echo "$0: without-sdl failed"
+if [ $? -eq 0 ] ; then
+   echo "$0: without-sdl should fail without without-opengl"
    exit 192
 fi
-make all
-if [ $? -ne 0 ] ; then
-   echo "$0: without-sdl failed"
-   exit 192
-fi
-# TODO: pcre not checked by running spar.
 
 # Make without PCRE
 # ---------------------------------------------------------------------------
