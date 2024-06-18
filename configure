@@ -1121,8 +1121,6 @@ if [ -z "$NO_SDL" ] ; then
 #fi
 else
    echo "Building without SDL Support"
-   cp -f spar_os_nosdl.ads spar_os-sdl.ads
-   cp -f spar_os_nosdl.adb spar_os-sdl.adb
 fi
 
 # Check for OpenGL
