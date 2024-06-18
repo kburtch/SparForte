@@ -182,7 +182,7 @@ echo "-----------------------------------------------------------------------"
 echo
 make distclean
 ./configure --jobs=1 --without-opengl
-if [ $? -eq 0 ] ; then
+if [ $? -ne 0 ] ; then
    echo "$0: without-opengl failed"
    exit 192
 fi
