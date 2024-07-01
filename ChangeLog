@@ -57,3 +57,9 @@ CHANGES SINCE 2.6.2
 
 20. Fix: first item in an enumerated type no longer gives an undefined error when converting a record to JSON.
 
+21. Fix: SDL support is now removed through the gnat preprocessor when --without-sdl is used.  This is a workaround for GCC 13 bug failing on graphics support.
+
+22. Fix: --without-sdl now requires --without-opengl.
+
+23. Fix: provision.sh for Rocky Linux and --without-sdl and --without-opengl should work.
+

@@ -25,17 +25,13 @@ Priority Issues (Fix These First)
 
   - upgrade SDL
     - need to upgrade to 2.0
-    - net to fix pointer issues to SDL/OpenGL structures
-    - fix SDL disable
-      - spar_os.sdl should not be included
-      - proper error messages should be provided on unavailable
-        functions
-    - building with SDL may be giving spar_os.sdl errors
+    - need to fix pointer issues to SDL/OpenGL structures
+    - proper error messages should be provided on unavailable
+      functions
 
 - exceptions are not propogating in wash_blocked SSDS script to the
   main program exception handler.  exceptions.exception_info is empty.
 
-- reports that SparForte is failing to build on GCC 13
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
  is derived from it

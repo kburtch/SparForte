@@ -1008,6 +1008,13 @@ if [ -z "$NO_SDL" ] ; then
       else
          (exec "$CC" sdlversion.c -I/usr/local/include/SDL -L/usr/local/lib -lSDL)
       fi
+      if [ $? -ne 0 ] ; then
+         echo "no"
+         echo
+         echo "sdlversion.c test program did not compile"
+         echo "Do you have libSDL installed?"
+         exit 192
+      fi
       if [ -f "./a.exe" ] ; then # Cygwin makes Windows executables
          TMP=`./a.exe`
          rm ./a.exe

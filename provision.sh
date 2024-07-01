@@ -138,12 +138,16 @@ zypper_install () {
 RHVERSION=""
 if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
-   TMP=`fgrep "7." "/etc/redhat-release"`
-   if [ -z "$TMP" ] ; then
+   TMP=`fgrep " 7." "/etc/redhat-release"`
+   if [ -n "$TMP" ] ; then
       RHVERSION="7"
    fi
-   TMP=`fgrep "9." "/etc/redhat-release"`
-   if [ -z "$TMP" ] ; then
+   TMP=`fgrep " 8." "/etc/redhat-release"`
+   if [ -n "$TMP" ] ; then
+      RHVERSION="8"
+   fi
+   TMP=`fgrep " 9." "/etc/redhat-release"`
+   if [ -n "$TMP" ] ; then
       RHVERSION="9"
    fi
 fi
@@ -204,17 +208,17 @@ redhat )
       if [ -n "$HAS_SUDO" ] ; then
          if [ "$RHVERSION" != "7" ] ; then
             sudo dnf config-manager --set-enabled
-	    sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-	 else
+	        sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+	     else
             sudo -u root rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-latest-7.noarch.rpm
-	 fi
+	     fi
       else
          if [ "$RHVERSION" != "7" ] ; then
             dnf config-manager --set-enabled
-	    dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-	 else
+            dnf install http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-latest-7.noarch.rpm
+	     else
             rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-latest-7.noarch.rpm
-	 fi
+	     fi
       fi
    fi
    # Containers may not have these
@@ -258,16 +262,18 @@ redhat )
 	 echo "Please provision using --without-sdl.  SDL1.2 is not included "
 	 echo "with Red Hat 9"
 	 exit 1
+         yum_install SDL
+         # Does not exist with Red Hat 9 but is also included with SDL
+         yum_install SDL-devel
+         yum_install SDL_image
       fi
-      yum_install SDL
-      # Does not exist with Red Hat 9 but is also included with SDL
-      yum_install SDL-devel
-      yum_install SDL_image
-      # On Red Hat 9, this will error because SDL-devel does not exist
-      # SparForte will still build but not SDL will not work.
-      yum_install SDL_image-devel
-      yum_install mesa-libGL-devel
-      yum_install mesa-libGLU-devel
+      if [ -z "$NO_OPENGL" ] ; then
+         # On Red Hat 9, this will error because SDL-devel does not exist
+         # SparForte will still build but not SDL will not work.
+         yum_install SDL_image-devel
+         yum_install mesa-libGL-devel
+         yum_install mesa-libGLU-devel
+      fi
    fi
    if [ -z "$NO_MEMCACHED" ] ; then
       yum_install memcached
