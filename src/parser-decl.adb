@@ -32,6 +32,7 @@ pragma warnings( on );
 with gnat.source_info,
     spar_os,
     pegasoft.strings,
+    pegasoft.numerics,
     performance_monitoring,
     compiler,
     scanner,
@@ -45,6 +46,7 @@ with gnat.source_info,
 use spar_os,
     pegasoft,
     pegasoft.strings,
+    pegasoft.numerics,
     performance_monitoring,
     compiler,
     scanner,
@@ -61,6 +63,37 @@ package body parser.decl is
 -----------------------------------------------------------------------------
 -- Declarations
 -----------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------
+--  MAYBE SECRET
+--
+-- True if value looks like it could be encrypted data.
+-----------------------------------------------------------------------------
+
+function maybe_secret( s : unbounded_string ) return boolean is
+  score : numericValue := 0.0;
+  could_be : boolean := false;
+begin
+  if length( s ) >= 8 then
+     score := shannon_entropy_of( s );
+
+     -- Heuristics
+
+     if head(s, 7) = "ssh-rsa" then
+        score := score + 1.0;
+     elsif head(s, 7) = "-----B" then
+        score := score + 1.0;
+     end if;
+     if length(s) / 8 = 0 then
+        score := score + 1.0;
+     end if;
+     if score > 5.5 then
+        could_be := true;
+     end if;
+  end if;
+  return could_be;
+end maybe_secret;
 
 
 -----------------------------------------------------------------------------
@@ -2017,6 +2050,17 @@ begin
         if identifiers( id ).usage = constantUsage then
            if expr_value /= null_unbounded_string then
               expr_value := castToType( expr_value, type_token );
+              if getUniType( type_token ) = uni_string_t then
+                 if maybe_secret( expr_value ) then
+                    err(
+                      contextNotes => +"In your declaration",
+                      subject => id,
+                      reason => +"is being assigned a high entropy value which may indicate",
+                      obstructorNotes => em( "secret data" ),
+                      remedy => +"hard-coded secrets could accidentally be stored in version control software.  Store them in an unmanaged data file and read them into limited variables"
+                 );
+                 end if;
+              end if;
               identifiers( id ).value.all := expr_value;
            end if;
         end if;

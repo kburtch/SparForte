@@ -134,6 +134,7 @@ sha1_digest_of_t   : identifier;
 sha224_digest_of_t : identifier;
 sha256_digest_of_t : identifier;
 sha512_digest_of_t : identifier;
+shannon_entropy_of_t : identifier;
 
 
 
@@ -1626,6 +1627,20 @@ begin
   end if;
 end ParseNumericsSHA512DigestOf;
 
+procedure ParseNumericsShannonEntropyOf( result : out unbounded_string; kind : out identifier ) is
+  -- Syntax: numerics.shannon_entropy_of( s );
+  -- Source: N/A
+  src_val  : unbounded_string;
+  src_type : identifier;
+begin
+  expect( shannon_entropy_of_t );
+  ParseSingleStringParameter( shannon_entropy_of_t, src_val, src_type );
+  kind := long_float_t;
+  if isExecutingCommand then
+     result := to_unbounded_string( shannon_entropy_of( src_val ) );
+  end if;
+end ParseNumericsShannonEntropyOf;
+
 procedure StartupNumerics is
 begin
 
@@ -1694,6 +1709,7 @@ begin
   declareFunction( sha224_digest_of_t,  "numerics.sha224_digest_of", ParseNumericsSHA224DigestOf'access );
   declareFunction( sha256_digest_of_t,  "numerics.sha256_digest_of", ParseNumericsSHA256DigestOf'access );
   declareFunction( sha512_digest_of_t,  "numerics.sha512_digest_of", ParseNumericsSHA512DigestOf'access );
+  declareFunction( shannon_entropy_of_t,  "numerics.shannon_entropy_of", ParseNumericsShannonEntropyOf'access );
 
   -- Numerics package constants
   -- There's are derived from the GNU standard C library math constants

@@ -1146,6 +1146,7 @@ begin
      content( e, "f := rounding( e )","f := scaling( x, y )","f := sdbm_hash_of( s, l )" );
      content( e, "f := serial","d := sha1_digest_of( s )","d := sha224_digest_of( s )" );
      content( e, "d := sha256_digest_of( s )","d := sha512_digest_of( s )","i := shift_left( e, b )" );
+     content( e, "f := shannon_entropy_of( s )" );
      content( e, "i := shift_right( e, b )","i := shift_right_arithmetic( x, b )" );
      content( e, "f := sqrt( e )","f := sturges( l, h, t )","f := truncation( e )" );
      content( e, "f := unbiased_rounding( e )","f := value( s )" );

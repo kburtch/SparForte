@@ -8,14 +8,16 @@ SHORT VERSION
 
 Installing the Binary Version
 
-   1. gmake install
+   1. sh provision.sh
+   2. gmake install
 
 Building from Sources
 
-   1. configure
-   2. gmake
-   3. gmake test (optional)
-   4. gmake install (as root user)
+   1. sh provision.sh
+   2. configure
+   3. gmake
+   4. gmake test (optional)
+   5. gmake install (as root user)
 
 
 LONG VERSION
@@ -56,7 +58,8 @@ The following software packages are required for SparForte:
     including Red Hat,  have GCC with Ada and C support active or available
     from an online repository.
 
-  * Optional PCRE (Perl Compatible Regular Expressions) library
+  * Optional PCRE (Perl Compatible Regular Expressions) library.  It is enabled
+    by default but can be disabled with the configure script.
 
   * gzip is needed to unpack the source code in the first place.  If you are
     reading this, you know this already.
@@ -74,7 +77,7 @@ The following software packages are required for SparForte:
   may be missing.  How you install these depends on your operating system.
 
   The provision.sh script will attempt to identify your version of Linux and
-  install all the required software.
+  install all the required software dependencies.
 
   Alternatively, you may want to install the requirements manually, selecting
   which software you want.  For example:
@@ -85,7 +88,7 @@ The following software packages are required for SparForte:
    - Debian Linux - apt-get install package-name (visit packages.debian.org
      for a list of available packages)
    - FreeBSD - pkg_add package-name
-   - Pre-build versions of SDL_image are available from www.libsdl.org 
+   - Pre-build versions of SDL_image are available from www.libsdl.org
 
   The package name depends on your operating system.  For example:
 
@@ -149,7 +152,11 @@ http://www.pegasoft.ca.
 
 By default, SparForte will install under /usr/local.
 
-1. configure
+1. provision
+
+   Install the software dependencies, if you have not already done so.
+
+2. configure
 
    The first step of the installation procedure is to select your operating
    system.  Run "configure" and the configure script will identify your
@@ -205,7 +212,7 @@ By default, SparForte will install under /usr/local.
       You'll need to install the postgresql development packages (or equivalent
       for your O/S) if you want to add support for this database.
 
-2. make
+3. make
 
    Use GNU make to build SparForte.  Linux users can just type "make" or "make all".
    If GNU make is not your native make (e.g. FreeBSD), use "gmake".
@@ -243,7 +250,7 @@ By default, SparForte will install under /usr/local.
    found.  Some packages have a "config" program to determine the proper
    settings, such as "SDL_config", "pg_config" or "mysql_config".
 
-3. (Optional) "gmake test" to run the SparForte core language regression
+4. (Optional) "gmake test" to run the SparForte core language regression
    tests.  The tests should by run as an unprivileged user (as some tests
    check file access rights and will fail if run as root).
 
@@ -251,7 +258,7 @@ By default, SparForte will install under /usr/local.
    results with gcov and lcov, or "gmake releasetest" to perform more
    extensive testing prior to pushing changes to GitHub.
 
-4. (Optional) "gmake install" will copy the spar executable to the
+5. (Optional) "gmake install" will copy the spar executable to the
    /usr/local/bin/ directory so that other users can access it.  Alteratively,
    you can copy the spar executable and man page yourself and set the
    appropriate permission bits.

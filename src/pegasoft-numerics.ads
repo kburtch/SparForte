@@ -50,5 +50,6 @@ function rnd( max : positive ) return positive;
 
 function sdbm_hash_of( val : unbounded_string; limit : hash_integer ) return hash_integer;
 
+function shannon_entropy_of( s : unbounded_string ) return numericValue;
 
 end pegasoft.numerics;

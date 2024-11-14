@@ -63,3 +63,11 @@ CHANGES SINCE 2.6.2
 
 23. Fix: provision.sh for Rocky Linux and --without-sdl and --without-opengl should work.
 
+CHANGES SINCE 2.6.3
+
+24. Fix: arrays.shuffle error message no longer says an array type can be used.
+
+25. New: numercis.shannon_entropy_of for strings.
+
+26. New: string constants are checked for secret data using shannon entropy.
+

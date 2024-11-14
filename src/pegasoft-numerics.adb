@@ -176,6 +176,65 @@ function murmur_hash_of( val : unbounded_string; limit : hash_integer ) return h
    return hash;
 end murmur_hash_of;
 
+
+------------------------------------------------------------------------------
+--  SHANNON ENTROPY OF
+--
+-- Return the Shannon entropy of a string, a measure of a set of data's
+-- randomness from 0..8 bits.
+------------------------------------------------------------------------------
+
+function shannon_entropy_of( s : unbounded_string ) return numericValue is
+  len : constant natural := length( s );
+  entropy  : numericValue := 0.0;
+  ch_count : natural;
+  prob     : numericValue;
+  ch       : character;
+begin
+
+  -- A byte has 256 possible values
+
+  for bin in 0..255 loop
+
+      ch := character'val(bin);
+
+      -- count the occurrences
+      -- TODO: count() may be faster
+
+      ch_count := 0;
+      for i in 1..len loop
+          if ch = element(s, i) then
+             ch_count := ch_count + 1;
+          end if;
+      end loop;
+
+      -- log will fail if zero because it's undefined
+
+      if ch_count > 0 then
+         prob := numericValue( ch_count ) / numericValue( len );
+         --put( "byte: " & ch );
+         --put( ", fact: " & prob'img );
+         --new_line;
+
+         -- Base 2 because we want to measure bits per byte
+         -- What power of 2 would give us this count?
+         -- (gives answer 1..8)
+
+         entropy := entropy + (prob * elementary_functions.log( prob, 2.0 ));
+      end if;
+  end loop;
+
+  -- Because it's a log of a number less than one, result will
+  -- be negative.  Reverse the sign unless zero.
+
+  if entropy < 0.0 then
+     entropy := -entropy;
+  end if;
+  return entropy;
+
+end shannon_entropy_of;
+
+
 begin
    Ada.Numerics.Float_Random.Reset( random_generator );-- reset RND generator
 end pegasoft.numerics;
