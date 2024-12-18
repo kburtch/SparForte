@@ -84,6 +84,8 @@ procedure spawn( fullPath : unbounded_string; ap : argumentListPtr;
      waitResult : aPID;                                    -- wait result
      execResult : integer;                                 -- exec result
 begin
+   -- If C_is_executable_file() fails, it is commonly because of the group_member()
+   -- function or getgrouplist() which Debian/Ubuntu handles in a non-standard way.
    if not C_is_executable_file( path ) then
       status := 192;
       return; -- whatever errno is created by CIEF

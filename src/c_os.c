@@ -53,6 +53,10 @@ int group_member(gid_t gid) {
 /* group_member() should exist when Linux has __USE_GNU */
 #else
 /* Use this if __USE_GNU is not defined for Linux (some Ubuntu) */
+/* Linux Mint 22 / Debian Trixie - getgrouplist() moved to grp.h */
+
+#include "/usr/include/grp.h"
+
 int group_member(gid_t gid) {
   int ngroups, i, ret;
   unsigned int groups[NGROUPS_MAX];
@@ -121,8 +125,9 @@ int C_is_executable_file( char * path ) {
 		} else if ( euid == info.st_uid ) {
            result = (info.st_mode & S_IXUSR ) > 0;
 		/* Group member can run if the file has group execute */
-        } else if ( group_member( info.st_gid ) ) {
-           result = (info.st_mode & S_IXGRP ) > 0;
+        //} else if ( group_member( info.st_gid ) ) {
+        //   fprintf(stderr, "is_exec_file: C4\n");
+        //   result = (info.st_mode & S_IXGRP ) > 0;
 		/* World can run if the file is other execute */
         } else {
            result = (info.st_mode & S_IXOTH ) > 0;

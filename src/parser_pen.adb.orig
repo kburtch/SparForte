@@ -5175,28 +5175,30 @@ end ParsePenglVertex4s;
 
 #if OPENGL
 
-procedure ParsePenglVertex2dv is
-  -- Syntax: glVertex2dv( v : GL_Double_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex2dv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex2dv_t );
-  ParseSingleInOutParameter( pen_glvertex2dv_t, id, pen_gl_double_array_t ); -- x : GLdouble
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Double_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
-      glVertex2dv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex2dv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex2dv is
+--   -- Syntax: glVertex2dv( v : GL_Double_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex2dv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex2dv_t );
+--   ParseSingleInOutParameter( pen_glvertex2dv_t, id, pen_gl_double_array_t ); -- x : GLdouble
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Double_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
+--       glVertex2dv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex2dv;
 
 #else
 
@@ -5209,28 +5211,30 @@ end ParsePenglVertex2dv;
 
 #if OPENGL
 
-procedure ParsePenglVertex2fv is
-  -- Syntax: glVertex2fv( v : GL_Float_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex2fv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex2fv_t );
-  ParseSingleInOutParameter( pen_glvertex2fv_t, id, pen_gl_float_array_t ); -- x : GLfloat
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Float_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
-      glVertex2fv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex2fv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex2fv is
+--   -- Syntax: glVertex2fv( v : GL_Float_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex2fv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex2fv_t );
+--   ParseSingleInOutParameter( pen_glvertex2fv_t, id, pen_gl_float_array_t ); -- x : GLfloat
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Float_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
+--       glVertex2fv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex2fv;
 
 #else
 
@@ -5243,28 +5247,30 @@ end ParsePenglVertex2fv;
 
 #if OPENGL
 
-procedure ParsePenglVertex2iv is
-  -- Syntax: glVertex2iv( v : GL_Int_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex2iv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex2iv_t );
-  ParseSingleInOutParameter( pen_glvertex2iv_t, id, pen_gl_int_array_t ); -- x : GLint
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Int_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
-      glVertex2iv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex2iv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex2iv is
+--   -- Syntax: glVertex2iv( v : GL_Int_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex2iv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex2iv_t );
+--   ParseSingleInOutParameter( pen_glvertex2iv_t, id, pen_gl_int_array_t ); -- x : GLint
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Int_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
+--       glVertex2iv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex2iv;
 
 #else
 
@@ -5277,28 +5283,30 @@ end ParsePenglVertex2iv;
 
 #if OPENGL
 
-procedure ParsePenglVertex2sv is
-  -- Syntax: glVertex2sv( v : GL_Short_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex2sv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex2sv_t );
-  ParseSingleInOutParameter( pen_glvertex2sv_t, id, pen_gl_short_array_t ); -- x : GLshort
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Short_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
-      glVertex2sv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex2sv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex2sv is
+--   -- Syntax: glVertex2sv( v : GL_Short_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex2sv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex2sv_t );
+--   ParseSingleInOutParameter( pen_glvertex2sv_t, id, pen_gl_short_array_t ); -- x : GLshort
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Short_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
+--       glVertex2sv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex2sv;
 
 #else
 
@@ -5311,28 +5319,30 @@ end ParsePenglVertex2sv;
 
 #if OPENGL
 
-procedure ParsePenglVertex3dv is
-  -- Syntax: glVertex3dv( v : GL_Double_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex3dv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex3dv_t );
-  ParseSingleInOutParameter( pen_glvertex3dv_t, id, pen_gl_double_array_t ); -- x : GLdouble
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Double_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
-      glVertex3dv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex3dv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex3dv is
+--   -- Syntax: glVertex3dv( v : GL_Double_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex3dv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex3dv_t );
+--   ParseSingleInOutParameter( pen_glvertex3dv_t, id, pen_gl_double_array_t ); -- x : GLdouble
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Double_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
+--       glVertex3dv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex3dv;
 
 #else
 
@@ -5345,28 +5355,30 @@ end ParsePenglVertex3dv;
 
 #if OPENGL
 
-procedure ParsePenglVertex3fv is
-  -- Syntax: glVertex3fv( v : GL_Float_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex3fv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex3fv_t );
-  ParseSingleInOutParameter( pen_glvertex3fv_t, id, pen_gl_float_array_t ); -- x : GLint
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Float_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
-      glVertex3fv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex3fv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex3fv is
+--   -- Syntax: glVertex3fv( v : GL_Float_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex3fv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex3fv_t );
+--   ParseSingleInOutParameter( pen_glvertex3fv_t, id, pen_gl_float_array_t ); -- x : GLint
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Float_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
+--       glVertex3fv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex3fv;
 
 #else
 
@@ -5379,28 +5391,30 @@ end ParsePenglVertex3fv;
 
 #if OPENGL
 
-procedure ParsePenglVertex3iv is
-  -- Syntax: glVertex3iv( v : GL_Int_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex3iv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex3iv_t );
-  ParseSingleInOutParameter( pen_glvertex3iv_t, id, pen_gl_int_array_t ); -- x : GLint
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Int_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
-      glVertex3iv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex3iv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex3iv is
+--   -- Syntax: glVertex3iv( v : GL_Int_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex3iv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex3iv_t );
+--   ParseSingleInOutParameter( pen_glvertex3iv_t, id, pen_gl_int_array_t ); -- x : GLint
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Int_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
+--       glVertex3iv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex3iv;
 
 #else
 
@@ -5413,28 +5427,30 @@ end ParsePenglVertex3iv;
 
 #if OPENGL
 
-procedure ParsePenglVertex3sv is
-  -- Syntax: glVertex3sv( v : GL_Short_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex3sv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex3sv_t );
-  ParseSingleInOutParameter( pen_glvertex3sv_t, id, pen_gl_short_array_t ); -- x : GLshort
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Short_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
-      glVertex3sv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex3sv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex3sv is
+--   -- Syntax: glVertex3sv( v : GL_Short_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex3sv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex3sv_t );
+--   ParseSingleInOutParameter( pen_glvertex3sv_t, id, pen_gl_short_array_t ); -- x : GLshort
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Short_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
+--       glVertex3sv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex3sv;
 
 #else
 
@@ -5447,28 +5463,30 @@ end ParsePenglVertex3sv;
 
 #if OPENGL
 
-procedure ParsePenglVertex4dv is
-  -- Syntax: glVertex4dv( v : GL_Double_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex4dv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex4dv_t );
-  ParseSingleInOutParameter( pen_glvertex4dv_t, id, pen_gl_double_array_t ); -- x : GLdouble
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Double_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
-      glVertex4dv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex4dv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex4dv is
+--   -- Syntax: glVertex4dv( v : GL_Double_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex4dv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex4dv_t );
+--   ParseSingleInOutParameter( pen_glvertex4dv_t, id, pen_gl_double_array_t ); -- x : GLdouble
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Double_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Double_Array_Conv.To_Address( theArray.gl_da );
+--       glVertex4dv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex4dv;
 
 #else
 
@@ -5481,28 +5499,30 @@ end ParsePenglVertex4dv;
 
 #if OPENGL
 
-procedure ParsePenglVertex4fv is
-  -- Syntax: glVertex4fv( v : GL_Float_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex4fv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex4fv_t );
-  ParseSingleInOutParameter( pen_glvertex4fv_t, id, pen_gl_float_array_t ); -- x : GLfloat
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Float_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
-      glVertex4fv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex4fv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex4fv is
+--   -- Syntax: glVertex4fv( v : GL_Float_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex4fv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex4fv_t );
+--   ParseSingleInOutParameter( pen_glvertex4fv_t, id, pen_gl_float_array_t ); -- x : GLfloat
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Float_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Float_Array_Conv.To_Address( theArray.gl_fa );
+--       glVertex4fv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex4fv;
 
 #else
 
@@ -5515,28 +5535,30 @@ end ParsePenglVertex4fv;
 
 #if OPENGL
 
-procedure ParsePenglVertex4iv is
-  -- Syntax: glVertex4iv( v : GL_Int_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex4iv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex4iv_t );
-  ParseSingleInOutParameter( pen_glvertex4iv_t, id, pen_gl_int_array_t ); -- x : GLint
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Int_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
-      glVertex4iv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex4iv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex4iv is
+--   -- Syntax: glVertex4iv( v : GL_Int_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex4iv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex4iv_t );
+--   ParseSingleInOutParameter( pen_glvertex4iv_t, id, pen_gl_int_array_t ); -- x : GLint
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Int_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Int_Array_Conv.To_Address( theArray.gl_ia );
+--       glVertex4iv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex4iv;
 
 #else
 
@@ -5549,28 +5571,30 @@ end ParsePenglVertex4iv;
 
 #if OPENGL
 
-procedure ParsePenglVertex4sv is
-  -- Syntax: glVertex4sv( v : GL_Short_Array_Ptr );
-  -- Source: spar_os.opengl.glVertex4sv
-  id       : identifier;
-  theArray : resPtr;
-begin
-  expect( pen_glvertex4sv_t );
-  ParseSingleInOutParameter( pen_glvertex4sv_t, id, pen_gl_short_array_t ); -- x : GLshort
-  if isExecutingCommand then
-    declare
-      param_ptr   : GL_Short_Array_Ptr;
-    begin
-      findResource( to_resource_id( identifiers( id ).value.all ), theArray );
-      param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
-      glVertex4sv( param_ptr );
-    exception when storage_error =>
-      err( +"storage error raised" );
-    when others =>
-      err_exception_raised;
-    end;
-  end if;
-end ParsePenglVertex4sv;
+-- GCC 13.3 crashes on the vertex family with variable parameters.
+-- Unable to reproduce on a smaller program.  GCC 12 is OK.
+-- procedure ParsePenglVertex4sv is
+--   -- Syntax: glVertex4sv( v : GL_Short_Array_Ptr );
+--   -- Source: spar_os.opengl.glVertex4sv
+--   id       : identifier;
+--   theArray : resPtr;
+-- begin
+--   expect( pen_glvertex4sv_t );
+--   ParseSingleInOutParameter( pen_glvertex4sv_t, id, pen_gl_short_array_t ); -- x : GLshort
+--   if isExecutingCommand then
+--     declare
+--       param_ptr   : GL_Short_Array_Ptr;
+--     begin
+--       findResource( to_resource_id( identifiers( id ).value.all ), theArray );
+--       param_ptr := GL_Short_Array_Conv.To_Address( theArray.gl_sa );
+--       glVertex4sv( param_ptr );
+--     exception when storage_error =>
+--       err( +"storage error raised" );
+--     when others =>
+--       err_exception_raised;
+--     end;
+--   end if;
+-- end ParsePenglVertex4sv;
 
 #else
 
@@ -23980,18 +24004,18 @@ begin
   declareProcedure( pen_glvertex4f_t, "pen.glvertex4f", ParsePenglVertex4f'access );
   declareProcedure( pen_glvertex4i_t, "pen.glvertex4i", ParsePenglVertex4i'access );
   declareProcedure( pen_glvertex4s_t, "pen.glvertex4s", ParsePenglVertex4s'access );
-  declareProcedure( pen_glvertex2dv_t, "pen.glvertex2dv", ParsePenglVertex2dv'access );
-  declareProcedure( pen_glvertex2fv_t, "pen.glvertex2fv", ParsePenglVertex2fv'access );
-  declareProcedure( pen_glvertex2iv_t, "pen.glvertex2iv", ParsePenglVertex2iv'access );
-  declareProcedure( pen_glvertex2sv_t, "pen.glvertex2sv", ParsePenglVertex2sv'access );
-  declareProcedure( pen_glvertex3dv_t, "pen.glvertex3dv", ParsePenglVertex3dv'access );
-  declareProcedure( pen_glvertex3fv_t, "pen.glvertex3fv", ParsePenglVertex3fv'access );
-  declareProcedure( pen_glvertex3iv_t, "pen.glvertex3iv", ParsePenglVertex3iv'access );
-  declareProcedure( pen_glvertex3sv_t, "pen.glvertex3sv", ParsePenglVertex3sv'access );
-  declareProcedure( pen_glvertex4dv_t, "pen.glvertex4dv", ParsePenglVertex4dv'access );
-  declareProcedure( pen_glvertex4fv_t, "pen.glvertex4fv", ParsePenglVertex4fv'access );
-  declareProcedure( pen_glvertex4iv_t, "pen.glvertex4iv", ParsePenglVertex4iv'access );
-  declareProcedure( pen_glvertex4sv_t, "pen.glvertex4sv", ParsePenglVertex4sv'access );
+  --declareProcedure( pen_glvertex2dv_t, "pen.glvertex2dv", ParsePenglVertex2dv'access );
+  --declareProcedure( pen_glvertex2fv_t, "pen.glvertex2fv", ParsePenglVertex2fv'access );
+  --declareProcedure( pen_glvertex2iv_t, "pen.glvertex2iv", ParsePenglVertex2iv'access );
+  --declareProcedure( pen_glvertex2sv_t, "pen.glvertex2sv", ParsePenglVertex2sv'access );
+  --declareProcedure( pen_glvertex3dv_t, "pen.glvertex3dv", ParsePenglVertex3dv'access );
+  --declareProcedure( pen_glvertex3fv_t, "pen.glvertex3fv", ParsePenglVertex3fv'access );
+  --declareProcedure( pen_glvertex3iv_t, "pen.glvertex3iv", ParsePenglVertex3iv'access );
+  --declareProcedure( pen_glvertex3sv_t, "pen.glvertex3sv", ParsePenglVertex3sv'access );
+  --declareProcedure( pen_glvertex4dv_t, "pen.glvertex4dv", ParsePenglVertex4dv'access );
+  --declareProcedure( pen_glvertex4fv_t, "pen.glvertex4fv", ParsePenglVertex4fv'access );
+  --declareProcedure( pen_glvertex4iv_t, "pen.glvertex4iv", ParsePenglVertex4iv'access );
+  --declareProcedure( pen_glvertex4sv_t, "pen.glvertex4sv", ParsePenglVertex4sv'access );
   declareProcedure( pen_glnormal3b_t, "pen.glnormal3b", ParsePenglNormal3b'access );
   declareProcedure( pen_glnormal3d_t, "pen.glnormal3d", ParsePenglNormal3d'access );
   declareProcedure( pen_glnormal3f_t, "pen.glnormal3f", ParsePenglNormal3f'access );

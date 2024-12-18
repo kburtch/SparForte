@@ -229,6 +229,8 @@ function tput( attr : termAttributes ) return unbounded_string is
   return ttyCode;
 
   exception when others =>
+       -- If C_is_executable_file() fails, it is commonly because of the group_member()
+       -- function or getgrouplist() which Debian/Ubuntu handles in a non-standard way.
        put_retry( standard_error, Gnat.Source_Info.Source_Location & ": Exception raised while getting tty " );
        put_line_retry( standard_error, attr'img );
        return null_unbounded_string;
