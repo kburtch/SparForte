@@ -82,7 +82,7 @@ fi
         echo "$OUTPUT"
         exit 192
      fi
-     let "CNT++"
+     CNT="$((CNT+1))"
   done
 )
 
@@ -114,9 +114,9 @@ fi
            echo "$OUTPUT"
            exit 192
         fi
-        let "CNT2++"
+        CNT2="$((CNT2+1))"
      done
-     let "CNT++"
+     CNT="$((CNT+1))"
   done
 )
 
