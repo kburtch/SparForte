@@ -100,6 +100,13 @@ type aMemcacheClusterEntry is record
   cluster : aMemcacheCluster;
 end record;
 
+-- Ada 2012
+-- Declarations of primitive functions must have a spec before the body since
+-- the first primitive body prohibits any more primitives to be declared.
+
+function ">="( left, right : aMemcacheClusterEntry ) return boolean;
+function "="( left, right : aMemcacheClusterEntry ) return boolean;
+
 function ">="( left, right : aMemcacheClusterEntry ) return boolean is
 begin
    return left.id >= right.id;
@@ -148,6 +155,13 @@ type aMemcacheDualClusterEntry is record
   id      : aMemcacheDualClusterID := 0;
   cluster : aMemcacheDualCluster;
 end record;
+
+-- Ada 2012
+-- Declarations of primitive functions must have a spec before the body since
+-- the first primitive body prohibits any more primitives to be declared.
+
+function ">="( left, right : aMemcacheDualClusterEntry ) return boolean;
+function "="( left, right : aMemcacheDualClusterEntry ) return boolean;
 
 function ">="( left, right : aMemcacheDualClusterEntry ) return boolean is
 begin
