@@ -76,10 +76,10 @@ package body interpreter is
 ------------------------------------------------------------------------------
 --  PROMPT IDLE_CALLBACK
 --
--- Pegasoft.user_io will use readline to read text at the command prompt.
+-- pegasoft.user_io will use readline to read text at the command prompt.
 -- This callback will handle readline idle events and run the user's prompt
 -- idle script.  This is a callback to keep SparForte logic out of the
--- Pegasoft packages.
+-- pegasoft packages.
 ------------------------------------------------------------------------------
 
 procedure promptIdleCallback is
@@ -1389,7 +1389,7 @@ end interpret;
 -- 0,1,2 respectively.
 --
 -- The standard files standard_input, standard_output and standard_error
--- represent the original stdin/out/err...ie the copied fd 4,5,6.
+-- represent the original stdin/out/err...i.e. the copied fd 4,5,6.
 ------------------------------------------------------------------------------
 
 procedure startInterpreter is
@@ -1403,7 +1403,7 @@ begin
   currentStandardError := originalStandardError;      -- no redirection, stderr
 
   SetStandardVariables;                               -- built-in elaboration
-  Ada.Numerics.Float_Random.Reset( random_generator );-- reset RND generator
+  Ada.Numerics.Float_Random.Reset( random_generator );-- reset random generator
   clearCommandHash;                                   -- initialize cmd table
 
   -- initialize the current_working_directory

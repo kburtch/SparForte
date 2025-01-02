@@ -157,7 +157,7 @@ package body scanner is
 -----------------------------------------------------------------------------
 --  PUT TOKEN
 --
--- For debugging, show the current token, its value, type and properities.
+-- For debugging, show the current token, its value, type and properties.
 -----------------------------------------------------------------------------
 
 procedure Put_Token is
@@ -431,7 +431,7 @@ begin
      end case;
 
      -- Show the type
-     -- Failsafe: shouldn't be keyword, but just in case.
+     -- Fail-safe: shouldn't be keyword, but just in case.
 
      if ident.kind = keyword_t then
         if ident.class /= funcClass and
@@ -664,7 +664,7 @@ begin
      put_identifier_attributes( id );
      new_line_retry;
 
-     -- if a renaming, use recusion
+     -- if a renaming, use recursion
 
      if ident.renaming_of /= identifier'first then
         put_identifier( ident.renaming_of );
@@ -748,7 +748,7 @@ end put_all_identifiers;
 -----------------------------------------------------------------------------
 --  ERR PREVIOUS
 --
--- Same as err below, but don't hilight the current token because the error
+-- Same as err below, but don't highlight the current token because the error
 -- actually happened before it.  Just mark start of current token.
 -----------------------------------------------------------------------------
 
@@ -1054,7 +1054,7 @@ end checkIdentifiersInCurrentBlock;
 -- outside of the main program.
 -- Variables are always checked.  Other identifiers are checked if SparForte
 -- is in testing mode.  If a software model is set, check the used
--- identifiers against the software model and record requirments that were
+-- identifiers against the software model and record requirements that were
 -- met.  This should only be run during the syntax check.
 --
 -- This only runs if not processing a template because the variables may be
@@ -1157,7 +1157,7 @@ end checkIdentifiersForSimpleScripts;
 -----------------------------------------------------------------------------
 --  COMPLETE SOFTWARE MODEL REQUIREMENTS
 --
--- Check pre-defined identifiers for software requirements.  Then evaluate
+-- Check predefined identifiers for software requirements.  Then evaluate
 -- if the requirements were met for the software model.  This should only be
 -- run during the syntax check.
 -----------------------------------------------------------------------------
@@ -3239,7 +3239,7 @@ function uniTypesOk( leftType, rightType : identifier ) return boolean is
   msg : messageStrings;
 begin
 
-  -- Basic checks: we're expecting a type, subtype or array type.  Unversal
+  -- Basic checks: we're expecting a type, subtype or array type.  Universal
   -- typeless is always a match.  Exceptions are a special case as they
   -- are a keyword not a data type.
 
@@ -3529,7 +3529,7 @@ begin
 -- put_line( to_string( identifiers( effectiveCanonicalType ).name ) );
 
   -- The types must be identical.  For universal or integer types, unless
-  -- both types are identicial, either type may end up with values it should
+  -- both types are identical, either type may end up with values it should
   -- not represent.
 
   if effectiveRenamingType /= effectiveCanonicalType then
@@ -3746,7 +3746,7 @@ function deleteIdent( id : identifier ) return boolean is
   ---------------------------------------------------------------------------
   --  CONVERT VALUE TO JSON (DELETE IDENT)
   --
-  -- convert the value to json.  assumes you checked that it needs to be
+  -- Convert the value to JSON.  assumes you checked that it needs to be
   ---------------------------------------------------------------------------
 
   function ConvertValueToJson( id : identifier ) return unbounded_string is
@@ -3775,7 +3775,7 @@ function deleteIdent( id : identifier ) return boolean is
   ---------------------------------------------------------------------------
   --  EXPORT VALUE (DELETE IDENT)
   --
-  -- export a value before deleting.
+  -- Export a value before deleting.
   ---------------------------------------------------------------------------
 
   procedure ExportValue( id : identifier ) is
@@ -3930,7 +3930,7 @@ begin
   identifiers( id ).renamed_count := 0;
 
   -- TODO: avalue not released on unset.  it is left to be released on reuse
-     return true;                                               -- delete ok
+     return true;                                               -- delete OK
   end if;                                                       -- else
 
   -- The following only occurs if a variable is not at the top of the
@@ -3987,7 +3987,7 @@ begin
   identifiers( id ).class  := otherClass;
   identifiers( id ).renamed_count := 0;
   -- TODO: avalue not released on unset.  it is left to be released on reuse
-  return true;                                                  -- delete ok
+  return true;                                                  -- delete OK
 end deleteIdent;
 
 
@@ -4036,7 +4036,7 @@ pragma inline( isJSONWhitespace );
 -----------------------------------------------------------------------------
 --  SKIP JSON WHITESPACE
 --
--- Move the start index ahread until it is a position in the string that has
+-- Move the start index ahead until it is a position in the string that has
 -- a non-whitespace character.
 -- --------------------------------------------------------------------------
 
@@ -4122,7 +4122,7 @@ begin
   -- We have characters to build into a string
 --put_line( "Parsing on character " & ch & " nesting" & nesting'img ); -- DEBUG
 
-  -- Deterime what we're doing by examining the first character
+  -- Determine what we're doing by examining the first character
   -- Aggregate type will recurse
 
   if ch = '"' then
@@ -4260,13 +4260,13 @@ begin
      return;
   end if;
   i := i + 1;
-  -- note : could be rewritten to discard quotes and do json unescaped
+  -- NOTE: could be rewritten to discard quotes and do JSON unescaped
   loop
      exit when i > length(expr_val)-1;
      if element( expr_val, i ) = '\' then
         i := i + 1;
         ch := element( expr_val, i );
-        -- Note : \u not implemented
+        -- NOTE : \u not implemented
         if ch = '"' then
            result := result & '"';
         elsif ch = '\' then
@@ -4328,7 +4328,7 @@ begin
      kind := getUniType( identifiers( source_var_id ).kind );
      elementKind := getBaseType( identifiers( identifiers( source_var_id ).kind ).kind );
 
-     -- In JSON, enumerateds (or, at least, booleans) are by the name,
+     -- In JSON, enumerateds (or, at least, Booleans) are by the name,
      -- not the value.
      if elementKind = boolean_t then
         declare
@@ -4469,7 +4469,7 @@ begin
   kind := getUniType( identifiers( target_var_id ).kind );
   elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
 
-  -- basic JSon validation.  Important to verify it isn't a record.
+  -- basic JSON validation.  Important to verify it isn't a record.
   declare
     i : integer := 1;
     ch: character;
@@ -4574,7 +4574,7 @@ begin
         );
      elsif kind = root_enumerated_t then
 
-        -- In JSON, booleans are stored by the name,
+        -- In JSON, Booleans are stored by the name,
         -- Other enums will be by ordinal position (more or less).
 
         if elementKind = boolean_t then
@@ -5187,7 +5187,7 @@ begin
               if identifiers( j ).name = searchName then
                  found := true;
                  if not error_found then
-                    -- for booleans, it's true or false, not value
+                    -- for Booleans, it's true or false, not value
                     elementKind := getBaseType( identifiers( j ).kind );
                     if elementKind = boolean_t then
                        if decodedItemValue = "true" then
@@ -5210,7 +5210,7 @@ begin
                           );
                        end if;
 
--- range check the valuse for enumerateds
+-- range check the values for enumerateds
                     elsif getUniType( elementKind ) = root_enumerated_t then
                       -- Enumerateds
                       -- i don't actually record the maximum value for an enumerated type
@@ -5594,7 +5594,7 @@ begin
   -- previously in tokenize stage).  Previously unseen identifiers
   -- will be declared as type "new".
 
-     if ch = high_ascii_escape then                           -- high ascii?
+     if ch = high_ascii_escape then                           -- high ASCII?
         word := null_unbounded_string;                        -- skip it
      else                                                     -- otherwise
         word := null_unbounded_string & ch;                   -- add to buffer

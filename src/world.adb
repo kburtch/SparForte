@@ -42,7 +42,7 @@ package body world is
 
 localMemcacheClusterInitialized : boolean := false;
 distributedMemcacheClusterInitialized : boolean := false;
--- flag: only initialize the memcache clusters once
+-- flag: only initialize the Memcache clusters once
 
 defaultVolatileExpire : constant time := clock;
 
@@ -145,7 +145,7 @@ end isExecutingStaticCommand;
 -- Allocating/deallocating memory is a slow operation.
 --
 -- To make slightly better use of allocated storage memory, instead of
--- freeing the last storage pointer, store it here so it can be resued.
+-- freeing the last storage pointer, store it here so it can be reused.
 --
 -- This is the same technique I used in my single-linked list library.
 --
@@ -158,7 +158,7 @@ storageCacheMiss : natural := 0;
 
 -- CACHE OR FREE STORAGE
 --
--- Cache or destory storage pointer sp.
+-- Cache or destroy storage pointer sp.
 -----------------------------------------------------------------------------
 
 procedure cacheOrFreeStorage( sp : storagePtr ) is
@@ -176,7 +176,7 @@ pragma inline( cacheOrFreeStorage );
 --
 -- Allocate storage space (or get it from the cache) and return a
 -- pointer to it.  If what is in the cache is missed three times,
--- forcably discard it.
+-- forcibly discard it.
 -----------------------------------------------------------------------------
 
 function findStorage( lbound, ubound : long_integer ) return storagePtr is
@@ -780,7 +780,7 @@ end declareStandardEnum;
 
 procedure updateFormalParameter( id : identifier; kind : identifier;
 proc_id : identifier; parameterNumber : integer; passingMode : aParameterPassingMode ) is
--- Update a formal parameter (ie. proc.param).  The id is not
+-- Update a formal parameter (i.e. proc.param).  The id is not
 -- returned since we don't change the formal parameters once they are set.
 begin
     if parameterNumber /= 0 then -- function result? no name suffix
@@ -812,7 +812,7 @@ end updateFormalParameter;
 
 -- DECLARE USABLE FORMAL PARAMETER
 --
--- Declare a usable formal parameter (ie. param for proc.param) in the symbol
+-- Declare a usable formal parameter (i.e. param for proc.param) in the symbol
 -- table.  proc_id is the id for the subprogram owning the parameter.
 -- value is ?
 -- symbol_table_overflow exception is raised if there is no more
@@ -1026,7 +1026,7 @@ end declareReturnResult;
 -- search for a pre-existing exception with the same name
 -- while Ada allows two exceptions with the same name
 -- to overshadow each other, differentiating each other
--- using dot notation, it's a hacky solution.  SparForte
+-- using dot notation, it's a kludge.  SparForte
 -- simply doesn't allow it.
 -----------------------------------------------------------------------------
 
@@ -1653,7 +1653,7 @@ begin
 end to_numeric;
 
 function To_Bush_Boolean( AdaBoolean : boolean ) return unbounded_string is
-  -- convert an Ada boolean into a BUSH boolean (a string containing
+  -- convert an Ada Boolean into a SparForte Boolean (a string containing
   -- the position, no leading blank).
 begin
   return To_Unbounded_String( integer'image( boolean'pos( AdaBoolean ) )(2)&"" );
@@ -1667,7 +1667,7 @@ end To_Bush_Boolean;
 
 function is_keyword( id : identifier ) return boolean is
 -- True if an AdaScript keyword.  Keywords are defined in the
--- first part of the indentifier table.
+-- first part of the identifier table.
 begin
   --return id < reserved_top;
   return id < keywords_top;
@@ -1940,9 +1940,9 @@ end equal;
 
 procedure findField( recordVar : identifier; fieldNumber: natural;
   fieldVar : out identifier ) is
--- Find fieldNumber'th field of a record varable.  This involves looking up the
+-- Find fieldNumber'th field of a record variable.  This involves looking up the
 -- record type, searching for the type's fields, checking the type field's
---  numbers, constructiong the name of the record's field, and finding it in
+--  numbers, constructing the name of the record's field, and finding it in
 -- the symbol table.  This is not very fast but it works.
   recordType : identifier;
 begin
@@ -1984,7 +1984,7 @@ begin
   end if;
 end checkAndInitializeLocalMemcacheCluster;
 
--- CHECK AND INITIALIZE DISTRIBLED MEMCACHE CLUSTER
+-- CHECK AND INITIALIZE DISTRIBUTED MEMCACHE CLUSTER
 
 procedure checkAndInitializeDistributedMemcacheCluster is
 begin

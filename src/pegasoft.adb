@@ -45,7 +45,7 @@ end to_numeric;
 ------------------------------------------------------------------------------
 --  TO UNBOUNDED STRING
 --
--- Convert a long_float (BUSH's numeric representation) to an
+-- Convert a long_float (SparForte's numeric representation) to an
 -- unbounded string.  If the value is representable as an integer,
 -- it is returned without a decimal part.
 ------------------------------------------------------------------------------

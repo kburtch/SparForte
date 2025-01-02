@@ -40,7 +40,7 @@ package body pegasoft.strings is
 
 
 ------------------------------------------------------------------------------
---  FIX SPACKING
+--  FIX SPACING
 --
 -- Remove leading and trailing spaces, as well as any double-spaces inside
 ------------------------------------------------------------------------------
@@ -760,7 +760,7 @@ begin
 end Split;
 
 ------------------------------------------------------------------------------
---  LEVENSHTEIN DISTANE
+--  LEVENSHTEIN DISTANCE
 --
 -- A measure of the similarity between two strings.
 -- Taken from Rosetta Code website, May 28/2021.
@@ -1360,7 +1360,7 @@ end basename;
 ------------------------------------------------------------------------------
 --  TO SECURE DATA
 --
--- If in mantenance mode, return "secured data" instead of the string.
+-- If in maintenance mode, return "secured data" instead of the string.
 ------------------------------------------------------------------------------
 
 function toSecureData( s : string ) return string is

@@ -50,7 +50,7 @@ procedure interpret;
 -- required.  Also, run any templates.
 
 ------------------------------------------------------------------------------
--- For Foreign Languages (eg. C) who want to run SparForte as a library.
+-- For Foreign Languages (e.g. C) who want to run SparForte as a library.
 ------------------------------------------------------------------------------
 
 type C_path is new char_array(0..1024);

@@ -86,7 +86,7 @@ jobs : jobList.List;            -- our list of jobs
 --  FIND CMD PATH
 --
 -- Determine the location of the command "cmd".  If a path
--- was specified in cmd, check for and expand a leading tilda.
+-- was specified in cmd, check for and expand a leading tilde.
 -- If no path, then we need to do a search of the PATH variable.
 -----------------------------------------------------------------------------
 

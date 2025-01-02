@@ -102,6 +102,7 @@ obstructorAda95    : constant messageStrings := em( "pragma ada_95" );
 -- Common See Also Strings
 
 seeAssign          : constant messageStrings := +"doc/ref_assign.html";
+seeBTreeIO         : constant messageStrings := +"doc/pkg_btree_io.html";
 seeDB              : constant messageStrings := +"doc/ref_db.html";
 seeLiterals        : constant messageStrings := +"doc/ref_literals.html";
 seePragmas         : constant messageStrings := +"doc/ref_pragmas.html";
@@ -405,7 +406,7 @@ pragma inline( expectIdentifier );
 
 
 -----------------------------------------------------------------------------
--- Missing Round Bracket / Paranthesis
+-- Missing Round Bracket / Parenthesis
 -----------------------------------------------------------------------------
 
 procedure expectStatementSemicolon( context : identifier := eof_t );
@@ -433,7 +434,7 @@ pragma inline( expectParameterComma );
 
 
 -----------------------------------------------------------------------------
--- Missing Round Bracket / Paranthesis
+-- Missing Round Bracket / Parenthesis
 -----------------------------------------------------------------------------
 
 procedure expectParameterOpen( subprogram : identifier := eof_t );
@@ -487,7 +488,14 @@ procedure expectAdaScriptDifferences(
 -----------------------------------------------------------------------------
 
 procedure expectNonRestrictedShell( subjectNotes : string );
+procedure expectNonRestrictedShell( subjectId : identifier );
 
+-----------------------------------------------------------------------------
+-- Not Implemented
+-----------------------------------------------------------------------------
+
+procedure featureNotImplemented( subjectNotes : string );
+procedure featureNotImplemented( subjectId : identifier );
 
 -----------------------------------------------------------------------------
 -- Internal errors

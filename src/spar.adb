@@ -228,7 +228,7 @@ begin
                   Set_Exit_Status( 1 );
                   return;
                end if;
-               -- -L has a wierd format: the directory is immediately attached
+               -- -L has a weird format: the directory is immediately attached
                -- to the "L"
 
                if Args(2) = 'L' then

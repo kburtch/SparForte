@@ -192,15 +192,15 @@ procedure restoreScript( scriptState : in out aScriptState );
 --
 ------------------------------------------------------------------------------
 
-type blockDeclaration is private;      -- Ident Scope: eg. for a for loop
+type blockDeclaration is private;      -- Ident Scope: e.g. for a for loop
 blocks_top : block := block'first;     -- scope stack next position
 
 procedure pushBlock( newScope : boolean := false;
   newName : string := "" ; newFlow : aDataFlowName := noDataFlow );
 -- start a new identifier scope, remember where we "parked"
 -- if newScope is false, the new block is the start of a
--- multi-line statement (eg. an "if"); if true, the new
--- block is a nested declaration scope (eg. a "declare")
+-- multi-line statement (e.g. an "if"); if true, the new
+-- block is a nested declaration scope (e.g. a "declare")
 
 procedure checkIdentifiersForSimpleScripts;
 -- check for unused variables and tally presence of software model req's
@@ -209,7 +209,7 @@ procedure checkIdentifiersForSimpleScripts;
 -- with no blocks.
 
 procedure completeSoftwareModelRequirements;
--- Check pre-defined identifiers for software requirements.  Then evaluate
+-- Check predefined identifiers for software requirements.  Then evaluate
 -- if the requirements were met for the software model.  This should only be
 -- run during the syntax check.
 
@@ -270,7 +270,7 @@ function getUniType( original : identifier ) return identifier;
 
 function getBaseType( original : identifier ) return identifier;
 -- dereference identifier until we find the original, parent root type
--- (ie for types declared with "subtype", roll them back to their
+-- (i.e. for types declared with "subtype", roll them back to their
 -- parent types)
 -- quit if a circular relationship is suspected
 -- errors result in type universal
@@ -342,7 +342,7 @@ procedure DoJsonToRecord( target_var_id : identifier; sourceVal : unbounded_stri
 -- Convert a JSON string and store in a record.
 
 procedure DoJsonToNumber( jsonString : unbounded_string; expr_val : out unbounded_string );
--- convert a Json string to a numeric value
+-- convert a JSON string to a numeric value
 
 -----------------------------------------------------------------------------
 
@@ -390,7 +390,7 @@ procedure shutdownScanner;
 ------------------------------------------------------------------------------
 
 procedure Put_Token;
--- for debugging, show the current token, its value, type and properities
+-- for debugging, show the current token, its value, type and properties
 
 procedure Put_Identifier( id : identifier );
 -- show an identifier's name, value and attributes on standard output

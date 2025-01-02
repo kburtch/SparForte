@@ -51,7 +51,7 @@ templateErrorHeader : constant unbounded_string := to_unbounded_string( "SparFor
 --  GET ERROR ICON
 --
 -- Return an appropriate error message icon, depending on the display context.
--- With --colour on the comand line, show a UTF icon.  When in a template,
+-- With --colour on the command line, show a UTF icon.  When in a template,
 -- the icon depends on the template.
 -----------------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ end getErrorIcon;
 --  GET CARET ICON
 --
 -- Return an appropriate caret message icon, depending on the display context.
--- With --colour on the comand line, show a UTF icon.  When in a template,
+-- With --colour on the command line, show a UTF icon.  When in a template,
 -- the icon depends on the template.
 -----------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ end getCaretIcon;
 --  GET LEFT CARET ICON
 --
 -- Return an appropriate caret message icon, depending on the display context.
--- With --colour on the comand line, show a UTF icon.  When in a template,
+-- With --colour on the command line, show a UTF icon.  When in a template,
 -- the icon depends on the template.
 -----------------------------------------------------------------------------
 
@@ -139,7 +139,7 @@ end getLeftCaretIcon;
 --  GET RIGHT CARET ICON
 --
 -- Return an appropriate caret message icon, depending on the display context.
--- With --colour on the comand line, show a UTF icon.  When in a template,
+-- With --colour on the command line, show a UTF icon.  When in a template,
 -- the icon depends on the template.
 -----------------------------------------------------------------------------
 
@@ -169,7 +169,7 @@ end getRightCaretIcon;
 --  GET HORIZONTAL LINE ICON
 --
 -- Return an appropriate horizontal line, depending on the display context.
--- With --colour on the comand line, show a UTF character.  When in a
+-- With --colour on the command line, show a UTF character.  When in a
 -- template, the icon depends on the template.
 -----------------------------------------------------------------------------
 
@@ -351,7 +351,7 @@ function get_script_execution_position( msg : messageStrings; utf_icon : string 
 begin
   -- Only create the abbreviated GCC-style error message if we need it
   --
-  -- In the case of templates, we need both the Gcc version and the non-Gcc
+  -- In the case of templates, we need both the GCC version and the non-Gcc
   -- version of the error message.  In a CGI script that isn't a template,
   -- regular errors are reported back.
 
@@ -373,7 +373,7 @@ begin
 
   fullErrorMessage := nullMessageStrings;
 
-  -- Generate a Gcc-formatted error message (if we need one)
+  -- Generate a GCC-style error message (if we need one)
 
   if needGccVersion then
      if script /= null then
@@ -461,7 +461,7 @@ begin
         null;
      end case;
      -- In the case of the template, the error output must always
-     -- be in gcc format (a single line) for the web server log.
+     -- be in GCC format (a single line) for the web server log.
      --
      -- This affects exception handling since HTML output for template
      -- will differ from error message in exceptions package.  Also,
@@ -480,7 +480,7 @@ end get_script_execution_position;
 -- Stop execution and record an compile-time or run-time error.  Format the
 -- error according to the user's preferences and set the error_found flag.
 --
--- Only display the first error/exception encounted.
+-- Only display the first error/exception encountered.
 -----------------------------------------------------------------------------
 
 procedure err_shell( msg : messageStrings; wordOffset : natural ) is
@@ -503,7 +503,7 @@ begin
 
   -- Only create the abbreviated GCC-style error message if we need it
   --
-  -- In the case of templates, we need both the Gcc version and the non-Gcc
+  -- In the case of templates, we need both the GCC version and the non-Gcc
   -- version of the error message.  In a CGI script that isn't a template,
   -- regular errors are reported back.
 
@@ -525,7 +525,7 @@ begin
 
   fullErrorMessage := nullMessageStrings;
 
-  -- Generate a Gcc-formatted error message (if we need one)
+  -- Generate a GCC-style error message (if we need one)
 
   if needGccVersion then
      if script /= null then
@@ -616,7 +616,7 @@ begin
   end if;
 
      -- In the case of the template, the error output must always
-     -- be in gcc format (a single line) for the web server log.
+     -- be in GCC format (a single line) for the web server log.
      --
      -- This affects exception handling since HTML output for template
      -- will differ from error message in exceptions package.  Also,
@@ -753,7 +753,7 @@ begin
 
   -- Only create the abbreviated GCC-style error message if we need it
   --
-  -- In the case of templates, we need both the Gcc version and the non-Gcc
+  -- In the case of templates, we need both the GCC version and the non-Gcc
   -- version of the error message.  In a CGI script that isn't a template,
   -- regular errors are reported back.
 
@@ -772,7 +772,7 @@ begin
 
   fullErrorMessage := nullMessageStrings;
 
-  -- Generate a Gcc-formatted error message (if we need one)
+  -- Generate a GCC-style error message (if we need one)
 
   if needGccVersion then
      gccFormatMsg := getGCCFormatErrorMessage(lineno, firstpos, fileno, msg );
@@ -842,7 +842,7 @@ begin
         null;
      end case;
      -- In the case of the template, the error output must always
-     -- be in gcc format (a single line) for the web server log.
+     -- be in GCC format (a single line) for the web server log.
      --
      -- This affects exception handling since HTML output for template
      -- will differ from error message in exceptions package.  Also,
@@ -887,7 +887,7 @@ procedure err_test_result is
   ourFullTemplateErrorMessage : unbounded_string;
   gccFormatMsg : messageStrings;
 begin
-  -- determine if gcc format is requested or required
+  -- determine if GCC format is requested or required
   needGccVersion := boolean( gccOpt ) or hasTemplate;
 
   -- Get the command line position.  We don't care about the command
@@ -895,7 +895,7 @@ begin
 
   getCommandLine( discardCmdline, firstpos, lastpos, lineno, distance_percent, fileno );
 
-  -- Generate a Gcc-formatted error message (if we need one)
+  -- Generate a GCC-style error message (if we need one)
 
   if needGccVersion then
      if script /= null then
@@ -956,7 +956,7 @@ begin
         null;
      end case;
      -- In the case of the template, the error output must always
-     -- be in gcc format (a single line) for the web server log.
+     -- be in GCC format (a single line) for the web server log.
      --
      -- This affects exception handling since HTML output for template
      -- will differ from error message in exceptions package.  Also,
@@ -973,7 +973,7 @@ begin
   -- err_exception.name := null_unbounded_string;            -- not an exception
   -- last_status := 0;
 
-  -- It is redundanct to output the message when tracing since it is always
+  -- It is redundant to output the message when tracing since it is always
   -- output when it occurs anyway...it's not an error or exception.
 
   -- Show the test result message immediately
@@ -991,7 +991,7 @@ end err_test_result;
 -----------------------------------------------------------------------------
 --  WARN
 --
--- Issue a warning.  This is done immediately, is not formatted by gcc-style
+-- Issue a warning.  This is done immediately, is not formatted by GCC-style
 -- preference and is not stored.
 -----------------------------------------------------------------------------
 
@@ -2046,7 +2046,7 @@ end expectIdentifier;
 
 
 -----------------------------------------------------------------------------
--- Missing Round Bracket / Paranthesis
+-- Missing Round Bracket / Parenthesis
 -----------------------------------------------------------------------------
 
 
@@ -2401,15 +2401,15 @@ end expectPragmaComma;
 
 
 -----------------------------------------------------------------------------
--- Missing Round Bracket / Paranthesis
+-- Missing Round Bracket / Parenthesis
 -----------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------
 --  EXPECT PARAMETER OPEN
 --
--- Read an open paranthesis, if it is present.  Otherwise, show an error
--- related to a missing open paranthesis in a parameter list of a subprogram.
+-- Read an open parenthesis, if it is present.  Otherwise, show an error
+-- related to a missing open parenthesis in a parameter list of a subprogram.
 -----------------------------------------------------------------------------
 
 procedure expectParameterOpen( subprogram : identifier := eof_t ) is
@@ -2467,8 +2467,8 @@ end expectParameterOpen;
 -----------------------------------------------------------------------------
 --  EXPECT PARAMETER CLOSE
 --
--- Read a close paranthesis, if it is present.  Otherwise, show an error
--- related to a missing close paranthesis in a parameter list of a
+-- Read a close parenthesis, if it is present.  Otherwise, show an error
+-- related to a missing close parenthesis in a parameter list of a
 -- subprogram.
 -----------------------------------------------------------------------------
 
@@ -2528,8 +2528,8 @@ end expectParameterClose;
 -----------------------------------------------------------------------------
 --  EXPECT PRAGMA PARAMETER OPEN
 --
--- Read an open paranthesis, if it is present.  Otherwise, show an error
--- related to a missing open paranthesis in a parameter list of a subprogram.
+-- Read an open parenthesis, if it is present.  Otherwise, show an error
+-- related to a missing open parenthesis in a parameter list of a subprogram.
 -- Unlike subprograms, pragmas have a kind string, not an id.
 -----------------------------------------------------------------------------
 
@@ -2563,8 +2563,8 @@ end expectPragmaParameterOpen;
 -----------------------------------------------------------------------------
 --  EXPECT PRAGMA PARAMETER CLOSE
 --
--- Read a close paranthesis, if it is present.  Otherwise, show an error
--- related to a missing close paranthesis in a parameter list of a
+-- Read a close parenthesis, if it is present.  Otherwise, show an error
+-- related to a missing close parenthesis in a parameter list of a
 -- subprogram.
 -----------------------------------------------------------------------------
 
@@ -2714,6 +2714,38 @@ begin
   end if;
 end expectNonRestrictedShell;
 
+procedure expectNonRestrictedShell( subjectId : identifier ) is
+begin
+  if rshOpt then
+      err(
+          subject=> subjectId,
+          reason => +"is not allowed in a",
+          obstructorNotes => em( "restricted shell" )
+      );
+  end if;
+end expectNonRestrictedShell;
+
+-----------------------------------------------------------------------------
+-- Not Implemented
+-----------------------------------------------------------------------------
+
+procedure featureNotImplemented( subjectNotes : string ) is
+begin
+   err( subjectNotes => em( subjectNotes ),
+        reason => +"is not implented",
+        obstructorNotes => nullMessageStrings,
+        remedy => +"it was disabled when SparForte was configured and compiled"
+   );
+end featureNotImplemented;
+
+procedure featureNotImplemented( subjectId : identifier ) is
+begin
+   err( subject => subjectId,
+        reason => +"is not implented",
+        obstructorNotes => nullMessageStrings,
+        remedy => +"it was disabled when SparForte was configured and compiled"
+   );
+end featureNotImplemented;
 
 -----------------------------------------------------------------------------
 -- Internal errors
@@ -2723,7 +2755,7 @@ end expectNonRestrictedShell;
 -----------------------------------------------------------------------------
 --  INTERNAL ERROR USAGE QUALIFIER
 --
--- An unexpected usage qualifier was found, usually appearning in a case
+-- An unexpected usage qualifier was found, usually appearing in a case
 -- others clause
 -----------------------------------------------------------------------------
 

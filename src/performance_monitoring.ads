@@ -52,7 +52,7 @@ package dynamic_string_hash_tables is
 --
 -- This is used to record static code analysis results and performance
 -- statistics.  These can be used to evaluate designs.
--- See jdepend/pdepend for examples of what should be here.
+-- See JDepend/PDepend for examples of what should be here.
 --
 -- It would also be good to add code coverage here.
 

@@ -22,8 +22,8 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
---with ada.text_io;
---use ada.text_io;
+with ada.text_io;
+use ada.text_io;
 
 pragma warnings( off ); -- suppress Gnat-specific package warning
 with ada.command_line.environment;
@@ -71,21 +71,40 @@ package body parser.decl is
 -- True if value looks like it could be encrypted data.
 -----------------------------------------------------------------------------
 
-function maybe_secret( s : unbounded_string ) return boolean is
+function maybe_secret( field_name, str_val : unbounded_string ) return boolean is
   score : numericValue := 0.0;
   could_be : boolean := false;
 begin
-  if length( s ) >= 8 then
-     score := shannon_entropy_of( s );
+  if length( str_val ) >= 8 then
+     score := shannon_entropy_of( str_val );
 
-     -- Heuristics
+     -- Heuristics: field name (English)
 
-     if head(s, 7) = "ssh-rsa" then
+     if index( field_name, "auth" ) > 0 then
         score := score + 1.0;
-     elsif head(s, 7) = "-----B" then
+     elsif index( field_name, "crypt" ) > 0 then
+        score := score + 1.0;
+     elsif index( field_name, "hash" ) > 0 then
+        score := score + 1.0;
+     elsif index( field_name, "pass" ) > 0 then
+        score := score + 1.0;
+     elsif index( field_name, "token" ) > 0 then
+        score := score + 1.0;
+     elsif tail( field_name, 3 ) = "_id" then
         score := score + 1.0;
      end if;
-     if length(s) / 8 = 0 then
+
+     -- Heuristics: SSH
+
+     if head(str_val, 7) = "ssh-rsa" then
+        score := score + 1.0;
+     elsif head(str_val, 7) = "-----B" then
+        score := score + 1.0;
+     end if;
+
+     -- Heuristics: multiple of 8 characters
+
+     if length(str_val) / 8 = 0 then
         score := score + 1.0;
      end if;
      if score > 5.5 then
@@ -113,39 +132,92 @@ begin
 
    if token = abstract_t then
       if onlyAda95 then
-        err( +"abstract types not allowed with " &
-            em( "pragam ada_95" ) );
+        err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"cannot be abstract because of",
+             obstructorNotes => obstructorAda95,
+             remedy => +"Ada does not support qualifiers",
+             seeAlso => seeTypes
+        );
       end if;
       identifiers( newtype_id ).usage := abstractUsage; -- vars not allowed
       identifiers( newtype_id ).wasReferenced := true;  -- treat as used
       identifiers( newtype_id ).wasApplied := true;     -- treat as applied
       expect( abstract_t );
-      if token = abstract_t or token = limited_t or token = constant_t then
-         err( +"only one of abstract, limited or constant allowed" );
+      if token = abstract_t then
+        err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"has a redundant qualifier",
+             obstructorNotes => name_em(token)
+        );
+      elsif token = limited_t or token = constant_t then
+        err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"can have only one qualifier but",
+             obstructorNotes => name_em(token) & pl(" is a second one"),
+             remedy => +"use only one of abstract, limited or constant",
+             seeAlso => seeTypes
+        );
       end if;
 
    -- limited types
 
    elsif token = limited_t then
       if onlyAda95 then
-         err( +"limited types are not allowed with " & em( "pragma ada_95" ) );
+         err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"cannot be limited because of",
+             obstructorNotes => obstructorAda95,
+             remedy => +"Ada does not support qualifiers",
+             seeAlso => seeTypes
+        );
       end if;
       identifiers( newtype_id ).usage := limitedUsage;  -- assign not allowed
       expect( limited_t );
-      if token = abstract_t or token = limited_t or token = constant_t then
-         err( +"only one of abstract, limited or constant allowed" );
+      if token = limited_t then
+        err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"has a redundant qualifier",
+             obstructorNotes => name_em(token)
+        );
+      elsif token = abstract_t or token = constant_t then
+         err( contextNotes => +"While checking the type usage qualifiers",
+              subject => newtype_id,
+              reason => +"can have only one qualifier but",
+              obstructorNotes => name_em(token) & pl(" is a second one"),
+              remedy => +"use only one of abstract, limited or constant",
+              seeAlso => seeTypes
+         );
       end if;
 
    -- constant types
 
    elsif token = constant_t then
       if onlyAda95 then
-         err( +"constant types are not allowed with " & em( "pragma ada_95" ) );
+         err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"cannot be constant because of",
+             obstructorNotes => obstructorAda95,
+             remedy => +"Ada does not support qualifiers",
+             seeAlso => seeTypes
+        );
       end if;
       identifiers( newtype_id ).usage := constantUsage;  -- read-only
       expect( constant_t );
-      if token = abstract_t or token = limited_t or token = constant_t then
-         err( +"only one of abstract, limited or constant allowed" );
+      if token = constant_t then
+        err( contextNotes => +"While checking the type usage qualifiers",
+             subject => newtype_id,
+             reason => +"has a redundant qualifier",
+             obstructorNotes => name_em(token)
+        );
+      elsif token = abstract_t or token = limited_t then
+         err( contextNotes => +"While checking the type usage qualifiers",
+              subject => newtype_id,
+              reason => +"can have only one qualifier but",
+              obstructorNotes => name_em(token) & pl(" is a second one"),
+              remedy => +"use only one of abstract, limited or constant",
+              seeAlso => seeTypes
+         );
       end if;
 
    -- default same as parent
@@ -161,7 +233,7 @@ end ParseTypeUsageQualifiers;
 -- for a usage qualifier and apply it to the variable declaration.
 -- e.g. With "x : constant integer", handle "constant".
 -- If a constant, expr_expected is set to true to alert the caller
--- that a constant declaration may need a value asigned.
+-- that a constant declaration may need a value assigned.
 -- Syntax: var-usage-qualifiers = [limited | constant]
 -- Type usage qualifiers and variable usage qualifiers are not identical:
 -- variables cannot be abstract.
@@ -172,25 +244,53 @@ begin
   expr_expected := false;                              -- usually false
 
   if token = aliased_t then                            -- aliased not supported
-     err( +"aliased isn't supported" );
+     err( +"aliased not implemented" );
 
   elsif token = constant_t then                        -- handle constant
      identifiers( id ).usage := constantUsage;         -- as a constant and
      expr_expected := true;                            -- must assign value
      expect( constant_t );                             -- by flagging variable
-     if token = abstract_t or token = limited_t or token = constant_t then
-        err( +"only one of abstract, limited or constant allowed" );
+     if token = constant_t then
+        err( contextNotes => +"While checking the variable usage qualifiers",
+             subject => id,
+             reason => +"has a redundant qualifier",
+             obstructorNotes => name_em(token)
+        );
+     elsif token = abstract_t or token = limited_t then
+         err( contextNotes => +"While checking the variable usage qualifiers",
+              subject => id,
+              reason => +"can have only one qualifier but",
+              obstructorNotes => name_em(token) & pl(" is a second one"),
+              remedy => +"use only one of limited or constant",
+              seeAlso => seeTypes
+         );
      end if;
 
   elsif token = abstract_t then                        -- abstract only makes sense
-     err( em( "abstract" ) &                          -- in type declarations since
-        pl( " can only be used in type declarations" ) ); -- it's a no-use quality.
+     err( contextNotes => +"While checking the variable usage qualifiers",
+          subject => id,
+          reason => +"cannot be abstract because",
+          obstructorNotes => +"abstract usage is not conrete and cannot create variables",
+          seeAlso => seeTypes
+     );
 
   elsif token = limited_t then                         -- limited access?
      identifiers( id ).usage := limitedUsage;
      expect( limited_t );
-     if token = abstract_t or token = limited_t or token = constant_t then
-        err( +"only one of abstract, limited or constant allowed" );
+     if token = limited_t then
+        err( contextNotes => +"While checking the variable usage qualifiers",
+             subject => id,
+             reason => +"has a redundant qualifier",
+             obstructorNotes => name_em(token)
+        );
+     elsif token = abstract_t or token = constant_t then
+         err( contextNotes => +"While checking the variable usage qualifiers",
+              subject => id,
+              reason => +"can have only one qualifier but",
+              obstructorNotes => name_em(token) & pl(" is a second one"),
+              remedy => +"use only one of limited or constant",
+              seeAlso => seeTypes
+         );
      end if;
   end if;
 end ParseVarUsageQualifiers;
@@ -207,11 +307,18 @@ end ParseVarUsageQualifiers;
 -- Currently, there are no user generic types, only built-in ones.
 -----------------------------------------------------------------------------
 
-procedure ParseGenericParametersPart( varId : identifier ) is
+procedure ParseGenericParametersPart( varId, genTypeId : identifier ) is
   genKind : identifier;
 begin
   if token /= symbol_t or identifiers( token ).svalue /= "(" then
-     err( +"generic types must have element type parameters" );
+
+     err( contextNotes => +"While checking the generic type",
+          subject => varId,
+          subjectType => genTypeId,
+          reason => +"uses a type that needs parameters",
+          obstructorNotes => nullMessageStrings,
+          remedy => +"a generic type needs to know what types it is working with to be complete and usable"
+     );
   end if;
   expect( symbol_t, "(" );
   ParseIdentifier( genKind );
@@ -355,12 +462,17 @@ begin
 
        -- All of our resources are limited.  However, as a safety precaution:
        -- If an identifier has an external reference, we cannot copy it because
-       -- we could inadvertantly deallocate it in one place while keeping it open
+       -- we could inadvertently deallocate it in one place while keeping it open
        -- in another.
 
        if identifiers( canonicalRef.id ).resource then
-          err( pl( gnat.source_info.source_location &
-               "internal error: resource identifiers cannot be copied" ) );
+          err(
+             contextNotes => pl( "At " & gnat.source_info.source_location &
+                 " while copying the value" ),
+             subjectNotes => subjectInterpreter,
+             reason => +"had an internal error because",
+             obstructorNotes => +"resource identifiers cannot be copied"
+         );
        end if;
 
      end;
@@ -422,16 +534,25 @@ begin
              begin
                identifiers( array_id ).avalue( arrayIndex ) := expr_value;
              exception when CONSTRAINT_ERROR =>
-               err( +"assigning " & em( arrayIndex'img ) &
-                    pl( " elements but the array is range " &
-                    identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img ) );
+               err(
+                  contextNotes => pl( "assigning the array values" ),
+                  subjectNotes => em( "array position" & arrayIndex'img ),
+                  reason => +"cannot be assigned because",
+                  obstructorNotes => pl( "the array bounds have range" &
+                       identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img )
+               );
              when STORAGE_ERROR =>
-               err( pl( gnat.source_info.source_location &
-                 ": internal error : storage error raised in ParseAssignmentPart" ) );
+               err(
+                  contextNotes => pl( "At " & gnat.source_info.source_location &
+                  " while assigning the array values" ),
+                  subjectNotes => subjectInterpreter,
+                  reason => +"had an internal error because",
+                  obstructorNotes => +"a storage_error was raised"
+               );
              end;
           --end if;
        end if;
-       if arrayIndex = long_integer'last then                  -- shound never
+       if arrayIndex = long_integer'last then                  -- should never
           err( +"array is too large" );                        -- happen but
        else                                                    -- check anyway
           arrayIndex := arrayIndex+1;                          -- next element
@@ -447,10 +568,14 @@ begin
      end if;
      if isExecutingCommand then                                -- not on synchk
         if arrayIndex < lastIndex then                         -- check sizes
-           err( +"assigning only " & em( arrayIndex'img ) &
-                pl( " elements but the array is range " &
-                identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img ) );
-        end if;
+           err(
+              contextNotes => pl( "assigning the array values" ),
+              subjectNotes => em( "the last value is at position" & arrayIndex'img ),
+              reason => +"and that is too few items to fill",
+              obstructorNotes => pl( "the array bounds of range" &
+              identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img )
+           );
+         end if;
      end if;
      expect( symbol_t, ")" );
   else                                                         -- copying a
@@ -501,7 +626,7 @@ end ParseArrayAssignPart;
 --  PARSE ANONYMOUS ARRAY
 --
 -- Handle an anonymous array declaration.  An anonymous array is an array
--- that is not pre-defined as it's own type.  A type declaration will be
+-- that is not predefined as it's own type.  A type declaration will be
 -- created to represent the array type.  If limit is true, the type
 -- will be limited.
 -- Syntax: anon-array = " array(expr..expr) of ident [array-assn]
@@ -649,7 +774,7 @@ end ParseAnonymousArray;
 -----------------------------------------------------------------------------
 --  PARSE ARRAY DECLARATION
 --
--- Handle the creation of an array varaible and any renaming or default value
+-- Handle the creation of an array variable and any renaming or default value
 -- assignment.
 -- Syntax: array-declaration = " := array_assign" | renames oldarray
 -- ParseDeclarationPart was getting complicated so this procedure
@@ -989,7 +1114,7 @@ begin
                -- record.  However, to make sure the record is used, it
                -- is convenient to track the field.
                identifiers( dont_care_t ).field_of := id;
-               -- apply abtract and limited
+               -- apply abstract and limited
                identifiers( dont_care_t ).usage := identifiers( j ).usage;
                -- CONST SPECS
                -- By default, constant record fields are specifications:
@@ -1033,7 +1158,7 @@ begin
      --    identifiers( id ).specAt := getLineNo;
      end if;
 
-  -- Paranthesis?  It looks like a Generic type.  Show an error.
+  -- Parenthesis?  It looks like a Generic type.  Show an error.
 
   elsif token = symbol_t and identifiers( token ).svalue = "(" then
      err( name_em( recType ) & pl( " is not a generic type but has parameters" ) );
@@ -1235,7 +1360,7 @@ begin
                -- short_short_integer_t, short_integer_t, long_integer_t
                -- long_long_integer_t
                null;
-             -- TODO: enumeriated
+             -- TODO: enumerated
             elsif getUniType( genKindId ) = root_enumerated_t then
                null;
             else
@@ -1277,7 +1402,7 @@ begin
                -- short_short_integer_t, short_integer_t, long_integer_t
                -- long_long_integer_t
                null;
-             -- TODO: enumeriated
+             -- TODO: enumerated
             elsif getUniType( genKindId ) = root_enumerated_t then
                null;
             else
@@ -1285,7 +1410,7 @@ begin
             end if;
          end if;
       end;
-      -- vactor cursor values (for now) must be scalar
+      -- vector cursor values (for now) must be scalar
       if identifiers( id ).genKind2 = eof_t then
          err( name_em( type_token ) & pl( " key type should have an element type for the next parameter" ) );
       else
@@ -1537,7 +1662,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        discardUnusedIdentifier( const_id );             -- discard variable
     end if;
 
-    -- Calculate the assignment (ie. using any previous variable i)
+    -- Calculate the assignment (i.e. using any previous variable i)
     -- if not an aggregate.  The assign part is done here while the variable
     -- does not exist.
     --   For a record, this will erase the number of fields in the record's
@@ -1548,7 +1673,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        ParseAssignPart( expr_value, right_type );          -- do := part
     end if;
 
-    -- Redeclare temporarily destroyed identifier (ie. declare new i)
+    -- Redeclare temporarily destroyed identifier (i.e. declare new i)
     -- and recover old properties.  Clear the spec and fix the avalue
     -- (if necessary).  The spec is now fulfilled.
     --  For records, we didn't destroy the original.
@@ -1581,7 +1706,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        ParseRecordAssignPart( new_const_id, type_token );
     end if;
 
-    -- mark the type that was targetted by the cast
+    -- mark the type that was targeted by the cast
     if syntax_check then
        identifiers( type_token ).wasCastTo := true;
     end if;
@@ -1785,7 +1910,7 @@ begin
   -- modification to check the generic parameters).
 
   if identifiers( type_token ).class = genericTypeClass then
-     ParseGenericParametersPart( id  );
+     ParseGenericParametersPart( id, type_token  );
      if not type_checks_done then
         CheckGenericParameterType( id, type_token );
      end if;
@@ -1828,7 +1953,7 @@ begin
 
      declare
         originalFieldOf : constant identifier := identifiers( id ).field_of;
-        -- TODO: refactor these booleans
+        -- TODO: refactor these Booleans
         wasLimited : constant boolean := identifiers( id ).usage = limitedUsage;
         wasConstant : constant boolean := identifiers( id ).usage = constantUsage;
      begin
@@ -1863,7 +1988,7 @@ begin
 
      if identifiers( canonicalRef.id ).list then
         if canonicalRef.hasIndex then
-           -- don't do this on an error or an excepion may be thrown
+           -- don't do this on an error or an exception may be thrown
            if isExecutingCommand then
               begin
                  identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
@@ -1882,7 +2007,7 @@ begin
 
      declare
         originalFieldOf : constant identifier := identifiers( id ).field_of;
-        -- TODO: refactor these booleans
+        -- TODO: refactor these Booleans
         wasLimited : constant boolean := identifiers( id ).usage = limitedUsage;
         wasConstant : constant boolean := identifiers( id ).usage = constantUsage;
      begin
@@ -1933,7 +2058,7 @@ begin
 
      if identifiers( canonicalRef.id ).list then
         if canonicalRef.hasIndex then
-           -- don't do this on an error or an excepion may be thrown
+           -- don't do this on an error or an exception may be thrown
            if isExecutingCommand then
               begin
                  identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
@@ -1983,11 +2108,11 @@ begin
        end if;
        discardUnusedIdentifier( id );                      -- discard variable
 
-       -- Calculate the assignment (ie. using any previous variable i)
+       -- Calculate the assignment (i.e. using any previous variable i)
 
        ParseAssignPart( expr_value, right_type );          -- do := part
 
-       -- Redeclare temporarily destroyed identifier (ie. declare new i)
+       -- Redeclare temporarily destroyed identifier (i.e. declare new i)
        -- and assign its type
 
        declareIdent( id, var_name, type_token, varClass );  -- declare var
@@ -2022,7 +2147,7 @@ begin
         null;
      end if;
 
-     -- mark the type that was targetted by the cast
+     -- mark the type that was targeted by the cast
      if syntax_check then
         identifiers( type_token ).wasCastTo := true;
      end if;
@@ -2051,13 +2176,15 @@ begin
            if expr_value /= null_unbounded_string then
               expr_value := castToType( expr_value, type_token );
               if getUniType( type_token ) = uni_string_t then
-                 if maybe_secret( expr_value ) then
+                 -- put_line(to_string( identifiers(id).name));
+                 -- put_line(maybe_secret( identifiers(id).name, expr_value )'img );
+                 if maybe_secret( identifiers(id).name, expr_value ) then
                     err(
                       contextNotes => +"In your declaration",
                       subject => id,
-                      reason => +"is being assigned a high entropy value which may indicate",
+                      reason => +"is being assigned a value that could be",
                       obstructorNotes => em( "secret data" ),
-                      remedy => +"hard-coded secrets could accidentally be stored in version control software.  Store them in an unmanaged data file and read them into limited variables"
+                      remedy => +"hard-coded secrets could accidentally be stored in version control software.  Store them in an untracked data file"
                  );
                  end if;
               end if;
@@ -2332,7 +2459,7 @@ end ParseAffirmClause;
 -- Syntax: type = "type newtype is new [type-usage] oldtype [affirm clause]"
 --         type = "type arraytype is array-type-part"
 --         type = "type rectype is record-type-part"
--- NOTE: enumerateds aren't overloadable (yet)
+-- NOTE: enumerated types cannot be overloaded (yet)
 -----------------------------------------------------------------------------
 
 procedure ParseType is
@@ -2491,7 +2618,7 @@ begin
 --put_line( "*** ParseType: " & to_string( identifiers( newtype_id ).name )  ); -- DEBUG
 
      if identifiers( parent_id ).class = genericTypeClass then
-        ParseGenericParametersPart( newtype_id );
+        ParseGenericParametersPart( newtype_id, parent_id );
         if not type_checks_done then
            CheckGenericParameterType( newtype_id, parent_id );
 --put_line( "ParseType: Generics done" ); -- DEBUG

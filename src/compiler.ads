@@ -185,7 +185,7 @@ type aVMIRNumber is new aVMRegister;
 ------------------------------------------------------------------------------
 -- Contexts
 --
--- Commands like "cd bush-0.9.1", if threated as AdaScript, will report an
+-- Commands like "cd bush-0.9.1", if treated as AdaScript, will report an
 -- error: the compiler, not knowing this is a shell command, will see 0.9.1
 -- as a malformed numeric literal.
 --
@@ -275,7 +275,7 @@ type aVMSRBank is array( aVMSRNumber ) of unbounded_string;
 type aVMIRBank is array( aVMIRNumber ) of identifier;
 -- banks of registers
 
--- The Virutal Machine Registers
+-- The Virtual Machine Registers
 
 VMNR : aVMNRBank; -- the numeric registers
 VMSR : aVMSRBank; -- the string registers

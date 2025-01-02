@@ -76,7 +76,7 @@ end displayVersionSplash;
 -- display copyright message.  This is located here because it
 -- uses term attributes.  Suppress the message on a login shell
 -- or if there is no tty.
--- Some of this is now defind in the world.ads file.
+-- Some of this is now defined in the world.ads file.
 -----------------------------------------------------------------------------
 
 procedure displayCopyrightSplash is

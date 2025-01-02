@@ -390,7 +390,7 @@ begin
       --   err( "cursor is not closed" );
       --end if;
   end if;
--- TODO: should close tinyserve server if open
+-- TODO: should close TinyServe server if open
   resHandleList.clear( resHandles, long_integer( id ) );
   --if trace then
   --   put_trace( "Resource handle" & id'img & " memory freed" );

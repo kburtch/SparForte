@@ -28,7 +28,7 @@ use ada.strings.unbounded;
 package pegasoft.strings is
 
 ------------------------------------------------------------------------------
--- The string util package contains supplimental string handling not included
+-- The string util package contains supplemental string handling not included
 -- with the standard ada.strings.unbounded package.
 ------------------------------------------------------------------------------
 

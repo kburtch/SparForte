@@ -52,7 +52,7 @@ use ada.text_io,
 
 package body compiler is
 
--- encoded character codes for certain keywords
+-- Encoded character codes for certain keywords
 
 begin_char     : character;
 function_char  : character;
@@ -421,7 +421,7 @@ end getTwoCommandLines;
 -- process checks for certain syntax errors and makes
 -- the following changes:
 --
--- * EOL characters are replaced by ASCII nul's.
+-- * EOL characters are replaced by ASCII NUL's.
 -- * leading indentation is a single byte at the start
 --   of a line, allowing BUSH to ignore indentation
 --   unless the line is being printed to the screen.
@@ -442,7 +442,7 @@ end getTwoCommandLines;
 --    if x > y then
 -- becomes
 -- file/line/indent/stuff/EOL
--- [ASCII 1][ASCII 1][ACSII 1][ASCII 3][if code] x > y [then code][ASCII 0]
+-- [ASCII 1][ASCII 1][ASCII 1][ASCII 3][if code] x > y [then code][ASCII 0]
 --
 -- reducing 17 bytes to 12 bytes, about 2/3rds the
 -- number of characters to read through when running
@@ -527,7 +527,7 @@ begin
 
   if inputMode /= interactive and inputMode /= breakout then  -- a script?
      lineStr := to_unbounded_string( natural'image( getByteCodeLineNo ) );
-     if gccOpt then                                    -- gcc style?
+     if gccOpt then                                    -- GCC style?
                                                        -- remove leading
         if length( lineStr ) > 0 then                  -- space (if any)
            if element( lineStr, 1 ) = ' ' then
@@ -547,7 +547,7 @@ begin
         put_retry( standard_error, ":1:" );
      end if;
   else
-     if gccOpt then                                    -- gcc style?
+     if gccOpt then                                    -- GCC style?
         lineStr := to_unbounded_string( natural'image( getByteCodeLineNo ) );
                                                        -- remove leading
         if length( lineStr ) > 0 then                  -- space (if any)
@@ -563,7 +563,7 @@ begin
      end if;
   end if;
 
-  -- Command line that errored (ie the current line)
+  -- Command line that errored (i.e. the current line)
 
   if not gccOpt then
      new_line_retry;
@@ -621,12 +621,12 @@ end err_tokenize;
 
 -----------------------------------------------------------------------------
 -- A record containing the compressed script being generated
--- and the parse history (to recognize and deal wtih Bourne
+-- and the parse history (to recognize and deal with Bourne
 -- shell parameters).
 
 --procedure resetRegisters( ci : in out CompressionInfo ) is
 --  -- called when we don't know if the index registers are valid
---  -- anymore (ie. at a 'begin' or 'end;')
+--  -- anymore (i.e. at a 'begin' or 'end;')
 --begin
 --  ci.nextVMIR := 0;
 --end resetRegisters;
@@ -1318,7 +1318,7 @@ begin
      return;                                                  -- and quit
   end if;
 
-  -- First Pos and Last Pos will mark the token text.  Cmdpos is our position
+  -- firstpos and lastpos will mark the token text.  Cmdpos is our position
   -- in the line (need a better name!)
 
   firstpos := cmdpos;                                         -- prepare to
@@ -1686,7 +1686,7 @@ begin
      return;
   end if;
 
-  -- First Pos and Last Pos will mark the token text.  Cmdpos is our position
+  -- Firstpos and lastpos will mark the token text.  Cmdpos is our position
   -- in the line (need a better name!)
 
   firstpos := cmdpos;                                         -- prepare to
@@ -1781,7 +1781,7 @@ begin
 
     ch := Element( command, cmdpos );                       -- next character
 
-    -- Check for charactes that will interfere with the compressed tokens.
+    -- Check for characters that will interfere with the compressed tokens.
 
     --if is_control( Element( command, cmdpos ) ) or Element( command, cmdpos ) > '~' then
     if is_control( Element( command, cmdpos ) ) then
@@ -1978,7 +1978,7 @@ end startOfDeleteParametersByteCode;
 --
 -- Part of line2ByteCode
 --
--- We are beginning a new statement of unknown type (ie. after a ;).  Handle
+-- We are beginning a new statement of unknown type (i.e. after a ;).  Handle
 -- the first word and compress it.  Determine what context is next and return
 -- it.
 --
@@ -2023,7 +2023,7 @@ begin
      return;                                                  -- and quit
   end if;
 
-  -- First Pos and Last Pos will mark the token text.  Cmdpos is our position
+  -- Firstpos and lastpos will mark the token text.  Cmdpos is our position
   -- in the line (need a better name!)
 
   firstpos := cmdpos;                                         -- prepare to
@@ -2088,7 +2088,7 @@ begin
 
   -- Get the first token on the line.
   --
-  -- Determine if this could be an Adascript identifier.  If it's not, then
+  -- Determine if this could be an AdaScript identifier.  If it's not, then
   -- it must be a Bourne shell word.
 
   elsif (ch >= 'a' and ch <='z') or (ch >= 'A' and ch <='Z') or
@@ -2105,7 +2105,7 @@ begin
      inRedirect     := false;
      redirectAmpersand := false;
 
-     -- read the first character, escaping high ascii if needed
+     -- read the first character, escaping high ASCII if needed
      if ch > ASCII.DEL then
         word := word & toByteCode( char_escape_t );
      end if;
@@ -2296,7 +2296,7 @@ begin
 
      else                                                  -- not reserved?
        -- it's either an identifier or a shell word (if it contains
-       -- path characaters).  Shell words start/end with a delim
+       -- path characters).  Shell words start/end with a delim
        -- while undeclared idents just end with a delim.
        if shell_word then
           ci.compressedScript := ci.compressedScript &        -- store store as an
@@ -2997,7 +2997,7 @@ begin
          pos := pos + 1;
       end if;
    end loop;
-   -- Ignore ASCII.NUL in sentinal record of the byte code
+   -- Ignore ASCII.NUL in sentinel record of the byte code
    perfStats.loc := perfStats.loc + 1;
    -- loop_count -> discount the end loop's.
    edge_count := edge_count + loop_count/2;

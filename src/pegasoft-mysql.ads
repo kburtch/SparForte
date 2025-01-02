@@ -31,18 +31,18 @@ function mysql_engine_to_string( kind : string ) return string;
 
 function mysql_column_type_to_string( kind, len : string ) return string;
 -- convert the pg_class table's pg_relkind code to a readable string
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 
 function mysql_not_null_to_string( val : string ) return string;
 -- convert a t/f value to "not null" like psql client
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 
 function mysql_default_to_string( val : string ) return string;
 -- convert a t/f value to "not null" like psql client
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 
 function mysql_userattributes_to_string( super, create : string ) return string;
 -- convert t/f values to "superuser, create database" like psql client
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 
 end pegasoft.mysql;

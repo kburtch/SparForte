@@ -428,7 +428,7 @@ package body reports.help is
   --
   -- Detailed text-based help report.
   ----------------------------------------------------------------------------
-  -- TODO: html encoding
+  -- TODO: HTML encoding
 
   procedure render( r : in out longHtmlHelpReport; e : in out aHelpEntry ) is
   begin

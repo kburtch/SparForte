@@ -1473,7 +1473,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
        if type_checks_done or else uniTypesOk( castType, kind ) then
 
           kind := castType;
-          -- mark the type that was targetted by the cast
+          -- mark the type that was targeted by the cast
           if syntax_check then
              identifiers( kind ).wasCastTo := true;
           end if;
@@ -2085,7 +2085,7 @@ begin
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then
              if operator = "*" then
                 begin
-                   -- mark the type that was targetted by the cast
+                   -- mark the type that was targeted by the cast
                    if syntax_check then
                       identifiers( term_type ).wasCastTo := true;
                    end if;
@@ -2108,7 +2108,7 @@ begin
                   p : numericValue;
                   z : numericValue := 0.0;
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -2140,7 +2140,7 @@ begin
                 end;
              elsif operator = "mod" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -2161,7 +2161,7 @@ begin
                 end;
              elsif operator = "rem" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -2329,7 +2329,7 @@ begin
         if operation = uni_numeric_t then
              if operator = "+" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
@@ -2348,7 +2348,7 @@ begin
                 end;
              elsif operator = "-" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
@@ -2711,7 +2711,7 @@ begin
   -- expression side-effects.  Remember how many lines have run prior to this
   -- expression to determine if variables in the expression were altered
   -- later than this line.  Remember that expressions can be nested.
-  -- If not checking side-effects, this will be zer0.
+  -- If not checking side-effects, this will be zero.
   lastExpressionInstruction := perfStats.lineCnt;
   if firstExpressionInstruction = noExpressionInstruction then
      firstExpressionInstruction := perfStats.lineCnt;
@@ -3096,7 +3096,7 @@ begin
            expect( symbol_t, ")" );
            if type_checks_done or else uniTypesOk( castType, kind ) then
               kind := castType;
-              -- mark the type that was targetted by the cast
+              -- mark the type that was targeted by the cast
               if syntax_check then
                  identifiers( kind ).wasCastTo := true;
               end if;
@@ -3316,7 +3316,7 @@ begin
         if type_checks_done or else baseTypesOK( kind1, kind2 ) then
              if operator = "*" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -3339,7 +3339,7 @@ begin
                   p : numericValue;
                   z : numericValue := 0.0;
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -3371,7 +3371,7 @@ begin
                 end;
              elsif operator = "mod" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -3392,7 +3392,7 @@ begin
                 end;
              elsif operator = "rem" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( term_type ).wasCastTo := true;
                   end if;
@@ -3545,7 +3545,7 @@ begin
         if operation = uni_numeric_t then
              if operator = "+" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
@@ -3564,7 +3564,7 @@ begin
                 end;
              elsif operator = "-" then
                 begin
-                  -- mark the type that was targetted by the cast
+                  -- mark the type that was targeted by the cast
                   if syntax_check then
                      identifiers( expr_type ).wasCastTo := true;
                   end if;

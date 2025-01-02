@@ -26,7 +26,7 @@ package body pegasoft.mysql is
 function mysql_kind_to_string( kind : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
 begin
-  -- older mysql
+  -- older MySQL
   if kind = "r" then
      return "table";
   elsif kind = "i" then
@@ -41,7 +41,7 @@ begin
      return "special";
   elsif kind = "t" then
      return "TOAST table";
-  -- newer mysql
+  -- newer MySQL
   elsif kind = "SYSTEM VIEW" then
      return "view";
   elsif kind = "BASE TABLE" then
@@ -71,7 +71,7 @@ end mysql_engine_to_string;
 
 function mysql_column_type_to_string( kind, len : string ) return string is
 -- convert the pg_class table's pg_relkind code to a readable string
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 begin
   -- if kind = "bpchar" then              -- blank-padded character array
   --    return "character(" & len & ")";  -- is char(n)
@@ -141,7 +141,7 @@ end mysql_column_type_to_string;
 
 function mysql_not_null_to_string( val : string ) return string is
 -- convert a t/f value to "not null" like psql client
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 begin
   if val = "t" then
      return "not null";
@@ -151,7 +151,7 @@ end mysql_not_null_to_string;
 
 function mysql_default_to_string( val : string ) return string is
 -- convert a t/f value to "not null" like psql client
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 begin
   if val = "t" then
      return "default";
@@ -161,7 +161,7 @@ end mysql_default_to_string;
 
 function mysql_userattributes_to_string( super, create : string ) return string is
 -- convert t/f values to "superuser, create database" like psql client
--- adapted from postgresql support
+-- adapted from PostgreSQL support
 begin
   if super = "t" and create = "t" then
      return "superuser, create database";

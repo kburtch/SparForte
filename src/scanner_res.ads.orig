@@ -109,7 +109,7 @@ type aResourceType is (
    tinyserve_socket_server
 );
 
---- Resource Defnitions
+--- Resource Definitions
 --
 -- Generic instantiations or other resources that are not directly available
 -- from the packages used

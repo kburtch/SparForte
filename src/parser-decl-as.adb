@@ -39,7 +39,7 @@ with Interfaces.C,
     compiler,
     scanner.communications,
     scanner_res,
-    parser.decl.shell, -- sybling package
+    parser.decl.shell, -- sibling package
     parser_aux,
     parser_sidefx,
     parser_params,
@@ -62,7 +62,7 @@ use Interfaces.C,
     compiler,
     scanner.communications,
     scanner_res,
-    parser.decl.shell, -- sybling package
+    parser.decl.shell, -- sibling package
     parser_aux,
     parser_sidefx,
     parser_params,
@@ -256,11 +256,11 @@ begin
   end if;
   ParseExpression( expr_val, expr_type );                  -- expression
   if type_checks_done then
-     b := expr_val = "1";                                  -- to real boolean
+     b := expr_val = "1";                                  -- to real Boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( +"boolean expression expected" );
   else                                                     -- else convert bool
-     b := expr_val = "1";                                  -- to real boolean
+     b := expr_val = "1";                                  -- to real Boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
@@ -289,11 +289,11 @@ begin
      end if;
      ParseExpression( expr_val, expr_type );               -- expression
      if type_checks_done then
-        b := expr_val = "1";                               -- to real boolean
+        b := expr_val = "1";                               -- to real Boolean
      elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
         err( +"boolean expression expected" );
      else                                                  -- else convert bool
-        b := expr_val = "1";                               -- to real boolean
+        b := expr_val = "1";                               -- to real Boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -435,11 +435,11 @@ begin
   end if;
   ParseStaticExpression( expr_val, expr_type );            -- expression
   if type_checks_done then
-     b := expr_val = "1";                                  -- to real boolean
+     b := expr_val = "1";                                  -- to real Boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( +"boolean expression expected" );
   else                                                     -- else convert bool
-     b := expr_val = "1";                                  -- to real boolean
+     b := expr_val = "1";                                  -- to real Boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
@@ -468,11 +468,11 @@ begin
      end if;
      ParseStaticExpression( expr_val, expr_type );         -- expression
      if type_checks_done then
-        b := expr_val = "1";                               -- to real boolean
+        b := expr_val = "1";                               -- to real Boolean
      elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
         err( +"boolean expression expected" );
      else                                                  -- else convert bool
-        b := expr_val = "1";                               -- to real boolean
+        b := expr_val = "1";                               -- to real Boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -4794,7 +4794,7 @@ procedure ParseShellCommand is
   -- environment so that the program we're running can see them.
   -- The search must start at the bottom of the symbol table so
   -- that, in the case of two exported variables with the same
-  -- name, the most recent scope will supercede the older
+  -- name, the most recent scope will supersede the older
   -- declaration.
   --  The variables exported are stored in exportList/exportCnt.
   -- Under UNIX/Linux, the application is responsible for storing
@@ -4903,7 +4903,7 @@ procedure ParseShellCommand is
   end clearParamList;
 
   --function isParenthesis return boolean is
-  -- check for a paranthesis, skipping any white space in front.
+  -- check for a parenthesis, skipping any white space in front.
   --begin
   --   skipWhiteSpace;
   --   return token = symbol_t and identifiers( token ).value.all = "(";
@@ -5314,7 +5314,7 @@ begin
   -- Basically, we can't have a bareword expansion because of this: if the
   -- command is AdaScript syntax, the tokens need to be read from the script.
   -- It can't read tokens from the shell word list.  (e.g. if $cmd = "ls (",
-  -- a $cmd bareword will put the paranthesis in the word list, not in the
+  -- a $cmd bareword will put the parenthesis in the word list, not in the
   -- command line, after parsing.)
   --
   -- So, for now, I require the first shell word not to be a bareword with
@@ -5560,7 +5560,7 @@ end if;
         closePipeline;
         -- certain cmds (like "less") need to be cleaned up
         -- with wait4children.  Others are OK.  Why?
-        -- KB: 18/05/23: because some commands expect child proceses and do
+        -- KB: 18/05/23: because some commands expect child processes and do
         -- a wait, others like "cut" and "less" do not.  SparForte must
         -- always wait4children to prevent zombies from being left behind
         -- by the commands of the pipeline.
@@ -5664,7 +5664,7 @@ end if;
      bourneShellWordLists.Clear( wordList );
   end if;
 
-  -- Comand complete.  Look for next in pipeline (if any).
+  -- Command complete.  Look for next in pipeline (if any).
 
   pipeFromLast := pipe2Next;                                -- input from out
   if pipeFromLast and not error_found and not done then     -- OK so far?
@@ -5689,7 +5689,7 @@ end ParseShellCommand;
 --  COMPILE AND RUN
 --
 -- Compile and run the byte code.  Do not capture the output.
--- Set fragmement to false if the byte code is a complete script rather than
+-- Set fragment to false if the byte code is a complete script rather than
 -- extracted from as a subscript.  You usually want to use
 -- CompileRunAndCaptureOutput.  The only thing that uses this procedure
 --  directly is the pragma debug because we don't want to capture the output.
@@ -5724,7 +5724,7 @@ end CompileAndRun;
 -----------------------------------------------------------------------------
 -- RUN AND CAPTURE OUTPUT
 --
--- Run the byte code and return the results.  Set fragmement to false if the
+-- Run the byte code and return the results.  Set fragment to false if the
 -- byte code is a complete script rather than extracted from as a subscript.
 -- You usually want to use CompileRunAndCaptureOutput.  The only thing that
 -- uses this procedure directly is the prompt script because the byte code
@@ -6231,7 +6231,7 @@ begin
      -- Double write races (relaxed)
      --
      -- Run-time side-effects tracking and test
-     -- Test for two or more dataflows writing to one unprotected variable
+     -- Test for two or more data flows writing to one unprotected variable
 
      checkDoubleDataFlowWrite( var_id );
 
@@ -6321,7 +6321,7 @@ begin
          if identifiers( var2_id ).list then
             err( +"multiple arrays cannot be declared in one declaration" );
             -- because only the array is assigned values with :=
-            -- unless I want to copy all the array elements everytime.
+            -- unless I want to copy all the array elements every time.
             -- Also, can't overwrite array ident value field.
             b := deleteIdent( var2_id );
          else
@@ -6556,7 +6556,7 @@ begin
         -- check for unreachable code on a stand-alone exit
         if syntax_check then
            if token = symbol_t and identifiers( token ).value.all = ";" then
-              -- we need to advance one to hilight the right token
+              -- we need to advance one to highlight the right token
               getNextToken;
               -- these are block ending tokens
               if token /= eof_t and token /= end_t and token /= elsif_t and
@@ -6644,7 +6644,7 @@ begin
            ParseAssignment;
            itself_type := new_t;
 
-        -- Boolean true shortcut (boolean assertions)
+        -- Boolean true shortcut (Boolean assertions)
         -- new_t check because a command will produce an varClass with no type
         elsif identifiers( startToken ).class = varClass and then identifiers( startToken ).kind /= new_t and then getBaseType( identifiers( startToken ).kind ) = boolean_t and then not identifiers( startToken ).deleted then
            if onlyAda95 then
@@ -6667,7 +6667,7 @@ begin
 
            -- assume it's a shell command and run it
            -- current token is first "token" of parameter.  Blow it away
-           -- if able (ie. "ls file", current token is file but we don't
+           -- if able (i.e. "ls file", current token is file but we don't
            -- need that in our identifier list.)
 
            discardUnusedIdentifier( token );
@@ -6685,7 +6685,7 @@ begin
      if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           -- move to next token or inifinite loop if done = true
+           -- move to next token or infinite loop if done = true
            getNextToken;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
@@ -6768,7 +6768,7 @@ end ParseExecutableStatement;
 -----------------------------------------------------------------------------
 --  PARSE GENERAL STATEMENT
 --
--- This procedure, for unstructured scripts, is used when any excutable or
+-- This procedure, for unstructured scripts, is used when any executable or
 -- declaration statement is expected.  (such as if, for, shell commands,
 -- procedure calls, etc.  It also handles Control-C, itself, breakout
 -- stepping, return, exit, @ chaining and other common functions.
@@ -6959,7 +6959,7 @@ begin
         -- check for unreachable code on a stand-alone exit
         if syntax_check then
            if token = symbol_t and identifiers( token ).value.all = ";" then
-              -- we need to advance one to hilight the right token
+              -- we need to advance one to highlight the right token
               getNextToken;
               -- these are block ending tokens
               if token /= eof_t and token /= end_t and token /= elsif_t and
@@ -7070,7 +7070,7 @@ begin
 
            -- assume it's a shell command and run it
            -- current token is first "token" of parameter.  Blow it away
-           -- if able (ie. "ls file", current token is file but we don't
+           -- if able (i.e. "ls file", current token is file but we don't
            -- need that in our identifier list.)
 
            discardUnusedIdentifier( token );
@@ -7088,7 +7088,7 @@ begin
      if ( token = symbol_t or token = word_t ) and identifiers( token ).value.all = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           -- move to next token or inifinite loop if done = true
+           -- move to next token or infinite loop if done = true
            getNextToken;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
@@ -7324,7 +7324,7 @@ begin
      scriptType := unstructured;
 
      -- Prior to a main program (or a simple script), a script may have
-     -- pragmas, policies, configurations, withs, trace.  A procedure
+     -- pragmas, policies, configurations, with's, trace.  A procedure
      -- is a main program.  Otherwise, skip all this and drop down to the
      -- simple script handling.
 

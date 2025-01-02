@@ -371,7 +371,7 @@ package body reports is
 
   procedure renderDescription( r : in out htmlReport'class; indent : positive; s : unbounded_string ) is
   begin
-    -- TOOD: indent not tested
+    -- TODO: indent not tested
     --if indent > 0 then
        put_line_retry( r.outputfile, "<div style=" & ASCII.Quotation &
           "margin-left:" & positive'image(indent) & "px" &

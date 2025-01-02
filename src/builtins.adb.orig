@@ -1006,7 +1006,7 @@ begin
           obstructorNotes => +"a script file",
           seeAlso => seeShellCmds
       );
-  -- this does not work under ada 95 because it assumes a text string
+  -- This does not work under Ada 95 because it assumes a text string
   -- parameter.  can it be modified?
   elsif onlyAda95 then
       err(
@@ -1152,7 +1152,7 @@ begin
   end if;
 exception
    -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it
-   -- occurs, just stop outputing and exit.
+   -- occurs, just stop the output and exit.
    when DEVICE_ERROR => null;
 end env;
 
@@ -1238,7 +1238,7 @@ end wait;
 -----------------------------------------------------------------------------
 --  VM (SparForte BUILTIN)
 --
--- vm: show the interal state of the virtual machine
+-- vm: show the internal state of the virtual machine
 -- (Not yet implemented)
 -- Syntax: vm nr n | sr n | ir n
 -----------------------------------------------------------------------------
