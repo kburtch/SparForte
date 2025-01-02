@@ -47,7 +47,7 @@
 
 <p>For some programming languages, a type is simply a way of describing how
 a variable will be stored in memory.  In AdaScript, types have much greater
-responsibility: they protect availability, intergrity and privacy.
+responsibility: they protect availability, integrity and privacy.
 Data types have four common aspects:</p>
 
 <ol>
@@ -223,13 +223,13 @@ abstract types as subprogram parameters.</p>
 <p>A <b>constant variable</b> is a variable that cannot be assigned
 a new value.</p>
 
-<p>A variable can "downgrade" a type's qaulifier.  For example, a
+<p>A variable can "downgrade" a type's qualifier.  For example, a
 constant variable can be made for a type without a qualifier because
 constant is more constrained than normal usage.</p>
 
 <h3>Constant Specifications</h3>
 
-<p>A constant varible can be created without giving it a value.
+<p>A constant variable can be created without giving it a value.
 This is called a constant specification (or a forward declaration
 in some languages.)</p>
 
@@ -276,12 +276,48 @@ customer_id <b>:</b> <b>limited</b> integer;<br />
         </div>
         </center>
 
-<p>A variable can "downgrade" a type's qaulifier.  For example, a
+<p>A variable can "downgrade" a type's qualifier.  For example, a
 limited variable can be made for a constant type because limited
 is more constrained than a constant.</p>
 
-<p><b>Ada</b>:In SparForte, limited does not require private, although this may change in the future.</p>
+<p><b>Ada</b>: In SparForte, limited does not require private, although this may change in the future.</p>
 <p><b>pragma ada_95</b>: Limited variables and types are not permitted.</p>
+
+<h3>Generic Types</h3>
+
+<p>A generic type requires additional types to be instantiated.  The generic
+types are often used to create lists, maps and other structures, where the
+type of value, or key and value, need to be defined.</p>
+
+<p>For example, the doubly_linked_lists package and create bi-directional
+lists from any scalar type.  To define a usable list, SparForte needs to know
+what kind of data the list contains.</p>
+
+<center>
+<div class="code">
+<p class="code">
+<b>type</b> fruit_string <b>is</b> <b>new</b> string;<br>
+fruit : doubly_linked_lists.list( fruit_string );<br>
+</p>
+</div>
+</center>
+
+<p>The fruit variable is an anonymous type (it has no name).  A generic type can be given a name using a type statement.</p>
+
+<center>
+<div class="code">
+<p class="code">
+<b>type</b> fruit list <b>is</b> <b>new</b> <b>limited</b> doubly_linked_lists.list( fruit_string );<br>
+fruit : fruit_list;<br>
+</p>
+</div>
+</center>
+
+<p>If the generic type uses resources (references to external record structures), it must also be limited.  Here fruit_list is limited, not the fruit_string values within it: doubly_linked_lists are Ada language data structures.</p>
+
+<p>A universal type parameters can be used to store all strings or all numeric values or both.</p>
+
+<p><b>Ada</b>: SparForte is an interpreted language and the concept of a template does not exist as nothing is compiled.</p>
 
 <h3>Affirm Clauses</h3>
 
@@ -321,7 +357,7 @@ j : customer_id := 1; -- validation_error<br />
 
 <p>The affirm clause runs whenever data is converted from one type to
 another: this can happen when data is stored in a variable, assigned,
-type casted or used with a in mode paramter.</p>
+typecasted or used with a in mode parameter.</p>
 
 <p>The affirm clauses are recursive.  If the parent type of a type has an
 affirm clause, the parent type's clause will be run first.</p>
@@ -380,8 +416,8 @@ of issues when you add "if", "case" and so on to expressions, as a kludge
 to get expressions to work like blocks, as Ada did.  Side-effects are a risk,
 but a much greater risk (outside of closed systems like space exploration,
 perhaps) is failure to validate inputs.  It's a matter of severity.
-However, to reduce the risk of side-effects, the affrim block runs in
-restricted shell mode.  Eliminiating side-effects is a bigger issue that
+However, to reduce the risk of side-effects, the affirm block runs in
+restricted shell mode.  Eliminating side-effects is a bigger issue that
 won't be solved by the implementation of the affirm clause.</p>
 
 <h3>Using Affirm Clauses to Modify or Correct Values</h3>

@@ -88,7 +88,7 @@ new name for the project.</p>
 <p>AdaScript is the programming language used by Sparforte.  Sparforte
 is the original AdaScript interpreter.  Since the language and the
 interpreter names are different, other projects can be developed using
-AdaScript&mdash;even other interpeters.</p>
+AdaScript&mdash;even other interpreters.</p>
 
 <h4>Do I need to know Ada to learn AdaScript?</h4>
 
@@ -130,7 +130,7 @@ you can copy this file to that folder.
 <p>If you can't install the spar.vim file, you use it as a local, custom
 syntax file as described at <a href="http://www.fleiner.com/vim/create.html">http://www.fleiner.com/vim/create.html</a>.</p>
 
-<p>To make vim use the syntax hilighting, you can add this to your .vimrc
+<p>To make vim use the syntax highlighting, you can add this to your .vimrc
 configuration file.</p>
 
 <pre>
@@ -156,13 +156,13 @@ program like this:</p>
 <p><img src="pictures/spar_on_vim.png" width="616" height="433" alt="[Screenshot of Sparforte script on vim]"><br>
 <b>Screenshot</b>: camel.sp script in Vim 7.3 using Sparforte mode</p>
 
-<h4>How Do I Use kdevelop with Sparforte?</h4>
+<h4>How Do I Use KDevelop with Sparforte?</h4>
 
 <p>Switch the editor language to Ada.  This will provide around 90% of the
 highlighting and other features you are looking for.  This is located
 under Editor / Tools / Highlighting / Source menu.</p>
 
-<p><img src="pictures/spar_on_kdevelop.png" width="724" height="500" alt="[Screenshot of Sparforte script on kdevelop]"><br>
+<p><img src="pictures/spar_on_kdevelop.png" width="724" height="500" alt="[Screenshot of Sparforte script on KDevelop]"><br>
 <b>Screenshot</b>: camel.sp script in KDevelop 4.2 using Ada mode</p>
 
 <h4>How Do I Use Eclipse with Sparforte?</h4>
@@ -171,14 +171,14 @@ under Editor / Tools / Highlighting / Source menu.</p>
 a AdaCore's GNATBench plug-in for GCC Ada, AonixADT for the Aonix Ada
 compiler, and an Ada Developer Tools project.  There may be others.  See
 if you can configure one of these plug-ins to recognize Sparforte scripts
-as Ada.  This may give you 90% of the hilighting and other features you are
+as Ada.  This may give you 90% of the highlighting and other features you are
 looking for.</p>
 
-<h4>How Do I Use Microsoft VS Code with SparForte?</h4>
+<h4>How Do I Use Microsoft VS Code with Sparforte?</h4>
 
 <p>Ada support will give you most of the features you are looking for.
 Install the Ada support plug-in.  Then change the user settings in
-the File / Preferences / Settings screen and map the SparForte file
+the File / Preferences / Settings screen and map the Sparforte file
 extension to the Ada language:</p>
 
 <pre>
@@ -191,7 +191,7 @@ extension to the Ada language:</p>
 
 <p>NetBeans has support for Ada (though I've never tried it).  There is
 an Ada Plug-in.  See if you can configure the plug-in to recognize
-Sparforte scripts as Ada.  This may give you 90% of the hilighting and
+Sparforte scripts as Ada.  This may give you 90% of the highlighting and
 other features you are looking for.</p>
 
 <h4>When I use spar as a login shell, why can't I use Control-D to log out?</h4>
@@ -205,11 +205,11 @@ yourself out when exiting several shells quickly using Control-D.</p>
 <p>Follow the instructions in the INSTALL text file included with
 your download.</p>
 
-<h4>Can I build SparForte without any database engine?</h4>
+<h4>Can I build Sparforte without any database engine?</h4>
 
 <p>Yes.</p>
 
-<h4>Can I build SparForte without SDL/OpenGL support?</h4>
+<h4>Can I build Sparforte without SDL/OpenGL support?</h4>
 
 <p>Yes.</p>
 
@@ -301,7 +301,7 @@ section.</p>
 <h4>What does it mean when a type is <tt>limited</tt>?</h4>
 
 <p>A limited type is a type that cannot be assigned in an assignment
-statement.  It can still be used in paramters.  Typically a limited
+statement.  It can still be used in parameters.  Typically a limited
 type is used to protect against "shallow copying" of data structures.
 Although Sparforte has no pointers and thus no shallow copying issues,
 limited types are used for sharing tokens or id numbers which should
@@ -363,7 +363,7 @@ to/from a string, which is inconvenient.  It is possible that
 the importing/exporting other types of variables will be done in the
 future.</p>
 
-<P>As a security feature, SparForte requires all imported variables
+<P>As a security feature, Sparforte requires all imported variables
 to be imported to a user-defined type.  You can add an
 <code>affirm</code> clause to validate the incoming data.</p>
 
@@ -385,14 +385,14 @@ the trace feature turned on.  This displays the lines the language reads,
 not the lines it executes, but you can use the lines in the report
 to estimate which lines ran a test.</p>
 
-<h4>Can you do Test-driven Development with SparForte?</h4>
+<h4>Can you do Test-driven Development with Sparforte?</h4>
 
-<p>SparForte runs in test phase mode of the SDLC.  It will
+<p>Sparforte runs in test phase mode of the SDLC.  It will
 run automated tests by default unless you switch to another phase of the
 SDLC.</p>
 
 <h4>Is there a libspar I can call to run Spar scripts from another
-language, like I can with lua?</h4>
+language, like I can with Lua?</h4>
 
 <p>AdaScript is an interpreted language: the "spar" interpreter must be used
 to run a program.</p>
@@ -422,20 +422,20 @@ a preprocessor for another shell.</p>
 
 <p>There are several open source shells such as Java's bean shell and
 Perl's zoidberg.  These attempt to create shells with a structure
-famillar to practicioners of those languages.</p>
+familiar to practitioners of those languages.</p>
 
-<p>SparForte chose compatibility with Ada because Ada was the only
+<p>Sparforte chose compatibility with Ada because Ada was the only
 top 20 language that had the capability to meet Sparforte's vision.
 This is the same reason that NASA, aerospace, air traffic control,
 robotics, and financial institutions chose Ada over Java, Perl, etc.</p>
 
-<h4>"Code Complete 2" calls Ada a dinosaur that has been surplanted
+<h4>"Code Complete 2" calls Ada a dinosaur that has been supplanted
 by other languages.</h4>
 
 <p>Ada is standard on most versions of Linux.  It remains one of the
-the top 10/top 20 (depending on which survey you read) langauges in
+the top 10/top 20 (depending on which survey you read) languages in
 the world.  It is the most popular language for high-reliability
-applications.  Ada has not been surplanted by Java or PHP because
+applications.  Ada has not been supplanted by Java or PHP because
 those languages traditionally solve different problems and target
 different audiences than Ada.</p>
 
@@ -444,7 +444,7 @@ could mean different things.  See my article on The Lone Coder site on the
 myth of agile languages, "What is an Agile Language?".</p>
 
 <h4>"Software Creativity 2.0" calls Ada a real-time programming
-language, unusuitable for other appliations, and it died because
+language, unsuitable for other applications, and it died because
 it was used where it was not intended.</h4>
 
 <p>While I have great respect for Mr. Glass, these statements are
@@ -471,7 +471,7 @@ strictly-defined alternative syntax in recognition of a standard
 lasting decades.  It can also be turned off.</p>
 
 <p>The command line SQL support is an attempt to address the problem
-of "mode errors" (right command typed in the wrong interpeter or
+of "mode errors" (right command typed in the wrong interpreter or
 "mode").   This also can be turned off.</p>
 
 <h4>Is AdaScript an enterprise language?</h4>
@@ -485,7 +485,7 @@ Sparforte an enterprise language.</p>
 
 <p>There is no strict definition of an cloud language.  However, if you
 consider "cloud" to mean to ability to create networked applications and to
-access shared services like memcached, then you could consider Sparforte to
+access shared services like Memcached, then you could consider Sparforte to
 be a cloud language.</p>
 
 <h4>Can strong typing be used successfully in a shell?</h4>
@@ -500,7 +500,7 @@ variables at the command prompt.</p>
 First, restrictions may be applied for security purposes.  Allowing them
 to be undone would be a security risk.  Second, restrictions may be applied
 for style or design reasons by architects or team leaders.  For example,
-they might use <code>pragma ada_95</code> make source code as reuseable as possible.  In
+they might use <code>pragma ada_95</code> make source code as reusable as possible.  In
 either case, the restrictions should not be undone.</p>
 
 <h4>Where does the idea of "itself" come from?</h4>
@@ -527,11 +527,11 @@ point out their convenience for short scripts, how large parameter lists
 with repeated variables are difficult to read and maintain, and that
 globals can be safely used by tacit agreement between programmers.</p>
 
-<p>SparForte implements safety features for working with global variables.
+<p>Sparforte implements safety features for working with global variables.
 Since AdaScript is a shell and scripting language, global variables are
 often useful.  They are also necessary for compatibility with Ada.</p>
 
-<h4>Why does AdaScript lack <tt>goto</tt> statments?  Some experts say they are bad.</h4>
+<h4>Why does AdaScript lack <tt>goto</tt> statements?  Some experts say they are bad.</h4>
 
 <p>AdaScript doesn't have a <code>goto</code> statements because of the
 complexity of implementing <code>goto</code>.</p>
@@ -548,9 +548,9 @@ believe that <code>goto</code> statements can improve performance as a result.</
 
 <p>The <code>goto</code> statement may be implemented in the future.</p>
 
-<h4>Does SparForte catch Side-Effects?</h4>
+<h4>Does Sparforte catch Side-Effects?</h4>
 
-<p>SparForte uses three methods to detect side-effects and designs
+<p>Sparforte uses three methods to detect side-effects and designs
 that have side-effect risks.</p>
 
 <h4>Is Sparforte innovative?</h4>
@@ -569,9 +569,9 @@ that other languages may find difficult.</p>
 <p>While reducing keystrokes is not a goal of Sparforte, it does have
 several convenience features for the command prompt.  It also has the
 concept of an "unstructured script", intended for small solutions,
-which relax some of SparForte's requirements.</p>
+which relax some of Sparforte's requirements.</p>
 
-<p>However, with a typical real-world project, the number of keystokes
+<p>However, with a typical real-world project, the number of keystrokes
 has little to do with the speed of project development.  Projects are
 dominated by reading, debugging, maintenance, etc. and these are managed
 by Sparforte's design.</p>
@@ -629,7 +629,7 @@ impact on a project.</p>
 <p>Most programming languages focus on the initial implementation phase
 of a project, which is a small percentage of a developer's time.  Sparforte
 (and Ada, the language Sparforte is modelled on) includes features
-that improve other stages of software building and facilliate team communication.
+that improve other stages of software building and facilitate team communication.
 Ada has been shown in large studies to have productivity improvements as much as
 double other programming languages.  Expect Sparforte to address more of these
 kind of time-consuming issues that other languages neglect.</p>
@@ -640,11 +640,11 @@ kind of time-consuming issues that other languages neglect.</p>
 used to.  There are several reasons for this.</p>
 
 <p>First, Sparforte focused on developing core features,
-not on optimizing performance.  Some features are not optmized for speed.</p>
+not on optimizing performance.  Some features are not optimized for speed.</p>
 
 <p>Second, Sparforte is built with the maximum error checking possible.
 This included checks done by GCC Ada (which does more compile time and run
-time checking compared to most langauges), as well as Sparforte's own
+time checking compared to most languages), as well as Sparforte's own
 extensive error checking.</p>
 
 <p>Third, it is has more powerful features than other languages, and these
@@ -652,7 +652,7 @@ features may require more setup to use.  As a general rule, the simpler
 the language, the faster the interpreter will run.  Sparforte is more
 high level than many languages.</p>
 
-<p>However, SparForte typically runs over 10,000 to 40,000 commands per second,
+<p>However, Sparforte typically runs over 10,000 to 40,000 commands per second,
 depending on your hardware and the nature of the commands.</p>
 
 <p>When evaluating performance, consider the trade-offs for loss of

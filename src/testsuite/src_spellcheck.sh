@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # Spell check comments in a SparForte Ada source file
+# Ken O. Burtch
+# January 2025
 #
 # The aspell command is very difficult to work with.  It is intended
 # to work interactively and non-interactive is only available with
@@ -11,6 +13,10 @@
 # Additionally, it is difficult to recognize commented out code from
 # genuine comments.  Comments often refer to functions or variables.
 # Only the first suspicious spelling on a line is reported.
+#
+# Documentation can be checked (from the doc/ directory with:
+# aspell --mode=html --home-dir=../src/testsuite --personal='aspell_dict.pws'
+#   check file.html
 
 TMP="/tmp/spellcheck.$$"
 TMP2="/tmp/spellcheck2.$$"

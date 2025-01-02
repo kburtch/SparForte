@@ -195,7 +195,7 @@ be used with both standalone pragmas and pragma blocks.</p>
 <p>Design constraint describe real-world concerns that affect
 the design of a project.  The idea is like sticky notes attached
 to the source code, identifying where the source code may be
-"network-bound", where relability is important, financial
+"network-bound", where reliability is important, financial
 issues, team dynamics, where there
 is uncertainty in the requirements and so forth.  This
 assists in the design phase or in refactoring source code
@@ -204,9 +204,9 @@ later in the project's life cycle.</p>
 <p>When design constraints conflict, an error will occur.  Either
 a constraint must be removed, or the work must be split into
 separate files.  For example, if a file contains both network-bound
-routines (physical/network) and cpu-bound routines (physical/cpu),
+routines (physical/network) and CPU-bound routines (physical/cpu),
 SparForte will report a physical constraint conflict: the network-bound
-routines and he cpu-bound routines must be placed in different files
+routines and the CPU-bound routines must be placed in different files
 to resolve the conflict</p>
 
 <p>Design constraints represent real-world issues.  SparForte provides
@@ -226,7 +226,7 @@ The affect of the constraint depends on the constraint mode:</li>
 <li> <b>unique</b>  If the constraint is declared as a unique constraint,
 it cannot be enforced twice in a file or an error will occur.</li>
 <li><b>file</b> If the constraint is declared as a file
-constraint, it can only be constrainted to one value within
+constraint, it can only be constrained to one value within
 a file.  The same constraint can be repeated.  If the
 constraint is enforced twice each to a different value, an
 error will occur.</li>
@@ -238,7 +238,7 @@ it is enforced in the scope of the subprogram where it is used.</li>
 <p>These are the predefined constraint/value pairs are:</p>
 
 <ul>
-  <li>physical / cpu - a file constraint. This is cpu-bound, heavily uses CPU.</li>
+  <li>physical / cpu - a file constraint. This is CPU-bound, heavily uses CPU.</li>
   <li>physical / memory - a file constraint. This is memory-bound, heavily uses memory.</li>
   <li>physical / network - a file constraint. This is network-bound, heavily uses networking.</li>
   <li>physical / storage - a file constraint. This is storage-bound, heavily uses storage.</li>
@@ -300,7 +300,7 @@ in separate files.</p>
 <b>pragma</b> declare_constraint( file, quota, network_bandwidth, 100 ); -- limit on network use<br />
 ...<br />
 <b>pragma</b> constraint( development_team, "Team A" ); -- this source code file owned by Team A<br />
-<b>pragma</b> constraint( quota, network_bandwith, 10 ); -- spend 10 from network bandwidth quota<br />
+<b>pragma</b> constraint( quota, network_bandwidth, 10 ); -- spend 10 from network bandwidth quota<br />
 <b>pragma</b> constraint( development_team, team_b ); -- error: two teams assigned to one source file<br />
 &nbsp;<br>
         <div class="code_caption">
@@ -341,7 +341,7 @@ Each affinity has an associated mode: file or local.</li>
   <li> <b>affinity( affinity [, weight] )</b> - enforces a design affinity
 for the current file.  There is an optional float weight
 which is added to the affinity each time it is used.  There will be an
-error if the total weight is more than the weight limitl.
+error if the total weight is more than the weight limit.
 The affect of the affinity depends on the affinity mode:</li>
 <li><ul>
 <li><b>file</b> If the affinity is declared as a file
@@ -360,7 +360,7 @@ affinity is enforced in two different subprograms, an error will occur.</li>
 <b>pragma</b> define_affinity( file, inventory_pod ); -- the inventory stuff will be collected into one container/pod<br />
 <b>pragma</b> affinity( accounting_server );<br />
 ... and in another with separate file...<br />
-<b>pragma</b> affinity( accounting_server ); -- error: file affinity: stuff labeled for accounting_server should be defined in the same file<br />
+<b>pragma</b> affinity( accounting_server ); -- error: file affinity: stuff labelled for accounting_server should be defined in the same file<br />
 &nbsp;<br>
         <div class="code_caption">
                 <b>Example</b>: File Design Affinities</span>
@@ -440,8 +440,8 @@ built-in
 commands are executed. Useful for applications using SparForte as a run-time
 scripting language and not for shell scripting.</li>
   <li> <b>pragma restriction( no_memcache )</b> - disable
-connections to memcached.  Doesn't prevent other programs from using
-Memcache.</li>
+connections to Memcached.  Doesn't prevent other programs from using
+Memcached.</li>
   <li> <b>pragma restriction( no_mysql_database )</b> - disable
 connections to a MySQL database.  Doesn't prevent the mysql client or
 other programs from using MySQL.</li>
@@ -449,7 +449,7 @@ other programs from using MySQL.</li>
 connections to a PostgreSQL database.  Doesn't prevent the psql client or
 other programs from using PostgreSQL.</li>
   <li> <b>pragma restriction( no_prompt_history )</b> - when this
-pragma is used, the interative prompt history will not be saved when
+pragma is used, the interactive prompt history will not be saved when
 SparForte is shutting down.  Perhaps useful for admin users to prevent
 confidential information from being saved in clear text.</li>
 other programs from using PostgreSQL.</li>
@@ -535,7 +535,7 @@ The debugging commands are run in restricted shell mode.  Because this
 is a pragma, it can be placed in variable declarations or other places
 executable statements are not normally allowed.</li>
   <li><span style="font-weight: bold;">pragma gcc_errors</span> - same
-as --gcc-errors.&nbsp; Show simplified gcc-style errors.<br>
+as --gcc-errors.&nbsp; Show simplified GCC-style errors.<br>
   </li>
   <li> <b>pragma inspect( var )</b> - show a variable's description
 (as if
@@ -870,7 +870,7 @@ only moderate or high priority todo's will produce this error.  These are todo's
 <ul>
 <li>a priority level greater than low</li>
 <li>a priority severity greater than 2</li>
-<li>a priority risk greater than 0 (AdaScript doesn't know how much finanical risk is acceptable)</li>
+<li>a priority risk greater than 0 (AdaScript doesn't know how much financial risk is acceptable)</li>
 <li>a priority CVSS score greater than 4.0</li>
 </ul>
 
@@ -888,15 +888,15 @@ interacts with other software.</p>
 
 <ul>
   <li> <b>pragma export( shell | local_memcache | memcache | session, var )</b> -
-export a string variable to the O/S environment or memcached.</li>
+export a string variable to the O/S environment or Memcached.</li>
   <li> <b>pragma export_json( shell | local_memcache | memcache | session, var )</b> -
 export a string, numeric, enumerated item,  array or record variable
-as a JSON string to the O/S environment or memcached.</li>
+as a JSON string to the O/S environment or Memcached.</li>
   <li> <b>pragma import( shell | cgi | local_memcache | memcache | session, var )</b> -
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
-get the value of the variable from a memcached server running on
+get the value of the variable from a Memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the environment variable doesn't exist, then
 the SparForte will report an error (see unchecked_import).</li>
@@ -908,7 +908,7 @@ SparForte normally remembers the location of a command once it has found
 it.&nbsp; This pragma forces SparForte to search for the location of the
 command, ignoring the previous location.<br>
   <li> <b>pragma register_memcache_server( host, port )</b> - add a
-memcache server which will be used with memcache method imports/exports</li>
+Memcached server which will be used with memcache method imports/exports</li>
   <li> <b>pragma session_export_script( `script` )</b> - define a callback to write a session variable.  The callback will be run as required by the language for all session export variables.  Two temporary variables, session_variable_name and session_variable_value will be defined for the script to use.</li>
   <li> <b>pragma session_import_script( `script` )</b> - define a callback to read a session variable.  The callback will be run as required by the language for all session import variables.  Two temporary variables, session_variable_name and session_variable_value will be defined for the script to use.  Update the value in session_variable_value.</li>
   <li> <b>pragma template( css|html|js|json|text|wml|xml [, template] )</b> - SparForte
@@ -923,7 +923,7 @@ affected by --gcc-errors, but errors written to standard error are always
 in --gcc-errors.  Errors occurring in a template are shown
 using the line number in the template as the line number for the
 error.  The first parameter is the template type: "css" (a style sheet),
-"html" (HTML web page), "js" (Javascript script), "json" (JSON encoded
+"html" (HTML web page), "js" (JavaScript script), "json" (JSON encoded
 text), "text" (plain text), "wml" (WML text) or "xml" (XML text).
 The position of this pragma affects how errors are reported: SparForte
 doesn't know the script has a template until this pragma is read so
@@ -932,7 +932,7 @@ while it can be placed anywhere it is best to place it early in a script.</li>
 import a variable.  For shell, from the O/S environment.  For cgi
 and if pragma template/unrestricted_template was used previously,
 a HTTP CGI variable from the O/S environment.  For local_memcache,
-get the value of the variable from a memcached server running on
+get the value of the variable from a Memcached server running on
 locahost port 11211.  Put the value in the SparForte variable.
 If the import variable doesn't exist, then
 the SparForte variable is unchanged.</li>
@@ -1136,7 +1136,7 @@ be unchanged.  It is a good idea to assign a default value.</p>
 
 <p>With SparForte 2.0, the type of the variable must not be a
 predefined type (or a subtype of one).  SparForte assumes that the
-data being imported should be considered untrusted and unvalidated.
+data being imported should be considered untrusted and not validated.
 You should use a new data type for the variable and not convert it
 to a predefined type unless the value has been checked and
 approved.  This restriction is not on an unchecked_import.</p>
@@ -1259,7 +1259,7 @@ variable's existence.</p>
 <p><b>pragma volatile</b> can be used to re-read the value whenever
 the variable is referenced.</p>
 
-<h3>Local Memcache Variables</h3>
+<h3>Local Memcached Variables</h3>
 
 <p><b>Memcached</b> (or the Memcache Daemon) is a general-purpose
 networked memory caching system that
@@ -1270,19 +1270,19 @@ number of times an external data source (such as a database or API) must
 be read.  Memcached has been used by web sites including YouTube,
 Facebook and Twitter.</p>
 
-<p>SparForte supports memcached natively (that is, you don't need to
-use a special package to access memcached.)
-The memcached support is built on the PegaSoft <b>PegaSock</b>
-socket library, which supports local memcached caching as well as
-distributed, redundant memcached caching clusters.</p>
+<p>SparForte supports Memcached natively (that is, you don't need to
+use a special package to access Memcached.)
+The Memcached support is built on the PegaSoft <b>PegaSock</b>
+socket library, which supports local Memcached caching as well as
+distributed, redundant Memcached caching clusters.</p>
 
 <p>One important rule: PegaSock expects a non-empty string for all
 variable values (it uses an empty string to represent a cache miss.)</p>
 
 <p>When importing or exporting to local_memcache, the variables will be
 imported or exported from your local machine.  SparForte expects to
-find a memcached server running on <b>localhost and port 11211</b> (the default
-memcached port).</p>
+find a Memcached server running on <b>localhost and port 11211</b> (the default
+Memcached port).</p>
 
 <p>All SparForte scripts running on the same server can access the
 memcache variables.</p>
@@ -1306,9 +1306,9 @@ memcache variables.</p>
         </div>
 	</center>
 
-<h4>Importing with Memcache</h4>
+<h4>Importing from Memcached</h4>
 
-<p>When importing, The variable will be read from memcache when <b>pragma
+<p>When importing, The variable will be read from Memcached when <b>pragma
 import</b> is used.</p>
 
         <center>
@@ -1319,14 +1319,14 @@ import</b> is used.</p>
 		=&gt; <b>env</b> user_count<br>
 		user_count := " 3"; -- imported local memcache identifier of the type string<br>&nbsp;<br>
         <div class="code_caption">
-                <b>Example</b>: Importing a memcached variable on the command line</span>
+                <b>Example</b>: Importing a Memcached variable on the command line</span>
         </div>
         </div>
         </center>
 
 <p>(For example, if you import a variable named "user_count", SparForte
-will request the value of "user_count" from memcached hash table on
-the localhost using a memcached GET command.)</p>
+will request the value of "user_count" from Memcached hash table on
+the localhost using a Memcached GET command.)</p>
 
 <p>If the variable doesn't exist, SparForte will report an error.
 This behaviour can be overridden using <b>pragma unchecked_import</b>:
@@ -1356,10 +1356,10 @@ by using an imported variable.</p>
         </div>
         </center>
 
-<h4>Exporting with Memcache</h4>
+<h4>Exporting to Memcached</h4>
 
-<p>When exporting, the variable's final value will be stored in memcache
-with the memcache SET command when the variable goes out of scope or
+<p>When exporting, the variable's final value will be stored in Memcached
+with the Memcached SET command when the variable goes out of scope or
 is destroyed with unset.</p>
 
 <p>You can update the value at any time using a declare block and an
@@ -1383,14 +1383,14 @@ exported variable:</p>
         </div>
         </center>
 
-<h4>Importing, Exporting and Volatile with Memcache</h4>
+<h4>Importing, Exporting and Volatile with Memcached</h4>
 
 <p>It is possible to declare a variable as both imported and
 exported using both import/export pragmas.</p>
 
 <p><b>Pragma volatile</b> will mark a variable as "volatile", meaning that its
-value can change unexpectedly and SparForte should reload the value from the
-memcached whenever it is referenced.</p>
+value can change unexpectedly and SparForte should reload the value from
+Memcached whenever it is referenced.</p>
 
 <p>You can declare a variable as import, export and volatile at the same time.
 For example:</p>
@@ -1417,26 +1417,26 @@ For example:</p>
 <p>In this example, the assignment statement will get the latest value for
 user_count, convert it to a number, add 1 and convert the result back to
 a string.  When the declare block ends, the value of user_count will be
-stored in memcached.</p>
+stored in Memcached.</p>
 
 <p>Bear in mind that this kind of operation is not atomic: another script
-could try to update user_count in memcache before the first script
+could try to update user_count in Memcached before the first script
 can write the result.  If you want to lock access to the variable to
 guarantee exclusive access, you will need to use the lock_file package
 or a similar approach.</p>
 
 <h4>Handling Server Failures</h4>
 
-<p>PegaSock uses a countdown system when a memcache server cannot
+<p>PegaSock uses a countdown system when a Memcached server cannot
 be found.  If it cannot connect, it marks the server as off-line
 and will return cache misses for several commands.  After enough
-commands have passed, it will attempt to reconnect to memcached.
+commands have passed, it will attempt to reconnect to Memcached.
 These "back offs" are escalating: each failed reconnect attempt
 will result in a longer back off period.  This is done for
 performance reasons: establishing new network connections is a
 very slow operation.</p>
 
-<p>If you don't have memcached running on your local machine, it
+<p>If you don't have Memcached running on your local machine, it
 will have the same effect.</p>
 
 <p>You'll periodically see warning messages from PegaSock because
@@ -1450,14 +1450,14 @@ it is unable to establish a connection.</p>
 		pegasock-memcache.adb:81: server localhost 11211 error - backing off for 8 tries<br>&nbsp;<br>
 </p>
         <div class="code_caption">
-                <b>Example</b>: The memcached server is not running or cannot be accessed</span>
+                <b>Example</b>: The Memcached server is not running or cannot be accessed</span>
         </div>
         </div>
         </center>
 
-<h3>Distributed Memcache Variables</h3>
+<h3>Distributed Memcached Variables</h3>
 
-<p>If you have memcached running on two or more servers, you can create a
+<p>If you have Memcached running on two or more servers, you can create a
 redundant distributed cache using the "memcache" method instead of
 "local_memcache".
 In order to use a distributed cache, inform SparForte of what servers to

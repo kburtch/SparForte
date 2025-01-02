@@ -250,7 +250,7 @@ is case-sensitive.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>return the natural cth substring of s delimited by character d (typically a comma).  Double quotes will escape the delimiter.  For use with Comma Separated Value files.  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+<td><p>return the natural c-th substring of s delimited by character d (typically a comma).  Double quotes will escape the delimiter.  For use with Comma Separated Value files.  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">s := strings.csv_field( "a/b/c", 2, '/' ); -- returns "b"</span></td>
@@ -321,7 +321,7 @@ is case-sensitive.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>replace the natural fth substring of s delimited by character d (typically a comma) with string t.  Double quotes will escape the delimiter.  For use with Comma Separated Value files (or ASCII.TAB for tab separated value file).  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+<td><p>replace the natural f-th substring of s delimited by character d (typically a comma) with string t.  Double quotes will escape the delimiter.  For use with Comma Separated Value files (or ASCII.TAB for tab separated value file).  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">s := "a/b/c"; strings.csv_replace( s, 2, "x", '/' ); -- now "a/x/c"</span></td>
@@ -567,7 +567,7 @@ is case-sensitive.</p></td>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>return the natural cth substring of s delimited by character d.  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
+<td><p>return the natural c-th substring of s delimited by character d.  A bad position returns an empty string (like the Linux/UNIX cut command).</p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">s := strings.field( "a/b/c", 2, '/' ); -- returns "b"</span></td>
@@ -1897,7 +1897,7 @@ padded using character p</p></td>
 <tr>
 <td><span>r</span></td>
 <td><span>return value</span></td>
-<td><span>univeral_string</span></td>
+<td><span>universal_string</span></td>
 <td><span>required</span></td>
 <td><span>the path with the dummy characters replaced with random characters</span></td>
 </tr>
@@ -2044,7 +2044,7 @@ This has more features than strings.match.</p>
 <table cellspacing="0" cellpadding="0" width="98%" summary="package call">
 <tr>
 <td width="15%">&nbsp;</td>
-<td><p>s contains substring fields delimited by character d.  Replace the fth substring field with new substring t.  No change is made for a position that doesn't exist.  </p></td>
+<td><p>s contains substring fields delimited by character d.  Replace the f-th substring field with new substring t.  No change is made for a position that doesn't exist.  </p></td>
 </tr><tr>
 <td><p class="pkg_label">Example</p></td>
 <td><span class="code">strings.replace( s, 2, "*", '/' ); -- if s is "a/b/c", it is now "a/*/c"</span></td>

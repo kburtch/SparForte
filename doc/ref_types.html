@@ -142,7 +142,7 @@ and
 numeric types.&nbsp; Variables declared as universal_typeless change
 their
 type between universal_string and universal_numeric depending how they
-are used.&nbsp; If an enumerated value is assigned to a univeral_typeless
+are used.&nbsp; If an enumerated value is assigned to a universal_typeless
 variable, it becomes a number with the ordinal value of the enumerated
 item.  If AdaScript cannot decide in a particular context, the
 variable type defaults to universal_string.&nbsp; Typeless variables
@@ -496,7 +496,7 @@ variable.
 		=&gt; c := "hello"; -- confusing, perhaps stupid, but legal<br>
 		=&gt; s : string := c; -- ILLEGAL<br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ type <b>string</b> is not compatible with type <b>character</b><br>
-		=&gt; c := character( "hello" ); -- explicity typecast is not fooled<br>
+		=&gt; c := character( "hello" ); -- explicitly typecast is not fooled<br>
 		c := character( "hello" );<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ character value must be one character long</p>
         </div>
@@ -676,7 +676,7 @@ escapes are supported.</p>
 </tr>
 <tr>
 <td>number</td>
-<td>numeric or non-boolean enumerated types</td>
+<td>numeric or non-Boolean enumerated types</td>
 </tr>
 <tr>
 <td>string</td>
@@ -698,9 +698,9 @@ escapes are supported.</p>
 <li><p>Exception is raised if the number of components don't match</p></li>
 <li><p>Exception is raised if a string value is given to a numeric array,
 or a numeric value is given to a string array.</p></li>
-<li><p>Exception is raised if the an enumerated ordinal value is out of
+<li><p>Exception is raised if an enumerated ordinal value is out of
 range</p></li>
-<li><p>Exception is raised if the a boolean value is not true or false</p></li>
+<li><p>Exception is raised if a Boolean value is not true or false</p></li>
 </ul>
 
         <center>
@@ -749,7 +749,7 @@ object(stdClass)#1 (4) {<br>
 */<br>&nbsp;<br>
 </p>
         <div class="code_caption">
-                <b>Example</b>: Deccoding JSON string into a PHP Object
+                <b>Example</b>: Decoding JSON string into a PHP Object
         </div>
         </div>
         </center>
