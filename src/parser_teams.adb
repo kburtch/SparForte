@@ -88,9 +88,9 @@ begin
   identifiers(  teams_member_business_phone_t ).field_of := teams_member_t;
   identifiers(  teams_member_business_phone_t ).value.all := to_unbounded_string( "12" );
 
-  declareIdent( teams_member_messenging_t, "teams.member.messenging", string_t, subClass );
-  identifiers(  teams_member_messenging_t ).field_of := teams_member_t;
-  identifiers(  teams_member_messenging_t ).value.all := to_unbounded_string( "13" );
+  declareIdent( teams_member_messaging_t, "teams.member.messaging", string_t, subClass );
+  identifiers(  teams_member_messaging_t ).field_of := teams_member_t;
+  identifiers(  teams_member_messaging_t ).value.all := to_unbounded_string( "13" );
 
   declareIdent( teams_member_teams_t, "teams.member.teams", string_t, subClass );
   identifiers(  teams_member_teams_t ).field_of := teams_member_t;

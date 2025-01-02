@@ -1652,12 +1652,12 @@ begin
    return to_numeric( identifiers( id ).value.all );
 end to_numeric;
 
-function To_Bush_Boolean( AdaBoolean : boolean ) return unbounded_string is
+function to_spar_boolean( AdaBoolean : boolean ) return unbounded_string is
   -- convert an Ada Boolean into a SparForte Boolean (a string containing
   -- the position, no leading blank).
 begin
   return To_Unbounded_String( integer'image( boolean'pos( AdaBoolean ) )(2)&"" );
-end To_Bush_Boolean;
+end to_spar_boolean;
 
 -----------------------------------------------------------------------------
 -- IS KEYWORD

@@ -69,5 +69,7 @@ CHANGES SINCE 2.6.3
 
 25. New: numercis.shannon_entropy_of for strings.
 
-26. New: string constants are checked for secret data using shannon entropy.
+26. New: string constants are checked for secret data using shannon entropy. [docs, positive tests needed]
+
+27. Fix: teams.messaging spelling corrected.
 

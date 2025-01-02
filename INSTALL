@@ -22,12 +22,12 @@ Building from Sources
 
 LONG VERSION
 
-The primary test plaform for SparForte is Linux or FreeBSD.  There
-is also old support for DEC Alpha and Cywin.  HP-UX is obsolete.
+The primary test platform for SparForte is Linux or FreeBSD.  There
+is also old support for DEC Alpha and Cygwin.  HP-UX is obsolete.
 
 Information on porting SparForte to other platforms can be found in the
 documentation: SparForte should port to a modern Unix-compatible platform
-within a few hours by creating a bush_os interface file based on the
+within a few hours by creating a spar_os interface file based on the
 standard C libraries for your operating system.  Please contribute new
 os_bindings files to the SparForte project.
 
@@ -42,7 +42,7 @@ packages from their distributor, if they are available.
 
 The following software packages are required for SparForte:
 
-  * A Bourne-compatible shell such as bash or ksh.  dash may work.  On
+  * A Bourne-compatible shell such as bash or ksh.  dash also works.  On
     distributions using non-Bourne shells, to run "make tests" you will have
     to replace the shell symlink to an appropriate shell.
 
@@ -66,7 +66,7 @@ The following software packages are required for SparForte:
 
   * a optional database, either (or both or neither):
 
-    * postgresql.  To verify that postgres is installed, try "psql --version".
+    * PostgreSQL.  To verify that postgres is installed, try "psql --version".
       For more information, visit http://www.postgresql.org.
 
     * MySQL.

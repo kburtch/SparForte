@@ -4355,7 +4355,7 @@ begin
                      err( pl( gnat.source_info.source_location &
                         ": internal error: last in chain not found" ) );
                   end if;
-                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
              end if;
 --put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
 --put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
@@ -4382,7 +4382,7 @@ begin
              if isExecutingCommand then
                 -- values only exist if not syntax check
                 identifiers( chain_count_id ).value.all := to_unbounded_string( " 1" );
-                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
                 -- TODO: we only want to export these if we are the current chain.
                 -- Otherwise, they will always be exported even if the chain was further
                 -- down the block stack
@@ -4656,7 +4656,7 @@ begin
                      err( pl( gnat.source_info.source_location &
                         ": internal error: last in chain not found" ) );
                   end if;
-                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
              end if;
 --put_line( "DEBUG: chain count: " & to_string( identifiers( chain_count_id ).value )  );
 --put_line( "DEBUG: last in cha: " & to_string( identifiers( last_in_chain_id ).value )  );
@@ -4683,7 +4683,7 @@ begin
              if isExecutingCommand then
                 -- values only exist if not syntax check
                 identifiers( chain_count_id ).value.all := to_unbounded_string( " 1" );
-                identifiers( last_in_chain_id ).value.all := to_bush_boolean( last_in_chain );
+                identifiers( last_in_chain_id ).value.all := to_spar_boolean( last_in_chain );
                 -- TODO: we only want to export these if we are the current chain.
                 -- Otherwise, they will always be exported even if the chain was further
                 -- down the block stack

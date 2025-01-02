@@ -212,7 +212,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := to_bush_boolean( Doubly_Linked_String_Lists.Is_Empty( theList.dlslList ) );
+       result := to_spar_boolean( Doubly_Linked_String_Lists.Is_Empty( theList.dlslList ) );
      end;
   end if;
 end ParseDoublyIsEmpty;
@@ -864,7 +864,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( listId ).value.all ), theList );
-       result := to_bush_boolean( Doubly_Linked_String_Lists.Contains( theList.dlslList, itemExpr ) );
+       result := to_spar_boolean( Doubly_Linked_String_Lists.Contains( theList.dlslList, itemExpr ) );
      end;
   end if;
 end ParseDoublyContains;
@@ -1233,7 +1233,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursId ).value.all ), theCursor );
-       result := to_bush_boolean( theCursor.dlslCursor /= Doubly_Linked_String_Lists.No_Element );
+       result := to_spar_boolean( theCursor.dlslCursor /= Doubly_Linked_String_Lists.No_Element );
      end;
   end if;
 end ParseDoublyHasElement;

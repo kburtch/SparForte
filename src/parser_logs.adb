@@ -850,7 +850,7 @@ begin
   kind := boolean_t;
   expect( logs_is_open_t );
   if isExecutingCommand then
-     result := to_bush_boolean( log_is_open );
+     result := to_spar_boolean( log_is_open );
   end if;
 end ParseIsOpen;
 
@@ -917,7 +917,7 @@ begin
   kind := boolean_t;
   expect( logs_is_rotating_t );
   if isExecutingCommand then
-     result := to_bush_boolean( log_is_rotating );
+     result := to_spar_boolean( log_is_rotating );
   end if;
 end ParseIsRotating;
 

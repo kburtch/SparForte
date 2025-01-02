@@ -90,7 +90,7 @@ begin
   kind := boolean_t;
   expect( cgi_parsing_errors_t );
   if isExecutingCommand then
-     result := to_bush_boolean( cgi.parsing_errors );
+     result := to_spar_boolean( cgi.parsing_errors );
   end if;
 end ParseParsing_Errors;
 
@@ -107,7 +107,7 @@ begin
   kind := boolean_t;
   expect( cgi_input_received_t );
   if isExecutingCommand then
-     result := to_bush_boolean( cgi.input_received );
+     result := to_spar_boolean( cgi.input_received );
   end if;
 end ParseInput_Received;
 
@@ -126,7 +126,7 @@ begin
   kind := boolean_t;
   expect( cgi_is_index_t );
   if isExecutingCommand then
-     result := to_bush_boolean( cgi.is_index );
+     result := to_spar_boolean( cgi.is_index );
   end if;
 end ParseIs_Index;
 
@@ -229,7 +229,7 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     result := to_bush_boolean(
+     result := to_spar_boolean(
           cgi.key_exists( expr_val, positive'value( to_string( expr_val2 ) ) )
        );
 -- RESULT SHOULD BE NUMERIC BOOLEAN, NOT STRING.  UTIL FUNCTION FOR THIS?
@@ -370,7 +370,7 @@ begin
      end if;
   end if;
   if isExecutingCommand then
-     result := to_bush_boolean( cgi.key_value_exists( expr_val, expr2_val ) );
+     result := to_spar_boolean( cgi.key_value_exists( expr_val, expr2_val ) );
   end if;
 end ParseKey_Value_Exists;
 

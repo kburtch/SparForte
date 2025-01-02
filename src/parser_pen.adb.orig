@@ -255,7 +255,7 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, record_id );
-       result := to_bush_boolean( isEmptyRect( pen_rect ) );
+       result := to_spar_boolean( isEmptyRect( pen_rect ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -438,7 +438,7 @@ begin
      begin
        bushRect2penRect( pen_rect, record_id );
        bushRect2penRect( pen_rect2, record2_id );
-       result := to_bush_boolean( insideRect( pen_rect, pen_rect2 ) );
+       result := to_spar_boolean( insideRect( pen_rect, pen_rect2 ) );
      exception when others =>
         err_exception_raised;
      end;
@@ -483,7 +483,7 @@ begin
        pen_rect : aRect;
      begin
        bushRect2penRect( pen_rect, record_id );
-       result := to_bush_boolean( inRect( ACoordinate( to_numeric( x_val ) ), ACoordinate( to_numeric( y_val ) ), pen_rect ) );
+       result := to_spar_boolean( inRect( ACoordinate( to_numeric( x_val ) ), ACoordinate( to_numeric( y_val ) ), pen_rect ) );
      exception when others =>
         err_exception_raised;
      end;

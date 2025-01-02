@@ -311,7 +311,7 @@ begin
   end if;
   expect( symbol_t, ")" );
   if isExecutingCommand then
-     result := to_bush_boolean( true );
+     result := to_spar_boolean( true );
      begin
        Clear( Q );
        if hasAfter then
@@ -320,7 +320,7 @@ begin
           Prepare( Q, to_string( sqlExpr ) );
        end if;
      exception when others =>
-       result := to_bush_boolean( false );
+       result := to_spar_boolean( false );
      end;
   end if;
 end ParseMySQLPrepare;
@@ -572,9 +572,9 @@ begin
   expect( mysql_is_connected_t );
   if isExecutingCommand then
      begin
-       result := to_bush_boolean( is_connected( C ) );
+       result := to_spar_boolean( is_connected( C ) );
      exception when others =>
-       result := to_bush_boolean( false );
+       result := to_spar_boolean( false );
      end;
   end if;
 end ParseMySQLIsConnected;
@@ -652,7 +652,7 @@ begin
   expect( mysql_in_abort_state_t );
   if isExecutingCommand then
      begin
-       result := to_bush_boolean( In_Abort_State( C ) );
+       result := to_spar_boolean( In_Abort_State( C ) );
      exception when not_connected =>
        err( +"not connected" );
      when others =>
@@ -724,7 +724,7 @@ begin
   expect( mysql_will_rollback_on_finalize_t );
   if isExecutingCommand then
     begin
-      result := to_bush_boolean( Will_Rollback_On_Finalize( C ) );
+      result := to_spar_boolean( Will_Rollback_On_Finalize( C ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -838,7 +838,7 @@ begin
   expect( mysql_is_trace_t );
   if isExecutingCommand then
     begin
-      result := to_bush_boolean( Is_Trace( C ) );
+      result := to_spar_boolean( Is_Trace( C ) );
     exception when others =>
       err_exception_raised;
     end;
@@ -1075,7 +1075,7 @@ begin
   expect( mysql_end_of_query_t );
   if isExecutingCommand then
      begin
-       result := to_bush_boolean( End_Of_Query( Q ) );
+       result := to_spar_boolean( End_Of_Query( Q ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -1259,7 +1259,7 @@ begin
   ParseSingleNumericParameter( mysql_is_null_t, exprVal, exprType, mysql_column_index_type_t );
   if isExecutingCommand then
      begin
-       result := to_bush_boolean(
+       result := to_spar_boolean(
           Is_Null( Q,
           Column_Index_Type( to_numeric( exprVal ) ) )
        );

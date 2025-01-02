@@ -1050,7 +1050,7 @@ function to_numeric( id : identifier ) return numericValue;
 -- Look up an identifier's value and return it as a numeric value.
 -- The string version is in the pegasoft package.
 
-function to_bush_boolean( AdaBoolean : boolean ) return unbounded_string;
+function to_spar_boolean( AdaBoolean : boolean ) return unbounded_string;
   -- convert an Ada Boolean into a SparForte Boolean (a string containing
   -- the position, no leading blank).
 

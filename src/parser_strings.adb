@@ -866,9 +866,9 @@ begin
            err( +"head substring is an empty string" );
         else
            if sensitivity_val = "1"  then
-              result := to_bush_boolean( head( str_val, length( head_val ) ) = head_val );
+              result := to_spar_boolean( head( str_val, length( head_val ) ) = head_val );
            else
-              result := to_bush_boolean( head( ToUpper( str_val ), length( head_val ) ) = ToUpper( head_val ) );
+              result := to_spar_boolean( head( ToUpper( str_val ), length( head_val ) ) = ToUpper( head_val ) );
            end if;
         end if;
      end if;
@@ -909,9 +909,9 @@ begin
            err( +"tail substring is an empty string" );
         else
            if sensitivity_val = "1"  then
-              result := to_bush_boolean( tail( str_val, length( tail_val ) ) = tail_val );
+              result := to_spar_boolean( tail( str_val, length( tail_val ) ) = tail_val );
            else
-              result := to_bush_boolean( tail( ToUpper( str_val ), length( tail_val ) ) = ToUpper( tail_val ) );
+              result := to_spar_boolean( tail( ToUpper( str_val ), length( tail_val ) ) = ToUpper( tail_val ) );
            end if;
         end if;
      end if;
@@ -1558,7 +1558,7 @@ begin
   ParseSingleStringParameter( is_control_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_control( expr_val ) );
+       result := to_spar_boolean( is_control( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1582,7 +1582,7 @@ begin
   ParseSingleStringParameter( is_graphic_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_graphic( expr_val ) );
+       result := to_spar_boolean( is_graphic( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1606,7 +1606,7 @@ begin
   ParseSingleStringParameter( is_letter_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_letter( expr_val ) );
+       result := to_spar_boolean( is_letter( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1630,7 +1630,7 @@ begin
   ParseSingleStringParameter( is_lower_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_lower( expr_val ) );
+       result := to_spar_boolean( is_lower( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1654,7 +1654,7 @@ begin
   ParseSingleStringParameter( is_upper_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_upper( expr_val ) );
+       result := to_spar_boolean( is_upper( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1678,7 +1678,7 @@ begin
   ParseSingleStringParameter( is_basic_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_basic( expr_val ) );
+       result := to_spar_boolean( is_basic( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1702,7 +1702,7 @@ begin
   ParseSingleStringParameter( is_digit_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_digit( expr_val ) );
+       result := to_spar_boolean( is_digit( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1726,7 +1726,7 @@ begin
   ParseSingleStringParameter( is_hex_digit_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_hexadecimal_digit( expr_val ) );
+       result := to_spar_boolean( is_hexadecimal_digit( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1750,7 +1750,7 @@ begin
   ParseSingleStringParameter( is_alphanumeric_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_alphanumeric( expr_val ) );
+       result := to_spar_boolean( is_alphanumeric( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1774,7 +1774,7 @@ begin
   ParseSingleStringParameter( is_special_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_special( expr_val ) );
+       result := to_spar_boolean( is_special( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1798,7 +1798,7 @@ begin
   ParseSingleStringParameter( is_slashed_date_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_date( expr_val ) );
+       result := to_spar_boolean( is_date( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1822,7 +1822,7 @@ begin
   ParseSingleStringParameter( is_fixed_t, expr_val, expr_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( is_fixed( expr_val ) );
+       result := to_spar_boolean( is_fixed( expr_val ) );
     end if;
   exception when others =>
     err_exception_raised;
@@ -1905,7 +1905,7 @@ begin
   ParseLastStringParameter( is_typo_of_t, expr2_val, expr2_type );
   begin
     if isExecutingCommand then
-       result := to_bush_boolean( typoOf( expr1_val, expr2_val ) );
+       result := to_spar_boolean( typoOf( expr1_val, expr2_val ) );
     end if;
   exception when others =>
     err_exception_raised;

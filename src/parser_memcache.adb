@@ -231,7 +231,7 @@ begin
   checkMemcacheRestriction;
   if isExecutingCommand then
      begin
-       result := to_bush_boolean( isValidMemcacheKey( expr_val ) );
+       result := to_spar_boolean( isValidMemcacheKey( expr_val ) );
      exception when others =>
        err_exception_raised;
      end;

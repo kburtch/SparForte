@@ -128,7 +128,7 @@ begin
   expect( templates_has_put_template_header_t );
   kind := boolean_t;
   if isExecutingCommand then
-     result := to_bush_boolean( templateHeader.templateHeaderSent );
+     result := to_spar_boolean( templateHeader.templateHeaderSent );
   end if;
 end ParseTemplatesHasPutTemplateHeader;
 

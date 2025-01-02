@@ -13,15 +13,25 @@ Priority Issues (Fix These First)
 
 - ongoing major rework
   - conversion of error message to give additional context
+    - ref_errors.html, ref_php are obsolete
+    - parser-decl has not been completed
     - messages in present or past tense not both
     - search for appropriate remedies
     - qp() - quiet mode capitalize first - and subjectNotes in err()
   - bash compatibility audit
   - coverage tests of recent changes
+  - shannon entropy
+    - should be applied to all string literals
+    - should be able to be turned off
+    - should be able to read into limited variables...check
+      - we need a get_line procedure since limited variables
+        cannot be assigned
 
   - an exception was raised that, when it finally was received at the
-    top level, had lost the message.  This occurred in the washed_blocked
-    script.  It may be difficult to reproduce and determine the cause.
+    top level, had lost the message.  This occurred in the SSDS washed_blocked
+    script.  exceptions are not propogating to the main program exception handler.
+    exceptions.exception_info is empty.  It may be difficult to reproduce and
+    determine the cause.
 
   - upgrade SDL
     - need to upgrade to 2.0
@@ -29,9 +39,17 @@ Priority Issues (Fix These First)
     - proper error messages should be provided on unavailable
       functions
 
-- exceptions are not propogating in wash_blocked SSDS script to the
-  main program exception handler.  exceptions.exception_info is empty.
-
+- on GCC 13 and 14, the build fails on the placement of an equality function due
+  to changes being "frozen".  This also causes the GNAT compiler to fail.
+  - theory: aMemcacheClusterEntry contains a static object.  Using a
+    pointer to the object instead may reduce the dependency between
+    the object and a record and avoid this "freeze" issue.
+- when doing autocorrection for shell commands like cd, it may be beneficial
+  to prioritize based on command history and then fall back on the default
+  order of the various checks
+- when accepting command line input from standard input, it may be beneficial
+  to treat commands as comments if it is determined they are being entered
+  faster than a human could and are errors (suggesting a copy-and-paste error)
 - test for pragma restriction( no_prompt_history )...may be difficult
 - universal typeless loses its properties when a custom type or subtype
  is derived from it
@@ -79,6 +97,8 @@ Priority Issues (Fix These First)
       strings and ambiguity over string functions
     - UTF-8 handling needs to be rethought to support multibyte
       characters
+- investigate the possibility of a simple ada-to-python code converter to
+  leverage python code scanning tools which are more abundant than ada ones.
 - templates
   - templates that are not for HTTP
 - check btree/hash_io get next mark the variable as written
@@ -409,6 +429,10 @@ Annoyances / Bugs with Workarounds / Updates
 Nice to Haves / Missing Functionality
 -------------------------------------
 
+- tokenized command history
+  - it would be good to maintain a separate history table with the commands
+    parsed out into their expanded values.  This may be helpful with auto
+    correction or security.
 - strings.uuid - UUID support
   - https://datatracker.ietf.org/doc/html/rfc4122.html
 - restrictions on loading

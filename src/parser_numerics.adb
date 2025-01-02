@@ -1192,7 +1192,7 @@ begin
   ParseSingleNumericParameter( odd_t, expr_val, expr_type, integer_t );
   begin
      if isExecutingCommand then
-       result := to_bush_boolean( integer( to_numeric( expr_val ) ) mod 2 = 1 );
+       result := to_spar_boolean( integer( to_numeric( expr_val ) ) mod 2 = 1 );
      end if;
   exception when others =>
      err_exception_raised;
@@ -1210,7 +1210,7 @@ begin
   ParseSingleNumericParameter( even_t, expr_val, expr_type, integer_t );
   begin
      if isExecutingCommand then
-       result := to_bush_boolean( integer( to_numeric( expr_val ) ) mod 2 = 0 );
+       result := to_spar_boolean( integer( to_numeric( expr_val ) ) mod 2 = 0 );
      end if;
   exception when others =>
      err_exception_raised;

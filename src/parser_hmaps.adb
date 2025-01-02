@@ -216,7 +216,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := to_bush_boolean( String_Hashed_Maps.Is_Empty( theMap.shmMap ) );
+       result := to_spar_boolean( String_Hashed_Maps.Is_Empty( theMap.shmMap ) );
      end;
   end if;
 end ParseHashedMapsIsEmpty;
@@ -338,13 +338,13 @@ begin
           findResource( to_resource_id( identifiers( cursorRef.id ).value.all ), theCursor );
           String_Hashed_Maps.Insert( theMap.shmMap, keyVal, theCursor.shmCursor,
              result );
-          AssignParameter( insertRef, to_bush_boolean( result ) );
+          AssignParameter( insertRef, to_spar_boolean( result ) );
        -- (m, k, e, p, b )
        when 3 =>
           findResource( to_resource_id( identifiers( cursorRef.Id ).value.all ), theCursor );
           String_Hashed_Maps.Insert( theMap.shmMap, keyVal, elemVal,
              theCursor.shmCursor, result );
-          AssignParameter( insertRef, to_bush_boolean( result ) );
+          AssignParameter( insertRef, to_spar_boolean( result ) );
        when others =>
           put_line_retry( gnat.source_info.source_location &
              ": internal error: unknown insert version" );
@@ -527,7 +527,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( mapId ).value.all ), theMap );
-       result := to_bush_boolean( String_Hashed_Maps.Contains( theMap.shmMap, keyVal ) );
+       result := to_spar_boolean( String_Hashed_Maps.Contains( theMap.shmMap, keyVal ) );
      end;
   end if;
 end ParseHashedMapsContains;
@@ -1122,7 +1122,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := to_bush_boolean( String_Hashed_Maps.Has_Element( theCursor.shmCursor ) );
+       result := to_spar_boolean( String_Hashed_Maps.Has_Element( theCursor.shmCursor ) );
      end;
   end if;
 end ParseHashedMapsHasElement;
@@ -1155,7 +1155,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( leftMapId ).value.all ), leftMap );
        findResource( to_resource_id( identifiers( rightMapId ).value.all ), rightMap );
-       result := to_bush_boolean( leftMap.shmMap = rightMap.shmMap );
+       result := to_spar_boolean( leftMap.shmMap = rightMap.shmMap );
      exception when storage_error =>
        err_storage;
      when others =>

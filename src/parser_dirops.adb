@@ -459,13 +459,13 @@ begin
      if identifiers( dirId ).resource then
         begin
           findResource( to_resource_id( identifiers( dirId ).value.all ), theDir );
-          result := to_bush_boolean( Is_Open( theDir.dir ) );
+          result := to_spar_boolean( Is_Open( theDir.dir ) );
         exception when others =>
           err_exception_raised;
         end;
      else
         -- probably not open
-        result := to_bush_boolean( false );
+        result := to_spar_boolean( false );
      end if;
   end if;
 end ParseDirOpsIsOpen;

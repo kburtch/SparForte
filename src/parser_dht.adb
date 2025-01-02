@@ -175,7 +175,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
-       result := to_bush_boolean( Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr ) /= null_unbounded_string );
+       result := to_spar_boolean( Dynamic_String_Hash_Tables.Get( theTable.dsht, keyExpr ) /= null_unbounded_string );
      end;
   end if;
 end ParseDHTHasElement;
@@ -232,7 +232,7 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        s := Dynamic_String_Hash_Tables.Get_First( theTable.dsht );
        AssignParameter( itemRef, s );
-       AssignParameter( eofRef, to_bush_boolean( s = null_unbounded_string ) );
+       AssignParameter( eofRef, to_spar_boolean( s = null_unbounded_string ) );
      end;
   end if;
 end ParseDHTGetFirst;
@@ -263,7 +263,7 @@ begin
        findResource( to_resource_id( identifiers( tableId ).value.all ), theTable );
        s := Dynamic_String_Hash_Tables.Get_Next( theTable.dsht );
        AssignParameter( itemRef, s );
-       AssignParameter( eofRef, to_bush_boolean( s = null_unbounded_string ) );
+       AssignParameter( eofRef, to_spar_boolean( s = null_unbounded_string ) );
      end;
   end if;
 end ParseDHTGetNext;

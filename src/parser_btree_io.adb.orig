@@ -22,10 +22,7 @@
 ------------------------------------------------------------------------------
 pragma ada_2005;
 
--- if text_io is commented out, then SSDS stops working, even though it is not
--- used
-
-with text_io;use text_io;
+--with text_io;use text_io;
 
 with
     Interfaces.C,
@@ -195,23 +192,35 @@ end isVerifiedOpenFile;
 -- For our purposes (simple files), keep everything in one directory
 -----------------------------------------------------------------------------
 
-procedure configureBDBEnv( env : in out bdb.berkeley_environment; dirname : string ) is
+procedure configureBDBEnv( subId : identifier; env : in out bdb.berkeley_environment; dirname : string ) is
 begin
    if dirname'length > 0 then
       begin
          set_data_dir( env, dirname );
       exception when msg: berkeley_error =>
-         err( pl( exception_message( msg ) & " on setting the data directory" ) );
+         err( context => subId,
+              subjectNotes => pl("the btree package" ),
+              reason => +"failed to assign the BDB data directory because",
+              obstructorNotes => pl( exception_message( msg ) )
+         );
       end;
       begin
          set_tmp_dir( env, dirname );
       exception when msg: berkeley_error =>
-         err( pl( exception_message( msg ) & " on setting the temp directory" ) );
+         err( context => subId,
+              subjectNotes => pl("the btree package" ),
+              reason => +"failed to assign the BDB temp directory because",
+              obstructorNotes => pl( exception_message( msg ) )
+         );
       end;
       begin
          set_lg_dir( env, dirname );
       exception when msg: berkeley_error =>
-         err( pl( exception_message( msg ) & " on setting the logging directory" ) );
+         err( context => subId,
+              subjectNotes => pl("the btree package" ),
+              reason => +"failed to assign the BDB logging directory because",
+              obstructorNotes => pl( exception_message( msg ) )
+         );
       end;
       begin
          if verboseOpt then
@@ -221,7 +230,11 @@ begin
             set_verbose( env, DB_VERB_WAITSFOR, 1 );
          end if;
       exception when msg: berkeley_error =>
-         err( pl( exception_message( msg ) & " on changing verbose setting" ) );
+         err( context => subId,
+              subjectNotes => pl("the btree package" ),
+              reason => +"failed to change the BDB verbose because",
+              obstructorNotes => pl( exception_message( msg ) )
+         );
       end;
    end if;
 end configureBDBEnv;
@@ -276,12 +289,12 @@ pragma warnings( off );
 
 procedure not_configured is
 begin
-  err( +"Berkeley DB support not configured" );
+  featureNotImplemented( "Berkeley DB support" );
 end not_configured;
 
 procedure not_configured( result : out unbounded_string; kind : out identifier ) is
 begin
-  err( +"Berkeley DB support not configured" );
+  featureNotImplemented( "Berkeley DB support" );
 end not_configured;
 
 --procedure ParseBtreeNewFile renames not_configured;
@@ -299,9 +312,10 @@ end not_configured;
 procedure ParseBTreeClear is
   fileId   : identifier;
   theFile  : resPtr;
+  subprogramId : constant identifier := btree_clear_t;
 begin
-  expect( btree_clear_t );
-  ParseSingleFileParameter( btree_clear_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
        -- close the file / environment, if they are still open.  This doesn't
@@ -313,7 +327,12 @@ begin
           theFile.btree.isOpen := false;
        end if;
      exception when msg: berkeley_error =>
-       err( pl( exception_message( msg ) ) );
+       err( contextNotes => +"releasing memory",
+            subject => subprogramId,
+            reason => +"raised a BDB error",
+            obstructorNotes => pl( exception_message( msg ) ),
+            seeAlso => seeBTreeIO
+       );
      when others =>
         err_exception_raised;
      end;
@@ -339,13 +358,12 @@ procedure ParseBTreeRecover is
   theFile    : resPtr;
   fname_val  : unbounded_string;
   fname_type : identifier;
+  subprogramId : constant identifier := btree_recover_t;
 begin
-  if rshOpt then
-     err( +"recover not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_recover_t );
-  ParseFirstFileParameter( btree_recover_t, fileId );
-  ParseLastStringParameter( btree_recover_t, fname_val, fname_type, string_t );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseLastStringParameter( subprogramId, fname_val, fname_type, string_t );
 
   if isExecutingCommand then
      declare
@@ -370,7 +388,7 @@ begin
            put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
         end if;
 
-        configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
+        configureBDBEnv( subprogramId, theFile.btree.env, to_string( dirname2 ) );
 
         -- To recover, open a new environment in recovery mode.  Transactions
         -- must be enabled.  This will recreate the environment files.
@@ -385,7 +403,12 @@ begin
                    0 );
            close( theFile.btree.env );
         exception when msg: berkeley_error =>
-           err( pl( exception_message( msg ) & " on recovering the environment" ) );
+           err( contextNotes => +"ecovering the environment",
+                subject => subprogramId,
+                reason => +"raised a BDB error",
+                obstructorNotes => pl( exception_message( msg ) ),
+                seeAlso => seeBTreeIO
+           );
         when others =>
            err_exception_raised;
         end;
@@ -419,17 +442,16 @@ procedure ParseBTreeCreate is
   valLen     : interfaces.C.size_t;
   valLenExpr : unbounded_string;
   valLenType : identifier;
+  subprogramId : constant identifier := btree_create_t;
 begin
-  if rshOpt then
-     err( +"create not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_create_t );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( btree_create_t, fileId );
-  ParseNextStringParameter( btree_create_t, fname_val, fname_type, string_t );
-  ParseNextNumericParameter( btree_create_t, keyLenExpr, keyLenType, positive_t );
-  ParseLastNumericParameter( btree_create_t, valLenExpr, valLenType, positive_t );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextStringParameter( subprogramId, fname_val, fname_type, string_t );
+  ParseNextNumericParameter( subprogramId, keyLenExpr, keyLenType, positive_t );
+  ParseLastNumericParameter( subprogramId, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
@@ -466,7 +488,7 @@ begin
            put_trace( "Base directory is '" & toSecuredata( to_string( toEscaped( dirname2 ) ) ) & "'" );
         end if;
 
-        configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
+        configureBDBEnv( subprogramId, theFile.btree.env, to_string( dirname2 ) );
 
         -- Create an environment
 
@@ -541,9 +563,10 @@ procedure ParseBTreeCreate renames not_configured;
 procedure ParseBTreeClose is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := btree_close_t;
 begin
-  expect( btree_close_t );
-  ParseSingleFileParameter( btree_close_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -589,15 +612,16 @@ procedure ParseBTreeOpen is
   valLen     : interfaces.C.size_t;
   valLenExpr : unbounded_string;
   valLenType : identifier;
+  subprogramId : constant identifier := btree_open_t;
 begin
-  expect( btree_open_t );
+  expect( subprogramId );
   -- NOTE: normally this is an out parameter but it is a resource so it
   -- must be initialized separately.
-  ParseFirstFileParameter( btree_open_t, fileId );
-  ParseNextStringParameter( btree_open_t, fname_val, fname_type, string_t );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextStringParameter( subprogramId, fname_val, fname_type, string_t );
   -- TODO: can this be dynamic?
-  ParseNextNumericParameter( btree_open_t, keyLenExpr, keyLenType, positive_t );
-  ParseLastNumericParameter( btree_open_t, valLenExpr, valLenType, positive_t );
+  ParseNextNumericParameter( subprogramId, keyLenExpr, keyLenType, positive_t );
+  ParseLastNumericParameter( subprogramId, valLenExpr, valLenType, positive_t );
   if isExecutingCommand then
      begin
         keyLen := Interfaces.C.size_t'value( to_string( keyLenExpr ) );
@@ -640,7 +664,7 @@ begin
            put_trace( "Base directory is '" & toSecureData( to_string( toEscaped( dirname2 ) ) ) & "'" );
         end if;
 
-        configureBDBEnv( theFile.btree.env, to_string( dirname2 ) );
+        configureBDBEnv( subprogramId, theFile.btree.env, to_string( dirname2 ) );
 
         if theFile.btree.isOpen then
            err( +"file " &
@@ -699,16 +723,17 @@ procedure ParseBTreeOpen renames not_configured;
 procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := btree_is_open_t;
 begin
   kind := boolean_t;
-  expect( btree_is_open_t );
-  ParseSingleFileParameter( btree_is_open_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_bush_boolean( theFile.btree.isOpen );
+        result := to_spar_boolean( theFile.btree.isOpen );
      exception when berkeley_error =>
-        result := to_bush_boolean( false );
+        result := to_spar_boolean( false );
      end;
   end if;
 end ParseBTreeIsOpen;
@@ -730,10 +755,11 @@ procedure ParseBTreeIsOpen( result : out unbounded_string; kind : out identifier
 procedure ParseBTreeName( result : out unbounded_string; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
+  subprogramId : constant identifier := btree_name_t;
 begin
   kind := string_t;
-  expect( btree_name_t );
-  ParseSingleFileParameter( btree_name_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -761,12 +787,11 @@ procedure ParseBTreeDelete is
   fileId     : identifier;
   theFile    : resPtr;
   dirname2 : unbounded_string;
+  subprogramId : constant identifier := btree_delete_t;
 begin
-  if rshOpt then
-     err( +"delete not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_delete_t );
-  ParseSingleFileParameter( btree_delete_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -911,9 +936,7 @@ procedure ParseBTreeSet is
   genKindId  : identifier;
   subprogramId : constant identifier := btree_set_t;
 begin
-  if rshOpt then
-     err( +"set not allowed in a " & em( "restricted shell" ) );
-  end if;
+  expectNonRestrictedShell( subprogramId );
   expect( subprogramId );
   ParseFirstFileParameter( subprogramId, fileId );
   ParseNextStringParameter( subprogramId, keyExpr, keyType, string_t );
@@ -1140,17 +1163,17 @@ procedure ParseBTreeHasElement( result : out unbounded_string; kind : out identi
   subprogramId : constant identifier := btree_has_element_t;
 begin
   kind := boolean_t;
-  expect( btree_has_element_t );
-  ParseFirstFileParameter( btree_has_element_t, fileId );
-  ParseLastStringParameter( btree_has_element_t, keyExpr, keyType, string_t );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseLastStringParameter( subprogramId, keyExpr, keyType, string_t );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
         begin
            exists( theFile.btree.session, to_string( keyExpr ) );
-           result := to_bush_boolean( true );
+           result := to_spar_boolean( true );
         exception when berkeley_error =>
-           result := to_bush_boolean( false );
+           result := to_spar_boolean( false );
         when STORAGE_ERROR =>
            err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
         when others =>
@@ -1183,12 +1206,10 @@ procedure ParseBTreeRemove is
   keyType    : identifier;
   subprogramId : constant identifier := btree_remove_t;
 begin
-  if rshOpt then
-     err( +"remove not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_remove_t );
-  ParseFirstFileParameter( btree_remove_t, fileId );
-  expectParameterComma( btree_remove_t );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  expectParameterComma( subprogramId );
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
      ParseIdentifier( cursId );
      genTypesOk( identifiers( fileId ).genKind, identifiers( cursId ).genKind );
@@ -1250,18 +1271,16 @@ procedure ParseBtreeIncrement is
   oldItemValue : numericValue;
   subprogramId : constant identifier := btree_increment_t;
 begin
-  if rshOpt then
-     err( +"increment not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_increment_t );
-  ParseFirstFileParameter( btree_increment_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( btree_increment_t, keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( btree_increment_t, amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( subprogramId, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -1324,18 +1343,16 @@ procedure ParseBtreeDecrement is
   oldItemValue : numericValue;
   subprogramId : constant identifier := btree_decrement_t;
 begin
-  if rshOpt then
-     err( +"decrement not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_decrement_t );
-  ParseFirstFileParameter( btree_decrement_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_numeric_t then
      err( +"increment requires a numeric item type" );
   end if;
-  ParseNextStringParameter( btree_decrement_t, keyExpr, keyType, uni_string_t );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
   if token = symbol_t and identifiers( token ).value.all = "," then
      hasAmt := true;
-     ParseLastNumericParameter( btree_decrement_t, amtExpr, amtType, natural_t );
+     ParseLastNumericParameter( subprogramId, amtExpr, amtType, natural_t );
   elsif token = symbol_t and identifiers( token ).value.all = ")" then
      expect( symbol_t, ")" );
   else
@@ -1399,12 +1416,10 @@ procedure ParseBtreeAdd is
   genKindId  : identifier;
   subprogramId : constant identifier := btree_add_t;
 begin
-  if rshOpt then
-     err( +"add not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_add_t );
-  ParseFirstFileParameter( btree_add_t, fileId );
-  ParseNextStringParameter( btree_add_t, keyExpr, keyType, uni_string_t );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
   expectParameterComma;
   genKindId := identifiers( fileId ).genKind;
   -- This assumes we don't have aggregate expressions yet.
@@ -1525,11 +1540,9 @@ procedure ParseBtreeReplace is
   theCurs  : resPtr;
   subprogramId : constant identifier := btree_replace_t;
 begin
-  if rshOpt then
-     err( +"replace not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_replace_t );
-  ParseFirstFileParameter( btree_replace_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
   expectParameterComma;
   if getbaseType( identifiers( token ).kind ) = btree_cursor_t then
      ParseIdentifier( cursId );
@@ -1739,16 +1752,14 @@ procedure ParseBtreeAppend is
   oldItem  : unbounded_string;
   subprogramId : constant identifier := btree_append_t;
 begin
-  if rshOpt then
-     err( +"append not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_append_t );
-  ParseFirstFileParameter( btree_append_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
-  ParseNextStringParameter( btree_append_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( btree_append_t, itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
@@ -1792,16 +1803,14 @@ procedure ParseBtreePrepend is
   oldItem  : unbounded_string;
   subprogramId : constant identifier := btree_prepend_t;
 begin
-  if rshOpt then
-     err( +"prepend not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_prepend_t );
-  ParseFirstFileParameter( btree_prepend_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
   if getUniType( identifiers( fileId ).genKind ) /= uni_string_t then
      err( +"append requires a string item type" );
   end if;
-  ParseNextStringParameter( btree_prepend_t, keyExpr, keyType, uni_string_t );
-  ParseLastGenItemParameter( btree_prepend_t, itemExpr, itemType, identifiers( fileId ).genKind );
+  ParseNextStringParameter( subprogramId, keyExpr, keyType, uni_string_t );
+  ParseLastGenItemParameter( subprogramId, itemExpr, itemType, identifiers( fileId ).genKind );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
@@ -1840,8 +1849,8 @@ procedure ParseBTreeFlush is
   theFile    : resPtr;
   subprogramId : constant identifier := btree_flush_t;
 begin
-  expect( btree_flush_t );
-  ParseSingleFileParameter( btree_flush_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
@@ -1873,11 +1882,9 @@ procedure ParseBTreeTruncate is
   theFile    : resPtr;
   subprogramId : constant identifier := btree_truncate_t;
 begin
-  if rshOpt then
-     err( +"truncate not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_truncate_t );
-  ParseSingleFileParameter( btree_truncate_t, fileId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
@@ -1956,9 +1963,9 @@ procedure ParseBTreeOpenCursor is
   theCurs    : resPtr;
   subprogramId : constant identifier := btree_open_cursor_t;
 begin
-  expect( btree_open_cursor_t );
-  ParseFirstFileParameter( btree_open_cursor_t, fileId );
-  ParseLastCursorParameter( btree_open_cursor_t, cursId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseLastCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
      findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
      if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
@@ -1997,9 +2004,9 @@ procedure ParseBTreeCloseCursor is
   theCurs    : resPtr;
   subprogramId : constant identifier := btree_close_cursor_t;
 begin
-  expect( btree_close_cursor_t );
-  ParseFirstFileParameter( btree_close_cursor_t, fileId );
-  ParseLastCursorParameter( btree_close_cursor_t, cursId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseLastCursorParameter( subprogramId, cursId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2048,15 +2055,13 @@ procedure ParseBTreeGetFirst is
   genKindId  : identifier;
   subprogramId : constant identifier := btree_get_first_t;
 begin
-  if rshOpt then
-     err( +"get_first not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_get_first_t );
-  ParseFirstFileParameter( btree_get_first_t, fileId );
-  ParseNextCursorParameter( btree_get_first_t, cursId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextCursorParameter( subprogramId, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( btree_get_first_t, keyRef, string_t );
+  ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
      identifiers( keyRef.id ).wasWritten := true;
@@ -2219,15 +2224,12 @@ procedure ParseBTreeGetNext is
   genKindId  : identifier;
   subprogramId : constant identifier := btree_get_next_t;
 begin
-  if rshOpt then
-     err( +"get_next not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_get_next_t );
-  ParseFirstFileParameter( btree_get_next_t, fileId );
-  ParseNextCursorParameter( btree_get_next_t, cursId );
+  expectNonRestrictedShell( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextCursorParameter( subprogramId, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( btree_get_next_t, keyRef, string_t );
+  ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
@@ -2382,15 +2384,13 @@ procedure ParseBTreeGetLast is
   genKindId  : identifier;
   subprogramId : constant identifier := btree_get_last_t;
 begin
-  if rshOpt then
-     err( +"get_last not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_get_last_t );
-  ParseFirstFileParameter( btree_get_last_t, fileId );
-  ParseNextCursorParameter( btree_get_last_t, cursId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextCursorParameter( subprogramId, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( btree_get_last_t, keyRef, string_t );
+  ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   if syntax_check and then not error_found then
      identifiers( keyRef.id ).wasWritten := true;
@@ -2553,15 +2553,13 @@ procedure ParseBTreeGetPrevious is
   genKindId  : identifier;
   subprogramId : constant identifier := btree_get_previous_t;
 begin
-  if rshOpt then
-     err( +"get_previous not allowed in a " & em( "restricted shell" ) );
-  end if;
-  expect( btree_get_previous_t );
-  ParseFirstFileParameter( btree_get_previous_t, fileId );
-  ParseNextCursorParameter( btree_get_previous_t, cursId );
+  expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseNextCursorParameter( subprogramId, cursId );
   genKindId := identifiers( fileId ).genKind;
   genTypesOk( genKindId, identifiers( cursId ).genKind );
-  ParseNextOutParameter( btree_get_previous_t, keyRef, string_t );
+  ParseNextOutParameter( subprogramId, keyRef, string_t );
   baseTypesOK( keyRef.kind, string_t );
   expectParameterComma;
   -- This assumes we don't have aggregate expressions yet.
@@ -2707,16 +2705,16 @@ procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identif
   subprogramId : constant identifier := btree_will_raise_t;
 begin
   kind := boolean_t;
-  expect( btree_will_raise_t );
-  ParseSingleFileParameter( btree_will_raise_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( subprogramId, fileId, theFile ) then
-           result := to_bush_boolean( will_raise( theFile.btree.session ) );
+           result := to_spar_boolean( will_raise( theFile.btree.session ) );
         end if;
      exception when berkeley_error =>
-        result := to_bush_boolean( false );
+        result := to_spar_boolean( false );
      end;
   end if;
 end ParseBTreeWillRaise;
@@ -2738,11 +2736,11 @@ procedure ParseBTreeWillRaise( result : out unbounded_string; kind : out identif
 procedure ParseBTreeLastError( result : out unbounded_string; kind : out identifier ) is
   fileId     : identifier;
   theFile    : resPtr;
-  subprogramId : constant identifier := bdb_db_error_t;
+  subprogramId : constant identifier := btree_last_error_t;
 begin
   kind := bdb_db_error_t;
-  expect( btree_last_error_t );
-  ParseSingleFileParameter( btree_last_error_t, fileId );
+  expect( subprogramId );
+  ParseSingleFileParameter( subprogramId, fileId );
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
@@ -2779,9 +2777,9 @@ procedure ParseBTreeRaiseExceptions is
   boolType   : identifier;
   subprogramId : constant identifier := btree_raise_exceptions_t;
 begin
-  expect( btree_raise_exceptions_t );
-  ParseFirstFileParameter( btree_raise_exceptions_t, fileId );
-  ParseLastEnumParameter( btree_raise_exceptions_t, boolExpr, boolType, boolean_t );
+  expect( subprogramId );
+  ParseFirstFileParameter( subprogramId, fileId );
+  ParseLastEnumParameter( subprogramId, boolExpr, boolType, boolean_t );
   if isExecutingCommand then
      declare
        raise_them : constant boolean := boolExpr = to_unbounded_string( "1" );

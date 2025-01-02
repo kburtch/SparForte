@@ -93,7 +93,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( File_Exists( to_string( file_val ) ) );
+     f := to_spar_boolean( File_Exists( to_string( file_val ) ) );
   end if;
 end ParseFileExists;
 
@@ -111,7 +111,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( Is_Absolute_Path( to_string( file_val ) ) );
+     f := to_spar_boolean( Is_Absolute_Path( to_string( file_val ) ) );
   end if;
 end ParseIsAbsolutePath;
 
@@ -129,7 +129,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( Is_Regular_File( to_string( file_val ) ) );
+     f := to_spar_boolean( Is_Regular_File( to_string( file_val ) ) );
   end if;
 end ParseIsRegularFile;
 
@@ -147,7 +147,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( Is_Directory( to_string( file_val ) ) );
+     f := to_spar_boolean( Is_Directory( to_string( file_val ) ) );
   end if;
 end ParseIsDirectory;
 
@@ -165,7 +165,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( Is_Writable_File( to_string( file_val ) )
+     f := to_spar_boolean( Is_Writable_File( to_string( file_val ) )
           and Is_Regular_File( to_string( file_val ) ) );
   end if;
 end ParseIsWritableFile;
@@ -184,7 +184,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( Is_Writable_File( to_string( file_val ) ) );
+     f := to_spar_boolean( Is_Writable_File( to_string( file_val ) ) );
   end if;
 end ParseIsWritable;
 
@@ -202,7 +202,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( C_Is_Executable_File( to_string( file_val ) & ASCII.NUL ) );
+     f := to_spar_boolean( C_Is_Executable_File( to_string( file_val ) & ASCII.NUL ) );
   end if;
 end ParseIsExecutableFile;
 
@@ -220,7 +220,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( C_Is_Executable( to_string( file_val ) & ASCII.NUL ) );
+     f := to_spar_boolean( C_Is_Executable( to_string( file_val ) & ASCII.NUL ) );
   end if;
 end ParseIsExecutable;
 
@@ -238,7 +238,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( C_Is_Readable_File( to_string( file_val ) & ASCII.NUL ) );
+     f := to_spar_boolean( C_Is_Readable_File( to_string( file_val ) & ASCII.NUL ) );
   end if;
 end ParseIsReadableFile;
 
@@ -256,7 +256,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( C_Is_Readable( to_string( file_val ) & ASCII.NUL ) );
+     f := to_spar_boolean( C_Is_Readable( to_string( file_val ) & ASCII.NUL ) );
   end if;
 end ParseIsReadable;
 
@@ -334,7 +334,7 @@ begin
      expect( symbol_t, ")" );
   end if;
   if isExecutingCommand then
-     f := to_bush_boolean( C_Is_Waiting_File( to_string( file_val ) & ASCII.NUL ) );
+     f := to_spar_boolean( C_Is_Waiting_File( to_string( file_val ) & ASCII.NUL ) );
   end if;
 end ParseIsWaitingFile;
 

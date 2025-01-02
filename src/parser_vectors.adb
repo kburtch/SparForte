@@ -733,7 +733,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := to_bush_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) );
+       result := to_spar_boolean( Vector_String_Lists.Is_Empty( theVector.vslVector ) );
      end;
   end if;
 end ParseVectorsIsEmpty;
@@ -1211,7 +1211,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( vectorId ).value.all ), theVector );
-       result := to_bush_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr ) );
+       result := to_spar_boolean( Vector_String_Lists.Contains( theVector.vslVector, itemExpr ) );
 
      end;
   end if;
@@ -1499,7 +1499,7 @@ begin
   if isExecutingCommand then
      begin
        findResource( to_resource_id( identifiers( cursorId ).value.all ), theCursor );
-       result := to_bush_boolean( Vector_String_Lists.Has_Element( theCursor.vslCursor ) );
+       result := to_spar_boolean( Vector_String_Lists.Has_Element( theCursor.vslCursor ) );
      end;
   end if;
 end ParseVectorsHasElement;
@@ -1533,7 +1533,7 @@ begin
      begin
        findResource( to_resource_id( identifiers( leftVectorId ).value.all ), leftVector );
        findResource( to_resource_id( identifiers( rightVectorId ).value.all ), rightVector );
-       result := to_bush_boolean( leftVector.vslVector = rightVector.vslVector );
+       result := to_spar_boolean( leftVector.vslVector = rightVector.vslVector );
      exception when storage_error =>
        err_storage;
      when others =>

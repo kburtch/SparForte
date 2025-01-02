@@ -671,9 +671,9 @@ begin
   if isExecutingCommand then
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
-        result := to_bush_boolean( theFile.hash.isOpen );
+        result := to_spar_boolean( theFile.hash.isOpen );
      exception when berkeley_error =>
-        result := to_bush_boolean( false );
+        result := to_spar_boolean( false );
      end;
   end if;
 end ParseHashIsOpen;
@@ -1049,9 +1049,9 @@ begin
      if isVerifiedOpenFile( fileId, theFile ) then
         begin
            exists( theFile.hash.session, to_string( keyExpr ) );
-           result := to_bush_boolean( true );
+           result := to_spar_boolean( true );
         exception when berkeley_error =>
-           result := to_bush_boolean( false );
+           result := to_spar_boolean( false );
         when STORAGE_ERROR =>
            err( pl( gnat.source_info.source_location & ": internal error: unable to reference BDB session" ) );
         end;
@@ -2470,10 +2470,10 @@ begin
      begin
         findResource( to_resource_id( identifiers( fileId ).value.all ), theFile );
         if isVerifiedOpenFile( fileId, theFile ) then
-           result := to_bush_boolean( will_raise( theFile.hash.session ) );
+           result := to_spar_boolean( will_raise( theFile.hash.session ) );
         end if;
      exception when berkeley_error =>
-        result := to_bush_boolean( false );
+        result := to_spar_boolean( false );
      end;
   end if;
 end ParseHashWillRaise;

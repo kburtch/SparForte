@@ -635,9 +635,9 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( is_connected( connection.C ) );
+       result := to_spar_boolean( is_connected( connection.C ) );
      exception when others =>
-       result := to_bush_boolean( false );
+       result := to_spar_boolean( false );
      end;
   end if;
 end ParseMySQLMIsConnected;
@@ -726,7 +726,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( In_Abort_State( connection.C ) );
+       result := to_spar_boolean( In_Abort_State( connection.C ) );
      exception when not_connected =>
        err( +"not connected" );
      when others =>
@@ -810,7 +810,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( Will_Rollback_On_Finalize( connection.C ) );
+       result := to_spar_boolean( Will_Rollback_On_Finalize( connection.C ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -939,7 +939,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( Is_Trace( connection.C ) );
+       result := to_spar_boolean( Is_Trace( connection.C ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -1227,7 +1227,7 @@ begin
   if isExecutingCommand then
      begin
        findQuery( queryId, query );
-       result := to_bush_boolean( End_Of_Query( query.Q ) );
+       result := to_spar_boolean( End_Of_Query( query.Q ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -1434,7 +1434,7 @@ begin
   if isExecutingCommand then
      begin
        findQuery( queryId, query );
-       result := to_bush_boolean(
+       result := to_spar_boolean(
           Is_Null( query.Q,
           Column_Index_Type( to_numeric( exprVal ) ) )
        );

@@ -696,9 +696,9 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( is_connected( connection.PG_C ) );
+       result := to_spar_boolean( is_connected( connection.PG_C ) );
      exception when others =>
-       result := to_bush_boolean( false );
+       result := to_spar_boolean( false );
      end;
   end if;
 end ParseDBMIsConnected;
@@ -821,7 +821,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( In_Abort_State( connection.PG_C ) );
+       result := to_spar_boolean( In_Abort_State( connection.PG_C ) );
      exception when not_connected =>
        err( +"not connected" );
      when others =>
@@ -920,7 +920,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( Will_Rollback_On_Finalize( connection.PG_C ) );
+       result := to_spar_boolean( Will_Rollback_On_Finalize( connection.PG_C ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -1069,7 +1069,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( connectId, connection );
-       result := to_bush_boolean( Is_Trace( connection.PG_C ) );
+       result := to_spar_boolean( Is_Trace( connection.PG_C ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -1402,7 +1402,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_bush_boolean( End_Of_Query( query.PG_Q ) );
+       result := to_spar_boolean( End_Of_Query( query.PG_Q ) );
      exception when others =>
        err_exception_raised;
      end;
@@ -1639,7 +1639,7 @@ begin
   if isExecutingCommand then
      begin
        findConnection( queryId, query );
-       result := to_bush_boolean(
+       result := to_spar_boolean(
           Is_Null( query.PG_Q,
           Column_Index_Type( to_numeric( exprVal ) ) )
        );

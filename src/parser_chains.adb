@@ -65,7 +65,7 @@ begin
   kind := boolean_t;
   expect( chains_in_chain_t );
   if isExecutingCommand then
-     result := to_bush_boolean( in_chain /= none );
+     result := to_spar_boolean( in_chain /= none );
   end if;
 end ParseChainsInChain;
 

@@ -647,7 +647,7 @@ begin
   expect( symbol_t, "(" );
   ParseIdentifier( var_id );
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
-     expectArrayOrArrayType( subprogramId, var_id );
+     expectArray( subprogramId, var_id );
   end if;
   expect( symbol_t, ")" );
   -- mark as being altered for later tests

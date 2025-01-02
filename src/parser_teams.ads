@@ -43,7 +43,7 @@ teams_member_full_t        : identifier;
 teams_member_chair_t       : identifier;
 teams_member_nickname_t    : identifier;
 teams_member_business_phone_t : identifier;
-teams_member_messenging_t  : identifier;
+teams_member_messaging_t  : identifier;
 teams_member_teams_t       : identifier;
 teams_member_manager_t     : identifier;
 teams_member_roles_t       : identifier;

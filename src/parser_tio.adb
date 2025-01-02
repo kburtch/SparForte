@@ -1679,7 +1679,7 @@ begin
               --   null;
               --end if;
               -- when non-blocking, Control-D indicates nothing read
-              AssignParameter( avail_ref, to_bush_boolean( ch = ASCII.EOT ) );
+              AssignParameter( avail_ref, to_spar_boolean( ch = ASCII.EOT ) );
            else
               getKey( ch );
               --if wasSIGINT then
