@@ -419,8 +419,7 @@ bintar: c_os.o all
 	@echo "5. Ensure the copyright year is up-to-date"
 	@echo "6. Build with aggressive linting and clean up issues"
 	@echo "7. Ensure a tag has been created for GitHub"
-	@echo "8. Build with the --released option"
-	@echo "9. Repack using tar cfvj under a sparforte-x.y-z.os directory name"
+	@echo "8. Build with the release script"
 
 install:
 ifdef RPM_BUILD_ROOT
