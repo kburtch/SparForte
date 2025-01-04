@@ -23,7 +23,6 @@ fi
 
 MAKE="gmake"
 BUILD_COMPRESSION="j"
-BUILD_NUMBER="1"
 
 # Build options
 
@@ -35,7 +34,7 @@ fi
 
 VERSION=`src/spar -e '? System.System_Version'`
 
-BUILD_DIR="sparforte-""$VERSION""-""$BUILD_NUMBER""-src"
+BUILD_DIR="sparforte-""$VERSION""-src"
 BUILD_TARBALL="$BUILD_DIR"".tar.bz2"
 
 START_DIR=`pwd`
