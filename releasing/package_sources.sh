@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Package a SparForte binary distribution in a tar file.
+# Package a SparForte source distribution in a tar file.
 # by Ken O. Burtch
 # January 2025
 
@@ -18,22 +18,12 @@ if [ ! -x "src/spar" ] ; then
    exit 192
 fi
 
+
 # Defaults
 
 MAKE="gmake"
-BUILD_CONFIG_OPTIONS="--released"
 BUILD_COMPRESSION="j"
 BUILD_NUMBER="1"
-BUILD_ARCH=`uname -m`
-BUILD_OS="unknown"
-DO_INSTALL="y"
-# My RDP account has not root access
-if [ "$LOGNAME" = "kenrdp" ] ; then
-   DO_INSTALL="n"
-fi
-
-echo "Build a SparForte binary distribution"
-echo
 
 # Build options
 
@@ -42,31 +32,10 @@ read REPLY
 if [ "$REPLY" != "" ] ; then
    MAKE="$REPLY"
 fi
-echo -n "Build architecture? ($BUILD_ARCH):"
-read REPLY
-if [ "$REPLY" != "" ] ; then
-   BUILD_ARCH="$REPLY"
-fi
-echo "Example: freebsd, pi4pios11, mint, redhat, suse"
-echo -n "Build O/S short name? ($BUILD_OS):"
-read REPLY
-if [ "$REPLY" != "" ] ; then
-   BUILD_OS="$REPLY"
-fi
-echo -n "Additional config options? ($BUILD_CONFIG_OPTIONS):"
-read REPLY
-if [ "$REPLY" != "" ] ; then
-   BUILD_CONFIG_OPTIONS="$BUILD_CONFIG_OPTIONS $REPLY"
-fi
-echo -n "Do install tests (y/n, n if no sudo)? ($DO_INSTALL):"
-read REPLY
-if [ "$REPLY" != "" ] ; then
-   DO_INSTALL="$REPLY"
-fi
 
 VERSION=`src/spar -e '? System.System_Version'`
 
-BUILD_DIR="sparforte-""$VERSION""-""$BUILD_NUMBER"".""$BUILD_ARCH"".""$BUILD_OS"
+BUILD_DIR="sparforte-""$VERSION""-""$BUILD_NUMBER""-src"
 BUILD_TARBALL="$BUILD_DIR"".tar.bz2"
 
 START_DIR=`pwd`
@@ -89,7 +58,6 @@ if [ $? -ne 0 ] ; then
    echo "make distclean failed"
    exit 192
 fi
-
 ./configure $BUILD_CONFIG_OPTIONS
 if [ $? -ne 0 ] ; then
    echo "Error: configure for release failed"
@@ -101,12 +69,18 @@ if [ $? -ne 0 ] ; then
    exit 192
 fi
 cd src
-"$MAKE" bintar
+"$MAKE" clean
 if [ $? -ne 0 ] ; then
-   echo "Error: make bintar failed"
+   echo "make distclean failed"
    exit 192
 fi
-cd ..
+# srctar will do a distclean
+"$MAKE" srctar
+if [ $? -ne 0 ] ; then
+   echo "Error: make srctar failed"
+   exit 192
+fi
+cd "$START_DIR"
 
 # Copying and rebuilding in the build directory
 
@@ -120,16 +94,11 @@ if [ $? -ne 0 ] ; then
    echo "Error: tar extract failed"
    exit 192
 fi
-rm "spar.tgz"
-if [ $? -ne 0 ] ; then
-   echo "Error: rm tar failed"
-   exit 192
-fi
 
 # Check for stray binaries and temp files before bintar
 # These should already be removed by make but let's be
 # sure
-TMP=`find src -type f -size +50k -print | grep -v "^src/spar$" | grep -v ".o" | fgrep -v ".ali"`
+TMP=`find src -type f -size +300k -print | grep -v "^src/spar$" | grep -v ".o" | fgrep -v ".ali" | fgrep parser_pen.adb"`
 if [ -n "$TMP" ] ; then
    echo "Error: Unaccounted for large files:"
    echo "$TMP"
@@ -160,17 +129,52 @@ if [ -n "$TMP" ] ; then
    exit 192
 fi
 
-echo "Testing installation (must have sudo access)"
-if [ "$DO_INSTALL" = "y" ] ; then
-   sudo "$MAKE" install
-   if [ $? -ne 0 ] ; then
-      echo "Error: install failed"
-      exit 192
-   fi
-else
-   echo "Skipped"
+# Test build
+
+echo
+echo "Test build..."
+./configure $BUILD_CONFIG_OPTIONS
+if [ $? -ne 0 ] ; then
+   echo "Error: configure for release failed"
+   exit 192
+fi
+"$MAKE" all
+if [ $? -ne 0 ] ; then
+   echo "Error: make all failed"
+   exit 192
+fi
+
+
+
+# Copy to archive
+
+cd "$START_DIR"
+echo
+echo "Clearing and copying..."
+rm -rf "../""$BUILD_DIR"
+if [ $? -ne 0 ] ; then
+   echo "rm build directory $BUILD_DIR failed"
+   exit 192
+fi
+echo
+echo "Copying to '$BUILD_DIR'..."
+mkdir "../""$BUILD_DIR"
+cp "spar.tgz" "../""$BUILD_DIR""/"
+cd "../""$BUILD_DIR"
+tar xfz "spar.tgz"
+if [ $? -ne 0 ] ; then
+   echo "Error: tar extract failed"
+   exit 192
+fi
+rm "spar.tgz"
+if [ $? -ne 0 ] ; then
+   echo "Error: rm tar failed"
+   exit 192
 fi
 cd ..
+
+#
+
 echo "Creating distribution archive '$BUILD_TARBALL'"
 tar cf"$BUILD_COMPRESSION" "$BUILD_TARBALL" "$BUILD_DIR"
 if [ $? -ne 0 ] ; then
@@ -182,7 +186,13 @@ if [ $? -ne 0 ] ; then
    echo "Error: tar test '$BUILD_TARBALL' failed"
    exit 192
 fi
-echo "Done"
+cd "$START_DIR"
+rm "spar.tgz"
+if [ $? -ne 0 ] ; then
+   echo "Error: rm tar failed"
+   exit 192
+fi
+cd ..
 
 # Upload
 
@@ -213,54 +223,20 @@ FILE_SIZE=`ls -lhdFq "$BUILD_TARBALL" | cut -d' ' -f 5 | sed 's/ /&nbsp;/g'`
 RELEASE_DATE=`date +'%Y/%m/%d'`
 echo "Build Options: $BUILD_CONFIG_OPTIONS"
 FILE_RESULT=`file "$BUILD_TARBALL" 2>&1`
-TMP=`echo "$FILE_RESULT" | fgrep "bzip2"`
+TMP=`echo "$FILE_RESULT" | fgrep "bzip"`
 if [ -z "$TMP" ] ; then
    echo "$FILE_RESULT"
    echo "Error: Archive may have used the wrong compression"
    exit 192
 fi
-rm -rf "$BUILD_DIR"
-if [ $? -ne 0 ] ; then
-   echo "rm build directory $BUILD_DIR failed"
-   exit 192
-fi
-cd "$START_DIR"
-OS_NAME="unknown"
-TMP=`echo "$BUILD_DIR" | fgrep "freebsd"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="FreeBSD"
-fi
-TMP=`echo "$BUILD_DIR" | fgrep "mint"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="Linux Mint / Ubuntu"
-fi
-TMP=`echo "$BUILD_DIR" | fgrep "pi4pios"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="Raspberry Pi"
-fi
-TMP=`echo "$BUILD_DIR" | fgrep "rhel"`
-TMP=`echo "$BUILD_DIR" | fgrep "suse"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="SuSE"
-fi
-TMP=`echo "$BUILD_DIR" | fgrep "raspian"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="Raspberry Pi"
-fi
-TMP=`echo "$BUILD_DIR" | fgrep "rhel"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="Red Hat / Rocky Linux"
-fi
-TMP=`echo "$BUILD_DIR" | fgrep "ubuntu"`
-if [ -n "$TMP" ] ; then
-   OS_NAME="Ubuntu"
-fi
 echo "--- Website link ---"
 echo "</tr><tr>"
-echo "  <td class=\"download_left\"><strong>$OS_NAME version (alias)</strong><br>Built for MySQL and PostgreSQL. Built on Mint 21.3</td>"
-echo "  <td class=\"download_left\">$BUILD_ARCH (64-bit)<br>($RELEASE_DATE)</td>"
+echo "  <td class=\"download_left\"><strong>Sources</strong><br>Linux / FreeBSD / OS/X / etc.</td>"
+echo "  <td class=\"download_left\">)Source Code and Docs<br>($RELEASE_DATE)</td>"
 echo "  <td class=\"download_right\">$VERSION</td>"
 echo "  <td class=\"download_right\">$FILE_SIZE</td>"
 echo "  <td class=\"download_left\"><a href="downloads/$BUILD_TARBALL">Download bzip tar</a></td>"
 echo "---"
+
+echo "Done"
 

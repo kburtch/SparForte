@@ -221,7 +221,6 @@ max: c_os.o c_scanner.o c_gstreamer.o c_pcre.o c_rl.o c_l10n.o
 	gnatlink spar.ali $(GSTREAMERLIBS) $(GSTREAMEROBJ) $(PCREOBJ) c_os.o c_scanner.o $(LIBS)
 
 clean:
-	#-$(MAKE) -C areadline clean
 	$(MAKE) -C adacgi-1.6 clean
 	$(MAKE) -C apq-2.1 clean
 	$(MAKE) -C bdb clean
@@ -235,13 +234,12 @@ clean:
 
 
 distclean:
-	#-$(MAKE) -C areadline clean
 	$(MAKE) -C adacgi-1.6 clean
 	#$(MAKE) -C ADAVOX-0.51 clobber
 	$(MAKE) -C apq-2.1 clobber
 	$(MAKE) -C pegasock clean
 	$(MAKE) -C bdb distclean
-	-rm -f *.o *.ali *~ t.t t.spar core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
+	-rm -f *.o *.ali *~ t.t t.spar *.bak core spar.zip spar testsuite/write_only.txt testsuite/exec_only.txt
 	-rm -f *.gcda *.gcno *.gcov coverage.info
 	-rm -rf coverage/ testsuite/junit_result.xml
 	-rm -f spar_os.ads spar_os.adb spar_os-sdl.ads spar_os-sdl.adb parser_db.adb parser_dbm.adb parser_mysql.adb parser_mysqlm.adb parser_sound.adb world.ads builtins.adb parser_gnat_cgi.adb scanner_res.adb scanner_res.ads parser_btree_io.adb parser_hash_io.adb parser_strings_pcre.adb
