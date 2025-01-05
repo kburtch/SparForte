@@ -7,14 +7,14 @@
 # This exists to avoid the occasional copying errors when manually
 # building a release.
 
+REPO_DIR="SparForte-master"
+REPO_ARCH="SparForte-master.zip"
+
 # Sanity checks
 
-if [ ! -d "src" ] ; then
-   echo "Run in the project root directory"
-   exit 192
-fi
-if [ ! -x "src/spar" ] ; then
-   echo "SparForte must be built first"
+if [ ! -f "SparForte-master.zip" ] ; then
+   echo "Download a fresh copy of 'SparForte-master.zip' from GitHub"
+   echo "to guarantee no extra files"
    exit 192
 fi
 
@@ -26,18 +26,38 @@ BUILD_COMPRESSION="j"
 
 # Build options
 
+echo "The latest SparForte binary must be installed on this machine"
+echo "Download the latest Zip sources from GitHub"
+echo
 echo -n "Make program? ($MAKE):"
 read REPLY
 if [ "$REPLY" != "" ] ; then
    MAKE="$REPLY"
 fi
 
-VERSION=`src/spar -e '? System.System_Version'`
+if [ -d "$REPO_DIR" ] ; then
+   rm -rf "$REPO_DIR"
+   if [ $? -ne 0 ] ; then
+      echo "rm of '$REPO_DIR' failed"
+      exit 192
+   fi
+fi
+unzip -q "$REPO_ARCH"
+if [ $? -ne 0 ] ; then
+   echo "unzip failed"
+   exit 192
+fi
+START_DIR=`pwd`
+cd "$REPO_DIR"
+if [ $? -ne 0 ] ; then
+   echo "cd to unzip dir failed"
+   exit 192
+fi
+
+VERSION=`spar -e '? System.System_Version'`
 
 BUILD_DIR="sparforte-""$VERSION""-src"
 BUILD_TARBALL="$BUILD_DIR"".tar.bz2"
-
-START_DIR=`pwd`
 
 if [ -d "../""$BUILD_DIR" ] ; then
    echo "Build directory '$BUILD_DIR' already exists"
@@ -50,14 +70,9 @@ echo "Build archive:   $BUILD_TARBALL"
 sleep 5
 echo
 
-# Rebuild SparForte
+# Rebuild SparForte from clean sources
 
-"$MAKE" distclean
-if [ $? -ne 0 ] ; then
-   echo "make distclean failed"
-   exit 192
-fi
-./configure $BUILD_CONFIG_OPTIONS
+./configure
 if [ $? -ne 0 ] ; then
    echo "Error: configure for release failed"
    exit 192
@@ -73,31 +88,12 @@ if [ $? -ne 0 ] ; then
    echo "make distclean failed"
    exit 192
 fi
-# srctar will do a distclean
-"$MAKE" srctar
-if [ $? -ne 0 ] ; then
-   echo "Error: make srctar failed"
-   exit 192
-fi
-cd "$START_DIR"
-
-# Copying and rebuilding in the build directory
-
-echo
-echo "Copying to '$BUILD_DIR'..."
-mkdir "../""$BUILD_DIR"
-cp "spar.tgz" "../""$BUILD_DIR""/"
-cd "../""$BUILD_DIR"
-tar xfz "spar.tgz"
-if [ $? -ne 0 ] ; then
-   echo "Error: tar extract failed"
-   exit 192
-fi
+cd ..
 
 # Check for stray binaries and temp files before bintar
 # These should already be removed by make but let's be
 # sure
-TMP=`find src -type f -size +300k -print | grep -v "^src/spar$" | grep -v ".o" | fgrep -v ".ali" | fgrep parser_pen.adb"`
+TMP=`find src -type f -size +300k -print | grep -v "^src/spar$" | grep -v ".o" | fgrep -v ".ali" | fgrep -v "parser_pen.adb" | fgrep -v "apq-mysql.ads"`
 if [ -n "$TMP" ] ; then
    echo "Error: Unaccounted for large files:"
    echo "$TMP"
@@ -127,54 +123,29 @@ if [ -n "$TMP" ] ; then
    echo "$TMP"
    exit 192
 fi
-
-# Test build
-
-echo
-echo "Test build..."
-./configure $BUILD_CONFIG_OPTIONS
-if [ $? -ne 0 ] ; then
-   echo "Error: configure for release failed"
-   exit 192
-fi
-"$MAKE" all
-if [ $? -ne 0 ] ; then
-   echo "Error: make all failed"
-   exit 192
-fi
-
-
-
-# Copy to archive
-
 cd "$START_DIR"
+
+# Create distribution archive
+
 echo
-echo "Clearing and copying..."
-rm -rf "../""$BUILD_DIR"
+echo "Creating distribution archive '$BUILD_TARBALL'"
+rm -rf "$REPO_DIR"
 if [ $? -ne 0 ] ; then
    echo "rm build directory $BUILD_DIR failed"
    exit 192
 fi
-echo
-echo "Copying to '$BUILD_DIR'..."
-mkdir "../""$BUILD_DIR"
-cp "spar.tgz" "../""$BUILD_DIR""/"
-cd "../""$BUILD_DIR"
-tar xfz "spar.tgz"
+
+pwd
+unzip -q "$REPO_ARCH"
 if [ $? -ne 0 ] ; then
-   echo "Error: tar extract failed"
+   echo "unzip failed"
    exit 192
 fi
-rm "spar.tgz"
+mv "$REPO_DIR" "$BUILD_DIR"
 if [ $? -ne 0 ] ; then
-   echo "Error: rm tar failed"
+   echo "mv to '$BUILD_DIR' dir failed"
    exit 192
 fi
-cd ..
-
-#
-
-echo "Creating distribution archive '$BUILD_TARBALL'"
 tar cf"$BUILD_COMPRESSION" "$BUILD_TARBALL" "$BUILD_DIR"
 if [ $? -ne 0 ] ; then
    echo "Error: tar create $BUILD_TARBALL failed"
@@ -185,13 +156,7 @@ if [ $? -ne 0 ] ; then
    echo "Error: tar test '$BUILD_TARBALL' failed"
    exit 192
 fi
-cd "$START_DIR"
-rm "spar.tgz"
-if [ $? -ne 0 ] ; then
-   echo "Error: rm tar failed"
-   exit 192
-fi
-cd ..
+#cd "$START_DIR"
 
 # Upload
 
