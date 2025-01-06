@@ -2225,6 +2225,7 @@ procedure ParseBTreeGetNext is
   subprogramId : constant identifier := btree_get_next_t;
 begin
   expectNonRestrictedShell( subprogramId );
+  expect( subprogramId );
   ParseFirstFileParameter( subprogramId, fileId );
   ParseNextCursorParameter( subprogramId, cursId );
   genKindId := identifiers( fileId ).genKind;
