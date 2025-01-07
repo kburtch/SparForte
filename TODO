@@ -39,11 +39,6 @@ Priority Issues (Fix These First)
     - proper error messages should be provided on unavailable
       functions
 
-- on GCC 13 and 14, the build fails on the placement of an equality function due
-  to changes being "frozen".  This also causes the GNAT compiler to fail.
-  - theory: aMemcacheClusterEntry contains a static object.  Using a
-    pointer to the object instead may reduce the dependency between
-    the object and a record and avoid this "freeze" issue.
 - when doing autocorrection for shell commands like cd, it may be beneficial
   to prioritize based on command history and then fall back on the default
   order of the various checks
