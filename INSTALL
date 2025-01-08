@@ -32,6 +32,22 @@ standard C libraries for your operating system.  Please contribute new
 os_bindings files to the SparForte project.
 
 
+BINARY DISTRIBUTIONS vs. SOURCE CODE
+
+The binary versions are created while testing SparForte before release.
+They are built for specific version of specific Operating Systems.  You
+will need to run the provision.sh script to install all the library
+dependencies for your operating systems.
+
+The binary distributions should containt the spar binary and the
+SparForte manual in the doc directory and sample scripts in the examples
+directory.
+
+The source code file has the source code in Ada, C and shell scripts,
+along with the SparForte manual and sample scripts.  You will need to
+build SparForte from the source files to use it.
+
+
 REQUIREMENTS
 
 We have attempted to avoid re-inventing existing functionality wherever
@@ -73,6 +89,12 @@ The following software packages are required for SparForte:
 
   * SDL (Simple DirectMedia Layer) library and SDL_image
 
+  * GNU locate is optional.  The configure script will fallback to using
+   the "find" command.
+
+
+DEPENDENCIES
+
   These may not be installed on your operating system, or some components
   may be missing.  How you install these depends on your operating system.
 
@@ -112,7 +134,8 @@ The following software packages are required for SparForte:
   $ apt-get install postgresql-server-dev-all
   $ apt-get install libgstreamer0.10-dev
 
-  Update the locate database: Debian uses a static Ada Run-Time file so SparForte
+  If you GNU locate is installed, update the locate database:
+  Debian uses a static Ada Run-Time file so SparForte
   will need to use locate instead of ldconfig to find it.  (Running updatedb
   is safe even if this was not true.)
 
@@ -137,6 +160,7 @@ The following software packages are required for SparForte:
   $ gupdatedb
   $ sh configure
   $ make
+
 
 INSTALLATION
 
@@ -267,6 +291,17 @@ You can now run the spar executable.
 
 Type "gmake help" for a list of all options.  There are more options in the
 src directory makefile.
+
+
+LOGIN SHELL
+
+SparForte will run as a login shell if you place it in the /etc/passwd
+file accordingly.  Alternatively, change /etc/shells to allow users to
+select spar as a shell with chsh.  You will need to be the superuser to
+copy or edit these files.
+
+You can run SparForte in login shell mode without making it your login
+shell by running it using the "--login" (or "-l") command option.
 
 
 INSTALLING FOR WEB TEMPLATES

@@ -25,18 +25,8 @@ APQ is released under the ACL or GPL licence.
 
 Installation
 
-If you have downloaded the binary version, you should have the spar
-binary and the SparForte manual in the doc directory and sample scripts in
-the examples directory.
+INSTALL has information on how to install SparForte.
 
-To install SparForte as your login shell, copy the "spar" file to the
-/usr/local/bin directory (or type "make install" to do this for you).
-Then change the /etc/passwd file accordingly.  Alternatively, change
-/etc/shells to allow users to select spar as a shell with chsh.
-You will need to be the superuser to copy or edit these files.
-
-If you have downloaded the SparForte sources, the INSTALL file contains
-instructions for compiling the sources.
 
 "Have a lot of fun!"
 
