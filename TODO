@@ -13,7 +13,6 @@ Priority Issues (Fix These First)
 
 - ongoing major rework
   - conversion of error message to give additional context
-    - ref_errors.html, ref_php are obsolete
     - parser-decl has not been completed
     - messages in present or past tense not both
     - search for appropriate remedies

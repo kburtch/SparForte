@@ -67,9 +67,13 @@ CHANGES SINCE 2.6.3
 
 24. Fix: arrays.shuffle error message no longer says an array type can be used.
 
-25. New: numercis.shannon_entropy_of for strings.
+25. New: numerics.shannon_entropy_of for byte entropy for string types.
 
-26. New: string constants are checked for secret data using shannon entropy. [docs, positive tests needed]
+26. New: string constants are checked for secret data using shannon entropy plus heuristics. [docs, positive tests needed]
 
 27. Fix: teams.messaging spelling corrected.
+
+28. Fix: Building mostly successfully under Linux Mint 22 / Ubuntu 24.04.  Graphics show warnings due to Ubuntu MESA bugs.  Sound must be disabled due with --without-sound to Ubuntu gstreamer bugs.  Some OpenGL functions commented out due to GCC Ada compiler bugs.
+
+29. Fix: Due to new rules about the arrangement of subprogram methods, some classes have been reordered to prevent GCC 13 "frozen" errors.
 

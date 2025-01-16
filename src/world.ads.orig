@@ -6,7 +6,7 @@
 -- Part of SparForte                                                        --
 ------------------------------------------------------------------------------
 --                                                                          --
---              Copyright (C) 2001-2023 Free Software Foundation            --
+--              Copyright (C) 2001-2025 Free Software Foundation            --
 --                                                                          --
 -- This is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -48,10 +48,10 @@ package world is
 -- Global Variables / Flags
 ------------------------------------------------------------------------------
 
-version   : constant string  := "2.6.3";
+version   : constant string  := "2.6.4";
 released  : constant boolean := $configreleased;
 buildDate : constant string  := $configbuilddate;
-copyright : constant string  :=  " Copyright (c)2001-2024 Free Software Foundation";
+copyright : constant string  :=  " Copyright (c)2001-2025 Free Software Foundation";
 
 globalConfigPath  : constant string := "/etc/sparforte_config";
 globalPolicyPath  : constant string := "/etc/sparforte_policy";

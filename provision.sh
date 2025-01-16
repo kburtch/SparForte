@@ -369,7 +369,13 @@ debian )
    apt_install git
    apt_install wget
    apt_install bc
+   apt_install gcc
+   set +e
    apt_install libssl1.1
+   if [ $? -ne 0 ] ; then
+      apt_install libssl3
+   fi
+   set -e
    if [ -z "$NO_LOCATE" ] ; then
       apt_install locate
    fi
