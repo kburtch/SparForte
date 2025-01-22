@@ -46,8 +46,6 @@ while [ $# -gt 0 ] ; do
   #    PREFIX=`echo "$1" | cut -d= -f2`
   #    ;;
   --without-bdb)
-
-Mjj
       NO_BDB=1
       ;;
   --without-l10n)
@@ -204,14 +202,72 @@ if [ -z "$DISTRO" ] ; then
 fi
 
 # Arch Linux
+
 if [ -f "/etc/arch-release" ] ; then
    DISTRO="arch"
+fi
+
+# Alpine
+# Run as root because Alpine is intended for containers
+
+if [ -f "/etc/alpine-release" ] ; then
+   DISTRO="alpine"
+   if [ "$LOGNAME" != "root" ] ; then
+      echo "Please run as the root user"
+      exit 192
+   fi
 fi
 
 # Install software dependences
 # ----------------------------------------------------------------------------
 
 case "$DISTRO" in
+alpine)
+   set -e
+   apk add ncurses-terminfo
+   apk add make
+   apk add bzip2
+   apk add git
+   apk add openssl
+   apk add build-base # include GCC and libraries
+   apk add gcc-gnat
+   if [ -z "$NO_LOCATE" ] ; then
+      apk add findutils-locate
+   fi
+   if [ -z "$NO_SOUND" ] ; then
+      apk add gstreamer-dev
+   fi
+   if [ -z "$NO_BDB" ] ; then
+      echo "At the time this script was written, Alpine has no BDB support"
+      echo "Please use the --without-bdb option"
+      exit 192
+   fi
+   if [ -z "$NO_MYSQL" ] ; then
+      apk add mariadb
+      apk add mariadb-client
+      apk add mariadb-connector-c-dev
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      apk add postgresql-dev
+      apk add postgresql-client
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      echo "At the time this script was written, Alpine has no SDL support"
+      echo "Please use the --without-sdl --without-opengl options"
+      exit 192
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      apk add memcached
+   fi
+   if [ -z "$NO_READLINE" ] ; then
+      apk add readline-dev
+   fi
+   if [ -z "$NO_PCRE" ] ; then
+      apk add pcre-dev
+   fi
+   set +e
+   ;;
+
 arch )
    # Arch Linux does not distinguish between "dev" and core versions of a
    # package.  Endeavor OS installs some of these by default.

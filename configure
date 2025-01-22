@@ -682,37 +682,48 @@ if [ -z "$TMP" ] ; then
              if [ ! -z "$TMP" ] ; then
                  echo "yes"
              else
+                 # ldconfig with Alpine Linux has no print option
                  echo "no"
-                 echo -n "checking for static libgnat.a only (e.g. Slackware)... "
+                 echo -n "checking for libgnat.so (e.g. Alpine Linux)..."
                  # In some cases, this may return multiple files.
                  if [ ! -z "$LOCATE" ] ; then
-                    TMP=`"$LOCATE" adalib/libgnat`
-                 else
-                    TMP=`"$FINDLIB" -name 'libgnat*' -print`
+                    TMP=`"$LOCATE" adalib/libgnat.so`
                  fi
                  if [ $? -eq 0 ] ; then
-                    if [ ! -z "$LOCATE" ] ; then
-                       TMP2=`"$LOCATE" adalib/libgnat.a`
-                    else
-                       TMP2=`"$FINDLIB" -name 'libgnat.a' -print`
-                    fi
-                 else
-                    TMP2="fail-me"
-                 fi
-                 if [ "$TMP" = "$TMP2" ] ; then
                     echo "yes"
-                     else
+                 else
                     echo "no"
-                    echo
-                    echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
-                    echo "(libgnat) was not found.  If libgnat.so was installed, you"
-                    echo "may need to run ldconfig (as root) to update the shared"
-                    echo "library search paths.  You may need to edit ld.so.conf first"
-                    echo "and add the path to libgnat's directory.  If libgnat.a was"
-                    echo "installed, run updatedb (as root) and this script should"
-                    echo "detect it."
-                    echo
-                    exit 1
+                    echo -n "checking for static libgnat.a only (e.g. Slackware)... "
+                    # In some cases, this may return multiple files.
+                    if [ ! -z "$LOCATE" ] ; then
+                       TMP=`"$LOCATE" adalib/libgnat`
+                    else
+                       TMP=`"$FINDLIB" -name 'libgnat*' -print`
+                    fi
+                    if [ $? -eq 0 ] ; then
+                       if [ ! -z "$LOCATE" ] ; then
+                          TMP2=`"$LOCATE" adalib/libgnat.a`
+                       else
+                          TMP2=`"$FINDLIB" -name 'libgnat.a' -print`
+                       fi
+                    else
+                       TMP2="fail-me"
+                    fi
+                    if [ "$TMP" = "$TMP2" ] ; then
+                       echo "yes"
+                        else
+                       echo "no"
+                       echo
+                       echo "GCC Ada or GNAT is installed but the Ada Run-Time Environment"
+                       echo "(libgnat) was not found.  If libgnat.so was installed, you"
+                       echo "may need to run ldconfig (as root) to update the shared"
+                       echo "library search paths.  You may need to edit ld.so.conf first"
+                       echo "and add the path to libgnat's directory.  If libgnat.a was"
+                       echo "installed, run updatedb (as root) and this script should"
+                       echo "detect it."
+                       echo
+                       exit 1
+                    fi
                   fi
               fi
           fi
@@ -842,9 +853,11 @@ if [ -z "$TMP" ] ; then
        echo "yes"
    else
        echo "no"
-       echo -n "checking for lib/openssl (Cygwin)..."
+       # ldconfig doesn't print on Alpline linux and openssl is not directly
+       # under lib/.
+       echo -n "checking for lib/openssl (Cygwin, Alpine)..."
        if [ ! -z "$LOCATE" ] ; then
-          TMP=`"$LOCATE" lib/openssl`
+          TMP=`"$LOCATE" openssl | grep -F "/lib/"`
        else
           TMP=`"$FINDLIB" -name 'openssl*' -print`
        fi
@@ -1375,7 +1388,7 @@ if [ -z "$NO_SOUND" ] ; then
       TMP=`/sbin/ldconfig -r 2>/dev/null | grep libgstreamer`
       if [ -z "$TMP" ] ; then
          echo "no"
-         echo -n "checking for gstreamer (locate, Darwin)... "
+         echo -n "checking for gstreamer (locate, Darwin, Alpine)... "
          if [ ! -z "$LOCATE" ] ; then
             TMP=`"$LOCATE" libgstreamer`
          else
@@ -1414,7 +1427,7 @@ if [ -z "$NO_PCRE" ] ; then
       TMP=`/sbin/ldconfig -r 2>/dev/null | grep libpcre`
       if [ -z "$TMP" ] ; then
          echo "no"
-         echo -n "checking for libpcre (locate, Darwin)... "
+         echo -n "checking for libpcre (locate, Darwin, Alpine)... "
          if [ ! -z "$LOCATE" ] ; then
             TMP=`"$LOCATE" libpcre`
          else
