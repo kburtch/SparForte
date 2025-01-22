@@ -38,7 +38,7 @@ fi
 
 echo "Spell checking '$SOURCE_FILE' ..."
 
-fgrep -Hn -- '--' "$SOURCE_FILE" > "$TMP"
+grep -FHn -- '--' "$SOURCE_FILE" > "$TMP"
 
 ( CNT=0 ; while read LINE; do
    # Split the line into location and text
@@ -52,21 +52,21 @@ fgrep -Hn -- '--' "$SOURCE_FILE" > "$TMP"
    # Skip lines that look like Ada source code, ada.text_io
    # often commented out but left in place for debugging,  or
    # parser syntax descriptions.
-   GREP_RESULT=`echo "$LINE" | fgrep "put_line"`
+   GREP_RESULT=`echo "$LINE" | grep -F "put_line"`
    if [ -z "$GREP_RESULT" ] ; then
-      GREP_RESULT=`echo "$LINE" | fgrep ":="`
+      GREP_RESULT=`echo "$LINE" | grep -F ":="`
    fi
    if [ -z "$GREP_RESULT" ] ; then
-      GREP_RESULT=`echo "$LINE" | fgrep "DEBUG"`
+      GREP_RESULT=`echo "$LINE" | grep -F "DEBUG"`
    fi
    if [ -z "$GREP_RESULT" ] ; then
-      GREP_RESULT=`echo "$LINE" | fgrep "ada.text_io"`
+      GREP_RESULT=`echo "$LINE" | grep -F "ada.text_io"`
    fi
    if [ -z "$GREP_RESULT" ] ; then
-      GREP_RESULT=`echo "$LINE" | fgrep "Syntax: "`
+      GREP_RESULT=`echo "$LINE" | grep -F "Syntax: "`
    fi
    if [ -z "$GREP_RESULT" ] ; then
-      GREP_RESULT=`echo "$LINE" | fgrep "CO"`  # Commented out
+      GREP_RESULT=`echo "$LINE" | grep -F "CO"`  # Commented out
    fi
 
    if [ -z "$GREP_RESULT" ] ; then

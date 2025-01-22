@@ -46,6 +46,8 @@ while [ $# -gt 0 ] ; do
   #    PREFIX=`echo "$1" | cut -d= -f2`
   #    ;;
   --without-bdb)
+
+Mjj
       NO_BDB=1
       ;;
   --without-l10n)
@@ -129,6 +131,14 @@ zypper_install () {
   fi
 }
 
+pacman_install () {
+  if [ -n "$HAS_SUDO" ] ; then
+     sudo pacman --sync --needed --quiet --noconfirm $@
+  else
+     pacman --sync --needed --quiet --noconfirm $@
+  fi
+}
+
 
 # Detect the Linux distribution
 # ----------------------------------------------------------------------------
@@ -138,15 +148,15 @@ zypper_install () {
 RHVERSION=""
 if test -f "/etc/redhat-release" ; then
    DISTRO="redhat"
-   TMP=`fgrep " 7." "/etc/redhat-release"`
+   TMP=`grep -F " 7." "/etc/redhat-release"`
    if [ -n "$TMP" ] ; then
       RHVERSION="7"
    fi
-   TMP=`fgrep " 8." "/etc/redhat-release"`
+   TMP=`grep -F " 8." "/etc/redhat-release"`
    if [ -n "$TMP" ] ; then
       RHVERSION="8"
    fi
-   TMP=`fgrep " 9." "/etc/redhat-release"`
+   TMP=`grep -F " 9." "/etc/redhat-release"`
    if [ -n "$TMP" ] ; then
       RHVERSION="9"
    fi
@@ -166,15 +176,15 @@ fi
 # Mint/Ubuntu
 
 if [ -f "/etc/issue" ] ; then
-   TMP=`fgrep Ubuntu /etc/issue`
+   TMP=`grep -F Ubuntu /etc/issue`
    if [ "$TMP" != "" ] ; then
       DISTRO="ubuntu"
    fi
-   TMP=`fgrep Mint /etc/issue`
+   TMP=`grep -F Mint /etc/issue`
    if [ "$TMP" != "" ] ; then
       DISTRO="ubuntu"
    fi
-   TMP=`fgrep SUSE /etc/issue`
+   TMP=`grep -F SUSE /etc/issue`
    if [ "$TMP" != "" ] ; then
       DISTRO="suse"
    fi
@@ -193,15 +203,77 @@ if [ -z "$DISTRO" ] ; then
    fi
 fi
 
+# Arch Linux
+if [ -f "/etc/arch-release" ] ; then
+   DISTRO="arch"
+fi
+
 # Install software dependences
 # ----------------------------------------------------------------------------
 
 case "$DISTRO" in
+arch )
+   # Arch Linux does not distinguish between "dev" and core versions of a
+   # package.  Endeavor OS installs some of these by default.
+   set -e
+   # Endeavor OS has these but a container may not
+   pacman_install make
+   pacman_install git
+   if [ -z "$NO_LOCATE" ] ; then
+      pacman_install plocate
+   fi
+   #
+   pacman_install bzip2
+   pacman_install gcc-ada
+   pacman_install bc
+   if [ -z "$NO_SOUND" ] ; then
+      pacman_install gstreamer
+   fi
+   # BDB
+   if [ -z "$NO_BDB" ] ; then
+      echo "There is an AUR note for 2021 that libdb is no longer"
+      echo "building due to an error.  If this fails to install,"
+      echo " provision and configure using the --without-bdb option"
+      pacman_install libdb
+   fi
+   if [ -z "$NO_MYSQL" ] ; then
+      pacman_install mariadb
+      pacman_install mariadb-clients
+   fi
+   if [ -z "$NO_POSTGRES" ] ; then
+      pacman_install postgresql
+   fi
+   if [ -z "$NO_SDL" ] ; then
+      pacman_install sdl_image
+      if [ -z "$NO_OPENGL" ] ; then
+         pacman_install mesa
+         pacman_install glu
+      fi
+   fi
+   if [ -z "$NO_MEMCACHED" ] ; then
+      pacman_install memcached
+   fi
+   if [ -z "$NO_READLINE" ] ; then
+      pacman_install readline
+   fi
+   #sudo -u root apt-get -q -y install libselinux-dev
+   #sudo -u root apt-get -q -y install libdb-dev
+   #sudo -u root apt-get -q -y install libmysqlclient-dev
+   #sudo -u root apt-get -q -y install postgresql-client
+   #sudo -u root apt-get -q -y install postgresql-server-dev-all
+   #sudo -u root apt-get -q -y install libsdl1.2-dev
+   # "autoremove" - prune and remove unnecessary packages
+   sudo paccache -r
+   sudo paccache -ruk0
+   yay -Yc
+   set +e
+   ;;
+
 redhat )
    if [ -n "$HAS_SUDO" ] ; then
-      sudo -u root yum list installed | fgrep epel-release >/dev/null
+      sudo -u root yum list installed | grep -F epel-release >/dev/null
    else
-      yum list installed | fgrep epel-release >/dev/null
+      yum list installed | grep -F epel-release >/dev/null
    fi
    if [ $? -eq 1 ] ; then
       set -e
@@ -243,7 +315,7 @@ redhat )
       yum_install mariadb-server
       # Unfortunately, dnf doesn't return an error status for something not
       # found
-      TMP=`dnf search mariadb-connector-c-devel 2>&1 | fgrep "No match"`
+      TMP=`dnf search mariadb-connector-c-devel 2>&1 | grep -F "No match"`
       if [ -z "$TMP" ] ; then
 	 # Newer versions of Red Hat
          yum_install mariadb-connector-c-devel

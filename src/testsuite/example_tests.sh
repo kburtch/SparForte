@@ -27,7 +27,7 @@ fi
 EXAMPLE="aplusb.sp"
 RESULT=`echo "1 2" | src/spar --test examples/$EXAMPLE | tr -d '\r\n'`
 EXPECTED="1 2 3"
-TMP=`echo "$RESULT" | fgrep "$EXPECTED"`
+TMP=`echo "$RESULT" | grep -F "$EXPECTED"`
 if [ -z "$TMP" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"
@@ -224,7 +224,7 @@ Starting Longitude: 2
 Distance between the two places is
   195.57030 miles"
 RESULT=`echo "$RESULT" | tr -d '\r\n'`
-TMP=`echo "$RESULT" | fgrep "$EXPECTED"`
+TMP=`echo "$RESULT" | grep -F "$EXPECTED"`
 if [ -z "$TMP" ] ; then
    echo "Failed - $EXAMPLE Failed"
    echo "$RESULT"

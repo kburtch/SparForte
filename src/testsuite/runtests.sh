@@ -396,7 +396,7 @@ bad_test() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  TMP=`echo "$OUTPUT" | grep -F "_ERROR"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH ADA EXCEPTION ---"
@@ -410,7 +410,7 @@ bad_test() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  TMP=`echo "$OUTPUT" | grep -F "unexpected exception"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
@@ -424,7 +424,7 @@ bad_test() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  TMP=`echo "$OUTPUT" | grep -F "internal"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH INTERNAL error ---"
@@ -480,7 +480,7 @@ bad_test_wparam() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  TMP=`echo "$OUTPUT" | grep -F "_ERROR"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH ADA EXCEPTION ---"
@@ -494,7 +494,7 @@ bad_test_wparam() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  TMP=`echo "$OUTPUT" | grep -F "unexpected exception"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
@@ -508,7 +508,7 @@ bad_test_wparam() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  TMP=`echo "$OUTPUT" | grep -F "internal"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH INTERNAL error ---"
@@ -564,7 +564,7 @@ bad_test_testmode() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  TMP=`echo "$OUTPUT" | grep -F "_ERROR"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH ADA EXCEPTION ---"
@@ -578,7 +578,7 @@ bad_test_testmode() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  TMP=`echo "$OUTPUT" | grep -F "unexpected exception"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
@@ -592,7 +592,7 @@ bad_test_testmode() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  TMP=`echo "$OUTPUT" | grep -F "internal"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH INTERNAL error ---"
@@ -648,7 +648,7 @@ bad_test_gcc_errors() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "_ERROR"`
+  TMP=`echo "$OUTPUT" | grep -F "_ERROR"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH ADA EXCEPTION ---"
@@ -662,7 +662,7 @@ bad_test_gcc_errors() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "unexpected exception"`
+  TMP=`echo "$OUTPUT" | grep -F "unexpected exception"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH UNEXPECTED EXCEPTION ---"
@@ -676,7 +676,7 @@ bad_test_gcc_errors() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "internal"`
+  TMP=`echo "$OUTPUT" | grep -F "internal"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 FAILED WITH INTERNAL error ---"
@@ -701,7 +701,7 @@ bad_test_gcc_errors() {
         exit 1
      fi
   fi
-  TMP=`echo "$OUTPUT" | fgrep "in script"`
+  TMP=`echo "$OUTPUT" | grep -F "in script"`
   if [ ! -z "$TMP" ] ; then
      echo
      echo "--- $1 TEST FAILED - not in GCC error format ---"

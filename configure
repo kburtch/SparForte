@@ -208,11 +208,11 @@ fi
 # Debian warning
 
 if [ -f "/etc/issue" ] ; then
-   TMP=`fgrep Ubuntu /etc/issue`
+   TMP=`grep -F Ubuntu /etc/issue`
    if [ "$TMP" != "" ] ; then
       DISTRO="ubuntu"
    fi
-   TMP=`fgrep Mint /etc/issue`
+   TMP=`grep -F Mint /etc/issue`
    if [ "$TMP" != "" ] ; then
       DISTRO="ubuntu"
    fi
@@ -675,9 +675,9 @@ if [ -z "$TMP" ] ; then
              echo "no"
              echo -n "checking for libgnat.dll.a (Cygwin)..."
              if [ ! -z "$LOCATE" ] ; then
-                TMP=`"$LOCATE" adalib/libgnat | fgrep dll.a`
+                TMP=`"$LOCATE" adalib/libgnat | grep -F dll.a`
              else
-                TMP=`"$FINDLIB" -name 'libgnat*' -print | fgrep dll.a`
+                TMP=`"$FINDLIB" -name 'libgnat*' -print | grep -F dll.a`
              fi
              if [ ! -z "$TMP" ] ; then
                  echo "yes"
@@ -829,7 +829,7 @@ fi
 # Check for libssl
 
 echo -n "checking for libssl (ldconfig -p, Linux)... "
-TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | fgrep libssl.so.`
+TMP=`$LDCONFIG_SUDO /sbin/ldconfig -p 2>/dev/null | grep -F libssl.so.`
 if [ -z "$TMP" ] ; then
    echo "no"
    echo -n "checking for libssl.dylib (Darwin)..."
@@ -853,7 +853,7 @@ if [ -z "$TMP" ] ; then
        else
            echo "no"
            echo -n "checking for libssl (FreeBSD)..."
-           TMP=`$LDCONFIG_SUDO /sbin/ldconfig -r 2>/dev/null | fgrep libssl.so.`
+           TMP=`$LDCONFIG_SUDO /sbin/ldconfig -r 2>/dev/null | grep -F libssl.so.`
            if [ ! -z "$TMP" ] ; then
                echo "yes"
            else
