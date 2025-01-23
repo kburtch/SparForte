@@ -312,6 +312,11 @@ arch )
    if [ -z "$NO_READLINE" ] ; then
       pacman_install readline
    fi
+   if [ -z "$NO_PCRE" ] ; then
+      # Note: pcre2 works but Arch renames the package and
+      # breaks the C code.  We fall back to pcre version 1.
+      pacman_install pcre
+   fi
    #sudo -u root apt-get -q -y install libselinux-dev
    #sudo -u root apt-get -q -y install libdb-dev
    #sudo -u root apt-get -q -y install libmysqlclient-dev
@@ -441,6 +446,9 @@ suse)
    fi
    if [ -z "$NO_BDB" ] ; then
       zypper_install libdb-4_8-devel
+   fi
+   if [ -z "$NO_PCRE" ] ; then
+      zypper_install pcre-devel
    fi
    set +e
    ;;
