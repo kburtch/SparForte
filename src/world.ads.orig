@@ -83,6 +83,7 @@ chain_count_str   : constant unbounded_string := to_unbounded_string( "chain cou
 last_in_chain_str : constant unbounded_string := to_unbounded_string( "last in chain" );
 return_value_str  : constant unbounded_string := to_unbounded_string( "return value" );
 affirm_clause_str : constant string := "affirm clause";
+case_affirm_clause_str : constant string := "case affirm clause";
 sessions_session_variable_name_str : constant unbounded_string := to_unbounded_string( "sessions.session_variable_name" );
 sessions_session_variable_value_str : constant unbounded_string := to_unbounded_string( "sessions.session_variable_value" );
 

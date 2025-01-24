@@ -2930,7 +2930,7 @@ begin
         err(
             contextNotes => pl( "Checking root types" ),
             subjectNotes => pl( qp( "a missing value" ) ),
-            reason => pl( "is not a" ),
+            reason => pl( "is not" ),
             obstructorNotes => pl( "a type or subtype" ) );
         return universal_t;
 
@@ -2956,13 +2956,13 @@ begin
         err(
             contextNotes => +"Checking root types",
             subjectNotes => pl( qp( "a keyword" ) ),
-            reason => +"is not a",
+            reason => +"is not",
             obstructorNotes => +"a type or subtype" );
      else
         err(
             contextNotes => +"Checking root types",
             subject=> original,
-            reason => +"is not a",
+            reason => +"is not",
             obstructorNotes => +"a type or subtype" );
      end if;
      return universal_t;
@@ -3017,7 +3017,7 @@ begin
         err(
             contextNotes => +"Checking base types",
             subjectNotes => pl( qp( "a missing value" ) ),
-            reason => +"is not a",
+            reason => +"is not",
             obstructorNotes => +"a type or subtype" );
         return universal_t;
 
@@ -3038,13 +3038,13 @@ begin
         err(
             contextNotes => +"Checking base types",
             subjectNotes => pl( qp( "a keyword" ) ),
-            reason => +"is not a",
+            reason => +"is not",
             obstructorNotes => +"a type or subtype" );
      else
         err(
             contextNotes => +"Checking base types",
             subject => original,
-            reason => +"is not a not",
+            reason => +"is not",
             obstructorNotes => +"a type or subtype" );
      end if;
      return universal_t;
