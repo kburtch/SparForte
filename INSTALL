@@ -22,14 +22,21 @@ Building from Sources
 
 LONG VERSION
 
-The primary test platform for SparForte is Linux or FreeBSD.  There
-is also old support for DEC Alpha and Cygwin.  HP-UX is obsolete.
+Installing SparForte assumes that you are familiar with the Linux
+command line and know basic programming knowledge.  You should know how
+to resolve common open source issues like missing software libraries or
+missing C language header files.
+
+The primary test platform for SparForte is Linux.  It is also tested on
+Raspberry Pi.  Volunteers have ported it to MacOS.  It is occasionally
+tested on Cygwin and FreeBSD.  It used to be supported on DEC Alpha and
+HP-UX but this has not been maintained.
 
 Information on porting SparForte to other platforms can be found in the
 documentation: SparForte should port to a modern Unix-compatible platform
 within a few hours by creating a spar_os interface file based on the
 standard C libraries for your operating system.  Please contribute new
-os_bindings files to the SparForte project.
+os_bindings files to the SparForte project so they can be shared with others.
 
 
 BINARY DISTRIBUTIONS vs. SOURCE CODE
@@ -77,8 +84,8 @@ The following software packages are required for SparForte:
   * Optional PCRE (Perl Compatible Regular Expressions) library.  It is enabled
     by default but can be disabled with the configure script.
 
-  * gzip is needed to unpack the source code in the first place.  If you are
-    reading this, you know this already.
+  * gzip or bzip2 is needed to unpack the source code in the first place.  If
+    you are reading this, you know this already.
 
   * a optional database, either (or both or neither):
 
@@ -87,10 +94,16 @@ The following software packages are required for SparForte:
 
     * MySQL.
 
-  * SDL (Simple DirectMedia Layer) library and SDL_image
+  * SDL (Simple DirectMedia Layer) library and SDL_image is also optional
+    for graphics
+
+  * gstreamer is optional for sound
 
   * GNU locate is optional.  The configure script will fallback to using
    the "find" command.
+
+Check the website release announcements for any known build issues for a
+release.
 
 
 DEPENDENCIES
@@ -98,21 +111,33 @@ DEPENDENCIES
   These may not be installed on your operating system, or some components
   may be missing.  How you install these depends on your operating system.
 
+  The provision.sh script was written to quickly set up test environments
+  for SparForte.  However, it can also help users install dependencies
+  before building SparForte from sources or installing a binary release.
   The provision.sh script will attempt to identify your version of Linux and
   install all the required software dependencies.
 
-  Alternatively, you may want to install the requirements manually, selecting
-  which software you want.  For example:
+  The provision.sh script recognizes most common Linux distributions (such
+  as Arch, Debian, Red Hat, OpenSuSE and Ubuntu) but it does not recognize
+  all possible distributions as there are so many of them.  Also, the names
+  of dependencies may change between releases of a Linux distribution.
 
-   - Fedora/Red Hat Linux - yum install package-name (or use add/remove
-     software in the menus)
-   - SuSE Linux - yast
+  Alternatively, you may want to install the requirements manually if you
+  have the technical skills to do so, selecting which software you want.
+  Different distributions or operating systems use different command line
+  software installers.  For example:
+
+   - Arch Linux - pacman --sync package-name
    - Debian Linux - apt-get install package-name (visit packages.debian.org
      for a list of available packages)
+   - Fedora/Red Hat Linux - dnf install package-name (or use add/remove
+     software in the menus).  Red Hat formerly used yum.
    - FreeBSD - pkg_add package-name
+   - SuSE Linux - yast or zypper
    - Pre-build versions of SDL_image are available from www.libsdl.org
 
-  The package name depends on your operating system.  For example:
+  The package name depends on your operating system.  For example, the
+  Ada language varies between systems:
 
     - Ubuntu/Debian Linux users can try gnat-4.6 (or similar)
     - Red Hat/Fedora Linux users can try gcc-gnat
@@ -179,6 +204,11 @@ By default, SparForte will install under /usr/local.
 1. provision
 
    Install the software dependencies, if you have not already done so.
+
+   provision recognizes most of the "without" options that configure uses.
+   For example, if you do not wish to install Berkeley DB libraries, you
+   can skip installing them using the --witout-bdb option.  Then configure
+   SparForte without Berkeley DB support.
 
 2. configure
 
