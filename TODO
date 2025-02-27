@@ -12,7 +12,12 @@ Long term Ongoing Work
 ----------------------
 
   - error messages and additional context
-    - parser-decl has not been completed
+    - many error messages have the source arrow 1 position to the right
+      of where it should be
+    - subjectLocation may not be relevant for built-in types like
+      integer.  How should this be distinguised to avoid nonsense
+      locations?
+    - expectSymbol double spaces before "expects" in message
     - messages in present or past tense not both
     - search for appropriate remedies
     - qp() - quiet mode capitalize first - and subjectNotes in err()
@@ -39,8 +44,11 @@ Long term Ongoing Work
 Priority Issues (Fix These First)
 ---------------------------------
 
+- constants can be assigned abstract types...was that intentional or
+  a bug?
 - can a workaround be found for mysql/mariadb not compiling on recent
   versions of Linux?
+- case affirm partially implemented - tests needed
 - an exception was raised that, when it finally was received at the
   top level, had lost the message.  This occurred in the SSDS washed_blocked
   script.  exceptions are not propogating to the main program exception
@@ -273,6 +281,7 @@ Annoyances / Bugs with Workarounds / Updates
   white may revert to dim white after showing help index)
   - it may be impossible but setting the colour to bright what by default
     may be a partial solution
+  - customizable colours / dark (or light) mode
 - cache the prompt script byte code to speed up prompt drawing
 - embedded sql - returning sql select in % (as JSON?) or by `..`?
 - constant spec negative tests

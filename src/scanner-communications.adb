@@ -2732,7 +2732,7 @@ end expectNonRestrictedShell;
 procedure featureNotImplemented( subjectNotes : string ) is
 begin
    err( subjectNotes => em( subjectNotes ),
-        reason => +"is not implented",
+        reason => +"is not implemented",
         obstructorNotes => nullMessageStrings,
         remedy => +"it was disabled when SparForte was configured and compiled"
    );
@@ -2741,11 +2741,29 @@ end featureNotImplemented;
 procedure featureNotImplemented( subjectId : identifier ) is
 begin
    err( subject => subjectId,
-        reason => +"is not implented",
+        reason => +"is not implemented",
         obstructorNotes => nullMessageStrings,
         remedy => +"it was disabled when SparForte was configured and compiled"
    );
 end featureNotImplemented;
+
+procedure featureNotYetImplemented( subjectNotes, remedy : string ) is
+begin
+   err( subjectNotes => em( subjectNotes ),
+        reason => +"is not yet implemented",
+        obstructorNotes => nullMessageStrings,
+        remedy => pl( remedy )
+   );
+end featureNotYetImplemented;
+
+procedure featureNotYetImplemented( subjectId : identifier; remedy : string ) is
+begin
+   err( subject => subjectId,
+        reason => +"is not yet implemented",
+        obstructorNotes => nullMessageStrings,
+        remedy => pl( remedy )
+   );
+end featureNotYetImplemented;
 
 -----------------------------------------------------------------------------
 -- Internal errors

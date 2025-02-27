@@ -1,72 +1,79 @@
 For the latest news, visit the SparForte web site.
 
-Objective: Shell modernization and reducing technical debt.
+Objective: Error message improvements
 
-CHANGES SINCE 2.5
+Known Issues
 
-1. New: --session option to store history and local profiles under alternate names.
+Warnings from MariaDB libraries Raspberry Pi OS / Bullseye.
 
-2. New: System.Session_Name to read the name from --session.
+Failure on OpenSuSE 15.5 on error in errmsg.h: MariaDB has mixed integers and string pointers in this file, which is illegal in C--presumably because a pointer may be a different size than an integer--and now strictly enforced by recent versions of GCC.  You may be able to edit errmsg.h and replace the strings near line 40 with integers as a kludge.
 
-3. New: pragma prompt_idle_script and prompt_idle_speed.
+Failing to build on Raspberry Pi OS / Bookworm due to an internal error in the Ada standard address to access conversions function.
 
-4. New: New examples rock.sp, user_input.sp, primes_asc.sp.
+CHANGES SINCE 2.6
 
-5. New: case in is now case procedure.
+1. Fix: --without-sound now builds successfully.
 
-6. Fix: GCC-style error messages no longer contains coloured text with --colour/--color.
+2. Fix: --without-readline now builds successfully.
 
-7. Fix: non-limited volatiles, which cannot be used in expressions, no longer have an error for not being declared limited.
 
-8. Fix: usable parameters in null subprograms no longer report an error if they are not used or are not referenced.
+CHANGES SINCE 2.6.1
 
-9. Refactor: end-of-line CR/LF definitions are now in the os_binding files.
+3. Change: more error messages updated to new format.
 
-10. Fix: --gcc-errors no longer hides error messages at an interactive prompt.
+4. Fix: additional error checks for JSON encoding/decoding.
 
-11. Fix: with APQ, Makeincl no longer aborts a make clean because this generated file was removed in a previous make clean.
+5. Fix: whitespace handling for JSON encoding/decoding.
 
-12. Refactor: error reporting functions have been redesigned for better security and support for European characters.  Also, highlighted keywords in source lines in error messages.
+6. Fix: boolean values now shown in env command.
 
-13. Fix: libc group_member() missing from some Ubuntu Linux where __USE_GNU is not set.  Occurred on a recent Ubuntu update.  Added workaround based on BSD hack.
+7. Fix: an error is reported when bubble or heap sorting arrays containing undefined numeric or enumerated values, instead of raising an exception.
 
-14. Fix: if an error occurs while parsing a pragma template, do not enable templates and get an internal error when rendering the HTTP header.
+8. Fix: type checking on out mode parameters.
 
-15. Fix: template error messages are now consistently written to standard error as a single line for logging purposes.
+9. Fix: trailing whitespace in a prompt script shows an appropriate message instead of "statement expected".
 
-16. New: basic TOML/INI template support.
+10. New: New style error messages may include the location where an identifier was declared.
 
-17. New: error messages include the percentage of distance through the script where the error occurred.
+11. Change: configure will try to use find /usr/lib if locate command is not installed.
 
-18. Fix: extended ASCII characters render correctly in log package messages.
+12. Change: very long identifier names will be replaced with the text "the identifier" in new style error messages.
 
-19. Change: normal errors (not GCC format) show the line before the error line as well as the error line, for more context.
+13. Change: when using cd on a path to a non-directory, cd will attempt to change directory to the directory containing the file with an "Assuming" warning.  In a script, this is a suggested remedy in the error message.
 
-20. Change: replaced "let" commands in shell scripts with $((..)) to make them compatible with feature-poor dash shell.
+14. Change: when using cd with a path with leading/trailing spaces, cd will attempt to change directory to the directory without spaces with an "Assuming" warning.  In a script, this is a suggested remedy in the error message.
 
-21. New: configure --jobs option.
+15. Change; when using cd with the wrong slash delimiter, cd will attempt to use the correct directory delimiter with an "Assuming" warning.  In a script, this is a suggested remedy.
 
-22. Refactor: standardized numeric values in the language to a dedicated type instead of using long_float's.
+16. Change: umask will correct suspicious values, at the command prompt only.
 
-23. Fix: directories with spaces now tab complete correctly.
+17. Change: standard names PATH, HOME, PWD, OLDPWD and TERM may no longer be deleted with unset.  These names also disallowed in declarations of new variables.
 
-24. Fix: type errors are now caught again in templates.
+18. Fix: design pragmas constraint mode error messages updated for the correct names.
 
-25. Fix: built-in functions with out parameters no longer require the out variable to be declared first.
+19. Change: support for newer Raspberry Pi OS Bullseye releases.  Bookworm failing to compile due to an Ada internal error.
 
-26. New: pragma restriction( no_prompt_history ) to disable saving interactive prompt history when SparForte is shutting down.
+CHANGES SINCE 2.6.2
 
-27. Change: the SIGQUIT signal is now ignored, as in the BASH shell.
+20. Fix: first item in an enumerated type no longer gives an undefined error when converting a record to JSON.
 
-28. Change: the SIGTERM signal is handled for interfactive sessions, as in the BASH shell.
+21. Fix: SDL support is now removed through the gnat preprocessor when --without-sdl is used.  This is a workaround for GCC 13 bug failing on graphics support.
 
-29. Change: the provision script supports "without" options.  A full install of all software dependencies is no longer required.
+22. Fix: --without-sdl now requires --without-opengl.
 
-30. Change: replaced some text_io functions within the language to deal with interrupted system calls based device_error exceptions.
+23. Fix: provision.sh for Rocky Linux and --without-sdl and --without-opengl should work.
 
-31. New: Bourne shell expansions: ${X||} for absolute value, ${X|} for rounded value, ${X|^} for ceiling value, ${X|,} for floor value.
+CHANGES SINCE 2.6.3
 
-32. New: provision.sh updates for Red Hat Linux 9, but SDL 1.2 is not fully included and it must be built --without-sdl.
+24. Fix: arrays.shuffle error message no longer says an array type can be used.
 
-33. Change: l10n changed to support Red Hat Linux 9 which disables GNU extensions.
+25. New: numerics.shannon_entropy_of for byte entropy for string types.
+
+26. New: string constants are checked for secret data using shannon entropy plus heuristics. [docs, positive tests needed]
+
+27. Fix: teams.messaging spelling corrected.
+
+28. Fix: Building mostly successfully under Linux Mint 22 / Ubuntu 24.04.  Graphics show warnings due to Ubuntu MESA bugs.  Sound must be disabled due with --without-sound to Ubuntu gstreamer bugs.  Some OpenGL functions commented out due to GCC Ada compiler bugs.
+
+29. Fix: Due to new rules about the arrangement of subprogram methods, some classes have been reordered to prevent GCC 13 "frozen" errors.
 

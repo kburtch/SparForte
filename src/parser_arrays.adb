@@ -84,7 +84,7 @@ begin
           subjectType => identifiers( id ).kind,
           reason => +"was used but the function expects",
           obstructorNotes => pl( "an " ) & em( "array or array type" ),
-          seeAlso => seeArrays
+          seeAlso => docPkgArrays
      );
   else
      err( context => sub_id,
@@ -92,7 +92,7 @@ begin
           subjectType => identifiers( id ).kind,
           reason => +"was used but the procedure expects",
           obstructorNotes => pl( "an " ) & em( "array or array type" ),
-          seeAlso => seeArrays
+          seeAlso => docPkgArrays
      );
   end if;
 end expectArrayOrArrayType;
@@ -105,7 +105,7 @@ begin
           subjectType => identifiers( id ).kind,
           reason => +"was used but the function expects",
           obstructorNotes => pl( "an " ) & em( "array" ),
-          seeAlso => seeArrays
+          seeAlso => docPkgArrays
      );
   else
      err( context => sub_id,
@@ -113,7 +113,7 @@ begin
           subjectType => identifiers( id ).kind,
           reason => +"was used but the procedure expects",
           obstructorNotes => pl( "an " ) & em( "array" ),
-          seeAlso => seeArrays
+          seeAlso => docPkgArrays
      );
   end if;
 end expectArray;
@@ -125,7 +125,7 @@ begin
         subjectType => identifiers( id ).kind,
         reason => +"cannot be sorted because it must have a",
         obstructorNotes => +"a string, numeric or enumerated element type",
-        seeAlso => seeArrays
+        seeAlso => docPkgArrays
    );
 end expectSortableArray;
 

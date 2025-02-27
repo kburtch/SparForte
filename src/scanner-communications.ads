@@ -104,12 +104,16 @@ obstructorAda95    : constant messageStrings := em( "pragma ada_95" );
 seeAssign          : constant messageStrings := +"doc/ref_assign.html";
 seeBTreeIO         : constant messageStrings := +"doc/pkg_btree_io.html";
 seeDB              : constant messageStrings := +"doc/ref_db.html";
+docEnum            : constant messageStrings := +"doc/ref_enum.html";
 seeLiterals        : constant messageStrings := +"doc/ref_literals.html";
 seePragmas         : constant messageStrings := +"doc/ref_pragmas.html";
 seeShellCmds       : constant messageStrings := +"doc/ref_shellcmds.html";
+docSubprograms     : constant messageStrings := +"doc/ref_subprograms.html";
 seeTypes           : constant messageStrings := +"doc/ref_types.html";
-seeArrays          : constant messageStrings := +"doc/pkg_arrays.html";
-seeRecords         : constant messageStrings := +"doc/pkg_records.html";
+docTypeDecl        : constant messageStrings := +"doc/ref_typedecl.html";
+docPkgArrays       : constant messageStrings := +"doc/pkg_arrays.html";
+docPkgRecords      : constant messageStrings := +"doc/pkg_records.html";
+docArrays      : constant messageStrings := +"doc/ref_arrays.html";
 
 ------------------------------------------------------------------------------
 
@@ -496,6 +500,9 @@ procedure expectNonRestrictedShell( subjectId : identifier );
 
 procedure featureNotImplemented( subjectNotes : string );
 procedure featureNotImplemented( subjectId : identifier );
+
+procedure featureNotYetImplemented( subjectNotes, remedy : string );
+procedure featureNotYetImplemented( subjectId : identifier; remedy : string );
 
 -----------------------------------------------------------------------------
 -- Internal errors

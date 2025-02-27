@@ -261,6 +261,6 @@ echo "  <td class=\"download_left\"><strong>$OS_NAME version (alias)</strong><br
 echo "  <td class=\"download_left\">$BUILD_ARCH (64-bit)<br>($RELEASE_DATE)</td>"
 echo "  <td class=\"download_right\">$VERSION</td>"
 echo "  <td class=\"download_right\">$FILE_SIZE</td>"
-echo "  <td class=\"download_left\"><a href="downloads/$BUILD_TARBALL">Download bzip tar</a></td>"
+echo "  <td class=\"download_left\"><a href=\"downloads/$BUILD_TARBALL\">Download bzip tar</a></td>"
 echo "---"
 
