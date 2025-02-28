@@ -1550,7 +1550,7 @@ begin
       end;
       -- vector values (for now) must be scalar
       if identifiers( id ).genKind2 = eof_t then
-         err_two_elements_not_one( id, type_token ); 
+         err_two_elements_not_one( id, type_token );
       else
          declare
             genKindId : identifier renames identifiers( id ).genKind2;
@@ -1597,7 +1597,7 @@ begin
       end;
       -- vector cursor values (for now) must be scalar
       if identifiers( id ).genKind2 = eof_t then
-         err_two_elements_not_one( id, type_token ); 
+         err_two_elements_not_one( id, type_token );
       else
          declare
             genKindId : identifier renames identifiers( id ).genKind2;
@@ -1626,7 +1626,7 @@ begin
       end;
       -- hashed map values (for now) must be scalar
       if identifiers( id ).genKind2 = eof_t then
-         err_two_elements_not_one( id, type_token ); 
+         err_two_elements_not_one( id, type_token );
       else
          declare
             genKindId : identifier renames identifiers( id ).genKind2;
@@ -1655,7 +1655,7 @@ begin
       end;
       -- hashed map values (for now) must be scalar
       if identifiers( id ).genKind2 = eof_t then
-         err_two_elements_not_one( id, type_token ); 
+         err_two_elements_not_one( id, type_token );
       else
          declare
             genKindId : identifier renames identifiers( id ).genKind2;

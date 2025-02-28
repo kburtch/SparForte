@@ -1,6 +1,4 @@
 js : json_string;
-type arrtype is array(1..2) of boolean;
+i : integer;
 
-a : arrtype;
-
-arrays.to_json( js, a ); -- bool values are undefined
+arrays.to_json( js, i ); -- i is not an array
