@@ -1677,6 +1677,17 @@ arrays.bubble_sort_descending( ssa );
 pragma assert( ssa(1) = "cat" );
 pragma assert( ssa(2) = "bat" );
 pragma assert( ssa(3) = "ape" );
+ssa(1) := "bat";
+ssa(2) := "cat";
+ssa(3) := "ape";
+arrays.heap_sort( ssa );
+pragma assert( ssa(1) = "ape" );
+pragma assert( ssa(2) = "bat" );
+pragma assert( ssa(3) = "cat" );
+arrays.heap_sort_descending( ssa );
+pragma assert( ssa(1) = "cat" );
+pragma assert( ssa(2) = "bat" );
+pragma assert( ssa(3) = "ape" );
 
 -- test on null arrays
 
