@@ -1662,6 +1662,22 @@ pragma assert( la1(aenum1) = 3 );
 pragma assert( la1(aenum2) = 2 );
 pragma assert( la1(aenum3) = 1 );
 
+-- string sorts
+
+type strsortarray is array(1..3) of string;
+ssa : strsortarray;
+ssa(1) := "bat";
+ssa(2) := "cat";
+ssa(3) := "ape";
+arrays.bubble_sort( ssa );
+pragma assert( ssa(1) = "ape" );
+pragma assert( ssa(2) = "bat" );
+pragma assert( ssa(3) = "cat" );
+arrays.bubble_sort_descending( ssa );
+pragma assert( ssa(1) = "cat" );
+pragma assert( ssa(2) = "bat" );
+pragma assert( ssa(3) = "ape" );
+
 -- test on null arrays
 
 arrays.bubble_sort( nularr );

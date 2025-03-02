@@ -118,6 +118,25 @@ begin
   end if;
 end expectArray;
 
+procedure expectWritableItems( subprogramId, var_id : identifier ) is
+begin
+  if identifiers( identifiers( var_id ).kind ).usage = constantUsage then
+     err( context => subprogramId,
+          subject => var_id,
+          subjectType => identifiers( var_id ).kind,
+          reason => +"cannot be rearranged or changed because its constant elements",
+          obstructorNotes => em( "cannot be written" )
+     );
+  elsif identifiers( identifiers( var_id ).kind ).usage = limitedUsage then
+     err( context => subprogramId,
+          subject => var_id,
+          subjectType => identifiers( var_id ).kind,
+          reason => +"cannot be rearranged or changed because its limited elements",
+          obstructorNotes => em( "cannot be read or written" )
+     );
+  end if;
+end expectWritableItems;
+
 procedure expectSortableArray( sub_id, id : identifier ) is
 begin
    err( context => sub_id,
@@ -463,6 +482,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check and not error_found then
@@ -509,6 +529,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check and not error_found then
@@ -555,6 +576,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -601,6 +623,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -649,6 +672,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -717,6 +741,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -776,6 +801,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArray( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   -- mark as being altered for later tests
   if syntax_check then
      identifiers( var_id ).wasWritten := true;
@@ -823,6 +849,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArrayOrArrayType( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -871,6 +898,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArrayOrArrayType( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -924,6 +952,7 @@ begin
   if not (class_ok( var_id, varClass ) and identifiers( var_id ).list) then
      expectArrayOrArrayType( subprogramId, var_id );
   end if;
+  expectWritableItems( subprogramId, var_id );
   expect( symbol_t, ")" );
   -- mark as being altered for later tests
   if syntax_check then
@@ -984,6 +1013,7 @@ begin
   if not (class_ok( target_var_id, varClass ) and identifiers( target_var_id ).list) then
      expectArray( subprogramId, target_var_id );
   end if;
+  expectWritableItems( subprogramId, target_var_id );
   expectParameterComma;
   ParseExpression( source_val, source_type );
   if baseTypesOK( source_type, json_string_t ) then

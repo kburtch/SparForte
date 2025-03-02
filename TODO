@@ -11,6 +11,8 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
+- type art is array(1..2_ of integer; produces a constraint error
+
   - error messages and additional context
     - many error messages have the source arrow 1 position to the right
       of where it should be
