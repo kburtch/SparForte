@@ -2672,10 +2672,12 @@ end ParseRecordTypePart;
 
 procedure ParseArrayTypePart( newtype_id : identifier ) is
    --type_id     : arrayID;
-   ab1         : unbounded_string; -- low array bound
+   ab1         : unbounded_string; -- low array bound (array bound 1)
    kind1       : identifier;
-   ab2         : unbounded_string; -- high array bound
+   ab1_as_longint : long_integer;
+   ab2         : unbounded_string; -- high array bound (array bound 2)
    kind2       : identifier;
+   ab2_as_longint : long_integer;
    elementType : identifier;
    elementBaseType : identifier;        -- base type of array elements type
    b           : boolean;
@@ -2722,9 +2724,34 @@ begin
       );
    elsif type_checks_done or else baseTypesOK(kind1, kind2 ) then
       if isExecutingCommand and not syntax_check then  -- ab1/2 undef on synchk
-         if to_numeric( ab1 ) > to_numeric( ab2 ) then
-            if long_integer( to_numeric( ab1 ) ) /= 1 and
-               long_integer( to_numeric( ab2 ) ) /= 0 then
+         begin
+            ab1_as_longint := long_integer( to_numeric( ab1 ) );
+         exception when constraint_error =>
+            err( contextNotes => pl( "declaring the array type " ) &
+                    unb_em( identifiers( newtype_id ).name ),
+                 subjectNotes => em( "the low bound of the array index range" ),
+                 reason => +"has a value that is too large",
+                 obstructorNotes => em_value( ab1 ),
+                 obstructorType => kind1,
+                 seeAlso => seeTypes
+            );
+            ab1_as_longint := 0;
+         end;
+         begin
+            ab2_as_longint := long_integer( to_numeric( ab2 ) );
+         exception when constraint_error =>
+            err( contextNotes => pl( "declaring the array type " ) &
+                    unb_em( identifiers( newtype_id ).name ),
+                 subjectNotes => em( "the high bound of the array index range" ),
+                 reason => +"has a value that is too large",
+                 obstructorNotes => em_value( ab2 ),
+                 obstructorType => kind2,
+                 seeAlso => seeTypes
+            );
+            ab2_as_longint := 0;
+         end;
+         if ab1_as_longint > ab2_as_longint then
+            if ab1_as_longint /= 1 and ab2_as_longint /= 0 then
                err( contextNotes => pl( "declaring the array type " ) &
                        unb_em( identifiers( newtype_id ).name ),
                     subjectNotes => em( "the high bound of the array index range" ),
@@ -2772,8 +2799,8 @@ begin
       b := deleteIdent( newtype_id );                       -- discard bad type
    elsif type_checks_done or else class_ok( elementType, typeClass, subClass ) then  -- item type OK?
       if isExecutingCommand and not syntax_check then       -- not on synchk
-         identifiers( newtype_id ).firstBound := long_integer( to_numeric( ab1 ) );
-         identifiers( newtype_id ).lastBound := long_integer( to_numeric( ab2 ) );
+         identifiers( newtype_id ).firstBound := ab1_as_longint;
+         identifiers( newtype_id ).lastBound := ab2_as_longint;
       end if;
       identifiers( newtype_id ).kind := elementType;        -- element type
       identifiers( newtype_id ).genKind := kind1;           -- index type

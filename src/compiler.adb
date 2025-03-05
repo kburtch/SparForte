@@ -44,6 +44,7 @@ use ada.text_io,
     spar_os,
     spar_os.tty,
     signal_flags,
+    pegasoft,
     pegasoft.user_io,
     pegasoft.script_io,
     pegasoft.strings,
@@ -1043,6 +1044,17 @@ begin
          lastpos := lastpos+1;
          exit when lastpos > length( command );
      end loop;
+     -- This test is for bad numeric literals like "2_" or very large values
+     -- that cannot be represented.  It is better to catch this in the compiler
+     -- than checking during parsing.  This does not guarantee that an
+     -- expression cannot be too large.
+     declare
+        tmp : numericValue;
+     begin
+        tmp := to_numeric( unbounded_slice( command, cmdpos, lastpos-1 ) );
+     exception when others =>
+        err_tokenize( "malformed or too large numeric literal",  to_string( command ) );
+     end;
         cmdpos := lastpos;
         lastpos := lastpos-1;
         -- if firstpos /= lastpos then  -- don't bother compressing 1 char numbers

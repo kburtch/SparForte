@@ -3633,7 +3633,8 @@ begin
                subjectNotes => pl( qp( "the value" ) ),
                subjectType => kind,
                reason => +"could not be cast because",
-               obstructorNotes => em( "it was out-of-range" )
+               obstructorNotes => em( "it was malfored or out-of-range" ),
+               seeAlso => seeTypes
            );
         end if;
      when others =>

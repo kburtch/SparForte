@@ -9,5 +9,7 @@ CHANGES SINCE 2.6.3
 1. Fix: For constant specifications, when the specification is fulfilled the type of the assigned value is now verified with the type of the constant.  Previously the type was not verified.
 
 2. Fix: command type variables must contain paths to files in a secure directory.
-3. Fix: arrays with limited or constant elements cannot be rearranged by sorting, shuffling, rotating, shifting, or flipping.  to_array also cannt write to limited or constant elements.
+3. Fix: arrays with limited or constant elements cannot be rearranged by sorting, shuffling, rotating, shifting, or flipping.  to_array also will no longer write to limited or constant array elements.
+
+4. Fix: malformed numeric literals like "123_" no longer throw an Ada exception.
 
