@@ -332,7 +332,8 @@ procedure DoJsonToString( result : out unbounded_string; expr_val : unbounded_st
 procedure DoArrayToJson( result : out unbounded_string; source_var_id : identifier );
 -- Convert an array to a JSON string.
 
-procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_string );
+procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaLabel : identifier );
+
 -- Convert a JSON string and store in an array.
 
 procedure DoRecordToJson( result : out unbounded_string; source_var_id : identifier );
@@ -475,6 +476,7 @@ type aScriptState is record
   inputMode    : anInputMode;       -- was interactive or not
 end record;
 
+-- Identifier aren't defined yet...do not use them
 type blockDeclaration is record
   startpos        : long_integer;     -- where in script file block starts
   identifiers_top : identifier;       -- where block declarations begin
@@ -488,6 +490,7 @@ type blockDeclaration is record
   occurrence_message   : unbounded_string;
   occurrence_status    : aStatusCode;
   occurrence_full      : unbounded_string;
+  metaLevel       : identifier; -- the security level
 end record;
 
 type blocksArray is array( block ) of blockDeclaration;

@@ -103,17 +103,19 @@ procedure putCommandPrompt is
   suppressPromptChars : boolean;
   bigArrowIndex : natural;
   termTitle : unbounded_string;
+  prompt_st : storage;
 begin
 
     -- Try to run the prompt script
 
     suppressPromptChars := false;
     if length( promptScript ) /= 0 then
-       CompileRunAndCaptureOutput( promptScript, prompt );
+       CompileRunAndCaptureOutput( promptScript, prompt_st );
        if error_found then
           put_line_retry( current_error, fullErrorMessage.templateMessage );
           prompt := null_unbounded_string;
        elsif terminalWindowNaming then
+          prompt := prompt_st.value;
           -- set the xterm window title
           termTitle := ASCII.ESC & ada.strings.unbounded.to_unbounded_string( "]2;" );
           for i in 1..length( prompt ) loop

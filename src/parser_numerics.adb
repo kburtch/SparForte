@@ -32,7 +32,6 @@ with ada.numerics.float_random,
     gnat.sha512,
     --pegasoft.user_io,
     pegasoft.numerics,
-    world,
     scanner,
     scanner.communications,
     parser_params,
@@ -44,7 +43,6 @@ use interfaces,
     pegasoft.numerics,
     pegasoft.numerics.elementary_functions,
     pegasoft.numerics.complex_types,
-    world,
     scanner,
     scanner.communications,
     parser_params,
@@ -1105,7 +1103,7 @@ begin
   end;
 end ParseNumericsPos;
 
-procedure ParseNumericsAbs( result : out unbounded_string ) is
+procedure ParseNumericsAbs( result : out storage ) is
   -- Syntax: numerics.abs( n );
   -- Source: Ada abs function
   expr_val   : unbounded_string;
@@ -1115,7 +1113,7 @@ begin
   ParseSingleNumericParameter( abs_t, expr_val, expr_type );
   begin
      if isExecutingCommand then
-       result := to_unbounded_string( abs( to_numeric( expr_val ) ) );
+       result.value := to_unbounded_string( abs( to_numeric( expr_val ) ) );
      end if;
   exception when others =>
      err_exception_raised;

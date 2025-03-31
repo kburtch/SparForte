@@ -97,6 +97,7 @@ sourceLineNoHi : natural := 0;
 -- identifiers are in the world package to make their values easily accessible
 ------------------------------------------------------------------------------
 
+system_meta_level_image_t : identifier; -- Spar-specific
 
 ------------------------------------------------------------------------------
 -- Source_Info package identifiers
@@ -112,9 +113,8 @@ source_info_file_t     : identifier; -- Gnat.Source_Info.File
 source_info_line_t     : identifier; -- Gnat.Source_Info.Line
 source_info_src_loc_t  : identifier; -- Gnat.Source_Info.Source_Location
 source_info_enc_ent_t  : identifier; -- Gnat.Source_Info.Enclosing_Entity
-source_info_script_size_t   : identifier; -- Bush-specific.  byte-code size
-source_info_symbol_table_size_t : identifier; -- Bush-specific
-
+source_info_script_size_t   : identifier; -- Spar-specific.  byte-code size
+source_info_symbol_table_size_t : identifier; -- Spar-specific
 
 -- End of Identifier Declarations
 

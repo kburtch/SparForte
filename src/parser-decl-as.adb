@@ -240,7 +240,7 @@ end checkVarUsageQualifier;
 -----------------------------------------------------------------------------
 
 procedure ParseIfBlock is
-  expr_val  : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
   b : boolean := false;
   handled : boolean := false;
@@ -254,13 +254,13 @@ begin
   if token = if_t then                                     -- this error is
      err( +"redundant " & em( "if" ) );                    -- from GNAT
   end if;
-  ParseExpression( expr_val, expr_type );                  -- expression
+  ParseExpression( expr_st, expr_type );                   -- expression
   if type_checks_done then
-     b := expr_val = "1";                                  -- to real Boolean
+     b := expr_st.value = "1";                             -- to real Boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( +"boolean expression expected" );
   else                                                     -- else convert bool
-     b := expr_val = "1";                                  -- to real Boolean
+     b := expr_st.value = "1";                             -- to real Boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
@@ -287,13 +287,13 @@ begin
      if token = elsif_t then                               -- this error is
         err( +"redundant " & em( "elsif" ) );              -- from GNAT
      end if;
-     ParseExpression( expr_val, expr_type );               -- expression
+     ParseExpression( expr_st, expr_type );                -- expression
      if type_checks_done then
-        b := expr_val = "1";                               -- to real Boolean
-     elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
+        b := expr_st.value = "1";                          -- to real Boolean
+     elsif not baseTypesOK( boolean_t, expr_type ) then    -- not bool result?
         err( +"boolean expression expected" );
      else                                                  -- else convert bool
-        b := expr_val = "1";                               -- to real Boolean
+        b := expr_st.value = "1";                          -- to real Boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -413,7 +413,7 @@ end SkipStaticBlock;
 
 procedure ParseStaticIfBlock is
 -- Syntax: if-block = "if"... "elsif"..."else"..."end if"
-  expr_val  : unbounded_string;
+  expr_st : storage;
   expr_type : identifier;
   b : boolean := false;
   handled : boolean := false;
@@ -433,13 +433,13 @@ begin
   if token = if_t then                                     -- this error is
      err( +"redundant " & em( "if" ) );                    -- from GNAT
   end if;
-  ParseStaticExpression( expr_val, expr_type );            -- expression
+  ParseStaticExpression( expr_st, expr_type );            -- expression
   if type_checks_done then
-     b := expr_val = "1";                                  -- to real Boolean
+     b := expr_st.value= "1";                              -- to real Boolean
   elsif not baseTypesOK( boolean_t, expr_type ) then       -- not a bool result?
      err( +"boolean expression expected" );
   else                                                     -- else convert bool
-     b := expr_val = "1";                                  -- to real Boolean
+     b := expr_st.value = "1";                              -- to real Boolean
   end if;
   expect( then_t );                                        -- "then"
   if token = then_t then                                   -- this error is
@@ -466,13 +466,13 @@ begin
      if token = elsif_t then                               -- this error is
         err( +"redundant " & em( "elsif" ) );              -- from GNAT
      end if;
-     ParseStaticExpression( expr_val, expr_type );         -- expression
+     ParseStaticExpression( expr_st, expr_type );          -- expression
      if type_checks_done then
-        b := expr_val = "1";                               -- to real Boolean
-     elsif not baseTypesOK( boolean_t, expr_type ) then       -- not bool result?
+        b := expr_st.value = "1";                          -- to real Boolean
+     elsif not baseTypesOK( boolean_t, expr_type ) then    -- not bool result?
         err( +"boolean expression expected" );
      else                                                  -- else convert bool
-        b := expr_val = "1";                               -- to real Boolean
+        b := expr_st.value= "1";                           -- to real Boolean
      end if;
      if handled then                                       -- already handled?
         syntax_check := backup_sc;                         -- restore flag
@@ -700,7 +700,7 @@ procedure ParseCaseInBigArrowPart(
   handled   : in out boolean
 ) is
   return_id  : identifier;
-  outExpr  : unbounded_string;
+  outExpr  : storage;
   outType  : identifier;
 begin
   if token /= symbol_t or identifiers( token ).value.all /= "=>" then
@@ -750,11 +750,11 @@ begin
                     identifiers( outType ).wasCastTo := true;
                  end if;
                  if isExecutingCommand then
-                    outExpr := castToType( outExpr, outtype );
+                    outExpr.value := castToType( outExpr.value, outtype );
                  end if;
               end if;
 
-              identifiers( return_id ).value.all := outExpr;
+              identifiers( return_id ).value.all := outExpr.value;
               if trace then
                  put_trace( to_string( identifiers( return_id ).name ) & " := " & toSecureData( to_string( toEscaped( identifiers( return_id ).value.all ) ) ) );
               end if;
@@ -1667,7 +1667,7 @@ end ParseLoopBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseWhileBlock is
-  expr_val  : unbounded_string;
+  expr_st: storage;
   expr_type : identifier;
   old_exit_block : constant boolean := exit_block;
 begin
@@ -1678,7 +1678,7 @@ begin
      if token = while_t then                               -- this is from
         err( +"redundant " & em( "while" ) );              -- GNAT
      end if;
-     ParseExpression( expr_val, expr_type );               -- expression
+     ParseExpression( expr_st, expr_type );                -- expression
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( +"boolean expression expected" );
      end if;
@@ -1689,13 +1689,13 @@ begin
 
   loop
      expect( while_t );                                    -- "while"
-     ParseExpression( expr_val, expr_type );               -- expression
+     ParseExpression( expr_st, expr_type );                 -- expression
      -- The type of the while expression can only change during a while loop
      -- with a typeset at the command prompt.
      if not type_checks_done and then not baseTypesOK( boolean_t, expr_type ) then       -- not boolean?
         err( +"boolean expression expected" );
         exit;
-     elsif expr_val /= "1" or error_found or exit_block then -- skipping?
+     elsif expr_st.value /= "1" or error_found or exit_block then -- skipping?
         expect( loop_t );                                  -- "loop"
         SkipBlock;                                         -- skip while block
         exit;                                              -- and quit
@@ -1733,9 +1733,9 @@ end ParseWhileBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseForBlock is
-  expr1_val  : unbounded_string;
+  expr1_st  : storage;
   expr1_type : identifier;
-  expr2_val  : unbounded_string;
+  expr2_st  : storage;
   expr2_type : identifier;
   expr2_num  : numericValue;
   for_var    : identifier;
@@ -1780,9 +1780,9 @@ begin
         isReverse := true;
         expect( reverse_t );
      end if;
-     ParseExpression( expr1_val, expr1_type );          -- low range
+     ParseExpression( expr1_st, expr1_type );           -- low range
      expect( symbol_t, ".." );                          -- ".."
-     ParseExpression( expr2_val, expr2_type );          -- high range
+     ParseExpression( expr2_st, expr2_type );           -- high range
      -- declare for var down here in case older var with same name
      -- used in for loop range (so that for k in k..k+1 is legit)
      declareIdent( for_var, for_name, uni_numeric_t);   -- declare for var
@@ -1838,11 +1838,11 @@ begin
            isReverse := true;
            expect( reverse_t );
         end if;
-        ParseExpression( expr1_val, expr1_type );          -- low range
+        ParseExpression( expr1_st, expr1_type );           -- low range
         expect( symbol_t, ".." );                          -- ".."
-        ParseExpression( expr2_val, expr2_type );          -- high range
+        ParseExpression( expr2_st, expr2_type );           -- high range
         if verboseOpt then
-           put_trace( "in " & toSecureData( to_string( toEscaped( expr1_val ) ) ) & ".." & toSecureData( to_string( toEscaped( expr2_val ) ) ) );
+           put_trace( "in " & toSecureData( to_string( toEscaped( expr1_st.value ) ) ) & ".." & toSecureData( to_string( toEscaped( expr2_st.value ) ) ) );
         end if;
 
         --if error_found then                              -- errors?
@@ -1861,20 +1861,20 @@ begin
            end if;
            if not error_found then
               if isReverse then
-                 identifiers( for_var ).value.all := expr2_val; -- for var is
+                 identifiers( for_var ).value.all := expr2_st.value; -- for var is
                  identifiers( for_var ).kind := expr2_type;     -- this type
                  identifiers( for_var ).class := varClass;      -- make const
                  identifiers( for_var ).usage := constantUsage;
                  if isExecutingCommand then
-                    expr2_num := to_numeric( expr1_val );
+                    expr2_num := to_numeric( expr1_st.value );
                  end if;
               else
-                 identifiers( for_var ).value.all := expr1_val; -- for var is
+                 identifiers( for_var ).value.all := expr1_st.value; -- for var is
                  identifiers( for_var ).kind := expr1_type;     -- this type
                  identifiers( for_var ).class := varClass;      -- make const
                  identifiers( for_var ).usage := constantUsage;
                  if isExecutingCommand then
-                    expr2_num := to_numeric( expr2_val );
+                    expr2_num := to_numeric( expr2_st.value );
                  end if;
               end if;
            end if;
@@ -1955,20 +1955,20 @@ end ParseForBlock;
 -----------------------------------------------------------------------------
 
 procedure ParseDelay is
-  expr_val  : unbounded_string;
+  expr_st: storage;
   expr_type : identifier;
 begin
   expect( delay_t );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_st, expr_type );
   if type_checks_done or else baseTypesOK( expr_type, duration_t ) then
      if isExecutingCommand then
         begin
-          delay duration( to_numeric( expr_val ) );
+          delay duration( to_numeric( expr_st.value ) );
         exception when others =>
           err_exception_raised;
         end;
         if trace then
-           put_trace( "duration := " & toSecureData( to_string( toEscaped( expr_val ) ) ) );
+           put_trace( "duration := " & toSecureData( to_string( toEscaped( expr_st.value ) ) ) );
         end if;
      end if;
   end if;
@@ -2047,22 +2047,22 @@ end ParseTypeset;
 -- Syntax: vm regtype, regnum
 -----------------------------------------------------------------------------
 
-procedure ParseVm is
-  regtype_val  : unbounded_string;
-  regtype_kind : identifier;
-  regnum_val   : unbounded_string;
-  regnum_kind  : identifier;
-begin
-  ParseExpression( regtype_val, regtype_kind );
-  if baseTypesOK( regtype_kind, string_t ) then
-     expectParameterComma;
-     ParseExpression( regnum_val, regnum_kind );
-     if baseTypesOK( regnum_kind, integer_t ) then
-        null;
-     end if;
-  end if;
-  builtins.vm( regtype_val, regnum_val );
-end ParseVm;
+-- procedure ParseVm is
+--   regtype_st  : storage;
+--   regtype_kind : identifier;
+--   regnum_st   : storage;
+--   regnum_kind  : identifier;
+-- begin
+--   ParseExpression( regtype_st, regtype_kind );
+--   if baseTypesOK( regtype_kind, string_t ) then
+--      expectParameterComma;
+--      ParseExpression( regnum_st, regnum_kind );
+--      if baseTypesOK( regnum_kind, integer_t ) then
+--         null;
+--      end if;
+--   end if;
+--   builtins.vm( regtype_st.value, regnum_st.value);
+-- end ParseVm;
 
 procedure ParseProcedureBlock;
 procedure ParseCaseProcedureBlock;
@@ -2125,6 +2125,9 @@ begin
      elsif token = type_t then
         ParseType;
         expectStatementSemicolon( context => type_t );
+     elsif token = meta_t then
+        ParseMeta;
+        expectStatementSemicolon( context =>meta_t );
      elsif token = subtype_t then
         ParseSubtype;
         expectStatementSemicolon( context => subtype_t );
@@ -2170,14 +2173,14 @@ end ParseDeclarations;
 -----------------------------------------------------------------------------
 
 procedure ParseWhenClause( when_true : out boolean ) is
-  expr_val    : unbounded_string;
+  expr_st    : storage;
   expr_type   : identifier;
 begin
   expect( when_t );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_st, expr_type );
   if type_checks_done or else baseTypesOK( boolean_t, expr_type ) then
      if isExecutingCommand then
-        when_true :=  expr_val = "1";
+        when_true :=  expr_st.value = "1";
         if trace then
            if when_true then
               put_trace( "when condition is true" );
@@ -2204,7 +2207,7 @@ end ParseWhenClause;
 
 procedure ParseRaise( has_when : out boolean ) is
   id : identifier;
-  with_text : unbounded_string;
+  with_text : storage;
   withTextType : identifier;
   mustRaise : boolean := true;
   atSemicolon : aScannerState;
@@ -2222,8 +2225,8 @@ begin
            err( +"re-raise is not in an exception handler" );
         else
            getBlockException( err_exception, err_message, last_status );
-           -- Be careful to fix svalue pointer
-           err_exception.value := err_exception.svalue'access;
+           -- Be careful to fix sstorage pointer
+           err_exception.value := err_exception.sstorage.value'access;
         end if;
      end if;
      if token = when_t or token = if_t then
@@ -2276,24 +2279,24 @@ begin
      if isExecutingCommand then
         if mustRaise then
            -- if no message, check for and use the default message
-           if length( with_text ) = 0 then
+           if length( with_text.value ) = 0 then
               if length( identifiers( id ).value.all ) > 1 then
-                 with_text := unbounded_slice( identifiers( id ).value.all, 2, length( identifiers( id ).value.all ) );
+                 with_text.value := unbounded_slice( identifiers( id ).value.all, 2, length( identifiers( id ).value.all ) );
               end if;
            end if;
            -- Record the exception id
            -- Pull the declaration out of the symbol table.  Mark as not deleted.
            -- Redirect storage pointer to point to local storage, not to the
-           -- symbol table svalue which could get disappear when a block is
+           -- symbol table sstorage which could get disappear when a block is
            -- deallocated.
            err_exception := identifiers( id );
            err_exception.deleted := false;
-           err_exception.value := err_exception.svalue'access;
-           if length( with_text ) > 0 then
+           err_exception.value := err_exception.sstorage.value'access;
+           if length( with_text.value ) > 0 then
               raise_exception( +"raised " &
                    name_em( id ) &
                    pl( ": " &
-                   to_string( with_text ) )
+                   to_string( with_text.value ) )
               );
            else
               raise_exception( +"raised " & name_em( id ) );
@@ -2468,7 +2471,7 @@ begin
      -- save the exception id
      occurrence_exception := err_exception;
      -- because value is a pointer now we must be careful with the value
-     occurrence_exception.value := occurrence_exception.svalue'unchecked_access;
+     occurrence_exception.value := occurrence_exception.sstorage.value'unchecked_access;
      -- TODO: an exception may be progated out of the declaration scope, leaving
 -- the position in the symbol table undefined
      occurrence_message := err_message;
@@ -2594,19 +2597,30 @@ end ParseDeclareBlock;
 -----------------------------------------------------------------------------
 --  PARSE BEGIN BLOCK
 --
--- Handle a begin..end block.
+-- Handle a begin [meta id]..end [meta id] block.
 -----------------------------------------------------------------------------
 
 procedure ParseBeginBlock is
   old_error_found : constant boolean := error_found;
+  newMetaLevel : identifier := eof_t;
 begin
   pushBlock( newScope => true, newName => "begin block" );
   expect( begin_t );
+  if token = with_t then
+     expect( with_t );
+     expect( meta_t );
+     ParseIdentifier( newMetaLevel );
+     metaLevel := newMetaLevel;
+  end if;
   ParseBlock;
   if token = exception_t then
      ParseExceptionHandler( old_error_found );
   end if;
   expect( end_t );
+  if newMetaLevel /= eof_t then
+     expect( meta_t );
+     expect( newMetaLevel );
+  end if;
   pullBlock;
 end ParseBeginBlock;
 
@@ -3526,8 +3540,8 @@ procedure ParseActualParameters( proc_id : identifier;
   begin
     if isExecutingCommand then                      -- no value change
        identifiers( usableParamId ).value :=
-          identifiers( actualParamRef.id ).avalue(
-          actualParamRef.index )'access;
+          identifiers( actualParamRef.id ).astorage(
+          actualParamRef.index ).value'access;
     end if;
     exception when storage_error =>              -- prob freed mem
          err( pl( gnat.source_info.source_location &
@@ -3665,7 +3679,7 @@ end updateRenamedRecordParameter;
   ----------------------------------------------------------------------------
 
 procedure parseUsableInModeParameter( formalParamId : identifier; paramName     : unbounded_string ) is
-   expr_value    : unbounded_string;
+   expr_st      : storage;
    expr_type     : identifier;
    usableParamId : identifier;
    typesOK       : boolean;
@@ -3675,7 +3689,7 @@ begin
   -- (when the scanner creates a "new" type identifier for it).
   -- However, we're in an error state at that point so it may not
   -- matter.
-  ParseExpression( expr_value, expr_type );
+  ParseExpression( expr_st, expr_type );
 
   if type_checks_done then
      typesOK := true;
@@ -3701,13 +3715,13 @@ begin
      --   to_string( expr_value ) );
      if isExecutingCommand then
         if identifiers( formalParamId ).kind /= expr_type then
-           DoContracts( identifiers( formalParamId ).kind, expr_value );
+           DoContracts( identifiers( formalParamId ).kind, expr_st);
         end if;
-        identifiers( usableParamId ).value.all := expr_value;
+        identifiers( usableParamId ).value.all := expr_st.value;
         if trace then
            put_trace(
               to_string( identifiers( usableParamId ).name ) & " := " &
-              toSecureData( to_string( toEscaped( expr_value ) ) ) );
+              toSecureData( to_string( toEscaped( expr_st.value) ) ) );
         end if;
      end if;
      -- DoContract may create a variable so we delay until here to move the
@@ -4475,11 +4489,11 @@ end DoUserDefinedProcedure;
 -- This routines runs the previously compiled function.
 -----------------------------------------------------------------------------
 
-procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string ) is
+procedure DoUserDefinedFunction( s : unbounded_string; result : out storage ) is
   scriptState : aScriptState;
   func_id     : identifier;
   return_id   : identifier;
-  results     : unbounded_string;
+  results     : storage;
   errorOnEntry : constant boolean := error_found;
   exitBlockOnEntry : constant boolean := exit_block;
 begin
@@ -4510,7 +4524,7 @@ begin
      -- parseNewCommands would clear error_found.
      if not error_found then
         parseNewCommands( scriptState, s );
-        results := null_unbounded_string;        -- no results (yet)
+        results.value := null_unbounded_string;  -- no results (yet)
         expect( function_t );                    -- function
         if token = abstract_t then
            expect( abstract_t );
@@ -4546,7 +4560,7 @@ begin
         end if;
         -- return value is top-most variable called "return value"
         findIdent( return_value_str, return_id );
-        result := identifiers( return_id ).value.all;
+        result.value := identifiers( return_id ).value.all;
         restoreScript( scriptState );            -- restore original script
      end if;
   elsif syntax_check or exit_block then
@@ -4778,7 +4792,7 @@ end DoUserDefinedCaseProcedure;
 procedure ParseShellCommand is
   cmdNameToken : identifier;
   cmdName    : unbounded_string;
-  expr_val   : unbounded_string;
+  expr_st   : storage;
   expr_type  : identifier;
   ap         : argumentListPtr;          -- list of parameters to the cmd
   --paramCnt   : natural;                  -- number of parameters in ap
@@ -5353,10 +5367,10 @@ begin
      expect( symbol_t, "(" );                            -- skip paraenthesis
      markScanner( firstParam );                          -- save position
      while not error_found and token /= eof_t loop       -- count parameters
-        ParseExpression( expr_val, expr_type );
+        ParseExpression( expr_st, expr_type );
         -- shellWordList.Queue( wordList, aShellWord'( normalWord, expr_val, expr_val ) );
         -- bourneShellWordLists.Queue( wordList, anExpandedShellWord( expr_val ) );
-        addAdaScriptValue( wordList, expr_val );
+        addAdaScriptValue( wordList, expr_st.value);
         --paramCnt := paramCnt + 1;
         if Token = symbol_t and then identifiers( Token ).value.all = "," then
            getNextToken;
@@ -5735,7 +5749,7 @@ end CompileAndRun;
 -----------------------------------------------------------------------------
 
 procedure RunAndCaptureOutput( s : unbounded_string; results : out
-  unbounded_string; fragment : boolean := true ) is
+  storage; fragment : boolean := true ) is
   scriptState : aScriptState;
   --command     : unbounded_string := s;
   oldStandardOutput : aFileDescriptor;
@@ -5750,7 +5764,7 @@ procedure RunAndCaptureOutput( s : unbounded_string; results : out
 begin
   -- saveScript( scriptState );                  -- save current script
 -- put_token; -- DEBUG
-  results := null_unbounded_string;
+  results.value := null_unbounded_string;
   if isExecutingCommand then                               -- only for real
      makeTempFile( resultName );                           -- results filename
      resultFile := open( to_string( resultName ) & ASCII.NUL, -- open results
@@ -5836,7 +5850,7 @@ begin
              err( pl( "unable to read results: " & OSError( C_errno ) ) );
              exit;                                         --  and bail
           end if;
-          results := results & ch;                         -- add to results
+          results.value := results.value & ch;             -- add to results
         end loop;
         closeResult := close( resultFile );            -- close and delete
         -- close EINTR is a diagnostic message.  Do not handle.
@@ -5845,12 +5859,12 @@ begin
      if unlinkResult < 0 then                              -- unable to delete?
         err( pl( "unable to unlink temp file: " & OSError( C_errno ) ) );
      end if;
-     if length( results ) > 0 then                         -- discard last EOL
-        if element( results, length( results ) ) = ASCII.LF then
-           delete( results, length( results ), length( results ) );
-           if length( results ) > 0 then  -- MS-DOS
-              if element( results, length( results ) ) = ASCII.CR then
-                 delete( results, length( results ), length( results ) );
+     if length( results.value ) > 0 then                   -- discard last EOL
+        if element( results.value, length( results.value ) ) = ASCII.LF then
+           delete( results.value, length( results.value ), length( results.value ) );
+           if length( results.value ) > 0 then  -- MS-DOS
+              if element( results.value, length( results.value) ) = ASCII.CR then
+                 delete( results.value, length( results.value ), length( results.value ) );
               end if;
            end if;
         end if;
@@ -5874,7 +5888,7 @@ end RunAndCaptureOutput;
 -----------------------------------------------------------------------------
 
 procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
-  unbounded_string; firstLineNo : natural := 1  ) is
+  storage; firstLineNo : natural := 1  ) is
   byteCode : unbounded_string;
   scriptState : aScriptState;
 begin
@@ -5924,7 +5938,7 @@ end ParseStep;
 -----------------------------------------------------------------------------
 
 procedure ParseReturn is
-  expr_val    : unbounded_string;
+  expr_st    : storage;
   expr_type   : identifier;
   return_id   : identifier;
   must_return : boolean;
@@ -5979,7 +5993,7 @@ begin
               err( +"procedures cannot return a value" );
            else
            -- no type checking on the function result!
-              ParseExpression( expr_val, expr_type );
+              ParseExpression( expr_st, expr_type );
               -- At this point, we don't know the function id.  Maybe we can
               -- check the block name but the function's identifier is not
               -- currently recorded there.  The return value should have
@@ -5989,19 +6003,19 @@ begin
                  -- typecast where appropriate
                  u := getUniType( identifiers( return_id ).kind );
                  if u = uni_string_t or u = uni_numeric_t or u = universal_t then
-                    expr_val := castToType( expr_val, identifiers( return_id ).kind );
+                    expr_st.value:= castToType( expr_st.value, identifiers( return_id ).kind );
                  end if;
-                 identifiers( return_id ).value.all := expr_val;
+                 identifiers( return_id ).value.all := expr_st.value;
                  -- Unlike a regular variable, we do not mark this as read or
                  -- written.
                  if trace then
-                    put_trace( "returning """ & toSecureData( to_string( toEscaped( expr_val ) ) ) & """" );
+                    put_trace( "returning """ & toSecureData( to_string( toEscaped( expr_st.value ) ) ) & """" );
                  end if;
               end if;
            end if;
         else
            -- for syntax checking, we need to walk the expression
-           ParseExpression( expr_val, expr_type );
+           ParseExpression( expr_st, expr_type );
         end if;
      end if;
 
@@ -6055,9 +6069,9 @@ end ParseReturn;
 procedure ParseAssignment( autoDeclareAllowed : boolean := false ) is
   var_id     : identifier;
   var_kind   : identifier;
-  expr_value : unbounded_string;
+  expr_st   : storage;
   right_type : identifier;
-  index_value: unbounded_string;
+  index_st  : storage;
   index_kind : identifier;
   -- array_id   : arrayID;
   arrayIndex : long_integer;
@@ -6101,7 +6115,7 @@ begin
   -- Array element
   elsif identifiers( var_id ).list then
      expect( symbol_t, "(" );
-     ParseExpression( index_value, index_kind );
+     ParseExpression( index_st, index_kind );
      if getUniType( index_kind ) = uni_string_t or identifiers( index_kind ).list then
         err( +"scalar expression expected" );
      end if;
@@ -6109,18 +6123,18 @@ begin
      expect( symbol_t, ")" );
 
      if isExecutingCommand then
-        arrayIndex := long_integer( to_numeric( index_value ) );
-        if identifiers( var_id ).avalue = null then
+        arrayIndex := long_integer( to_numeric( index_st.value ) );
+        if identifiers( var_id ).astorage = null then
            err( pl( gnat.source_info.source_location &
                 ": internal error: target array storage unexpectedly null" ) );
-        elsif identifiers( var_id ).avalue'first > arrayIndex then
-           err( pl( "array index " & to_string( trim( index_value, ada.strings.both ) ) &
-                " not in" & identifiers( var_id ).avalue'first'img & " .." &
-                identifiers( var_id ).avalue'last'img ) );
-        elsif identifiers( var_id ).avalue'last < arrayIndex then
-           err( pl( "array index " &  to_string( trim( index_value, ada.strings.both ) ) &
-                " not in" & identifiers( var_id ).avalue'first'img & " .." &
-                identifiers( var_id ).avalue'last'img ) );
+        elsif identifiers( var_id ).astorage'first > arrayIndex then
+           err( pl( "array index " & to_string( trim( index_st.value, ada.strings.both ) ) &
+                " not in" & identifiers( var_id ).astorage'first'img & " .." &
+                identifiers( var_id ).astorage'last'img ) );
+        elsif identifiers( var_id ).astorage'last < arrayIndex then
+           err( pl( "array index " &  to_string( trim( index_st.value, ada.strings.both ) ) &
+                " not in" & identifiers( var_id ).astorage'first'img & " .." &
+                identifiers( var_id ).astorage'last'img ) );
         end if;
      end if;
      var_kind := identifiers( var_kind ).kind; -- array of what?
@@ -6141,7 +6155,7 @@ begin
 
   targetExpression := lastExpressionInstruction;
 
-  ParseAssignPart( expr_value, right_type );
+  ParseAssignPart( expr_st, right_type );
 
   lastExpressionInstruction := targetExpression;
 
@@ -6173,7 +6187,7 @@ begin
         identifiers( var_kind ).wasCastTo := true;
      end if;
      if isExecutingCommand then
-        expr_value := castToType( expr_value, var_kind );
+        expr_st.value := castToType( expr_st.value, var_kind );
      end if;
   end if;
 
@@ -6238,7 +6252,7 @@ begin
      -- Programming-by-contract
 
      if var_kind /= right_type then
-        DoContracts( var_kind, expr_value );
+        DoContracts( var_kind, expr_st);
      end if;
 
      if identifiers( var_id ).list then
@@ -6250,18 +6264,18 @@ begin
            -- assignElement( array_id, arrayIndex, expr_value );
         begin
            -- KB: 16/10/02: these appear to be checked above
-           --if identifiers( var_id ).avalue = null then
+           --if identifiers( var_id ).astorage = null then
            --   err( gnat.source_info.source_location & ": internal error: target array storage unexpectedly null" );
-           --elsif identifiers( var_id ).avalue'first > arrayIndex then -- DEBUG, this should never happen, checked above
-           --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
-           --elsif identifiers( var_id ).avalue'last < arrayIndex then
-           --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).avalue'first'img & " .. " & identifiers( var_id ).avalue'last'img );
+           --elsif identifiers( var_id ).astorage'first > arrayIndex then -- DEBUG, this should never happen, checked above
+           --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).astorage'first'img & " .. " & identifiers( var_id ).astorage'last'img );
+           --elsif identifiers( var_id ).astorage'last < arrayIndex then
+           --   err( gnat.source_info.source_location & ": internal error: array index out of bounds " & identifiers( var_id ).astorage'first'img & " .. " & identifiers( var_id ).astorage'last'img );
            --elsif not error_found then
-           identifiers( var_id ).avalue( arrayIndex ) := expr_value; -- NEWARRAY
+           identifiers( var_id ).astorage( arrayIndex ) := expr_st; -- NEWARRAY
            --end if;
         exception when CONSTRAINT_ERROR =>
-          err( pl( "constraint_error : index out of range " & identifiers( var_id ).avalue'first'img & " .." &
-               identifiers( var_id ).avalue'last'img ) );
+          err( pl( "constraint_error : index out of range " & identifiers( var_id ).astorage'first'img & " .." &
+               identifiers( var_id ).astorage'last'img ) );
         when STORAGE_ERROR =>
           err( pl( gnat.source_info.source_location & ": internal error : storage error raised in ParseAssignment" ) );
         end;
@@ -6269,21 +6283,21 @@ begin
            put_trace(
               to_string( identifiers( var_id ).name ) &
               "(" &
-              toSecureData( to_string( ToEscaped( index_value ) ) ) &
+              toSecureData( to_string( ToEscaped( index_st.value) ) ) &
               ")" &
               " := """ &
-              toSecureData( to_string( ToEscaped( expr_value ) ) ) &
+              toSecureData( to_string( ToEscaped( expr_st.value ) ) ) &
                  """" );
         end if;
      else
-        identifiers( var_id ).value.all := expr_value;
+        identifiers( var_id ).value.all := expr_st.value;
         if trace then
            -- builtins.env( ident ) would be better if a value is
            -- returned
            put_trace(
               to_string( identifiers( var_id ).name ) &
               " := """ &
-              toSecureData( to_string( ToEscaped( expr_value ) ) ) &
+              toSecureData( to_string( ToEscaped( expr_st.value ) ) ) &
               """" );
         end if;
      end if;
@@ -6453,12 +6467,12 @@ begin
      ParsePragma;
   elsif Token = type_t then
      err( +"declarations not allowed in executable statements" );
-     -- ParseType;
+  elsif Token = meta_t then
+     err( +"declarations not allowed in executable statements" );
   elsif Token = null_t then
      getNextToken;
   elsif Token = subtype_t then
      err( +"declarations not allowed in executable statements" );
-     -- ParseSubtype;
   elsif Token = if_t then
      ParseIfBlock;
   elsif Token = case_t then
@@ -6852,6 +6866,8 @@ begin
      ParsePragma;
   elsif Token = type_t then
      ParseType;
+  elsif Token = meta_t then
+     ParseMeta;
   elsif Token = null_t then
      getNextToken;
   elsif Token = subtype_t then

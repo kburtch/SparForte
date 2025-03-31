@@ -67,11 +67,11 @@ cal_day_of_week_t  : identifier;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalClock( result : out unbounded_string; kind : out identifier ) is
+procedure ParseCalClock( result : out storage; kind : out identifier ) is
 begin
   kind := cal_time_t;
   expect( cal_clock_t );
-  result := to_unbounded_string( clock'img );
+  result := storage'(to_unbounded_string( clock'img ), noMetaLevel );
 end ParseCalClock;
 
 
@@ -80,16 +80,16 @@ end ParseCalClock;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalYear( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalYear( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := cal_year_number_t;
   expect( cal_year_t );
-  ParseSingleNumericParameter( cal_year_t, expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_year_t, expr_st, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( year( time( to_numeric( expr_val ) ) )'img );
+       result := storage'( to_unbounded_string( year( time( to_numeric( expr_st.value ) ) )'img ), noMetaLevel );
      exception when others =>
        err_exception_raised;
      end;
@@ -102,16 +102,16 @@ end ParseCalYear;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalMonth( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalMonth( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := cal_month_number_t;
   expect( cal_month_t );
-  ParseSingleNumericParameter( cal_month_t, expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_month_t, expr_st, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( month( time( to_numeric( expr_val ) ) )'img );
+       result := storage'( to_unbounded_string( month( time( to_numeric( expr_st.value ) ) )'img ), noMetaLevel );
      exception when others =>
        err_exception_raised;
      end;
@@ -124,16 +124,16 @@ end ParseCalMonth;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalDay( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalDay( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := cal_day_number_t;
   expect( cal_day_t );
-  ParseSingleNumericParameter( cal_day_t, expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_day_t, expr_st, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( day( time( to_numeric( expr_val ) ) )'img );
+       result := storage'( to_unbounded_string( day( time( to_numeric( expr_st.value ) ) )'img ), noMetaLevel );
      exception when others =>
        err_exception_raised;
      end;
@@ -146,16 +146,16 @@ end ParseCalDay;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalSeconds( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalSeconds( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := cal_day_duration_t;
   expect( cal_seconds_t );
-  ParseSingleNumericParameter( cal_seconds_t, expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_seconds_t, expr_st, expr_type, cal_time_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string( numericValue( seconds( time( to_numeric( expr_val ) ) ) )'img );
+       result := storage'(to_unbounded_string( numericValue( seconds( time( to_numeric( expr_st.value ) ) ) )'img ), noMetaLevel);
      exception when others =>
        err_exception_raised;
      end;
@@ -169,7 +169,7 @@ end ParseCalSeconds;
 -----------------------------------------------------------------------------
 
 procedure ParseCalSplit is
-   date_val  : unbounded_string;
+   date_st  : storage;
    date_type : identifier;
    id1_ref  : reference;
    id2_ref  : reference;
@@ -181,18 +181,18 @@ procedure ParseCalSplit is
    seconds  : day_duration;
 begin
   expect( cal_split_t );
-  ParseFirstNumericParameter( cal_split_t, date_val, date_type, cal_time_t );
+  ParseFirstNumericParameter( cal_split_t, date_st, date_type, cal_time_t );
   ParseNextOutParameter( cal_split_t, id1_ref, cal_year_number_t );
   ParseNextOutParameter( cal_split_t, id2_ref, cal_month_number_t );
   ParseNextOutParameter( cal_split_t, id3_ref, cal_day_number_t );
   ParseLastOutParameter( cal_split_t, id4_ref, cal_day_duration_t );
   if isExecutingCommand then
      begin
-       Split( time( to_numeric( date_val ) ), year, month, day, seconds );
-       AssignParameter( id1_ref, to_unbounded_string( year'img ) );
-       AssignParameter( id2_ref, to_unbounded_string( month'img ) );
-       AssignParameter( id3_ref, to_unbounded_string( day'img ) );
-       AssignParameter( id4_ref, to_unbounded_string( seconds'img ) );
+       Split( time( to_numeric( date_st.value ) ), year, month, day, seconds );
+       AssignParameter( id1_ref, storage'( to_unbounded_string( year'img ), noMetaLevel ));
+       AssignParameter( id2_ref, storage'( to_unbounded_string( month'img ), noMetaLevel ) );
+       AssignParameter( id3_ref, storage'( to_unbounded_string( day'img ), noMetaLevel ) );
+       AssignParameter( id4_ref, storage'( to_unbounded_string( seconds'img ), noMetaLevel  ));
      exception when others =>
        err_exception_raised;
      end;
@@ -205,29 +205,29 @@ end ParseCalSplit;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalTimeOf( result : out unbounded_string; kind : out identifier ) is
-  year_val   : unbounded_string;
+procedure ParseCalTimeOf( result : out storage; kind : out identifier ) is
+  year_st    : storage;
   year_type  : identifier;
-  month_val  : unbounded_string;
+  month_st   : storage;
   month_type : identifier;
-  day_val    : unbounded_string;
+  day_st     : storage;
   day_type   : identifier;
-  secs_val   : unbounded_string;
+  secs_st    : storage;
   secs_type  : identifier;
 begin
   kind := cal_time_t;
   expect( cal_time_of_t );
-  ParseFirstNumericParameter( cal_time_of_t, year_val, year_type, cal_year_number_t );
-  ParseNextNumericParameter( cal_time_t, month_val, month_type, cal_month_number_t );
-  ParseNextNumericParameter( cal_time_t, day_val, day_type, cal_day_number_t );
-  ParseLastNumericParameter( cal_time_t, secs_val, secs_type, cal_day_duration_t );
+  ParseFirstNumericParameter( cal_time_of_t, year_st, year_type, cal_year_number_t );
+  ParseNextNumericParameter( cal_time_t, month_st, month_type, cal_month_number_t );
+  ParseNextNumericParameter( cal_time_t, day_st, day_type, cal_day_number_t );
+  ParseLastNumericParameter( cal_time_t, secs_st, secs_type, cal_day_duration_t );
   if isExecutingCommand then
      begin
-       result := to_unbounded_string(
-           Time_Of( year_number( to_numeric( year_val ) ),
-                    month_number( to_numeric( month_val ) ),
-                    day_number( to_numeric( day_val ) ),
-                    day_duration( to_numeric( secs_val ) ) )'img );
+       result := storage'( to_unbounded_string(
+           Time_Of( year_number( to_numeric( year_st.value ) ),
+                    month_number( to_numeric( month_st.value ) ),
+                    day_number( to_numeric( day_st.value ) ),
+                    day_duration( to_numeric( secs_st.value ) ) )'img ), noMetaLevel );
      exception when time_error =>
        err( +"time error: illegal time value" );
      when constraint_error =>
@@ -244,13 +244,13 @@ end ParseCalTimeOf;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalToJulian( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalToJulian( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := long_integer_t;
   expect( cal_to_julian_t );
-  ParseSingleNumericParameter( cal_to_julian_t, expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_to_julian_t, expr_st, expr_type, cal_time_t );
   if isExecutingCommand then
      declare
        -- Communications of the ACM, October 1968
@@ -266,7 +266,7 @@ begin
        Term2  : long_float;
        Term3  : long_float;
      begin
-       Split( time( to_numeric( expr_val ) ), Year, Month, Day, DayDur );
+       Split( time( to_numeric( expr_st.value ) ), Year, Month, Day, DayDur );
        I := long_float( Year );
        J := long_float( Month );
        K := long_float( Day );
@@ -282,7 +282,7 @@ begin
                 ) / 100.0 )
                 ) / 4.0 );
        Julian := K - 32075.0 + Term1 + Term2 - Term3;
-       result := to_unbounded_string( long_integer( Julian )'img );
+       result := storage'( to_unbounded_string( long_integer( Julian )'img ), noMetaLevel );
      exception when others =>
        err_exception_raised;
      end;
@@ -295,13 +295,13 @@ end ParseCalToJulian;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalToTime( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalToTime( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := cal_time_t;
   expect( cal_to_time_t );
-  ParseSingleNumericParameter( cal_to_time_t, expr_val, expr_type, long_integer_t );
+  ParseSingleNumericParameter( cal_to_time_t, expr_st, expr_type, long_integer_t );
   if isExecutingCommand then
      declare
        -- Communications of the ACM, October 1968
@@ -315,7 +315,7 @@ begin
        L      : long_float;
        N      : long_float;
      begin
-       Julian := long_float( to_numeric( expr_val ) );
+       Julian := long_float( to_numeric( expr_st.value ) );
        L := Julian + 68569.0;
        N := long_float'truncation( 4.0*L / 146097.0 );
        L := L - long_float'truncation( ( 146097.0 * N + 3.0 ) / 4.0 );
@@ -329,7 +329,7 @@ begin
        Year := Year_Number( I );
        Month := Month_Number( J );
        Day := Day_Number( K );
-       result := to_unbounded_string( long_long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img );
+       result := storage'( to_unbounded_string( long_long_integer( time_of( Year, Month, Day, 0.0 ) ) 'img ), noMetaLevel );
      exception when others =>
        err_exception_raised;
      end;
@@ -342,13 +342,13 @@ end ParseCalToTime;
 --
 -----------------------------------------------------------------------------
 
-procedure ParseCalDayOfWeek( result : out unbounded_string; kind : out identifier ) is
-  expr_val  : unbounded_string;
+procedure ParseCalDayOfWeek( result : out storage; kind : out identifier ) is
+  expr_st   : storage;
   expr_type : identifier;
 begin
   kind := integer_t;
   expect( cal_day_of_week_t );
-  ParseSingleNumericParameter( cal_day_of_week_t, expr_val, expr_type, cal_time_t );
+  ParseSingleNumericParameter( cal_day_of_week_t, expr_st, expr_type, cal_time_t );
   if isExecutingCommand then
      declare
        Year   : year_number;
@@ -357,9 +357,9 @@ begin
        DayDur : day_duration;
        wday   : integer;
      begin
-       Split( time( to_numeric( expr_val ) ), Year, Month, Day, DayDur );
+       Split( time( to_numeric( expr_st.value ) ), Year, Month, Day, DayDur );
        C_day_of_week( wday, Year, Month, Day );
-       result := to_unbounded_string( wday'img );
+       result := storage'( to_unbounded_string( wday'img ), noMetaLevel );
      exception when others =>
        err_exception_raised;
      end;

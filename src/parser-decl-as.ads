@@ -37,7 +37,7 @@ package parser.decl.as is
 
    procedure CompileAndRun( commands : unbounded_string; firstLineNo : natural := 1; fragment : boolean := true );
    procedure CompileRunAndCaptureOutput( commands : unbounded_string; results : out
-      unbounded_string; firstLineNo : natural := 1  );
+      storage; firstLineNo : natural := 1  );
 
    procedure ParseGeneralStatement;
    procedure ParseExecutableStatement;
@@ -48,7 +48,7 @@ package parser.decl.as is
    procedure ParseBlock( termid1, termid2 : identifier := keyword_t );
    procedure ParseBlockExecutablePartStatement;
    procedure parseNewCommands( scriptState : out aScriptState; byteCode : unbounded_string; fragment : boolean := true );
-   procedure DoUserDefinedFunction( s : unbounded_string; result : out unbounded_string );
+   procedure DoUserDefinedFunction( s : unbounded_string; result : out storage );
 
    procedure parsePolicy;
    procedure parseConfig;

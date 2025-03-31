@@ -32,11 +32,11 @@ package parser_params is
 -- Parameter references
 ------------------------------------------------------------------------------
 
-procedure AssignParameter( ref : in reference; value : unbounded_string );
+procedure AssignParameter( ref : in reference; value_se : storage );
 pragma inline( AssignParameter );
 -- assign a value to the variable or array indicated by ref
 
-procedure GetParameterValue( ref : in reference; value : out unbounded_string );
+procedure GetParameterValue( ref : in reference; value_se : out storage );
 pragma inline( GetParameterValue );
 -- return the value of the variable or array indicated by ref
 
@@ -52,19 +52,19 @@ procedure ParseRenamingReference( ref : out renamingReference; expectedType : id
 ------------------------------------------------------------------------------
 
 procedure ParseGenItemParameter(
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
 procedure ParseNextGenItemParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
 procedure ParseLastGenItemParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
@@ -73,31 +73,31 @@ procedure ParseLastGenItemParameter(
 ------------------------------------------------------------------------------
 
 procedure ParseStringParameter(
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t  );
 
 procedure ParseSingleStringParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t  );
 
 procedure ParseFirstStringParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
 procedure ParseNextStringParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
 procedure ParseLastStringParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t );
 
@@ -106,31 +106,31 @@ procedure ParseLastStringParameter(
 ------------------------------------------------------------------------------
 
 procedure ParseEnumParameter(
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier );
 
 procedure ParseSingleEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier );
 
 procedure ParseFirstEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier );
 
 procedure ParseNextEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier );
 
 procedure ParseLastEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier );
 
@@ -139,31 +139,31 @@ procedure ParseLastEnumParameter(
 ------------------------------------------------------------------------------
 
 procedure ParseNumericParameter(
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 
 procedure ParseSingleNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 
 procedure ParseFirstNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 
 procedure ParseNextNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 
 procedure ParseLastNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t );
 

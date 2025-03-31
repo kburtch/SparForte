@@ -3179,6 +3179,8 @@ begin
   declareIdent( uni_numeric_t, "universal_numeric", variable_t, typeClass );
   declareIdent( uni_string_t, "universal_string", variable_t, typeClass );
 
+  declareKeyword( meta_t, "meta" );
+
   -- Literals
   --
   -- These must be declared after the universal types

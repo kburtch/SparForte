@@ -312,7 +312,7 @@ end ParseVarUsageQualifiers;
 procedure ParseGenericParametersPart( varId, genTypeId : identifier ) is
   genKind : identifier;
 begin
-  if token /= symbol_t or identifiers( token ).svalue /= "(" then
+  if token /= symbol_t or identifiers( token ).sstorage.value /= "(" then
 
      err( contextNotes => +"While checking the generic type",
           subject => varId,
@@ -326,7 +326,7 @@ begin
   ParseIdentifier( genKind );
   if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
      identifiers( varId ).genKind := genKind;
-     if token = symbol_t and identifiers( token ).svalue = "," then
+     if token = symbol_t and identifiers( token ).sstorage .value = "," then
         getNextToken;
         ParseIdentifier( genKind );
         if type_checks_done or else class_ok( genKind, typeClass, subClass ) then
@@ -426,7 +426,7 @@ begin
   if not error_found then
      begin
        --identifiers( new_id ).usage := identifiers( canonicalRef.id ).usage;
-       identifiers( new_id ).value := identifiers( new_id ).svalue'access;
+       identifiers( new_id ).value := identifiers( new_id ).sstorage.value'access;
 
        -- For a volatile, update the value before copying.
        if isExecutingCommand then
@@ -436,9 +436,9 @@ begin
        end if;
 
        if canonicalRef.index = 0 then
-          identifiers( new_id ).svalue := identifiers( canonicalRef.id ).value.all;
+          identifiers( new_id ).sstorage.value := identifiers( canonicalRef.id ).value.all;
        else
-          identifiers( new_id ).svalue := identifiers( canonicalRef.id ).avalue( canonicalRef.index );
+          identifiers( new_id ).sstorage.value := identifiers( canonicalRef.id ).astorage( canonicalRef.index ).value;
        end if;
 
        -- check to see that the usage qualifier isn't less restrictive
@@ -490,10 +490,10 @@ end ParseCopiesPart;
 -- Syntax: assign-part = " := default_value_expression"
 -----------------------------------------------------------------------------
 
-procedure ParseAssignPart( expr_value : out unbounded_string; expr_type : out identifier ) is
+procedure ParseAssignPart( expr_se : out storage; expr_type : out identifier ) is
 begin
   expect( symbol_t, ":=" );
-  ParseExpression( expr_value, expr_type );
+  ParseExpression( expr_se, expr_type );
 end ParseAssignPart;
 
 
@@ -511,7 +511,7 @@ end ParseAssignPart;
 
 procedure ParseArrayAssignPart( array_id : identifier ) is
 -- procedure ParseArrayAssignPart( array_id : identifier; array_id2: arrayID ) is
-  expr_value : unbounded_string;
+  expr_se : storage;
   expr_type  : identifier;
   arrayIndex : long_integer;
   lastIndex  : long_integer;
@@ -530,16 +530,16 @@ begin
         lastIndex := identifiers( base_type ).lastBound;
      end if;
      loop                                                      -- read values
-       ParseExpression( expr_value, expr_type );               -- next element
+       ParseExpression( expr_se, expr_type );               -- next element
        if isExecutingCommand then                              -- not on synchk
              begin
-               identifiers( array_id ).avalue( arrayIndex ) := expr_value;
+               identifiers( array_id ).astorage( arrayIndex ) := expr_se;
              exception when CONSTRAINT_ERROR =>
                err( contextNotes => pl( "assigning the array values" ),
                   subjectNotes => em( "array position" & arrayIndex'img ),
                   reason => +"cannot be assigned because",
                   obstructorNotes => pl( "the array bounds have range" &
-                       identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img )
+                       identifiers( array_id ).astorage'first'img & " .." & identifiers( array_id ).astorage'last'img )
                );
              when STORAGE_ERROR =>
                err( contextNotes => pl( "At " & gnat.source_info.source_location &
@@ -575,7 +575,7 @@ begin
               subjectNotes => em( "the last value is at position" & arrayIndex'img ),
               reason => +"and that is too few items to fill",
               obstructorNotes => pl( "the array bounds of range" &
-                 identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img )
+                 identifiers( array_id ).astorage'first'img & " .." & identifiers( array_id ).astorage'last'img )
            );
          end if;
      end if;
@@ -596,35 +596,35 @@ begin
           base_type := getBaseType( identifiers( array_id ).kind );
           arrayIndex := identifiers( base_type ).firstBound;
           lastIndex := identifiers( base_type ).lastBound;
-           if identifiers( array_id ).avalue = null then
+           if identifiers( array_id ).astorage = null then
               err( contextNotes => pl( "At " & gnat.source_info.source_location ),
                    subjectNotes => pl( qp( "creating the array" ) ),
                    reason => +"had an internal error because",
                    obstructorNotes => em( "the target array storage was unexpectedly null" )
               );
-           elsif identifiers( array_id ).avalue'first /= arrayIndex then
+           elsif identifiers( array_id ).astorage'first /= arrayIndex then
               err( contextNotes => pl( "At " & gnat.source_info.source_location ),
                    subjectNotes => pl( qp( "creating the array" ) ),
                    reason => +"had an internal error because",
                    obstructorNotes => pl( "the target array first bound doesn't match: " &
-                      identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img  )
+                      identifiers( array_id ).astorage'first'img & " vs " & arrayIndex'img  )
               );
-           elsif identifiers( array_id ).avalue'last /= lastIndex then
+           elsif identifiers( array_id ).astorage'last /= lastIndex then
               err( contextNotes => pl( "At " & gnat.source_info.source_location ),
                    subjectNotes => pl( qp( "creating the array" ) ),
                    reason => +"had an internal error because",
                    obstructorNotes => pl( "the target array last bound doesn't match: " &
-                      identifiers( array_id ).avalue'first'img & " vs " & arrayIndex'img )
+                      identifiers( array_id ).astorage'first'img & " vs " & arrayIndex'img )
               );
            elsif not error_found then
-              identifiers( array_id ).avalue.all := identifiers( second_array_id ).avalue.all;
+              identifiers( array_id ).astorage.all := identifiers( second_array_id ).astorage.all;
            end if;
         exception when CONSTRAINT_ERROR =>
            err( contextNotes => pl( "At " & gnat.source_info.source_location ),
                 subjectNotes => pl( qp( "creating the array" ) ),
                 reason => +"had an internal error because",
                 obstructorNotes => pl( "a constraint_error was raised on index out of range " &
-                   identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img )
+                   identifiers( array_id ).astorage'first'img & " .." & identifiers( array_id ).astorage'last'img )
            );
         when STORAGE_ERROR =>
            err( contextNotes => pl( "At " & gnat.source_info.source_location ),
@@ -658,9 +658,9 @@ end ParseArrayAssignPart;
 procedure ParseAnonymousArray( id : identifier; limit : boolean ) is
   -- array_id    : arrayID;           -- array table index for array variable
   -- type_id     : arrayID;           -- array table index for anon array type
-  ab1         : unbounded_string;  -- first array bound
+  ab1_se      : storage;    -- first array bound
   kind1       : identifier;        -- type of first array bound
-  ab2         : unbounded_string;  -- last array bound
+  ab2_se      : storage;    -- last array bound
   kind2       : identifier;        -- type of last array bound
   elementType : identifier;        -- array elements type
   elementBaseType : identifier;        -- base type of array elements type
@@ -675,7 +675,7 @@ begin
      contextNotes => +"in the anonymous array declaration",
      subjectNotes => +"the start of the index range"
   );
-  ParseExpression( ab1, kind1 );                           -- low bound
+  ParseExpression( ab1_se, kind1 );                          -- low bound
   -- should really be a constant expression but we can't handle that
   if getUniType( kind1 ) = uni_string_t then                 -- must be scalar
      err( contextNotes => +"in the anonymous array declaration",
@@ -707,13 +707,13 @@ begin
         contextNotes => +"in the anonymous array declaration",
         subjectNotes => +"the index range"
      );
-     ParseExpression( ab2, kind2 );                            -- high bound
+     ParseExpression( ab2_se, kind2 );                            -- high bound
      if token = symbol_t and identifiers( token ).value.all = "," then
        featureNotYetImplemented( subjectNotes => "array of multiple dimensions",
           remedy => "encode a dimension to a JSON string as a workaround until support is written" );
      elsif type_checks_done or else baseTypesOK( kind1, kind2 ) then -- indexes good?
         if isExecutingCommand then                             -- not on synchk
-           if ab1 = null_unbounded_string then
+           if ab1_se.value = null_unbounded_string then
               err( contextNotes => +"in the anonymous array declaration",
                    subjectNotes => em( "the low bound of the array index range" ),
                    reason => em( "has no value" ),
@@ -722,7 +722,7 @@ begin
                    seeAlso => docArrays
               );
 
-           elsif ab2 = null_unbounded_string then
+           elsif ab2_se.value = null_unbounded_string then
               err( contextNotes => +"in the anonymous array declaration",
                    subjectNotes => em( "the high bound of the array index range" ),
                    reason => em( "has no value" ),
@@ -730,9 +730,9 @@ begin
                    remedy => +"a numeric variable was not assigned a value",
                    seeAlso => docArrays
               );
-           elsif to_numeric( ab1 ) > to_numeric( ab2 ) then    -- bound backwd?
-              if long_integer( to_numeric( ab1 ) ) /= 1 and    -- only 1..0
-                 long_integer( to_numeric( ab2 ) ) /= 0 then   -- allowed
+           elsif to_numeric( ab1_se.value ) > to_numeric( ab2_se.value ) then    -- bound backwd?
+              if long_integer( to_numeric( ab1_se.value ) ) /= 1 and    -- only 1..0
+                 long_integer( to_numeric( ab2_se.value) ) /= 0 then   -- allowed
                  err( contextNotes => +"in the anonymous array declaration",
                       subjectNotes => em( "the low bound of the array index range" ),
                       reason => em( "is greater than" ),
@@ -792,8 +792,8 @@ begin
         if type_checks_done or else class_ok( elementType, typeClass, subClass ) then     -- item type OK?
            if isExecutingCommand and not syntax_check then
               identifiers( anonType ).value.all := null_unbounded_string;
-              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1 ) );
-              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2 ) );
+              identifiers( anonType ).firstBound := long_integer( to_numeric( ab1_se.value ) );
+              identifiers( anonType ).lastBound  := long_integer( to_numeric( ab2_se.value ) );
               identifiers( anonType ).genKind    := kind1;
            end if;
         end if;
@@ -807,7 +807,8 @@ begin
 
   if isExecutingCommand then
      identifiers( id ).value.all := null_unbounded_string;
-     identifiers( id ).avalue := findStorage( long_integer( to_numeric( ab1 ) ), long_integer( to_numeric( ab2 ) ) );
+     identifiers( id ).astorage := findStorage( long_integer( to_numeric( ab1_se.value ) ),
+        long_integer( to_numeric( ab2_se.value ) ) );
      identifiers( id ).genKind := kind1;
   end if;
 
@@ -884,7 +885,7 @@ begin
            base_type_id := arrayType;
         end if;
         identifiers( id ).value.all := null_unbounded_string;
-        identifiers( id ).avalue := findStorage( identifiers( base_type_id ).firstBound, identifiers( base_type_id ).lastBound );
+        identifiers( id ).astorage := findStorage( identifiers( base_type_id ).firstBound, identifiers( base_type_id ).lastBound );
         identifiers( id ).genKind := identifiers( base_type_id ).genKind;
      end if;
 
@@ -911,7 +912,7 @@ begin
        -- TODO: the recursion problem may exist here, where defining x but x may be
        -- in the assignment list.
         ParseArrayAssignPart( id );
-     elsif token = symbol_t and identifiers( token ).svalue = "(" then
+     elsif token = symbol_t and identifiers( token ).sstorage.value = "(" then
          err( name_em( arrayType ) & pl( " is not a generic type but has parameters" ) );
      end if;
 
@@ -942,7 +943,7 @@ end ParseArrayDeclaration;
 
 procedure ParseRecordAssignPart( id : identifier; recType : identifier ) is
   field_no : integer;
-  expr_value : unbounded_string;
+  expr_se    : storage;
   expr_type  : identifier;
   found      : boolean;
   expected_fields : integer;
@@ -959,7 +960,7 @@ begin
        expected_fields := 0;
      end;
      loop                                                      -- read values
-       ParseExpression( expr_value, expr_type );               -- next element
+       ParseExpression( expr_se, expr_type );                  -- next element
        found := false;
        for j in 1..identifiers_top-1 loop
            if identifiers( j ).field_of = recType then
@@ -996,11 +997,11 @@ begin
                     else
                        if type_checks_done or else baseTypesOK( identifiers( field_t ).kind, expr_type ) then
                           if isExecutingCommand then
-                             identifiers( field_t ).value.all := expr_value;
+                             identifiers( field_t ).value.all := expr_se.value;
                              if trace then
                                 put_trace(
                                   to_string( fieldName ) & " := " &
-                                  toSecureData( to_string( toEscaped( expr_value ) ) ) );
+                                  toSecureData( to_string( toEscaped( expr_se.value) ) ) );
                              end if;
                           end if;
                        end if;
@@ -1130,11 +1131,11 @@ begin
   if not error_found then
 
      -- Determine the number of fields for the record, as stored in the record
-     -- type's value.all (that is, svalue).  If recType is a derived type, get
+     -- type's value.all (that is, sstorage).  If recType is a derived type, get
      -- the base type which contains the number of fields because it is not
      -- stored in the value of the derived type.
      --
-     -- TODO: perhaps the svalue SHOULD be copied by the declaration...but then
+     -- TODO: perhaps the sstorage SHOULD be copied by the declaration...but then
      -- it must also create the field identifiers as well...
 
      baseRecType := getBaseType( recType );
@@ -1263,7 +1264,7 @@ begin
 
   -- Parenthesis?  It looks like a Generic type.  Show an error.
 
-  elsif token = symbol_t and identifiers( token ).svalue = "(" then
+  elsif token = symbol_t and identifiers( token ).sstorage.value = "(" then
      err( contextNotes => pl( "in record declaration for " &
              to_string( identifiers( id ).name ) ),
           subject => recType,
@@ -1297,8 +1298,8 @@ end ParseRecordDeclaration;
 
 procedure ParseExceptionDeclarationPart( id : in out identifier ) is
   var_name : unbounded_string;
-  default_message : unbounded_string;
-  exception_status : unbounded_string;
+  default_message_se : storage;
+  exception_status_se : storage;
   exception_status_code : anExceptionStatusCode := 1;
   messageType : identifier;
   statusType  : identifier;
@@ -1316,10 +1317,10 @@ begin
               seeAlso => docSubprograms
          );
       end if;
-      ParseExpression( default_message, messageType );
+      ParseExpression( default_message_se, messageType );
       if type_checks_done or else uniTypesOK( messageType, uni_string_t ) then
          expect( use_t );
-         ParseExpression( exception_status, statusType );
+         ParseExpression( exception_status_se, statusType );
          if type_checks_done or else baseTypesOK( statusType, natural_t ) then
             null;
          end if;
@@ -1327,11 +1328,11 @@ begin
       -- expression value has no meaning except as run-time
       if isExecutingCommand then
          begin
-           exception_status_code := anExceptionStatusCode'value( to_string( exception_status ) );
+           exception_status_code := anExceptionStatusCode'value( to_string( exception_status_se.value ) );
          exception when others =>
            err( contextNotes => +"in the exception declaration",
                 subjectNotes => pl( "the exception status code " ) &
-                   unb_em( trim( exception_status, ada.strings.both ) ),
+                   unb_em( trim( exception_status_se.value, ada.strings.both ) ),
                 reason => pl( "is not in the range" ),
                 obstructorNotes => em( "0..255" ),
                 seeAlso => docSubprograms
@@ -1362,7 +1363,7 @@ begin
    if not error_found then
       findException( var_name, id );
       if id = eof_t then
-         declareException( id, var_name, default_message, exception_status_code ); -- declare var
+         declareException( id, var_name, default_message_se.value, exception_status_code ); -- declare var
          identifiers( id ).declaredAt := getLineNo;
          identifiers( id ).declaredFile := getSourceFileName;
       else
@@ -1744,8 +1745,8 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
         );
      end if;
      if isExecutingCommand then
-        identifiers( id ).svalue := to_unbounded_string( resId );
-        identifiers( id ).value := identifiers( id ).svalue'access;
+        identifiers( id ).sstorage.value := to_unbounded_string( resId );
+        identifiers( id ).value := identifiers( id ).sstorage.value'access;
         identifiers( id ).resource := true;
      end if;
   end AttachGenericParameterResource;
@@ -1763,7 +1764,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- CONST SPECS
     type_token    : identifier;
     right_type    : identifier;
-    expr_value    : unbounded_string;
+    expr_se       : storage;
     new_const_id  : identifier;
     oldSpec       : declaration;
 
@@ -1844,7 +1845,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- The Tricky Part
 
     -- Temporarily destroy identifer so that i : constant integer := i
-    -- isn't circular.  Set avalue to null to prevent releasing storage
+    -- isn't circular.  Set astorage to null to prevent releasing storage
     -- pointed to by oldSpec.  Backup the entire entry.
     --  For records, which are currently a collection of variables,
     -- it is not possible to destroy the parent record variable.  If we
@@ -1858,7 +1859,7 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
     -- and has a type (not new_t )
 
     if getUniType( oldSpec.kind ) /= root_record_t then
-       identifiers( const_id ).avalue := null;
+       identifiers( const_id ).astorage := null;
        identifiers( const_id ).kind := new_t;           -- make it discardable
        discardUnusedIdentifier( const_id );             -- discard variable
     end if;
@@ -1871,12 +1872,12 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
 
     if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
 --put_line( "verify: AssignPart should not run for aggregates"); -- DEBUG
-       ParseAssignPart( expr_value, right_type );          -- do := part
+       ParseAssignPart( expr_se, right_type );            -- do := part
        baseTypesOK( type_token, right_type );
     end if;
 
     -- Redeclare temporarily destroyed identifier (i.e. declare new i)
-    -- and recover old properties.  Clear the spec and fix the avalue
+    -- and recover old properties.  Clear the spec and fix the astorage
     -- (if necessary).  The spec is now fulfilled.
     --  For records, we didn't destroy the original.
 
@@ -1916,24 +1917,24 @@ procedure ParseDeclarationPart( id : in out identifier; anon_arrays : boolean; e
        if trace then
           put_trace( "Completing constant specification for " & to_string( oldSpec.name ) );
        end if;
-       expr_value := castToType( expr_value, type_token );
+       expr_se.value := castToType( expr_se.value, type_token );
        -- Contracts only run on scalars currently
        if not oldSpec.list and getUniType( oldSpec.kind ) /= root_record_t then
           if type_token /= right_type then
-             DoContracts( identifiers( new_const_id ).kind, expr_value );
+             DoContracts( identifiers( new_const_id ).kind, expr_se );
           end if;
        end if;
-       identifiers( new_const_id ).value.all := expr_value;
+       identifiers( new_const_id ).value.all := expr_se.value;
        if trace then
            put_trace(
               to_string( identifiers( new_const_id ).name ) & " := """ &
-              toSecureData( to_string( ToEscaped( expr_value ) ) ) & """" );
+              toSecureData( to_string( ToEscaped( expr_se.value ) ) ) & """" );
        end if;
     end if;
   end VerifyConstantSpec;
 
   type_token    : identifier;
-  expr_value    : unbounded_string;
+  expr_se       : storage;
   right_type    : identifier;
   expr_expected : boolean := false;
   canonicalRef : renamingReference;
@@ -2168,7 +2169,7 @@ begin
      identifiers( id ).kind := type_token;
      identifiers( id ).usage := identifiers( type_token ).usage;
 
-  elsif token = symbol_t and identifiers( token ).svalue = "(" then
+  elsif token = symbol_t and identifiers( token ).sstorage.value = "(" then
      err( contextNotes => pl( "in declaration for " &
              to_string( identifiers( id ).name ) ),
           subject => type_token,
@@ -2192,8 +2193,8 @@ begin
          identifiers( id ).genKind2 := identifiers( type_token ).genKind2;
          identifiers( id ).kind := type_token;
       else
-        -- identifiers( id ).svalue := to_unbounded_string( resId );
-        -- identifiers( id ).value := identifiers( id ).svalue'access;
+        -- identifiers( id ).sstorage := to_unbounded_string( resId );
+        -- identifiers( id ).value := identifiers( id ).sstorage'access;
         -- identifiers( id ).resource := true;
          ParseRenamesPart( canonicalRef, id, type_token );
          identifiers( id ).genKind := identifiers( type_token ).genKind;
@@ -2270,7 +2271,7 @@ begin
            -- don't do this on an error or an exception may be thrown
            if isExecutingCommand then
               begin
-                 identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
+                 identifiers( id ).value := identifiers( canonicalRef.id ).astorage( canonicalRef.index ).value'access;
               exception when storage_error =>
                  err( contextNotes => pl( "At " & gnat.source_info.source_location &
                          " while declaring the renaming" ),
@@ -2376,7 +2377,7 @@ begin
            -- don't do this on an error or an exception may be thrown
            if isExecutingCommand then
               begin
-                 identifiers( id ).value := identifiers( canonicalRef.id ).avalue( canonicalRef.index )'access;
+                 identifiers( id ).value := identifiers( canonicalRef.id ).astorage( canonicalRef.index ).value'access;
               exception when storage_error =>
                  err( contextNotes => pl( "At " & gnat.source_info.source_location &
                          " while declaring the renaming" ),
@@ -2440,7 +2441,7 @@ begin
 
        -- Calculate the assignment (i.e. using any previous variable i)
 
-       ParseAssignPart( expr_value, right_type );          -- do := part
+       ParseAssignPart( expr_se, right_type );          -- do := part
 
        -- Redeclare temporarily destroyed identifier (i.e. declare new i)
        -- and assign its type
@@ -2478,7 +2479,7 @@ begin
        begin
           if baseTypesOK( uni_string_t, right_type ) then
              type_token := uni_string_t; -- pretend it's a string
-             scriptDir := dirname( expr_value );
+             scriptDir := dirname( expr_se.value );
              if not C_is_secure_dir( to_string( scriptDir ) & ASCII.NUL ) then
                 err( contextNotes => +"declarating the command " &
                         unb_em( identifiers( id ).name ),
@@ -2487,18 +2488,18 @@ begin
                      obstructorNotes => +"is either not readable, is world writable, is not a directory"
                 );
              end if;
-             if not File_Exists( to_string( expr_value ) ) then
+             if not File_Exists( to_string( expr_se.value ) ) then
                 err( contextNotes => +"declarating the command " &
                         unb_em( identifiers( id ).name ),
-                     subjectNotes => em( '"' & to_string( toEscaped( expr_value ) ) & '"' ),
+                     subjectNotes => em( '"' & to_string( toEscaped( expr_se.value ) ) & '"' ),
                      reason => +"is not a path to an",
                      obstructorNotes => em( "executable file" ),
                      remedy => +"the path is wrong or the file is missing"
                 );
-             elsif not C_is_executable_file( to_string( expr_value ) & ASCII.NUL ) then
+             elsif not C_is_executable_file( to_string( expr_se.value ) & ASCII.NUL ) then
                 err( contextNotes => +"declarating the command " &
                         unb_em( identifiers( id ).name ),
-                     subjectNotes => em( '"' & to_string( toEscaped( expr_value ) ) & '"' ),
+                     subjectNotes => em( '"' & to_string( toEscaped( expr_se.value ) ) & '"' ),
                      reason => +"is not a path to an",
                      obstructorNotes => em( "executable file" ),
                      remedy => +"the path is not a regular file or does not have execute permission"
@@ -2519,15 +2520,15 @@ begin
      -- perform assignment
 
      if isExecutingCommand then
-        expr_value := castToType( expr_value, type_token );
+        expr_se.value := castToType( expr_se.value, type_token );
         if type_token /= right_type then
-           DoContracts( identifiers( id ).kind, expr_value );
+           DoContracts( identifiers( id ).kind, expr_se );
         end if;
-        identifiers( id ).value.all := expr_value;
+        identifiers( id ).value.all := expr_se.value;
         if trace then
             put_trace(
                to_string( identifiers( id ).name ) & " := """ &
-               toSecureData( to_string( ToEscaped( expr_value ) ) ) & """" );
+               toSecureData( to_string( ToEscaped( expr_se.value ) ) ) & """" );
         end if;
      else
         -- At compile time, constants may have assigned values.
@@ -2537,12 +2538,12 @@ begin
         -- KLUDGE: For constants, we may at compile-time and the
         -- variables are not defined.  Contracts cannot be run.
         if identifiers( id ).usage = constantUsage then
-           if expr_value /= null_unbounded_string then
-              expr_value := castToType( expr_value, type_token );
+           if expr_se.value /= null_unbounded_string then
+              expr_se.value := castToType( expr_se.value, type_token );
               if getUniType( type_token ) = uni_string_t then
                  -- put_line(to_string( identifiers(id).name));
                  -- put_line(maybe_secret( identifiers(id).name, expr_value )'img );
-                 if maybe_secret( identifiers(id).name, expr_value ) then
+                 if maybe_secret( identifiers(id).name, expr_se.value ) then
                     err(
                       contextNotes => +"In your declaration",
                       subject => id,
@@ -2552,7 +2553,7 @@ begin
                  );
                  end if;
               end if;
-              identifiers( id ).value.all := expr_value;
+              identifiers( id ).value.all := expr_se.value;
            end if;
         end if;
      end if;
@@ -2672,12 +2673,12 @@ end ParseRecordTypePart;
 
 procedure ParseArrayTypePart( newtype_id : identifier ) is
    --type_id     : arrayID;
-   ab1         : unbounded_string; -- low array bound (array bound 1)
-   kind1       : identifier;
-   ab1_as_longint : long_integer;
-   ab2         : unbounded_string; -- high array bound (array bound 2)
-   kind2       : identifier;
-   ab2_as_longint : long_integer;
+   ab1_se          : storage; -- low array bound (array bound 1)
+   kind1           : identifier;
+   ab1_as_longint  : long_integer;
+   ab2_se          : storage; -- high array bound (array bound 2)
+   kind2           : identifier;
+   ab2_as_longint  : long_integer;
    elementType : identifier;
    elementBaseType : identifier;        -- base type of array elements type
    b           : boolean;
@@ -2688,7 +2689,7 @@ begin
 
    expect( array_t );
    expect( symbol_t, "(" );
-   ParseExpression( ab1, kind1 );
+   ParseExpression( ab1_se, kind1 );
    -- should be constant expression but we can't handle those yet
    if getUniType( kind1 ) = uni_string_t or
       identifiers( kind1 ).list then
@@ -2700,11 +2701,11 @@ begin
       );
    end if;
    expect( symbol_t, ".." );
-   ParseExpression( ab2, kind2 );
+   ParseExpression( ab2_se, kind2 );
    if token = symbol_t and identifiers( token ).value.all = "," then
        featureNotYetImplemented( subjectNotes => "array of multiple dimensions",
           remedy => "encode a dimension to a JSON string as a workaround until support is written" );
-   elsif ab1 = null_unbounded_string then
+   elsif ab1_se.value = null_unbounded_string then
       err( contextNotes => pl( "declaring the array type " ) &
               unb_em( identifiers( newtype_id ).name ),
               subjectNotes => em( "the low bound of the array index range" ),
@@ -2713,7 +2714,7 @@ begin
               remedy => +"a numeric variable was not assigned a value",
               seeAlso => docArrays
       );
-   elsif ab2 = null_unbounded_string then
+   elsif ab2_se.value = null_unbounded_string then
       err( contextNotes => pl( "declaring the array type " ) &
               unb_em( identifiers( newtype_id ).name ),
               subjectNotes => em( "the high bound of the array index range" ),
@@ -2725,26 +2726,26 @@ begin
    elsif type_checks_done or else baseTypesOK(kind1, kind2 ) then
       if isExecutingCommand and not syntax_check then  -- ab1/2 undef on synchk
          begin
-            ab1_as_longint := long_integer( to_numeric( ab1 ) );
+            ab1_as_longint := long_integer( to_numeric( ab1_se.value ) );
          exception when constraint_error =>
             err( contextNotes => pl( "declaring the array type " ) &
                     unb_em( identifiers( newtype_id ).name ),
                  subjectNotes => em( "the low bound of the array index range" ),
                  reason => +"has a value that is too large",
-                 obstructorNotes => em_value( ab1 ),
+                 obstructorNotes => em_value( ab1_se.value ),
                  obstructorType => kind1,
                  seeAlso => seeTypes
             );
             ab1_as_longint := 0;
          end;
          begin
-            ab2_as_longint := long_integer( to_numeric( ab2 ) );
+            ab2_as_longint := long_integer( to_numeric( ab2_se.value ) );
          exception when constraint_error =>
             err( contextNotes => pl( "declaring the array type " ) &
                     unb_em( identifiers( newtype_id ).name ),
                  subjectNotes => em( "the high bound of the array index range" ),
                  reason => +"has a value that is too large",
-                 obstructorNotes => em_value( ab2 ),
+                 obstructorNotes => em_value( ab2_se.value ),
                  obstructorType => kind2,
                  seeAlso => seeTypes
             );
@@ -3054,6 +3055,48 @@ begin
       pullBlock;
    end if;
 end ParseCaseAffirmClause;
+
+-----------------------------------------------------------------------------
+-- PARSE META
+--
+-- Handle a value meta label.
+-- Syntax: meta = "meta newlabel is new [abstract] meta|oldlabel"
+-----------------------------------------------------------------------------
+
+procedure ParseMeta is
+  newmeta_id : identifier;
+  oldmeta_id : identifier;
+  isAbstract : boolean := false;
+  b : boolean;
+begin
+  expect( meta_t );
+  ParseNewIdentifier( newmeta_id );
+  expect( is_t );
+  expect( new_t );
+  if token = abstract_t then
+     isAbstract := true;
+     expect( abstract_t );
+  end if;
+
+  if token = meta_t then
+     expect( meta_t );
+     oldmeta_id := meta_t;
+  else
+     ParseIdentifier( oldmeta_id );
+  end if;
+
+  if isExecutingCommand or syntax_check then
+     identifiers( newmeta_id ).kind := oldmeta_id;
+     identifiers( newmeta_id ).class := metaClass;
+     if isAbstract then
+       identifiers( newmeta_id ).usage := abstractUsage;
+     else
+       identifiers( newmeta_id ).usage := constantUsage;
+     end if;
+  else
+     b := deleteIdent( newmeta_id );
+  end if;
+end ParseMeta;
 
 
 -----------------------------------------------------------------------------

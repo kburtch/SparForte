@@ -1286,10 +1286,10 @@ end ParseProgramName;
 -- with the clause on the type itself.  If no clause exists, do nothing.
 --
 -- kind_id is the data type.
--- expr_val is the value to be tested for that type
+-- expr_se is the storage element to be tested for that type
 -----------------------------------------------------------------------------
 
-procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string ) is
+procedure DoContracts( kind_id : identifier; expr_se : in out storage ) is
    type_value_id : identifier;
 
    -- DO CONTRACT1
@@ -1297,14 +1297,14 @@ procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string 
    -- The inner recursive procedure.
    --------------------------------------------------------------------------
 
-   procedure DoContract1( kind_id : identifier; expr_val : in out unbounded_string ) is
+   procedure DoContract1( kind_id : identifier; expr_se : in out storage ) is
       scriptState : aScriptState;
       save_error_found : boolean;
    begin
       if identifiers( kind_id ).kind /= variable_t then    -- not uni?
          -- Cannot do DoContract1 because type identifier will change
          -- So switched it to DoContracts
-         DoContracts( identifiers( kind_id ).kind, expr_val ); -- parents first
+         DoContracts( identifiers( kind_id ).kind, expr_se ); -- parents first
       end if;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
@@ -1353,8 +1353,8 @@ begin
       -- Otherwise, assign the value to the variable and apply contracts.
 
       if kind_id /= new_t and kind_id /= eof_t then
-         identifiers( type_value_id ).value.all := expr_val;
-         DoContract1( kind_id, expr_val );
+         identifiers( type_value_id ).value.all := expr_se.value;
+         DoContract1( kind_id, expr_se);
       end if;
 
       -- If the validation function altered the data, return the new value
@@ -1367,10 +1367,10 @@ begin
       --if identifiers( type_value_id ).wasWritten then
 
       -- Copying a value is not so easy for an array
-      expr_val := identifiers( type_value_id ).value.all;
+      expr_se.value := identifiers( type_value_id ).value.all;
       if identifiers( kind_id ).contract /= "" then        -- a contract?
          if trace then                                     -- trace message
-            put_trace( "value after affirm clause: " & toSecureData( to_string( toEscaped( expr_val ) ) ) );
+            put_trace( "value after affirm clause: " & toSecureData( to_string( toEscaped( expr_se.value ) ) ) );
          end if;
       end if;
    end if;
@@ -1401,7 +1401,7 @@ end DoContracts;
 -- if the identifier is volatile, reload the value from the environment
 -----------------------------------------------------------------------------
 
-procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
+procedure ParseFactor( f : out storage; kind : out identifier ) is
   castType  : identifier;
   array_id  : identifier;
   -- array_id2 : arrayID;
@@ -1478,7 +1478,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
              identifiers( kind ).wasCastTo := true;
           end if;
           if isExecutingCommand then
-             f := castToType( f, kind );
+             f.value := castToType( f.value, kind );
              DoContracts( kind, f );
           end if;
        end if;
@@ -1521,7 +1521,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
               -- parse factor identifier: arrays
               -- expression side-effect prevention
               checkExpressionFactorVolatility( t );
-              arrayIndex := long_integer(to_numeric(f));  -- convert to number
+              arrayIndex := long_integer(to_numeric(f.value));  -- convert to number
               --array_id2 := arrayID( to_numeric(      -- array_id2=reference
               --   identifiers( array_id ).value ) );  -- to the array table
               --if indexTypeOK( array_id2, kind ) then -- check and access array
@@ -1532,20 +1532,20 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
               -- TODO: make a utility function for doing all this.
               -- TODO: probably needs a better error message
               if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
-                 if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
-                    err( pl( "array index " & to_string( trim( f, ada.strings.both ) ) &
-                         " not in" & identifiers( array_id ).avalue'first'img & " .." &
-                         identifiers( array_id ).avalue'last'img ) );
+                 if arrayIndex not in identifiers( array_id ).astorage'range then -- DEBUG
+                    err( pl( "array index " & to_string( trim( f.value, ada.strings.both ) ) &
+                         " not in" & identifiers( array_id ).astorage'first'img & " .." &
+                         identifiers( array_id ).astorage'last'img ) );
                  end if;
               end if;
           if not error_found then
              begin
-               f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
+               f := identifiers( array_id ).astorage( arrayIndex );
              exception when CONSTRAINT_ERROR =>
                err( pl( gnat.source_info.source_location &
                 ": internal error: constraint_error : index out of range " &
-                identifiers( array_id ).avalue'first'img & " .." &
-                identifiers( array_id ).avalue'last'img ) );
+                identifiers( array_id ).astorage'first'img & " .." &
+                identifiers( array_id ).astorage'last'img ) );
              when STORAGE_ERROR =>
                err( pl( gnat.source_info.source_location &
                 ": internal error : storage error raised in ParseFactor" ) );
@@ -1595,7 +1595,7 @@ procedure ParseFactor( f : out unbounded_string; kind : out identifier ) is
              end if;
           end if;
        end if;
-       f := identifiers( t ).value.all;
+       f.value := identifiers( t ).value.all;
        kind := identifiers( t ).kind;
        -- Mark as used as a factor.  if it is a record field, mark the whole
        -- record as used as a factor for limit type testing purposes.
@@ -1638,15 +1638,18 @@ begin
   -- categories.  If the token isn't in the category, skip the rest.
   elsif token < reserved_top then
      if Token = symbol_t and then identifiers( Token ).value.all = "$?" then
-        f := to_unbounded_string( last_status'img );
+        f.value := to_unbounded_string( last_status'img );
+        f.metaLabel := meta_t;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$$" then
-        f := to_unbounded_string( aPID'image( getpid ) );
+        f.value := to_unbounded_string( aPID'image( getpid ) );
+        f.metaLabel := meta_t;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
-        f := to_unbounded_string( aPID'image( lastChild ) );
+        f.value := to_unbounded_string( aPID'image( lastChild ) );
+        f.metaLabel := meta_t;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
@@ -1655,7 +1658,8 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
-           f := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+           f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+           f.metaLabel:= meta_t;
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -1669,7 +1673,7 @@ begin
         kind := uni_string_t;
         if isExecutingCommand then
            begin
-              f := to_unbounded_string(
+              f.value := to_unbounded_string(
                  Argument(
                    integer'value(
                    "" & Element( identifiers( Token ).value.all, 2 ) )+optionOffset ) );
@@ -1688,54 +1692,54 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingCommand then
-           f := to_unbounded_string( Ada.Command_Line.Command_Name );
+           f.value := to_unbounded_string( Ada.Command_Line.Command_Name );
         end if;
         kind := uni_string_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
            err( +"@ is not a variable" );
            kind := eof_t;
         else
-           f := itself;
+           f.value := itself;
            kind := itself_type;
         end if;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
         if onlyAda95 then
            err( +"% is not allowed with " & em( "pragma ada_95" ) );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         elsif syntax_check then             -- % depends on run-time
-           f := to_unbounded_string( "0" ); -- so just use a dummy
+           f.value := to_unbounded_string( "0" ); -- so just use a dummy
            kind := universal_t;             -- typeless value
         else
            if last_output_type = eof_t then
               err( +"there has been no output assigned to %" );
            else
-              f := last_output;
+              f.value := last_output;
            end if;
            kind := last_output_type;
         end if;
         getNextToken;
      elsif token = number_t then                           -- numeric literal
-        f := identifiers( token ).value.all;
+        f.value := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = charlit_t then                          -- character literal
-        f := identifiers( token ).value.all;
+        f.value := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = strlit_t then                           -- string literal
-        f := identifiers( token ).value.all;
+        f.value := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = backlit_t then           -- `cmds`
@@ -1767,7 +1771,7 @@ begin
         ParseNumericsAbs( f );
         kind := uni_numeric_t;
      elsif token = if_t or token = case_t then            -- ada 2012
-        f := null_unbounded_string;                -- (always return something)
+        f.value := null_unbounded_string;                -- (always return something)
         kind := eof_t;
         err(                                              -- if/case function
            contextNotes => +"in this expression",
@@ -1777,7 +1781,7 @@ begin
            remedy => +"use the statement version which is easier to debug and maintain"
         );
      else
-        f := null_unbounded_string;                -- (always return something)
+        f.value := null_unbounded_string;                -- (always return something)
         kind := eof_t;
         -- comma (a list) or semi-colon (end-of-statement) may indicate a
         -- missing expression
@@ -1803,42 +1807,54 @@ begin
   elsif token < predefined_top then
      if identifiers( token ).funcCB /= null then         -- a built-in function?
 --put_line("C1 - " & identifiers( token ).name ); -- DEBUG
-        identifiers( token ).funcCB.all( f, kind );        -- run it
+        identifiers( token ).funcCB.all( f, kind );       -- run it
      elsif token = is_open_t then                         -- is_open function
         ParseIsOpen( t );
         if isExecutingCommand then
-           f := identifiers( t ).value.all;
+           f.value := identifiers( t ).value.all;
         end if;
         kind := boolean_t;
+     elsif token = system_meta_level_image_t then         -- Security Level
+        -- VALUE META LABELS: this is mainly for debugging labels
+        getNextToken;
+        if onlyAda95 then
+           err( +"system_metal_level_image is not allowed with " &
+              em( "pragma ada_95" ) );
+           f.value := null_unbounded_string;
+           kind := eof_t;
+        else
+          f.value := identifiers( metaLevel ).name;
+          kind := string_t;
+        end if;
      elsif token = source_info_symbol_table_size_t then   -- Symbol_Table_Sz
         getNextToken;
         if onlyAda95 then
            err( +"symbol_table_size is not allowed with " &
               em( "pragma ada_95" ) );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         else
-          f := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
+          f.value := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
           kind := natural_t;
         end if;
      elsif token = source_info_file_t then                -- source_info.file
-        f := basename( getSourceFileName );
+        f.value := basename( getSourceFileName );
         kind := string_t;
         getNextToken;
      elsif token = source_info_line_t then                -- source_info.line
-        f := to_unbounded_string( getLineNo'img );
+        f.value := to_unbounded_string( getLineNo'img );
         kind := positive_t;
         getNextToken;
      elsif token = source_info_src_loc_t then      -- source_info.source_loc.
-        f := to_unbounded_string( getLineNo'img );
-        f := basename( getSourceFileName ) & ":" & f;
+        f.value := to_unbounded_string( getLineNo'img );
+        f.value := basename( getSourceFileName ) & ":" & f.value;
         kind := string_t;
         getNextToken;
      elsif token = source_info_enc_ent_t then      -- source_info.enclosing.
         if blocks_top > block'First then
-           f := getBlockName( block'First );
+           f.value := getBlockName( block'First );
         else
-           f := to_unbounded_string( "script" );
+           f.value := to_unbounded_string( "script" );
         end if;
         kind := string_t;
         getNextToken;
@@ -1863,7 +1879,7 @@ begin
        kind := identifiers( funcToken ).kind;
      end;
   elsif identifiers( token ).kind = keyword_t then      -- no keywords
-     f := null_unbounded_string;                        -- (always return something)
+     f.value := null_unbounded_string;                        -- (always return something)
      kind := universal_t;
       -- comma (a list) or semi-colon (end-of-statement) may indicate a
       -- missing expression
@@ -1899,7 +1915,7 @@ begin
        begin
           if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
              if isExecutingCommand then
-                f := to_unbounded_string( -to_numeric( f ) );
+                f.value := to_unbounded_string( -to_numeric( f.value ) );
              end if;
           end if;
        exception when others =>
@@ -1909,10 +1925,10 @@ begin
        begin
           if type_checks_done or else baseTypesOK( kind, boolean_t ) then
              if isExecutingCommand then
-                if to_numeric( f ) = 1.0 then
-                   f := to_unbounded_string( "0" );
+                if to_numeric( f.value ) = 1.0 then
+                   f.value := to_unbounded_string( "0" );
                 else
-                   f := to_unbounded_string( "1" );
+                   f.value := to_unbounded_string( "1" );
                 end if;
              end if;
           end if;
@@ -1920,7 +1936,7 @@ begin
           err_exception_raised;
        end;
   when others =>
-      f := null_unbounded_string;                -- (always return something)
+      f.value := null_unbounded_string;                -- (always return something)
       kind := eof_t;
       err( pl( gnat.source_info.source_location &
            ": internal error: unexpected uniary operation error" ) );
@@ -1963,9 +1979,9 @@ end ParsePowerTermOperator;
 -- Syntax: term = "factor powerterm-op factor"
 -----------------------------------------------------------------------------
 
-procedure ParsePowerTerm( term : out unbounded_string; term_type : out identifier ) is
-  factor1  : unbounded_string;
-  factor2  : unbounded_string;
+procedure ParsePowerTerm( term : out storage; term_type : out identifier ) is
+  factor1  : storage;
+  factor2  : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : unbounded_string;
@@ -1991,16 +2007,16 @@ begin
            if operator = "**" then
               begin
                  if isExecutingCommand then
-                    term := to_unbounded_string(
-                         to_numeric( term ) **
-                         natural( to_numeric( factor2 ) ) );
+                    term.value := to_unbounded_string(
+                         to_numeric( term.value ) **
+                         natural( to_numeric( factor2.value ) ) );
                  end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 term := null_unbounded_string;
+                 term.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 term := null_unbounded_string;
+                 term.value := null_unbounded_string;
               end;
           else
               err( pl( gnat.source_info.source_location &
@@ -2055,9 +2071,9 @@ end ParseTermOperator;
 -- Syntax: term = "powerterm term-op powerterm"
 -----------------------------------------------------------------------------
 
-procedure ParseTerm( term : out unbounded_string; term_type : out identifier ) is
-  pterm1   : unbounded_string;
-  pterm2   : unbounded_string;
+procedure ParseTerm( term : out storage; term_type : out identifier ) is
+  pterm1   : storage;
+  pterm2   : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : unbounded_string;
@@ -2090,17 +2106,17 @@ begin
                       identifiers( term_type ).wasCastTo := true;
                    end if;
                   if isExecutingCommand then
-                     term := castToType(
-                        to_numeric( term ) *
-                        to_numeric( pterm2 ),
+                     term.value := castToType(
+                        to_numeric( term.value ) *
+                        to_numeric( pterm2.value ),
                      term_type );
                   end if;
                  exception when program_error =>
                     err( +"program_error exception raised" );
-                    term := null_unbounded_string;
+                    term.value := null_unbounded_string;
                  when others =>
                     err_exception_raised;
-                    term := null_unbounded_string;
+                    term.value := null_unbounded_string;
                  end;
              elsif operator = "/" then
                 declare
@@ -2122,21 +2138,21 @@ begin
                      -- As a kludge, we'll break up this function call into
                      -- its parts and explicitly test for division by zero.
                      -- this could likely be improved.
-                     t := to_numeric( term );
-                     p := to_numeric( pterm2 );
+                     t := to_numeric( term.value );
+                     p := to_numeric( pterm2.value );
                      if p = 0.0 then
                         err( +"division by zero" );
                      else
                         z := t / p;
-                        term := castToType( z, term_type );
+                        term.value := castToType( z, term_type );
                      end if;
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 end;
              elsif operator = "mod" then
                 begin
@@ -2145,19 +2161,19 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     term := castToType(
+                     term.value := castToType(
                         --long_long_integer'image(
                         numericValue(
-                        long_long_integer( to_numeric( term ) ) mod
-                        long_long_integer( to_numeric( pterm2 ) ) ),
+                        long_long_integer( to_numeric( term.value ) ) mod
+                        long_long_integer( to_numeric( pterm2.value ) ) ),
                      term_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 end;
              elsif operator = "rem" then
                 begin
@@ -2166,19 +2182,19 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     term := castToType(
+                     term.value := castToType(
                         --long_long_integer'image(
                         numericValue(
-                        long_long_integer( to_numeric( term ) ) rem
-                        long_long_integer( to_numeric( pterm2 ) ) ),
+                        long_long_integer( to_numeric( term.value ) ) rem
+                        long_long_integer( to_numeric( pterm2.value ) ) ),
                      term_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 end;
              else
                 err( pl( gnat.source_info.source_location &
@@ -2205,14 +2221,14 @@ begin
                  end if;
                  if type_checks_done or else baseTypesOK( kind1, kind2 ) then
                     if isExecutingCommand then
-                       term := term & pterm2;
+                       term.value := term.value & pterm2.value;
                     end if;
                  end if;
               elsif operator = "*" then
                  if type_checks_done or else baseTypesOK( kind1, natural_t ) then
                     if type_checks_done or else baseTypesOK( kind2, uni_string_t ) then
                        if isExecutingCommand then
-                          term := natural( to_numeric( term ) ) * pterm2;
+                          term.value := natural( to_numeric( term.value ) ) * pterm2.value;
                        end if;
                     end if;
                  end if;
@@ -2221,10 +2237,10 @@ begin
               end if;
            exception when program_error =>
               err( +"program_error exception raised" );
-              term := null_unbounded_string;
+              term.value := null_unbounded_string;
            when others =>
               err_exception_raised;
-              term := null_unbounded_string;
+              term.value := null_unbounded_string;
            end;
         else
            if operator = "*" then
@@ -2278,9 +2294,9 @@ end ParseSimpleExpressionOperator;
 -- Syntax: term = "term expr-op term"
 -----------------------------------------------------------------------------
 
-procedure ParseSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
-  term1    : unbounded_string;
-  term2    : unbounded_string;
+procedure ParseSimpleExpression( se : out storage; expr_type : out identifier ) is
+  term1    : storage;
+  term2    : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : unbounded_string;
@@ -2334,17 +2350,17 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     se := castToType(
-                        to_numeric( se ) +
-                        to_numeric( term2 ),
+                     se.value := castToType(
+                        to_numeric( se.value ) +
+                        to_numeric( term2.value ),
                      expr_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 end;
              elsif operator = "-" then
                 begin
@@ -2353,36 +2369,36 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingCommand then
-                     se := castToType(
-                        to_numeric( se ) -
-                        to_numeric( term2 ),
+                     se.value := castToType(
+                        to_numeric( se.value ) -
+                        to_numeric( term2.value ),
                      expr_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 end;
              end if;
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
               if isExecutingCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se.value ) );
                  begin
-                    c := c + duration( to_numeric( term2 ) );
-                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
+                    c := c + duration( to_numeric( term2.value ) );
+                    se.value := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            elsif operator = "-" then
               if isExecutingCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se.value ) );
                  begin
-                    c := c - duration( to_numeric( term2 ) );
-                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
+                    c := c - duration( to_numeric( term2.value ) );
+                    se.value := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            end if;
@@ -2390,10 +2406,10 @@ begin
            if operator = "+" then
               if isExecutingCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2.value ) );
                  begin
-                    c := duration( to_numeric( se ) ) + c;
-                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
+                    c := duration( to_numeric( se.value ) ) + c;
+                    se.value := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            elsif operator = "-" then
@@ -2405,11 +2421,11 @@ begin
            else
               if isExecutingCommand then
                  declare
-                    c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se.value ) );
                     c2: duration;
                  begin
-                    c2 := c - scanner.calendar.time( to_numeric( term2 ) );
-                    se := to_unbounded_string( duration'image( c2 ) );
+                    c2 := c - scanner.calendar.time( to_numeric( term2.value ) );
+                    se.value := to_unbounded_string( duration'image( c2 ) );
                  exception when time_error =>
                     err( +"duration value too large or small" );
                  when constraint_error =>
@@ -2490,10 +2506,10 @@ end ParseRelationalOperator;
 -- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
 -----------------------------------------------------------------------------
 
-procedure ParseRelation( re : out unbounded_string; rel_type : out identifier ) is
-  se1      : unbounded_string;
-  se2      : unbounded_string;
-  se3      : unbounded_string;
+procedure ParseRelation( re : out storage; rel_type : out identifier ) is
+  se1      : storage;
+  se2      : storage;
+  se3      : storage;
   kind1    : identifier;
   kind2    : identifier;
   kind3    : identifier;
@@ -2544,44 +2560,44 @@ begin
              begin
                if operator = ">=" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) >= to_numeric( se2 );
+                     b := to_numeric( se1.value ) >= to_numeric( se2.value );
                   end if;
                elsif operator = ">" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) > to_numeric( se2 );
+                     b := to_numeric( se1.value ) > to_numeric( se2.value );
                   end if;
                elsif operator = "<" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) < to_numeric( se2 );
+                     b := to_numeric( se1.value ) < to_numeric( se2.value );
                   end if;
                elsif operator = "<=" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) <= to_numeric( se2 );
+                     b := to_numeric( se1.value ) <= to_numeric( se2.value );
                   end if;
                elsif operator = "=" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) = to_numeric( se2 );
+                     b := to_numeric( se1.value ) = to_numeric( se2.value );
                   end if;
                elsif operator = "/=" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) /= to_numeric( se2 );
+                     b := to_numeric( se1.value ) /= to_numeric( se2.value );
                   end if;
                elsif operator = "in" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) in to_numeric( se2 )..to_numeric( se3 );
+                     b := to_numeric( se1.value ) in to_numeric( se2.value )..to_numeric( se3.value );
                   end if;
                elsif operator = "not in" then
                   if isExecutingCommand then
-                     b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
+                     b := to_numeric( se1.value ) not in to_numeric( se2.value )..to_numeric( se3.value );
                   end if;
                else
                   err( pl( gnat.source_info.source_location &
                     ": Internal error: couldn't handle relational operator" ) );
                end if;
                if b then
-                  re := to_unbounded_string( "1" );
+                  re.value := to_unbounded_string( "1" );
                else
-                  re := to_unbounded_string( "0" );
+                  re.value := to_unbounded_string( "0" );
                end if;
              exception when others =>
                err_exception_raised;
@@ -2589,39 +2605,39 @@ begin
         elsif operation = uni_string_t then
              if operator = ">=" then
                 if isExecutingCommand then
-                   b := se1 >= se2;
+                   b := se1.value >= se2.value;
                 end if;
              elsif operator = ">" then
                 if isExecutingCommand then
-                   b := se1 > se2;
+                   b := se1.value > se2.value;
                 end if;
              elsif operator = "<" then
                 if isExecutingCommand then
-                   b := se1 < se2;
+                   b := se1.value < se2.value;
                 end if;
              elsif operator = "<=" then
                 if isExecutingCommand then
-                   b := se1 <= se2;
+                   b := se1.value <= se2.value;
                 end if;
              elsif operator = "=" then
                 if isExecutingCommand then
-                   b := se1 = se2;
+                   b := se1.value = se2.value;
                 end if;
              elsif operator = "/=" then
                 if isExecutingCommand then
-                   b := se1 /= se2;
+                   b := se1.value /= se2.value;
                 end if;
              elsif operator = "in" then
                 if isExecutingCommand then
-                   if length( se1 ) /= 1 or
-                      length( se2 ) /= 1 or
-                      length( se3 ) /= 1 then
+                   if length( se1.value ) /= 1 or
+                      length( se2.value ) /= 1 or
+                      length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
                    else
                       declare
-                        c1 : constant character := element( se1, 1 );
-                        c2 : constant character := element( se2, 1 );
-                        c3 : constant character := element( se3, 1 );
+                        c1 : constant character := element( se1.value, 1 );
+                        c2 : constant character := element( se2.value, 1 );
+                        c3 : constant character := element( se3.value, 1 );
                       begin
                         b := c1 in c2..c3;
                       exception when others =>
@@ -2631,15 +2647,15 @@ begin
                 end if;
              elsif operator = "not in" then
                 if isExecutingCommand then
-                   if length( se1 ) /= 1 or
-                      length( se2 ) /= 1 or
-                      length( se3 ) /= 1 then
+                   if length( se1.value ) /= 1 or
+                      length( se2.value ) /= 1 or
+                      length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
                    else
                       declare
-                        c1 : constant character := element( se1, 1 );
-                        c2 : constant character := element( se2, 1 );
-                        c3 : constant character := element( se3, 1 );
+                        c1 : constant character := element( se1.value, 1 );
+                        c2 : constant character := element( se2.value, 1 );
+                        c3 : constant character := element( se3.value, 1 );
                       begin
                         b := c1 not in c2..c3;
                       exception when others =>
@@ -2652,9 +2668,9 @@ begin
                   ": Internal error: couldn't handle relational operator" ) );
              end if;
              if b then
-                re := to_unbounded_string( "1" );
+                re.value := to_unbounded_string( "1" );
              else
-                re := to_unbounded_string( "0" );
+                re.value := to_unbounded_string( "0" );
              end if;
         else
              err( +"relational operation not defined for these types" );
@@ -2695,9 +2711,9 @@ end ParseExpressionOperator;
 -- Syntax: expr = "relation" and|or|xor "relation"
 -----------------------------------------------------------------------------
 
-procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier ) is
-  re1      : unbounded_string;
-  re2      : unbounded_string;
+procedure ParseExpression( ex : out storage; expr_type : out identifier ) is
+  re1      : storage;
+  re2      : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : identifier;
@@ -2733,71 +2749,71 @@ begin
            if operator = and_t then
               begin
                 if isExecutingCommand then
-                   re1 := to_unbounded_string(
+                   re1.value := to_unbounded_string(
                       numericValue(
-                      bitwise_number( to_numeric( re1 ) ) and
-                      bitwise_number( to_numeric( re2 ) ) ) );
+                      bitwise_number( to_numeric( re1.value ) ) and
+                      bitwise_number( to_numeric( re2.value ) ) ) );
                 end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when ada.strings.index_error =>
                  err( +"variable was not intialized" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               end;
            elsif operator = or_t then
               begin
                 if isExecutingCommand then
-                   re1 := to_unbounded_string(
+                   re1.value := to_unbounded_string(
                       numericValue(
-                      bitwise_number( to_numeric( re1 ) ) or
-                      bitwise_number( to_numeric( re2 ) ) ) );
+                      bitwise_number( to_numeric( re1.value ) ) or
+                      bitwise_number( to_numeric( re2.value ) ) ) );
                 end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when ada.strings.index_error =>
                  err( +"variable was not intialized" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               end;
            elsif operator = xor_t then
               begin
                 if isExecutingCommand then
-                   re1 := to_unbounded_string(
+                   re1.value := to_unbounded_string(
                       numericValue(
-                      bitwise_number( to_numeric( re1 ) ) xor
-                      bitwise_number( to_numeric( re2 ) ) ) );
+                      bitwise_number( to_numeric( re1.value ) ) xor
+                      bitwise_number( to_numeric( re2.value ) ) ) );
                 end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when ada.strings.index_error =>
                  err( +"variable was not intialized" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               end;
            end if;
         elsif getBaseType( kind1 ) = boolean_t then
            expr_type := getBaseType( kind1 );
            if operator = and_t then
               if isExecutingCommand then
-                 b := re1 = "1" and re2 = "1";
+                 b := re1.value = "1" and re2.value = "1";
               end if;
            elsif operator= or_t then
               if isExecutingCommand then
-                 b := re1 = "1" or re2 = "1";
+                 b := re1.value = "1" or re2.value = "1";
               end if;
            elsif operator = xor_t then
               if isExecutingCommand then
-                 b := re1 = "1" xor re2 = "1";
+                 b := re1.value = "1" xor re2.value = "1";
               end if;
            else
               err( pl( gnat.source_info.source_location &
@@ -2805,9 +2821,9 @@ begin
            end if;
            if isExecutingCommand then
               if b then
-                 re1 := to_unbounded_string( "1" );
+                 re1.value := to_unbounded_string( "1" );
               else
-                 re1 := to_unbounded_string( "0" );
+                 re1.value := to_unbounded_string( "0" );
               end if;
            end if;
         else
@@ -2845,7 +2861,7 @@ end ParseExpression;
 -- if the identifier is volatile, reload the value from the environment
 -----------------------------------------------------------------------------
 
-procedure ParseStaticFactor( f : out unbounded_string; kind : out identifier ) is
+procedure ParseStaticFactor( f : out storage; kind : out identifier ) is
   castType  : identifier;
   --array_id  : identifier;
   -- array_id2 : arrayID;
@@ -2871,15 +2887,18 @@ begin
      expect( symbol_t, ")" );
   else
      if Token = symbol_t and then identifiers( Token ).value.all = "$?" then
-        f := to_unbounded_string( last_status'img );
+        f.value := to_unbounded_string( last_status'img );
+        f.metaLabel := noMetaLevel;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$$" then
-        f := to_unbounded_string( aPID'image( getpid ) );
+        f.value := to_unbounded_string( aPID'image( getpid ) );
+        f.metaLabel := noMetaLevel;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$!" then
-        f := to_unbounded_string( aPID'image( lastChild ) );
+        f.value := to_unbounded_string( aPID'image( lastChild ) );
+        f.metaLabel := noMetaLevel;
         kind := uni_numeric_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "$#" then
@@ -2888,7 +2907,8 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingStaticCommand then
-           f := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+           f.value := to_unbounded_string( integer'image( Argument_Count-optionOffset) );
+           f.metaLabel := noMetaLevel;
         end if;
         kind := uni_numeric_t;
         getNextToken;
@@ -2901,8 +2921,9 @@ begin
         end if;
         kind := uni_string_t;
         if isExecutingStaticCommand then
+           f.metaLabel := noMetaLevel;
            begin
-              f := to_unbounded_string(
+              f.value := to_unbounded_string(
                  Argument(
                    integer'value(
                    "" & Element( identifiers( Token ).value.all, 2 ) )+optionOffset ) );
@@ -2921,53 +2942,53 @@ begin
            pl( " -- use command_line package" ) );
         end if;
         if isExecutingStaticCommand then
-           f := to_unbounded_string( Ada.Command_Line.Command_Name );
+           f.value := to_unbounded_string( Ada.Command_Line.Command_Name );
         end if;
         kind := uni_string_t;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "@" then
         if onlyAda95 then
            err( +"@ is not allowed with " & em( "pragma ada_95" ) );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         elsif itself_type = new_t then
            err( +"@ is not defined" );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         elsif identifiers( itself_type ).class = procClass then
            err( +"@ is not a variable" );
         else
-           f := itself;
+           f.value := itself;
            kind := itself_type;
         end if;
         getNextToken;
      elsif Token = symbol_t and then identifiers( Token ).value.all = "%" then
         if onlyAda95 then
            err( +"% is not allowed with " & em( "pragma ada_95" ) );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         elsif syntax_check then             -- % depends on run-time
-           f := to_unbounded_string( "0" ); -- so just use a dummy
+           f.value := to_unbounded_string( "0" ); -- so just use a dummy
            kind := universal_t;             -- typeless value
         else
            if last_output_type = eof_t then
               err( +"there has been no output assigned to %" );
            else
-              f := last_output;
+              f.value := last_output;
            end if;
            kind := last_output_type;
         end if;
         getNextToken;
      elsif token = number_t then                           -- numeric literal
-        f := identifiers( token ).value.all;
+        f.value := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = charlit_t then                          -- character literal
-        f := identifiers( token ).value.all;
+        f.value := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = strlit_t then                           -- string literal
-        f := identifiers( token ).value.all;
+        f.value := identifiers( token ).value.all;
         kind := identifiers( token ).kind;
         getNextToken;
      elsif token = backlit_t then           -- `cmds`
@@ -3012,30 +3033,30 @@ begin
         getNextToken;
         if onlyAda95 then
            err( +"symbol_table_size is not allowed with pragma ada_95" );
-           f := null_unbounded_string;
+           f.value := null_unbounded_string;
            kind := eof_t;
         else
-          f := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
+          f.value := delete( to_unbounded_string( identifier'image( identifiers_top-1 )), 1, 1 );
           kind := natural_t;
         end if;
      elsif token = source_info_file_t then                -- source_info.file
-        f := basename( getSourceFileName );
+        f.value := basename( getSourceFileName );
         kind := string_t;
         getNextToken;
      elsif token = source_info_line_t then                -- source_info.line
-        f := to_unbounded_string( getLineNo'img );
+        f.value := to_unbounded_string( getLineNo'img );
         kind := positive_t;
         getNextToken;
      elsif token = source_info_src_loc_t then      -- source_info.source_loc.
-        f := to_unbounded_string( getLineNo'img );
-        f := basename( getSourceFileName ) & ":" & f;
+        f.value := to_unbounded_string( getLineNo'img );
+        f.value := basename( getSourceFileName ) & ":" & f.value;
         kind := string_t;
         getNextToken;
      elsif token = source_info_enc_ent_t then      -- source_info.enclosing.
         if blocks_top > block'First then
-           f := getBlockName( block'First );
+           f.value := getBlockName( block'First );
         else
-           f := to_unbounded_string( "script" );
+           f.value := to_unbounded_string( "script" );
         end if;
         kind := string_t;
         getNextToken;
@@ -3066,7 +3087,7 @@ begin
      --      kind := identifiers( funcToken ).kind;
      --    end;
      elsif identifiers( token ).kind = keyword_t then      -- no keywords
-        f := null_unbounded_string;                        -- (always return something)
+        f.value := null_unbounded_string;                        -- (always return something)
         kind := universal_t;
         err( +"variable, value or expression expected" );
      else                                                  -- some kind of user ident?
@@ -3081,7 +3102,7 @@ begin
         -- Note: Variables must be allowed for System package variables
         if identifiers( t ).volatile /= none then  -- volatile user identifier
            refreshVolatile( t );
-           f := identifiers( t ).value.all;
+           f.value := identifiers( t ).value.all;
            kind := identifiers( t ).kind;
         elsif identifiers( t ).class = subClass or             -- type cast
            identifiers( t ).class = typeClass then
@@ -3102,7 +3123,7 @@ begin
               end if;
               if isExecutingStaticCommand then
                  --f := castToType( to_numeric( f ), kind );
-                 f := castToType( f, kind );
+                 f.value := castToType( f.value, kind );
               end if;
            end if;
         -- KB: 20/11/16 : array values don't exist in static context
@@ -3119,17 +3140,17 @@ begin
         --      -- TODO: make a utility function for doing all this.
         --      -- TODO: probably needs a better error message
         --      if type_checks_done or else baseTypesOK( identifiers( array_id ).genKind, kind ) then
-        --         if arrayIndex not in identifiers( array_id ).avalue'range then -- DEBUG
-        --            err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).avalue'first'img & " .." & identifiers( array_id ).avalue'last'img );
+        --         if arrayIndex not in identifiers( array_id ).astorage'range then -- DEBUG
+        --            err( "array index " &  to_string( trim( f, ada.strings.both ) ) & " not in" & identifiers( array_id ).astorage'first'img & " .." & identifiers( array_id ).astorage'last'img );
         --         end if;
         --      end if;
         --      if not error_found then
         --         begin
-        --           f := identifiers( array_id ).avalue( arrayIndex ); -- NEWARRAY
+        --           f := identifiers( array_id ).astorage( arrayIndex ); -- NEWARRAY
         --         exception when CONSTRAINT_ERROR =>
         --           err( gnat.source_info.source_location &
         --             ": internal error: constraint_error : index out of range " &
-        --             identifiers( array_id ).avalue'first'img & " .. " & identifiers( array_id ).avalue'last'img );
+        --             identifiers( array_id ).astorage'first'img & " .. " & identifiers( array_id ).astorage'last'img );
         --         when STORAGE_ERROR =>
         --           err( gnat.source_info.source_location &
         --             ": internal error : storage error raised in ParseStaticFactor" );
@@ -3144,7 +3165,7 @@ begin
              err( name_em( t ) &
                  pl( " has an array index but is not an array" ) );
            end if;
-           f := identifiers( t ).value.all;
+           f.value := identifiers( t ).value.all;
            kind := identifiers( t ).kind;
         end if;
      end if;
@@ -3159,7 +3180,7 @@ begin
        begin
           if type_checks_done or else baseTypesOK( kind, uni_numeric_t ) then
              if isExecutingStaticCommand then
-             f := to_unbounded_string( -to_numeric( f ) );
+             f.value := to_unbounded_string( -to_numeric( f.value ) );
              end if;
           end if;
        exception when others =>
@@ -3169,10 +3190,10 @@ begin
        begin
           if type_checks_done or else baseTypesOK( kind, boolean_t ) then
              if isExecutingStaticCommand then
-                if to_numeric( f ) = 1.0 then
-                   f := to_unbounded_string( "0" );
+                if to_numeric( f.value ) = 1.0 then
+                   f.value := to_unbounded_string( "0" );
                 else
-                   f := to_unbounded_string( "1" );
+                   f.value := to_unbounded_string( "1" );
                 end if;
              end if;
           end if;
@@ -3209,9 +3230,9 @@ end ParseStaticPowerTermOperator;
 -- Syntax: term = "factor powerterm-op factor"
 -----------------------------------------------------------------------------
 
-procedure ParseStaticPowerTerm( term : out unbounded_string; term_type : out identifier ) is
-  factor1  : unbounded_string;
-  factor2  : unbounded_string;
+procedure ParseStaticPowerTerm( term : out storage; term_type : out identifier ) is
+  factor1  : storage;
+  factor2  : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : unbounded_string;
@@ -3236,16 +3257,16 @@ begin
            if operator = "**" then
               begin
                  if isExecutingStaticCommand then
-                    term := to_unbounded_string(
-                         to_numeric( term ) **
-                         natural( to_numeric( factor2 ) ) );
+                    term.value := to_unbounded_string(
+                         to_numeric( term.value ) **
+                         natural( to_numeric( factor2.value ) ) );
                  end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 term := null_unbounded_string;
+                 term.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 term := null_unbounded_string;
+                 term.value := null_unbounded_string;
               end;
           else
               err( pl( gnat.source_info.source_location &
@@ -3287,9 +3308,9 @@ end ParseStaticTermOperator;
 -- Syntax: term = "powerterm term-op powerterm"
 -----------------------------------------------------------------------------
 
-procedure ParseStaticTerm( term : out unbounded_string; term_type : out identifier ) is
-  pterm1   : unbounded_string;
-  pterm2   : unbounded_string;
+procedure ParseStaticTerm( term : out storage; term_type : out identifier ) is
+  pterm1   : storage;
+  pterm2   : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : unbounded_string;
@@ -3321,17 +3342,17 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingStaticCommand then
-                     term := castToType(
-                        to_numeric( term ) *
-                        to_numeric( pterm2 ),
+                     term.value := castToType(
+                        to_numeric( term.value ) *
+                        to_numeric( pterm2.value ),
                      term_type );
                   end if;
                  exception when program_error =>
                     err( +"program_error exception raised" );
-                    term := null_unbounded_string;
+                    term.value := null_unbounded_string;
                  when others =>
                     err_exception_raised;
-                    term := null_unbounded_string;
+                    term.value := null_unbounded_string;
                  end;
              elsif operator = "/" then
                 declare
@@ -3353,21 +3374,21 @@ begin
                      -- As a kludge, we'll break up this function call into
                      -- its parts and explicitly test for division by zero.
                      -- this could likely be improved.
-                     t := to_numeric( term );
-                     p := to_numeric( pterm2 );
+                     t := to_numeric( term.value );
+                     p := to_numeric( pterm2.value );
                      if p = 0.0 then
                         err( +"division by zero" );
                      else
                         z := t / p;
-                        term := castToType( z, term_type );
+                        term.value := castToType( z, term_type );
                      end if;
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 end;
              elsif operator = "mod" then
                 begin
@@ -3376,19 +3397,19 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingStaticCommand then
-                     term := castToType(
+                     term.value := castToType(
                         --long_long_integer'image(
                         numericValue(
-                        long_long_integer( to_numeric( term ) ) mod
-                        long_long_integer( to_numeric( pterm2 ) ) ),
+                        long_long_integer( to_numeric( term.value ) ) mod
+                        long_long_integer( to_numeric( pterm2.value ) ) ),
                      term_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 end;
              elsif operator = "rem" then
                 begin
@@ -3397,19 +3418,19 @@ begin
                      identifiers( term_type ).wasCastTo := true;
                   end if;
                   if isExecutingStaticCommand then
-                     term := castToType(
+                     term.value := castToType(
                         --long_long_integer'image(
                         numericValue(
-                        long_long_integer( to_numeric( term ) ) rem
-                        long_long_integer( to_numeric( pterm2 ) ) ),
+                        long_long_integer( to_numeric( term.value ) ) rem
+                        long_long_integer( to_numeric( pterm2.value ) ) ),
                      term_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   term := null_unbounded_string;
+                   term.value := null_unbounded_string;
                 end;
              else
                 err( pl( gnat.source_info.source_location &
@@ -3436,14 +3457,14 @@ begin
                  end if;
                  if type_checks_done or else baseTypesOK( kind1, kind2 ) then
                     if isExecutingStaticCommand then
-                       term := term & pterm2;
+                       term.value := term.value & pterm2.value;
                     end if;
                  end if;
               elsif operator = "*" then
                  if type_checks_done or else baseTypesOK( kind1, natural_t ) then
                     if type_checks_done or else baseTypesOK( kind2, uni_string_t ) then
                        if isExecutingCommand then
-                          term := natural( to_numeric( term ) ) * pterm2;
+                          term.value := natural( to_numeric( term.value ) ) * pterm2.value;
                        end if;
                     end if;
                  end if;
@@ -3452,10 +3473,10 @@ begin
               end if;
            exception when program_error =>
               err( +"program_error exception raised" );
-              term := null_unbounded_string;
+              term.value := null_unbounded_string;
            when others =>
               err_exception_raised;
-              term := null_unbounded_string;
+              term.value := null_unbounded_string;
            end;
         else
            if operator = "*" then
@@ -3495,9 +3516,9 @@ end ParseStaticSimpleExpressionOperator;
 -- Syntax: term = "term expr-op term"
 -----------------------------------------------------------------------------
 
-procedure ParseStaticSimpleExpression( se : out unbounded_string; expr_type : out identifier ) is
-  term1    : unbounded_string;
-  term2    : unbounded_string;
+procedure ParseStaticSimpleExpression( se : out storage; expr_type : out identifier ) is
+  term1    : storage;
+  term2    : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : unbounded_string;
@@ -3550,17 +3571,17 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingStaticCommand then
-                     se := castToType(
-                        to_numeric( se ) +
-                        to_numeric( term2 ),
+                     se.value := castToType(
+                        to_numeric( se.value ) +
+                        to_numeric( term2.value ),
                      expr_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 end;
              elsif operator = "-" then
                 begin
@@ -3569,36 +3590,36 @@ begin
                      identifiers( expr_type ).wasCastTo := true;
                   end if;
                   if isExecutingStaticCommand then
-                     se := castToType(
-                        to_numeric( se ) -
-                        to_numeric( term2 ),
+                     se.value := castToType(
+                        to_numeric( se.value ) -
+                        to_numeric( term2.value ),
                      expr_type );
                   end if;
                 exception when program_error =>
                    err( +"program_error exception raised" );
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 when others =>
                    err_exception_raised;
-                   se := null_unbounded_string;
+                   se.value := null_unbounded_string;
                 end;
              end if;
         elsif operation = cal_time_t then -- time +/- duration
            if operator = "+" then
               if isExecutingStaticCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se.value ) );
                  begin
-                    c := c + duration( to_numeric( term2 ) );
-                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
+                    c := c + duration( to_numeric( term2.value ) );
+                    se.value := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            elsif operator = "-" then
               if isExecutingStaticCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( se.value ) );
                  begin
-                    c := c - duration( to_numeric( term2 ) );
-                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
+                    c := c - duration( to_numeric( term2.value ) );
+                    se.value := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            end if;
@@ -3606,10 +3627,10 @@ begin
            if operator = "+" then
               if isExecutingStaticCommand then
                  declare
-                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2 ) );
+                    c : scanner.calendar.time := scanner.calendar.time( to_numeric( term2.value ) );
                  begin
-                    c := duration( to_numeric( se ) ) + c;
-                    se := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
+                    c := duration( to_numeric( se.value ) ) + c;
+                    se.value := to_unbounded_string( long_long_integer'image( long_long_integer( c ) ) );
                  end;
               end if;
            elsif operator = "-" then
@@ -3621,11 +3642,11 @@ begin
            else
               if isExecutingStaticCommand then
                  declare
-                    c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se ) );
+                    c : constant scanner.calendar.time := scanner.calendar.time( to_numeric( se.value ) );
                     c2: duration;
                  begin
-                    c2 := c - scanner.calendar.time( to_numeric( term2 ) );
-                    se := to_unbounded_string( duration'image( c2 ) );
+                    c2 := c - scanner.calendar.time( to_numeric( term2.value ) );
+                    se.value := to_unbounded_string( duration'image( c2 ) );
                  exception when time_error =>
                     err( +"duration value too large or small" );
                  when constraint_error =>
@@ -3687,10 +3708,10 @@ end ParseStaticRelationalOperator;
 -- Syntax: relation = "simple-expr" =|>|<|... "simple-expr"
 -----------------------------------------------------------------------------
 
-procedure ParseStaticRelation( re : out unbounded_string; rel_type : out identifier ) is
-  se1      : unbounded_string;
-  se2      : unbounded_string;
-  se3      : unbounded_string;
+procedure ParseStaticRelation( re : out storage; rel_type : out identifier ) is
+  se1      : storage;
+  se2      : storage;
+  se3      : storage;
   kind1    : identifier;
   kind2    : identifier;
   kind3    : identifier;
@@ -3734,44 +3755,44 @@ begin
              begin
                if operator = ">=" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) >= to_numeric( se2 );
+                     b := to_numeric( se1.value ) >= to_numeric( se2.value );
                   end if;
                elsif operator = ">" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) > to_numeric( se2 );
+                     b := to_numeric( se1.value ) > to_numeric( se2.value );
                   end if;
                elsif operator = "<" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) < to_numeric( se2 );
+                     b := to_numeric( se1.value ) < to_numeric( se2.value );
                   end if;
                elsif operator = "<=" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) <= to_numeric( se2 );
+                     b := to_numeric( se1.value ) <= to_numeric( se2.value );
                   end if;
                elsif operator = "=" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) = to_numeric( se2 );
+                     b := to_numeric( se1.value ) = to_numeric( se2.value );
                   end if;
                elsif operator = "/=" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) /= to_numeric( se2 );
+                     b := to_numeric( se1.value ) /= to_numeric( se2.value );
                   end if;
                elsif operator = "in" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) in to_numeric( se2 )..to_numeric( se3 );
+                     b := to_numeric( se1.value ) in to_numeric( se2.value )..to_numeric( se3.value );
                   end if;
                elsif operator = "not in" then
                   if isExecutingStaticCommand then
-                     b := to_numeric( se1 ) not in to_numeric( se2 )..to_numeric( se3 );
+                     b := to_numeric( se1.value ) not in to_numeric( se2.value )..to_numeric( se3.value );
                   end if;
                else
                   err( pl( gnat.source_info.source_location &
                     ": Internal error: couldn't handle relational operator" ) );
                end if;
                if b then
-                  re := to_unbounded_string( "1" );
+                  re.value := to_unbounded_string( "1" );
                else
-                  re := to_unbounded_string( "0" );
+                  re.value := to_unbounded_string( "0" );
                end if;
              exception when others =>
                err_exception_raised;
@@ -3779,39 +3800,39 @@ begin
         elsif operation = uni_string_t then
              if operator = ">=" then
                 if isExecutingStaticCommand then
-                   b := se1 >= se2;
+                   b := se1.value >= se2.value;
                 end if;
              elsif operator = ">" then
                 if isExecutingStaticCommand then
-                   b := se1 > se2;
+                   b := se1.value > se2.value;
                 end if;
              elsif operator = "<" then
                 if isExecutingStaticCommand then
-                   b := se1 < se2;
+                   b := se1.value < se2.value;
                 end if;
              elsif operator = "<=" then
                 if isExecutingStaticCommand then
-                   b := se1 <= se2;
+                   b := se1.value <= se2.value;
                 end if;
              elsif operator = "=" then
                 if isExecutingStaticCommand then
-                   b := se1 = se2;
+                   b := se1.value = se2.value;
                 end if;
              elsif operator = "/=" then
                 if isExecutingStaticCommand then
-                   b := se1 /= se2;
+                   b := se1.value /= se2.value;
                 end if;
              elsif operator = "in" then
                 if isExecutingStaticCommand then
-                   if length( se1 ) /= 1 or
-                      length( se2 ) /= 1 or
-                      length( se3 ) /= 1 then
+                   if length( se1.value ) /= 1 or
+                      length( se2.value ) /= 1 or
+                      length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
                    else
                       declare
-                        c1 : constant character := element( se1, 1 );
-                        c2 : constant character := element( se2, 1 );
-                        c3 : constant character := element( se3, 1 );
+                        c1 : constant character := element( se1.value, 1 );
+                        c2 : constant character := element( se2.value, 1 );
+                        c3 : constant character := element( se3.value, 1 );
                       begin
                         b := c1 in c2..c3;
                       exception when others =>
@@ -3821,15 +3842,15 @@ begin
                 end if;
              elsif operator = "not in" then
                 if isExecutingStaticCommand then
-                   if length( se1 ) /= 1 or
-                      length( se2 ) /= 1 or
-                      length( se3 ) /= 1 then
+                   if length( se1.value ) /= 1 or
+                      length( se2.value ) /= 1 or
+                      length( se3.value ) /= 1 then
                       err( +"scalar type required for range" );
                    else
                       declare
-                        c1 : constant character := element( se1, 1 );
-                        c2 : constant character := element( se2, 1 );
-                        c3 : constant character := element( se3, 1 );
+                        c1 : constant character := element( se1.value, 1 );
+                        c2 : constant character := element( se2.value, 1 );
+                        c3 : constant character := element( se3.value, 1 );
                       begin
                         b := c1 not in c2..c3;
                       exception when others =>
@@ -3842,9 +3863,9 @@ begin
                    ": Internal error: couldn't handle relational operator" ) );
              end if;
              if b then
-                re := to_unbounded_string( "1" );
+                re.value := to_unbounded_string( "1" );
              else
-                re := to_unbounded_string( "0" );
+                re.value := to_unbounded_string( "0" );
              end if;
         else
              err( +"relational operation not defined for these types" );
@@ -3878,9 +3899,9 @@ end ParseStaticExpressionOperator;
 -- Syntax: expr = "relation" and|or|xor "relation"
 -----------------------------------------------------------------------------
 
-procedure ParseStaticExpression( ex : out unbounded_string; expr_type : out identifier ) is
-  re1      : unbounded_string;
-  re2      : unbounded_string;
+procedure ParseStaticExpression( ex : out storage; expr_type : out identifier ) is
+  re1      : storage;
+  re2      : storage;
   kind1    : identifier;
   kind2    : identifier;
   operator : identifier;
@@ -3904,80 +3925,80 @@ begin
            if operator = and_t then
               begin
                 if isExecutingStaticCommand then
-                   re1 := to_unbounded_string(
+                   re1.value := to_unbounded_string(
                       numericValue(
-                      bitwise_number( to_numeric( re1 ) ) and
-                      bitwise_number( to_numeric( re2 ) ) ) );
+                      bitwise_number( to_numeric( re1.value ) ) and
+                      bitwise_number( to_numeric( re2.value ) ) ) );
                 end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when ada.strings.index_error =>
                  err( +"variable was not intialized" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               end;
            elsif operator = or_t then
               begin
                 if isExecutingStaticCommand then
-                   re1 := to_unbounded_string(
+                   re1.value := to_unbounded_string(
                       numericValue(
-                      bitwise_number( to_numeric( re1 ) ) or
-                      bitwise_number( to_numeric( re2 ) ) ) );
+                      bitwise_number( to_numeric( re1.value ) ) or
+                      bitwise_number( to_numeric( re2.value ) ) ) );
                 end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when ada.strings.index_error =>
                  err( +"variable was not intialized" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               end;
            elsif operator = xor_t then
               begin
                 if isExecutingStaticCommand then
-                   re1 := to_unbounded_string(
+                   re1.value := to_unbounded_string(
                       numericValue(
-                      bitwise_number( to_numeric( re1 ) ) xor
-                      bitwise_number( to_numeric( re2 ) ) ) );
+                      bitwise_number( to_numeric( re1.value ) ) xor
+                      bitwise_number( to_numeric( re2.value ) ) ) );
                 end if;
               exception when program_error =>
                  err( +"program_error exception raised" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when ada.strings.index_error =>
                  err( +"variable was not intialized" );
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               when others =>
                  err_exception_raised;
-                 re1 := null_unbounded_string;
+                 re1.value := null_unbounded_string;
               end;
            end if;
         elsif getBaseType( kind1 ) = boolean_t then
            expr_type := getBaseType( kind1 );
            if operator = and_t then
               if isExecutingStaticCommand then
-                 b := re1 = "1" and re2 = "1";
+                 b := re1.value = "1" and re2.value = "1";
               end if;
            elsif operator= or_t then
               if isExecutingStaticCommand then
-                 b := re1 = "1" or re2 = "1";
+                 b := re1.value = "1" or re2.value = "1";
               end if;
            elsif operator = xor_t then
               if isExecutingStaticCommand then
-                 b := re1 = "1" xor re2 = "1";
+                 b := re1.value = "1" xor re2.value = "1";
               end if;
            else
               err( pl( gnat.source_info.source_location &
                 ": Internal error: unable to handle boolean operator" ) );
            end if;
            if b then
-              re1 := to_unbounded_string( "1" );
+              re1.value := to_unbounded_string( "1" );
            else
-              re1 := to_unbounded_string( "0" );
+              re1.value := to_unbounded_string( "0" );
            end if;
         else
            err( +"boolean or number expected" );
@@ -3985,7 +4006,7 @@ begin
      end if;
      last_op := operator;
   end loop;
-  ex := re1;
+  ex.value := re1.value;
   --put_line( "Expression value = " & to_string( ex ) );
 end ParseStaticExpression;
 

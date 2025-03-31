@@ -11,9 +11,26 @@ These are new issues identified but not entered into the outstanding bug list
 Long term Ongoing Work
 ----------------------
 
-- custom error for subtype x is array... where arrays must be a type
+- value meta labels
+  - world should be split into symbol table and world
+  - the global meta mode for the language
+  - a structure to escallate and descallate the global meta mode
+  - a package dealing with strings + meta tags
+  - deploying strings + meta tags
+  - assignments using strings + meta tags
+  - consider other issues like decision making on the meta tags and
+    global meta tag
+  - identifing identifying individual trees
+  - adaptation to other uses such as units of measure
 
-  - error messages and additional context
+  - consistent name of exprType, expr_type, genKind, etc.
+  - array bounds logic reversed in one place but not the other in
+    parser-decl
+
+- error messages and additional context
+  - errors for common problems
+    - custom error for subtype x is array... where arrays must be a type
+
     - many error messages have the source arrow 1 position to the right
       of where it should be
     - subjectLocation may not be relevant for built-in types like

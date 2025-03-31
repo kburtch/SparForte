@@ -1087,6 +1087,8 @@ end unset;
 -- Syntax: env [identifier]
 -- Note: this uses a word, not an identifier token as in older versions of
 -- SparForte.  If SparForte becomes more complex, this may need to be redesigned.
+-- Note: this is called from jobs as a shell command.  As a result, wasReferenced
+-- has no effect because this does not run during a syntax check anyway.
 -----------------------------------------------------------------------------
 
 procedure env( ap : argumentListPtr ) is
@@ -1105,50 +1107,40 @@ begin
      );
   -- elsif inputMode /= interactive and inputMode /= breakout then
   --    err( +"env is only allowed in an interactive session" );
-  elsif isExecutingCommand then
-     if ap'length = 0 then
-        put_all_identifiers;
-     else
-        tempStr := to_unbounded_string( ap( 1 ).all );
-        if length( tempStr ) <= 1 then
-            err(
-               contextNotes => pl( "At " & gnat.source_info.source_location &
-                  " in the shell command" ),
-               subjectNotes => subjectInterpreter,
-               reason => +"had an internal error because it cannot search for",
-               obstructorNotes => pl( "an empty identifier" )
-           );
-        else
-           -- remove ASCII.NUL from C string
-           delete( tempStr, length( tempStr ), length( tempStr ) );
-           findIdent( tempStr, identToShow );
-           if identToShow = eof_t then
-              -- it is possible a mistaken variable substitution could reveal data
-              err(
-                 contextNotes => +"in the " & em( "env" ) & pl( " command" ),
-                 subjectNotes =>  pl( "identifier " ) & em_value( tempStr ),
-                 reason => +"is",
-                 obstructorNotes => em( "not declared" )
-              );
-           -- commented out: env does not run at all in a restricted shell
-           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name =  "PATH" then
-           --    expectNonRestrictedShell( "env PATH" );
-           --   -- err( pl( "env PATH is not allowed in a " ) &
-           --    --  em( "restricted shell" ) );
-           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name = "HOME" then
-           --    err( pl( "env HOME is not allowed in a " ) &
-           --       em( "restricted shell" ) );
-           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name = "PWD" then
-           --    err( pl( "env PWD is not allowed in a " ) &
-           --      em( "restricted shell" ) );
-           -- elsif boolean(rshOpt) and then identifiers( identToShow ).name = "OLDPWD" then
-           --    err( pl( "env OLDPWD is not allowed in a " ) &
-           --      em( "restricted shell" ) );
-           elsif isExecutingCommand then
-              Put_Identifier( identToShow );
-           end if;
-        end if;
-     end if;
+  elsif ap'length = 0 then
+    if isExecutingCommand then
+       put_all_identifiers;
+    end if;
+  else
+    tempStr := to_unbounded_string( ap( 1 ).all );
+    if length( tempStr ) <= 1 then
+       err(
+           contextNotes => pl( "At " & gnat.source_info.source_location &
+              " in the shell command" ),
+           subjectNotes => subjectInterpreter,
+           reason => +"had an internal error because it cannot search for",
+           obstructorNotes => pl( "an empty identifier" )
+       );
+    else
+       -- remove ASCII.NUL from C string
+       delete( tempStr, length( tempStr ), length( tempStr ) );
+       findIdent( tempStr, identToShow );
+       if identToShow = eof_t then
+          -- it is possible a mistaken variable substitution could reveal data
+          err(
+             contextNotes => +"in the " & em( "env" ) & pl( " command" ),
+             subjectNotes =>  pl( "identifier " ) & em_value( tempStr ),
+             reason => +"is",
+             obstructorNotes => em( "not declared" )
+          );
+       else
+          identifiers( identToShow ).wasReferenced := true;
+          if isExecutingCommand then
+             Put_Identifier( identToShow );
+          end if;
+       end if;
+
+    end if;
   end if;
 exception
    -- DEVICE ERROR is typically a broken pipe... e.g. env | head . If it

@@ -153,7 +153,7 @@ end isExecutingStaticCommand;
 -- I didn't see much of a speed improvement.
 -----------------------------------------------------------------------------
 
-storageCache     : storagePtr := null;
+storageCache     : storageGroupPtr := null;
 storageCacheMiss : natural := 0;
 
 -- CACHE OR FREE STORAGE
@@ -161,7 +161,7 @@ storageCacheMiss : natural := 0;
 -- Cache or destroy storage pointer sp.
 -----------------------------------------------------------------------------
 
-procedure cacheOrFreeStorage( sp : storagePtr ) is
+procedure cacheOrFreeStorage( sp : storageGroupPtr ) is
 begin
   if storageCache = null then
      storageCache := sp;
@@ -179,11 +179,11 @@ pragma inline( cacheOrFreeStorage );
 -- forcibly discard it.
 -----------------------------------------------------------------------------
 
-function findStorage( lbound, ubound : long_integer ) return storagePtr is
-  sp : storagePtr;
+function findStorage( lbound, ubound : long_integer ) return storageGroupPtr is
+  sp : storagegroupPtr;
 begin
   if storageCache = null then
-     sp := new Storage( lbound..ubound );
+     sp := new StorageGroup( lbound..ubound );
      storageCacheMiss := 0;
   else
      if storageCacheMiss >= 3 then
@@ -196,7 +196,7 @@ begin
         storageCache := null;
         storageCacheMiss := 0;
      else
-        sp := new Storage( lbound..ubound );
+        sp := new StorageGroup( lbound..ubound );
         storageCacheMiss := storageCacheMiss + 1;
      end if;
   end if;
@@ -235,13 +235,13 @@ begin
      declare
        kw : declaration renames identifiers( id );
      begin
-       if kw.avalue /= null then
-          free( kw.avalue );
+       if kw.astorage /= null then
+          free( kw.astorage );
        end if;
        kw.name := To_Unbounded_String( s );
        kw.kind := identifier'first;
-       kw.value := kw.svalue'access;
-       kw.svalue := Null_Unbounded_String;
+       kw.value := kw.sstorage.value'access;
+       kw.sstorage.value := Null_Unbounded_String;
        -- field_of is used while searching for fields.  It must always be
        -- set to a known value. eof_t may not not defined yet.
        kw.field_of := identifiers'first;
@@ -266,19 +266,19 @@ begin
      declare
        func : declaration renames identifiers( id );
      begin
-       if func.avalue /= null then
-          free( func.avalue );
+       if func.astorage /= null then
+          free( func.astorage );
        end if;
        func.name := To_Unbounded_String( s );
        func.kind := identifier'first;
-       func.svalue := Null_Unbounded_String;
-       func.value := func.svalue'access;
+       func.sstorage.value := Null_Unbounded_String;
+       func.value := func.sstorage.value'access;
        func.class := funcClass;
        func.genKind := identifiers'first;
        func.genKind2 := identifiers'first;
        func.procCB := null;
        func.funcCB := cb;
-       func.avalue := null;
+       func.astorage := null;
        -- field_of is used while searching for fields.  It must always be
        -- set to a known value. eof_t may not not defined yet.
        func.field_of := identifier'first;
@@ -300,19 +300,19 @@ begin
      declare
        proc : declaration renames identifiers( id );
      begin
-       if proc.avalue /= null then
-          free( proc.avalue );
+       if proc.astorage /= null then
+          free( proc.astorage );
        end if;
        proc.name := To_Unbounded_String( s );
        proc.kind := identifier'first;
-       proc.svalue := Null_Unbounded_String;
-       proc.value := proc.svalue'access;
+       proc.sstorage.value := Null_Unbounded_String;
+       proc.value := proc.sstorage.value'access;
        proc.class := procClass;
        proc.genKind := identifiers'first;
        proc.genKind2 := identifiers'first;
        proc.procCB := cb;
        proc.funcCB := null;
-       proc.avalue := null;
+       proc.astorage := null;
        -- field_of is used while searching for fields.  It must always be
        -- set to a known value. eof_t may not not defined yet.
        proc.field_of := identifier'first;
@@ -567,14 +567,14 @@ begin
             exit;                                               -- and done
          end if;
      end loop;
-     if identifiers( identifiers_top ).avalue /= null then
-        free( identifiers( identifiers_top ).avalue );
+     if identifiers( identifiers_top ).astorage /= null then
+        free( identifiers( identifiers_top ).astorage );
      end if;
      identifiers( identifiers_top ) := declaration'(            -- define
        name     => To_Unbounded_String( s(s'first..eqpos-1) ),  -- identifier
        kind     => string_t,
-       --svalue    => To_Unbounded_String( s(eqpos+1..s'last ) ),
-       --value    => svalue'access,
+       --sstorage    => To_Unbounded_String( s(eqpos+1..s'last ) ),
+       --value    => sstorage'access,
        value    => null,
        class    => varClass,
        import   => true,                                        -- must import
@@ -613,14 +613,14 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       svalue    => To_Unbounded_String( s(eqpos+1..s'last ) ),
-       avalue => null,
+       sstorage => storage'(To_Unbounded_String( s(eqpos+1..s'last )), identifiers'first ),
+       astorage => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
-     -- svalue isn't defined until here
-     identifiers( identifiers_top ).value := identifiers( identifiers_top ).svalue'access;
+     -- sstorage isn't defined until here
+     identifiers( identifiers_top ).value := identifiers( identifiers_top ).sstorage.value'access;
      identifiers_top := identifiers_top + 1;                    -- push stack
   end if;
 end init_env_ident;
@@ -636,9 +636,9 @@ begin
   else                                                          -- otherwise
      id := identifiers_top;                                     -- return id
      identifiers_top := identifiers_top+1;                      -- push stack
-     if identifiers( id ).avalue /= null then
-        cacheOrFreeStorage( identifiers( id ).avalue );
-        --free( identifiers( id ).avalue );
+     if identifiers( id ).astorage /= null then
+        cacheOrFreeStorage( identifiers( id ).astorage );
+        --free( identifiers( id ).astorage );
      end if;
      identifiers( id ) := declaration'(                         -- define
        name     => name,                                        -- identifier
@@ -681,14 +681,14 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       svalue => null_unbounded_string,
-       avalue => null,
+       sstorage => nullStorage,
+       astorage => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
-     -- svalue isn't defined until here
-     identifiers( id ).value := identifiers( id ).svalue'access;
+     -- sstorage isn't defined until here
+     identifiers( id ).value := identifiers( id ).sstorage.value'access;
   end if;
 end declareIdent;
 
@@ -711,12 +711,12 @@ begin
      declare
        sc : declaration renames identifiers( identifiers_top );
      begin
-       if sc.avalue /= null then
-          cacheOrFreeStorage( sc.avalue );
+       if sc.astorage /= null then
+          cacheOrFreeStorage( sc.astorage );
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
-       sc.svalue := to_unbounded_string( value );
+       sc.sstorage := storage'( to_unbounded_string( value ), identifiers'first);
        sc.class := varClass;
        sc.genKind := identifiers'first;
        sc.genKind2 := identifiers'first;
@@ -724,7 +724,7 @@ begin
        sc.usage := constantUsage;
        sc.field_of := eof_t;
        sc.list := identifiers( kind ).list;
-       sc.value := sc.svalue'access;
+       sc.value := sc.sstorage.value'access;
        sc.writtenByFlow := noDataFlow;
        sc.writtenOn := 0;
       -- since this is only called at startup, the default
@@ -755,19 +755,19 @@ begin
      declare
        sc : declaration renames identifiers( identifiers_top );
      begin
-       if sc.avalue /= null then
-          cacheOrFreeStorage( sc.avalue );
+       if sc.astorage /= null then
+          cacheOrFreeStorage( sc.astorage );
        end if;
        sc.name  := to_unbounded_string( name );                 -- define
        sc.kind  := kind;                                        -- identifier
-       sc.svalue := to_unbounded_string( value );
+       sc.sstorage := storage'(to_unbounded_string( value ), identifiers'first);
        sc.class := enumClass;
        sc.genKind := identifiers'first;
        sc.genKind2 := identifiers'first;
        sc.static := true;                                       -- identifier
        sc.usage := fullUsage;
        sc.field_of := eof_t;
-       sc.value := sc.svalue'access;
+       sc.value := sc.sstorage.value'access;
        sc.writtenByFlow := noDataFlow;
        sc.writtenOn := 0;
        -- since this is only called at startup, the default
@@ -788,7 +788,7 @@ begin
     --else
        identifiers(id).name     := identifiers( proc_id ).name & "." & identifiers( id ).name;
     end if;
-    identifiers(id).svalue   := to_unbounded_string( parameterNumber'img );
+    identifiers(id).sstorage   := storage'(to_unbounded_string( parameterNumber'img ), identifiers'first );
     identifiers(id).class    := formalParamClass;
     identifiers(id).kind     := kind;
     identifiers(id).import   := false;
@@ -879,14 +879,14 @@ begin
   else                                                -- otherwise
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
-     if identifiers( id ).avalue /= null then
-        cacheOrFreeStorage( identifiers( id ).avalue );
-        --free( identifiers( id ).avalue );
+     if identifiers( id ).astorage /= null then
+        cacheOrFreeStorage( identifiers( id ).astorage );
+        --free( identifiers( id ).astorage );
      end if;
      identifiers( id ) := declaration'(               -- define
                  name     => paramName,                         -- identifier
                  kind     => identifiers( i ).kind,
-                 --value    => svalue'access,
+                 --value    => sstorage'access,
                  value    => null,
                  class    => varClass,
                  import   => false,
@@ -926,14 +926,14 @@ begin
                  firstBound => 1,
                  lastBound => 0,
                  contract => null_unbounded_string,
-                 svalue => value,
-                 avalue => null,
+                 sstorage => storage'(value, identifiers'first),
+                 astorage => null,
                  renaming_of => identifier'first,
                  renamed_count => 0,
                  passingMode => identifiers( i ).passingMode
      );
-     -- svalue isn't defined until here
-     identifiers( id ).value := identifiers( id ).svalue'access;
+     -- sstorage isn't defined until here
+     identifiers( id ).value := identifiers( id ).sstorage.value'access;
      -- out or in out can be assigned to
      --if identifiers( i ).passingMode = out_mode or
      --   identifiers( i ).passingMode = in_out_mode then
@@ -966,15 +966,15 @@ begin
   else                                                -- otherwise
      id := identifiers_top;                           -- return id
      identifiers_top := identifiers_top+1;            -- push stack
-     if identifiers( id ).avalue /= null then
-        cacheOrFreeStorage( identifiers( id ).avalue );
-        --free( identifiers( id ).avalue );
+     if identifiers( id ).astorage /= null then
+        cacheOrFreeStorage( identifiers( id ).astorage );
+        --free( identifiers( id ).astorage );
      end if;
      identifiers( id ) := declaration'(               -- define
        name     => paramName,                         -- identifier
        kind     => identifiers( func_id ).kind,
        value    => null,
-       --value    => svalue'access,
+       --value    => sstorage'access,
        class    => varClass,
        import   => false,
        method   => none,
@@ -1012,8 +1012,8 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       svalue => null_unbounded_string,
-       avalue => null,
+       sstorage => nullStorage,
+       astorage => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
@@ -1063,14 +1063,14 @@ begin
   else                                                          -- otherwise
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
-     if identifiers( id ).avalue /= null then
-        cacheOrFreeStorage( identifiers( id ).avalue );
-        --free( identifiers( id ).avalue );
+     if identifiers( id ).astorage /= null then
+        cacheOrFreeStorage( identifiers( id ).astorage );
+        --free( identifiers( id ).astorage );
      end if;
      identifiers( id ) := declaration'(                      -- define
        name     => name,                                     -- identifier
        kind     => exception_t,
-       --value    => svalue'access,
+       --value    => sstorage'access,
        value    => null,
        class    => exceptionClass,
        import   => false,
@@ -1109,14 +1109,14 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       svalue    => character'val( exception_status_code ) & default_message,
-       avalue   => null,
+       sstorage    => storage'(character'val( exception_status_code ) & default_message, identifiers'first),
+       astorage   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
-     -- svalue isn't defined until here
-     identifiers( id ).value := identifiers( id ).svalue'access;
+     -- sstorage isn't defined until here
+     identifiers( id ).value := identifiers( id ).sstorage.value'access;
   end if;
 end declareException;
 
@@ -1133,8 +1133,8 @@ procedure declareRenaming( new_id : identifier; canonicalRef :
 begin
   -- assumes a new identifier (kind = new_t) was previously declared
 
-  --if identifiers( new_id ).avalue /= null then
-  --   free( identifiers( new_id ).avalue );
+  --if identifiers( new_id ).astorage /= null then
+  --   free( identifiers( new_id ).astorage );
   --end if;
 
   -- To do a renaming, you cannot do a straight copy of identifiers.
@@ -1182,12 +1182,12 @@ begin
        firstBound => identifiers( canonicalRef.id ).firstBound,
        lastBound => identifiers( canonicalRef.id ).lastBound,
        contract => null_unbounded_string,
-       -- not sure we need to copy svalue as it is not normally
+       -- not sure we need to copy sstorage as it is not normally
        -- read directly.
-       svalue => identifiers( canonicalRef.id ).svalue,
-       -- we need to refer to the canonical variables' avalue to
+       sstorage => identifiers( canonicalRef.id ).sstorage,
+       -- we need to refer to the canonical variables' astorage to
        -- do array bounds tests in the parser...
-       avalue => identifiers( canonicalRef.id ).avalue,
+       astorage => identifiers( canonicalRef.id ).astorage,
        renaming_of => canonicalRef.id,
        renamed_count => 0,
        passingMode => none
@@ -1195,8 +1195,8 @@ begin
 
      -- The canonical reference returned by ParseRenamingReference
      -- isn't the root canonical variable.  So we must follow the chain
-     -- and assign value to the svalue of the root canonical.
-     --identifiers( new_id ).value := identifiers( canonicalRef.id ).svalue'access;
+     -- and assign value to the sstorage of the root canonical.
+     --identifiers( new_id ).value := identifiers( canonicalRef.id ).sstorage'access;
 
      declare
         deref_id : identifier := canonicalRef.id;
@@ -1210,7 +1210,7 @@ begin
                  ": internal error: infinite renaming loop";
            end if;
         end loop;
-        identifiers( new_id ).value := identifiers( deref_id ).svalue'access;
+        identifiers( new_id ).value := identifiers( deref_id ).sstorage.value'access;
      end;
 
      -- if the renaming is an array element, the type is the type of the
@@ -1335,9 +1335,9 @@ begin
   else
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
-     if identifiers( id ).avalue /= null then
-        cacheOrFreeStorage( identifiers( id ).avalue );
-        --free( identifiers( id ).avalue );
+     if identifiers( id ).astorage /= null then
+        cacheOrFreeStorage( identifiers( id ).astorage );
+        --free( identifiers( id ).astorage );
      end if;
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
@@ -1380,14 +1380,14 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       svalue    => currentNamespace,
-       avalue   => null,
+       sstorage    => storage'(currentNamespace, identifiers'first),
+       astorage   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
-     -- svalue isn't defined until here
-     identifiers( id ).value := identifiers( id ).svalue'access;
+     -- sstorage isn't defined until here
+     identifiers( id ).value := identifiers( id ).sstorage.value'access;
 
      -- The position of the last namespace tag (open or closed)
      -- for setting the nextNamespace link
@@ -1474,14 +1474,14 @@ begin
   else
      id := identifiers_top;                                  -- return id
      identifiers_top := identifiers_top+1;                   -- push stack
-     if identifiers( id ).avalue /= null then
-        cacheOrFreeStorage( identifiers( id ).avalue );
-        --free( identifiers( id ).avalue );
+     if identifiers( id ).astorage /= null then
+        cacheOrFreeStorage( identifiers( id ).astorage );
+        --free( identifiers( id ).astorage );
      end if;
      identifiers( id ) := declaration'(                      -- define
        name     => to_unbounded_string( name ),              -- identifier
        kind     => identifiers'first,       -- TODO: this is a placeholder
-       --value    => svalue'access,
+       --value    => sstorage'access,
        value    => null,
        class    => namespaceClass,
        import   => false,
@@ -1520,14 +1520,14 @@ begin
        firstBound => 1,
        lastBound => 0,
        contract => null_unbounded_string,
-       svalue    => currentNamespace,             -- the previous namespace
-       avalue   => null,
+       sstorage    => storage'(currentNamespace, identifiers'first),             -- the previous namespace
+       astorage   => null,
        renaming_of => identifier'first,
        renamed_count => 0,
        passingMode => none
      );
-     -- svalue isn't defined until here
-     identifiers( id ).value := identifiers( id ).svalue'access;
+     -- sstorage isn't defined until here
+     identifiers( id ).value := identifiers( id ).sstorage.value'access;
 --put_line( "   last namespace was " & to_string( currentNamespace ) ); -- DEBUG
 
      -- The position of the last namespace tag (open or closed)
@@ -1621,8 +1621,8 @@ end declareNamespaceClosed;
 -- Copy the value and type of one identifier to another
 procedure copyValue( to_decl : in out declaration; from_decl : declaration ) is
 begin
-   to_decl.svalue := from_decl.svalue;
-   to_decl.avalue := from_decl.avalue;
+   to_decl.sstorage := from_decl.sstorage;
+   to_decl.astorage := from_decl.astorage;
    to_decl.list := from_decl.list;
    to_decl.kind := from_decl.kind;
    to_decl.class := from_decl.class;
@@ -2019,6 +2019,7 @@ begin
   when genericTypeClass => return "generic type";
   when formalParamClass => return "formal parameter";
   when userCaseProcClass => return "user-defined case procedure";
+  when metaClass        => return "value meta label";
   when otherClass       => return "other class";
   end case;
 end getIdentifierClassImage;

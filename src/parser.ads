@@ -42,8 +42,8 @@ procedure ParseNewIdentifier( id : out identifier );
 procedure ParseIdentifier( id : out identifier );
 procedure ParseStaticIdentifier( id : out identifier );
 procedure ParseProgramName( program_id : out identifier );
-procedure ParseExpression( ex : out unbounded_string; expr_type : out identifier );
-procedure ParseStaticExpression( ex : out unbounded_string; expr_type : out identifier );
+procedure ParseExpression( ex : out storage; expr_type : out identifier );
+procedure ParseStaticExpression( ex : out storage; expr_type : out identifier );
 
 procedure ParsePragmaIdentifier;
 procedure ParsePragmaIdentifier( name : out unbounded_string );
@@ -52,7 +52,7 @@ procedure ParseDesignPragmaAffinityIdentifier( name : out unbounded_string );
 procedure ParseDesignPragmaModeIdentifier( name : out unbounded_string );
 procedure ParseDesignPragmaAffinityModeIdentifier( name : out unbounded_string );
 
-procedure DoContracts( kind_id : identifier; expr_val : in out unbounded_string );
+procedure DoContracts( kind_id : identifier; expr_se : in out storage );
 
 
 ------------------------------------------------------------------------------

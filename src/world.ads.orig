@@ -428,13 +428,14 @@ lastChild : aPID := 0;
 --   policyClass   - a policy block
 --   configurationClass - a configuration block
 --   formalParamClass - formal parameters
+--   metaClass     - a value metalabel
 --   otherClass    - an undefined class
 
 type anIdentifierClass is ( subClass, typeClass, funcClass,
   userFuncClass, procClass, userProcClass, taskClass, mainProgramClass,
   exceptionClass, varClass, namespaceClass, enumClass, policyClass,
   configurationClass, genericTypeClass, formalParamClass, userCaseProcClass,
-  otherClass );
+  metaClass, otherClass );
 
 function getIdentifierClassImage( c : anIdentifierClass ) return string;
 
@@ -481,25 +482,56 @@ type anImportMapping is ( none, json );
 
 type aUsageQualifier is ( fullUsage, abstractUsage, limitedUsage, constantUsage );
 
-------------------------------------------------------------------------------
---
--- Callbacks to execute a build-in procedure or function (such as put_line).
-
-type aBuiltinProcedureCallback is access procedure;
-type aBuiltinFunctionCallback is access procedure( value : out unbounded_string; kind : out identifier );
-
 -- Each identifier has a single-dimension array of strings to hold the
 -- identifier's value(s)
 
-type storage is array( long_integer range <>) of aliased unbounded_string;
-type storagePtr is access all storage;
-procedure free is new ada.unchecked_deallocation( storage, storagePtr );
+------------------------------------------------------------------------------
+--
+-- META VALUE LABEL
+--
+-- The global setting is later in this file.  This is declared here for use
+-- with null storage.
+------------------------------------------------------------------------------
+
+noMetaLevel     : constant identifier := identifier'first;
+
+------------------------------------------------------------------------------
+--
+-- VALUE STORAGE
+--
+-- A storage element is the string to hold a value plus any meta data
+-- (tags) associated with the value.
+------------------------------------------------------------------------------
+
+type storage is record
+    value      : aliased unbounded_string;
+    metaLabel  : identifier;  -- TODO: just one for now
+end record;
+nullStorage : constant storage := ( null_unbounded_string, noMetaLevel );
+
+-- A storage for a variable is an array of storage elements, possibly with
+-- zero or only one element.
+
+type storageGroup is array( long_integer range <>) of aliased storage;
+type storageGroupPtr is access all storageGroup;
+procedure free is new ada.unchecked_deallocation( storageGroup, storageGroupPtr );
+
 type valuePtr is access all unbounded_string;
 
-function findStorage( lbound, ubound : long_integer ) return storagePtr;
+function findStorage( lbound, ubound : long_integer ) return storageGroupPtr;
 pragma inline( findStorage );
 -- find/allocate storage
 
+------------------------------------------------------------------------------
+--
+-- Callbacks to execute a build-in procedure or function (such as put_line).
+------------------------------------------------------------------------------
+
+type aBuiltinProcedureCallback is access procedure;
+type aBuiltinFunctionCallback is access procedure( value : out storage; kind : out identifier );
+
+------------------------------------------------------------------------------
+--
 -- Ways to pass parameters
 
 type aParameterPassingMode is (none, in_mode, out_mode, in_out_mode );
@@ -586,8 +618,8 @@ type declaration is record
 
      -- Storage
 
-     avalue    : storagePtr := null;             -- array value (array variable)
-     svalue    : aliased unbounded_string;       -- identifier's value
+     astorage    : storageGroupPtr := null;      -- array value (array variable)
+     sstorage  : aliased storage;                -- identifier's value storage
 
      -- Namespaces
 
@@ -608,10 +640,19 @@ err_exception    : declaration;           -- the exception else eof_t for none
 -- err_exception must be a declaration because it can be propagated out of
 -- the exception declaration scope
 
+------------------------------------------------------------------------------
+--  Security Level
+--
+-- The run-time security level.
+------------------------------------------------------------------------------
+
+metaLevel       : identifier := noMetaLevel;             -- the security level
 
 ------------------------------------------------------------------------------
 -- Symbol Table
 --
+-- The stack of all identifiers.
+-- This arrangement means the last array element is never accessed
 ------------------------------------------------------------------------------
 
 type identifiersArray is array ( identifier ) of declaration;
@@ -622,9 +663,7 @@ keywords_top    : identifier := identifier'last; -- last Ada keyword (xor)
 reserved_top    : identifier := identifier'last; -- last keyword any kind
 predefined_top  : identifier := identifier'last; -- last predefined ident
                                                  -- (like last built-in fn)
--- this arrangement means the last array element is never accessed
-
--- "Captain, the ship can't take any more!"
+-- Too many symbols/identifiers.
 
 symbol_table_overflow : exception;
 
@@ -762,6 +801,7 @@ xor_t      : identifier;
 affirm_t   : identifier;
 copies_t   : identifier;
 configuration_t : identifier;
+meta_t     : identifier;
 policy_t   : identifier;
 
 ------------------------------------------------------------------------------

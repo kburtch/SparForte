@@ -353,6 +353,13 @@ begin
                   " while checking the type attributes" ),
                subject => id );
         end case;
+     when metaClass =>
+        if ident.usage = abstractUsage then
+           put_retry( "abstract " );
+        -- elsif ident.usage = constantUsage then
+        --   put_retry( "constant " );
+        end if;
+        put_retry( "value meta label " );
      when funcClass =>
         put_retry( "built-in " );
         if ident.usage = abstractUsage then
@@ -451,6 +458,15 @@ begin
         null;
      elsif ident.class = genericTypeClass then
         null;
+     elsif ident.class = metaClass then
+        put_retry( "of ");
+        if ident.kind = eof_t then
+           put_retry( " unknown" );
+        elsif ident.kind = noMetaLevel then
+           put_retry( "root value meta label" );
+        else
+           put_retry( identifiers( identifiers( ident.kind ).kind ).name );
+        end if;
      else
         if kind.name = "an anonymous array" then
            -- special handling since they're not easily visible
@@ -594,7 +610,8 @@ begin
         put_retry( ident.name );
         if ident.renaming_of /= identifier'first then
             null;
-        elsif not ident.list and ident.kind /= root_record_t and ident.class /= exceptionClass then
+        elsif not ident.list and ident.kind /= root_record_t and
+               ident.class /= exceptionClass and ident.class /= metaClass then
             put_retry( " := " );
             if ident.class = userProcClass then
                 -- this appears first because getBaseType will fail on a
@@ -1202,7 +1219,7 @@ begin
   scannerState.last_output_type := last_output_type;
   scannerState.err_exception := err_exception;
   -- because value is now a pointer
-  scannerState.err_exception.value := scannerState.err_exception.svalue'unchecked_access;
+  scannerState.err_exception.value := scannerState.err_exception.sstorage.value'unchecked_access;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      scannerState.value := identifiers( token ).value.all;
   end if;
@@ -1231,7 +1248,7 @@ begin
   -- stoarge.
   if length( err_exception.name ) = 0 then
      err_exception := scannerState.err_exception;
-     err_exception.value := err_exception.svalue'access;
+     err_exception.value := err_exception.sstorage.value'access;
   end if;
   if token = symbol_t or token = strlit_t or token = charlit_t or token = number_t or token = word_t then
      identifiers( token ).value.all := scannerState.value;
@@ -1333,6 +1350,7 @@ begin
         theBlock.identifiers_top := identifiers_top;               -- last ident
         theBlock.newScope := newScope;                             -- scope flag
         theBlock.blockName := To_Unbounded_String( newName );      -- name if any
+        theBlock.metaLevel := metaLevel;
         if newFlow = noDataFlow then
            if blocks_top = block'first then
               theBlock.flowName := mainDataFlow;
@@ -1389,6 +1407,7 @@ begin
          b := deleteIdent( i );
      end loop;
      identifiers_top := blocks( blocks_top ).identifiers_top;   -- pop decl's
+     metaLevel := blocks( blocks_top ).metaLevel;
 
   -- Tiny Hash Cache
 
@@ -2288,6 +2307,8 @@ begin
   declareStandardConstant( "System.Testing_Phase", boolean_t, integer'image( commandLineOption'pos(testOpt))(2) & "" );
   declareStandardConstant( "System.Development_Phase", boolean_t, integer'image( commandLineOption'pos( not testOpt and not maintenanceOpt and not designOpt ) )(2) & "" );
   declareStandardConstant( "System.Session_Name", uni_string_t, to_string( sessionName ) );
+  declareFunction( system_meta_level_image_t, "System.Meta_Level_Image" );
+  -- VALUE META LABELS: a pseudo function
   declareNamespaceClosed( "System" );
 end declareStandardPackage;
 
@@ -2696,6 +2717,10 @@ begin
   DesignAffinityLists.Clear( designAffinityList );
   declareDefaultDesignConstraints;
 
+  -- VALUE META LABELS
+  -- Set the default run-time security level
+
+  metaLevel := noMetaLevel;
 end resetScanner;
 
 
@@ -2892,7 +2917,7 @@ begin
         if getUniType( identifiers( id ).kind ) = uni_string_t then -- string
            DoJsonToString( identifiers( id ).value.all, importedStringValue );
         elsif identifiers( id ).list then                           -- array
-           DoJsonToArray( id, importedStringValue );
+           DoJsonToArray( id, importedStringValue, noMetaLevel );   -- VALUE META LABEL: TODO: assign the correct level
         elsif  identifiers( getBaseType( identifiers( id ).kind ) ).kind  = root_record_t then -- record
            DoJsonToRecord( id, importedStringValue );
         elsif getUniType( identifiers( id ).kind ) = uni_numeric_t then -- number
@@ -3883,9 +3908,9 @@ begin
   elsif id = identifiers_top-1 then                             -- last id?
      -- If a renaming, decrement the renaming count of the target first.
      if identifiers( id ).renaming_of /= identifiers'first then
-        -- the avalue is a pointer to the canonical avalue, so just
+        -- the astorage is a pointer to the canonical astorage, so just
         -- remove it so declareIdent won't be confused and try to free it.
-        identifiers( id ).avalue := null;
+        identifiers( id ).astorage := null;
         declare
           derefed_id : constant identifier := identifiers( id ).renaming_of;
         begin
@@ -3930,7 +3955,7 @@ begin
   identifiers( id ).class  := otherClass;
   identifiers( id ).renamed_count := 0;
 
-  -- TODO: avalue not released on unset.  it is left to be released on reuse
+  -- TODO: astorage not released on unset.  it is left to be released on reuse
      return true;                                               -- delete OK
   end if;                                                       -- else
 
@@ -3939,9 +3964,9 @@ begin
 
   -- If a renaming, decrement the renaming count of the target first.
   if identifiers( id ).renaming_of /= identifiers'first then
-     -- the avalue is a pointer to the canonical avalue, so just
+     -- the astorage is a pointer to the canonical astorage, so just
      -- remove it so declareIdent won't be confused and try to free it.
-     identifiers( id ).avalue := null;
+     identifiers( id ).astorage := null;
      declare
        derefed_id : constant identifier := identifiers( id ).renaming_of;
      begin
@@ -3987,7 +4012,7 @@ begin
   identifiers( id ).inspect := false;
   identifiers( id ).class  := otherClass;
   identifiers( id ).renamed_count := 0;
-  -- TODO: avalue not released on unset.  it is left to be released on reuse
+  -- TODO: astorage not released on unset.  it is left to be released on reuse
   return true;                                                  -- delete OK
 end deleteIdent;
 
@@ -4323,8 +4348,8 @@ begin
      -- sourceArrayId := arrayID( to_numeric( identifiers( source_var_id ).value ) );
      -- source_first := firstBound( sourceArrayID );
      -- source_last  := lastBound( sourceArrayID );
-     source_first := identifiers( source_var_id ).avalue'first;
-     source_last  := identifiers( source_var_id ).avalue'last;
+     source_first := identifiers( source_var_id ).astorage'first;
+     source_last  := identifiers( source_var_id ).astorage'last;
      source_len   := source_last - source_first + 1;
      kind := getUniType( identifiers( source_var_id ).kind );
      elementKind := getBaseType( identifiers( identifiers( source_var_id ).kind ).kind );
@@ -4338,7 +4363,7 @@ begin
            result := to_unbounded_string( "[" );
            for arrayElementPos in source_first..source_last loop
                -- data := arrayElement( sourceArrayId, arrayElementPos );
-               data := identifiers( source_var_id ).avalue( arrayElementPos );
+               data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
                if length( data ) = 0 then
                   err(
                       contextNotes => +"enoding the JSON array value",
@@ -4375,7 +4400,7 @@ begin
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
-           data := identifiers( source_var_id ).avalue( arrayElementPos );
+           data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
            if elementKind = json_string_t then
               -- if it's a JSON string, just copy the data
               result := result & data;
@@ -4394,7 +4419,7 @@ begin
         result := to_unbounded_string( "[" );
         for arrayElementPos in source_first..source_last loop
            -- data := arrayElement( sourceArrayId, arrayElementPos );
-           data := identifiers( source_var_id ).avalue( arrayElementPos );
+           data := identifiers( source_var_id ).astorage( arrayElementPos ).value;
            if length( data ) = 0 then
               err(
                   contextNotes => +"enoding the JSON array value",
@@ -4445,10 +4470,11 @@ end DoArrayToJson;
 --
 -- Convert a JSON string and store in an array.  This is placed here so it
 -- can be reused elsewhere in the language as required.  Params are not
--- checked.
+-- checked.  The security level must be provided because this procedure does
+-- not know what it should be.
 -----------------------------------------------------------------------------
 
-procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_string ) is
+procedure DoJsonToArray( target_var_id : identifier; sourceVal : unbounded_string; newMetaLabel : identifier ) is
   target_first  : long_integer;
   target_last   : long_integer;
   target_len    : long_integer;
@@ -4464,8 +4490,8 @@ procedure DoJsonToArray( target_var_id : identifier; source_val : unbounded_stri
   inQuotes      : boolean;
 begin
   -- look up the array information
-  target_first := identifiers( target_var_id ).avalue'first;
-  target_last  := identifiers( target_var_id ).avalue'last;
+  target_first := identifiers( target_var_id ).astorage'first;
+  target_last  := identifiers( target_var_id ).astorage'last;
   target_len   := target_last - target_first + 1;
   kind := getUniType( identifiers( target_var_id ).kind );
   elementKind := getBaseType( identifiers( identifiers( target_var_id ).kind ).kind );
@@ -4475,23 +4501,23 @@ begin
     i : integer := 1;
     ch: character;
   begin
-    skipJSONWhitespace( source_val, i );
-    if length( source_val ) > 0 then
-       ch := element( source_val, i );
+    skipJSONWhitespace( sourceVal, i );
+    if length( sourceVal ) > 0 then
+       ch := element( sourceVal, i );
        if ch = '{' then
-         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+         err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
               subjectNotes => pl( qp( "an opening '['" ) ),
               reason => pl( "at position" & i'img & " is expected for an array not a" ),
               obstructorNotes => +"'{' for a JSON object"
          );
        elsif ch /= '[' then
-         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+         err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
               subjectNotes => pl( qp( "an opening '['" ) ),
               reason => pl( "at position" & i'img & " is expected for an array not a" ),
               obstructorNotes => pl( "'" ) & em_esc( ch ) & pl( "'" )
          );
-       elsif element( source_val, length( source_val ) ) /= ']' then
-         err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+       elsif element( sourceVal, length( sourceVal ) ) /= ']' then
+         err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
               subjectNotes => pl( qp( "a closing ']'" ) ),
               reason => pl( "is expected for an array not a" ),
               obstructorNotes => nullMessageStrings
@@ -4509,40 +4535,40 @@ begin
     i : integer := 1;
     discard : unbounded_string;
   begin
-       while i <= length( source_val ) loop
-         ch := element( source_val, i );
+       while i <= length( sourceVal ) loop
+         ch := element( sourceVal, i );
          if ch = '[' then
              exit;
          end if;
          i := i + 1;
        end loop;
 
-       if i <= length( source_val ) then
+       if i <= length( sourceVal ) then
           i := i + 1; -- skip [
           loop
-            --SkipJSONWhitespace( source_val, i );
-            if element( source_val, i ) = ',' then
-               err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+            --SkipJSONWhitespace( sourceVal, i );
+            if element( sourceVal, i ) = ',' then
+               err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                     subjectNotes => subjectInterpreter,
                     reason => pl( "at position" & i'img & " expected an array item but found a" ),
                     obstructorNotes => pl("'") & em_esc( ch ) & pl("'")
                );
             end if;
-            ParseJSONItem( source_val, discard, i );
-            if i > length( source_val ) then
+            ParseJSONItem( sourceVal, discard, i );
+            if i > length( sourceVal ) then
                exit;
             else
                numItems := numItems + 1;
-               SkipJSONWhitespace( source_val, i );
-               if i <= length( source_val ) then
-                  ch := element( source_val, i );
+               SkipJSONWhitespace( sourceVal, i );
+               if i <= length( sourceVal ) then
+                  ch := element( sourceVal, i );
                   if ch = ',' then
                      i := i + 1;
                   elsif ch = ']' then
                      exit;
                   end if;
                else
-                  err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                  err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                        subjectNotes => subjectInterpreter,
                        reason => pl( "at position" & i'img & " and found an unexpected character" ),
                        obstructorNotes => pl("'") & em_esc( ch ) & pl("'")
@@ -4552,7 +4578,7 @@ begin
             end if;
           end loop;
        else
-          err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+          err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                subjectNotes => subjectInterpreter,
                reason => pl( "at position" & i'img & " and found" ),
                obstructorNotes => em( "the end of the string" )
@@ -4568,7 +4594,7 @@ begin
      if numItems = 0 and target_len = 0 then
         null;
      elsif numItems /= target_len then
-        err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+        err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
              subjectNotes => pl( qp( "the JSON string length of" ) & numItems'img & " elements" ),
              reason => +"does not equal the target array length of",
              obstructorNotes => em( target_len'img & " elements" )
@@ -4586,29 +4612,31 @@ begin
               i : integer := 2;
            begin
               -- read true/false
-              while i <= length( source_val ) loop
+              while i <= length( sourceVal ) loop
                  -- skip leading whitespace
-                 skipJSONWhitespace( source_val, i );
-                 exit when i > length( source_val );
-                 while i <= length( source_val ) loop
-                    ch := element( source_val, i );
+                 skipJSONWhitespace( sourceVal, i );
+                 exit when i > length( sourceVal );
+                 while i <= length( sourceVal ) loop
+                    ch := element( sourceVal, i );
                     exit when ch /= ' ' and ch /= ASCII.HT;
                     i := i + 1;
                  end loop;
-                  ch := element( source_val, i );
+                  ch := element( sourceVal, i );
                   if ch = ',' or ch = ']' or ch = ' ' or ch = ASCII.HT then
                      if item = "false" then
                         -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "0" ) );
-                        identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "0" );
+                        identifiers( target_var_id ).astorage( arrayElement ).value := to_unbounded_string( "0" );
+                        identifiers( target_var_id ).astorage( arrayElement ).metaLabel := newMetaLabel;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      elsif item = "true" then
                         -- assignElement( targetArrayId, arrayElement, to_unbounded_string( "1" ) );
-                        identifiers( target_var_id ).avalue( arrayElement ) := to_unbounded_string( "1" );
+                        identifiers( target_var_id ).astorage( arrayElement ).value := to_unbounded_string( "1" );
+                        identifiers( target_var_id ).astorage( arrayElement ).metaLabel := newMetaLabel;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      else
-                        err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value to an array" ),
+                        err( contextNotes => jsonDecodeContextAltText( sourceVal, "decoding the JSON string value to an array" ),
                              subjectNotes => pl( qp( "a JSON boolean value" ) ),
                              reason => +"is expected but instead found",
                              obstructorNotes => em_value( item )
@@ -4645,19 +4673,20 @@ begin
               -- Assign the positions to the array, checking for out-of-range
               -- positions.
               arrayElement := target_first;
-              for i in 2..length( source_val ) loop
-                  ch := element( source_val, i );
+              for i in 2..length( sourceVal ) loop
+                  ch := element( sourceVal, i );
                   if ch = ',' or ch = ']' then
                      enumVal := integer'value( ' ' & to_string( item ) );
                      if enumVal < 0 or enumVal > maxEnum then
-                        err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                        err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                              subjectNotes => pl( qp( "a JSON enumerated position" ) ),
                              reason => +"was was out of range for " & name_em( elementKind ) & pl( " with" ),
                              obstructorNotes => +"position " & em_value( item )
                         );
                      else
                         -- assignElement( targetArrayId, arrayElement, ' ' & item );
-                        identifiers( target_var_id ).avalue( arrayElement ) := ' ' & item;
+                        identifiers( target_var_id ).astorage( arrayElement ).value := ' ' & item;
+                        identifiers( target_var_id ).astorage( arrayElement ).metaLabel := newMetaLabel;
                         arrayElement := arrayElement + 1;
                         item := null_unbounded_string;
                      end if;
@@ -4673,28 +4702,28 @@ begin
         -- some kind of string items
 
         arrayElement := target_first;
-        -- for i in 2..length( source_val ) loop
+        -- for i in 2..length( sourceVal ) loop
         declare
           i : integer := 2;
         begin
 
-          while i <= length( source_val ) loop
-            skipJSONWhitespace( source_val, i );
-            exit when i > length( source_val );
+          while i <= length( sourceVal ) loop
+            skipJSONWhitespace( sourceVal, i );
+            exit when i > length( sourceVal );
 
-            ch := element( source_val, i );
+            ch := element( sourceVal, i );
 
             if elementKind = json_string_t then
             -- if it's JSON string, read the string as-is and assign it to the
             -- array.
-               ParseJSONItem( source_val, item, i );
-               if i <= length( source_val ) then
-                   skipJSONWhitespace( source_val, i );
-                   ch := element( source_val, i );
+               ParseJSONItem( sourceVal, item, i );
+               if i <= length( sourceVal ) then
+                   skipJSONWhitespace( sourceVal, i );
+                   ch := element( sourceVal, i );
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                      err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                            subjectNotes => subjectInterpreter,
                            reason => pl( "at position" & i'img & " found unexpect character" ),
                            obstructorNotes => em_esc( ch )
@@ -4703,14 +4732,15 @@ begin
                end if;
 
                -- assignElement( targetArrayId, arrayElement, item );
-               identifiers( target_var_id ).avalue( arrayElement ) := item;
+               identifiers( target_var_id ).astorage( arrayElement ).value := item;
+               identifiers( target_var_id ).astorage( arrayElement ).metaLabel := newMetaLabel;
                arrayElement := arrayElement + 1;
                item := null_unbounded_string;
             else
-               if i <= length( source_val ) then
-                  ch := element( source_val, i );
+               if i <= length( sourceVal ) then
+                  ch := element( sourceVal, i );
                   if ch /= '"' then
-                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                      err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                            subjectNotes => subjectInterpreter,
                            reason => pl( "at position" & i'img & " a string value expects a double quote not a " ),
                            obstructorNotes => em_esc( ch )
@@ -4718,16 +4748,16 @@ begin
                   end if;
                end if;
 
-               ParseJSONItem( source_val, item, i );
+               ParseJSONItem( sourceVal, item, i );
                if length( item ) < 2 then
-                  err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value" ),
+                  err( contextNotes => jsonDecodeContextAltText( sourceVal, "decoding the JSON string value" ),
                        subjectNotes => pl( qp( "the string field" ) ),
                        reason => pl( "at position" & i'img & "should at least 2 characters because there should be" ),
                        obstructorNotes => em( "2 double quotes" )
                   );
                   exit;
                elsif element( item, length( item ) ) /= '"' then
-                  err( contextNotes => jsonDecodeContextAltText( source_val, "decoding the JSON string value" ),
+                  err( contextNotes => jsonDecodeContextAltText( sourceVal, "decoding the JSON string value" ),
                        subjectNotes => pl( qp( "the string field" ) ),
                        reason => pl( "at position" & i'img & " should have" ),
                        obstructorNotes => em( "a final double quote" )
@@ -4765,13 +4795,13 @@ begin
                    end if;
                end loop;
 
-               if i <= length( source_val ) then
-                   skipJSONWhitespace( source_val, i );
-                   ch := element( source_val, i );
+               if i <= length( sourceVal ) then
+                   skipJSONWhitespace( sourceVal, i );
+                   ch := element( sourceVal, i );
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                      err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                            subjectNotes => subjectInterpreter,
                            reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
                            obstructorNotes => em_esc( ch )
@@ -4780,7 +4810,8 @@ begin
                end if;
 
                -- assignElement( targetArrayId, arrayElement, decoded_item );
-               identifiers( target_var_id ).avalue( arrayElement ) := decoded_item;
+               identifiers( target_var_id ).astorage( arrayElement ).value := decoded_item;
+               identifiers( target_var_id ).astorage( arrayElement ).metaLabel := newMetaLabel;
                arrayElement := arrayElement + 1;
                item := null_unbounded_string;
                --else
@@ -4798,13 +4829,13 @@ begin
           ok : boolean;
           ch : character;
         begin
-          skipJSONWhitespace( source_val, i );
-          if i <= length( source_val ) then
-             JSONexpect( source_val, i, '[' );
-             while i <= length( source_val ) loop
-               skipJSONWhitespace( source_val, i );
+          skipJSONWhitespace( sourceVal, i );
+          if i <= length( sourceVal ) then
+             JSONexpect( sourceVal, i, '[' );
+             while i <= length( sourceVal ) loop
+               skipJSONWhitespace( sourceVal, i );
                item := null_unbounded_string;
-               ParseJSONItem( source_val, item, i );
+               ParseJSONItem( sourceVal, item, i );
                -- assume that it's OK if it starts with a numeric character
                -- TODO: better validation based on actual type
                ch := element( item, 1 );
@@ -4822,29 +4853,30 @@ begin
                exception when others => ok := false;
                end;
                if not ok then
-                  err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                  err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                        subjectNotes => subjectInterpreter,
                        reason => pl( "at position" & i'img & " expected a numeric value but found" ),
                        obstructorNotes => em_value( item )
                   );
                end if;
                -- assignElement( targetArrayId, arrayElement, item );
-               identifiers( target_var_id ).avalue( arrayElement ) := item;
+               identifiers( target_var_id ).astorage( arrayElement ).value := item;
+               identifiers( target_var_id ).astorage( arrayElement ).metaLabel := newMetaLabel;
                arrayElement := arrayElement + 1;
-               skipJSONWhitespace( source_val, i );
-               if i <= length( source_val ) then
-                   ch := element( source_val, i );
+               skipJSONWhitespace( sourceVal, i );
+               if i <= length( sourceVal ) then
+                   ch := element( sourceVal, i );
                    if ch = ',' or ch = ']' then
                       i := i + 1;
                    else
-                      err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                      err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                            subjectNotes => subjectInterpreter,
                            reason => pl( "at position" & i'img & " expected a comma or ']' but found" ),
                            obstructorNotes => em_esc( ch )
                       );
                    end if;
                else
-                   err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+                   err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                         subjectNotes => subjectInterpreter,
                         reason => pl( "at position" & i'img & " expected a comma or ']' but reached" ),
                         obstructorNotes => +"the end of the string"
@@ -4853,7 +4885,7 @@ begin
                end if;
              end loop;
           else
-             err( contextNotes => contextAltText( source_val, "decoding the JSON string value to an array" ),
+             err( contextNotes => contextAltText( sourceVal, "decoding the JSON string value to an array" ),
                   subjectNotes => subjectInterpreter,
                   reason => pl( "at position" & i'img & " expected a '[' but found" ),
                   obstructorNotes => +"the end of the string"

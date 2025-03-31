@@ -64,13 +64,13 @@ discard_result : boolean;
 ------------------------------------------------------------------------------
 
 pragma inline( AssignParameter );
-procedure AssignParameter( ref : in reference; value : unbounded_string ) is
+procedure AssignParameter( ref : in reference; value_se : storage ) is
 begin
    if ref.index = 0 then
-      identifiers( ref.id ).value.all := value;
+      identifiers( ref.id ).sstorage := value_se;
    else
       -- assignElement( ref.a_id, ref.index, value ); -- OLDARRAY
-      identifiers( ref.id ).avalue( ref.index ) := value; --NEWARRAY
+      identifiers( ref.id ).astorage( ref.index ) := value_se; --NEWARRAY
    end if;
 exception when storage_error =>
    err( +"internal error: storage error raised in AssignParameter" );
@@ -84,13 +84,13 @@ end AssignParameter;
 ------------------------------------------------------------------------------
 
 pragma inline( GetParameterValue );
-procedure GetParameterValue( ref : in reference; value : out unbounded_string ) is
+procedure GetParameterValue( ref : in reference; value_se : out storage ) is
 begin
    if ref.index = 0 then
-      value := identifiers( ref.id ).value.all;
+      value_se := identifiers( ref.id ).sstorage;
    else
       --value := arrayElement( ref.a_id, ref.index );
-      value := identifiers( ref.id ).avalue( ref.index ); -- NEWARRAY
+      value_se := identifiers( ref.id ).astorage( ref.index ); -- NEWARRAY
    end if;
 end GetParameterValue;
 
@@ -113,8 +113,8 @@ end GetParameterValue;
 procedure ParseRenamingReference( ref : out renamingReference;
   expectedType : identifier ) is
   -- syntax: identifier [ (index) ]
-  expr_kind  : identifier;
-  expr_value : unbounded_string;
+  expr_type  : identifier;
+  expr_se    : storage;
   -- array_id2  : arrayID;
   arrayIndex : long_integer;
 begin
@@ -138,9 +138,9 @@ begin
         expect( symbol_t, "(" );
         ref.hasIndex := true;
         ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
-        ParseExpression( expr_value, expr_kind );
-        if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
-           identifiers( getBaseType( expr_kind ) ).list then
+        ParseExpression( expr_se, expr_type );
+        if getUniType( expr_type ) = uni_string_t or   -- index must be scalar
+           identifiers( getBaseType( expr_type ) ).list then
            err( +"array index must be a scalar type" );
         end if;
         expect( symbol_t, ")" );
@@ -160,17 +160,17 @@ begin
      if isExecutingCommand then                -- declared in syntax chk
          if ref.hasIndex then
             begin
-               arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
+               arrayIndex := long_integer(to_numeric(expr_se.value));-- convert to number
             exception when others =>
                err_exception_raised;
                arrayIndex := 0;
             end;
-            if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then
+            if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then
                -- TODO: probably needs a better error message
-               if arrayIndex not in identifiers( ref.id ).avalue'range then
-                  err( pl( "array index " & to_string( trim( expr_value, ada.strings.both ) ) &
-                     " not in" & identifiers( ref.id ).avalue'first'img & " .." &
-                     identifiers( ref.id ).avalue'last'img ) );
+               if arrayIndex not in identifiers( ref.id ).astorage'range then
+                  err( pl( "array index " & to_string( trim( expr_se.value, ada.strings.both ) ) &
+                     " not in" & identifiers( ref.id ).astorage'first'img & " .." &
+                     identifiers( ref.id ).astorage'last'img ) );
                else
                  ref.index := arrayIndex;
                end if;
@@ -211,18 +211,18 @@ end ParseRenamingReference;
 
 procedure ParseNextGenItemParameter(
     subprogram : identifier;
-    expr_val : out unbounded_string;
-    expr_type : out identifier;
+    expr_se    : out storage;
+    expr_type  : out identifier;
     expected_type : identifier := uni_string_t ) is
   u : identifier;
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   genTypesOK( expr_type, expected_type );
   if isExecutingCommand then
      u := getUniType( expected_type );
      if u = uni_string_t or u = uni_numeric_t or u = universal_t then
-        expr_val := castToType( expr_val, expected_type );
+        expr_se.value := castToType( expr_se.value, expected_type );
      end if;
   end if;
 end ParseNextGenItemParameter;
@@ -238,19 +238,19 @@ end ParseNextGenItemParameter;
 
 procedure ParseLastGenItemParameter(
     subprogram : identifier;
-    expr_val : out unbounded_string;
-    expr_type : out identifier;
+    expr_se    : out storage;
+    expr_type  : out identifier;
     expected_type : identifier := uni_string_t ) is
   u : identifier;
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   expectParameterClose( subprogram );
   genTypesOK( expr_type, expected_type );
   if isExecutingCommand then
      u := getUniType( expected_type );
      if u = uni_string_t or u = uni_numeric_t or u = universal_t then
-        expr_val := castToType( expr_val, expected_type );
+        expr_se.value := castToType( expr_se.value, expected_type );
      end if;
   end if;
 end ParseLastGenItemParameter;
@@ -264,15 +264,15 @@ end ParseLastGenItemParameter;
 -- one it is.
 ------------------------------------------------------------------------------
 
-procedure ParseGenItemParameter( expr_val : out unbounded_string; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
+procedure ParseGenItemParameter( expr_se: out storage; expr_type : out identifier; expected_type : identifier := uni_string_t ) is
   u : identifier;
 begin
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   genTypesOK( expr_type, expected_type );
   if isExecutingCommand then
      u := getUniType( expected_type );
      if u = uni_string_t or u = uni_numeric_t or u = universal_t then
-        expr_val := castToType( expr_val, expected_type );
+        expr_se.value := castToType( expr_se.value, expected_type );
      end if;
   end if;
 end ParseGenItemParameter;
@@ -285,16 +285,16 @@ end ParseGenItemParameter;
 -- type, assume it's a universal string type.
 ------------------------------------------------------------------------------
 
-procedure ParseStringParameter( expr_val : out unbounded_string;
+procedure ParseStringParameter( expr_se: out storage;
   expr_type : out identifier; expected_type : identifier := uni_string_t  ) is
 begin
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value:= castToType( expr_se.value, expected_type );
   end if;
 end ParseStringParameter;
 
@@ -308,18 +308,18 @@ end ParseStringParameter;
 
 procedure ParseSingleStringParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t  ) is
 begin
   expectParameterOpen( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
   expectParameterClose( subprogram );
 end ParseSingleStringParameter;
@@ -654,18 +654,18 @@ end ParseSingleInOutInstantiatedParameter;
 
 procedure ParseFirstStringParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_string_t ) is
 begin
   expectParameterOpen( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
 end ParseFirstStringParameter;
 
@@ -677,17 +677,17 @@ end ParseFirstStringParameter;
 -- type, assume it's a universal string type.
 ------------------------------------------------------------------------------
 
-procedure ParseNextStringParameter( subprogram : identifier; expr_val : out unbounded_string;
+procedure ParseNextStringParameter( subprogram : identifier; expr_se: out storage;
   expr_type : out identifier; expected_type : identifier := uni_string_t ) is
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value:= castToType( expr_se.value, expected_type );
   end if;
 end ParseNextStringParameter;
 
@@ -701,18 +701,18 @@ end ParseNextStringParameter;
 
 procedure ParseLastStringParameter(
     subprogram : identifier;
-    expr_val : out unbounded_string;
+    expr_se : out storage;
     expr_type : out identifier;
     expected_type : identifier := uni_string_t ) is
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
   expectParameterClose( subprogram );
 end ParseLastStringParameter;
@@ -731,10 +731,10 @@ end ParseLastStringParameter;
 -- Expect a parameter that is an enum expression.
 ------------------------------------------------------------------------------
 
-procedure ParseEnumParameter( expr_val : out unbounded_string;
+procedure ParseEnumParameter( expr_se: out storage;
   expr_type : out identifier; expected_type : identifier ) is
 begin
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
 end ParseEnumParameter;
@@ -748,12 +748,12 @@ end ParseEnumParameter;
 
 procedure ParseSingleEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier ) is
 begin
   expectParameterOpen( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   expectParameterClose( subprogram );
@@ -768,12 +768,12 @@ end ParseSingleEnumParameter;
 
 procedure ParseFirstEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier ) is
 begin
   expectParameterOpen( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
 end ParseFirstEnumParameter;
@@ -787,12 +787,12 @@ end ParseFirstEnumParameter;
 
 procedure ParseNextEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier ) is
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
 end ParseNextEnumParameter;
@@ -806,12 +806,12 @@ end ParseNextEnumParameter;
 
 procedure ParseLastEnumParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se: out storage;
   expr_type : out identifier;
   expected_type : identifier ) is
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   -- no cast to type
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   expectParameterClose( subprogram );
@@ -833,18 +833,18 @@ end ParseLastEnumParameter;
 
 procedure ParseSingleNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t ) is
 begin
   expectParameterOpen( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
   expectParameterClose( subprogram );
 end ParseSingleNumericParameter;
@@ -857,18 +857,18 @@ end ParseSingleNumericParameter;
 
 procedure ParseFirstNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t ) is
 begin
   expectParameterOpen( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
 end ParseFirstNumericParameter;
 
@@ -880,18 +880,18 @@ end ParseFirstNumericParameter;
 
 procedure ParseNextNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t ) is
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value:= castToType( expr_se.value, expected_type );
   end if;
 end ParseNextNumericParameter;
 
@@ -903,18 +903,18 @@ end ParseNextNumericParameter;
 
 procedure ParseLastNumericParameter(
   subprogram : identifier;
-  expr_val : out unbounded_string;
+  expr_se : out storage;
   expr_type : out identifier;
   expected_type : identifier := uni_numeric_t ) is
 begin
   expectParameterComma( subprogram );
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
   expectParameterClose( subprogram );
 end ParseLastNumericParameter;
@@ -926,16 +926,16 @@ end ParseLastNumericParameter;
 -- Special case: don't read ( / , / )
 ------------------------------------------------------------------------------
 
-procedure ParseNumericParameter( expr_val : out unbounded_string;
+procedure ParseNumericParameter( expr_se : out storage;
   expr_type : out identifier; expected_type : identifier := uni_numeric_t ) is
 begin
-  ParseExpression( expr_val, expr_type );
+  ParseExpression( expr_se, expr_type );
   discard_result := type_checks_done or else baseTypesOK( expr_type, expected_type );
   if syntax_check then
      identifiers( expected_type ).wasCastTo := true;
   end if;
   if isExecutingCommand then
-     expr_val := castToType( expr_val, expected_type );
+     expr_se.value := castToType( expr_se.value, expected_type );
   end if;
 end ParseNumericParameter;
 
@@ -957,8 +957,8 @@ end ParseNumericParameter;
 
 procedure ParseOutParameter( ref : out reference; defaultType : identifier ) is
   -- syntax: identifier [ (index) ]
-  expr_kind  : identifier;
-  expr_value : unbounded_string;
+  expr_type  : identifier;
+  expr_se    : storage;
   arrayIndex : long_integer;
   isNew      : boolean := false;
   discard    : boolean;
@@ -1001,24 +1001,24 @@ begin
   if identifiers( ref.id ).list then        -- array variable?
      ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      expect( symbol_t, "(" );
-     ParseExpression( expr_value, expr_kind );
-     if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
-        identifiers( getBaseType( expr_kind ) ).list then
+     ParseExpression( expr_se, expr_type );
+     if getUniType( expr_type ) = uni_string_t or   -- index must be scalar
+        identifiers( getBaseType( expr_type ) ).list then
         err( +"array index must be a scalar type" );
      end if;                                   -- variables are not
-     --if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then
+     --if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then
      if isExecutingCommand then                -- declared in syntax chk
          begin
-            arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
+            arrayIndex := long_integer(to_numeric(expr_se.value));-- convert to number
          exception when others =>
             err_exception_raised;
             arrayIndex := 0;
          end;
-         if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
-            if arrayIndex not in identifiers( ref.id ).avalue'range then
-               err( pl( "array index " & to_string( trim( expr_value, ada.strings.both ) ) &
-                  " not in" & identifiers( ref.id ).avalue'first'img & " .." &
-                  identifiers( ref.id ).avalue'last'img ) );
+         if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then -- TODO: probably needs a better error message
+            if arrayIndex not in identifiers( ref.id ).astorage'range then
+               err( pl( "array index " & to_string( trim( expr_se.value, ada.strings.both ) ) &
+                  " not in" & identifiers( ref.id ).astorage'first'img & " .." &
+                  identifiers( ref.id ).astorage'last'img ) );
             else
               ref.index := arrayIndex;
             end if;
@@ -1178,38 +1178,38 @@ end ParseLastOutParameter;
 
 procedure ParseInOutParameter( ref : out reference ) is
   -- syntax: identifier [ (index) ]
-  expr_kind : identifier;
-  expr_value : unbounded_string;
+  expr_type : identifier;
+  expr_se   : storage;
   arrayIndex: long_integer;
 begin
   ParseIdentifier( ref.id );
   ref.index := 0;
   if identifiers( token ).list then        -- array variable?
      expect( symbol_t, "(" );
-     ParseExpression( expr_value, expr_kind );
+     ParseExpression( expr_se, expr_type );
      expectParameterClose;
   end if;
   ref.index := 0;
   if identifiers( ref.id ).list then        -- array variable?
      ref.kind := identifiers( identifiers( ref.id ).kind ).kind;
      expect( symbol_t, "(" );
-     ParseExpression( expr_value, expr_kind );
-     if getUniType( expr_kind ) = uni_string_t or   -- index must be scalar
-        identifiers( getBaseType( expr_kind ) ).list then
+     ParseExpression( expr_se, expr_type );
+     if getUniType( expr_type ) = uni_string_t or   -- index must be scalar
+        identifiers( getBaseType( expr_type ) ).list then
         err( +"array index must be a scalar type" );
      end if;                                   -- variables are not
      if isExecutingCommand then                -- declared in syntax chk
          begin
-            arrayIndex := long_integer(to_numeric(expr_value));-- convert to number
+            arrayIndex := long_integer(to_numeric(expr_se.value));-- convert to number
          exception when others =>
             err_exception_raised;
             arrayIndex := 0;
          end;
-         if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_kind ) then -- TODO: probably needs a better error message
-            if arrayIndex not in identifiers( ref.id ).avalue'range then
-               err( pl( "array index " & to_string( trim( expr_value, ada.strings.both ) ) &
-                  " not in" & identifiers( ref.id ).avalue'first'img & " .." &
-                  identifiers( ref.id ).avalue'last'img ) );
+         if type_checks_done or else baseTypesOK( identifiers( ref.id ).genKind, expr_type ) then -- TODO: probably needs a better error message
+            if arrayIndex not in identifiers( ref.id ).astorage'range then
+               err( pl( "array index " & to_string( trim( expr_se.value, ada.strings.both ) ) &
+                  " not in" & identifiers( ref.id ).astorage'first'img & " .." &
+                  identifiers( ref.id ).astorage'last'img ) );
             else
               ref.index := arrayIndex;
             end if;

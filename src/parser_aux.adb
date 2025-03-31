@@ -131,10 +131,10 @@ end replaceField;
 -----------------------------------------------------------------------------
 
 function stringField( r : reference; f : natural ) return unbounded_string is
-   tempStr : unbounded_string;
+   tempStr : storage;
 begin
   getParameterValue( r, tempStr );
-  return stringField( tempStr, recSep, f );
+  return stringField( tempStr.value, recSep, f );
 end stringField;
 
 
@@ -145,10 +145,10 @@ end stringField;
 -----------------------------------------------------------------------------
 
 procedure replaceField( r : reference; f : natural; field : string ) is
-   tempStr : unbounded_string;
+   tempStr : storage;
 begin
   getParameterValue( r, tempStr );
-  replaceField( tempStr, recSep, f, field );
+  replaceField( tempStr.value, recSep, f, field );
   assignParameter( r, tempStr );
 end replaceField;
 

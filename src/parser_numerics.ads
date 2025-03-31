@@ -21,8 +21,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with ada.strings.unbounded;
-use ada.strings.unbounded;
+with ada.strings.unbounded,
+   world;
+use ada.strings.unbounded,
+   world;
 
 package parser_numerics is
 
@@ -37,7 +39,7 @@ procedure ShutdownNumerics;
 -- PARSE THE NUMERICS PACKAGE
 ------------------------------------------------------------------------------
 
-procedure ParseNumericsAbs( result : out unbounded_string );
+procedure ParseNumericsAbs( result : out storage );
 -- this must be exposed because abs() is a language built-in
 
 end parser_numerics;

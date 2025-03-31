@@ -148,12 +148,12 @@ procedure ShutdownTextIO;
 ------------------------------------------------------------------------------
 
 procedure ParseIsOpen( b : out identifier );
-procedure ParseEndOfFile( result : out unbounded_string; kind : out identifier );
-procedure ParseEndOfLine( result : out unbounded_string; kind : out identifier );
-procedure ParseLine( result : out unbounded_string; kind : out identifier );
-procedure ParseName( result : out unbounded_string; kind : out identifier );
-procedure ParseMode( result : out unbounded_string; kind : out identifier );
-procedure ParseGetLine( str : out unbounded_string; kind : out identifier );
+procedure ParseEndOfFile( result : out storage; kind : out identifier );
+procedure ParseEndOfLine( result : out storage; kind : out identifier );
+procedure ParseLine( result : out storage; kind : out identifier );
+procedure ParseName( result : out storage; kind : out identifier );
+procedure ParseMode( result : out storage; kind : out identifier );
+procedure ParseGetLine( result : out storage; kind : out identifier );
 procedure ParseOpen( create : boolean := false );
 procedure ParseReset;
 procedure ParseClose;
@@ -172,7 +172,7 @@ procedure ParseSetError;
 ------------------------------------------------------------------------------
 
 procedure ParseQuestion;
-procedure ParseInkey( str : out unbounded_string; kind : out identifier );
+procedure ParseInkey( result : out storage; kind : out identifier );
 
 end parser_tio;
 
